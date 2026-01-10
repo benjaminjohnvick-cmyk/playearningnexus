@@ -68,11 +68,14 @@ export default function Surveys() {
   });
 
   const availableSurveys = [
-    { id: 1, provider: 'cint', title: 'Consumer Preferences Survey', earnings: 0.50, duration: 5, category: 'Shopping' },
-    { id: 2, provider: 'pollfish', title: 'Mobile App Usage Study', earnings: 0.75, duration: 8, category: 'Technology' },
-    { id: 3, provider: 'cint', title: 'Entertainment Habits', earnings: 0.60, duration: 6, category: 'Lifestyle' },
-    { id: 4, provider: 'qualtrics', title: 'Product Feedback', earnings: 0.40, duration: 4, category: 'Products' },
-    { id: 5, provider: 'pollfish', title: 'Travel Preferences', earnings: 0.85, duration: 10, category: 'Travel' }
+    { id: 1, provider: 'pollfish', title: 'Consumer Preferences Survey', earnings: 1.20, duration: 5, category: 'Shopping', url: 'https://www.pollfish.com/survey' },
+    { id: 2, provider: 'pollfish', title: 'Mobile App Usage Study', earnings: 1.50, duration: 8, category: 'Technology', url: 'https://www.pollfish.com/survey' },
+    { id: 3, provider: 'pollfish', title: 'Entertainment Habits', earnings: 0.90, duration: 6, category: 'Lifestyle', url: 'https://www.pollfish.com/survey' },
+    { id: 4, provider: 'pollfish', title: 'Product Feedback Study', earnings: 0.80, duration: 4, category: 'Products', url: 'https://www.pollfish.com/survey' },
+    { id: 5, provider: 'pollfish', title: 'Travel & Leisure Survey', earnings: 1.75, duration: 10, category: 'Travel', url: 'https://www.pollfish.com/survey' },
+    { id: 6, provider: 'pollfish', title: 'Healthcare Opinion Survey', earnings: 2.50, duration: 15, category: 'Health', url: 'https://www.pollfish.com/survey' },
+    { id: 7, provider: 'pollfish', title: 'Financial Services Survey', earnings: 3.00, duration: 12, category: 'Finance', url: 'https://www.pollfish.com/survey' },
+    { id: 8, provider: 'pollfish', title: 'Gaming Habits Study', earnings: 1.10, duration: 7, category: 'Gaming', url: 'https://www.pollfish.com/survey' }
   ];
 
   const todaysEarnings = todaysSurveys.reduce((sum, survey) => sum + (survey.earnings || 0), 0);
@@ -142,18 +145,24 @@ export default function Surveys() {
                       </div>
                     </div>
                     
-                    <Button
-                      onClick={() => completeSurveyMutation.mutate({
-                        provider: survey.provider,
-                        earnings: survey.earnings,
-                        duration: survey.duration
-                      })}
-                      disabled={completeSurveyMutation.isPending}
-                      className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
-                    >
-                      Start Survey
-                      <ExternalLink className="w-4 h-4 ml-2" />
-                    </Button>
+                    <a href={survey.url} target="_blank" rel="noopener noreferrer">
+                      <Button
+                        onClick={() => {
+                          setTimeout(() => {
+                            completeSurveyMutation.mutate({
+                              provider: survey.provider,
+                              earnings: survey.earnings,
+                              duration: survey.duration
+                            });
+                          }, survey.duration * 60000);
+                        }}
+                        disabled={completeSurveyMutation.isPending}
+                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+                      >
+                        Start Survey on Pollfish
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </Button>
+                    </a>
                   </div>
                 </div>
               </Card>
@@ -161,15 +170,22 @@ export default function Surveys() {
           </div>
         </div>
 
-        <Card className="mt-8 p-6 bg-blue-50 border-blue-200">
-          <h3 className="font-bold text-lg text-gray-900 mb-2">Survey Providers</h3>
-          <p className="text-sm text-gray-600 mb-3">
-            We partner with leading survey providers to ensure quality surveys and timely payments:
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Badge className="bg-white text-blue-700 border border-blue-200">Cint</Badge>
-            <Badge className="bg-white text-blue-700 border border-blue-200">Pollfish</Badge>
-            <Badge className="bg-white text-blue-700 border border-blue-200">Qualtrics</Badge>
+        <Card className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-white rounded-lg">
+              <DollarSign className="w-8 h-8 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-lg text-gray-900 mb-2">Powered by Pollfish</h3>
+              <p className="text-sm text-gray-600 mb-3">
+                We partner with Pollfish, the industry-leading survey platform that pays <span className="font-bold text-green-600">$0.30 to $5.00 per survey</span> - the highest rates in the market. All surveys are vetted for quality and payments are processed instantly.
+              </p>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <Badge className="bg-green-100 text-green-700 border border-green-200">Highest Payouts</Badge>
+                <Badge className="bg-blue-100 text-blue-700 border border-blue-200">Instant Payments</Badge>
+                <Badge className="bg-purple-100 text-purple-700 border border-purple-200">Quality Surveys</Badge>
+              </div>
+            </div>
           </div>
         </Card>
       </div>
