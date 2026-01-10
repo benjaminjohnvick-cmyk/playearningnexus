@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "./utils";
+import { createPageUrl } from "@/utils";
 
 export default function Home() {
   const features = [

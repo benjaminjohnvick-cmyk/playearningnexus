@@ -9,7 +9,7 @@ import GameCard from '../components/games/GameCard';
 import SurveyProgress from '../components/surveys/SurveyProgress';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "./utils";
+import { createPageUrl } from "@/utils";
 
 export default function UserDashboard() {
   const [user, setUser] = useState(null);

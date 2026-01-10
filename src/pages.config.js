@@ -2,6 +2,7 @@ import Home from './pages/Home';
 import UserDashboard from './pages/UserDashboard';
 import Surveys from './pages/Surveys';
 import BusinessDashboard from './pages/BusinessDashboard';
+import Settings from './pages/Settings';
 
 
 export const PAGES = {
@@ -9,6 +10,7 @@ export const PAGES = {
     "UserDashboard": UserDashboard,
     "Surveys": Surveys,
     "BusinessDashboard": BusinessDashboard,
+    "Settings": Settings,
 }
 
 export const pagesConfig = {
