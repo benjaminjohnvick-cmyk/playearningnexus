@@ -159,7 +159,9 @@ export default function PayPalManagement() {
               const formData = new FormData(e.target);
               connectPayPalMutation.mutate({
                 paypal_email: formData.get('paypal_email'),
-                client_id: formData.get('client_id')
+                api_username: formData.get('api_username'),
+                api_password: formData.get('api_password'),
+                api_signature: formData.get('api_signature')
               });
             }} className="space-y-4">
               <div>
@@ -168,20 +170,39 @@ export default function PayPalManagement() {
                   name="paypal_email"
                   type="email"
                   required
+                  defaultValue="benjaminjohnvick_api1.gmail.com"
                   placeholder="business@example.com"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  This must be your PayPal Business account email
-                </p>
               </div>
               <div>
-                <Label>PayPal Client ID (Optional)</Label>
+                <Label>API Username *</Label>
                 <Input
-                  name="client_id"
-                  placeholder="Your PayPal REST API Client ID"
+                  name="api_username"
+                  required
+                  defaultValue="benjaminjohnvick_api1.gmail.com"
+                  placeholder="PayPal API username"
+                />
+              </div>
+              <div>
+                <Label>API Password *</Label>
+                <Input
+                  name="api_password"
+                  type="password"
+                  required
+                  defaultValue="8SAJUJ243GLE7P7J"
+                  placeholder="PayPal API password"
+                />
+              </div>
+              <div>
+                <Label>API Signature *</Label>
+                <Input
+                  name="api_signature"
+                  required
+                  defaultValue="AqF4sFMlqRFHp2lbH07fQhsVUtPzArJT0nBcliaB7.zo03SyFa4PXwR6"
+                  placeholder="PayPal API signature"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Get this from <a href="https://developer.paypal.com/dashboard/" target="_blank" className="text-blue-600 hover:underline">PayPal Developer Dashboard</a>
+                  Get your API credentials from <a href="https://www.paypal.com/businessmanage/credentials/apiAccess" target="_blank" className="text-blue-600 hover:underline">PayPal API Access</a>
                 </p>
               </div>
               <div className="flex gap-3">
@@ -236,9 +257,10 @@ export default function PayPalManagement() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">Connected PayPal Account</h3>
                     <p className="text-gray-600">{connectedAccount.paypal_email}</p>
+                    <p className="text-xs text-gray-500 mt-1">API User: {connectedAccount.api_username}</p>
                     <Badge className="mt-2 bg-green-100 text-green-700">
                       <CheckCircle2 className="w-3 h-3 mr-1" />
-                      Connected
+                      Connected & Authenticated
                     </Badge>
                   </div>
                 </div>
