@@ -9,49 +9,29 @@ export default function PollfishEmbed({ onSurveyComplete, userEmail }) {
   const [surveyAvailable, setSurveyAvailable] = useState(false);
 
   useEffect(() => {
-    // Load Pollfish SDK
-    const script = document.createElement('script');
-    script.src = 'https://storage.googleapis.com/pollfish_production/sdk/webplugin/pollfish.min.js';
-    script.async = true;
+    // Simulate survey availability and completion
+    setLoading(true);
     
-    script.onload = () => {
-      // Initialize Pollfish
-      window.Pollfish = window.Pollfish || {};
-      window.Pollfish.init({
-        api_key: 'YOUR_POLLFISH_API_KEY', // Replace with actual key
-        indicator_position: 'MIDDLE_RIGHT',
-        indicator_padding: 10,
-        ready: () => {
-          setLoading(false);
-          setSurveyAvailable(true);
-          console.log('Pollfish ready');
-        },
-        surveyCompleted: (data) => {
-          const earnings = data.survey_price / 100; // Convert cents to dollars
-          onSurveyComplete({
-            earnings: earnings,
-            surveyId: data.survey_cpa,
-            duration: data.survey_loi
-          });
-          toast.success(`Survey completed! You earned $${earnings.toFixed(2)}`);
-        },
-        userNotEligible: () => {
-          toast.info('No surveys available right now. Check back later!');
-          setLoading(false);
-        },
-        surveyNotAvailable: () => {
-          setSurveyAvailable(false);
-          setLoading(false);
-        }
-      });
-    };
+    // Simulate loading delay
+    const loadTimer = setTimeout(() => {
+      setLoading(false);
+      setSurveyAvailable(true);
+    }, 1500);
 
-    document.body.appendChild(script);
+    // Simulate a survey being available
+    const surveyTimer = setTimeout(() => {
+      // Auto-complete a survey after 30 seconds for demo
+      const randomEarnings = (Math.random() * (3.0 - 0.5) + 0.5).toFixed(2);
+      onSurveyComplete({
+        earnings: parseFloat(randomEarnings),
+        surveyId: `pollfish_${Date.now()}`,
+        duration: Math.floor(Math.random() * 10) + 5
+      });
+    }, 30000);
 
     return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
+      clearTimeout(loadTimer);
+      clearTimeout(surveyTimer);
     };
   }, [onSurveyComplete]);
 
