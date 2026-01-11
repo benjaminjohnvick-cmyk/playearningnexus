@@ -137,8 +137,8 @@ export default function Surveys() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <Zap className="w-6 h-6 text-blue-600" />
-            <h2 className="text-2xl font-bold text-gray-900">Live Surveys</h2>
-            <Badge className="bg-green-100 text-green-700">Real-Time Earnings</Badge>
+            <h2 className="text-2xl font-bold text-gray-900">Available Surveys</h2>
+            <Badge className="bg-green-100 text-green-700">Earn Real Money</Badge>
           </div>
           <PollfishEmbed onSurveyComplete={handlePollfishComplete} userEmail={user.email} />
         </div>
@@ -155,61 +155,7 @@ export default function Surveys() {
           </Card>
         )}
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900">More Survey Opportunities</h2>
-            <Badge variant="outline">External Partners</Badge>
-          </div>
-          <div className="grid gap-4">
-            {availableSurveys.map((survey) => (
-              <Card key={survey.id} className="p-6 border-0 shadow-lg hover:shadow-xl transition-all">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-xl font-bold text-gray-900">{survey.title}</h3>
-                      <Badge variant="outline">{survey.category}</Badge>
-                    </div>
-                    
-                    <div className="flex items-center gap-6 text-sm text-gray-600 mb-4">
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-emerald-600" />
-                        <span className="font-medium text-emerald-600">${survey.earnings.toFixed(2)}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span>{survey.duration} minutes</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                          {survey.provider}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <a href={survey.url} target="_blank" rel="noopener noreferrer">
-                      <Button
-                        onClick={() => {
-                          setTimeout(() => {
-                            completeSurveyMutation.mutate({
-                              provider: survey.provider,
-                              earnings: survey.earnings,
-                              duration: survey.duration
-                            });
-                          }, survey.duration * 60000);
-                        }}
-                        disabled={completeSurveyMutation.isPending}
-                        className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
-                      >
-                        Start Survey on Pollfish
-                        <ExternalLink className="w-4 h-4 ml-2" />
-                      </Button>
-                    </a>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
+
 
         <Card className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
           <div className="flex items-start gap-4">
