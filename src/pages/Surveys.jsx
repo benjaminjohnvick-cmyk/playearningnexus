@@ -4,9 +4,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, Clock, CheckCircle2, ExternalLink } from "lucide-react";
+import { DollarSign, Clock, CheckCircle2, ExternalLink, Zap } from "lucide-react";
 import { toast } from "sonner";
 import SurveyProgress from '../components/surveys/SurveyProgress';
+import PollfishEmbed from '../components/surveys/PollfishEmbed';
+import SurveyEarningsCard from '../components/surveys/SurveyEarningsCard';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
@@ -37,20 +39,21 @@ export default function Surveys() {
   });
 
   const completeSurveyMutation = useMutation({
-    mutationFn: async ({ provider, earnings, duration }) => {
-      await base44.entities.Survey.create({
+    mutationFn: async ({ provider, earnings, duration, surveyId }) => {
+      const survey = await base44.entities.Survey.create({
         user_id: user.id,
-        survey_provider: provider,
-        survey_id: `survey_${Date.now()}`,
+        survey_provider: provider || 'pollfish',
+        survey_id: surveyId || `survey_${Date.now()}`,
         earnings: earnings,
         completion_date: new Date().toISOString(),
         status: 'completed',
-        duration_minutes: duration
+        duration_minutes: duration || 5
       });
 
+      const newEarnings = (user.total_earnings || 0) + earnings;
       await base44.auth.updateMe({
-        total_earnings: (user.total_earnings || 0) + earnings,
-        daily_survey_completed: true,
+        total_earnings: newEarnings,
+        daily_survey_completed: newEarnings >= 2,
         last_survey_date: new Date().toISOString().split('T')[0]
       });
 
@@ -58,14 +61,29 @@ export default function Surveys() {
         user_id: user.id,
         amount: earnings,
         transaction_type: 'survey_earning',
-        status: 'completed'
+        status: 'completed',
+        notes: `Survey ${surveyId} completed via Pollfish`
       });
+
+      // Refresh user data
+      const updatedUser = await base44.auth.me();
+      setUser(updatedUser);
+
+      return survey;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['todays-surveys']);
-      toast.success('Survey completed! Earnings added to your account.');
     }
   });
+
+  const handlePollfishComplete = async (data) => {
+    await completeSurveyMutation.mutateAsync({
+      provider: 'pollfish',
+      earnings: data.earnings,
+      duration: data.duration,
+      surveyId: data.surveyId
+    });
+  };
 
   const availableSurveys = [
     { id: 1, provider: 'pollfish', title: 'Consumer Preferences Survey', earnings: 1.20, duration: 5, category: 'Shopping', url: 'https://www.pollfish.com/survey' },
@@ -92,9 +110,19 @@ export default function Surveys() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
       <div className="max-w-5xl mx-auto">
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Available Surveys</h1>
+            <p className="text-gray-600">Complete surveys to earn rewards and unlock games</p>
+          </div>
+        </div>
+
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Available Surveys</h1>
-          <p className="text-gray-600">Complete surveys to earn rewards and unlock games</p>
+          <SurveyEarningsCard
+            totalEarnings={user.total_earnings || 0}
+            todayEarnings={todaysEarnings}
+            surveysCompleted={todaysSurveys.length}
+          />
         </div>
 
         <div className="mb-8">
@@ -103,6 +131,16 @@ export default function Surveys() {
             currentEarnings={todaysEarnings}
             todayCompleted={dailyGoalMet}
           />
+        </div>
+
+        {/* Live Pollfish Integration */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <Zap className="w-6 h-6 text-blue-600" />
+            <h2 className="text-2xl font-bold text-gray-900">Live Surveys</h2>
+            <Badge className="bg-green-100 text-green-700">Real-Time Earnings</Badge>
+          </div>
+          <PollfishEmbed onSurveyComplete={handlePollfishComplete} userEmail={user.email} />
         </div>
 
         {dailyGoalMet && (
@@ -118,7 +156,10 @@ export default function Surveys() {
         )}
 
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-gray-900">Today's Surveys</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-900">More Survey Opportunities</h2>
+            <Badge variant="outline">External Partners</Badge>
+          </div>
           <div className="grid gap-4">
             {availableSurveys.map((survey) => (
               <Card key={survey.id} className="p-6 border-0 shadow-lg hover:shadow-xl transition-all">

@@ -1,19 +1,19 @@
-import Home from './pages/Home';
-import UserDashboard from './pages/UserDashboard';
-import Surveys from './pages/Surveys';
 import BusinessDashboard from './pages/BusinessDashboard';
-import Settings from './pages/Settings';
+import Home from './pages/Home';
 import PayPalManagement from './pages/PayPalManagement';
+import Settings from './pages/Settings';
+import Surveys from './pages/Surveys';
+import UserDashboard from './pages/UserDashboard';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "UserDashboard": UserDashboard,
-    "Surveys": Surveys,
     "BusinessDashboard": BusinessDashboard,
-    "Settings": Settings,
+    "Home": Home,
     "PayPalManagement": PayPalManagement,
+    "Settings": Settings,
+    "Surveys": Surveys,
+    "UserDashboard": UserDashboard,
 }
 
 export const pagesConfig = {
