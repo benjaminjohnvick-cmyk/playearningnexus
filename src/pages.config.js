@@ -6,6 +6,7 @@ import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import IntegrationSettings from './pages/IntegrationSettings';
 import AdminDashboard from './pages/AdminDashboard';
+import AIAgents from './pages/AIAgents';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "UserDashboard": UserDashboard,
     "IntegrationSettings": IntegrationSettings,
     "AdminDashboard": AdminDashboard,
+    "AIAgents": AIAgents,
 }
 
 export const pagesConfig = {

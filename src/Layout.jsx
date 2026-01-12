@@ -12,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  DollarSign
+  DollarSign,
+  Bot
 } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
@@ -42,13 +43,13 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
     { name: 'Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
     { name: 'For Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
+    { name: 'AI Agents', icon: Bot, path: 'AIAgents', requireAuth: true },
   ];
 
   // Add admin menu items
   if (user?.role === 'admin') {
     navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });
-    navigation.push({ name: 'Integrations', icon: Settings, path: 'IntegrationSettings', requireAuth: true });
   }
 
   const filteredNav = navigation.filter(item => !item.requireAuth || isAuthenticated);
