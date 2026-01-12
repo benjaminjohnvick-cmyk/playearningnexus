@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DollarSign, Download, TrendingUp, Users, Plus, Upload } from "lucide-react";
 import StatsCard from '../components/dashboard/StatsCard';
+import AppUploadForm from '../components/developer/AppUploadForm';
 import { toast } from "sonner";
 
 export default function BusinessDashboard() {
@@ -17,16 +18,6 @@ export default function BusinessDashboard() {
   const [businessClient, setBusinessClient] = useState(null);
   const [showNewGameForm, setShowNewGameForm] = useState(false);
   const queryClient = useQueryClient();
-
-  const [newGame, setNewGame] = useState({
-    title: '',
-    description: '',
-    category: 'casual',
-    platform: ['android', 'ios'],
-    download_url: '',
-    icon_url: '',
-    screenshots: []
-  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -72,52 +63,9 @@ export default function BusinessDashboard() {
     }
   });
 
-  const createGameMutation = useMutation({
-    mutationFn: async (gameData) => {
-      return await base44.entities.Game.create({
-        ...gameData,
-        developer_id: businessClient.id,
-        status: 'pending'
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['my-games']);
-      setShowNewGameForm(false);
-      setNewGame({
-        title: '',
-        description: '',
-        category: 'casual',
-        platform: ['android', 'ios'],
-        download_url: '',
-        icon_url: '',
-        screenshots: []
-      });
-      toast.success('Game submitted for review!');
-    }
-  });
-
-  const uploadImageMutation = useMutation({
-    mutationFn: async (file) => {
-      const result = await base44.integrations.Core.UploadFile({ file });
-      return result.file_url;
-    }
-  });
-
-  const handleImageUpload = async (e, type) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    try {
-      const url = await uploadImageMutation.mutateAsync(file);
-      if (type === 'icon') {
-        setNewGame({ ...newGame, icon_url: url });
-      } else {
-        setNewGame({ ...newGame, screenshots: [...newGame.screenshots, url] });
-      }
-      toast.success('Image uploaded!');
-    } catch (error) {
-      toast.error('Failed to upload image');
-    }
+  const handleUploadSuccess = () => {
+    queryClient.invalidateQueries(['my-games']);
+    setShowNewGameForm(false);
   };
 
   if (!user) {
@@ -220,80 +168,11 @@ export default function BusinessDashboard() {
         </div>
 
         {showNewGameForm && (
-          <Card className="p-6 mb-8 border-0 shadow-xl">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Submit New Game</h2>
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              createGameMutation.mutate(newGame);
-            }} className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Game Title *</Label>
-                  <Input
-                    value={newGame.title}
-                    onChange={(e) => setNewGame({ ...newGame, title: e.target.value })}
-                    required
-                    placeholder="Super Fun Game"
-                  />
-                </div>
-                <div>
-                  <Label>Category *</Label>
-                  <Select value={newGame.category} onValueChange={(val) => setNewGame({ ...newGame, category: val })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="casual">Casual</SelectItem>
-                      <SelectItem value="puzzle">Puzzle</SelectItem>
-                      <SelectItem value="action">Action</SelectItem>
-                      <SelectItem value="strategy">Strategy</SelectItem>
-                      <SelectItem value="rpg">RPG</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div>
-                <Label>Description *</Label>
-                <Textarea
-                  value={newGame.description}
-                  onChange={(e) => setNewGame({ ...newGame, description: e.target.value })}
-                  required
-                  rows={4}
-                  placeholder="Describe your game..."
-                />
-              </div>
-
-              <div>
-                <Label>Download URL *</Label>
-                <Input
-                  value={newGame.download_url}
-                  onChange={(e) => setNewGame({ ...newGame, download_url: e.target.value })}
-                  required
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div>
-                <Label>Game Icon</Label>
-                <div className="flex gap-4 items-center">
-                  <Input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'icon')} />
-                  {newGame.icon_url && (
-                    <img src={newGame.icon_url} alt="Icon" className="w-16 h-16 rounded-lg object-cover" />
-                  )}
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <Button type="submit" disabled={createGameMutation.isPending} className="bg-gradient-to-r from-blue-600 to-blue-700">
-                  Submit Game for Review
-                </Button>
-                <Button type="button" variant="outline" onClick={() => setShowNewGameForm(false)}>
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </Card>
+          <AppUploadForm 
+            businessClient={businessClient}
+            onSuccess={handleUploadSuccess}
+            onCancel={() => setShowNewGameForm(false)}
+          />
         )}
 
         <Card className="p-6 border-0 shadow-xl">
