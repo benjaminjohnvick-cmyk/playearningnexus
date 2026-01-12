@@ -5,6 +5,7 @@ import Settings from './pages/Settings';
 import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import IntegrationSettings from './pages/IntegrationSettings';
+import AdminDashboard from './pages/AdminDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -16,6 +17,7 @@ export const PAGES = {
     "Surveys": Surveys,
     "UserDashboard": UserDashboard,
     "IntegrationSettings": IntegrationSettings,
+    "AdminDashboard": AdminDashboard,
 }
 
 export const pagesConfig = {

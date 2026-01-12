@@ -13,6 +13,8 @@ import { createPageUrl } from "@/utils";
 
 export default function UserDashboard() {
   const [user, setUser] = useState(null);
+  const [showLockout, setShowLockout] = useState(false);
+  const [showULA, setShowULA] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -20,6 +22,17 @@ export default function UserDashboard() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
+        
+        // Check if user has agreed to terms
+        if (!currentUser.agreed_to_terms) {
+          setShowULA(true);
+        }
+        
+        // Check if user needs to complete surveys today
+        const today = new Date().toISOString().split('T')[0];
+        if (currentUser.last_survey_date !== today && currentUser.played_featured_game_today) {
+          setShowLockout(true);
+        }
       } catch (error) {
         base44.auth.redirectToLogin();
       }
@@ -106,6 +119,27 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      {showULA && (
+        <UserLicenseAgreement
+          isOpen={showULA}
+          onAccept={() => {
+            setShowULA(false);
+            window.location.reload();
+          }}
+          onDecline={() => {
+            base44.auth.logout();
+          }}
+        />
+      )}
+      
+      {showLockout && (
+        <LockoutModal
+          user={user}
+          isOpen={showLockout}
+          onClose={() => setShowLockout(false)}
+        />
+      )}
+      
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">

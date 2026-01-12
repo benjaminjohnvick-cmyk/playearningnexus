@@ -44,9 +44,11 @@ export default function Layout({ children, currentPageName }) {
     { name: 'For Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
   ];
 
-  // Add PayPal management for admins
+  // Add admin menu items
   if (user?.role === 'admin') {
+    navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });
+    navigation.push({ name: 'Integrations', icon: Settings, path: 'IntegrationSettings', requireAuth: true });
   }
 
   const filteredNav = navigation.filter(item => !item.requireAuth || isAuthenticated);
