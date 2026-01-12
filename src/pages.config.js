@@ -4,6 +4,7 @@ import PayPalManagement from './pages/PayPalManagement';
 import Settings from './pages/Settings';
 import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
+import IntegrationSettings from './pages/IntegrationSettings';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +15,7 @@ export const PAGES = {
     "Settings": Settings,
     "Surveys": Surveys,
     "UserDashboard": UserDashboard,
+    "IntegrationSettings": IntegrationSettings,
 }
 
 export const pagesConfig = {
