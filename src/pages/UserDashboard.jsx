@@ -7,6 +7,8 @@ import { DollarSign, Gamepad2, TrendingUp, Library, Star } from "lucide-react";
 import StatsCard from '../components/dashboard/StatsCard';
 import GameCard from '../components/games/GameCard';
 import SurveyProgress from '../components/surveys/SurveyProgress';
+import LockoutModal from '../components/user/LockoutModal';
+import UserLicenseAgreement from '../components/user/UserLicenseAgreement';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
