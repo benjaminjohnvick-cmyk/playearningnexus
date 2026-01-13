@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DollarSign, Download, TrendingUp, Users, Plus, Upload, Bot } from "lucide-react";
+import { DollarSign, Download, TrendingUp, Users, Plus, Upload, Bot, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import StatsCard from '../components/dashboard/StatsCard';
 import AppUploadForm from '../components/developer/AppUploadForm';
+import MonetizationDashboard from '../components/developer/MonetizationDashboard';
 import { toast } from "sonner";
 
 export default function BusinessDashboard() {
