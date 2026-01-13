@@ -10,6 +10,7 @@ import UserDashboard from './pages/UserDashboard';
 import Support from './pages/Support';
 import AdminUsers from './pages/AdminUsers';
 import ContactUs from './pages/ContactUs';
+import Gamification from './pages/Gamification';
 import __Layout from './Layout.jsx';
 
 
@@ -26,6 +27,7 @@ export const PAGES = {
     "Support": Support,
     "AdminUsers": AdminUsers,
     "ContactUs": ContactUs,
+    "Gamification": Gamification,
 }
 
 export const pagesConfig = {

@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   DollarSign,
-  Bot
+  Bot,
+  Trophy
 } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
@@ -53,6 +54,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Home', icon: Home, path: 'Home' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
     { name: 'Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
+    { name: 'Rewards', icon: Trophy, path: 'Gamification', requireAuth: true },
     { name: 'For Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
   ];
 

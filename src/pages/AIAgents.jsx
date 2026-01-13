@@ -23,6 +23,15 @@ export default function AIAgents() {
 
   const agents = [
     {
+      name: 'gamification_manager',
+      title: 'Gamification Manager',
+      icon: TrendingUp,
+      description: 'Manages streaks, achievements, leaderboards, and sends personalized game challenges and push notifications',
+      replaces: 'Engagement Platform',
+      color: 'purple',
+      features: ['Streak tracking', 'Achievement unlocks', 'Leaderboard updates', 'Push notifications']
+    },
+    {
       name: 'crm_manager',
       title: 'CRM Manager',
       icon: TrendingUp,
