@@ -185,7 +185,21 @@ export default function BusinessDashboard() {
           />
         )}
 
-        <Card className="p-6 border-0 shadow-xl">
+        <Tabs defaultValue="games" className="mb-8">
+          <TabsList className="bg-white shadow-md border-2 border-red-200">
+            <TabsTrigger value="games">My Games</TabsTrigger>
+            <TabsTrigger value="monetization">
+              <Zap className="w-4 h-4 mr-2" />
+              AI Monetization
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="monetization">
+            <MonetizationDashboard businessClient={businessClient} games={myGames} />
+          </TabsContent>
+
+          <TabsContent value="games">
+            <Card className="p-6 border-0 shadow-xl">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Games</h2>
           {myGames.length > 0 ? (
             <div className="space-y-4">
@@ -236,7 +250,9 @@ export default function BusinessDashboard() {
               <p className="text-sm">Submit your first game to get started</p>
             </div>
           )}
-        </Card>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

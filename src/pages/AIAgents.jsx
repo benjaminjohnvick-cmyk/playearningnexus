@@ -23,6 +23,15 @@ export default function AIAgents() {
 
   const agents = [
     {
+      name: 'monetization_optimizer',
+      title: 'Monetization Optimizer',
+      icon: TrendingUp,
+      description: 'Optimizes revenue through dynamic pricing, personalized offers, promotional content, and automated payouts',
+      replaces: 'Monetization Platform',
+      color: 'green',
+      features: ['Dynamic pricing', 'Personalized offers', 'Ad generation', 'Auto payouts']
+    },
+    {
       name: 'gamification_manager',
       title: 'Gamification Manager',
       icon: TrendingUp,
