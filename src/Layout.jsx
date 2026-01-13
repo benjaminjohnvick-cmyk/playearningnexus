@@ -37,35 +37,52 @@ export default function Layout({ children, currentPageName }) {
     };
     checkAuth();
   }, []);
+  
+  // PWA install prompt
+  useEffect(() => {
+    let deferredPrompt;
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
 
   const navigation = [
     { name: 'Home', icon: Home, path: 'Home' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
     { name: 'Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
     { name: 'For Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
-    { name: 'AI Agents', icon: Bot, path: 'AIAgents', requireAuth: true },
   ];
 
   // Add admin menu items
   if (user?.role === 'admin') {
     navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });
+    navigation.push({ name: 'Users', icon: Bot, path: 'AdminUsers', requireAuth: true });
   }
 
   const filteredNav = navigation.filter(item => !item.requireAuth || isAuthenticated);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50" style={{
+      background: 'linear-gradient(135deg, rgba(254, 242, 242, 0.95) 0%, rgba(255, 255, 255, 0.98) 50%, rgba(254, 242, 242, 0.95) 100%)',
+      backdropFilter: 'blur(10px)'
+    }}>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b-2 border-red-200 shadow-lg" style={{
+        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(254, 242, 242, 0.8))',
+        boxShadow: '0 4px 30px rgba(220, 38, 38, 0.1)'
+      }}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to={createPageUrl('Home')} className="flex items-center gap-2 group">
-              <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl group-hover:scale-110 transition-transform">
+              <div className="p-2 bg-gradient-to-br from-red-600 to-red-700 rounded-xl group-hover:scale-110 transition-transform shadow-lg">
                 <DollarSign className="w-6 h-6 text-white" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent">
                 GameRewards
               </span>
             </Link>
@@ -76,7 +93,7 @@ export default function Layout({ children, currentPageName }) {
                 <Link key={item.name} to={createPageUrl(item.path)}>
                   <Button
                     variant={currentPageName === item.path ? "default" : "ghost"}
-                    className={currentPageName === item.path ? "bg-gradient-to-r from-blue-600 to-blue-700" : ""}
+                    className={currentPageName === item.path ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
                     {item.name}
@@ -111,7 +128,7 @@ export default function Layout({ children, currentPageName }) {
               ) : (
                 <Button
                   onClick={() => base44.auth.redirectToLogin()}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700"
+                  className="bg-gradient-to-r from-red-600 to-red-700 shadow-lg"
                 >
                   Sign In
                 </Button>

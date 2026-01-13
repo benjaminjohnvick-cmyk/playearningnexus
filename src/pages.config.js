@@ -1,25 +1,29 @@
+import AIAgents from './pages/AIAgents';
+import AdminDashboard from './pages/AdminDashboard';
 import BusinessDashboard from './pages/BusinessDashboard';
 import Home from './pages/Home';
+import IntegrationSettings from './pages/IntegrationSettings';
 import PayPalManagement from './pages/PayPalManagement';
 import Settings from './pages/Settings';
 import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
-import IntegrationSettings from './pages/IntegrationSettings';
-import AdminDashboard from './pages/AdminDashboard';
-import AIAgents from './pages/AIAgents';
+import Support from './pages/Support';
+import AdminUsers from './pages/AdminUsers';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AIAgents": AIAgents,
+    "AdminDashboard": AdminDashboard,
     "BusinessDashboard": BusinessDashboard,
     "Home": Home,
+    "IntegrationSettings": IntegrationSettings,
     "PayPalManagement": PayPalManagement,
     "Settings": Settings,
     "Surveys": Surveys,
     "UserDashboard": UserDashboard,
-    "IntegrationSettings": IntegrationSettings,
-    "AdminDashboard": AdminDashboard,
-    "AIAgents": AIAgents,
+    "Support": Support,
+    "AdminUsers": AdminUsers,
 }
 
 export const pagesConfig = {
