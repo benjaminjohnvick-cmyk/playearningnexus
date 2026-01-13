@@ -9,6 +9,7 @@ import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import Support from './pages/Support';
 import AdminUsers from './pages/AdminUsers';
+import ContactUs from './pages/ContactUs';
 import __Layout from './Layout.jsx';
 
 
@@ -24,6 +25,7 @@ export const PAGES = {
     "UserDashboard": UserDashboard,
     "Support": Support,
     "AdminUsers": AdminUsers,
+    "ContactUs": ContactUs,
 }
 
 export const pagesConfig = {

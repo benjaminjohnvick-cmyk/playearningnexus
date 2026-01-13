@@ -3,7 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Gamepad2, TrendingUp, Library, Star } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DollarSign, Gamepad2, TrendingUp, Library, Star, Clock } from "lucide-react";
 import StatsCard from '../components/dashboard/StatsCard';
 import GameCard from '../components/games/GameCard';
 import SurveyProgress from '../components/surveys/SurveyProgress';
@@ -17,6 +18,9 @@ export default function UserDashboard() {
   const [user, setUser] = useState(null);
   const [showLockout, setShowLockout] = useState(false);
   const [showULA, setShowULA] = useState(false);
+  const [showTrialExpired, setShowTrialExpired] = useState(false);
+  const [trialStartTime, setTrialStartTime] = useState(null);
+  const [currentGame, setCurrentGame] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -32,7 +36,14 @@ export default function UserDashboard() {
         
         // Check if user needs to complete surveys today
         const today = new Date().toISOString().split('T')[0];
-        if (currentUser.last_survey_date !== today && currentUser.played_featured_game_today) {
+        const todaysSurveys = await base44.entities.Survey.filter({
+          user_id: currentUser.id,
+          completion_date: { $gte: today }
+        });
+        const todaysEarnings = todaysSurveys.reduce((sum, s) => sum + (s.earnings || 0), 0);
+
+        // Lock out user on login if they haven't completed $2 surveys
+        if (todaysEarnings < 2) {
           setShowLockout(true);
         }
       } catch (error) {
@@ -82,6 +93,16 @@ export default function UserDashboard() {
 
   const installGameMutation = useMutation({
     mutationFn: async (game) => {
+      // Start 2-minute trial
+      setCurrentGame(game);
+      setTrialStartTime(Date.now());
+      setShowTrialExpired(false);
+      
+      // Set timer for 2 minutes
+      setTimeout(() => {
+        setShowTrialExpired(true);
+      }, 120000); // 2 minutes
+      
       await base44.entities.Game.update(game.id, {
         total_installs: (game.total_installs || 0) + 1
       });
@@ -92,19 +113,31 @@ export default function UserDashboard() {
         });
       }
 
+      // Create automated payment record
+      await base44.entities.AutomatedPayment.create({
+        developer_id: game.developer_id,
+        game_id: game.id,
+        user_id: user.id,
+        install_date: new Date().toISOString().split('T')[0],
+        install_fee_deducted: 6,
+        amount_owed: -6,
+        days_since_install: 0
+      });
+
       await base44.entities.Transaction.create({
         user_id: user.id,
         game_id: game.id,
+        business_client_id: game.developer_id,
         amount: 6,
         transaction_type: 'install_fee',
         status: 'completed',
-        notes: 'Game installation fee'
+        notes: 'Game installation fee - $6 for 3 days access'
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['my-library']);
       queryClient.invalidateQueries(['featured-games']);
-      toast.success('Game installed successfully! Added to your library.');
+      toast.success('2-minute trial started! Complete $2 surveys to continue playing.');
     }
   });
 
@@ -120,7 +153,30 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
+      {showTrialExpired && (
+        <Dialog open={showTrialExpired} onOpenChange={setShowTrialExpired}>
+          <DialogContent className="border-2 border-red-300">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <Clock className="w-6 h-6" />
+                2-Minute Trial Expired
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-gray-700">
+                Your 2-minute trial has ended. Complete ${(2 - todaysEarnings).toFixed(2)} worth of surveys to continue playing!
+              </p>
+              <Link to={createPageUrl('Surveys')}>
+                <Button className="w-full bg-red-600 hover:bg-red-700">
+                  Complete Surveys Now
+                </Button>
+              </Link>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+      
       {showULA && (
         <UserLicenseAgreement
           isOpen={showULA}

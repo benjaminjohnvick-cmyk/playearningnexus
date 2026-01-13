@@ -6,6 +6,7 @@ import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import FeaturedGameRotation from '../components/admin/FeaturedGameRotation';
 import RevenueTracker from '../components/admin/RevenueTracker';
+import RevenueDistribution from '../components/admin/RevenueDistribution';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
@@ -53,7 +54,10 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="revenue">
-            <RevenueTracker />
+            <div className="space-y-6">
+              <RevenueDistribution />
+              <RevenueTracker />
+            </div>
           </TabsContent>
 
           <TabsContent value="rotation">

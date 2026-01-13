@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DollarSign, Download, TrendingUp, Users, Plus, Upload } from "lucide-react";
+import { DollarSign, Download, TrendingUp, Users, Plus, Upload, Bot } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import StatsCard from '../components/dashboard/StatsCard';
 import AppUploadForm from '../components/developer/AppUploadForm';
 import { toast } from "sonner";
@@ -131,13 +133,21 @@ export default function BusinessDashboard() {
             <h1 className="text-4xl font-bold text-gray-900 mb-2">{businessClient.company_name}</h1>
             <p className="text-gray-600">Developer Dashboard</p>
           </div>
-          <Button
-            onClick={() => setShowNewGameForm(!showNewGameForm)}
-            className="bg-gradient-to-r from-blue-600 to-blue-700"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Submit New Game
-          </Button>
+          <div className="flex gap-3">
+            <Link to={createPageUrl('AIAgents')}>
+              <Button className="bg-gradient-to-r from-purple-600 to-purple-700">
+                <Bot className="w-4 h-4 mr-2" />
+                AI Agents
+              </Button>
+            </Link>
+            <Button
+              onClick={() => setShowNewGameForm(!showNewGameForm)}
+              className="bg-gradient-to-r from-red-600 to-red-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Submit New Game
+            </Button>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-4 gap-6 mb-8">
