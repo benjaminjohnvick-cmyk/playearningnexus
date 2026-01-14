@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
+import FloatingSidebar from '@/components/common/FloatingSidebar';
 import { 
   Home, 
   LayoutDashboard, 
@@ -72,6 +73,9 @@ export default function Layout({ children, currentPageName }) {
       background: 'linear-gradient(135deg, rgba(254, 242, 242, 0.95) 0%, rgba(255, 255, 255, 0.98) 50%, rgba(254, 242, 242, 0.95) 100%)',
       backdropFilter: 'blur(10px)'
     }}>
+      {/* Floating Sidebar */}
+      <FloatingSidebar user={user} />
+
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b-2 border-red-200 shadow-lg" style={{
         background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(254, 242, 242, 0.8))',
