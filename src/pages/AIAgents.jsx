@@ -23,6 +23,60 @@ export default function AIAgents() {
 
   const agents = [
     {
+      name: 'fraud_detection',
+      title: 'Fraud Detection AI',
+      icon: Bot,
+      description: 'Proactively monitors user activity for fraudulent patterns, bot behavior, and suspicious earning velocities',
+      replaces: 'Fraud Prevention Tools',
+      color: 'red',
+      features: ['Pattern analysis', 'Bot detection', 'Risk scoring', 'Auto-flagging']
+    },
+    {
+      name: 'churn_predictor',
+      title: 'Churn Prediction AI',
+      icon: TrendingUp,
+      description: 'Predicts user churn risk and triggers personalized retention strategies to keep users engaged',
+      replaces: 'Retention Platform',
+      color: 'amber',
+      features: ['Churn scoring', 'Retention triggers', 'Re-engagement', 'Offer creation']
+    },
+    {
+      name: 'content_recommender',
+      title: 'Content Recommender AI',
+      icon: Zap,
+      description: 'Generates personalized game, survey, and challenge recommendations based on user behavior and preferences',
+      replaces: 'Recommendation Engine',
+      color: 'purple',
+      features: ['Personalization', 'Behavior analysis', 'Relevance scoring', 'Smart matching']
+    },
+    {
+      name: 'sentiment_analyzer',
+      title: 'Sentiment Analysis AI',
+      icon: MessageSquare,
+      description: 'Analyzes reviews, ratings, and feedback to understand user sentiment and identify trending issues',
+      replaces: 'Survey Analytics',
+      color: 'blue',
+      features: ['Review analysis', 'Sentiment scoring', 'Trend detection', 'Actionable insights']
+    },
+    {
+      name: 'support_bot',
+      title: 'AI Support Agent',
+      icon: MessageSquare,
+      description: 'Handles common user queries instantly, creates tickets for complex issues, and provides 24/7 support',
+      replaces: 'Customer Support',
+      color: 'green',
+      features: ['Auto-responses', 'Ticket creation', '24/7 availability', 'Learning system']
+    },
+    {
+      name: 'revenue_forecaster',
+      title: 'Revenue Forecasting AI',
+      icon: TrendingUp,
+      description: 'Predicts future revenue for developers using historical data, trends, and predictive analytics',
+      replaces: 'Analytics Platform',
+      color: 'indigo',
+      features: ['Revenue predictions', 'Trend analysis', 'Confidence intervals', 'Growth forecasts']
+    },
+    {
       name: 'monetization_optimizer',
       title: 'Monetization Optimizer',
       icon: TrendingUp,
@@ -68,49 +122,40 @@ export default function AIAgents() {
       features: ['Social media posts', 'Email campaigns', 'Forum marketing', 'Ad copy']
     },
     {
-      name: 'sms_manager',
-      title: 'SMS Manager',
-      icon: MessageSquare,
-      description: 'Sends targeted SMS notifications and campaigns to users',
-      replaces: 'Twilio SMS',
-      color: 'amber',
-      features: ['User notifications', 'Marketing campaigns', 'Reminders', 'Alerts']
-    },
-    {
-      name: 'infrastructure_manager',
-      title: 'Infrastructure Manager',
-      icon: Settings,
-      description: 'Monitors platform performance, manages scaling decisions, and optimizes resources',
-      replaces: 'Cloud Auto-scaling',
-      color: 'red',
-      features: ['Performance monitoring', 'Scaling recommendations', 'Cost optimization', 'Health checks']
-    },
-    {
-      name: 'translation_specialist',
-      title: 'Translation Specialist',
-      icon: Globe,
-      description: 'Automatically translates content and converts currencies for international markets',
-      replaces: 'Translation Services',
-      color: 'indigo',
-      features: ['Multi-language', 'Cultural adaptation', 'Currency conversion', 'Localization']
-    },
-    {
-      name: 'store_manager',
-      title: 'Store Manager',
-      icon: Store,
-      description: 'Creates and manages custom marketplace stores with 60 clients/year allocation',
-      replaces: 'E-commerce Platform',
-      color: 'pink',
-      features: ['Store creation', 'Client allocation', 'Performance tracking', 'Merchandising']
-    },
-    {
-      name: 'concept_tester',
-      title: 'Concept Tester',
+      name: 'ab_test_optimizer',
+      title: 'A/B Test Optimizer',
       icon: TestTube,
-      description: 'Tests app concepts with surveys and provides actionable feedback to developers',
-      replaces: 'Market Research',
+      description: 'Automatically manages A/B tests, optimizes variants, and determines winners with statistical significance',
+      replaces: 'Testing Platform',
       color: 'teal',
-      features: ['Concept surveys', 'Market validation', 'User feedback', 'Analytics']
+      features: ['Test management', 'Auto-optimization', 'Winner detection', 'Statistical analysis']
+    },
+    {
+      name: 'market_analyzer',
+      title: 'Market Analysis AI',
+      icon: TrendingUp,
+      description: 'Analyzes market trends, game performance, and provides competitive intelligence for developers',
+      replaces: 'Market Research',
+      color: 'pink',
+      features: ['Trend tracking', 'Competitive intel', 'Performance metrics', 'Market insights']
+    },
+    {
+      name: 'compliance_monitor',
+      title: 'Compliance Monitor AI',
+      icon: Settings,
+      description: 'Monitors platform activities for policy violations, regulatory compliance, and content moderation',
+      replaces: 'Compliance Tools',
+      color: 'red',
+      features: ['Policy enforcement', 'Auto-moderation', 'Audit logging', 'Violation flagging']
+    },
+    {
+      name: 'challenge_manager',
+      title: 'Challenge Manager AI',
+      icon: Zap,
+      description: 'Creates personalized daily challenges and weekly events based on user activity and preferences',
+      replaces: 'Engagement Tools',
+      color: 'purple',
+      features: ['Challenge creation', 'Difficulty balancing', 'Reward optimization', 'Event management']
     }
   ];
 
