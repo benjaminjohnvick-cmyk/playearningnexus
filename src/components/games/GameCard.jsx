@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Download, Calendar } from "lucide-react";
+import { Star, Download, Calendar, Play } from "lucide-react";
 import { motion } from "framer-motion";
+import GameLauncher from './GameLauncher';
+import { base44 } from '@/api/base44Client';
 
-export default function GameCard({ game, onInstall, showFeaturedBadge = false }) {
+export default function GameCard({ game, onInstall, showFeaturedBadge = false, enableLauncher = false }) {
+  const [showLauncher, setShowLauncher] = useState(false);
+  const [user, setUser] = useState(null);
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+    if (enableLauncher) {
+      fetchUser();
+    }
+  }, [enableLauncher]);
+
   return (
     <>
       {enableLauncher && <GameLauncher game={game} user={user} isOpen={showLauncher} onClose={() => setShowLauncher(false)} />}
@@ -52,14 +71,35 @@ export default function GameCard({ game, onInstall, showFeaturedBadge = false })
             </div>
           </div>
           
-          <Button 
-            onClick={() => onInstall(game)} 
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
-          >
-            Install Game
-          </Button>
+          {enableLauncher ? (
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setShowLauncher(true)}
+                className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Play Now
+              </Button>
+              <Button 
+                onClick={() => onInstall(game)} 
+                variant="outline"
+                className="flex-1"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Install
+              </Button>
+            </div>
+          ) : (
+            <Button 
+              onClick={() => onInstall(game)} 
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+            >
+              Install Game
+            </Button>
+          )}
         </div>
       </Card>
     </motion.div>
+    </>
   );
 }
