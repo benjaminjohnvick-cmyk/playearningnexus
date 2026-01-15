@@ -24,6 +24,7 @@ import VirtualStore from './pages/VirtualStore';
 import UserProfile from './pages/UserProfile';
 import MyPurchases from './pages/MyPurchases';
 import DeveloperIAPDashboard from './pages/DeveloperIAPDashboard';
+import MonetizationHub from './pages/MonetizationHub';
 import __Layout from './Layout.jsx';
 
 
@@ -54,6 +55,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "MyPurchases": MyPurchases,
     "DeveloperIAPDashboard": DeveloperIAPDashboard,
+    "MonetizationHub": MonetizationHub,
 }
 
 export const pagesConfig = {
