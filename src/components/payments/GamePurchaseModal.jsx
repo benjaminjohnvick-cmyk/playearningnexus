@@ -5,10 +5,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { CreditCard, Lock, CheckCircle2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CreditCard, Lock, CheckCircle2, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
+  const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
   const [cvc, setCvc] = useState('');
@@ -20,35 +22,57 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
     mutationFn: async () => {
       setProcessing(true);
 
-      // Validate card details
-      if (!cardNumber || !expiry || !cvc || !cardName) {
-        throw new Error('Please fill in all payment details');
-      }
-
-      // Simulate payment processing (in production, use Stripe API)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
       const user = await base44.auth.me();
 
-      // Create transaction
-      await base44.entities.Transaction.create({
-        user_id: user.id,
-        game_id: game.id,
-        transaction_type: 'game_purchase',
-        amount: game.price || 0,
-        status: 'completed',
-        payment_method: 'credit_card'
-      });
-
-      // Track purchase
-      await base44.analytics.track({
-        eventName: 'game_purchased_credit_card',
-        properties: {
-          game_id: game.id,
-          game_title: game.title,
-          amount: game.price || 0
+      if (paymentMethod === 'credit_card') {
+        // Validate card details
+        if (!cardNumber || !expiry || !cvc || !cardName) {
+          throw new Error('Please fill in all payment details');
         }
-      });
+
+        // Simulate payment processing (in production, use Stripe API)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Create transaction
+        await base44.entities.Transaction.create({
+          user_id: user.id,
+          game_id: game.id,
+          transaction_type: 'game_purchase',
+          amount: game.price || 0,
+          status: 'completed',
+          payment_method: 'credit_card'
+        });
+
+        // Track purchase
+        await base44.analytics.track({
+          eventName: 'game_purchased_credit_card',
+          properties: {
+            game_id: game.id,
+            game_title: game.title,
+            amount: game.price || 0
+          }
+        });
+      } else {
+        // Pay with survey
+        await base44.entities.Transaction.create({
+          user_id: user.id,
+          game_id: game.id,
+          transaction_type: 'game_purchase',
+          amount: game.price || 0,
+          status: 'pending_survey',
+          payment_method: 'survey'
+        });
+
+        // Track purchase
+        await base44.analytics.track({
+          eventName: 'game_purchased_survey',
+          properties: {
+            game_id: game.id,
+            game_title: game.title,
+            amount: game.price || 0
+          }
+        });
+      }
 
       // Update game stats
       await base44.entities.Game.update(game.id, {
@@ -62,7 +86,11 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['games'] });
       setProcessing(false);
-      toast.success('Purchase successful! Game added to your library.');
+      if (paymentMethod === 'survey') {
+        toast.success('Survey payment initiated! Complete surveys to unlock your game.');
+      } else {
+        toast.success('Purchase successful! Game added to your library.');
+      }
       onSuccess?.();
       onClose();
     },
@@ -110,7 +138,34 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
             </div>
           </div>
 
+          {/* Payment Method Selection */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">
+              Payment Method
+            </label>
+            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="credit_card">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4" />
+                    Credit Card
+                  </div>
+                </SelectItem>
+                <SelectItem value="survey">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Pay with Surveys
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Payment Form */}
+          {paymentMethod === 'credit_card' ? (
           <div className="space-y-3">
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">
@@ -166,6 +221,19 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
             <Lock className="w-4 h-4 text-green-600" />
             <span>Your payment is secure and encrypted</span>
           </div>
+          ) : (
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <h4 className="font-semibold text-purple-900 mb-2">Pay with Surveys</h4>
+            <p className="text-sm text-purple-700 mb-3">
+              Complete surveys worth ${(game?.price || 0).toFixed(2)} to unlock this game. 
+              Surveys will be available after purchase confirmation.
+            </p>
+            <div className="flex items-center gap-2 text-xs text-purple-600">
+              <FileText className="w-4 h-4" />
+              <span>Estimated time: {Math.ceil((game?.price || 0) * 5)} minutes</span>
+            </div>
+          </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
@@ -186,6 +254,11 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                   Processing...
+                </>
+              ) : paymentMethod === 'survey' ? (
+                <>
+                  <FileText className="w-4 h-4 mr-2" />
+                  Unlock with Surveys
                 </>
               ) : (
                 <>
