@@ -29,11 +29,11 @@ export default function GameCard({ game, onInstall, showFeaturedBadge = false, e
     <>
       {enableLauncher && <GameLauncher game={game} user={user} isOpen={showLauncher} onClose={() => setShowLauncher(false)} />}
       <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.3 }}
-    >
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        whileHover={{ y: -4 }}
+        transition={{ duration: 0.3 }}
+      >
       <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all">
         <div className="relative h-48 bg-gradient-to-br from-blue-100 to-purple-100">
           {game.icon_url ? (
