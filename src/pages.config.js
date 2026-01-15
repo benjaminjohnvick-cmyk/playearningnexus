@@ -25,6 +25,7 @@ import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
+import DeveloperPortfolio from './pages/DeveloperPortfolio';
 import __Layout from './Layout.jsx';
 
 
@@ -56,6 +57,7 @@ export const PAGES = {
     "UserDashboard": UserDashboard,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
+    "DeveloperPortfolio": DeveloperPortfolio,
 }
 
 export const pagesConfig = {
