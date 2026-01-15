@@ -166,73 +166,75 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
 
           {/* Payment Form */}
           {paymentMethod === 'credit_card' ? (
-          <div className="space-y-3">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
-                Card Number
-              </label>
-              <Input
-                placeholder="1234 5678 9012 3456"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                maxLength={19}
-              />
-            </div>
+            <>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">
+                    Card Number
+                  </label>
+                  <Input
+                    placeholder="1234 5678 9012 3456"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                    maxLength={19}
+                  />
+                </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
-                Cardholder Name
-              </label>
-              <Input
-                placeholder="John Doe"
-                value={cardName}
-                onChange={(e) => setCardName(e.target.value)}
-              />
-            </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">
+                    Cardholder Name
+                  </label>
+                  <Input
+                    placeholder="John Doe"
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value)}
+                  />
+                </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">
-                  Expiry Date
-                </label>
-                <Input
-                  placeholder="MM/YY"
-                  value={expiry}
-                  onChange={(e) => setExpiry(formatExpiry(e.target.value))}
-                  maxLength={5}
-                />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      Expiry Date
+                    </label>
+                    <Input
+                      placeholder="MM/YY"
+                      value={expiry}
+                      onChange={(e) => setExpiry(formatExpiry(e.target.value))}
+                      maxLength={5}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                      CVC
+                    </label>
+                    <Input
+                      placeholder="123"
+                      value={cvc}
+                      onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').substring(0, 3))}
+                      maxLength={3}
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">
-                  CVC
-                </label>
-                <Input
-                  placeholder="123"
-                  value={cvc}
-                  onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').substring(0, 3))}
-                  maxLength={3}
-                />
-              </div>
-            </div>
-          </div>
 
-          {/* Security Badge */}
-          <div className="flex items-center gap-2 text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
-            <Lock className="w-4 h-4 text-green-600" />
-            <span>Your payment is secure and encrypted</span>
-          </div>
+              {/* Security Badge */}
+              <div className="flex items-center gap-2 text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
+                <Lock className="w-4 h-4 text-green-600" />
+                <span>Your payment is secure and encrypted</span>
+              </div>
+            </>
           ) : (
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-            <h4 className="font-semibold text-purple-900 mb-2">Pay with Surveys</h4>
-            <p className="text-sm text-purple-700 mb-3">
-              Complete surveys worth ${(game?.price || 0).toFixed(2)} to unlock this game. 
-              Surveys will be available after purchase confirmation.
-            </p>
-            <div className="flex items-center gap-2 text-xs text-purple-600">
-              <FileText className="w-4 h-4" />
-              <span>Estimated time: {Math.ceil((game?.price || 0) * 5)} minutes</span>
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <h4 className="font-semibold text-purple-900 mb-2">Pay with Surveys</h4>
+              <p className="text-sm text-purple-700 mb-3">
+                Complete surveys worth ${(game?.price || 0).toFixed(2)} to unlock this game. 
+                Surveys will be available after purchase confirmation.
+              </p>
+              <div className="flex items-center gap-2 text-xs text-purple-600">
+                <FileText className="w-4 h-4" />
+                <span>Estimated time: {Math.ceil((game?.price || 0) * 5)} minutes</span>
+              </div>
             </div>
-          </div>
           )}
 
           {/* Action Buttons */}
