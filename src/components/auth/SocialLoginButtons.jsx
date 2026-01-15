@@ -22,7 +22,7 @@ export default function SocialLoginButtons() {
     },
     { 
       id: 'twitter', 
-      name: 'Twitter', 
+      name: 'Twitter/X', 
       icon: '🐦',
       bgColor: 'bg-black hover:bg-gray-900',
       textColor: 'text-white',
