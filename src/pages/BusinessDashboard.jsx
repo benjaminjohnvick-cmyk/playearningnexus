@@ -135,10 +135,22 @@ export default function BusinessDashboard() {
             <p className="text-gray-600">Developer Dashboard</p>
           </div>
           <div className="flex gap-3">
-            <Link to={createPageUrl('AIAgents')}>
-              <Button className="bg-gradient-to-r from-purple-600 to-purple-700">
-                <Bot className="w-4 h-4 mr-2" />
-                AI Agents
+            <Link to={createPageUrl('DeveloperAIDashboard')}>
+              <Button className="bg-gradient-to-r from-indigo-600 to-purple-700">
+                <Zap className="w-4 h-4 mr-2" />
+                AI Dashboard
+              </Button>
+            </Link>
+            <Link to={createPageUrl('GameAnalyticsDashboard')}>
+              <Button className="bg-gradient-to-r from-blue-600 to-cyan-700">
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Analytics
+              </Button>
+            </Link>
+            <Link to={createPageUrl('GameStore')}>
+              <Button className="bg-gradient-to-r from-green-600 to-emerald-700">
+                <DollarSign className="w-4 h-4 mr-2" />
+                Game Store
               </Button>
             </Link>
             <Button
