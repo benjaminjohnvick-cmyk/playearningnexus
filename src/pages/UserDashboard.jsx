@@ -10,6 +10,7 @@ import GameCard from '../components/games/GameCard';
 import SurveyProgress from '../components/surveys/SurveyProgress';
 import LockoutModal from '../components/user/LockoutModal';
 import UserLicenseAgreement from '../components/user/UserLicenseAgreement';
+import AIRecommendations from '../components/dashboard/AIRecommendations';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -241,6 +242,11 @@ export default function UserDashboard() {
             currentEarnings={todaysEarnings}
             todayCompleted={dailyGoalMet}
           />
+        </div>
+
+        {/* AI Recommendations */}
+        <div className="mb-8">
+          <AIRecommendations user={user} />
         </div>
 
         {/* Surveys CTA */}
