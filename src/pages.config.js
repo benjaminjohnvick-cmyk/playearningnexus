@@ -13,6 +13,7 @@ import GameStore from './pages/GameStore';
 import Gamification from './pages/Gamification';
 import Guilds from './pages/Guilds';
 import Home from './pages/Home';
+import InAppStore from './pages/InAppStore';
 import IntegrationSettings from './pages/IntegrationSettings';
 import PayPalManagement from './pages/PayPalManagement';
 import Settings from './pages/Settings';
@@ -20,7 +21,7 @@ import Support from './pages/Support';
 import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import VirtualStore from './pages/VirtualStore';
-import InAppStore from './pages/InAppStore';
+import UserProfile from './pages/UserProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -40,6 +41,7 @@ export const PAGES = {
     "Gamification": Gamification,
     "Guilds": Guilds,
     "Home": Home,
+    "InAppStore": InAppStore,
     "IntegrationSettings": IntegrationSettings,
     "PayPalManagement": PayPalManagement,
     "Settings": Settings,
@@ -47,7 +49,7 @@ export const PAGES = {
     "Surveys": Surveys,
     "UserDashboard": UserDashboard,
     "VirtualStore": VirtualStore,
-    "InAppStore": InAppStore,
+    "UserProfile": UserProfile,
 }
 
 export const pagesConfig = {
