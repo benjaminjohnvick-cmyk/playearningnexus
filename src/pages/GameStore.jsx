@@ -224,7 +224,7 @@ export default function GameStore() {
                   index={index}
                   user={user}
                   ratings={ratings}
-                  onPurchase={() => handlePurchase(game)}
+                  onPurchase={(paymentMethod) => handlePurchase(game, paymentMethod)}
                 />
               ))}
             </div>
@@ -252,7 +252,7 @@ export default function GameStore() {
                     user={user}
                     ratings={ratings}
                     isRecommended
-                    onPurchase={() => handlePurchase(game)}
+                    onPurchase={(paymentMethod) => handlePurchase(game, paymentMethod)}
                   />
                 ))}
               </div>
@@ -268,7 +268,7 @@ export default function GameStore() {
                   index={index}
                   user={user}
                   ratings={ratings}
-                  onPurchase={() => handlePurchase(game)}
+                  onPurchase={(paymentMethod) => handlePurchase(game, paymentMethod)}
                 />
               ))}
             </div>
