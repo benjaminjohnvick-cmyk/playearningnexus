@@ -129,12 +129,12 @@ export default function BusinessDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
+        <div className="mb-8">
+          <div className="mb-4">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">{businessClient.company_name}</h1>
             <p className="text-gray-600">Developer Dashboard</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Link to={createPageUrl('MonetizationHub')}>
               <Button className="bg-gradient-to-r from-purple-600 to-pink-700">
                 <DollarSign className="w-4 h-4 mr-2" />
