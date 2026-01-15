@@ -14,6 +14,7 @@ import GamePurchaseModal from '../components/payments/GamePurchaseModal';
 import BugReportButton from '../components/game/BugReportButton';
 import ReviewForm from '../components/reviews/ReviewForm';
 import ReviewsList from '../components/reviews/ReviewsList';
+import DeveloperCard from '../components/developer/DeveloperCard';
 
 export default function GameDetail() {
   const [user, setUser] = useState(null);
@@ -44,6 +45,15 @@ export default function GameDetail() {
       return games.find(g => g.id === gameId);
     },
     enabled: !!gameId
+  });
+
+  const { data: developer } = useQuery({
+    queryKey: ['developer', game?.developer_id],
+    queryFn: async () => {
+      const devs = await base44.entities.BusinessClient.list();
+      return devs.find(d => d.id === game.developer_id);
+    },
+    enabled: !!game?.developer_id
   });
 
   const { data: ratings = [] } = useQuery({
@@ -237,6 +247,33 @@ export default function GameDetail() {
                 </div>
               </CardContent>
             </Card>
+
+            {developer && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Developer</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Link to={createPageUrl('DeveloperPortfolio') + `?id=${developer.id}`}>
+                    <div className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
+                      {developer.logo_url && (
+                        <img 
+                          src={developer.logo_url} 
+                          alt={developer.company_name}
+                          className="w-12 h-12 rounded-lg object-cover"
+                        />
+                      )}
+                      <div>
+                        <p className="font-semibold">{developer.company_name}</p>
+                        {developer.tagline && (
+                          <p className="text-xs text-gray-600">{developer.tagline}</p>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
