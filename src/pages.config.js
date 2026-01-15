@@ -20,6 +20,7 @@ import Support from './pages/Support';
 import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import VirtualStore from './pages/VirtualStore';
+import InAppStore from './pages/InAppStore';
 import __Layout from './Layout.jsx';
 
 
@@ -46,6 +47,7 @@ export const PAGES = {
     "Surveys": Surveys,
     "UserDashboard": UserDashboard,
     "VirtualStore": VirtualStore,
+    "InAppStore": InAppStore,
 }
 
 export const pagesConfig = {
