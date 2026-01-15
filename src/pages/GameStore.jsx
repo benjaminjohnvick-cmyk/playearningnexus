@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Store, Search, Star, TrendingUp, Sparkles, ShoppingCart, Filter } from 'lucide-react';
+import { Store, Search, Star, TrendingUp, Sparkles, ShoppingCart, Filter, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
@@ -51,7 +51,7 @@ export default function GameStore() {
     queryFn: () => base44.entities.GameRating.list()
   });
 
-  const handlePurchase = (game) => {
+  const handlePurchase = (game, paymentMethod = 'credit_card') => {
     if (!user) {
       base44.auth.redirectToLogin();
       return;
@@ -60,10 +60,40 @@ export default function GameStore() {
     // If game is free, purchase directly
     if (!game.price || game.price === 0) {
       purchaseGameMutation.mutate(game);
+    } else if (paymentMethod === 'survey') {
+      // Handle survey payment directly
+      handleSurveyPurchase(game);
     } else {
       // Show payment modal for paid games
       setSelectedGame(game);
       setShowPurchaseModal(true);
+    }
+  };
+
+  const handleSurveyPurchase = async (game) => {
+    try {
+      await base44.entities.Transaction.create({
+        user_id: user.id,
+        game_id: game.id,
+        transaction_type: 'game_purchase',
+        amount: game.price || 0,
+        status: 'pending_survey',
+        payment_method: 'survey'
+      });
+
+      await base44.analytics.track({
+        eventName: 'game_purchased_survey',
+        properties: {
+          game_id: game.id,
+          game_title: game.title,
+          amount: game.price || 0
+        }
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      toast.success('Survey payment initiated! Complete surveys to unlock your game.');
+    } catch (error) {
+      toast.error('Failed to initiate survey payment');
     }
   };
 
@@ -305,17 +335,33 @@ function GameStoreCard({ game, index, user, ratings, isRecommended, onPurchase }
                 {!game.price || game.price === 0 ? 'FREE' : `$${game.price.toFixed(2)}`}
               </span>
             </div>
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                onPurchase();
-              }}
-              className="w-full bg-gradient-to-r from-red-600 to-red-700"
-              size="sm"
-            >
-              <ShoppingCart className="w-3 h-3 mr-2" />
-              {!game.price || game.price === 0 ? 'Get Free' : 'Buy Now'}
-            </Button>
+            <div className="space-y-2">
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPurchase('credit_card');
+                }}
+                className="w-full bg-gradient-to-r from-red-600 to-red-700"
+                size="sm"
+              >
+                <ShoppingCart className="w-3 h-3 mr-2" />
+                {!game.price || game.price === 0 ? 'Get Free' : 'Buy Now'}
+              </Button>
+              {game.price > 0 && (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onPurchase('survey');
+                  }}
+                  variant="outline"
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50"
+                  size="sm"
+                >
+                  <FileText className="w-3 h-3 mr-2" />
+                  Pay with Surveys
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </Link>
