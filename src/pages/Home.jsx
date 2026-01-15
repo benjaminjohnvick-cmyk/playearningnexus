@@ -5,6 +5,7 @@ import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp } from "lucide-reac
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 
 export default function Home() {
   const features = [
@@ -54,6 +55,12 @@ export default function Home() {
               A revolutionary platform connecting gamers with top mobile games through 
               survey-based monetization. Play featured games, complete surveys, and build your library.
             </p>
+            
+            {/* Social Login Buttons */}
+            <div className="max-w-md mx-auto mb-8">
+              <SocialLoginButtons />
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to={createPageUrl('UserDashboard')}>
                 <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-lg px-8 h-14">
