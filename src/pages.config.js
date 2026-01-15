@@ -7,6 +7,7 @@ import DailyChallenges from './pages/DailyChallenges';
 import DeveloperAIDashboard from './pages/DeveloperAIDashboard';
 import DeveloperAnalytics from './pages/DeveloperAnalytics';
 import DeveloperIAPDashboard from './pages/DeveloperIAPDashboard';
+import DeveloperPortfolio from './pages/DeveloperPortfolio';
 import GameAnalyticsDashboard from './pages/GameAnalyticsDashboard';
 import GameDetail from './pages/GameDetail';
 import GameGuides from './pages/GameGuides';
@@ -25,7 +26,7 @@ import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
-import DeveloperPortfolio from './pages/DeveloperPortfolio';
+import SocialMediaGenerator from './pages/SocialMediaGenerator';
 import __Layout from './Layout.jsx';
 
 
@@ -39,6 +40,7 @@ export const PAGES = {
     "DeveloperAIDashboard": DeveloperAIDashboard,
     "DeveloperAnalytics": DeveloperAnalytics,
     "DeveloperIAPDashboard": DeveloperIAPDashboard,
+    "DeveloperPortfolio": DeveloperPortfolio,
     "GameAnalyticsDashboard": GameAnalyticsDashboard,
     "GameDetail": GameDetail,
     "GameGuides": GameGuides,
@@ -57,7 +59,7 @@ export const PAGES = {
     "UserDashboard": UserDashboard,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
-    "DeveloperPortfolio": DeveloperPortfolio,
+    "SocialMediaGenerator": SocialMediaGenerator,
 }
 
 export const pagesConfig = {

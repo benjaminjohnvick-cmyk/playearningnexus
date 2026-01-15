@@ -159,6 +159,12 @@ export default function BusinessDashboard() {
                 Game Store
               </Button>
             </Link>
+            <Link to={createPageUrl('SocialMediaGenerator')}>
+              <Button className="bg-gradient-to-r from-pink-600 to-purple-700">
+                <Zap className="w-4 h-4 mr-2" />
+                Social Media
+              </Button>
+            </Link>
             <Button
               onClick={() => setShowNewGameForm(!showNewGameForm)}
               className="bg-gradient-to-r from-red-600 to-red-700"
