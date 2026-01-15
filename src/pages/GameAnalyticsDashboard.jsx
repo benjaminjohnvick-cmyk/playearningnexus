@@ -4,10 +4,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, BarChart3 } from 'lucide-react';
+import { ArrowLeft, BarChart3, Activity, Users, FlaskConical, Bug } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import DeveloperGameAnalytics from '../components/analytics/DeveloperGameAnalytics';
+import EngagementAnalytics from '../components/developer/EngagementAnalytics';
+import PlayerDemographics from '../components/developer/PlayerDemographics';
+import ABTestingTools from '../components/developer/ABTestingTools';
+import BugReportsManager from '../components/developer/BugReportsManager';
 
 export default function GameAnalyticsDashboard() {
   const [user, setUser] = useState(null);
@@ -71,19 +75,59 @@ export default function GameAnalyticsDashboard() {
           </Card>
         ) : (
           <Tabs defaultValue={games[0]?.id}>
-            <TabsList className="mb-6">
+            <TabsList className="mb-6 flex-wrap">
               {games.map(game => (
                 <TabsTrigger key={game.id} value={game.id}>
                   {game.title}
                 </TabsTrigger>
               ))}
+              <TabsTrigger value="ab-testing">
+                <FlaskConical className="w-4 h-4 mr-2" />
+                A/B Testing
+              </TabsTrigger>
+              <TabsTrigger value="bug-reports">
+                <Bug className="w-4 h-4 mr-2" />
+                Bug Reports
+              </TabsTrigger>
             </TabsList>
 
             {games.map(game => (
               <TabsContent key={game.id} value={game.id}>
-                <DeveloperGameAnalytics game={game} developerId={businessClient.id} />
+                <Tabs defaultValue="overview">
+                  <TabsList className="mb-6">
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="engagement">
+                      <Activity className="w-4 h-4 mr-2" />
+                      Engagement
+                    </TabsTrigger>
+                    <TabsTrigger value="demographics">
+                      <Users className="w-4 h-4 mr-2" />
+                      Demographics
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="overview">
+                    <DeveloperGameAnalytics game={game} developerId={businessClient.id} />
+                  </TabsContent>
+
+                  <TabsContent value="engagement">
+                    <EngagementAnalytics game={game} />
+                  </TabsContent>
+
+                  <TabsContent value="demographics">
+                    <PlayerDemographics game={game} />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
             ))}
+
+            <TabsContent value="ab-testing">
+              <ABTestingTools businessClient={businessClient} games={games} />
+            </TabsContent>
+
+            <TabsContent value="bug-reports">
+              <BugReportsManager games={games} />
+            </TabsContent>
           </Tabs>
         )}
       </div>
