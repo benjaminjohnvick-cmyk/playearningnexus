@@ -19,6 +19,7 @@ import Support from './pages/Support';
 import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import VirtualStore from './pages/VirtualStore';
+import GameAnalyticsDashboard from './pages/GameAnalyticsDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -44,6 +45,7 @@ export const PAGES = {
     "Surveys": Surveys,
     "UserDashboard": UserDashboard,
     "VirtualStore": VirtualStore,
+    "GameAnalyticsDashboard": GameAnalyticsDashboard,
 }
 
 export const pagesConfig = {
