@@ -305,6 +305,7 @@ export default function UserDashboard() {
                       key={game.id}
                       game={game}
                       showFeaturedBadge
+                      enableLauncher
                       onInstall={(g) => installGameMutation.mutate(g)}
                     />
                   ))}
@@ -333,6 +334,7 @@ export default function UserDashboard() {
                     <GameCard
                       key={game.id}
                       game={game}
+                      enableLauncher
                       onInstall={(g) => toast.info('Game already in your library!')}
                     />
                   ))}

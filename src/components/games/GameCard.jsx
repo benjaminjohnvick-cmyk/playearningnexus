@@ -7,7 +7,9 @@ import { motion } from "framer-motion";
 
 export default function GameCard({ game, onInstall, showFeaturedBadge = false }) {
   return (
-    <motion.div
+    <>
+      {enableLauncher && <GameLauncher game={game} user={user} isOpen={showLauncher} onClose={() => setShowLauncher(false)} />}
+      <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ y: -4 }}
