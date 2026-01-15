@@ -12,12 +12,15 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import GamePurchaseModal from '../components/payments/GamePurchaseModal';
 
 export default function GameStore() {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('trending');
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -48,20 +51,36 @@ export default function GameStore() {
     queryFn: () => base44.entities.GameRating.list()
   });
 
+  const handlePurchase = (game) => {
+    if (!user) {
+      base44.auth.redirectToLogin();
+      return;
+    }
+
+    // If game is free, purchase directly
+    if (!game.price || game.price === 0) {
+      purchaseGameMutation.mutate(game);
+    } else {
+      // Show payment modal for paid games
+      setSelectedGame(game);
+      setShowPurchaseModal(true);
+    }
+  };
+
   const purchaseGameMutation = useMutation({
     mutationFn: async (game) => {
-      // Create transaction
+      // Create transaction for free games
       await base44.entities.Transaction.create({
         user_id: user.id,
         game_id: game.id,
         transaction_type: 'game_purchase',
-        amount: 0, // Free for now, can be priced later
+        amount: 0,
         status: 'completed'
       });
 
       // Track analytics
       await base44.analytics.track({
-        eventName: 'game_purchased',
+        eventName: 'game_purchased_free',
         properties: {
           game_id: game.id,
           game_title: game.title,
@@ -175,7 +194,7 @@ export default function GameStore() {
                   index={index}
                   user={user}
                   ratings={ratings}
-                  onPurchase={() => purchaseGameMutation.mutate(game)}
+                  onPurchase={() => handlePurchase(game)}
                 />
               ))}
             </div>
@@ -203,7 +222,7 @@ export default function GameStore() {
                     user={user}
                     ratings={ratings}
                     isRecommended
-                    onPurchase={() => purchaseGameMutation.mutate(game)}
+                    onPurchase={() => handlePurchase(game)}
                   />
                 ))}
               </div>
@@ -219,12 +238,27 @@ export default function GameStore() {
                   index={index}
                   user={user}
                   ratings={ratings}
-                  onPurchase={() => purchaseGameMutation.mutate(game)}
+                  onPurchase={() => handlePurchase(game)}
                 />
               ))}
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Purchase Modal */}
+        {selectedGame && (
+          <GamePurchaseModal
+            game={selectedGame}
+            open={showPurchaseModal}
+            onClose={() => {
+              setShowPurchaseModal(false);
+              setSelectedGame(null);
+            }}
+            onSuccess={() => {
+              queryClient.invalidateQueries({ queryKey: ['transactions'] });
+            }}
+          />
+        )}
       </div>
     </div>
   );
@@ -265,20 +299,22 @@ function GameStoreCard({ game, index, user, ratings, isRecommended, onPurchase }
               <span className="text-xs text-gray-500">({gameRatings.length})</span>
             </div>
             <p className="text-xs text-gray-600 line-clamp-2 mb-3">{game.description}</p>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-gray-500">Price:</span>
+              <span className="text-lg font-bold text-green-600">
+                {!game.price || game.price === 0 ? 'FREE' : `$${game.price.toFixed(2)}`}
+              </span>
+            </div>
             <Button
               onClick={(e) => {
                 e.preventDefault();
-                if (!user) {
-                  base44.auth.redirectToLogin();
-                } else {
-                  onPurchase();
-                }
+                onPurchase();
               }}
               className="w-full bg-gradient-to-r from-red-600 to-red-700"
               size="sm"
             >
               <ShoppingCart className="w-3 h-3 mr-2" />
-              Add to Library
+              {!game.price || game.price === 0 ? 'Get Free' : 'Buy Now'}
             </Button>
           </CardContent>
         </Card>

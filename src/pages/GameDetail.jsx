@@ -5,16 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Star, Download, ArrowLeft, ThumbsUp, ShoppingCart } from 'lucide-react';
+import { Star, Download, ArrowLeft, ThumbsUp, ShoppingCart, CreditCard } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import GamePurchaseModal from '../components/payments/GamePurchaseModal';
 
 export default function GameDetail() {
   const [user, setUser] = useState(null);
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const queryClient = useQueryClient();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -62,6 +64,19 @@ export default function GameDetail() {
     }
   });
 
+  const handlePurchase = () => {
+    if (!user) {
+      base44.auth.redirectToLogin();
+      return;
+    }
+
+    if (!game.price || game.price === 0) {
+      purchaseGameMutation.mutate();
+    } else {
+      setShowPurchaseModal(true);
+    }
+  };
+
   const purchaseGameMutation = useMutation({
     mutationFn: async () => {
       await base44.entities.Transaction.create({
@@ -73,7 +88,7 @@ export default function GameDetail() {
       });
 
       await base44.analytics.track({
-        eventName: 'game_purchased',
+        eventName: 'game_purchased_free',
         properties: { game_id: gameId, game_title: game.title }
       });
     },
@@ -135,14 +150,31 @@ export default function GameDetail() {
                     </div>
                   </div>
 
-                  <Button
-                    onClick={() => user ? purchaseGameMutation.mutate() : base44.auth.redirectToLogin()}
-                    className="w-full bg-gradient-to-r from-red-600 to-red-700 mb-6"
-                    size="lg"
-                  >
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Add to Library - Free
-                  </Button>
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                      <span className="text-gray-700 font-medium">Price:</span>
+                      <span className="text-3xl font-bold text-green-700">
+                        {!game.price || game.price === 0 ? 'FREE' : `$${game.price.toFixed(2)}`}
+                      </span>
+                    </div>
+                    <Button
+                      onClick={handlePurchase}
+                      className="w-full bg-gradient-to-r from-red-600 to-red-700"
+                      size="lg"
+                    >
+                      {!game.price || game.price === 0 ? (
+                        <>
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          Get Free
+                        </>
+                      ) : (
+                        <>
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Buy Now - ${game.price.toFixed(2)}
+                        </>
+                      )}
+                    </Button>
+                  </div>
 
                   <div className="mb-6">
                     <h2 className="text-xl font-bold mb-3">About this game</h2>
@@ -259,6 +291,16 @@ export default function GameDetail() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Purchase Modal */}
+        <GamePurchaseModal
+          game={game}
+          open={showPurchaseModal}
+          onClose={() => setShowPurchaseModal(false)}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] });
+          }}
+        />
       </div>
     </div>
   );
