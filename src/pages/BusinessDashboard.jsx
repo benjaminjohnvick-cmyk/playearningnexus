@@ -207,11 +207,97 @@ export default function BusinessDashboard() {
         <Tabs defaultValue="games" className="mb-8">
           <TabsList className="bg-white shadow-md border-2 border-red-200">
             <TabsTrigger value="games">My Games</TabsTrigger>
+            <TabsTrigger value="portfolio">Portfolio Settings</TabsTrigger>
             <TabsTrigger value="monetization">
               <Zap className="w-4 h-4 mr-2" />
               AI Monetization
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="portfolio">
+            <Card className="p-6 border-0 shadow-xl">
+              <h2 className="text-2xl font-bold mb-6">Portfolio Settings</h2>
+              <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Logo URL</Label>
+                    <Input 
+                      placeholder="https://example.com/logo.png"
+                      defaultValue={businessClient?.logo_url}
+                      onBlur={(e) => {
+                        if (e.target.value !== businessClient?.logo_url) {
+                          base44.entities.BusinessClient.update(businessClient.id, {
+                            logo_url: e.target.value
+                          });
+                        }
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label>Tagline</Label>
+                    <Input 
+                      placeholder="Creating amazing games since 2020"
+                      defaultValue={businessClient?.tagline}
+                      onBlur={(e) => {
+                        if (e.target.value !== businessClient?.tagline) {
+                          base44.entities.BusinessClient.update(businessClient.id, {
+                            tagline: e.target.value
+                          });
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label>Bio</Label>
+                  <Textarea 
+                    placeholder="Tell users about your company and game development philosophy..."
+                    rows={4}
+                    defaultValue={businessClient?.bio}
+                    onBlur={(e) => {
+                      if (e.target.value !== businessClient?.bio) {
+                        base44.entities.BusinessClient.update(businessClient.id, {
+                          bio: e.target.value
+                        });
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="font-semibold mb-3">Social Media Links</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {['website', 'twitter', 'linkedin', 'github', 'facebook', 'instagram', 'youtube'].map(platform => (
+                      <div key={platform}>
+                        <Label className="capitalize">{platform}</Label>
+                        <Input 
+                          placeholder={`https://${platform}.com/yourprofile`}
+                          defaultValue={businessClient?.social_links?.[platform]}
+                          onBlur={(e) => {
+                            base44.entities.BusinessClient.update(businessClient.id, {
+                              social_links: {
+                                ...businessClient?.social_links,
+                                [platform]: e.target.value
+                              }
+                            });
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <Link to={createPageUrl('DeveloperPortfolio') + `?id=${businessClient?.id}`}>
+                    <Button variant="outline" className="w-full">
+                      View Public Portfolio
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="monetization">
             <MonetizationDashboard businessClient={businessClient} games={myGames} />
