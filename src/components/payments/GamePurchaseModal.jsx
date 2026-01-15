@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CreditCard, Lock, CheckCircle2, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import SocialSharePrompt from '../social/SocialSharePrompt';
 
 export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
@@ -16,6 +17,7 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
   const [cvc, setCvc] = useState('');
   const [cardName, setCardName] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [showSharePrompt, setShowSharePrompt] = useState(false);
   const queryClient = useQueryClient();
 
   const purchaseMutation = useMutation({
@@ -93,6 +95,7 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
       }
       onSuccess?.();
       onClose();
+      setShowSharePrompt(true);
     },
     onError: (error) => {
       setProcessing(false);
@@ -115,8 +118,15 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+    <>
+      <SocialSharePrompt
+        isOpen={showSharePrompt}
+        onClose={() => setShowSharePrompt(false)}
+        game={game}
+        action="purchased"
+      />
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-blue-600" />
@@ -273,5 +283,6 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

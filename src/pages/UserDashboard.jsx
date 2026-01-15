@@ -11,6 +11,7 @@ import SurveyProgress from '../components/surveys/SurveyProgress';
 import LockoutModal from '../components/user/LockoutModal';
 import UserLicenseAgreement from '../components/user/UserLicenseAgreement';
 import AIRecommendations from '../components/dashboard/AIRecommendations';
+import SocialSharePrompt from '../components/social/SocialSharePrompt';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -22,6 +23,8 @@ export default function UserDashboard() {
   const [showTrialExpired, setShowTrialExpired] = useState(false);
   const [trialStartTime, setTrialStartTime] = useState(null);
   const [currentGame, setCurrentGame] = useState(null);
+  const [showSharePrompt, setShowSharePrompt] = useState(false);
+  const [gameToShare, setGameToShare] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -135,10 +138,12 @@ export default function UserDashboard() {
         notes: 'Game installation fee - $6 for 3 days access'
       });
     },
-    onSuccess: () => {
+    onSuccess: (data, game) => {
       queryClient.invalidateQueries(['my-library']);
       queryClient.invalidateQueries(['featured-games']);
       toast.success('2-minute trial started! Complete $2 surveys to continue playing.');
+      setGameToShare(game);
+      setShowSharePrompt(true);
     }
   });
 
@@ -155,6 +160,12 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
+      <SocialSharePrompt
+        isOpen={showSharePrompt}
+        onClose={() => setShowSharePrompt(false)}
+        game={gameToShare}
+        action="started playing"
+      />
       {showTrialExpired && (
         <Dialog open={showTrialExpired} onOpenChange={setShowTrialExpired}>
           <DialogContent className="border-2 border-red-300">
