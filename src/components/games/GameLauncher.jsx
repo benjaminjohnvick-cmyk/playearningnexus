@@ -13,8 +13,10 @@ import {
   RotateCcw,
   Cloud,
   Volume2,
-  VolumeX
+  VolumeX,
+  ShoppingCart
 } from 'lucide-react';
+import InGameStore from './InGameStore';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -24,6 +26,7 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
   const [isMuted, setIsMuted] = useState(false);
   const [playtime, setPlaytime] = useState(0);
   const [lastSaveTime, setLastSaveTime] = useState(null);
+  const [showStore, setShowStore] = useState(false);
   const gameContainerRef = useRef(null);
   const iframeRef = useRef(null);
   const playtimeIntervalRef = useRef(null);
@@ -202,6 +205,16 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                 <Save className="w-4 h-4" />
               </Button>
 
+              {/* Store */}
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowStore(!showStore)}
+                className="text-white hover:bg-gray-800"
+              >
+                <ShoppingCart className="w-4 h-4" />
+              </Button>
+
               {/* Mute */}
               <Button
                 size="sm"
@@ -236,8 +249,12 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
 
           {/* Game Area */}
           <div className="flex-1 flex">
-            {/* Sidebar - Cloud Saves */}
-            <div className="w-64 bg-gray-800 text-white p-4 overflow-y-auto border-r border-gray-700">
+            {/* Sidebar - Cloud Saves or Store */}
+            <div className="w-64 bg-gray-800 text-white overflow-y-auto border-r border-gray-700">
+              {showStore ? (
+                <InGameStore game={game} user={user} />
+              ) : (
+                <div className="p-4">
               <h4 className="font-bold mb-3 flex items-center gap-2">
                 <Cloud className="w-4 h-4" />
                 Cloud Saves
@@ -282,6 +299,8 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                   <div className="px-2 py-1 bg-gray-700 rounded text-xs">Android</div>
                 </div>
               </div>
+                </div>
+              )}
             </div>
 
             {/* Game Canvas/Iframe */}
