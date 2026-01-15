@@ -6,6 +6,7 @@ import ContactUs from './pages/ContactUs';
 import DailyChallenges from './pages/DailyChallenges';
 import DeveloperAIDashboard from './pages/DeveloperAIDashboard';
 import DeveloperAnalytics from './pages/DeveloperAnalytics';
+import DeveloperIAPDashboard from './pages/DeveloperIAPDashboard';
 import GameAnalyticsDashboard from './pages/GameAnalyticsDashboard';
 import GameDetail from './pages/GameDetail';
 import GameGuides from './pages/GameGuides';
@@ -15,16 +16,15 @@ import Guilds from './pages/Guilds';
 import Home from './pages/Home';
 import InAppStore from './pages/InAppStore';
 import IntegrationSettings from './pages/IntegrationSettings';
+import MonetizationHub from './pages/MonetizationHub';
+import MyPurchases from './pages/MyPurchases';
 import PayPalManagement from './pages/PayPalManagement';
 import Settings from './pages/Settings';
 import Support from './pages/Support';
 import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
-import VirtualStore from './pages/VirtualStore';
 import UserProfile from './pages/UserProfile';
-import MyPurchases from './pages/MyPurchases';
-import DeveloperIAPDashboard from './pages/DeveloperIAPDashboard';
-import MonetizationHub from './pages/MonetizationHub';
+import VirtualStore from './pages/VirtualStore';
 import __Layout from './Layout.jsx';
 
 
@@ -37,6 +37,7 @@ export const PAGES = {
     "DailyChallenges": DailyChallenges,
     "DeveloperAIDashboard": DeveloperAIDashboard,
     "DeveloperAnalytics": DeveloperAnalytics,
+    "DeveloperIAPDashboard": DeveloperIAPDashboard,
     "GameAnalyticsDashboard": GameAnalyticsDashboard,
     "GameDetail": GameDetail,
     "GameGuides": GameGuides,
@@ -46,16 +47,15 @@ export const PAGES = {
     "Home": Home,
     "InAppStore": InAppStore,
     "IntegrationSettings": IntegrationSettings,
+    "MonetizationHub": MonetizationHub,
+    "MyPurchases": MyPurchases,
     "PayPalManagement": PayPalManagement,
     "Settings": Settings,
     "Support": Support,
     "Surveys": Surveys,
     "UserDashboard": UserDashboard,
-    "VirtualStore": VirtualStore,
     "UserProfile": UserProfile,
-    "MyPurchases": MyPurchases,
-    "DeveloperIAPDashboard": DeveloperIAPDashboard,
-    "MonetizationHub": MonetizationHub,
+    "VirtualStore": VirtualStore,
 }
 
 export const pagesConfig = {

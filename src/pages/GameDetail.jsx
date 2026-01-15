@@ -12,6 +12,8 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import GamePurchaseModal from '../components/payments/GamePurchaseModal';
 import BugReportButton from '../components/game/BugReportButton';
+import ReviewForm from '../components/reviews/ReviewForm';
+import ReviewsList from '../components/reviews/ReviewsList';
 
 export default function GameDetail() {
   const [user, setUser] = useState(null);
@@ -48,6 +50,13 @@ export default function GameDetail() {
     queryKey: ['gameRatings', gameId],
     queryFn: () => base44.entities.GameRating.filter({ game_id: gameId }),
     enabled: !!gameId
+  });
+
+  const { data: userReview } = useQuery({
+    queryKey: ['userReview', gameId, user?.id],
+    queryFn: () => base44.entities.GameReview.filter({ game_id: gameId, user_id: user.id }),
+    enabled: !!user && !!gameId,
+    select: (data) => data[0]
   });
 
   const submitReviewMutation = useMutation({
@@ -232,69 +241,10 @@ export default function GameDetail() {
         </div>
 
         {/* Reviews Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Reviews & Ratings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {user && (
-              <Card className="mb-6 bg-gray-50">
-                <CardContent className="p-6">
-                  <h3 className="font-bold mb-3">Write a Review</h3>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-sm text-gray-600">Your Rating:</span>
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <Star
-                        key={star}
-                        className={`w-6 h-6 cursor-pointer ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-                        onClick={() => setRating(star)}
-                      />
-                    ))}
-                  </div>
-                  <Textarea
-                    placeholder="Share your experience with this game..."
-                    value={review}
-                    onChange={(e) => setReview(e.target.value)}
-                    className="mb-4"
-                  />
-                  <Button
-                    onClick={() => submitReviewMutation.mutate()}
-                    disabled={rating === 0 || !review}
-                    className="bg-red-600"
-                  >
-                    Submit Review
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="space-y-4">
-              {ratings.map(rating => (
-                <Card key={rating.id}>
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <Star
-                              key={star}
-                              className={`w-4 h-4 ${star <= rating.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-                            />
-                          ))}
-                        </div>
-                        <span className="font-bold">{rating.rating}/5</span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {new Date(rating.created_date).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="text-gray-700">{rating.review}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          {user && <ReviewForm game={game} user={user} existingReview={userReview} />}
+          <ReviewsList gameId={gameId} currentUser={user} />
+        </div>
 
         {/* Purchase Modal */}
         <GamePurchaseModal
