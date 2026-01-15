@@ -135,6 +135,12 @@ export default function BusinessDashboard() {
             <p className="text-gray-600">Developer Dashboard</p>
           </div>
           <div className="flex gap-3">
+            <Link to={createPageUrl('MonetizationHub')}>
+              <Button className="bg-gradient-to-r from-purple-600 to-pink-700">
+                <DollarSign className="w-4 h-4 mr-2" />
+                Monetization Hub
+              </Button>
+            </Link>
             <Link to={createPageUrl('DeveloperAIDashboard')}>
               <Button className="bg-gradient-to-r from-indigo-600 to-purple-700">
                 <Zap className="w-4 h-4 mr-2" />
