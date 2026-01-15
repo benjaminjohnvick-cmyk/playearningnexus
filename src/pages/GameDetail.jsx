@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import GamePurchaseModal from '../components/payments/GamePurchaseModal';
+import BugReportButton from '../components/game/BugReportButton';
 
 export default function GameDetail() {
   const [user, setUser] = useState(null);
@@ -157,23 +158,26 @@ export default function GameDetail() {
                         {!game.price || game.price === 0 ? 'FREE' : `$${game.price.toFixed(2)}`}
                       </span>
                     </div>
-                    <Button
-                      onClick={handlePurchase}
-                      className="w-full bg-gradient-to-r from-red-600 to-red-700"
-                      size="lg"
-                    >
-                      {!game.price || game.price === 0 ? (
-                        <>
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Get Free
-                        </>
-                      ) : (
-                        <>
-                          <CreditCard className="w-4 h-4 mr-2" />
-                          Buy Now - ${game.price.toFixed(2)}
-                        </>
-                      )}
-                    </Button>
+                    <div className="space-y-3">
+                      <Button
+                        onClick={handlePurchase}
+                        className="w-full bg-gradient-to-r from-red-600 to-red-700"
+                        size="lg"
+                      >
+                        {!game.price || game.price === 0 ? (
+                          <>
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            Get Free
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="w-4 h-4 mr-2" />
+                            Buy Now - ${game.price.toFixed(2)}
+                          </>
+                        )}
+                      </Button>
+                      <BugReportButton game={game} />
+                    </div>
                   </div>
 
                   <div className="mb-6">
