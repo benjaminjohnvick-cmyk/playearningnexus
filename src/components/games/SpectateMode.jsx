@@ -10,9 +10,10 @@ import SubscriptionManager from '../streaming/SubscriptionManager';
 import VirtualGiftsPanel from '../streaming/VirtualGiftsPanel';
 import StreamNotifications from '../streaming/StreamNotifications';
 
-export default function SpectateMode({ game, user, onSpectatorUpdate }) {
+export default function SpectateMode({ game, user, onSpectatorUpdate, tournamentMatch = null }) {
   const [isSpectatable, setIsSpectatable] = useState(false);
   const [spectators, setSpectators] = useState([]);
+  const [isTournamentMatch, setIsTournamentMatch] = useState(!!tournamentMatch);
 
   // Subscribe to spectator updates
   useEffect(() => {
@@ -92,6 +93,13 @@ export default function SpectateMode({ game, user, onSpectatorUpdate }) {
       {isSpectatable && <StreamNotifications streamerId={user.id} />}
       
       <div className="flex items-center gap-3">
+        {isTournamentMatch && (
+          <Badge className="bg-purple-600 flex items-center gap-1">
+            <Trophy className="w-3 h-3" />
+            Tournament Match
+          </Badge>
+        )}
+        
         <Button
           size="sm"
           variant={isSpectatable ? "default" : "outline"}

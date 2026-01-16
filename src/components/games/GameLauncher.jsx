@@ -23,6 +23,7 @@ import InGameStore from './InGameStore';
 import SpectateMode from './SpectateMode';
 import ActiveEventsDisplay from '../events/ActiveEventsDisplay';
 import ViewerMonetizationPanel from '../streaming/ViewerMonetizationPanel';
+import InGameTournamentOverlay from '../tournaments/InGameTournamentOverlay';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -330,6 +331,16 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                   </TabsContent>
                 </Tabs>
 
+                {/* Tournament Quick Access */}
+                <TournamentQuickAccess game={game} user={user} />
+              </div>
+            </div>
+
+            {/* Game Canvas/Iframe */}
+            <div className="flex-1 relative bg-gray-900 flex items-center justify-center">
+              {/* Tournament Overlay */}
+              {isPlaying && <InGameTournamentOverlay game={game} user={user} />}
+
                 {/* Viewer Monetization Panel */}
                 <div className="mt-4">
                   <ViewerMonetizationPanel 
@@ -338,12 +349,6 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                     game={game} 
                   />
                 </div>
-              </div>
-            </div>
-
-            {/* Game Canvas/Iframe */}
-            <div className="flex-1 relative bg-gray-900 flex items-center justify-center">
-              {isPlaying ? (
                 game.download_url ? (
                   <iframe
                     ref={iframeRef}
@@ -388,5 +393,40 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function TournamentQuickAccess({ game, user }) {
+  const { data: gameTournaments = [] } = useQuery({
+    queryKey: ['gameTournaments', game?.id],
+    queryFn: () => base44.entities.Tournament.filter({
+      game_id: game.id,
+      status: 'registration'
+    }, '-start_time', 3),
+    enabled: !!game
+  });
+
+  if (gameTournaments.length === 0) return null;
+
+  return (
+    <div className="mt-4 pt-4 border-t border-gray-700">
+      <h4 className="font-bold text-sm mb-3 flex items-center gap-2">
+        <Trophy className="w-4 h-4 text-yellow-400" />
+        Join Tournament
+      </h4>
+      <div className="space-y-2">
+        {gameTournaments.map(tournament => (
+          <div key={tournament.id} className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
+            <p className="text-xs font-semibold mb-1">{tournament.title}</p>
+            <div className="flex items-center justify-between text-xs text-gray-400">
+              <span>{tournament.current_participants}/{tournament.max_participants}</span>
+              <Badge className="bg-purple-600 text-xs">
+                {tournament.prize_pool_type === 'real_money' ? '$' : ''}{tournament.prize_pool_amount}
+              </Badge>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

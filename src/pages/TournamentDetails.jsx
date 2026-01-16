@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Trophy, Users, Calendar, Info, Award } from 'lucide-react';
+import { Trophy, Users, Calendar, Info, Award, Eye } from 'lucide-react';
 import TournamentBracket from '../components/tournaments/TournamentBracket';
+import TournamentMatchSpectator from '../components/tournaments/TournamentMatchSpectator';
 
 export default function TournamentDetails() {
   const [user, setUser] = useState(null);
@@ -108,10 +109,14 @@ export default function TournamentDetails() {
         </Card>
 
         <Tabs defaultValue="bracket" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="bracket">
               <Trophy className="w-4 h-4 mr-2" />
               Bracket
+            </TabsTrigger>
+            <TabsTrigger value="spectate">
+              <Eye className="w-4 h-4 mr-2" />
+              Watch Live
             </TabsTrigger>
             <TabsTrigger value="participants">
               <Users className="w-4 h-4 mr-2" />
@@ -125,6 +130,29 @@ export default function TournamentDetails() {
 
           <TabsContent value="bracket">
             <TournamentBracket tournament={tournament} matches={matches} participants={participants} />
+          </TabsContent>
+
+          <TabsContent value="spectate">
+            <Card>
+              <CardHeader>
+                <CardTitle>Live Tournament Matches</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {matches.filter(m => m.status === 'in_progress').length > 0 ? (
+                  <div className="space-y-4">
+                    {matches.filter(m => m.status === 'in_progress').map(match => (
+                      <TournamentMatchSpectator key={match.id} match={match} tournament={tournament} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-gray-500">
+                    <Eye className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>No live matches at the moment</p>
+                    <p className="text-sm mt-2">Check back when tournament is in progress</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="participants">

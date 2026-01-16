@@ -15,7 +15,8 @@ import {
   DollarSign,
   Bot,
   Trophy,
-  Users
+  Users,
+  Swords
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 
@@ -56,6 +57,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Home', icon: Home, path: 'Home' },
     { name: 'Game Store', icon: DollarSign, path: 'GameStore' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
+    { name: 'Tournaments', icon: Swords, path: 'Tournaments', requireAuth: true },
     { name: 'Guilds', icon: Users, path: 'Guilds', requireAuth: true },
     { name: 'Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
     { name: 'Rewards', icon: Trophy, path: 'Gamification', requireAuth: true },
