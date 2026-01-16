@@ -48,7 +48,7 @@ export default function GameStore() {
 
   const { data: ratings = [] } = useQuery({
     queryKey: ['gameRatings'],
-    queryFn: () => base44.entities.GameRating.list()
+    queryFn: () => base44.entities.GameReview.list()
   });
 
   const handlePurchase = (game, paymentMethod = 'credit_card') => {

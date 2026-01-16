@@ -15,6 +15,7 @@ import BugReportButton from '../components/game/BugReportButton';
 import ReviewForm from '../components/reviews/ReviewForm';
 import ReviewsList from '../components/reviews/ReviewsList';
 import DeveloperCard from '../components/developer/DeveloperCard';
+import ReviewSection from '../components/reviews/ReviewSection';
 
 export default function GameDetail() {
   const [user, setUser] = useState(null);
@@ -278,10 +279,7 @@ export default function GameDetail() {
         </div>
 
         {/* Reviews Section */}
-        <div className="space-y-6">
-          {user && <ReviewForm game={game} user={user} existingReview={userReview} />}
-          <ReviewsList gameId={gameId} currentUser={user} />
-        </div>
+        <ReviewSection game={game} user={user} />
 
         {/* Purchase Modal */}
         <GamePurchaseModal
