@@ -25,6 +25,7 @@ import SpectateMode from './SpectateMode';
 import ActiveEventsDisplay from '../events/ActiveEventsDisplay';
 import ViewerMonetizationPanel from '../streaming/ViewerMonetizationPanel';
 import InGameTournamentOverlay from '../tournaments/InGameTournamentOverlay';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
