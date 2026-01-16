@@ -30,6 +30,8 @@ import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import StreamerAnalytics from './pages/StreamerAnalytics';
 import GuildDetails from './pages/GuildDetails';
+import Tournaments from './pages/Tournaments';
+import TournamentDetails from './pages/TournamentDetails';
 import __Layout from './Layout.jsx';
 
 
@@ -66,6 +68,8 @@ export const PAGES = {
     "VirtualStore": VirtualStore,
     "StreamerAnalytics": StreamerAnalytics,
     "GuildDetails": GuildDetails,
+    "Tournaments": Tournaments,
+    "TournamentDetails": TournamentDetails,
 }
 
 export const pagesConfig = {
