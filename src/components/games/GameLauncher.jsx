@@ -344,7 +344,7 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                   />
                 ) : (
                   <div className="text-white text-center">
-                    <Gamepad2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <div className="w-16 h-16 mx-auto mb-4 opacity-50" />
                     <p className="text-lg font-bold mb-2">{game.title}</p>
                     <p className="text-sm text-gray-400 mb-4">Game Demo Area</p>
                     <p className="text-xs text-gray-500">
