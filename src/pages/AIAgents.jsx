@@ -244,7 +244,8 @@ export default function AIAgents() {
                   rel="noopener noreferrer"
                 >
                   <Button className={`w-full bg-gradient-to-r ${colorClasses[agent.color]}`}>
-                    💬 Connect on WhatsApp
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Connect on WhatsApp
                   </Button>
                 </a>
               </Card>
@@ -256,19 +257,28 @@ export default function AIAgents() {
           <h3 className="text-2xl font-bold mb-4">Why AI Agents?</h3>
           <div className="grid md:grid-cols-3 gap-6">
             <div>
-              <h4 className="font-bold mb-2 text-blue-300">💰 Cost Savings</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="w-5 h-5 text-blue-300" />
+                <h4 className="font-bold text-blue-300">Cost Savings</h4>
+              </div>
               <p className="text-sm text-gray-300">
                 Save thousands per month on GoHighLevel ($297-$497/mo), ElevenLabs ($22-$330/mo), Twilio ($0.0079/SMS), and other services.
               </p>
             </div>
             <div>
-              <h4 className="font-bold mb-2 text-green-300">🎯 Customization</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <Settings className="w-5 h-5 text-green-300" />
+                <h4 className="font-bold text-green-300">Customization</h4>
+              </div>
               <p className="text-sm text-gray-300">
                 AI agents understand your business logic and adapt to your specific needs. No rigid third-party limitations.
               </p>
             </div>
             <div>
-              <h4 className="font-bold mb-2 text-purple-300">🚀 Scalability</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="w-5 h-5 text-purple-300" />
+                <h4 className="font-bold text-purple-300">Scalability</h4>
+              </div>
               <p className="text-sm text-gray-300">
                 Agents scale automatically with your platform growth. No per-user pricing or API limits.
               </p>
