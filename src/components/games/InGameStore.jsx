@@ -292,7 +292,6 @@ export default function InGameStore({ game, user }) {
         </TabsContent>
       </Tabs>
 
-      {/* Footer */}
       <div className="p-3 bg-gray-800 border-t border-gray-700 text-center">
         <p className="text-xs text-gray-400">
           Earn more credits by completing surveys and playing games!

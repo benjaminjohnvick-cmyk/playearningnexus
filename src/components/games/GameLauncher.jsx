@@ -281,11 +281,11 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                   </TabsList>
 
                   <TabsContent value="saves" className="mt-4">
-                    <div>
-              <h4 className="font-bold mb-3 flex items-center gap-2">
-                <Cloud className="w-4 h-4" />
-                Cloud Saves
-              </h4>
+                   <div className="text-white">
+                     <h4 className="font-bold mb-3 flex items-center gap-2">
+                       <Cloud className="w-4 h-4" />
+                       Cloud Saves
+                     </h4>
               
               {cloudSaves.length > 0 ? (
                 <div className="space-y-2">
@@ -315,19 +315,19 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                 </div>
               )}
 
-              <div className="mt-6 pt-6 border-t border-gray-700">
-                <h4 className="font-bold mb-2 text-sm">Cross-Platform</h4>
-                <p className="text-xs text-gray-400">
-                  Your saves sync across all devices automatically
-                </p>
-                <div className="flex gap-2 mt-3">
-                  <div className="px-2 py-1 bg-blue-600 rounded text-xs">Web</div>
-                  <div className="px-2 py-1 bg-gray-700 rounded text-xs">iOS</div>
-                  <div className="px-2 py-1 bg-gray-700 rounded text-xs">Android</div>
-                </div>
-              </div>
+                      <div className="mt-6 pt-6 border-t border-gray-700">
+                        <h4 className="font-bold mb-2 text-sm">Cross-Platform</h4>
+                        <p className="text-xs text-gray-400">
+                          Your saves sync across all devices automatically
+                        </p>
+                        <div className="flex gap-2 mt-3">
+                          <div className="px-2 py-1 bg-blue-600 rounded text-xs">Web</div>
+                          <div className="px-2 py-1 bg-gray-700 rounded text-xs">iOS</div>
+                          <div className="px-2 py-1 bg-gray-700 rounded text-xs">Android</div>
+                        </div>
+                      </div>
                     </div>
-                  </TabsContent>
+                   </TabsContent>
 
                   <TabsContent value="store" className="mt-4">
                     <InGameStore game={game} user={user} />

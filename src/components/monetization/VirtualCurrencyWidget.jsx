@@ -118,7 +118,7 @@ export default function VirtualCurrencyWidget({ user }) {
 
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-800">
-              💰 Your Survey Credits: <strong>{(user?.total_earnings || 0).toFixed(2)}</strong>
+              Your Survey Credits: <strong>{(user?.total_earnings || 0).toFixed(2)}</strong>
             </p>
           </div>
 

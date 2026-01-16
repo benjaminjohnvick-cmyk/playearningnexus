@@ -123,7 +123,7 @@ export default function DeveloperSupportPanel({ game, user }) {
           </Button>
 
           <p className="text-xs text-gray-600 text-center">
-            💝 Show appreciation for creating this game
+            Show appreciation for creating this game
           </p>
         </CardContent>
       </Card>
