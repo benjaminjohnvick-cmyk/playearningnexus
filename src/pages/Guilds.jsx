@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,224 +6,367 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Users, Crown, TrendingUp, Plus, Search } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Users, Crown, MessageSquare, TrendingUp, Shield, Plus, Send, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 export default function GuildsPage() {
   const [user, setUser] = useState(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [guildName, setGuildName] = useState('');
-  const [guildDescription, setGuildDescription] = useState('');
+  const [newGuildData, setNewGuildData] = useState({ guild_name: '', description: '' });
+  const [selectedGuild, setSelectedGuild] = useState(null);
+  const [chatMessage, setChatMessage] = useState('');
   const queryClient = useQueryClient();
 
   useEffect(() => {
     const fetchUser = async () => {
-      const currentUser = await base44.auth.me();
-      setUser(currentUser);
+      try {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+      } catch (error) {
+        base44.auth.redirectToLogin();
+      }
     };
     fetchUser();
   }, []);
 
   const { data: guilds = [] } = useQuery({
     queryKey: ['guilds'],
-    queryFn: () => base44.entities.Guild.filter({ is_public: true }, '-total_earnings', 20)
+    queryFn: () => base44.entities.Guild.filter({ is_public: true }, '-total_earnings')
   });
 
-  const { data: myGuild } = useQuery({
-    queryKey: ['myGuild', user?.id],
-    queryFn: async () => {
-      const allGuilds = await base44.entities.Guild.list();
-      return allGuilds.find(g => 
-        g.leader_id === user?.id || g.member_ids?.includes(user?.id)
-      );
-    },
+  const { data: myGuilds = [] } = useQuery({
+    queryKey: ['myGuilds', user?.id],
+    queryFn: () => base44.entities.Guild.list().then(guilds => 
+      guilds.filter(g => g.leader_id === user.id || g.member_ids?.includes(user.id))
+    ),
     enabled: !!user
   });
 
+  const { data: guildMessages = [] } = useQuery({
+    queryKey: ['guildMessages', selectedGuild?.id],
+    queryFn: () => base44.entities.ChatMessage.filter({ 
+      guild_id: selectedGuild.id 
+    }, '-created_date', 50),
+    enabled: !!selectedGuild,
+    refetchInterval: 3000
+  });
+
   const createGuildMutation = useMutation({
-    mutationFn: (data) => base44.entities.Guild.create(data),
+    mutationFn: async (guildData) => {
+      return await base44.entities.Guild.create({
+        ...guildData,
+        leader_id: user.id,
+        member_ids: [user.id],
+        total_earnings: 0,
+        guild_level: 1
+      });
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['guilds'] });
-      queryClient.invalidateQueries({ queryKey: ['myGuild'] });
-      setShowCreateForm(false);
-      setGuildName('');
-      setGuildDescription('');
+      queryClient.invalidateQueries(['guilds']);
+      queryClient.invalidateQueries(['myGuilds']);
       toast.success('Guild created!');
+      setNewGuildData({ guild_name: '', description: '' });
     }
   });
 
   const joinGuildMutation = useMutation({
-    mutationFn: (guild) => {
-      const newMembers = [...(guild.member_ids || []), user.id];
-      return base44.entities.Guild.update(guild.id, { member_ids: newMembers });
+    mutationFn: async (guild) => {
+      const updatedMembers = [...(guild.member_ids || []), user.id];
+      return await base44.entities.Guild.update(guild.id, {
+        member_ids: updatedMembers
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['guilds'] });
-      queryClient.invalidateQueries({ queryKey: ['myGuild'] });
+      queryClient.invalidateQueries(['guilds']);
+      queryClient.invalidateQueries(['myGuilds']);
       toast.success('Joined guild!');
     }
   });
 
-  const handleCreateGuild = () => {
-    if (!guildName.trim()) return;
-    createGuildMutation.mutate({
-      guild_name: guildName,
-      description: guildDescription,
-      leader_id: user.id,
-      member_ids: [user.id],
-      is_public: true
-    });
+  const sendMessageMutation = useMutation({
+    mutationFn: async () => {
+      return await base44.entities.ChatMessage.create({
+        guild_id: selectedGuild.id,
+        user_id: user.id,
+        user_name: user.full_name,
+        message: chatMessage,
+        message_type: 'text'
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['guildMessages']);
+      setChatMessage('');
+    }
+  });
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (chatMessage.trim()) {
+      sendMessageMutation.mutate();
+    }
   };
 
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent mb-2">
-              Guilds & Teams
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent mb-2">
+              Gaming Guilds
             </h1>
-            <p className="text-gray-600">Join a guild to compete together and earn bonuses</p>
+            <p className="text-gray-600">Join forces, compete together, earn together</p>
           </div>
-          {!myGuild && (
-            <Button
-              onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-gradient-to-r from-red-600 to-red-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Guild
-            </Button>
-          )}
+          
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-green-600 to-green-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Guild
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create Your Guild</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Guild Name</label>
+                  <Input
+                    placeholder="Enter guild name"
+                    value={newGuildData.guild_name}
+                    onChange={(e) => setNewGuildData({ ...newGuildData, guild_name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Description</label>
+                  <Textarea
+                    placeholder="What's your guild about?"
+                    value={newGuildData.description}
+                    onChange={(e) => setNewGuildData({ ...newGuildData, description: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+                <Button 
+                  onClick={() => createGuildMutation.mutate(newGuildData)}
+                  disabled={!newGuildData.guild_name || createGuildMutation.isPending}
+                  className="w-full"
+                >
+                  Create Guild
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
-        {showCreateForm && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
+        <Tabs defaultValue="discover" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="discover">
+              <Shield className="w-4 h-4 mr-2" />
+              Discover
+            </TabsTrigger>
+            <TabsTrigger value="my-guilds">
+              <Users className="w-4 h-4 mr-2" />
+              My Guilds ({myGuilds.length})
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard">
+              <Trophy className="w-4 h-4 mr-2" />
+              Leaderboard
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="discover">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {guilds.map((guild, index) => (
+                <motion.div
+                  key={guild.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <CardTitle className="flex items-center gap-2">
+                            {guild.guild_name}
+                            {guild.leader_id === user.id && (
+                              <Crown className="w-4 h-4 text-yellow-500" />
+                            )}
+                          </CardTitle>
+                          <p className="text-sm text-gray-600 mt-1">{guild.description}</p>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">Members</span>
+                          <Badge variant="outline">
+                            {guild.member_ids?.length || 0} / {guild.max_members}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">Level</span>
+                          <Badge>{guild.guild_level}</Badge>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">Total Earnings</span>
+                          <span className="font-bold text-green-600">
+                            ${(guild.total_earnings || 0).toFixed(2)}
+                          </span>
+                        </div>
+                        
+                        {myGuilds.find(g => g.id === guild.id) ? (
+                          <Button 
+                            onClick={() => setSelectedGuild(guild)}
+                            variant="outline" 
+                            className="w-full"
+                          >
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            Open Chat
+                          </Button>
+                        ) : (
+                          <Button 
+                            onClick={() => joinGuildMutation.mutate(guild)}
+                            disabled={guild.member_ids?.length >= guild.max_members}
+                            className="w-full bg-gradient-to-r from-green-600 to-green-700"
+                          >
+                            Join Guild
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="my-guilds">
+            {myGuilds.length === 0 ? (
+              <Card className="p-12 text-center">
+                <Users className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600 mb-4">You haven't joined any guilds yet</p>
+                <p className="text-sm text-gray-500">Join a guild to connect with other gamers!</p>
+              </Card>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-6">
+                {myGuilds.map((guild) => (
+                  <Card key={guild.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        {guild.guild_name}
+                        {guild.leader_id === user.id && (
+                          <Badge className="bg-yellow-500">Leader</Badge>
+                        )}
+                      </CardTitle>
+                      <p className="text-sm text-gray-600">{guild.description}</p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Members</span>
+                          <span className="font-medium">{guild.member_ids?.length || 0}</span>
+                        </div>
+                        <Button 
+                          onClick={() => setSelectedGuild(guild)}
+                          className="w-full"
+                        >
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Guild Chat
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="leaderboard">
             <Card>
               <CardHeader>
-                <CardTitle>Create New Guild</CardTitle>
+                <CardTitle>Top Guilds</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <Input
-                  placeholder="Guild Name"
-                  value={guildName}
-                  onChange={(e) => setGuildName(e.target.value)}
-                />
-                <Textarea
-                  placeholder="Guild Description"
-                  value={guildDescription}
-                  onChange={(e) => setGuildDescription(e.target.value)}
-                />
-                <div className="flex gap-3">
-                  <Button onClick={() => setShowCreateForm(false)} variant="outline">
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleCreateGuild}
-                    disabled={createGuildMutation.isPending}
-                    className="bg-gradient-to-r from-red-600 to-red-700"
-                  >
-                    Create Guild
-                  </Button>
+              <CardContent>
+                <div className="space-y-3">
+                  {guilds
+                    .sort((a, b) => (b.total_earnings || 0) - (a.total_earnings || 0))
+                    .slice(0, 10)
+                    .map((guild, index) => (
+                      <div key={guild.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-gray-400 w-8">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold">{guild.guild_name}</p>
+                          <p className="text-sm text-gray-600">
+                            {guild.member_ids?.length || 0} members • Level {guild.guild_level}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-green-600">
+                            ${(guild.total_earnings || 0).toFixed(2)}
+                          </p>
+                          <p className="text-xs text-gray-500">Total Earnings</p>
+                        </div>
+                      </div>
+                    ))}
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
-        )}
+          </TabsContent>
+        </Tabs>
 
-        {myGuild && (
-          <Card className="mb-8 border-2 border-red-400 bg-gradient-to-br from-red-50 to-white">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Crown className="w-6 h-6 text-yellow-600" />
-                  My Guild: {myGuild.guild_name}
-                </CardTitle>
-                <Badge className="bg-red-600">Rank #{myGuild.rank || 'Unranked'}</Badge>
+        {/* Guild Chat Modal */}
+        <Dialog open={!!selectedGuild} onOpenChange={() => setSelectedGuild(null)}>
+          <DialogContent className="max-w-2xl h-[600px] flex flex-col p-0">
+            <DialogHeader className="p-6 pb-4 border-b">
+              <DialogTitle className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5" />
+                {selectedGuild?.guild_name} Chat
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {guildMessages.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.user_id === user.id ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[70%] ${msg.user_id === user.id ? 'bg-green-600 text-white' : 'bg-gray-100'} rounded-lg p-3`}>
+                    <p className="text-xs font-semibold mb-1 opacity-80">{msg.user_name}</p>
+                    <p className="text-sm">{msg.message}</p>
+                    <p className="text-xs opacity-60 mt-1">
+                      {new Date(msg.created_date).toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <form onSubmit={handleSendMessage} className="p-4 border-t">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Type a message..."
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  className="flex-1"
+                />
+                <Button type="submit" disabled={!chatMessage.trim()}>
+                  <Send className="w-4 h-4" />
+                </Button>
               </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">{myGuild.description}</p>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-2xl font-bold text-red-600">{myGuild.member_ids?.length || 0}</p>
-                  <p className="text-sm text-gray-600">Members</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-green-600">${myGuild.total_earnings || 0}</p>
-                  <p className="text-sm text-gray-600">Total Earnings</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-purple-600">Level {myGuild.guild_level}</p>
-                  <p className="text-sm text-gray-600">Guild Level</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        <h2 className="text-2xl font-bold mb-4">Discover Guilds</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {guilds.map((guild, index) => {
-            const isMember = myGuild?.id === guild.id;
-            const isFull = (guild.member_ids?.length || 0) >= guild.max_members;
-
-            return (
-              <motion.div
-                key={guild.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        {guild.leader_id === user?.id && <Crown className="w-5 h-5 text-yellow-600" />}
-                        <CardTitle className="text-lg">{guild.guild_name}</CardTitle>
-                      </div>
-                      <Badge variant="outline">#{index + 1}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-600 mb-4">{guild.description}</p>
-                    <div className="flex items-center justify-between text-sm mb-4">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        <span>{guild.member_ids?.length || 0}/{guild.max_members}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-green-600" />
-                        <span>${guild.total_earnings || 0}</span>
-                      </div>
-                    </div>
-                    {isMember ? (
-                      <Button disabled className="w-full" variant="outline">
-                        Your Guild
-                      </Button>
-                    ) : myGuild ? (
-                      <Button disabled className="w-full" variant="outline">
-                        Already in a Guild
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => joinGuildMutation.mutate(guild)}
-                        disabled={isFull || joinGuildMutation.isPending}
-                        className="w-full bg-gradient-to-r from-red-600 to-red-700"
-                      >
-                        {isFull ? 'Full' : 'Join Guild'}
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

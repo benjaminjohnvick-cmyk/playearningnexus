@@ -14,9 +14,11 @@ import {
   Cloud,
   Volume2,
   VolumeX,
-  ShoppingCart
+  ShoppingCart,
+  Eye
 } from 'lucide-react';
 import InGameStore from './InGameStore';
+import SpectateMode from './SpectateMode';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +29,7 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
   const [playtime, setPlaytime] = useState(0);
   const [lastSaveTime, setLastSaveTime] = useState(null);
   const [showStore, setShowStore] = useState(false);
+  const [spectatorCount, setSpectatorCount] = useState(0);
   const gameContainerRef = useRef(null);
   const iframeRef = useRef(null);
   const playtimeIntervalRef = useRef(null);
@@ -181,6 +184,12 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                   Saved {Math.floor((Date.now() - lastSaveTime) / 1000)}s ago
                 </div>
               )}
+
+              <SpectateMode 
+                game={game} 
+                user={user} 
+                onSpectatorUpdate={setSpectatorCount}
+              />
             </div>
 
             <div className="flex items-center gap-2">
