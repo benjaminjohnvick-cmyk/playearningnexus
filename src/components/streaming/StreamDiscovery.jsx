@@ -203,7 +203,7 @@ function StreamCard({ stream, games }) {
           </div>
         </div>
 
-        <Link to={createPageUrl('UserProfile', `?user_id=${stream.streamer_id}`)}>
+        <Link to={createPageUrl('UserProfile') + `?user_id=${stream.streamer_id}`}>
           <Button size="sm" className="w-full mt-3">
             Watch Stream
           </Button>
