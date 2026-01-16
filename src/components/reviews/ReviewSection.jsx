@@ -193,7 +193,7 @@ export default function ReviewSection({ game, user }) {
                     )}
                     {review.is_verified_purchase && (
                       <span className="inline-flex items-center gap-1 text-xs text-green-600 mt-2">
-                        ✓ Verified Purchase
+                        Verified Purchase
                       </span>
                     )}
                   </div>

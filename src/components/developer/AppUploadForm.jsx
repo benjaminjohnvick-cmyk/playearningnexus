@@ -330,7 +330,7 @@ export default function AppUploadForm({ onSuccess, onCancel, businessClient }) {
                 <label htmlFor="app-upload">
                   <Button type="button" variant="outline" disabled={uploading} className="w-full">
                     <FileArchive className="w-4 h-4 mr-2" />
-                    {gameData.app_file_url ? 'App File Uploaded ✓' : 'Upload App File (APK/IPA)'}
+                    {gameData.app_file_url ? 'App File Uploaded' : 'Upload App File (APK/IPA)'}
                   </Button>
                 </label>
               </div>
@@ -391,7 +391,7 @@ export default function AppUploadForm({ onSuccess, onCancel, businessClient }) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-gray-700">Icon</Label>
-              <p className="text-sm">{gameData.icon_url ? '✓ Uploaded' : '✗ Missing'}</p>
+              <p className="text-sm">{gameData.icon_url ? 'Uploaded' : 'Missing'}</p>
             </div>
             <div>
               <Label className="text-gray-700">Screenshots</Label>
@@ -399,11 +399,11 @@ export default function AppUploadForm({ onSuccess, onCancel, businessClient }) {
             </div>
             <div>
               <Label className="text-gray-700">Video</Label>
-              <p className="text-sm">{gameData.video_url ? '✓ Uploaded' : 'Not provided'}</p>
+              <p className="text-sm">{gameData.video_url ? 'Uploaded' : 'Not provided'}</p>
             </div>
             <div>
               <Label className="text-gray-700">Download</Label>
-              <p className="text-sm">{gameData.download_url || gameData.app_file_url ? '✓ Provided' : '✗ Missing'}</p>
+              <p className="text-sm">{gameData.download_url || gameData.app_file_url ? 'Provided' : 'Missing'}</p>
             </div>
           </div>
 

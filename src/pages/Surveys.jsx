@@ -148,7 +148,7 @@ export default function Surveys() {
             <div className="flex items-center gap-4">
               <CheckCircle2 className="w-8 h-8 text-emerald-600" />
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Daily Goal Complete! 🎉</h3>
+                <h3 className="text-xl font-bold text-gray-900">Daily Goal Complete!</h3>
                 <p className="text-gray-600">You've unlocked access to all games for today</p>
               </div>
             </div>
