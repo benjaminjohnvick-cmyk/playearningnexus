@@ -5,9 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { User, Trophy, Gamepad2, Star, Users, MessageSquare, Calendar, Target } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { User, Trophy, Gamepad2, Star, Users, MessageSquare, Calendar, Target, Coins, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import GameLibrary from '../components/profile/GameLibrary';
@@ -19,6 +21,8 @@ import UserReviews from '../components/profile/UserReviews';
 export default function UserProfile() {
   const [user, setUser] = useState(null);
   const [profileUser, setProfileUser] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({ bio: '', avatar_url: '' });
   const urlParams = new URLSearchParams(window.location.search);
   const userId = urlParams.get('user_id');
 
@@ -34,12 +38,28 @@ export default function UserProfile() {
         } else {
           setProfileUser(currentUser);
         }
+        setEditData({
+          bio: currentUser.bio || '',
+          avatar_url: currentUser.avatar_url || ''
+        });
       } catch (error) {
         base44.auth.redirectToLogin();
       }
     };
     fetchUsers();
   }, [userId]);
+
+  const handleSaveProfile = async () => {
+    try {
+      await base44.auth.updateMe(editData);
+      const updatedUser = await base44.auth.me();
+      setProfileUser(updatedUser);
+      setUser(updatedUser);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update profile', error);
+    }
+  };
 
   const { data: transactions = [] } = useQuery({
     queryKey: ['userTransactions', profileUser?.id],
@@ -95,6 +115,7 @@ export default function UserProfile() {
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                 <Avatar className="w-24 h-24 border-4 border-white">
+                  {profileUser.avatar_url && <AvatarImage src={profileUser.avatar_url} />}
                   <AvatarFallback className="text-3xl bg-white text-blue-600">
                     {profileUser.full_name?.charAt(0) || 'U'}
                   </AvatarFallback>
@@ -102,7 +123,10 @@ export default function UserProfile() {
                 
                 <div className="flex-1 text-center md:text-left">
                   <h1 className="text-3xl font-bold mb-2">{profileUser.full_name}</h1>
-                  <p className="text-blue-100 mb-4">{profileUser.email}</p>
+                  <p className="text-blue-100 mb-2">{profileUser.email}</p>
+                  {profileUser.bio && (
+                    <p className="text-blue-100 italic mb-4">{profileUser.bio}</p>
+                  )}
                   
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
@@ -125,24 +149,69 @@ export default function UserProfile() {
                 </div>
 
                 {isOwnProfile && (
-                  <Link to={createPageUrl('Settings')}>
-                    <Button variant="secondary">
-                      Edit Profile
-                    </Button>
-                  </Link>
+                  <Button 
+                    variant="secondary"
+                    onClick={() => setIsEditing(!isEditing)}
+                  >
+                    {isEditing ? 'Cancel' : 'Edit Profile'}
+                  </Button>
                 )}
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
+        {/* Edit Profile Form */}
+        {isEditing && isOwnProfile && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Edit Profile</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Avatar URL</label>
+                  <Input
+                    placeholder="https://example.com/avatar.jpg"
+                    value={editData.avatar_url}
+                    onChange={(e) => setEditData({ ...editData, avatar_url: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Bio</label>
+                  <Textarea
+                    placeholder="Tell us about yourself..."
+                    value={editData.bio}
+                    onChange={(e) => setEditData({ ...editData, bio: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+                <Button onClick={handleSaveProfile}>
+                  Save Changes
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
         {/* Stats Overview */}
-        <div className="grid md:grid-cols-4 gap-4 mb-6">
+        <div className="grid md:grid-cols-5 gap-4 mb-6">
           <Card>
             <CardContent className="p-6 text-center">
-              <Target className="w-8 h-8 mx-auto mb-2 text-green-600" />
+              <DollarSign className="w-8 h-8 mx-auto mb-2 text-green-600" />
               <p className="text-2xl font-bold">${(profileUser.total_earnings || 0).toFixed(2)}</p>
               <p className="text-sm text-gray-600">Total Earnings</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6 text-center">
+              <Coins className="w-8 h-8 mx-auto mb-2 text-yellow-600" />
+              <p className="text-2xl font-bold">{(profileUser.virtual_currency || 0).toFixed(0)}</p>
+              <p className="text-sm text-gray-600">Credits Balance</p>
             </CardContent>
           </Card>
           
@@ -173,7 +242,7 @@ export default function UserProfile() {
 
         {/* Detailed Tabs */}
         <Tabs defaultValue="library" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="library">
               <Gamepad2 className="w-4 h-4 mr-2" />
               Library
@@ -193,6 +262,10 @@ export default function UserProfile() {
             <TabsTrigger value="reviews">
               <Star className="w-4 h-4 mr-2" />
               Reviews
+            </TabsTrigger>
+            <TabsTrigger value="transactions">
+              <DollarSign className="w-4 h-4 mr-2" />
+              Transactions
             </TabsTrigger>
           </TabsList>
 
@@ -219,6 +292,38 @@ export default function UserProfile() {
 
           <TabsContent value="reviews">
             <UserReviews userId={profileUser.id} ratings={ratings} />
+          </TabsContent>
+
+          <TabsContent value="transactions">
+            <Card>
+              <CardHeader>
+                <CardTitle>Transaction History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {transactions.length > 0 ? (
+                  <div className="space-y-3">
+                    {transactions.map(transaction => (
+                      <div key={transaction.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="font-semibold capitalize">{transaction.transaction_type.replace(/_/g, ' ')}</p>
+                          <p className="text-sm text-gray-600">
+                            {new Date(transaction.created_date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className={`font-bold ${transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {transaction.currency === 'CREDITS' ? `${transaction.amount} Credits` : `$${transaction.amount.toFixed(2)}`}
+                          </p>
+                          <p className="text-sm text-gray-600">{transaction.status}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-8">No transactions yet</p>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

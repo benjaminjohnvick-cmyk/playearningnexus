@@ -21,12 +21,12 @@ import MonetizationHub from './pages/MonetizationHub';
 import MyPurchases from './pages/MyPurchases';
 import PayPalManagement from './pages/PayPalManagement';
 import Settings from './pages/Settings';
+import SocialMediaGenerator from './pages/SocialMediaGenerator';
 import Support from './pages/Support';
 import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
-import SocialMediaGenerator from './pages/SocialMediaGenerator';
 import __Layout from './Layout.jsx';
 
 
@@ -54,12 +54,12 @@ export const PAGES = {
     "MyPurchases": MyPurchases,
     "PayPalManagement": PayPalManagement,
     "Settings": Settings,
+    "SocialMediaGenerator": SocialMediaGenerator,
     "Support": Support,
     "Surveys": Surveys,
     "UserDashboard": UserDashboard,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
-    "SocialMediaGenerator": SocialMediaGenerator,
 }
 
 export const pagesConfig = {
