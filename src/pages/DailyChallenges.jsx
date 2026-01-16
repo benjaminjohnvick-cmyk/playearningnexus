@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ProgressBar from '@/components/common/ProgressBar';
-import { Target, Trophy, Clock, CheckCircle2, Zap } from 'lucide-react';
+import { Target, Trophy, Clock, CheckCircle2, Zap, DollarSign, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -50,11 +50,11 @@ export default function DailyChallengesPage() {
   });
 
   const challengeIcons = {
-    complete_surveys: '📝',
-    play_games: '🎮',
-    earn_amount: '💰',
-    maintain_streak: '🔥',
-    invite_friends: '👥'
+    complete_surveys: Target,
+    play_games: Trophy,
+    earn_amount: DollarSign,
+    maintain_streak: Zap,
+    invite_friends: Users
   };
 
   if (isLoading) {
@@ -96,7 +96,7 @@ export default function DailyChallengesPage() {
                   <div key={event.id}>
                     <h3 className="text-xl font-bold mb-2">{event.event_name}</h3>
                     <p className="opacity-90">{event.description}</p>
-                    <p className="mt-2">🎁 {event.bonus_multiplier}x Bonus Earnings</p>
+                    <p className="mt-2">{event.bonus_multiplier}x Bonus Earnings</p>
                   </div>
                 ))}
               </CardContent>
@@ -131,7 +131,7 @@ export default function DailyChallengesPage() {
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex items-center gap-3">
-                              <span className="text-3xl">{challengeIcons[challenge.challenge_type]}</span>
+                              {React.createElement(challengeIcons[challenge.challenge_type] || Target, { className: "w-8 h-8 text-red-600" })}
                               <div>
                                 <h3 className="font-bold text-lg">{challenge.title}</h3>
                                 <p className="text-sm text-gray-600">{challenge.description}</p>

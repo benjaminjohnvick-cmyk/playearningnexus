@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Bell, CheckCheck, Trash2 } from 'lucide-react';
+import { Bell, CheckCheck, Trash2, Trophy, Target, Zap, MessageSquare, Gift, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPageUrl } from '@/utils';
@@ -47,12 +47,12 @@ export default function NotificationCenter({ userId }) {
   };
 
   const iconMap = {
-    achievement: '🏆',
-    challenge: '🎯',
-    event: '🎉',
-    message: '💬',
-    gift: '🎁',
-    system: '⚙️'
+    achievement: Trophy,
+    challenge: Target,
+    event: Zap,
+    message: MessageSquare,
+    gift: Gift,
+    system: Settings
   };
 
   return (
@@ -100,7 +100,7 @@ export default function NotificationCenter({ userId }) {
                       onClick={() => handleNotificationClick(notif)}
                     >
                       <div className="flex items-start gap-3">
-                        <span className="text-2xl">{iconMap[notif.notification_type] || '📢'}</span>
+                        {React.createElement(iconMap[notif.notification_type] || Bell, { className: "w-5 h-5 text-red-600 mt-0.5" })}
                         <div className="flex-1">
                           <p className="font-medium text-sm">{notif.title}</p>
                           <p className="text-xs text-gray-600 mt-1">{notif.message}</p>

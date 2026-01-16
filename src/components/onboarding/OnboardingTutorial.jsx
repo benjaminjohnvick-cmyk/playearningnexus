@@ -6,7 +6,7 @@ import { X, ArrowRight, ArrowLeft, CheckCircle2, Gamepad2, DollarSign, Trophy, G
 
 const tutorialSteps = [
   {
-    title: "Welcome to GameRewards! 🎮",
+    title: "Welcome to GameRewards!",
     description: "Discover amazing games, complete surveys, and earn real money. Let's get you started!",
     icon: Gamepad2,
     color: "from-blue-600 to-purple-600"
