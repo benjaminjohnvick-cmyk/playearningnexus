@@ -226,7 +226,7 @@ export default function FriendsSystem({ currentUser }) {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Link to={createPageUrl('UserProfile', `?user_id=${friend.id}`)}>
+                      <Link to={createPageUrl('UserProfile') + `?user_id=${friend.id}`}>
                         <Button size="sm" variant="outline">
                           <User className="w-4 h-4" />
                         </Button>
