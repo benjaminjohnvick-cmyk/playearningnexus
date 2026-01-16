@@ -69,7 +69,7 @@ export default function VirtualGiftsPanel({ streamer, viewer, game }) {
         spread: 70,
         origin: { y: 0.6 }
       });
-      toast.success(`${gift.name} sent to ${streamer.full_name}! 🎁`);
+      toast.success(`${gift.name} sent to ${streamer.full_name}!`);
       setIsOpen(false);
       queryClient.invalidateQueries(['user']);
     },
@@ -128,7 +128,7 @@ export default function VirtualGiftsPanel({ streamer, viewer, game }) {
 
           <div className="mt-4 p-4 bg-purple-50 rounded-lg">
             <p className="text-sm text-purple-900">
-              💡 Gifts appear as on-screen animations and notify the streamer in real-time!
+              Gifts appear as on-screen animations and notify the streamer in real-time!
             </p>
           </div>
         </DialogContent>

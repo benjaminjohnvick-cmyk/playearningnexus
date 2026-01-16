@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DollarSign, Download, TrendingUp, Users, Plus, Upload, Bot, Zap } from "lucide-react";
+import { DollarSign, Download, TrendingUp, Users, Plus, Upload, Bot, Zap, Gamepad2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import StatsCard from '../components/dashboard/StatsCard';
@@ -318,7 +318,7 @@ export default function BusinessDashboard() {
                 <Card key={game.id} className="p-4 border">
                   <div className="flex items-start gap-4">
                     <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-2xl">
-                      {game.icon_url ? <img src={game.icon_url} alt={game.title} className="w-full h-full object-cover rounded-lg" /> : '🎮'}
+                      {game.icon_url ? <img src={game.icon_url} alt={game.title} className="w-full h-full object-cover rounded-lg" /> : <Gamepad2 className="w-8 h-8 text-gray-400" />}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
@@ -346,7 +346,7 @@ export default function BusinessDashboard() {
                         </div>
                         <div>
                           <span className="text-gray-500">Rating:</span>
-                          <span className="font-medium ml-2">{(game.average_rating || 0).toFixed(1)} ⭐</span>
+                          <span className="font-medium ml-2">{(game.average_rating || 0).toFixed(1)}</span>
                         </div>
                       </div>
                     </div>
