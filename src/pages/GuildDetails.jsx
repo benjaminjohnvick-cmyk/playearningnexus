@@ -21,7 +21,7 @@ export default function GuildDetails() {
     fetchUser();
   }, []);
 
-  const { data: guild } = useQuery({
+  const { data: guild, isLoading: guildLoading } = useQuery({
     queryKey: ['guild', guildId],
     queryFn: () => base44.entities.Guild.filter({ id: guildId }).then(g => g[0]),
     enabled: !!guildId
@@ -59,7 +59,7 @@ export default function GuildDetails() {
     refetchInterval: 5000
   });
 
-  if (!guild || !user) {
+  if (guildLoading || !guild || !user) {
     return <div className="flex items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
     </div>;

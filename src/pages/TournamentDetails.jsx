@@ -22,7 +22,7 @@ export default function TournamentDetails() {
     fetchUser();
   }, []);
 
-  const { data: tournament } = useQuery({
+  const { data: tournament, isLoading: tournamentLoading } = useQuery({
     queryKey: ['tournament', tournamentId],
     queryFn: () => base44.entities.Tournament.filter({ id: tournamentId }).then(t => t[0]),
     enabled: !!tournamentId
@@ -54,7 +54,7 @@ export default function TournamentDetails() {
     refetchInterval: 5000
   });
 
-  if (!tournament || !user) {
+  if (tournamentLoading || !tournament || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>

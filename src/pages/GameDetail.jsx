@@ -39,7 +39,7 @@ export default function GameDetail() {
     fetchUser();
   }, []);
 
-  const { data: game } = useQuery({
+  const { data: game, isLoading } = useQuery({
     queryKey: ['game', gameId],
     queryFn: async () => {
       const games = await base44.entities.Game.list();
@@ -118,7 +118,7 @@ export default function GameDetail() {
     }
   });
 
-  if (!game) {
+  if (isLoading || !game) {
     return <div className="flex items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
     </div>;
