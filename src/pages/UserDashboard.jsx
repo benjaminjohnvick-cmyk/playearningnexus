@@ -163,12 +163,14 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
-      <SocialSharePrompt
-        isOpen={showSharePrompt}
-        onClose={() => setShowSharePrompt(false)}
-        game={gameToShare}
-        action="started playing"
-      />
+      {gameToShare && (
+        <SocialSharePrompt
+          isOpen={showSharePrompt}
+          onClose={() => setShowSharePrompt(false)}
+          game={gameToShare}
+          action="started playing"
+        />
+      )}
       {showTrialExpired && (
         <Dialog open={showTrialExpired} onOpenChange={setShowTrialExpired}>
           <DialogContent className="border-2 border-red-300">
