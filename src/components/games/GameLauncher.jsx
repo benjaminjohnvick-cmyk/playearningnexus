@@ -22,6 +22,7 @@ import {
 import InGameStore from './InGameStore';
 import SpectateMode from './SpectateMode';
 import ActiveEventsDisplay from '../events/ActiveEventsDisplay';
+import ViewerMonetizationPanel from '../streaming/ViewerMonetizationPanel';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -328,6 +329,15 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                     <ActiveEventsDisplay />
                   </TabsContent>
                 </Tabs>
+
+                {/* Viewer Monetization Panel */}
+                <div className="mt-4">
+                  <ViewerMonetizationPanel 
+                    streamer={user} 
+                    viewer={user} 
+                    game={game} 
+                  />
+                </div>
               </div>
             </div>
 

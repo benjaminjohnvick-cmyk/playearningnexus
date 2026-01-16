@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Eye, EyeOff, Users, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
+import SupportStreamerButton from '../streaming/SupportStreamerButton';
+import SubscriptionManager from '../streaming/SubscriptionManager';
+import VirtualGiftsPanel from '../streaming/VirtualGiftsPanel';
+import StreamNotifications from '../streaming/StreamNotifications';
 
 export default function SpectateMode({ game, user, onSpectatorUpdate }) {
   const [isSpectatable, setIsSpectatable] = useState(false);
@@ -84,32 +88,36 @@ export default function SpectateMode({ game, user, onSpectatorUpdate }) {
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <Button
-        size="sm"
-        variant={isSpectatable ? "default" : "outline"}
-        onClick={toggleSpectatable}
-        className={isSpectatable ? "bg-purple-600 hover:bg-purple-700" : ""}
-      >
-        {isSpectatable ? (
-          <>
-            <Eye className="w-4 h-4 mr-2" />
-            Spectatable
-          </>
-        ) : (
-          <>
-            <EyeOff className="w-4 h-4 mr-2" />
-            Private
-          </>
-        )}
-      </Button>
+    <>
+      {isSpectatable && <StreamNotifications streamerId={user.id} />}
+      
+      <div className="flex items-center gap-3">
+        <Button
+          size="sm"
+          variant={isSpectatable ? "default" : "outline"}
+          onClick={toggleSpectatable}
+          className={isSpectatable ? "bg-purple-600 hover:bg-purple-700" : ""}
+        >
+          {isSpectatable ? (
+            <>
+              <Eye className="w-4 h-4 mr-2" />
+              Spectatable
+            </>
+          ) : (
+            <>
+              <EyeOff className="w-4 h-4 mr-2" />
+              Private
+            </>
+          )}
+        </Button>
 
-      {spectators.length > 0 && (
-        <Badge variant="outline" className="flex items-center gap-1">
-          <Users className="w-3 h-3" />
-          {spectators.length} watching
-        </Badge>
-      )}
-    </div>
+        {spectators.length > 0 && (
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Users className="w-3 h-3" />
+            {spectators.length} watching
+          </Badge>
+        )}
+      </div>
+    </>
   );
 }
