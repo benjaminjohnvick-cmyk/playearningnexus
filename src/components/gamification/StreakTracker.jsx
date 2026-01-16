@@ -5,12 +5,20 @@ import { Flame, TrendingUp, Award, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function StreakTracker({ streak }) {
+  const iconComponents = {
+    7: <Flame className="w-4 h-4" />,
+    14: <Zap className="w-4 h-4" />,
+    30: <Award className="w-4 h-4" />,
+    60: <Award className="w-4 h-4" />,
+    100: <Award className="w-4 h-4" />
+  };
+
   const milestones = [
-    { days: 7, reward: 5, icon: "🔥" },
-    { days: 14, reward: 10, icon: "⚡" },
-    { days: 30, reward: 25, icon: "💎" },
-    { days: 60, reward: 50, icon: "👑" },
-    { days: 100, reward: 100, icon: "🏆" }
+    { days: 7, reward: 5 },
+    { days: 14, reward: 10 },
+    { days: 30, reward: 25 },
+    { days: 60, reward: 50 },
+    { days: 100, reward: 100 }
   ];
 
   const nextMilestone = milestones.find(m => m.days > (streak?.current_streak || 0));
@@ -57,8 +65,9 @@ export default function StreakTracker({ streak }) {
           <div className="pt-4 border-t border-red-200">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">Next Milestone</span>
-              <Badge className="bg-red-600 text-white">
-                {nextMilestone.icon} ${nextMilestone.reward} bonus
+              <Badge className="bg-red-600 text-white flex items-center gap-1">
+                {iconComponents[nextMilestone.days]}
+                ${nextMilestone.reward} bonus
               </Badge>
             </div>
             <div className="relative h-3 bg-red-100 rounded-full overflow-hidden">
@@ -84,7 +93,7 @@ export default function StreakTracker({ streak }) {
                   : 'bg-gray-100 text-gray-400'
               }`}
             >
-              <div className="text-xl mb-1">{milestone.icon}</div>
+              <div className="mb-1 flex justify-center">{iconComponents[milestone.days]}</div>
               <div className="text-xs font-bold">{milestone.days}d</div>
             </div>
           ))}

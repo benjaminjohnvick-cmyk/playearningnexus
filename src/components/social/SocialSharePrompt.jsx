@@ -5,7 +5,7 @@ import { Twitter, Facebook, Linkedin, Share2, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function SocialSharePrompt({ isOpen, onClose, game, action = "purchased" }) {
-  const shareText = `Just ${action} ${game.title}! ${game.description?.substring(0, 100)}... Check it out on GameRewards! 🎮`;
+  const shareText = `Just ${action} ${game.title}! ${game.description?.substring(0, 100)}... Check it out on GameRewards!`;
   const shareUrl = window.location.origin;
 
   const handleShare = (platform) => {
