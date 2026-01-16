@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, TrendingUp, TrendingDown, Medal, Crown } from "lucide-react";
+import { Trophy, TrendingUp, TrendingDown, Medal, Crown, Flame } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Leaderboard({ entries, currentUserId }) {
@@ -72,12 +72,16 @@ export default function Leaderboard({ entries, currentUserId }) {
                         <span>•</span>
                         <span>{entry.surveys_completed} surveys</span>
                         <span>•</span>
-                        <span>🔥 {entry.current_streak}d</span>
+                        <span className="flex items-center gap-1">
+                          <Flame className="w-3 h-3 text-red-500" />
+                          {entry.current_streak}d
+                        </span>
                       </div>
                     </div>
                   </div>
-                  <Badge className="bg-purple-600 text-white">
-                    {entry.achievements_count} 🏆
+                  <Badge className="bg-purple-600 text-white flex items-center gap-1">
+                    {entry.achievements_count}
+                    <Trophy className="w-3 h-3" />
                   </Badge>
                 </div>
               </Card>
