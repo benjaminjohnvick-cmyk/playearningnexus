@@ -80,7 +80,7 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
     onSuccess: () => {
       setLastSaveTime(new Date());
       queryClient.invalidateQueries(['cloud-saves']);
-      toast.success('Game saved to cloud ☁️');
+      toast.success('Game saved to cloud');
     }
   });
 
