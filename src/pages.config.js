@@ -29,6 +29,7 @@ import UserDashboard from './pages/UserDashboard';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import StreamerAnalytics from './pages/StreamerAnalytics';
+import GuildDetails from './pages/GuildDetails';
 import __Layout from './Layout.jsx';
 
 
@@ -64,6 +65,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
     "StreamerAnalytics": StreamerAnalytics,
+    "GuildDetails": GuildDetails,
 }
 
 export const pagesConfig = {
