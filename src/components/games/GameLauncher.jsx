@@ -17,7 +17,8 @@ import {
   VolumeX,
   ShoppingCart,
   Eye,
-  Zap
+  Zap,
+  Trophy
 } from 'lucide-react';
 import InGameStore from './InGameStore';
 import SpectateMode from './SpectateMode';
