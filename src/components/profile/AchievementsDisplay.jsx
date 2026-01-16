@@ -29,7 +29,7 @@ export default function AchievementsDisplay({ achievements }) {
                 <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className="text-4xl">{achievement.icon || '🏆'}</div>
+                      <Trophy className="w-10 h-10 text-yellow-600" />
                       <div className="flex-1">
                         <h4 className="font-bold mb-1">{achievement.title}</h4>
                         <p className="text-sm text-gray-600 mb-2">{achievement.description}</p>
@@ -63,7 +63,7 @@ export default function AchievementsDisplay({ achievements }) {
               <Card key={achievement.id} className="opacity-60">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
-                    <div className="text-4xl grayscale">{achievement.icon || '🔒'}</div>
+                    <Lock className="w-10 h-10 text-gray-400" />
                     <div className="flex-1">
                       <h4 className="font-bold mb-1">{achievement.title}</h4>
                       <p className="text-sm text-gray-600 mb-2">{achievement.description}</p>
