@@ -42,6 +42,14 @@ export default function Gamification() {
     queryFn: () => base44.entities.LeaderboardEntry.list('-total_earnings', 50)
   });
 
+  const { data: myGuilds = [] } = useQuery({
+    queryKey: ['myGuilds', user?.id],
+    queryFn: () => base44.entities.Guild.list().then(guilds => 
+      guilds.filter(g => g.leader_id === user.id || g.member_ids?.includes(user.id))
+    ),
+    enabled: !!user
+  });
+
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">

@@ -51,6 +51,7 @@ export default function AdminDashboard() {
           <TabsList className="bg-white shadow-md">
             <TabsTrigger value="revenue">Revenue & Analytics</TabsTrigger>
             <TabsTrigger value="rotation">Game Rotation</TabsTrigger>
+            <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
 
           <TabsContent value="revenue">
@@ -62,6 +63,15 @@ export default function AdminDashboard() {
 
           <TabsContent value="rotation">
             <FeaturedGameRotation />
+          </TabsContent>
+
+          <TabsContent value="events">
+            <Card className="p-6">
+              <p className="text-gray-600 mb-4">Manage platform-wide events and special challenges</p>
+              <a href="/EventsManagement" className="text-blue-600 hover:underline">
+                Go to Events Management →
+              </a>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
