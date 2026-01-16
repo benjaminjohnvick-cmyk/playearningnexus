@@ -12,6 +12,7 @@ import LockoutModal from '../components/user/LockoutModal';
 import UserLicenseAgreement from '../components/user/UserLicenseAgreement';
 import AIRecommendations from '../components/dashboard/AIRecommendations';
 import SocialSharePrompt from '../components/social/SocialSharePrompt';
+import ActiveEventsDisplay from '../components/events/ActiveEventsDisplay';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -253,6 +254,11 @@ export default function UserDashboard() {
             currentEarnings={todaysEarnings}
             todayCompleted={dailyGoalMet}
           />
+        </div>
+
+        {/* Active Events */}
+        <div className="mb-8">
+          <ActiveEventsDisplay />
         </div>
 
         {/* AI Recommendations */}

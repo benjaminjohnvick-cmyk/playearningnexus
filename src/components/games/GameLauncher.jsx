@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Play, 
   Pause, 
@@ -15,10 +16,12 @@ import {
   Volume2,
   VolumeX,
   ShoppingCart,
-  Eye
+  Eye,
+  Zap
 } from 'lucide-react';
 import InGameStore from './InGameStore';
 import SpectateMode from './SpectateMode';
+import ActiveEventsDisplay from '../events/ActiveEventsDisplay';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -258,12 +261,18 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
 
           {/* Game Area */}
           <div className="flex-1 flex">
-            {/* Sidebar - Cloud Saves or Store */}
-            <div className="w-64 bg-gray-800 text-white overflow-y-auto border-r border-gray-700">
-              {showStore ? (
-                <InGameStore game={game} user={user} />
-              ) : (
-                <div className="p-4">
+            {/* Sidebar */}
+            <div className="w-80 bg-gray-900/95 backdrop-blur-sm border-l border-gray-700 overflow-y-auto">
+              <div className="p-4">
+                <Tabs defaultValue="saves" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+                    <TabsTrigger value="saves">Saves</TabsTrigger>
+                    <TabsTrigger value="store">Store</TabsTrigger>
+                    <TabsTrigger value="events">Events</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="saves" className="mt-4">
+                    <div>
               <h4 className="font-bold mb-3 flex items-center gap-2">
                 <Cloud className="w-4 h-4" />
                 Cloud Saves

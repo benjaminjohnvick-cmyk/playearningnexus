@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Flame, Users } from "lucide-react";
+import { Trophy, Flame, Users, TrendingUp } from "lucide-react";
 import StreakTracker from '../components/gamification/StreakTracker';
 import AchievementsList from '../components/gamification/AchievementsList';
 import Leaderboard from '../components/gamification/Leaderboard';
+import GuildLeaderboard from '../components/gamification/GuildLeaderboard';
 
 export default function Gamification() {
   const [user, setUser] = useState(null);
@@ -77,8 +78,12 @@ export default function Gamification() {
               Achievements
             </TabsTrigger>
             <TabsTrigger value="leaderboard" className="text-lg">
-              <Users className="w-4 h-4 mr-2" />
+              <TrendingUp className="w-4 h-4 mr-2" />
               Leaderboard
+            </TabsTrigger>
+            <TabsTrigger value="guilds" className="text-lg">
+              <Users className="w-4 h-4 mr-2" />
+              Guild Rankings
             </TabsTrigger>
           </TabsList>
 
@@ -92,6 +97,10 @@ export default function Gamification() {
 
           <TabsContent value="leaderboard">
             <Leaderboard entries={leaderboard} currentUserId={user.id} />
+          </TabsContent>
+
+          <TabsContent value="guilds">
+            <GuildLeaderboard currentGuildId={myGuilds[0]?.id} />
           </TabsContent>
         </Tabs>
       </div>
