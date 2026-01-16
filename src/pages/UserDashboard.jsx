@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DollarSign, Gamepad2, TrendingUp, Library, Star, Clock } from "lucide-react";
+import { DollarSign, Gamepad2, TrendingUp, Library, Star, Clock, Eye, Users } from "lucide-react";
 import StatsCard from '../components/dashboard/StatsCard';
 import GameCard from '../components/games/GameCard';
 import SurveyProgress from '../components/surveys/SurveyProgress';
@@ -13,6 +13,8 @@ import UserLicenseAgreement from '../components/user/UserLicenseAgreement';
 import AIRecommendations from '../components/dashboard/AIRecommendations';
 import SocialSharePrompt from '../components/social/SocialSharePrompt';
 import ActiveEventsDisplay from '../components/events/ActiveEventsDisplay';
+import StreamDiscovery from '../components/streaming/StreamDiscovery';
+import FriendsSystem from '../components/social/FriendsSystem';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -293,6 +295,14 @@ export default function UserDashboard() {
               <Library className="w-4 h-4 mr-2" />
               My Library
             </TabsTrigger>
+            <TabsTrigger value="streams" className="text-lg">
+              <Eye className="w-4 h-4 mr-2" />
+              Live Streams
+            </TabsTrigger>
+            <TabsTrigger value="friends" className="text-lg">
+              <Users className="w-4 h-4 mr-2" />
+              Friends
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="featured">
@@ -353,6 +363,14 @@ export default function UserDashboard() {
                 </div>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="streams">
+            <StreamDiscovery />
+          </TabsContent>
+
+          <TabsContent value="friends">
+            <FriendsSystem currentUser={user} />
           </TabsContent>
         </Tabs>
       </div>
