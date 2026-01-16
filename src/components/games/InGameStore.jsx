@@ -12,7 +12,8 @@ import {
   Zap,
   Lock,
   Star,
-  DollarSign
+  DollarSign,
+  Gem
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -166,7 +167,7 @@ export default function InGameStore({ game, user }) {
                 <span className="font-bold">{getCurrencyBalance('coins')}</span>
               </div>
               <div className="flex items-center gap-1 bg-black/30 px-2 py-1 rounded-full text-xs">
-                <Sparkles className="w-3 h-3 text-purple-400" />
+                <Gem className="w-3 h-3 text-purple-400" />
                 <span className="font-bold">{getCurrencyBalance('gems')}</span>
               </div>
               <div className="flex items-center gap-1 bg-black/30 px-2 py-1 rounded-full text-xs">
