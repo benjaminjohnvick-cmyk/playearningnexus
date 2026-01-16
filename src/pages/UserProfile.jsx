@@ -17,6 +17,9 @@ import AchievementsDisplay from '../components/profile/AchievementsDisplay';
 import UserStats from '../components/profile/UserStats';
 import SocialConnections from '../components/profile/SocialConnections';
 import UserReviews from '../components/profile/UserReviews';
+import CurrentActivity from '../components/profile/CurrentActivity';
+import GuildActivity from '../components/profile/GuildActivity';
+import FavoriteGames from '../components/profile/FavoriteGames';
 
 export default function UserProfile() {
   const [user, setUser] = useState(null);
@@ -238,6 +241,16 @@ export default function UserProfile() {
               <p className="text-sm text-gray-600">Best Streak</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Activity & Favorites Grid */}
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          <CurrentActivity userId={profileUser.id} />
+          <GuildActivity userId={profileUser.id} />
+        </div>
+
+        <div className="mb-6">
+          <FavoriteGames userId={profileUser.id} isOwnProfile={isOwnProfile} />
         </div>
 
         {/* Detailed Tabs */}
