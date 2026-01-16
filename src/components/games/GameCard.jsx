@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Download, Calendar, Play } from "lucide-react";
+import { Star, Download, Calendar, Play, Gamepad2 } from "lucide-react";
 import { motion } from "framer-motion";
 import GameLauncher from './GameLauncher';
 import { base44 } from '@/api/base44Client';
@@ -39,11 +39,13 @@ export default function GameCard({ game, onInstall, showFeaturedBadge = false, e
           {game.icon_url ? (
             <img src={game.icon_url} alt={game.title} className="w-full h-full object-cover" />
           ) : (
-            <div className="flex items-center justify-center h-full text-6xl">🎮</div>
+            <div className="flex items-center justify-center h-full">
+              <Gamepad2 className="w-24 h-24 text-gray-400" />
+            </div>
           )}
           {showFeaturedBadge && (
             <Badge className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
-              ⭐ Featured
+Featured
             </Badge>
           )}
         </div>
