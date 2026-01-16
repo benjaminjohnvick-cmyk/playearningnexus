@@ -16,6 +16,7 @@ import {
   Bot,
   Trophy
 } from 'lucide-react';
+import GamerGainLogo from '@/components/branding/GamerGainLogo';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -81,12 +82,12 @@ export default function Layout({ children, currentPageName }) {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to={createPageUrl('Home')} className="flex items-center gap-2 group">
-              <div className="p-2 bg-gradient-to-br from-red-600 to-red-700 rounded-xl group-hover:scale-110 transition-transform shadow-lg">
-                <DollarSign className="w-6 h-6 text-white" />
+            <Link to={createPageUrl('Home')} className="flex items-center gap-3 group">
+              <div className="group-hover:scale-110 transition-transform">
+                <GamerGainLogo className="w-12 h-12" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent">
-                GameRewards
+              <span className="text-2xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">
+                GamerGain
               </span>
             </Link>
 
@@ -221,11 +222,9 @@ export default function Layout({ children, currentPageName }) {
           <div className="grid md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl">
-                  <DollarSign className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  GameRewards
+                <GamerGainLogo className="w-10 h-10" />
+                <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">
+                  GamerGain
                 </span>
               </div>
               <p className="text-gray-600 text-sm">
@@ -254,7 +253,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
           
           <div className="border-t mt-8 pt-8 text-center text-sm text-gray-500">
-            <p>© 2024 GameRewards. All rights reserved. | Survey monetization platform with 50/50 revenue share</p>
+            <p>© 2024 GamerGain. All rights reserved. | Survey monetization platform with 50/50 revenue share</p>
           </div>
         </div>
       </footer>
