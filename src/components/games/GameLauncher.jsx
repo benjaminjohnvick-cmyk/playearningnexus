@@ -317,8 +317,18 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                   <div className="px-2 py-1 bg-gray-700 rounded text-xs">Android</div>
                 </div>
               </div>
-                </div>
-              )}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="store" className="mt-4">
+                    <InGameStore game={game} user={user} />
+                  </TabsContent>
+
+                  <TabsContent value="events" className="mt-4">
+                    <ActiveEventsDisplay />
+                  </TabsContent>
+                </Tabs>
+              </div>
             </div>
 
             {/* Game Canvas/Iframe */}
