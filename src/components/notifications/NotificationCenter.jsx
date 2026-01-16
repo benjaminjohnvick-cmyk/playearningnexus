@@ -100,7 +100,10 @@ export default function NotificationCenter({ userId }) {
                       onClick={() => handleNotificationClick(notif)}
                     >
                       <div className="flex items-start gap-3">
-                        {React.createElement(iconMap[notif.notification_type] || Bell, { className: "w-5 h-5 text-red-600 mt-0.5" })}
+                        {(() => {
+                          const IconComponent = iconMap[notif.notification_type] || Bell;
+                          return <IconComponent className="w-5 h-5 text-red-600 mt-0.5" />;
+                        })()}
                         <div className="flex-1">
                           <p className="font-medium text-sm">{notif.title}</p>
                           <p className="text-xs text-gray-600 mt-1">{notif.message}</p>

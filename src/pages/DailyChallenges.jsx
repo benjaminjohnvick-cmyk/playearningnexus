@@ -131,7 +131,10 @@ export default function DailyChallengesPage() {
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex items-center gap-3">
-                              {React.createElement(challengeIcons[challenge.challenge_type] || Target, { className: "w-8 h-8 text-red-600" })}
+                              {(() => {
+                                const IconComponent = challengeIcons[challenge.challenge_type] || Target;
+                                return <IconComponent className="w-8 h-8 text-red-600" />;
+                              })()}
                               <div>
                                 <h3 className="font-bold text-lg">{challenge.title}</h3>
                                 <p className="text-sm text-gray-600">{challenge.description}</p>

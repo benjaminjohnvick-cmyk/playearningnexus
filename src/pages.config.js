@@ -14,6 +14,7 @@ import GameDetail from './pages/GameDetail';
 import GameGuides from './pages/GameGuides';
 import GameStore from './pages/GameStore';
 import Gamification from './pages/Gamification';
+import GuildDetails from './pages/GuildDetails';
 import Guilds from './pages/Guilds';
 import Home from './pages/Home';
 import InAppStore from './pages/InAppStore';
@@ -23,15 +24,14 @@ import MyPurchases from './pages/MyPurchases';
 import PayPalManagement from './pages/PayPalManagement';
 import Settings from './pages/Settings';
 import SocialMediaGenerator from './pages/SocialMediaGenerator';
+import StreamerAnalytics from './pages/StreamerAnalytics';
 import Support from './pages/Support';
 import Surveys from './pages/Surveys';
+import TournamentDetails from './pages/TournamentDetails';
+import Tournaments from './pages/Tournaments';
 import UserDashboard from './pages/UserDashboard';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
-import StreamerAnalytics from './pages/StreamerAnalytics';
-import GuildDetails from './pages/GuildDetails';
-import Tournaments from './pages/Tournaments';
-import TournamentDetails from './pages/TournamentDetails';
 import __Layout from './Layout.jsx';
 
 
@@ -52,6 +52,7 @@ export const PAGES = {
     "GameGuides": GameGuides,
     "GameStore": GameStore,
     "Gamification": Gamification,
+    "GuildDetails": GuildDetails,
     "Guilds": Guilds,
     "Home": Home,
     "InAppStore": InAppStore,
@@ -61,15 +62,14 @@ export const PAGES = {
     "PayPalManagement": PayPalManagement,
     "Settings": Settings,
     "SocialMediaGenerator": SocialMediaGenerator,
+    "StreamerAnalytics": StreamerAnalytics,
     "Support": Support,
     "Surveys": Surveys,
+    "TournamentDetails": TournamentDetails,
+    "Tournaments": Tournaments,
     "UserDashboard": UserDashboard,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
-    "StreamerAnalytics": StreamerAnalytics,
-    "GuildDetails": GuildDetails,
-    "Tournaments": Tournaments,
-    "TournamentDetails": TournamentDetails,
 }
 
 export const pagesConfig = {
