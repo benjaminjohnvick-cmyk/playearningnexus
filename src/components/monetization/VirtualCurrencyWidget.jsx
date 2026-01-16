@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Coins, Plus, Gem, Zap } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 export default function VirtualCurrencyWidget({ user }) {
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
@@ -127,16 +128,23 @@ export default function VirtualCurrencyWidget({ user }) {
               const totalAmount = pkg.amount + (pkg.bonus || 0);
               const canAfford = (user?.total_earnings || 0) >= pkg.price;
 
+              const colorClasses = {
+                yellow: 'text-yellow-500',
+                purple: 'text-purple-500',
+                blue: 'text-blue-500'
+              };
+
               return (
                 <Card
                   key={idx}
-                  className={`p-4 cursor-pointer hover:border-${pkg.color}-500 transition-all ${
-                    !canAfford ? 'opacity-50' : ''
-                  }`}
+                  className={cn(
+                    "p-4 cursor-pointer transition-all",
+                    !canAfford && "opacity-50"
+                  )}
                 >
                   <div className="text-center">
                     <div className="mb-3">
-                      <Icon className={`w-12 h-12 mx-auto text-${pkg.color}-500`} />
+                      <Icon className={`w-12 h-12 mx-auto ${colorClasses[pkg.color]}`} />
                     </div>
                     <div className="mb-2">
                       <p className="text-2xl font-bold">{totalAmount}</p>
