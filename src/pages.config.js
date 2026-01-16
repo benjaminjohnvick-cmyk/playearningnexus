@@ -8,6 +8,7 @@ import DeveloperAIDashboard from './pages/DeveloperAIDashboard';
 import DeveloperAnalytics from './pages/DeveloperAnalytics';
 import DeveloperIAPDashboard from './pages/DeveloperIAPDashboard';
 import DeveloperPortfolio from './pages/DeveloperPortfolio';
+import EventsManagement from './pages/EventsManagement';
 import GameAnalyticsDashboard from './pages/GameAnalyticsDashboard';
 import GameDetail from './pages/GameDetail';
 import GameGuides from './pages/GameGuides';
@@ -27,7 +28,7 @@ import Surveys from './pages/Surveys';
 import UserDashboard from './pages/UserDashboard';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
-import EventsManagement from './pages/EventsManagement';
+import StreamerAnalytics from './pages/StreamerAnalytics';
 import __Layout from './Layout.jsx';
 
 
@@ -42,6 +43,7 @@ export const PAGES = {
     "DeveloperAnalytics": DeveloperAnalytics,
     "DeveloperIAPDashboard": DeveloperIAPDashboard,
     "DeveloperPortfolio": DeveloperPortfolio,
+    "EventsManagement": EventsManagement,
     "GameAnalyticsDashboard": GameAnalyticsDashboard,
     "GameDetail": GameDetail,
     "GameGuides": GameGuides,
@@ -61,7 +63,7 @@ export const PAGES = {
     "UserDashboard": UserDashboard,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
-    "EventsManagement": EventsManagement,
+    "StreamerAnalytics": StreamerAnalytics,
 }
 
 export const pagesConfig = {
