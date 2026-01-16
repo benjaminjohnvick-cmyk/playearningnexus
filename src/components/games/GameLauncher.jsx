@@ -25,6 +25,8 @@ import SpectateMode from './SpectateMode';
 import ActiveEventsDisplay from '../events/ActiveEventsDisplay';
 import ViewerMonetizationPanel from '../streaming/ViewerMonetizationPanel';
 import InGameTournamentOverlay from '../tournaments/InGameTournamentOverlay';
+import VirtualCurrencyWidget from '../monetization/VirtualCurrencyWidget';
+import DeveloperSupportPanel from '../monetization/DeveloperSupportPanel';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -197,6 +199,8 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                 user={user} 
                 onSpectatorUpdate={setSpectatorCount}
               />
+
+              <VirtualCurrencyWidget user={user} />
             </div>
 
             <div className="flex items-center gap-2">
@@ -269,9 +273,10 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
             <div className="w-80 bg-gray-900/95 backdrop-blur-sm border-l border-gray-700 overflow-y-auto">
               <div className="p-4">
                 <Tabs defaultValue="saves" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+                  <TabsList className="grid w-full grid-cols-4 bg-gray-800">
                     <TabsTrigger value="saves">Saves</TabsTrigger>
                     <TabsTrigger value="store">Store</TabsTrigger>
+                    <TabsTrigger value="support">Support</TabsTrigger>
                     <TabsTrigger value="events">Events</TabsTrigger>
                   </TabsList>
 
@@ -326,6 +331,10 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
 
                   <TabsContent value="store" className="mt-4">
                     <InGameStore game={game} user={user} />
+                  </TabsContent>
+
+                  <TabsContent value="support" className="mt-4">
+                    <DeveloperSupportPanel game={game} user={user} />
                   </TabsContent>
 
                   <TabsContent value="events" className="mt-4">

@@ -34,12 +34,47 @@ export default function InGameStore({ game, user }) {
   // Get user's credit balance from earnings
   const userCredits = user?.total_earnings || 0;
 
+  // Fetch user's virtual currencies
+  const { data: currencies = [] } = useQuery({
+    queryKey: ['virtualCurrency', user?.id],
+    queryFn: () => base44.entities.VirtualCurrency.filter({ user_id: user.id }),
+    enabled: !!user
+  });
+
+  const getCurrencyBalance = (type) => {
+    const currency = currencies.find(c => c.currency_type === type);
+    return currency?.balance || 0;
+  };
+
   // Purchase mutation
   const purchaseMutation = useMutation({
-    mutationFn: async ({ product, paymentMethod }) => {
-      // Check if user has enough credits
-      if (paymentMethod === 'credits' && userCredits < product.price_credits) {
-        throw new Error('Insufficient credits');
+    mutationFn: async ({ product, paymentMethod, currencyType }) => {
+      let currencyUsed = paymentMethod === 'credits' ? 'CREDITS' : currencyType?.toUpperCase();
+      let amountCharged = product.price_credits;
+
+      // Handle virtual currency payment
+      if (paymentMethod === 'virtual' && currencyType) {
+        const currency = currencies.find(c => c.currency_type === currencyType);
+        if (!currency || currency.balance < product.price_credits) {
+          throw new Error(`Insufficient ${currencyType}`);
+        }
+        
+        // Deduct virtual currency
+        await base44.entities.VirtualCurrency.update(currency.id, {
+          balance: currency.balance - product.price_credits,
+          total_spent: currency.total_spent + product.price_credits
+        });
+        currencyUsed = currencyType.toUpperCase();
+      } else if (paymentMethod === 'credits') {
+        // Check survey credits
+        if (userCredits < product.price_credits) {
+          throw new Error('Insufficient credits');
+        }
+        
+        // Deduct survey credits
+        await base44.auth.updateMe({
+          total_earnings: userCredits - product.price_credits
+        });
       }
 
       // Create transaction
@@ -47,8 +82,8 @@ export default function InGameStore({ game, user }) {
         user_id: user.id,
         game_id: game.id,
         product_id: product.id,
-        amount: paymentMethod === 'credits' ? product.price_credits : product.price_usd,
-        currency: paymentMethod === 'credits' ? 'CREDITS' : 'USD',
+        amount: amountCharged,
+        currency: currencyUsed,
         transaction_type: 'in_game_purchase',
         status: 'completed'
       });
@@ -59,12 +94,14 @@ export default function InGameStore({ game, user }) {
         stock_quantity: product.stock_quantity ? product.stock_quantity - 1 : null
       });
 
-      // Deduct credits from user if paid with credits
-      if (paymentMethod === 'credits') {
-        await base44.auth.updateMe({
-          total_earnings: userCredits - product.price_credits
-        });
-      }
+      // Add to user inventory
+      await base44.entities.UserInventory.create({
+        user_id: user.id,
+        product_id: product.id,
+        game_id: game.id,
+        quantity: 1,
+        acquired_date: new Date().toISOString()
+      });
 
       return transaction;
     },
@@ -92,8 +129,8 @@ export default function InGameStore({ game, user }) {
     }
   });
 
-  const handlePurchase = (product, paymentMethod = 'credits') => {
-    purchaseMutation.mutate({ product, paymentMethod });
+  const handlePurchase = (product, paymentMethod = 'credits', currencyType = null) => {
+    purchaseMutation.mutate({ product, paymentMethod, currencyType });
   };
 
   const categoryIcons = {
@@ -117,10 +154,26 @@ export default function InGameStore({ game, user }) {
             <ShoppingCart className="w-6 h-6" />
             <h3 className="text-xl font-bold">In-Game Store</h3>
           </div>
-          <div className="flex items-center gap-2 bg-black/30 px-4 py-2 rounded-full">
-            <Coins className="w-5 h-5 text-yellow-400" />
-            <span className="font-bold text-lg">{userCredits.toFixed(2)}</span>
-            <span className="text-sm text-gray-300">Credits</span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 bg-black/30 px-3 py-1 rounded-full">
+              <Coins className="w-4 h-4 text-green-400" />
+              <span className="font-bold text-sm">{userCredits.toFixed(2)}</span>
+              <span className="text-xs text-gray-300">Survey Credits</span>
+            </div>
+            <div className="flex gap-2">
+              <div className="flex items-center gap-1 bg-black/30 px-2 py-1 rounded-full text-xs">
+                <Coins className="w-3 h-3 text-yellow-400" />
+                <span className="font-bold">{getCurrencyBalance('coins')}</span>
+              </div>
+              <div className="flex items-center gap-1 bg-black/30 px-2 py-1 rounded-full text-xs">
+                <Sparkles className="w-3 h-3 text-purple-400" />
+                <span className="font-bold">{getCurrencyBalance('gems')}</span>
+              </div>
+              <div className="flex items-center gap-1 bg-black/30 px-2 py-1 rounded-full text-xs">
+                <Zap className="w-3 h-3 text-blue-400" />
+                <span className="font-bold">{getCurrencyBalance('tokens')}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -178,30 +231,43 @@ export default function InGameStore({ game, user }) {
                           )}
 
                           {/* Price & Purchase */}
-                          <div className="flex items-center justify-between">
+                          <div className="space-y-2">
                             <div className="flex items-center gap-2">
                               <div className="flex items-center gap-1 font-bold text-lg">
                                 <Coins className="w-5 h-5 text-yellow-400" />
                                 {product.price_credits}
                               </div>
-                              {product.price_usd && (
-                                <span className="text-xs text-gray-500">
-                                  or ${product.price_usd}
-                                </span>
-                              )}
                             </div>
 
-                            <Button
-                              size="sm"
-                              onClick={() => handlePurchase(product, 'credits')}
-                              disabled={!canAfford || purchaseMutation.isPending}
-                              className={cn(
-                                "bg-gradient-to-r from-purple-600 to-blue-600",
-                                !canAfford && "opacity-50 cursor-not-allowed"
-                              )}
-                            >
-                              {!canAfford ? 'Not enough credits' : 'Buy Now'}
-                            </Button>
+                            <div className="flex gap-1">
+                              <Button
+                                size="sm"
+                                onClick={() => handlePurchase(product, 'credits')}
+                                disabled={!canAfford || purchaseMutation.isPending}
+                                className={cn(
+                                  "flex-1 text-xs bg-green-600 hover:bg-green-700",
+                                  !canAfford && "opacity-50 cursor-not-allowed"
+                                )}
+                              >
+                                Survey Credits
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => handlePurchase(product, 'virtual', 'coins')}
+                                disabled={getCurrencyBalance('coins') < product.price_credits || purchaseMutation.isPending}
+                                className="flex-1 text-xs bg-yellow-600 hover:bg-yellow-700"
+                              >
+                                Coins
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => handlePurchase(product, 'virtual', 'gems')}
+                                disabled={getCurrencyBalance('gems') < product.price_credits || purchaseMutation.isPending}
+                                className="flex-1 text-xs bg-purple-600 hover:bg-purple-700"
+                              >
+                                Gems
+                              </Button>
+                            </div>
                           </div>
 
                           {product.stock_quantity !== null && (
