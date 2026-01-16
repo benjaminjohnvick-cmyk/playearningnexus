@@ -342,14 +342,7 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
               {/* Tournament Overlay */}
               {isPlaying && <InGameTournamentOverlay game={game} user={user} />}
 
-                {/* Viewer Monetization Panel */}
-                <div className="mt-4">
-                  <ViewerMonetizationPanel 
-                    streamer={user} 
-                    viewer={user} 
-                    game={game} 
-                  />
-                </div>
+              {isPlaying ? (
                 game.download_url ? (
                   <iframe
                     ref={iframeRef}
