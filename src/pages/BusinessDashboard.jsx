@@ -147,10 +147,10 @@ export default function BusinessDashboard() {
                 AI Dashboard
               </Button>
             </Link>
-            <Link to={createPageUrl('GameAnalyticsDashboard')}>
+            <Link to={createPageUrl('DeveloperAnalytics')}>
               <Button className="bg-gradient-to-r from-blue-600 to-cyan-700">
                 <TrendingUp className="w-4 h-4 mr-2" />
-                Analytics
+                Advanced Analytics
               </Button>
             </Link>
             <Link to={createPageUrl('GameStore')}>
