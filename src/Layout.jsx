@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { 
   Home, 
@@ -21,11 +22,15 @@ import {
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
+import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLogoutPrompt, setShowLogoutPrompt] = useState(false);
+  const [promptShownThisSession, setPromptShownThisSession] = useState(false);
+  const [logoutContext, setLogoutContext] = useState({});
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -43,6 +48,19 @@ export default function Layout({ children, currentPageName }) {
     };
     checkAuth();
   }, []);
+
+  // Fetch active events for contextual triggers
+  const { data: activeEvents = [] } = useQuery({
+    queryKey: ['activeEvents'],
+    queryFn: async () => {
+      const now = new Date().toISOString();
+      const events = await base44.entities.LiveEvent.filter({
+        is_active: true
+      });
+      return events.filter(e => new Date(e.start_time) <= new Date(now) && new Date(e.end_time) >= new Date(now));
+    },
+    enabled: isAuthenticated
+  });
   
   // PWA install prompt
   useEffect(() => {
@@ -54,6 +72,42 @@ export default function Layout({ children, currentPageName }) {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
+
+  const shouldShowLogoutPrompt = () => {
+    if (!user || !user.prompt_before_logout) return false;
+    if (promptShownThisSession) return false;
+
+    // Check 24-hour cooldown
+    const lastShown = localStorage.getItem('lastLogoutPromptShown');
+    if (lastShown) {
+      const hoursSinceLastShown = (new Date() - new Date(lastShown)) / (1000 * 60 * 60);
+      if (hoursSinceLastShown < 24) return false;
+    }
+
+    // Check 7-day inactivity for social posts
+    if (user.last_social_post_date) {
+      const daysSinceLastPost = (new Date() - new Date(user.last_social_post_date)) / (1000 * 60 * 60 * 24);
+      if (daysSinceLastPost < 7) return false;
+    }
+
+    // Check if there's an active campaign
+    const hasActiveCampaign = activeEvents.length > 0;
+    
+    return hasActiveCampaign || !user.last_social_post_date;
+  };
+
+  const handleLogoutClick = () => {
+    if (shouldShowLogoutPrompt()) {
+      setShowLogoutPrompt(true);
+      setPromptShownThisSession(true);
+    } else {
+      base44.auth.logout();
+    }
+  };
+
+  const handleActualLogout = () => {
+    base44.auth.logout();
+  };
 
   const navigation = [
     { name: 'Home', icon: Home, path: 'Home' },
@@ -133,7 +187,7 @@ export default function Layout({ children, currentPageName }) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => base44.auth.logout()}
+                    onClick={handleLogoutClick}
                   >
                     <LogOut className="w-5 h-5" />
                   </Button>
@@ -199,7 +253,7 @@ export default function Layout({ children, currentPageName }) {
                     className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
                     onClick={() => {
                       setIsMenuOpen(false);
-                      base44.auth.logout();
+                      handleLogoutClick();
                     }}
                   >
                     <LogOut className="w-4 h-4 mr-2" />
@@ -227,6 +281,15 @@ export default function Layout({ children, currentPageName }) {
 
       {/* AI Support Chat Button */}
       <SupportChatButton />
+
+      {/* Logout Prompt Modal */}
+      <LogoutPromptModal
+        isOpen={showLogoutPrompt}
+        onClose={() => setShowLogoutPrompt(false)}
+        onLogout={handleActualLogout}
+        user={user}
+        contextData={logoutContext}
+      />
 
       {/* Footer */}
       <footer className="border-t bg-white mt-20">

@@ -18,7 +18,8 @@ export default function Settings() {
     phone: '',
     notifications_enabled: true,
     preferred_language: 'en',
-    preferred_currency: 'USD'
+    preferred_currency: 'USD',
+    prompt_before_logout: true
   });
 
   useEffect(() => {
@@ -31,7 +32,8 @@ export default function Settings() {
           phone: currentUser.phone || '',
           notifications_enabled: currentUser.notifications_enabled ?? true,
           preferred_language: currentUser.preferred_language || 'en',
-          preferred_currency: currentUser.preferred_currency || 'USD'
+          preferred_currency: currentUser.preferred_currency || 'USD',
+          prompt_before_logout: currentUser.prompt_before_logout ?? true
         });
       } catch (error) {
         base44.auth.redirectToLogin();
@@ -116,15 +118,28 @@ export default function Settings() {
               <h2 className="text-xl font-bold text-gray-900">Notifications</h2>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-gray-900">Push Notifications</p>
-                <p className="text-sm text-gray-500">Get notified about new featured games</p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-gray-900">Push Notifications</p>
+                  <p className="text-sm text-gray-500">Get notified about new featured games</p>
+                </div>
+                <Switch
+                  checked={settings.notifications_enabled}
+                  onCheckedChange={(checked) => setSettings({ ...settings, notifications_enabled: checked })}
+                />
               </div>
-              <Switch
-                checked={settings.notifications_enabled}
-                onCheckedChange={(checked) => setSettings({ ...settings, notifications_enabled: checked })}
-              />
+
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div>
+                  <p className="font-medium text-gray-900">Logout Sharing Prompt</p>
+                  <p className="text-sm text-gray-500">Show reminder to share on social media before logging out</p>
+                </div>
+                <Switch
+                  checked={settings.prompt_before_logout}
+                  onCheckedChange={(checked) => setSettings({ ...settings, prompt_before_logout: checked })}
+                />
+              </div>
             </div>
           </Card>
 
