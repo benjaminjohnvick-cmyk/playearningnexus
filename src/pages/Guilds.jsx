@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Users, Crown, MessageSquare, TrendingUp, Shield, Plus, Send, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import AIGuildChallenge from '../components/guilds/AIGuildChallenge';
 
 export default function GuildsPage() {
   const [user, setUser] = useState(null);
@@ -42,6 +43,15 @@ export default function GuildsPage() {
       guilds.filter(g => g.leader_id === user.id || g.member_ids?.includes(user.id))
     ),
     enabled: !!user
+  });
+
+  const { data: guildMembers = [] } = useQuery({
+    queryKey: ['guildMembers', selectedGuild?.id],
+    queryFn: async () => {
+      if (!selectedGuild?.member_ids) return [];
+      return await base44.entities.User.filter({ id: { $in: selectedGuild.member_ids } });
+    },
+    enabled: !!selectedGuild
   });
 
   const { data: guildMessages = [] } = useQuery({
@@ -260,35 +270,42 @@ export default function GuildsPage() {
                 <p className="text-sm text-gray-500">Join a guild to connect with other gamers!</p>
               </Card>
             ) : (
-              <div className="grid md:grid-cols-2 gap-6">
-                {myGuilds.map((guild) => (
-                  <Card key={guild.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        {guild.guild_name}
-                        {guild.leader_id === user.id && (
-                          <Badge className="bg-yellow-500">Leader</Badge>
-                        )}
-                      </CardTitle>
-                      <p className="text-sm text-gray-600">{guild.description}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Members</span>
-                          <span className="font-medium">{guild.member_ids?.length || 0}</span>
+              <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  {myGuilds.map((guild) => (
+                    <Card key={guild.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          {guild.guild_name}
+                          {guild.leader_id === user.id && (
+                            <Badge className="bg-yellow-500">Leader</Badge>
+                          )}
+                        </CardTitle>
+                        <p className="text-sm text-gray-600">{guild.description}</p>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">Members</span>
+                            <span className="font-medium">{guild.member_ids?.length || 0}</span>
+                          </div>
+                          <Button 
+                            onClick={() => setSelectedGuild(guild)}
+                            className="w-full"
+                          >
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            Guild Chat
+                          </Button>
                         </div>
-                        <Button 
-                          onClick={() => setSelectedGuild(guild)}
-                          className="w-full"
-                        >
-                          <MessageSquare className="w-4 h-4 mr-2" />
-                          Guild Chat
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* AI Guild Challenges */}
+                {myGuilds.length > 0 && myGuilds[0].leader_id === user.id && (
+                  <AIGuildChallenge guild={myGuilds[0]} guildMembers={guildMembers} />
+                )}
               </div>
             )}
           </TabsContent>

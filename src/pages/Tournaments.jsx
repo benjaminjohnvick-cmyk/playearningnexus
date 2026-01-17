@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import CreateTournamentModal from '../components/tournaments/CreateTournamentModal';
 import TournamentCard from '../components/tournaments/TournamentCard';
+import AITournamentMatchmaking from '../components/tournaments/AITournamentMatchmaking';
 
 export default function Tournaments() {
   const [user, setUser] = useState(null);
@@ -60,6 +61,16 @@ export default function Tournaments() {
       registration_end: { $gte: new Date().toISOString() }
     }, 'start_time', 10),
     enabled: !!user
+  });
+
+  const [selectedTournamentForAI, setSelectedTournamentForAI] = useState(null);
+
+  const { data: tournamentParticipants = [] } = useQuery({
+    queryKey: ['tournamentParticipants', selectedTournamentForAI?.id],
+    queryFn: () => base44.entities.TournamentParticipant.filter({
+      tournament_id: selectedTournamentForAI.id
+    }),
+    enabled: !!selectedTournamentForAI
   });
 
   if (!user) {
@@ -148,6 +159,39 @@ export default function Tournaments() {
           </TabsList>
 
           <TabsContent value="all" className="space-y-4">
+            {/* AI Matchmaking for Tournament Hosts */}
+            {activeTournaments.some(t => t.host_user_id === user.id) && (
+              <Card className="border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50 mb-6">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">🤖 AI Tournament Management</h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Select one of your tournaments to use AI-powered matchmaking and bracket generation
+                  </p>
+                  <div className="flex gap-2">
+                    {activeTournaments
+                      .filter(t => t.host_user_id === user.id)
+                      .map(t => (
+                        <Button
+                          key={t.id}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedTournamentForAI(t)}
+                        >
+                          {t.title}
+                        </Button>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {selectedTournamentForAI && (
+              <AITournamentMatchmaking 
+                tournament={selectedTournamentForAI} 
+                participants={tournamentParticipants}
+              />
+            )}
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {activeTournaments.map(tournament => (
                 <TournamentCard key={tournament.id} tournament={tournament} user={user} />

@@ -20,6 +20,10 @@ import UserReviews from '../components/profile/UserReviews';
 import CurrentActivity from '../components/profile/CurrentActivity';
 import GuildActivity from '../components/profile/GuildActivity';
 import FavoriteGames from '../components/profile/FavoriteGames';
+import EnhancedProfileHeader from '../components/profile/EnhancedProfileHeader';
+import RecentlyPlayedGames from '../components/profile/RecentlyPlayedGames';
+import WishlistDisplay from '../components/profile/WishlistDisplay';
+import FriendEndorsements from '../components/profile/FriendEndorsements';
 
 export default function UserProfile() {
   const [user, setUser] = useState(null);
@@ -106,63 +110,33 @@ export default function UserProfile() {
   const totalGames = transactions.filter(t => t.transaction_type === 'game_purchase').length;
   const unlockedAchievements = achievements.filter(a => a.is_unlocked).length;
 
+  // Top badges for header
+  const topBadges = achievements
+    .filter(a => a.is_unlocked)
+    .sort((a, b) => (b.points_awarded || 0) - (a.points_awarded || 0))
+    .slice(0, 3)
+    .map(a => ({
+      name: a.title,
+      icon: Trophy
+    }));
+
+  const stats = {
+    achievements: unlockedAchievements,
+    totalPoints: profileUser.gamification_points || 0,
+    streak: streak?.current_streak || 0
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Profile Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <Card className="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-            <CardContent className="p-8">
-              <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                <Avatar className="w-24 h-24 border-4 border-white">
-                  {profileUser.avatar_url && <AvatarImage src={profileUser.avatar_url} />}
-                  <AvatarFallback className="text-3xl bg-white text-blue-600">
-                    {profileUser.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="flex-1 text-center md:text-left">
-                  <h1 className="text-3xl font-bold mb-2">{profileUser.full_name}</h1>
-                  <p className="text-blue-100 mb-2">{profileUser.email}</p>
-                  {profileUser.bio && (
-                    <p className="text-blue-100 italic mb-4">{profileUser.bio}</p>
-                  )}
-                  
-                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                    <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
-                      <Gamepad2 className="w-5 h-5" />
-                      <span className="font-semibold">{totalGames} Games</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
-                      <Trophy className="w-5 h-5" />
-                      <span className="font-semibold">{unlockedAchievements} Achievements</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
-                      <Star className="w-5 h-5" />
-                      <span className="font-semibold">{ratings.length} Reviews</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
-                      <Users className="w-5 h-5" />
-                      <span className="font-semibold">{connections.length} Friends</span>
-                    </div>
-                  </div>
-                </div>
-
-                {isOwnProfile && (
-                  <Button 
-                    variant="secondary"
-                    onClick={() => setIsEditing(!isEditing)}
-                  >
-                    {isEditing ? 'Cancel' : 'Edit Profile'}
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Enhanced Profile Header */}
+        <EnhancedProfileHeader
+          user={user}
+          profileUser={profileUser}
+          isOwnProfile={isOwnProfile}
+          stats={stats}
+          topBadges={topBadges}
+        />
 
         {/* Edit Profile Form */}
         {isEditing && isOwnProfile && (
@@ -243,14 +217,23 @@ export default function UserProfile() {
           </Card>
         </div>
 
-        {/* Activity & Favorites Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
+        {/* Activity, Recently Played & Wishlist Grid */}
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
           <CurrentActivity userId={profileUser.id} />
-          <GuildActivity userId={profileUser.id} />
+          <RecentlyPlayedGames userId={profileUser.id} />
+          <WishlistDisplay userId={profileUser.id} isOwnProfile={isOwnProfile} />
         </div>
 
-        <div className="mb-6">
-          <FavoriteGames userId={profileUser.id} isOwnProfile={isOwnProfile} />
+        {/* Favorites & Endorsements */}
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
+          <div className="md:col-span-2">
+            <FavoriteGames userId={profileUser.id} isOwnProfile={isOwnProfile} />
+          </div>
+          <FriendEndorsements 
+            profileUserId={profileUser.id} 
+            currentUserId={user?.id}
+            isOwnProfile={isOwnProfile}
+          />
         </div>
 
         {/* Detailed Tabs */}
