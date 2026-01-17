@@ -35,6 +35,7 @@ import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import Leaderboard from './pages/Leaderboard';
+import MovieStarGenerator from './pages/MovieStarGenerator';
 import __Layout from './Layout.jsx';
 
 
@@ -76,6 +77,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
     "Leaderboard": Leaderboard,
+    "MovieStarGenerator": MovieStarGenerator,
 }
 
 export const pagesConfig = {
