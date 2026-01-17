@@ -32,6 +32,7 @@ import Tournaments from './pages/Tournaments';
 import UserDashboard from './pages/UserDashboard';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
+import DeveloperEventManagement from './pages/DeveloperEventManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -70,6 +71,7 @@ export const PAGES = {
     "UserDashboard": UserDashboard,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
+    "DeveloperEventManagement": DeveloperEventManagement,
 }
 
 export const pagesConfig = {

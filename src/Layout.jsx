@@ -61,7 +61,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Guilds', icon: Users, path: 'Guilds', requireAuth: true },
     { name: 'Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
     { name: 'Rewards', icon: Trophy, path: 'Gamification', requireAuth: true },
-    { name: 'For Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
+    { name: 'Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
   ];
 
   // Add admin menu items

@@ -8,6 +8,7 @@ import { TrendingUp, Users, DollarSign, Target, Activity, Brain } from 'lucide-r
 import AdvancedDeveloperInsights from '../components/analytics/AdvancedDeveloperInsights';
 import MarketingROIAnalyzer from '../components/analytics/MarketingROIAnalyzer';
 import GameImprovementAnalyzer from '../components/analytics/GameImprovementAnalyzer';
+import AIMonetizationAdvisor from '../components/analytics/AIMonetizationAdvisor';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
