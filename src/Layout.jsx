@@ -20,6 +20,7 @@ import {
   Mail
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
+import SupportChatButton from '@/components/support/SupportChatButton';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -222,6 +223,9 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main>{children}</main>
+
+      {/* AI Support Chat Button */}
+      <SupportChatButton />
 
       {/* Footer */}
       <footer className="border-t bg-white mt-20">
