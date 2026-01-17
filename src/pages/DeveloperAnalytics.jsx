@@ -4,7 +4,12 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, Users, DollarSign, Target, Activity } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Target, Activity, Brain } from 'lucide-react';
+import AdvancedDeveloperInsights from '../components/analytics/AdvancedDeveloperInsights';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 export default function DeveloperAnalyticsPage() {
   const [user, setUser] = useState(null);
@@ -57,6 +62,12 @@ export default function DeveloperAnalyticsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
       <div className="max-w-7xl mx-auto">
+        <Link to={createPageUrl('BusinessDashboard')}>
+          <Button variant="ghost" className="mb-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </Link>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent mb-8">
           Advanced Analytics
         </h1>
@@ -111,13 +122,25 @@ export default function DeveloperAnalyticsPage() {
           </Card>
         </div>
 
-        <Tabs defaultValue="performance" className="space-y-6">
+        <Tabs defaultValue="ai-insights" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="ai-insights">
+              <Brain className="w-4 h-4 mr-2" />
+              AI Insights
+            </TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="abtests">A/B Tests</TabsTrigger>
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="users">User Insights</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="ai-insights">
+            <div className="space-y-6">
+              {games.map(game => (
+                <AdvancedDeveloperInsights key={game.id} game={game} developerId={businessClient.id} />
+              ))}
+            </div>
+          </TabsContent>
 
           <TabsContent value="performance">
             <div className="grid md:grid-cols-2 gap-6">

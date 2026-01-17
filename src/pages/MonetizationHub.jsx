@@ -5,10 +5,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, DollarSign, TrendingUp, Sparkles, Ticket } from 'lucide-react';
+import { ArrowLeft, DollarSign, TrendingUp, Sparkles, Ticket, Image } from 'lucide-react';
 import RevenueAnalytics from '../components/developer/RevenueAnalytics';
 import AIPricingStrategy from '../components/developer/AIPricingStrategy';
 import PromoCodeManager from '../components/developer/PromoCodeManager';
+import DynamicPricingAI from '../components/developer/DynamicPricingAI';
+import PromotionalContentGenerator from '../components/developer/PromotionalContentGenerator';
 
 export default function MonetizationHub() {
   const [user, setUser] = useState(null);
@@ -75,6 +77,10 @@ export default function MonetizationHub() {
                 <TrendingUp className="w-4 h-4 mr-2" />
                 Revenue Analytics
               </TabsTrigger>
+              <TabsTrigger value="dynamic-pricing" className="text-base">
+                <DollarSign className="w-4 h-4 mr-2" />
+                Dynamic Pricing AI
+              </TabsTrigger>
               <TabsTrigger value="pricing" className="text-base">
                 <Sparkles className="w-4 h-4 mr-2" />
                 AI Pricing
@@ -83,10 +89,22 @@ export default function MonetizationHub() {
                 <Ticket className="w-4 h-4 mr-2" />
                 Promo Codes
               </TabsTrigger>
+              <TabsTrigger value="content" className="text-base">
+                <Image className="w-4 h-4 mr-2" />
+                Promotional Content
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="analytics">
               <RevenueAnalytics games={games} developerId={businessClient.id} />
+            </TabsContent>
+
+            <TabsContent value="dynamic-pricing">
+              <div className="space-y-6">
+                {games.map(game => (
+                  <DynamicPricingAI key={game.id} game={game} developerId={businessClient.id} />
+                ))}
+              </div>
             </TabsContent>
 
             <TabsContent value="pricing">
@@ -99,6 +117,14 @@ export default function MonetizationHub() {
 
             <TabsContent value="promos">
               <PromoCodeManager games={games} developerId={businessClient.id} />
+            </TabsContent>
+
+            <TabsContent value="content">
+              <div className="space-y-6">
+                {games.map(game => (
+                  <PromotionalContentGenerator key={game.id} game={game} />
+                ))}
+              </div>
             </TabsContent>
           </Tabs>
         )}
