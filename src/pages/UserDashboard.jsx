@@ -15,6 +15,9 @@ import SocialSharePrompt from '../components/social/SocialSharePrompt';
 import ActiveEventsDisplay from '../components/events/ActiveEventsDisplay';
 import StreamDiscovery from '../components/streaming/StreamDiscovery';
 import FriendsSystem from '../components/social/FriendsSystem';
+import SocialFeed from '../components/social/SocialFeed';
+import PointsBadgeSystem from '../components/gamification/PointsBadgeSystem';
+import AIChatSupport from '../components/support/AIChatSupport';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -270,6 +273,16 @@ export default function UserDashboard() {
           <AIRecommendations user={user} />
         </div>
 
+        {/* Social Feed & Points System */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className="md:col-span-2">
+            <SocialFeed currentUser={user} />
+          </div>
+          <div>
+            <PointsBadgeSystem user={user} />
+          </div>
+        </div>
+
         {/* Surveys CTA */}
         {!dailyGoalMet && (
           <div className="mb-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl">
@@ -375,6 +388,9 @@ export default function UserDashboard() {
             <FriendsSystem currentUser={user} />
           </TabsContent>
         </Tabs>
+
+        {/* AI Chat Support Widget */}
+        <AIChatSupport user={user} />
       </div>
     </div>
   );
