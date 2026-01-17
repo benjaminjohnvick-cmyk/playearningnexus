@@ -131,6 +131,10 @@ export default function DeveloperAnalyticsPage() {
               <Brain className="w-4 h-4 mr-2" />
               AI Insights
             </TabsTrigger>
+            <TabsTrigger value="monetization">
+              <DollarSign className="w-4 h-4 mr-2" />
+              Monetization AI
+            </TabsTrigger>
             <TabsTrigger value="marketing-roi">Marketing ROI</TabsTrigger>
             <TabsTrigger value="game-improvements">Game Improvements</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
@@ -142,6 +146,14 @@ export default function DeveloperAnalyticsPage() {
             <div className="space-y-6">
               {games.map(game => (
                 <AdvancedDeveloperInsights key={game.id} game={game} developerId={businessClient.id} />
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="monetization">
+            <div className="space-y-6">
+              {games.map(game => (
+                <AIMonetizationAdvisor key={game.id} gameId={game.id} gameName={game.title} />
               ))}
             </div>
           </TabsContent>
