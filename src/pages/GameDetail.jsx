@@ -16,6 +16,7 @@ import ReviewForm from '../components/reviews/ReviewForm';
 import ReviewsList from '../components/reviews/ReviewsList';
 import DeveloperCard from '../components/developer/DeveloperCard';
 import ReviewSection from '../components/reviews/ReviewSection';
+import RecommendationsSection from '../components/games/RecommendationsSection';
 
 export default function GameDetail() {
   const [user, setUser] = useState(null);
