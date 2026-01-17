@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, Users, DollarSign, Target, Activity, Brain } from 'lucide-react';
 import AdvancedDeveloperInsights from '../components/analytics/AdvancedDeveloperInsights';
+import MarketingROIAnalyzer from '../components/analytics/MarketingROIAnalyzer';
+import GameImprovementAnalyzer from '../components/analytics/GameImprovementAnalyzer';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
@@ -128,10 +130,11 @@ export default function DeveloperAnalyticsPage() {
               <Brain className="w-4 h-4 mr-2" />
               AI Insights
             </TabsTrigger>
+            <TabsTrigger value="marketing-roi">Marketing ROI</TabsTrigger>
+            <TabsTrigger value="game-improvements">Game Improvements</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="abtests">A/B Tests</TabsTrigger>
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
-            <TabsTrigger value="users">User Insights</TabsTrigger>
           </TabsList>
 
           <TabsContent value="ai-insights">
@@ -140,6 +143,14 @@ export default function DeveloperAnalyticsPage() {
                 <AdvancedDeveloperInsights key={game.id} game={game} developerId={businessClient.id} />
               ))}
             </div>
+          </TabsContent>
+
+          <TabsContent value="marketing-roi">
+            <MarketingROIAnalyzer businessClient={businessClient} games={games} />
+          </TabsContent>
+
+          <TabsContent value="game-improvements">
+            <GameImprovementAnalyzer businessClient={businessClient} games={games} />
           </TabsContent>
 
           <TabsContent value="performance">
@@ -265,17 +276,6 @@ export default function DeveloperAnalyticsPage() {
                     ))}
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Engagement Metrics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-center text-gray-600 py-8">User insights coming soon...</p>
               </CardContent>
             </Card>
           </TabsContent>

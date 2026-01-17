@@ -18,6 +18,7 @@ import FriendsSystem from '../components/social/FriendsSystem';
 import SocialFeed from '../components/social/SocialFeed';
 import PointsBadgeSystem from '../components/gamification/PointsBadgeSystem';
 import AIChatSupport from '../components/support/AIChatSupport';
+import PersonalizedGameBundles from '../components/bundles/PersonalizedGameBundles';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -271,6 +272,11 @@ export default function UserDashboard() {
         {/* AI Recommendations */}
         <div className="mb-8">
           <AIRecommendations user={user} />
+        </div>
+
+        {/* Personalized Game Bundles */}
+        <div className="mb-8">
+          <PersonalizedGameBundles user={user} />
         </div>
 
         {/* Social Feed & Points System */}
