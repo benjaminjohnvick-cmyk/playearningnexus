@@ -281,6 +281,13 @@ export default function GameDetail() {
         {/* Reviews Section */}
         <ReviewSection game={game} user={user} />
 
+        {/* You Might Like Section */}
+        {user && (
+          <div className="mt-12">
+            <RecommendationsSection currentGame={game} userId={user.id} />
+          </div>
+        )}
+
         {/* Purchase Modal */}
         <GamePurchaseModal
           game={game}
