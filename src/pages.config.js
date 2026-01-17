@@ -33,6 +33,7 @@ import UserDashboard from './pages/UserDashboard';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import DeveloperEventManagement from './pages/DeveloperEventManagement';
+import UserInbox from './pages/UserInbox';
 import __Layout from './Layout.jsx';
 
 
@@ -72,6 +73,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
     "DeveloperEventManagement": DeveloperEventManagement,
+    "UserInbox": UserInbox,
 }
 
 export const pagesConfig = {
