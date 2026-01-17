@@ -6,6 +6,7 @@ import ContactUs from './pages/ContactUs';
 import DailyChallenges from './pages/DailyChallenges';
 import DeveloperAIDashboard from './pages/DeveloperAIDashboard';
 import DeveloperAnalytics from './pages/DeveloperAnalytics';
+import DeveloperEventManagement from './pages/DeveloperEventManagement';
 import DeveloperIAPDashboard from './pages/DeveloperIAPDashboard';
 import DeveloperPortfolio from './pages/DeveloperPortfolio';
 import EventsManagement from './pages/EventsManagement';
@@ -30,10 +31,10 @@ import Surveys from './pages/Surveys';
 import TournamentDetails from './pages/TournamentDetails';
 import Tournaments from './pages/Tournaments';
 import UserDashboard from './pages/UserDashboard';
+import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
-import DeveloperEventManagement from './pages/DeveloperEventManagement';
-import UserInbox from './pages/UserInbox';
+import Leaderboard from './pages/Leaderboard';
 import __Layout from './Layout.jsx';
 
 
@@ -46,6 +47,7 @@ export const PAGES = {
     "DailyChallenges": DailyChallenges,
     "DeveloperAIDashboard": DeveloperAIDashboard,
     "DeveloperAnalytics": DeveloperAnalytics,
+    "DeveloperEventManagement": DeveloperEventManagement,
     "DeveloperIAPDashboard": DeveloperIAPDashboard,
     "DeveloperPortfolio": DeveloperPortfolio,
     "EventsManagement": EventsManagement,
@@ -70,10 +72,10 @@ export const PAGES = {
     "TournamentDetails": TournamentDetails,
     "Tournaments": Tournaments,
     "UserDashboard": UserDashboard,
+    "UserInbox": UserInbox,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
-    "DeveloperEventManagement": DeveloperEventManagement,
-    "UserInbox": UserInbox,
+    "Leaderboard": Leaderboard,
 }
 
 export const pagesConfig = {

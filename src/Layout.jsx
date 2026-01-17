@@ -59,6 +59,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Game Store', icon: DollarSign, path: 'GameStore' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
     { name: 'Inbox', icon: Mail, path: 'UserInbox', requireAuth: true },
+    { name: 'Leaderboard', icon: Trophy, path: 'Leaderboard', requireAuth: true },
     { name: 'Tournaments', icon: Swords, path: 'Tournaments', requireAuth: true },
     { name: 'Guilds', icon: Users, path: 'Guilds', requireAuth: true },
     { name: 'Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
