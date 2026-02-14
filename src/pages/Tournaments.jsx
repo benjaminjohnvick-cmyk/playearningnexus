@@ -14,6 +14,7 @@ import TournamentCard from '../components/tournaments/TournamentCard';
 import AITournamentMatchmaking from '../components/tournaments/AITournamentMatchmaking';
 import EnhancedTournamentSystem from '../components/tournaments/EnhancedTournamentSystem';
 import AutomatedBracketSystem from '../components/tournaments/AutomatedBracketSystem';
+import CrossGameTournamentSystem from '../components/tournaments/CrossGameTournamentSystem';
 
 export default function Tournaments() {
   const [user, setUser] = useState(null);
