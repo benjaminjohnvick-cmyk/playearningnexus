@@ -1,62 +1,88 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Bell, CheckCheck, Trash2, Trophy, Target, Zap, MessageSquare, Gift, Settings } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { motion, AnimatePresence } from 'framer-motion';
-import { createPageUrl } from '@/utils';
-import { useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { 
+  Bell, 
+  Trophy, 
+  Users, 
+  Calendar, 
+  MessageSquare, 
+  Gift,
+  AlertCircle,
+  Check,
+  X
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import moment from "moment";
 
-export default function NotificationCenter({ userId }) {
+const notificationIcons = {
+  achievement: Trophy,
+  challenge: Calendar,
+  event: Calendar,
+  message: MessageSquare,
+  gift: Gift,
+  system: AlertCircle
+};
+
+export default function NotificationCenter({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
-  const { data: notifications = [] } = useQuery({
-    queryKey: ['notifications', userId],
-    queryFn: () => base44.entities.Notification.filter({ user_id: userId }, '-created_date', 20),
-    enabled: !!userId
+  const { data: notifications = [], isLoading } = useQuery({
+    queryKey: ['notifications', user?.id],
+    queryFn: async () => {
+      return await base44.entities.Notification.filter(
+        { user_id: user.id },
+        '-created_date',
+        50
+      );
+    },
+    enabled: !!user,
+    refetchInterval: 10000 // Refresh every 10 seconds
   });
 
-  const unreadCount = notifications.filter(n => !n.is_read).length;
+  // Subscribe to real-time notifications
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubscribe = base44.entities.Notification.subscribe((event) => {
+      if (event.type === 'create' && event.data.user_id === user.id) {
+        queryClient.invalidateQueries(['notifications']);
+      }
+    });
+
+    return unsubscribe;
+  }, [user, queryClient]);
 
   const markAsReadMutation = useMutation({
-    mutationFn: (id) => base44.entities.Notification.update(id, { is_read: true }),
+    mutationFn: async (notificationId) => {
+      await base44.entities.Notification.update(notificationId, {
+        is_read: true
+      });
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries(['notifications']);
     }
   });
 
   const deleteNotificationMutation = useMutation({
-    mutationFn: (id) => base44.entities.Notification.delete(id),
+    mutationFn: async (notificationId) => {
+      await base44.entities.Notification.delete(notificationId);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries(['notifications']);
     }
   });
 
-  const handleNotificationClick = (notification) => {
-    if (!notification.is_read) {
-      markAsReadMutation.mutate(notification.id);
-    }
-    if (notification.action_url) {
-      navigate(notification.action_url);
-      setIsOpen(false);
-    }
-  };
-
-  const iconMap = {
-    achievement: Trophy,
-    challenge: Target,
-    event: Zap,
-    message: MessageSquare,
-    gift: Gift,
-    system: Settings
-  };
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
     <div className="relative">
+      {/* Notification Bell */}
       <Button
         variant="ghost"
         size="icon"
@@ -65,68 +91,130 @@ export default function NotificationCenter({ userId }) {
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <Badge className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center p-0 bg-red-600">
-            {unreadCount}
-          </Badge>
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
         )}
       </Button>
 
+      {/* Notification Panel */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute right-0 top-full mt-2 w-96 z-50"
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            className="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border-2 border-gray-200 z-50"
           >
-            <Card className="max-h-[500px] overflow-y-auto shadow-xl">
-              <div className="p-4 border-b bg-gradient-to-r from-red-600 to-red-700 text-white">
-                <h3 className="font-bold text-lg">Notifications</h3>
-                <p className="text-sm opacity-90">{unreadCount} unread</p>
+            <div className="p-4 border-b bg-gradient-to-r from-blue-50 to-purple-50">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-gray-900">Notifications</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
+              {unreadCount > 0 && (
+                <p className="text-sm text-gray-600 mt-1">
+                  {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+                </p>
+              )}
+            </div>
 
-              <div className="divide-y">
-                {notifications.length === 0 ? (
-                  <div className="p-8 text-center text-gray-500">
-                    No notifications yet
+            <ScrollArea className="h-[500px]">
+              <div className="p-2">
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : notifications.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Bell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">No notifications yet</p>
                   </div>
                 ) : (
-                  notifications.map((notif) => (
-                    <div
-                      key={notif.id}
-                      className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                        !notif.is_read ? 'bg-red-50' : ''
-                      }`}
-                      onClick={() => handleNotificationClick(notif)}
-                    >
-                      <div className="flex items-start gap-3">
-                        {(() => {
-                          const IconComponent = iconMap[notif.notification_type] || Bell;
-                          return <IconComponent className="w-5 h-5 text-red-600 mt-0.5" />;
-                        })()}
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{notif.title}</p>
-                          <p className="text-xs text-gray-600 mt-1">{notif.message}</p>
-                          <p className="text-xs text-gray-400 mt-2">
-                            {new Date(notif.created_date).toLocaleString()}
-                          </p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteNotificationMutation.mutate(notif.id);
-                          }}
+                  <div className="space-y-2">
+                    {notifications.map((notification) => {
+                      const Icon = notificationIcons[notification.notification_type] || Bell;
+                      const priorityColors = {
+                        high: 'border-l-4 border-l-red-500 bg-red-50',
+                        normal: 'border-l-4 border-l-blue-500 bg-blue-50',
+                        low: 'border-l-4 border-l-gray-400 bg-gray-50'
+                      };
+
+                      return (
+                        <motion.div
+                          key={notification.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className={`p-3 rounded-lg transition-all ${
+                            notification.is_read
+                              ? 'bg-white hover:bg-gray-50'
+                              : priorityColors[notification.priority]
+                          }`}
                         >
-                          <Trash2 className="w-4 h-4 text-gray-400" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))
+                          <div className="flex items-start gap-3">
+                            <div className={`p-2 rounded-lg ${
+                              notification.is_read ? 'bg-gray-100' : 'bg-white'
+                            }`}>
+                              <Icon className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <p className="font-semibold text-gray-900 text-sm">
+                                  {notification.title}
+                                </p>
+                                {!notification.is_read && (
+                                  <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-1"></div>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-600 mt-1">
+                                {notification.message}
+                              </p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className="text-xs text-gray-500">
+                                  {moment(notification.created_date).fromNow()}
+                                </span>
+                                {notification.priority === 'high' && (
+                                  <Badge className="bg-red-100 text-red-700 text-xs">
+                                    Urgent
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-2">
+                                {!notification.is_read && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => markAsReadMutation.mutate(notification.id)}
+                                    className="h-7 text-xs"
+                                  >
+                                    <Check className="w-3 h-3 mr-1" />
+                                    Mark Read
+                                  </Button>
+                                )}
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => deleteNotificationMutation.mutate(notification.id)}
+                                  className="h-7 text-xs text-red-600"
+                                >
+                                  <X className="w-3 h-3 mr-1" />
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
-            </Card>
+            </ScrollArea>
           </motion.div>
         )}
       </AnimatePresence>
