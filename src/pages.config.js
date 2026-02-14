@@ -51,12 +51,14 @@ import AIAgents from './pages/AIAgents';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import BusinessDashboard from './pages/BusinessDashboard';
+import CRMDashboard from './pages/CRMDashboard';
 import ContactUs from './pages/ContactUs';
 import DailyChallenges from './pages/DailyChallenges';
 import DeveloperAIDashboard from './pages/DeveloperAIDashboard';
 import DeveloperAnalytics from './pages/DeveloperAnalytics';
 import DeveloperEventManagement from './pages/DeveloperEventManagement';
 import DeveloperIAPDashboard from './pages/DeveloperIAPDashboard';
+import DeveloperLeaderboards from './pages/DeveloperLeaderboards';
 import DeveloperPortfolio from './pages/DeveloperPortfolio';
 import EventsManagement from './pages/EventsManagement';
 import GameAnalyticsDashboard from './pages/GameAnalyticsDashboard';
@@ -67,6 +69,7 @@ import Gamification from './pages/Gamification';
 import GuildDetails from './pages/GuildDetails';
 import Guilds from './pages/Guilds';
 import Home from './pages/Home';
+import InAppGameStore from './pages/InAppGameStore';
 import InAppStore from './pages/InAppStore';
 import IntegrationSettings from './pages/IntegrationSettings';
 import Leaderboard from './pages/Leaderboard';
@@ -74,6 +77,8 @@ import MonetizationHub from './pages/MonetizationHub';
 import MovieStarGenerator from './pages/MovieStarGenerator';
 import MyPurchases from './pages/MyPurchases';
 import PayPalManagement from './pages/PayPalManagement';
+import ReferralAnalytics from './pages/ReferralAnalytics';
+import ReferralContest from './pages/ReferralContest';
 import Settings from './pages/Settings';
 import SocialMediaGenerator from './pages/SocialMediaGenerator';
 import StreamerAnalytics from './pages/StreamerAnalytics';
@@ -85,11 +90,6 @@ import UserDashboard from './pages/UserDashboard';
 import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
-import ReferralContest from './pages/ReferralContest';
-import CRMDashboard from './pages/CRMDashboard';
-import ReferralAnalytics from './pages/ReferralAnalytics';
-import DeveloperLeaderboards from './pages/DeveloperLeaderboards';
-import InAppGameStore from './pages/InAppGameStore';
 import __Layout from './Layout.jsx';
 
 
@@ -98,12 +98,14 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "AdminUsers": AdminUsers,
     "BusinessDashboard": BusinessDashboard,
+    "CRMDashboard": CRMDashboard,
     "ContactUs": ContactUs,
     "DailyChallenges": DailyChallenges,
     "DeveloperAIDashboard": DeveloperAIDashboard,
     "DeveloperAnalytics": DeveloperAnalytics,
     "DeveloperEventManagement": DeveloperEventManagement,
     "DeveloperIAPDashboard": DeveloperIAPDashboard,
+    "DeveloperLeaderboards": DeveloperLeaderboards,
     "DeveloperPortfolio": DeveloperPortfolio,
     "EventsManagement": EventsManagement,
     "GameAnalyticsDashboard": GameAnalyticsDashboard,
@@ -114,6 +116,7 @@ export const PAGES = {
     "GuildDetails": GuildDetails,
     "Guilds": Guilds,
     "Home": Home,
+    "InAppGameStore": InAppGameStore,
     "InAppStore": InAppStore,
     "IntegrationSettings": IntegrationSettings,
     "Leaderboard": Leaderboard,
@@ -121,6 +124,8 @@ export const PAGES = {
     "MovieStarGenerator": MovieStarGenerator,
     "MyPurchases": MyPurchases,
     "PayPalManagement": PayPalManagement,
+    "ReferralAnalytics": ReferralAnalytics,
+    "ReferralContest": ReferralContest,
     "Settings": Settings,
     "SocialMediaGenerator": SocialMediaGenerator,
     "StreamerAnalytics": StreamerAnalytics,
@@ -132,11 +137,6 @@ export const PAGES = {
     "UserInbox": UserInbox,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
-    "ReferralContest": ReferralContest,
-    "CRMDashboard": CRMDashboard,
-    "ReferralAnalytics": ReferralAnalytics,
-    "DeveloperLeaderboards": DeveloperLeaderboards,
-    "InAppGameStore": InAppGameStore,
 }
 
 export const pagesConfig = {

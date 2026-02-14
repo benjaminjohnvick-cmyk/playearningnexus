@@ -24,6 +24,9 @@ import EnhancedProfileHeader from '../components/profile/EnhancedProfileHeader';
 import RecentlyPlayedGames from '../components/profile/RecentlyPlayedGames';
 import WishlistDisplay from '../components/profile/WishlistDisplay';
 import FriendEndorsements from '../components/profile/FriendEndorsements';
+import FriendSystem from '../components/social/FriendSystem';
+import StreamIntegration from '../components/streaming/StreamIntegration';
+import ReferralNetworkVisual from '../components/profile/ReferralNetworkVisual';
 
 export default function UserProfile() {
   const [user, setUser] = useState(null);
@@ -238,7 +241,7 @@ export default function UserProfile() {
 
         {/* Detailed Tabs */}
         <Tabs defaultValue="library" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-8">
             <TabsTrigger value="library">
               <Gamepad2 className="w-4 h-4 mr-2" />
               Library
@@ -258,6 +261,14 @@ export default function UserProfile() {
             <TabsTrigger value="reviews">
               <Star className="w-4 h-4 mr-2" />
               Reviews
+            </TabsTrigger>
+            <TabsTrigger value="referrals">
+              <Users className="w-4 h-4 mr-2" />
+              Referrals
+            </TabsTrigger>
+            <TabsTrigger value="streaming">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Streaming
             </TabsTrigger>
             <TabsTrigger value="transactions">
               <DollarSign className="w-4 h-4 mr-2" />
@@ -283,11 +294,30 @@ export default function UserProfile() {
           </TabsContent>
 
           <TabsContent value="friends">
-            <SocialConnections userId={profileUser.id} connections={connections} />
+            {isOwnProfile ? (
+              <FriendSystem user={profileUser} />
+            ) : (
+              <SocialConnections userId={profileUser.id} connections={connections} />
+            )}
           </TabsContent>
 
           <TabsContent value="reviews">
             <UserReviews userId={profileUser.id} ratings={ratings} />
+          </TabsContent>
+
+          <TabsContent value="referrals">
+            <ReferralNetworkVisual userId={profileUser.id} />
+          </TabsContent>
+
+          <TabsContent value="streaming">
+            {isOwnProfile && <StreamIntegration user={profileUser} />}
+            {!isOwnProfile && (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <p className="text-gray-500">Streaming features only available on your own profile</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="transactions">

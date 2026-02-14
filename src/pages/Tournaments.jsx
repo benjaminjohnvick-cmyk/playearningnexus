@@ -12,6 +12,7 @@ import { createPageUrl } from '@/utils';
 import CreateTournamentModal from '../components/tournaments/CreateTournamentModal';
 import TournamentCard from '../components/tournaments/TournamentCard';
 import AITournamentMatchmaking from '../components/tournaments/AITournamentMatchmaking';
+import EnhancedTournamentSystem from '../components/tournaments/EnhancedTournamentSystem';
 
 export default function Tournaments() {
   const [user, setUser] = useState(null);
