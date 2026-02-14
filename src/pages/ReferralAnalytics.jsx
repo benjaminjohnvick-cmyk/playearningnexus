@@ -15,6 +15,7 @@ import {
   UserPlus,
   Briefcase
 } from "lucide-react";
+import MultiTierReferralSystem from '../components/referral/MultiTierReferralSystem';
 import { 
   LineChart, 
   Line, 
@@ -139,6 +140,11 @@ export default function ReferralAnalytics() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Referral Analytics</h1>
           <p className="text-gray-600">Track your referral performance and earnings</p>
+        </div>
+
+        {/* Multi-Tier System */}
+        <div className="mb-8">
+          <MultiTierReferralSystem user={user} />
         </div>
 
         {/* Key Metrics */}

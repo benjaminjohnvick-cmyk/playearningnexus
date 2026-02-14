@@ -89,6 +89,7 @@ import ReferralContest from './pages/ReferralContest';
 import CRMDashboard from './pages/CRMDashboard';
 import ReferralAnalytics from './pages/ReferralAnalytics';
 import DeveloperLeaderboards from './pages/DeveloperLeaderboards';
+import InAppGameStore from './pages/InAppGameStore';
 import __Layout from './Layout.jsx';
 
 
@@ -135,6 +136,7 @@ export const PAGES = {
     "CRMDashboard": CRMDashboard,
     "ReferralAnalytics": ReferralAnalytics,
     "DeveloperLeaderboards": DeveloperLeaderboards,
+    "InAppGameStore": InAppGameStore,
 }
 
 export const pagesConfig = {
