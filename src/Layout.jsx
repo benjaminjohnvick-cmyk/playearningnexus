@@ -18,7 +18,8 @@ import {
   Trophy,
   Users,
   Swords,
-  Mail
+  Mail,
+  Star
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
@@ -113,6 +114,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Home', icon: Home, path: 'Home' },
     { name: 'Game Store', icon: DollarSign, path: 'GameStore' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
+    { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
     { name: 'AI Generator', icon: Bot, path: 'MovieStarGenerator', requireAuth: true },
     { name: 'Inbox', icon: Mail, path: 'UserInbox', requireAuth: true },
     { name: 'Leaderboard', icon: Trophy, path: 'Leaderboard', requireAuth: true },
