@@ -60,9 +60,20 @@ export default function ReferralContest() {
         user_id: user.id,
         date: today
       });
+      
+      if (participations.length === 0 && todayContest) {
+        // Auto-create participation
+        const newParticipation = await base44.entities.ContestParticipation.create({
+          user_id: user.id,
+          contest_id: todayContest.id,
+          date: today
+        });
+        return newParticipation;
+      }
+      
       return participations[0];
     },
-    enabled: !!user
+    enabled: !!user && !!todayContest
   });
 
   // Timer countdown
