@@ -14,7 +14,9 @@ import {
   Crown,
   Briefcase,
   Activity,
-  Target
+  Target,
+  Star,
+  Gamepad2
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -283,6 +285,10 @@ export default function DeveloperLeaderboards() {
               <Users className="w-4 h-4 mr-2" />
               Referrals
             </TabsTrigger>
+            <TabsTrigger value="top-games">
+              <Star className="w-4 h-4 mr-2" />
+              Top Games
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overall">
@@ -417,6 +423,58 @@ export default function DeveloperLeaderboards() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="top-games">
+            <div className="space-y-6">
+              {leaderboard.slice(0, 10).map((entry) => {
+                const devGames = games.filter(g => g.developer_id === entry.developer.id)
+                  .sort((a, b) => (b.total_revenue || 0) - (a.total_revenue || 0))
+                  .slice(0, 3);
+                
+                if (devGames.length === 0) return null;
+                
+                return (
+                  <Card key={entry.developer.id} className="border-0 shadow-lg">
+                    <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50">
+                      <CardTitle className="flex items-center gap-3">
+                        <Briefcase className="w-6 h-6 text-indigo-600" />
+                        {entry.developer.company_name}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      <div className="grid md:grid-cols-3 gap-4">
+                        {devGames.map((game, idx) => (
+                          <div key={game.id} className="p-4 bg-gray-50 rounded-lg border">
+                            <div className="flex items-start justify-between mb-2">
+                              <Gamepad2 className="w-5 h-5 text-blue-600" />
+                              {idx === 0 && <Badge className="bg-yellow-100 text-yellow-700">Top</Badge>}
+                            </div>
+                            <h4 className="font-bold text-gray-900 mb-1">{game.title}</h4>
+                            <div className="space-y-1 text-sm text-gray-600">
+                              <div className="flex justify-between">
+                                <span>Revenue:</span>
+                                <span className="font-semibold text-green-600">
+                                  ${(game.total_revenue || 0).toFixed(0)}
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Installs:</span>
+                                <span className="font-semibold">{game.total_installs || 0}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                                <span>{(game.average_rating || 0).toFixed(1)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           </TabsContent>
         </Tabs>
       </div>
