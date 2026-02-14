@@ -88,6 +88,7 @@ import VirtualStore from './pages/VirtualStore';
 import ReferralContest from './pages/ReferralContest';
 import CRMDashboard from './pages/CRMDashboard';
 import ReferralAnalytics from './pages/ReferralAnalytics';
+import DeveloperLeaderboards from './pages/DeveloperLeaderboards';
 import __Layout from './Layout.jsx';
 
 
@@ -133,6 +134,7 @@ export const PAGES = {
     "ReferralContest": ReferralContest,
     "CRMDashboard": CRMDashboard,
     "ReferralAnalytics": ReferralAnalytics,
+    "DeveloperLeaderboards": DeveloperLeaderboards,
 }
 
 export const pagesConfig = {

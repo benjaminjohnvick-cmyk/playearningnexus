@@ -142,6 +142,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
     { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
     { name: 'Referral Analytics', icon: TrendingUp, path: 'ReferralAnalytics', requireAuth: true },
+    { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
     { name: 'AI Generator', icon: Bot, path: 'MovieStarGenerator', requireAuth: true },
     { name: 'Inbox', icon: Mail, path: 'UserInbox', requireAuth: true },
     { name: 'Leaderboard', icon: Trophy, path: 'Leaderboard', requireAuth: true },
