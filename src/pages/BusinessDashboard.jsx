@@ -16,6 +16,8 @@ import AppUploadForm from '../components/developer/AppUploadForm';
 import MonetizationDashboard from '../components/developer/MonetizationDashboard';
 import DeveloperSDK from '../components/developer/DeveloperSDK';
 import AIDynamicPricing from '../components/developer/AIDynamicPricing';
+import GameManagementPortal from '../components/developer/GameManagementPortal';
+import AIOptimizationTools from '../components/developer/AIOptimizationTools';
 import DeveloperSupportChatbot from '../components/support/DeveloperSupportChatbot';
 import { toast } from "sonner";
 
@@ -224,6 +226,8 @@ export default function BusinessDashboard() {
         <Tabs defaultValue="games" className="mb-8">
           <TabsList className="bg-white shadow-md border-2 border-red-200">
             <TabsTrigger value="games">My Games</TabsTrigger>
+            <TabsTrigger value="management">Game Management</TabsTrigger>
+            <TabsTrigger value="optimization">AI Optimization</TabsTrigger>
             <TabsTrigger value="sdk">SDK & API</TabsTrigger>
             <TabsTrigger value="pricing">AI Pricing</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio Settings</TabsTrigger>
@@ -322,14 +326,38 @@ export default function BusinessDashboard() {
             <MonetizationDashboard businessClient={businessClient} games={myGames} />
           </TabsContent>
 
+          <TabsContent value="management">
+            {myGames.length > 0 ? (
+              <div className="space-y-6">
+                {myGames.map(game => (
+                  <GameManagementPortal key={game.id} game={game} developer={businessClient} />
+                ))}
+              </div>
+            ) : (
+              <Card><CardContent className="p-12 text-center text-gray-500">Upload a game first</CardContent></Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="optimization">
+            {myGames.length > 0 ? (
+              <div className="space-y-6">
+                {myGames.map(game => (
+                  <AIOptimizationTools key={game.id} game={game} />
+                ))}
+              </div>
+            ) : (
+              <Card><CardContent className="p-12 text-center text-gray-500">Upload a game first</CardContent></Card>
+            )}
+          </TabsContent>
+
           <TabsContent value="sdk">
             <DeveloperSDK developer={businessClient} />
           </TabsContent>
 
           <TabsContent value="pricing">
-            {games.length > 0 ? (
+            {myGames.length > 0 ? (
               <div className="space-y-6">
-                {games.map(game => (
+                {myGames.map(game => (
                   <AIDynamicPricing key={game.id} game={game} />
                 ))}
               </div>

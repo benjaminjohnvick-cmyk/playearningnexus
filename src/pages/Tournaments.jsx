@@ -13,6 +13,7 @@ import CreateTournamentModal from '../components/tournaments/CreateTournamentMod
 import TournamentCard from '../components/tournaments/TournamentCard';
 import AITournamentMatchmaking from '../components/tournaments/AITournamentMatchmaking';
 import EnhancedTournamentSystem from '../components/tournaments/EnhancedTournamentSystem';
+import AutomatedBracketSystem from '../components/tournaments/AutomatedBracketSystem';
 
 export default function Tournaments() {
   const [user, setUser] = useState(null);
@@ -187,10 +188,16 @@ export default function Tournaments() {
             )}
 
             {selectedTournamentForAI && (
-              <AITournamentMatchmaking 
-                tournament={selectedTournamentForAI} 
-                participants={tournamentParticipants}
-              />
+              <>
+                <AutomatedBracketSystem 
+                  tournament={selectedTournamentForAI}
+                  participants={tournamentParticipants}
+                />
+                <AITournamentMatchmaking 
+                  tournament={selectedTournamentForAI} 
+                  participants={tournamentParticipants}
+                />
+              </>
             )}
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

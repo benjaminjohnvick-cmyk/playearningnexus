@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 export default function PersonalizedRecommendations({ user }) {
+  const [surveyRecs, setSurveyRecs] = React.useState([]);
   const [generating, setGenerating] = useState(false);
 
   // Fetch user activity data
