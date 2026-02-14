@@ -14,6 +14,8 @@ import { createPageUrl } from "@/utils";
 import StatsCard from '../components/dashboard/StatsCard';
 import AppUploadForm from '../components/developer/AppUploadForm';
 import MonetizationDashboard from '../components/developer/MonetizationDashboard';
+import DeveloperSDK from '../components/developer/DeveloperSDK';
+import AIDynamicPricing from '../components/developer/AIDynamicPricing';
 import DeveloperSupportChatbot from '../components/support/DeveloperSupportChatbot';
 import { toast } from "sonner";
 
@@ -316,6 +318,26 @@ export default function BusinessDashboard() {
 
           <TabsContent value="monetization">
             <MonetizationDashboard businessClient={businessClient} games={myGames} />
+          </TabsContent>
+
+          <TabsContent value="sdk">
+            <DeveloperSDK developer={businessClient} />
+          </TabsContent>
+
+          <TabsContent value="pricing">
+            {games.length > 0 ? (
+              <div className="space-y-6">
+                {games.map(game => (
+                  <AIDynamicPricing key={game.id} game={game} />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="p-12 text-center text-gray-500">
+                  Upload a game first to use AI pricing
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="games">
