@@ -155,8 +155,9 @@ export default function Tournaments() {
         </div>
 
         <Tabs defaultValue="all" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="all">All Tournaments</TabsTrigger>
+            <TabsTrigger value="crossgame">Cross-Game</TabsTrigger>
             <TabsTrigger value="my">My Tournaments</TabsTrigger>
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
           </TabsList>
@@ -214,6 +215,10 @@ export default function Tournaments() {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          <TabsContent value="crossgame">
+            <CrossGameTournamentSystem />
           </TabsContent>
 
           <TabsContent value="my" className="space-y-4">
