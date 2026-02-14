@@ -14,12 +14,14 @@ import { createPageUrl } from "@/utils";
 import StatsCard from '../components/dashboard/StatsCard';
 import AppUploadForm from '../components/developer/AppUploadForm';
 import MonetizationDashboard from '../components/developer/MonetizationDashboard';
+import DeveloperSupportChatbot from '../components/support/DeveloperSupportChatbot';
 import { toast } from "sonner";
 
 export default function BusinessDashboard() {
   const [user, setUser] = useState(null);
   const [businessClient, setBusinessClient] = useState(null);
   const [showNewGameForm, setShowNewGameForm] = useState(false);
+  const [showSupportChat, setShowSupportChat] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -171,6 +173,13 @@ export default function BusinessDashboard() {
             >
               <Plus className="w-4 h-4 mr-2" />
               Submit New Game
+            </Button>
+            <Button
+              onClick={() => setShowSupportChat(true)}
+              variant="outline"
+            >
+              <Bot className="w-4 h-4 mr-2" />
+              AI Support
             </Button>
           </div>
         </div>
@@ -364,6 +373,15 @@ export default function BusinessDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {showSupportChat && (
+          <DeveloperSupportChatbot
+            isOpen={showSupportChat}
+            onClose={() => setShowSupportChat(false)}
+            developerId={businessClient?.id}
+            developerEmail={user?.email}
+          />
+        )}
       </div>
     </div>
   );
