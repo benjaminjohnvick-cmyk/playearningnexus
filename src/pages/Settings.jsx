@@ -17,6 +17,14 @@ export default function Settings() {
     full_name: '',
     phone: '',
     notifications_enabled: true,
+    notification_preferences: {
+      contest_results: true,
+      new_surveys: true,
+      friend_activity: true,
+      announcements: true,
+      achievements: true,
+      events: true
+    },
     preferred_language: 'en',
     preferred_currency: 'USD',
     prompt_before_logout: true
@@ -31,6 +39,14 @@ export default function Settings() {
           full_name: currentUser.full_name || '',
           phone: currentUser.phone || '',
           notifications_enabled: currentUser.notifications_enabled ?? true,
+          notification_preferences: currentUser.notification_preferences || {
+            contest_results: true,
+            new_surveys: true,
+            friend_activity: true,
+            announcements: true,
+            achievements: true,
+            events: true
+          },
           preferred_language: currentUser.preferred_language || 'en',
           preferred_currency: currentUser.preferred_currency || 'USD',
           prompt_before_logout: currentUser.prompt_before_logout ?? true
@@ -139,6 +155,95 @@ export default function Settings() {
                   checked={settings.prompt_before_logout}
                   onCheckedChange={(checked) => setSettings({ ...settings, prompt_before_logout: checked })}
                 />
+              </div>
+
+              <div className="pt-4 border-t">
+                <h3 className="font-semibold text-gray-900 mb-3">Notification Preferences</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Contest Results</p>
+                      <p className="text-xs text-gray-500">Daily contest winners and results</p>
+                    </div>
+                    <Switch
+                      checked={settings.notification_preferences.contest_results}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        notification_preferences: { ...settings.notification_preferences, contest_results: checked }
+                      })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">New Surveys</p>
+                      <p className="text-xs text-gray-500">When new surveys become available</p>
+                    </div>
+                    <Switch
+                      checked={settings.notification_preferences.new_surveys}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        notification_preferences: { ...settings.notification_preferences, new_surveys: checked }
+                      })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Friend Activity</p>
+                      <p className="text-xs text-gray-500">Updates from friends and connections</p>
+                    </div>
+                    <Switch
+                      checked={settings.notification_preferences.friend_activity}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        notification_preferences: { ...settings.notification_preferences, friend_activity: checked }
+                      })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Announcements</p>
+                      <p className="text-xs text-gray-500">Platform updates and news</p>
+                    </div>
+                    <Switch
+                      checked={settings.notification_preferences.announcements}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        notification_preferences: { ...settings.notification_preferences, announcements: checked }
+                      })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Achievements</p>
+                      <p className="text-xs text-gray-500">Badges, milestones, and rewards</p>
+                    </div>
+                    <Switch
+                      checked={settings.notification_preferences.achievements}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        notification_preferences: { ...settings.notification_preferences, achievements: checked }
+                      })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Events</p>
+                      <p className="text-xs text-gray-500">Special events and tournaments</p>
+                    </div>
+                    <Switch
+                      checked={settings.notification_preferences.events}
+                      onCheckedChange={(checked) => setSettings({
+                        ...settings,
+                        notification_preferences: { ...settings.notification_preferences, events: checked }
+                      })}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </Card>

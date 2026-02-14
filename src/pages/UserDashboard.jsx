@@ -19,6 +19,7 @@ import SocialFeed from '../components/social/SocialFeed';
 import PointsBadgeSystem from '../components/gamification/PointsBadgeSystem';
 import AIChatSupport from '../components/support/AIChatSupport';
 import PersonalizedGameBundles from '../components/bundles/PersonalizedGameBundles';
+import EnhancedPointsSystem from '../components/gamification/EnhancedPointsSystem';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -98,6 +99,18 @@ export default function UserDashboard() {
         user_id: user.id,
         completion_date: { $gte: today }
       });
+    },
+    enabled: !!user
+  });
+
+  const { data: recentActivities = [] } = useQuery({
+    queryKey: ['recent-activities', user?.id],
+    queryFn: async () => {
+      return await base44.entities.UserActivity.filter(
+        { user_id: user.id },
+        '-created_date',
+        10
+      );
     },
     enabled: !!user
   });
@@ -285,7 +298,7 @@ export default function UserDashboard() {
             <SocialFeed currentUser={user} />
           </div>
           <div>
-            <PointsBadgeSystem user={user} />
+            <EnhancedPointsSystem user={user} recentActivities={recentActivities} />
           </div>
         </div>
 

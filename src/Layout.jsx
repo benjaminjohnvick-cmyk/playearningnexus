@@ -19,11 +19,13 @@ import {
   Users,
   Swords,
   Mail,
-  Star
+  Star,
+  TrendingUp
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
 import LogoutPromptModal from '@/components/user/LogoutPromptModal';
+import NotificationCenter from '@/components/notifications/NotificationCenter';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -139,6 +141,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Game Store', icon: DollarSign, path: 'GameStore' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
     { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
+    { name: 'Referral Analytics', icon: TrendingUp, path: 'ReferralAnalytics', requireAuth: true },
     { name: 'AI Generator', icon: Bot, path: 'MovieStarGenerator', requireAuth: true },
     { name: 'Inbox', icon: Mail, path: 'UserInbox', requireAuth: true },
     { name: 'Leaderboard', icon: Trophy, path: 'Leaderboard', requireAuth: true },
@@ -205,6 +208,7 @@ export default function Layout({ children, currentPageName }) {
                       ${(user.total_earnings || 0).toFixed(2)} earned
                     </p>
                   </div>
+                  <NotificationCenter user={user} />
                   <Link to={createPageUrl('Settings')}>
                     <Button variant="ghost" size="icon">
                       <Settings className="w-5 h-5" />
