@@ -310,15 +310,26 @@ export default function UserDashboard() {
           <PersonalizedGameBundles user={user} />
         </div>
 
-        {/* Social Feed & Points System */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="md:col-span-2">
-            <SocialFeed currentUser={user} />
-          </div>
-          <div>
-            <EnhancedPointsSystem user={user} recentActivities={recentActivities} />
-          </div>
-        </div>
+        {/* Social Feed & Gamification */}
+        <Tabs defaultValue="feed" className="mb-8">
+          <TabsList>
+            <TabsTrigger value="feed">Social Feed</TabsTrigger>
+            <TabsTrigger value="groups">Groups</TabsTrigger>
+          </TabsList>
+          <TabsContent value="feed">
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="md:col-span-2">
+                <EnhancedSocialFeed user={user} />
+              </div>
+              <div>
+                <EnhancedPointsSystem user={user} recentActivities={recentActivities} />
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="groups">
+            <GameGroups user={user} />
+          </TabsContent>
+        </Tabs>
 
         {/* Surveys CTA */}
         {!dailyGoalMet && (

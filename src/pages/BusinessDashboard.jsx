@@ -224,6 +224,8 @@ export default function BusinessDashboard() {
         <Tabs defaultValue="games" className="mb-8">
           <TabsList className="bg-white shadow-md border-2 border-red-200">
             <TabsTrigger value="games">My Games</TabsTrigger>
+            <TabsTrigger value="sdk">SDK & API</TabsTrigger>
+            <TabsTrigger value="pricing">AI Pricing</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio Settings</TabsTrigger>
             <TabsTrigger value="monetization">
               <Zap className="w-4 h-4 mr-2" />
