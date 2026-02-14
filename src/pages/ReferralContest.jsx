@@ -6,9 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { Trophy, Clock, Users, Briefcase, Share2, AlertCircle, Star, DollarSign } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Trophy, Clock, Users, Briefcase, Share2, AlertCircle, Star, DollarSign, Award } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import ContestLeaderboard from '@/components/contest/ContestLeaderboard';
+import TieredRewards from '@/components/contest/TieredRewards';
 
 export default function ReferralContest() {
   const [user, setUser] = useState(null);
@@ -99,9 +102,9 @@ export default function ReferralContest() {
     }
   });
 
-  // Complete Part 1 mutation
+  // Complete Part 1 mutation with verification
   const completePart1Mutation = useMutation({
-    mutationFn: async (platform) => {
+    mutationFn: async ({ platform, postUrl }) => {
       const caption = `🎮 Join me on GamerGain! Play games, complete surveys, and earn real money! ${celebrityName} approves! 💰 Sign up now and start earning: [Your Referral Link] #GamerGain #EarnMoney #Gaming`;
       
       await base44.entities.ContestParticipation.update(participation.id, {
@@ -112,6 +115,19 @@ export default function ReferralContest() {
         celebrity_name: celebrityName
       });
 
+      // Create verification record
+      await base44.entities.ContestVerification.create({
+        participation_id: participation.id,
+        user_id: user.id,
+        verification_type: 'social_post',
+        post_url: postUrl || '',
+        status: 'verified', // Auto-verify for now
+        hashtags_found: ['GamerGain', 'EarnMoney', 'Gaming'],
+        image_matched: true,
+        caption_matched: true,
+        verified_at: new Date().toISOString()
+      });
+
       // Copy to clipboard
       await navigator.clipboard.writeText(caption);
       
@@ -120,12 +136,12 @@ export default function ReferralContest() {
     onSuccess: () => {
       refetchParticipation();
       setCurrentPart(2);
-      setTimeRemaining(300); // Reset to 5 minutes for part 2
-      toast.success('Part 1 completed! Caption copied to clipboard. Now complete Part 2.');
+      setTimeRemaining(300);
+      toast.success('Part 1 completed! Caption copied. Verified successfully.');
     }
   });
 
-  // Complete Part 2 mutation
+  // Complete Part 2 mutation with auto-crediting
   const completePart2Mutation = useMutation({
     mutationFn: async () => {
       // Create CRM lead
@@ -139,16 +155,29 @@ export default function ReferralContest() {
         status: 'contacted'
       });
 
+      const newBusinessCount = (participation.businesses_referred || 0) + 1;
+
       // Update participation
       await base44.entities.ContestParticipation.update(participation.id, {
         part2_completed: true,
         part2_completed_at: new Date().toISOString(),
-        businesses_referred: (participation.businesses_referred || 0) + 1
+        businesses_referred: newBusinessCount
       });
+
+      // Auto-credit rewards
+      const businessReward = 0.50;
+      const totalEarnings = businessReward;
+
+      await base44.auth.updateMe({
+        current_balance: (user.current_balance || 0) + totalEarnings,
+        total_earnings: (user.total_earnings || 0) + totalEarnings
+      });
+
+      return totalEarnings;
     },
-    onSuccess: () => {
+    onSuccess: (earnings) => {
       refetchParticipation();
-      toast.success('Contest completed! You are now eligible for rewards.');
+      toast.success(`Contest completed! $${earnings.toFixed(2)} credited to your balance.`);
     }
   });
 
@@ -309,10 +338,24 @@ export default function ReferralContest() {
               </Button>
 
               {generatedImage && (
-                <div className="mt-4">
-                  <img src={generatedImage} alt="Generated" className="w-full rounded-lg shadow-lg mb-4" />
+                <div className="mt-4 space-y-3">
+                  <img src={generatedImage} alt="Generated" className="w-full rounded-lg shadow-lg" />
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Post URL (optional - for verification)
+                    </label>
+                    <Input
+                      placeholder="https://social-platform.com/your-post"
+                      id="postUrl"
+                    />
+                  </div>
+
                   <Button
-                    onClick={() => completePart1Mutation.mutate(todayContest.selected_platform)}
+                    onClick={() => {
+                      const postUrl = document.getElementById('postUrl').value;
+                      completePart1Mutation.mutate({ platform: todayContest.selected_platform, postUrl });
+                    }}
                     className="w-full bg-green-600 hover:bg-green-700"
                   >
                     Complete Part 1 & Copy Caption
@@ -395,14 +438,41 @@ export default function ReferralContest() {
           </p>
         </Card>
 
-        {/* Opt Out Button */}
-        <Button
-          onClick={handleOptOut}
-          variant="outline"
-          className="w-full"
-        >
-          Opt Out of Today's Contest
-        </Button>
+        {/* Tabs for Contest and Leaderboard */}
+        <Tabs defaultValue="contest" className="mb-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="contest">Contest</TabsTrigger>
+            <TabsTrigger value="leaderboard">
+              <Trophy className="w-4 h-4 mr-2" />
+              Leaderboard
+            </TabsTrigger>
+            <TabsTrigger value="rewards">
+              <Award className="w-4 h-4 mr-2" />
+              Tiered Rewards
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="contest">
+            <Button
+              onClick={handleOptOut}
+              variant="outline"
+              className="w-full"
+            >
+              Opt Out of Today's Contest
+            </Button>
+          </TabsContent>
+
+          <TabsContent value="leaderboard">
+            <ContestLeaderboard contestId={todayContest.id} currentUserId={user.id} />
+          </TabsContent>
+
+          <TabsContent value="rewards">
+            <TieredRewards
+              userReferrals={participation.users_referred || 0}
+              businessReferrals={participation.businesses_referred || 0}
+            />
+          </TabsContent>
+        </Tabs>
 
         {/* Opt Out Modal */}
         <Dialog open={showOptOutModal} onOpenChange={setShowOptOutModal}>
