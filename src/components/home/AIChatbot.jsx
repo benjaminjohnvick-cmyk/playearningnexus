@@ -142,7 +142,7 @@ Respond naturally and helpfully:`
                             : 'bg-gray-100 text-gray-900'
                         }`}
                       >
-                        <p className="text-sm">{msg.content}</p>
+                        <p className="text-sm whitespace-pre-line">{msg.content}</p>
                       </div>
                     </div>
                   ))}
