@@ -46,7 +46,7 @@ export default function ReferralContest() {
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
       const contests = await base44.entities.ReferralContest.filter({ date: today });
-      return contests[0];
+      return contests[0] || null;
     },
     enabled: !!user
   });
