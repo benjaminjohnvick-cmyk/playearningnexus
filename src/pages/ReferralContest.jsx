@@ -40,13 +40,28 @@ export default function ReferralContest() {
     fetchUser();
   }, []);
 
-  // Get today's contest
+  // Get today's contest - auto-create if doesn't exist
   const { data: todayContest } = useQuery({
     queryKey: ['todayContest'],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
       const contests = await base44.entities.ReferralContest.filter({ date: today });
-      return contests[0] || null;
+      
+      if (contests.length === 0) {
+        // Auto-create today's contest
+        const platforms = ['facebook', 'twitter', 'instagram', 'youtube_shorts', 'snapchat', 'tiktok', 'twitch'];
+        const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
+        
+        const newContest = await base44.entities.ReferralContest.create({
+          date: today,
+          selected_platform: randomPlatform,
+          status: 'active'
+        });
+        
+        return newContest;
+      }
+      
+      return contests[0];
     },
     enabled: !!user
   });
