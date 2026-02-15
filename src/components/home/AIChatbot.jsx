@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Hi! I\'m your GamerGain AI assistant. Ask me anything about games, surveys, tournaments, or how to maximize your earnings!' }
+    { role: 'assistant', content: '👋 Welcome to GamerGain! I\'m your AI assistant.\n\nI can help you with:\n• 🎮 Finding and playing games\n• 📊 Completing surveys ($0.50-$2.00 each)\n• 🏆 Joining tournaments\n• 💰 Maximizing your earnings\n• 👥 Referral programs & contests\n• 🎯 Guilds, achievements & challenges\n• 🛠️ Developer tools & monetization\n\nWhat would you like to know?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
