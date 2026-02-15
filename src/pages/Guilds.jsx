@@ -12,6 +12,7 @@ import { Users, Crown, MessageSquare, TrendingUp, Shield, Plus, Send, Trophy } f
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import AIGuildChallenge from '../components/guilds/AIGuildChallenge';
+import EnhancedGroupSpace from '../components/groups/EnhancedGroupSpace';
 
 export default function GuildsPage() {
   const [user, setUser] = useState(null);
@@ -345,43 +346,10 @@ export default function GuildsPage() {
           </TabsContent>
         </Tabs>
 
-        {/* Guild Chat Modal */}
+        {/* Enhanced Group Space Modal */}
         <Dialog open={!!selectedGuild} onOpenChange={() => setSelectedGuild(null)}>
-          <DialogContent className="max-w-2xl h-[600px] flex flex-col p-0">
-            <DialogHeader className="p-6 pb-4 border-b">
-              <DialogTitle className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5" />
-                {selectedGuild?.guild_name} Chat
-              </DialogTitle>
-            </DialogHeader>
-            
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {guildMessages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.user_id === user.id ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[70%] ${msg.user_id === user.id ? 'bg-green-600 text-white' : 'bg-gray-100'} rounded-lg p-3`}>
-                    <p className="text-xs font-semibold mb-1 opacity-80">{msg.user_name}</p>
-                    <p className="text-sm">{msg.message}</p>
-                    <p className="text-xs opacity-60 mt-1">
-                      {new Date(msg.created_date).toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <form onSubmit={handleSendMessage} className="p-4 border-t">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Type a message..."
-                  value={chatMessage}
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  className="flex-1"
-                />
-                <Button type="submit" disabled={!chatMessage.trim()}>
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-            </form>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <EnhancedGroupSpace group={selectedGuild} user={user} />
           </DialogContent>
         </Dialog>
       </div>

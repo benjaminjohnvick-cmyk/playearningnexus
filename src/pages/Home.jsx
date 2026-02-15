@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
+import AIChatbot from "../components/home/AIChatbot";
 
 export default function Home() {
   const features = [
@@ -151,6 +152,9 @@ export default function Home() {
           </Link>
         </motion.div>
       </div>
+
+      {/* AI Chatbot */}
+      <AIChatbot />
     </div>
   );
 }
