@@ -81,6 +81,7 @@ import MyPurchases from './pages/MyPurchases';
 import PayPalManagement from './pages/PayPalManagement';
 import ReferralAnalytics from './pages/ReferralAnalytics';
 import ReferralContest from './pages/ReferralContest';
+import ReferralTracking from './pages/ReferralTracking';
 import Settings from './pages/Settings';
 import SocialMediaGenerator from './pages/SocialMediaGenerator';
 import StreamerAnalytics from './pages/StreamerAnalytics';
@@ -92,7 +93,8 @@ import UserDashboard from './pages/UserDashboard';
 import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
-import ReferralTracking from './pages/ReferralTracking';
+import PayoutSettings from './pages/PayoutSettings';
+import PayoutHistory from './pages/PayoutHistory';
 import __Layout from './Layout.jsx';
 
 
@@ -131,6 +133,7 @@ export const PAGES = {
     "PayPalManagement": PayPalManagement,
     "ReferralAnalytics": ReferralAnalytics,
     "ReferralContest": ReferralContest,
+    "ReferralTracking": ReferralTracking,
     "Settings": Settings,
     "SocialMediaGenerator": SocialMediaGenerator,
     "StreamerAnalytics": StreamerAnalytics,
@@ -142,7 +145,8 @@ export const PAGES = {
     "UserInbox": UserInbox,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
-    "ReferralTracking": ReferralTracking,
+    "PayoutSettings": PayoutSettings,
+    "PayoutHistory": PayoutHistory,
 }
 
 export const pagesConfig = {
