@@ -57,7 +57,23 @@ export default function MovieStarGenerator() {
       const result = await base44.integrations.Core.UploadFile({ file });
       setUploadedImageUrl(result.file_url);
       setUploadedImage(file);
-      toast.success('Image uploaded successfully!');
+      
+      // Create referral link for uploaded image
+      const linkCode = `upload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      await base44.entities.CustomReferralLink.create({
+        user_id: user.id,
+        link_code: linkCode,
+        link_type: 'campaign',
+        campaign_name: `Uploaded Image - ${file.name}`,
+        clicks: 0,
+        conversions: 0,
+        total_earned: 0
+      });
+      
+      const fullReferralLink = `${window.location.origin}/?ref=${linkCode}`;
+      setReferralLink(fullReferralLink);
+      
+      toast.success('Image uploaded with referral link!');
     } catch (error) {
       toast.error('Failed to upload image');
     } finally {
@@ -223,23 +239,48 @@ Created with GamerGain's AI Image Generator 🎮✨
                     className="cursor-pointer"
                   />
                   {uploadedImage && (
-                    <div className="mt-2 relative">
-                      <img
-                        src={URL.createObjectURL(uploadedImage)}
-                        alt="Uploaded"
-                        className="w-full h-32 object-cover rounded-lg"
-                      />
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="absolute top-2 right-2"
-                        onClick={() => {
-                          setUploadedImage(null);
-                          setUploadedImageUrl(null);
-                        }}
-                      >
-                        Remove
-                      </Button>
+                    <div className="mt-2 space-y-2">
+                      <div className="relative">
+                        <img
+                          src={URL.createObjectURL(uploadedImage)}
+                          alt="Uploaded"
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="absolute top-2 right-2"
+                          onClick={() => {
+                            setUploadedImage(null);
+                            setUploadedImageUrl(null);
+                            setReferralLink(null);
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                      {referralLink && (
+                        <div className="bg-green-50 p-2 rounded border border-green-200">
+                          <p className="text-xs text-green-800 font-medium mb-1">📎 Tracking Link Created</p>
+                          <div className="flex gap-1">
+                            <Input
+                              value={referralLink}
+                              readOnly
+                              className="text-xs h-7"
+                            />
+                            <Button
+                              size="sm"
+                              className="h-7"
+                              onClick={() => {
+                                navigator.clipboard.writeText(referralLink);
+                                toast.success('Link copied!');
+                              }}
+                            >
+                              <Copy className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
