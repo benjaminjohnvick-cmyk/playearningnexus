@@ -125,6 +125,8 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
     { name: 'Referral Analytics', icon: TrendingUp, path: 'ReferralAnalytics', requireAuth: true },
     { name: 'Link Tracking', icon: TrendingUp, path: 'ReferralTracking', requireAuth: true },
+    { name: 'Payout Settings', icon: Settings, path: 'PayoutSettings', requireAuth: true },
+    { name: 'Payout History', icon: DollarSign, path: 'PayoutHistory', requireAuth: true },
     { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
     { name: 'AI Generator', icon: Bot, path: 'MovieStarGenerator', requireAuth: true },
     { name: 'Inbox', icon: Mail, path: 'UserInbox', requireAuth: true },
