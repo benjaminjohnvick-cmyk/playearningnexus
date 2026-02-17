@@ -13,9 +13,17 @@ import {
   Activity,
   ArrowUpRight,
   UserPlus,
-  Briefcase
+  Briefcase,
+  Award,
+  Sparkles,
+  BarChart3
 } from "lucide-react";
 import MultiTierReferralSystem from '../components/referral/MultiTierReferralSystem';
+import ReferralLeaderboard from '../components/referral/ReferralLeaderboard';
+import AchievementsBadges from '../components/referral/AchievementsBadges';
+import AICampaignGenerator from '../components/referral/AICampaignGenerator';
+import SourcePerformance from '../components/referral/SourcePerformance';
+import CohortAnalysis from '../components/referral/CohortAnalysis';
 import { 
   LineChart, 
   Line, 
@@ -210,20 +218,36 @@ export default function ReferralAnalytics() {
           </Card>
         </div>
 
-        {/* Charts */}
+        {/* Enhanced Analytics Tabs */}
         <Tabs defaultValue="timeline" className="space-y-6">
           <TabsList className="bg-white shadow-md">
             <TabsTrigger value="timeline">
               <Activity className="w-4 h-4 mr-2" />
               Timeline
             </TabsTrigger>
+            <TabsTrigger value="sources">
+              <Globe className="w-4 h-4 mr-2" />
+              Source Performance
+            </TabsTrigger>
+            <TabsTrigger value="cohort">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Cohort Analysis
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard">
+              <Award className="w-4 h-4 mr-2" />
+              Leaderboard
+            </TabsTrigger>
+            <TabsTrigger value="achievements">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Achievements
+            </TabsTrigger>
+            <TabsTrigger value="ai-campaigns">
+              <Sparkles className="w-4 h-4 mr-2" />
+              AI Campaigns
+            </TabsTrigger>
             <TabsTrigger value="status">
               <TrendingUp className="w-4 h-4 mr-2" />
-              Status Breakdown
-            </TabsTrigger>
-            <TabsTrigger value="leads">
-              <Briefcase className="w-4 h-4 mr-2" />
-              Business Leads
+              Status
             </TabsTrigger>
           </TabsList>
 
@@ -313,24 +337,24 @@ export default function ReferralAnalytics() {
             </div>
           </TabsContent>
 
-          <TabsContent value="leads">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Business Lead Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={leadStatusData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value" fill="#8b5cf6" name="Leads" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+          <TabsContent value="sources">
+            <SourcePerformance user={user} />
+          </TabsContent>
+
+          <TabsContent value="cohort">
+            <CohortAnalysis user={user} />
+          </TabsContent>
+
+          <TabsContent value="leaderboard">
+            <ReferralLeaderboard currentUser={user} />
+          </TabsContent>
+
+          <TabsContent value="achievements">
+            <AchievementsBadges user={user} />
+          </TabsContent>
+
+          <TabsContent value="ai-campaigns">
+            <AICampaignGenerator user={user} />
           </TabsContent>
         </Tabs>
 
