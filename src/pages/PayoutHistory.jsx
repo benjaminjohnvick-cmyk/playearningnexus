@@ -109,14 +109,31 @@ ${payout.transaction_id ? `Transaction ID: ${payout.transaction_id}` : ''}
     a.click();
   };
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Referral Earnings & Payouts</h1>
-          <p className="text-gray-600">Track your referral performance and payment history</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Payout Management</h1>
+          <p className="text-gray-600">Track earnings, manage payouts, and optimize your referrals</p>
+        </div>
+
+        <EnhancedPayoutDashboard user={user} />
+        
+        <div className="grid lg:grid-cols-2 gap-6">
+          <CampaignAutomation user={user} />
+          <AutomatedFollowUps user={user} />
+        </div>
+
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Detailed Payout History</h2>
         </div>
 
         {/* Stats Grid */}
