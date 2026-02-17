@@ -8,8 +8,39 @@ import { createPageUrl } from "@/utils";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 import AIChatbot from "../components/home/AIChatbot";
 import { base44 } from '@/api/base44Client';
+import SupportChatButton from '../components/support/SupportChatButton';
+import InteractiveTutorial from '../components/onboarding/InteractiveTutorial';
 
 export default function Home() {
+  const [showTutorial, setShowTutorial] = React.useState(false);
+  const [user, setUser] = React.useState(null);
+
+  // Check if user just signed up
+  useEffect(() => {
+    const checkNewUser = async () => {
+      try {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+        
+        // Check if user needs tutorial (new signup)
+        const accountAge = new Date() - new Date(currentUser.created_date);
+        const isNewUser = accountAge < 24 * 60 * 60 * 1000; // Less than 24 hours old
+        
+        if (isNewUser && !localStorage.getItem('tutorial_completed')) {
+          setShowTutorial(true);
+        }
+      } catch (error) {
+        // Not logged in
+      }
+    };
+    checkNewUser();
+  }, []);
+
+  const handleTutorialComplete = () => {
+    localStorage.setItem('tutorial_completed', 'true');
+    setShowTutorial(false);
+  };
+
   // Track referral link clicks
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -221,6 +252,17 @@ export default function Home() {
 
       {/* AI Chatbot */}
       <AIChatbot />
+
+      {/* Support Chat Button */}
+      <SupportChatButton />
+
+      {/* Interactive Tutorial */}
+      {showTutorial && (
+        <InteractiveTutorial 
+          isOpen={showTutorial} 
+          onComplete={handleTutorialComplete} 
+        />
+      )}
     </div>
   );
 }
