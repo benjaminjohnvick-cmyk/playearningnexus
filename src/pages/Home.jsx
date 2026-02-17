@@ -38,6 +38,40 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      {/* Mega Referral Banner */}
+      <div className="bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 py-20">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4">
+              <span className="text-white font-bold text-sm">💎 MEGA OPPORTUNITY</span>
+            </div>
+            <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
+              $1 Million+ Payout Possible
+            </h2>
+            <p className="text-xl text-white/90 mb-6">
+              Refer 7 million users and earn 10% of all profits they generate. 
+              This is the biggest referral opportunity in gaming history.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to={createPageUrl('ReferralContest')}>
+                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 h-14">
+                  Start Referring Now
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
+              <div className="text-white text-sm">
+                <p className="font-bold">Currently Active Referrers:</p>
+                <p className="text-white/80">Building their million-dollar network</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-purple-600/5" />
@@ -108,40 +142,6 @@ export default function Home() {
               </Card>
             </motion.div>
           ))}
-        </div>
-      </div>
-
-      {/* Mega Referral Banner */}
-      <div className="bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 py-20">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-              <span className="text-white font-bold text-sm">💎 MEGA OPPORTUNITY</span>
-            </div>
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
-              $1 Million+ Payout Possible
-            </h2>
-            <p className="text-xl text-white/90 mb-6">
-              Refer 7 million users and earn 10% of all profits they generate. 
-              This is the biggest referral opportunity in gaming history.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to={createPageUrl('ReferralContest')}>
-                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 h-14">
-                  Start Referring Now
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-              <div className="text-white text-sm">
-                <p className="font-bold">Currently Active Referrers:</p>
-                <p className="text-white/80">Building their million-dollar network</p>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </div>
 
