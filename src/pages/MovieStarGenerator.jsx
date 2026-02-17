@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function MovieStarGenerator() {
   const [user, setUser] = useState(null);
+  const [userName, setUserName] = useState('');
   const [imageDescription, setImageDescription] = useState('');
   const [uploadedImage, setUploadedImage] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
@@ -50,34 +51,17 @@ export default function MovieStarGenerator() {
 
   const generateImageMutation = useMutation({
     mutationFn: async () => {
-      let prompt;
+      const prompt = `Create a high-quality, creative transformation of ${userName} in the reference image. ${imageDescription ? imageDescription : 'Transform them into an epic, cinematic style'}.
+      Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
+      The image should be vibrant, professional, and social media ready. 
+      Style: photorealistic, dynamic lighting, 4K quality.`;
       
-      if (uploadedImageUrl) {
-        // Using uploaded image as reference
-        prompt = `Create a high-quality, creative transformation of the person in the reference image. ${imageDescription ? imageDescription : 'Transform them into an epic, cinematic style'}.
-        Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
-        The image should be vibrant, professional, and social media ready. 
-        Style: photorealistic, dynamic lighting, 4K quality.`;
-        
-        const result = await base44.integrations.Core.GenerateImage({
-          prompt,
-          existing_image_urls: [uploadedImageUrl]
-        });
-        
-        return result.url;
-      } else {
-        // Using text description only
-        prompt = `Create a high-quality, cinematic image: ${imageDescription}. 
-        Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
-        The image should be vibrant, professional, and social media ready. 
-        Style: photorealistic, dynamic lighting, 4K quality.`;
-        
-        const result = await base44.integrations.Core.GenerateImage({
-          prompt
-        });
-        
-        return result.url;
-      }
+      const result = await base44.integrations.Core.GenerateImage({
+        prompt,
+        existing_image_urls: [uploadedImageUrl]
+      });
+      
+      return result.url;
     },
     onSuccess: (imageUrl) => {
       setGeneratedImage(imageUrl);
@@ -145,7 +129,7 @@ Created with GamerGain's AI Image Generator 🎮✨
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent mb-2">
             AI Image Generator
           </h1>
-          <p className="text-gray-600">Upload your photo or describe an image, and let AI create something amazing</p>
+          <p className="text-gray-600">Upload your photo, enter your name, and let AI create something amazing</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -159,7 +143,7 @@ Created with GamerGain's AI Image Generator 🎮✨
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label>Upload Your Photo (Optional)</Label>
+                <Label>Upload Your Photo</Label>
                 <div className="mt-2">
                   <Input
                     type="file"
@@ -190,26 +174,39 @@ Created with GamerGain's AI Image Generator 🎮✨
                   )}
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Upload a photo to transform it, or leave blank to generate from description
+                  Upload your photo from phone or PC
                 </p>
               </div>
 
               <div>
-                <Label>Image Description</Label>
+                <Label>Your Name</Label>
                 <Input
-                  placeholder={uploadedImage ? "e.g., as a superhero, cyberpunk style, fantasy character" : "e.g., A dragon flying over a futuristic city"}
+                  placeholder="Enter your name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  className="mt-2"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  This will be used in the AI transformation
+                </p>
+              </div>
+
+              <div>
+                <Label>Transformation Style</Label>
+                <Input
+                  placeholder="e.g., as a superhero, cyberpunk style, fantasy character"
                   value={imageDescription}
                   onChange={(e) => setImageDescription(e.target.value)}
                   className="mt-2"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {uploadedImage ? "Describe how to transform your photo" : "Describe the image you want to create"}
+                  Describe how to transform your photo
                 </p>
               </div>
 
               <Button
                 onClick={() => generateImageMutation.mutate()}
-                disabled={!imageDescription.trim() || generateImageMutation.isPending}
+                disabled={!uploadedImageUrl || !userName.trim() || !imageDescription.trim() || generateImageMutation.isPending}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600"
               >
                 {generateImageMutation.isPending ? (
@@ -344,15 +341,15 @@ Created with GamerGain's AI Image Generator 🎮✨
                 <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-purple-700 font-bold">1</span>
                 </div>
-                <p className="text-sm font-semibold">Upload or Describe</p>
-                <p className="text-xs text-gray-500">Upload a photo or type a description</p>
+                <p className="text-sm font-semibold">Upload Photo</p>
+                <p className="text-xs text-gray-500">Upload your photo</p>
               </div>
               <div className="text-center">
                 <div className="bg-pink-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-pink-700 font-bold">2</span>
                 </div>
-                <p className="text-sm font-semibold">Add Details</p>
-                <p className="text-xs text-gray-500">Describe the transformation</p>
+                <p className="text-sm font-semibold">Enter Name & Style</p>
+                <p className="text-xs text-gray-500">Add your name and transformation style</p>
               </div>
               <div className="text-center">
                 <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
