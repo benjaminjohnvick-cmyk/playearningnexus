@@ -321,58 +321,10 @@ Created with GamerGain's AI Image Generator 🎮✨
                         </Button>
                       </div>
 
-                      <div className="border rounded-lg p-3 bg-gray-50">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-sm font-semibold text-gray-700">Social Media Caption</p>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={handleCopyCaption}
-                            className="h-7"
-                          >
-                            {captionCopied ? (
-                              <Check className="w-4 h-4 text-green-600" />
-                            ) : (
-                              <Copy className="w-4 h-4" />
-                            )}
-                          </Button>
-                        </div>
-                        <p className="text-xs text-gray-600 whitespace-pre-wrap">{shareCaption}</p>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleShareToSocial('twitter')}
-                          className="text-xs"
-                        >
-                          <Share2 className="w-3 h-3 mr-1" />
-                          Twitter
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleShareToSocial('facebook')}
-                          className="text-xs"
-                        >
-                          <Share2 className="w-3 h-3 mr-1" />
-                          Facebook
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleShareToSocial('linkedin')}
-                          className="text-xs"
-                        >
-                          <Share2 className="w-3 h-3 mr-1" />
-                          LinkedIn
-                        </Button>
-                      </div>
-
-                      <p className="text-xs text-gray-500 text-center mt-2">
-                        Caption copied automatically - paste it when sharing!
-                      </p>
+                      <SocialShareButtons
+                        imageUrl={generatedImage}
+                        caption={`🎮 Check out my amazing AI-generated image by GamerGain! ${userName ? `Featuring ${userName}!` : ''} Create yours now and start earning! 💰 #GamerGain #AIArt #${userName?.replace(/\s+/g, '')}`}
+                      />
                     </div>
                   </motion.div>
                 ) : (
@@ -399,6 +351,7 @@ Created with GamerGain's AI Image Generator 🎮✨
             <div className="max-w-2xl w-full">
               <ImageEditor
                 imageUrl={editedImageUrl || generatedImage}
+                imageId={generatedImageId}
                 onSave={handleSaveEdit}
                 onClose={() => setShowEditor(false)}
               />
