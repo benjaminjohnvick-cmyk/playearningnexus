@@ -53,7 +53,7 @@ export default function Home() {
               $1 Million+ Payout Possible
             </h2>
             <p className="text-xl text-white/90 mb-6">
-              Refer 7 million users and earn 10% of all profits they generate. 
+              For every 7 million users you add, earn 10% of all profits they generate. 
               This is the biggest referral opportunity in gaming history.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
