@@ -15,7 +15,8 @@ import {
   Filter,
   Check,
   CreditCard,
-  Loader2
+  Loader2,
+  FileText
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -251,14 +252,25 @@ export default function InAppGameStore() {
                           Owned
                         </Badge>
                       ) : (
-                        <Button
-                          size="sm"
-                          onClick={() => setCheckoutGame(game)}
-                          className="bg-blue-600"
-                        >
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Buy
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => setCheckoutGame(game)}
+                            className="bg-blue-600"
+                          >
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            Buy
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.location.href = '/Surveys'}
+                            className="border-green-600 text-green-600 hover:bg-green-50"
+                          >
+                            <FileText className="w-4 h-4 mr-1" />
+                            Survey
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </CardContent>

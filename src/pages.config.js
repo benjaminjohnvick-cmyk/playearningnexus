@@ -79,6 +79,8 @@ import MonetizationHub from './pages/MonetizationHub';
 import MovieStarGenerator from './pages/MovieStarGenerator';
 import MyPurchases from './pages/MyPurchases';
 import PayPalManagement from './pages/PayPalManagement';
+import PayoutHistory from './pages/PayoutHistory';
+import PayoutSettings from './pages/PayoutSettings';
 import ReferralAnalytics from './pages/ReferralAnalytics';
 import ReferralContest from './pages/ReferralContest';
 import ReferralTracking from './pages/ReferralTracking';
@@ -93,8 +95,6 @@ import UserDashboard from './pages/UserDashboard';
 import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
-import PayoutSettings from './pages/PayoutSettings';
-import PayoutHistory from './pages/PayoutHistory';
 import __Layout from './Layout.jsx';
 
 
@@ -131,6 +131,8 @@ export const PAGES = {
     "MovieStarGenerator": MovieStarGenerator,
     "MyPurchases": MyPurchases,
     "PayPalManagement": PayPalManagement,
+    "PayoutHistory": PayoutHistory,
+    "PayoutSettings": PayoutSettings,
     "ReferralAnalytics": ReferralAnalytics,
     "ReferralContest": ReferralContest,
     "ReferralTracking": ReferralTracking,
@@ -145,8 +147,6 @@ export const PAGES = {
     "UserInbox": UserInbox,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
-    "PayoutSettings": PayoutSettings,
-    "PayoutHistory": PayoutHistory,
 }
 
 export const pagesConfig = {
