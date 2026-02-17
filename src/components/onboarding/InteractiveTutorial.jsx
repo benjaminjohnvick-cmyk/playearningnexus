@@ -147,8 +147,14 @@ export default function InteractiveTutorial({ isOpen, onComplete }) {
     onComplete();
   };
 
+  const handleClose = (open) => {
+    if (!open) {
+      onComplete();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onComplete()}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <div className="flex items-center justify-between mb-2">

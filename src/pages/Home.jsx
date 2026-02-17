@@ -42,8 +42,8 @@ export default function Home() {
   }, []);
 
   const handleTutorialComplete = () => {
-    localStorage.setItem('tutorial_completed', 'true');
     setShowTutorial(false);
+    localStorage.setItem('tutorial_completed', 'true');
   };
 
   // Track referral link clicks
