@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import EnhancedPayoutDashboard from '../components/payout/EnhancedPayoutDashboard';
+import CampaignAutomation from '../components/automation/CampaignAutomation';
+import AutomatedFollowUps from '../components/automation/AutomatedFollowUps';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
