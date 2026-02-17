@@ -351,7 +351,7 @@ export default function ReferralContest() {
                 <Input
                   value={celebrityName}
                   onChange={(e) => setCelebrityName(e.target.value)}
-                  placeholder="e.g., Tom Cruise, Taylor Swift, LeBron James"
+                  placeholder="e.g. your best friend or a picture of you"
                 />
               </div>
 
