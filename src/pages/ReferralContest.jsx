@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Trophy, Clock, Users, Briefcase, Share2, AlertCircle, Star, DollarSign, Award, Upload, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Trophy, Clock, Users, Briefcase, Share2, AlertCircle, Star, DollarSign, Award, Upload, Image as ImageIcon, Sparkles, Copy } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import ContestLeaderboard from '@/components/contest/ContestLeaderboard';
@@ -125,7 +126,23 @@ export default function ReferralContest() {
     try {
       const result = await base44.integrations.Core.UploadFile({ file });
       setUploadedImageUrl(result.file_url);
-      toast.success('Photo uploaded successfully!');
+      
+      // Create referral link for uploaded image
+      const linkCode = `contest-upload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      await base44.entities.CustomReferralLink.create({
+        user_id: user.id,
+        link_code: linkCode,
+        link_type: 'campaign',
+        campaign_name: `Contest Upload - ${todayContest?.selected_platform}`,
+        clicks: 0,
+        conversions: 0,
+        total_earned: 0
+      });
+      
+      const fullReferralLink = `${window.location.origin}/?ref=${linkCode}`;
+      setReferralLink(fullReferralLink);
+      
+      toast.success('Photo uploaded with tracking link!');
     } catch (error) {
       toast.error('Failed to upload photo');
     } finally {
@@ -421,23 +438,48 @@ export default function ReferralContest() {
                   className="cursor-pointer mb-2"
                 />
                 {uploadedImage && (
-                  <div className="mt-3 relative">
-                    <img
-                      src={URL.createObjectURL(uploadedImage)}
-                      alt="Uploaded"
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="absolute top-2 right-2"
-                      onClick={() => {
-                        setUploadedImage(null);
-                        setUploadedImageUrl(null);
-                      }}
-                    >
-                      Remove
-                    </Button>
+                  <div className="mt-3 space-y-2">
+                    <div className="relative">
+                      <img
+                        src={URL.createObjectURL(uploadedImage)}
+                        alt="Uploaded"
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="absolute top-2 right-2"
+                        onClick={() => {
+                          setUploadedImage(null);
+                          setUploadedImageUrl(null);
+                          setReferralLink(null);
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                    {referralLink && !generatedImage && (
+                      <div className="bg-green-50 p-2 rounded border border-green-200">
+                        <p className="text-xs text-green-800 font-medium mb-1">📎 Tracking Link Created</p>
+                        <div className="flex gap-1">
+                          <Input
+                            value={referralLink}
+                            readOnly
+                            className="text-xs h-7"
+                          />
+                          <Button
+                            size="sm"
+                            className="h-7"
+                            onClick={() => {
+                              navigator.clipboard.writeText(referralLink);
+                              toast.success('Link copied!');
+                            }}
+                          >
+                            <Copy className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
                 <p className="text-xs text-purple-700 mt-2 flex items-center gap-1">
