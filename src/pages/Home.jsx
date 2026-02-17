@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp } from "lucide-react";
@@ -7,8 +7,40 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 import AIChatbot from "../components/home/AIChatbot";
+import { base44 } from '@/api/base44Client';
 
 export default function Home() {
+  // Track referral link clicks
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref');
+    
+    if (refCode) {
+      // Track the click
+      const trackClick = async () => {
+        try {
+          // Find the referral link
+          const links = await base44.entities.CustomReferralLink.filter({ link_code: refCode });
+          
+          if (links.length > 0) {
+            const link = links[0];
+            // Increment clicks
+            await base44.entities.CustomReferralLink.update(link.id, {
+              clicks: (link.clicks || 0) + 1
+            });
+            
+            // Store referral code in localStorage for future conversion tracking
+            localStorage.setItem('referralCode', refCode);
+            localStorage.setItem('referralTimestamp', new Date().toISOString());
+          }
+        } catch (error) {
+          console.error('Error tracking referral click:', error);
+        }
+      };
+      
+      trackClick();
+    }
+  }, []);
   const features = [
     {
       icon: Gamepad2,
