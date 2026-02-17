@@ -32,6 +32,7 @@ export default function ReferralContest() {
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
   const [imageDescription, setImageDescription] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [referralLink, setReferralLink] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -155,12 +156,27 @@ export default function ReferralContest() {
         existing_image_urls: uploadedImageUrl ? [uploadedImageUrl] : undefined
       });
       
-      return result.url;
+      // Create referral link for contest
+      const linkCode = `contest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const referralLinkData = await base44.entities.CustomReferralLink.create({
+        user_id: user.id,
+        link_code: linkCode,
+        link_type: 'campaign',
+        campaign_name: `Contest ${todayContest.selected_platform} - ${celebrityName}`,
+        clicks: 0,
+        conversions: 0,
+        total_earned: 0
+      });
+      
+      const fullReferralLink = `${window.location.origin}/?ref=${linkCode}`;
+      
+      return { imageUrl: result.url, referralLink: fullReferralLink };
     },
-    onSuccess: (imageUrl) => {
+    onSuccess: ({ imageUrl, referralLink }) => {
       setGeneratedImage(imageUrl);
+      setReferralLink(referralLink);
       setIsGenerating(false);
-      toast.success('Image generated successfully!');
+      toast.success('Image and referral link generated!');
     },
     onError: () => {
       setIsGenerating(false);
@@ -479,9 +495,37 @@ export default function ReferralContest() {
                 <div className="mt-4 space-y-3">
                   <img src={generatedImage} alt="Generated" className="w-full rounded-lg shadow-lg" />
                   
+                  {referralLink && (
+                    <div className="bg-gradient-to-r from-yellow-50 to-amber-50 p-4 rounded-lg border-2 border-yellow-300">
+                      <Label className="text-sm font-semibold text-yellow-900 mb-2 block flex items-center gap-2">
+                        <Trophy className="w-4 h-4" />
+                        Your Contest Referral Link
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={referralLink}
+                          readOnly
+                          className="text-xs bg-white"
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText(referralLink);
+                            toast.success('Referral link copied!');
+                          }}
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <p className="text-xs text-yellow-800 mt-2 font-medium">
+                        🏆 Use this link in your contest posts to track referrals and win prizes!
+                      </p>
+                    </div>
+                  )}
+                  
                   <SocialShareButtons
                     imageUrl={generatedImage}
-                    caption={`🎮 Join me on GamerGain! Play games, complete surveys, and earn real money! ${celebrityName} approves! 💰 Sign up now and start earning: [Your Referral Link] #GamerGain #EarnMoney #Gaming`}
+                    caption={`🎮 Join me on GamerGain! Play games, complete surveys, and earn real money! ${celebrityName} approves! 💰 Sign up now: ${referralLink || '[Link]'} #GamerGain #EarnMoney #Gaming`}
                     platform={getPlatformName(todayContest.selected_platform)}
                   />
                   

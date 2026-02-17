@@ -25,6 +25,7 @@ export default function MovieStarGenerator() {
   const [showEditor, setShowEditor] = useState(false);
   const [editedImageUrl, setEditedImageUrl] = useState(null);
   const [selectedGalleryImage, setSelectedGalleryImage] = useState(null);
+  const [referralLink, setReferralLink] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -95,13 +96,28 @@ export default function MovieStarGenerator() {
         description: imageDescription
       });
       
-      return { imageUrl: result.url, imageId: savedImage.id };
+      // Create referral link
+      const linkCode = `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const referralLinkData = await base44.entities.CustomReferralLink.create({
+        user_id: user.id,
+        link_code: linkCode,
+        link_type: 'campaign',
+        campaign_name: `AI Image - ${userName}`,
+        clicks: 0,
+        conversions: 0,
+        total_earned: 0
+      });
+      
+      const fullReferralLink = `${window.location.origin}/?ref=${linkCode}`;
+      
+      return { imageUrl: result.url, imageId: savedImage.id, referralLink: fullReferralLink };
     },
-    onSuccess: ({ imageUrl, imageId }) => {
+    onSuccess: ({ imageUrl, imageId, referralLink }) => {
       setGeneratedImage(imageUrl);
       setGeneratedImageId(imageId);
+      setReferralLink(referralLink);
       setEditedImageUrl(null);
-      toast.success('Image generated successfully!');
+      toast.success('Image generated successfully with referral link!');
     },
     onError: () => {
       toast.error('Failed to generate image');
@@ -321,9 +337,34 @@ Created with GamerGain's AI Image Generator 🎮✨
                         </Button>
                       </div>
 
+                      {referralLink && (
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border-2 border-green-200 mb-3">
+                          <Label className="text-sm font-semibold text-green-800 mb-2 block">Your Tracking Link</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              value={referralLink}
+                              readOnly
+                              className="text-xs"
+                            />
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                navigator.clipboard.writeText(referralLink);
+                                toast.success('Referral link copied!');
+                              }}
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          <p className="text-xs text-green-700 mt-2">
+                            💰 Share this link to earn 10% from all referrals!
+                          </p>
+                        </div>
+                      )}
+
                       <SocialShareButtons
                         imageUrl={generatedImage}
-                        caption={`🎮 Check out my amazing AI-generated image by GamerGain! ${userName ? `Featuring ${userName}!` : ''} Create yours now and start earning! 💰 #GamerGain #AIArt #${userName?.replace(/\s+/g, '')}`}
+                        caption={`🎮 Check out my amazing AI-generated image by GamerGain! ${userName ? `Featuring ${userName}!` : ''} Create yours now and start earning! 💰 ${referralLink ? `\n\nJoin here: ${referralLink}` : ''} #GamerGain #AIArt #${userName?.replace(/\s+/g, '')}`}
                       />
                     </div>
                   </motion.div>
