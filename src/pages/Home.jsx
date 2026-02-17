@@ -12,43 +12,6 @@ import SupportChatButton from '../components/support/SupportChatButton';
 import InteractiveTutorial from '../components/onboarding/InteractiveTutorial';
 
 export default function Home() {
-  const [showTutorial, setShowTutorial] = React.useState(false);
-  const [user, setUser] = React.useState(null);
-
-  // Check if user just signed up - only once per session
-  useEffect(() => {
-    const checkNewUser = async () => {
-      try {
-        // Check both localStorage and sessionStorage
-        if (localStorage.getItem('tutorial_completed') === 'true' || 
-            sessionStorage.getItem('tutorial_shown') === 'true') {
-          return;
-        }
-
-        const currentUser = await base44.auth.me();
-        setUser(currentUser);
-        
-        // Mark as shown in this session
-        sessionStorage.setItem('tutorial_shown', 'true');
-        
-        // Check if user needs tutorial (new signup)
-        const accountAge = new Date() - new Date(currentUser.created_date);
-        const isNewUser = accountAge < 24 * 60 * 60 * 1000;
-        
-        if (isNewUser) {
-          setTimeout(() => setShowTutorial(true), 500);
-        }
-      } catch (error) {
-        // Not logged in
-      }
-    };
-    checkNewUser();
-  }, []);
-
-  const handleTutorialComplete = () => {
-    localStorage.setItem('tutorial_completed', 'true');
-    setShowTutorial(false);
-  };
 
   // Track referral link clicks
   useEffect(() => {
