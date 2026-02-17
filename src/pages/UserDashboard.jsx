@@ -21,7 +21,6 @@ import PointsBadgeSystem from '../components/gamification/PointsBadgeSystem';
 import AIChatSupport from '../components/support/AIChatSupport';
 import PersonalizedGameBundles from '../components/bundles/PersonalizedGameBundles';
 import EnhancedPointsSystem from '../components/gamification/EnhancedPointsSystem';
-import InteractiveTutorial from '../components/onboarding/InteractiveTutorial';
 import PersonalizedRecommendations from '../components/ai/PersonalizedRecommendations';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -36,7 +35,6 @@ export default function UserDashboard() {
   const [currentGame, setCurrentGame] = useState(null);
   const [showSharePrompt, setShowSharePrompt] = useState(false);
   const [gameToShare, setGameToShare] = useState(null);
-  const [showTutorial, setShowTutorial] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -48,11 +46,6 @@ export default function UserDashboard() {
         // Check if user has agreed to terms
         if (!currentUser.agreed_to_terms) {
           setShowULA(true);
-        }
-        
-        // Show tutorial for new users
-        if (!currentUser.onboarding_completed) {
-          setShowTutorial(true);
         }
         
         // Check if user needs to complete surveys today
@@ -189,15 +182,6 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
-      <InteractiveTutorial
-        isOpen={showTutorial}
-        onClose={() => setShowTutorial(false)}
-        onComplete={() => {
-          setShowTutorial(false);
-          window.location.reload();
-        }}
-      />
-      
       {gameToShare && (
         <SocialSharePrompt
           isOpen={showSharePrompt}
