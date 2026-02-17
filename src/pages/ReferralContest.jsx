@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Trophy, Clock, Users, Briefcase, Share2, AlertCircle, Star, DollarSign, Award } from 'lucide-react';
+import { Trophy, Clock, Users, Briefcase, Share2, AlertCircle, Star, DollarSign, Award, Upload, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import ContestLeaderboard from '@/components/contest/ContestLeaderboard';
@@ -27,6 +27,10 @@ export default function ReferralContest() {
   const [businessName, setBusinessName] = useState('');
   const [businessEmail, setBusinessEmail] = useState('');
   const [outreachMessage, setOutreachMessage] = useState('');
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
+  const [imageDescription, setImageDescription] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -108,22 +112,57 @@ export default function ReferralContest() {
     return () => clearInterval(timer);
   }, [participation]);
 
+  // Handle image upload
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadedImage(file);
+    setIsUploading(true);
+
+    try {
+      const result = await base44.integrations.Core.UploadFile({ file });
+      setUploadedImageUrl(result.file_url);
+      toast.success('Photo uploaded successfully!');
+    } catch (error) {
+      toast.error('Failed to upload photo');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // Generate image mutation
   const generateImageMutation = useMutation({
     mutationFn: async () => {
-      const prompt = `Professional promotional image featuring ${celebrityName} as a movie star promoting GamerGain - a gaming platform where you earn real money. Make it eye-catching and suitable for social media. Include GamerGain branding elements. Cinematic lighting, high quality.`;
+      let prompt;
+      
+      if (uploadedImageUrl) {
+        // Transform uploaded photo
+        prompt = `Create a high-quality, creative transformation of ${celebrityName} in the reference image. ${imageDescription || 'Transform them into an epic, cinematic style'}.
+        Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
+        The image should be vibrant, professional, and social media ready. 
+        Style: photorealistic, dynamic lighting, 4K quality.`;
+      } else {
+        // Generate stock brand image
+        prompt = `Create a high-quality promotional image for GamerGain gaming platform featuring ${celebrityName}. ${imageDescription}.
+        Include GamerGain branding elements (logo or text) integrated naturally. Gaming aesthetic, vibrant colors, professional, social media ready.
+        Style: photorealistic, dynamic lighting, 4K quality, modern gaming brand.`;
+      }
       
       const result = await base44.integrations.Core.GenerateImage({
-        prompt
+        prompt,
+        existing_image_urls: uploadedImageUrl ? [uploadedImageUrl] : undefined
       });
       
       return result.url;
     },
     onSuccess: (imageUrl) => {
       setGeneratedImage(imageUrl);
+      setIsGenerating(false);
       toast.success('Image generated successfully!');
     },
     onError: () => {
+      setIsGenerating(false);
       toast.error('Failed to generate image');
     }
   });
@@ -222,9 +261,14 @@ export default function ReferralContest() {
 
   const handleGenerateImage = () => {
     if (!celebrityName.trim()) {
-      toast.error('Please enter a celebrity name');
+      toast.error('Please enter a name');
       return;
     }
+    if (!imageDescription.trim()) {
+      toast.error('Please describe the image style');
+      return;
+    }
+    setIsGenerating(true);
     generateImageMutation.mutate();
   };
 
@@ -346,21 +390,88 @@ export default function ReferralContest() {
             </div>
 
             <div className="space-y-4">
+              {/* Upload Photo Section */}
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-lg border-2 border-dashed border-purple-300">
+                <div className="flex items-center gap-2 mb-3">
+                  <Upload className="w-5 h-5 text-purple-600" />
+                  <label className="block text-sm font-semibold text-purple-900">Upload Your Photo (Optional)</label>
+                </div>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={isUploading}
+                  className="cursor-pointer mb-2"
+                />
+                {uploadedImage && (
+                  <div className="mt-3 relative">
+                    <img
+                      src={URL.createObjectURL(uploadedImage)}
+                      alt="Uploaded"
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="absolute top-2 right-2"
+                      onClick={() => {
+                        setUploadedImage(null);
+                        setUploadedImageUrl(null);
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                )}
+                <p className="text-xs text-purple-700 mt-2 flex items-center gap-1">
+                  <ImageIcon className="w-3 h-3" />
+                  Upload from phone/PC to transform your photo, or skip to create stock AI images
+                </p>
+              </div>
+
+              {/* Name Input */}
               <div>
                 <label className="block text-sm font-medium mb-2">Enter a Name</label>
                 <Input
                   value={celebrityName}
                   onChange={(e) => setCelebrityName(e.target.value)}
-                  placeholder="e.g. your best friend or a picture of you"
+                  placeholder="e.g. your best friend or your name"
                 />
+                <p className="text-xs text-gray-500 mt-1">Name to feature in the image</p>
+              </div>
+
+              {/* Image Description */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  {uploadedImageUrl ? 'Transformation Style' : 'Image Description'}
+                </label>
+                <Textarea
+                  value={imageDescription}
+                  onChange={(e) => setImageDescription(e.target.value)}
+                  placeholder={uploadedImageUrl ? "e.g., as a superhero, cyberpunk style, movie star" : "e.g., gaming champion holding a trophy, futuristic gamer setup"}
+                  rows={3}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {uploadedImageUrl ? 'How to transform your photo' : 'Describe the GamerGain brand image to create'}
+                </p>
               </div>
 
               <Button
                 onClick={handleGenerateImage}
-                disabled={!celebrityName.trim() || isGenerating}
+                disabled={!celebrityName.trim() || !imageDescription.trim() || isGenerating || isUploading}
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
               >
-                {isGenerating ? 'Generating...' : 'Generate AI Image'}
+                {isGenerating ? (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                    Generating AI Image...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate AI Image
+                  </>
+                )}
               </Button>
 
               {generatedImage && (
