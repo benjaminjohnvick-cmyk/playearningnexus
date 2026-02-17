@@ -65,14 +65,24 @@ export default function MovieStarGenerator() {
 
   const generateImageMutation = useMutation({
     mutationFn: async () => {
-      const prompt = `Create a high-quality, creative transformation of ${userName} in the reference image. ${imageDescription ? imageDescription : 'Transform them into an epic, cinematic style'}.
-      Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
-      The image should be vibrant, professional, and social media ready. 
-      Style: photorealistic, dynamic lighting, 4K quality.`;
+      let prompt;
+      
+      if (uploadedImageUrl) {
+        // Transform uploaded photo
+        prompt = `Create a high-quality, creative transformation of ${userName} in the reference image. ${imageDescription ? imageDescription : 'Transform them into an epic, cinematic style'}.
+        Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
+        The image should be vibrant, professional, and social media ready. 
+        Style: photorealistic, dynamic lighting, 4K quality.`;
+      } else {
+        // Generate stock brand image
+        prompt = `Create a high-quality promotional image for GamerGain gaming platform featuring ${userName}. ${imageDescription}.
+        Include GamerGain branding elements (logo or text) integrated naturally. Gaming aesthetic, vibrant colors, professional, social media ready.
+        Style: photorealistic, dynamic lighting, 4K quality, modern gaming brand.`;
+      }
       
       const result = await base44.integrations.Core.GenerateImage({
         prompt,
-        existing_image_urls: [uploadedImageUrl]
+        existing_image_urls: uploadedImageUrl ? [uploadedImageUrl] : undefined
       });
       
       // Save to database
@@ -172,7 +182,7 @@ Created with GamerGain's AI Image Generator 🎮✨
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent mb-2">
             AI Image Generator
           </h1>
-          <p className="text-gray-600">Upload your photo, enter your name, and let AI create something amazing</p>
+          <p className="text-gray-600">Upload your photo or create GamerGain brand images with AI</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -186,7 +196,7 @@ Created with GamerGain's AI Image Generator 🎮✨
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label>Upload Your Photo</Label>
+                <Label>Upload Your Photo (Optional)</Label>
                 <div className="mt-2">
                   <Input
                     type="file"
@@ -217,7 +227,7 @@ Created with GamerGain's AI Image Generator 🎮✨
                   )}
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Upload your photo from phone or PC
+                  Upload from phone/PC to transform your photo, or skip to create stock AI images
                 </p>
               </div>
 
@@ -230,26 +240,26 @@ Created with GamerGain's AI Image Generator 🎮✨
                   className="mt-2"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  This will be used in the AI transformation
+                  Name to feature in the image
                 </p>
               </div>
 
               <div>
-                <Label>Transformation Style</Label>
+                <Label>{uploadedImageUrl ? 'Transformation Style' : 'Image Description'}</Label>
                 <Input
-                  placeholder="e.g., as a superhero, cyberpunk style, fantasy character"
+                  placeholder={uploadedImageUrl ? "e.g., as a superhero, cyberpunk style" : "e.g., gaming champion holding a trophy, futuristic gamer setup"}
                   value={imageDescription}
                   onChange={(e) => setImageDescription(e.target.value)}
                   className="mt-2"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Describe how to transform your photo
+                  {uploadedImageUrl ? 'How to transform your photo' : 'Describe the GamerGain brand image to create'}
                 </p>
               </div>
 
               <Button
                 onClick={() => generateImageMutation.mutate()}
-                disabled={!uploadedImageUrl || !userName.trim() || !imageDescription.trim() || generateImageMutation.isPending}
+                disabled={!userName.trim() || !imageDescription.trim() || generateImageMutation.isPending}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600"
               >
                 {generateImageMutation.isPending ? (
@@ -414,8 +424,8 @@ Created with GamerGain's AI Image Generator 🎮✨
                 <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-purple-700 font-bold">1</span>
                 </div>
-                <p className="text-sm font-semibold">Upload Photo</p>
-                <p className="text-xs text-gray-500">Upload your photo</p>
+                <p className="text-sm font-semibold">Upload or Skip</p>
+                <p className="text-xs text-gray-500">Upload photo or create stock image</p>
               </div>
               <div className="text-center">
                 <div className="bg-pink-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
