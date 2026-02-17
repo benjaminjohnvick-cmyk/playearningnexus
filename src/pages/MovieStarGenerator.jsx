@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, Download, Share2, Loader2, Copy, Check } from 'lucide-react';
+import { Sparkles, Download, Share2, Loader2, Copy, Check, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import ImageEditor from '@/components/image/ImageEditor';
+import ImageGallery from '@/components/image/ImageGallery';
 
 export default function MovieStarGenerator() {
   const [user, setUser] = useState(null);
@@ -17,8 +18,12 @@ export default function MovieStarGenerator() {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
   const [generatedImage, setGeneratedImage] = useState(null);
+  const [generatedImageId, setGeneratedImageId] = useState(null);
   const [captionCopied, setCaptionCopied] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editedImageUrl, setEditedImageUrl] = useState(null);
+  const [selectedGalleryImage, setSelectedGalleryImage] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -31,6 +36,15 @@ export default function MovieStarGenerator() {
     };
     fetchUser();
   }, []);
+
+  const { data: galleryImages = [] } = useQuery({
+    queryKey: ['generated-images', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      return await base44.entities.GeneratedImage.filter({ user_id: user.id }, '-created_date', 50);
+    },
+    enabled: !!user
+  });
 
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -61,16 +75,45 @@ export default function MovieStarGenerator() {
         existing_image_urls: [uploadedImageUrl]
       });
       
-      return result.url;
+      // Save to database
+      const savedImage = await base44.entities.GeneratedImage.create({
+        user_id: user.id,
+        user_name: userName,
+        image_url: result.url,
+        original_image_url: uploadedImageUrl,
+        description: imageDescription
+      });
+      
+      return { imageUrl: result.url, imageId: savedImage.id };
     },
-    onSuccess: (imageUrl) => {
+    onSuccess: ({ imageUrl, imageId }) => {
       setGeneratedImage(imageUrl);
+      setGeneratedImageId(imageId);
+      setEditedImageUrl(null);
       toast.success('Image generated successfully!');
     },
     onError: () => {
       toast.error('Failed to generate image');
     }
   });
+
+  const handleSaveEdit = async (editedUrl) => {
+    if (generatedImageId) {
+      await base44.entities.GeneratedImage.update(generatedImageId, {
+        edited_image_url: editedUrl
+      });
+      setEditedImageUrl(editedUrl);
+      setShowEditor(false);
+    }
+  };
+
+  const handleGalleryImageSelect = (image) => {
+    setSelectedGalleryImage(image);
+    setGeneratedImage(image.edited_image_url || image.image_url);
+    setGeneratedImageId(image.id);
+    setUserName(image.user_name);
+    setImageDescription(image.description);
+  };
 
   const handleDownload = async () => {
     if (!generatedImage) return;
@@ -250,13 +293,22 @@ Created with GamerGain's AI Image Generator 🎮✨
                     />
 
                     <div className="space-y-2">
-                      <Button
-                        onClick={handleDownload}
-                        className="w-full bg-green-600 hover:bg-green-700"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Download Image
-                      </Button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          onClick={() => setShowEditor(true)}
+                          variant="outline"
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          onClick={handleDownload}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Download
+                        </Button>
+                      </div>
 
                       <div className="border rounded-lg p-3 bg-gray-50">
                         <div className="flex items-center justify-between mb-2">
@@ -330,7 +382,28 @@ Created with GamerGain's AI Image Generator 🎮✨
           </Card>
         </div>
 
-        {/* Gallery of Previous Generations */}
+        {/* Image Editor Modal */}
+        {showEditor && generatedImage && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
+            <div className="max-w-2xl w-full">
+              <ImageEditor
+                imageUrl={editedImageUrl || generatedImage}
+                onSave={handleSaveEdit}
+                onClose={() => setShowEditor(false)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Gallery */}
+        <div className="mt-6">
+          <ImageGallery
+            images={galleryImages}
+            onImageSelect={handleGalleryImageSelect}
+          />
+        </div>
+
+        {/* How It Works */}
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>How It Works</CardTitle>
