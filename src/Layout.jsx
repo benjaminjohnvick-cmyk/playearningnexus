@@ -117,6 +117,7 @@ export default function Layout({ children, currentPageName }) {
 
   const navigation = [
     { name: 'Home', icon: Home, path: 'Home' },
+    { name: 'Complete Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
     { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
     { name: 'Store', icon: DollarSign, path: 'InAppGameStore' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },

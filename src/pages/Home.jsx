@@ -15,24 +15,28 @@ export default function Home() {
   const [showTutorial, setShowTutorial] = React.useState(false);
   const [user, setUser] = React.useState(null);
 
-  // Check if user just signed up
+  // Check if user just signed up - only once per session
   useEffect(() => {
     const checkNewUser = async () => {
       try {
-        // Always check localStorage first
-        if (localStorage.getItem('tutorial_completed') === 'true') {
+        // Check both localStorage and sessionStorage
+        if (localStorage.getItem('tutorial_completed') === 'true' || 
+            sessionStorage.getItem('tutorial_shown') === 'true') {
           return;
         }
 
         const currentUser = await base44.auth.me();
         setUser(currentUser);
         
+        // Mark as shown in this session
+        sessionStorage.setItem('tutorial_shown', 'true');
+        
         // Check if user needs tutorial (new signup)
         const accountAge = new Date() - new Date(currentUser.created_date);
         const isNewUser = accountAge < 24 * 60 * 60 * 1000;
         
         if (isNewUser) {
-          setShowTutorial(true);
+          setTimeout(() => setShowTutorial(true), 500);
         }
       } catch (error) {
         // Not logged in
