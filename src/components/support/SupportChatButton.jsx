@@ -5,6 +5,20 @@ import { MessageCircle } from 'lucide-react';
 import AISupportChatbot from './AISupportChatbot';
 
 export default function SupportChatButton() {
+  const [user, setUser] = useState(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+      } catch (error) {
+        // User not logged in
+      }
+    };
+    fetchUser();
+  }, []);
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null);
 

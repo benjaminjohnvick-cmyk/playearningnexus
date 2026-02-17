@@ -1,293 +1,352 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Bot, Send, AlertCircle, User, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  MessageCircle, 
+  Send, 
+  Bot, 
+  User, 
+  X, 
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  Minimize2,
+  Maximize2
+} from 'lucide-react';
 import { toast } from 'sonner';
+import moment from 'moment';
 
-export default function AISupportChatbot({ user, onClose }) {
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: "👋 Hi! I'm your AI support assistant. I can help with:\n\n• Game mechanics & how-to questions\n• In-app purchases & billing\n• Account issues\n• Technical problems\n\nWhat can I help you with today?",
-      timestamp: new Date().toISOString()
-    }
-  ]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+const FAQ_DATABASE = {
+  referrals: [
+    { q: "How do I create a referral link?", a: "Go to Referral Tracking page and click 'Create New Link'. You can customize it for different campaigns and platforms." },
+    { q: "When do I get paid for referrals?", a: "We operate on Net 90 payment terms. Your earnings are paid out 90 days after they're earned, with a minimum threshold of $50." },
+    { q: "How much do I earn per referral?", a: "User referrals: $5-$50 based on tier. Business referrals: $100-$500. Plus ongoing commissions!" },
+    { q: "What is the Mega Millionaire opportunity?", a: "For every 7 million users you refer, you earn 10% of ALL their profits - unlimited earning potential!" }
+  ],
+  payouts: [
+    { q: "How do I set up my payout method?", a: "Visit Payout Settings to configure PayPal, Bank Transfer, or Stripe as your payment method." },
+    { q: "When will I receive my payout?", a: "Payouts are processed on Net 90 terms. Check Payout History to see scheduled payment dates." },
+    { q: "What is the minimum payout?", a: "The minimum payout threshold is $50. Earnings below this will accumulate until you reach the threshold." },
+    { q: "Can I change my payout method?", a: "Yes, update your payout preferences anytime in Payout Settings. Changes apply to future payouts." }
+  ],
+  platform: [
+    { q: "How do achievements work?", a: "Earn badges and points by hitting referral milestones. View your achievements in Referral Analytics > Achievements tab." },
+    { q: "What are A/B tests?", a: "Test different referral links or campaigns to see which performs better. Create tests in the Analytics dashboard." },
+    { q: "How do I track my performance?", a: "Visit Referral Analytics for detailed stats, predictions, and customizable reports on your referral performance." }
+  ]
+};
+
+export default function AISupportChatbot({ user, isOpen, onClose, initialMessage = null }) {
+  const [conversationId, setConversationId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef(null);
   const queryClient = useQueryClient();
 
+  // Initialize conversation
   useEffect(() => {
+    if (isOpen && !conversationId) {
+      const newConvId = `support_${user.id}_${Date.now()}`;
+      setConversationId(newConvId);
+      
+      const welcomeMsg = {
+        id: 'welcome',
+        sender_type: 'support_ai',
+        message: `Hi ${user.full_name}! 👋 I'm your AI support assistant. I can help you with:\n\n• Referral questions\n• Payout information\n• Platform features\n• Troubleshooting\n\nWhat can I help you with today?`,
+        created_date: new Date().toISOString()
+      };
+      
+      setMessages([welcomeMsg]);
+      
+      if (initialMessage) {
+        setTimeout(() => handleSendMessage(initialMessage), 500);
+      }
+    }
+  }, [isOpen, conversationId, user, initialMessage]);
+
+  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
 
-  const sendMessageMutation = useMutation({
+  const findFAQAnswer = (question) => {
+    const lowerQ = question.toLowerCase();
+    
+    for (const category in FAQ_DATABASE) {
+      for (const faq of FAQ_DATABASE[category]) {
+        if (lowerQ.includes(faq.q.toLowerCase().split(' ').slice(0, 3).join(' '))) {
+          return faq.a;
+        }
+      }
+    }
+    
+    // Check for keyword matches
+    if (lowerQ.includes('referral') && lowerQ.includes('link')) {
+      return FAQ_DATABASE.referrals[0].a;
+    }
+    if (lowerQ.includes('payout') || lowerQ.includes('payment') || lowerQ.includes('paid')) {
+      return FAQ_DATABASE.payouts[0].a;
+    }
+    if (lowerQ.includes('earn') || lowerQ.includes('money')) {
+      return FAQ_DATABASE.referrals[2].a;
+    }
+    
+    return null;
+  };
+
+  const sendAIMessageMutation = useMutation({
     mutationFn: async (userMessage) => {
-      const chatHistory = messages.map(m => ({
-        role: m.role,
-        content: m.content
-      }));
+      // Check FAQ first
+      const faqAnswer = findFAQAnswer(userMessage);
+      
+      if (faqAnswer) {
+        return {
+          message: faqAnswer,
+          isEscalation: false
+        };
+      }
+      
+      // Use AI for complex queries
+      const context = `You are a helpful support agent for GamerGain, a referral platform. 
+      
+User asking: ${user.full_name} (${user.email})
+User stats: ${user.total_referrals || 0} referrals, $${user.total_earnings || 0} earned
 
-      // Get user context
-      const userContext = {
-        user_id: user.id,
-        email: user.email,
-        total_earnings: user.total_earnings,
-        total_surveys_completed: user.total_surveys_completed,
-        game_library: user.game_library,
-        current_balance: user.current_balance
-      };
+Key platform info:
+- User referrals: $5-$50 per user (tier-based)
+- Business referrals: $100-$500 per business
+- Mega Millionaire: 10% of all profits from 7M users referred
+- Payment terms: Net 90, minimum $50
+- Features: A/B testing, predictive analytics, gamification
 
-      const systemPrompt = `You are a helpful customer support AI for GamerGain, a gaming platform. 
+User question: ${userMessage}
 
-User Context:
-- User ID: ${userContext.user_id}
-- Email: ${userContext.email}
-- Total Earnings: $${userContext.total_earnings}
-- Surveys Completed: ${userContext.total_surveys_completed}
-- Games Owned: ${userContext.game_library?.length || 0}
-- Current Balance: $${userContext.current_balance}
+Provide a helpful, friendly response. If the issue seems complex or requires human review (account issues, payment problems, technical bugs), suggest escalation.`;
 
-Platform Information:
-- GamerGain is a game discovery platform with survey-based monetization
-- Users earn money by completing surveys and playing games
-- 50/50 revenue share between platform and game developers
-- Users can cash out via PayPal when balance reaches $10
-- All games undergo approval before being featured
-
-Your role:
-1. Answer questions about game mechanics, purchases, and account issues
-2. Be friendly, helpful, and concise
-3. If the issue requires human support (billing disputes, account security, technical bugs), recommend escalating to a support ticket
-4. Provide specific instructions when possible
-5. Never make up information - if you don't know, say so and suggest escalation
-
-Previous conversation:
-${chatHistory.map(m => `${m.role}: ${m.content}`).join('\n')}
-
-User's question: ${userMessage}
-
-Provide a helpful response. If this issue needs human support, end your message with: [ESCALATE_TO_HUMAN]`;
-
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: systemPrompt
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: context,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+            should_escalate: { type: 'boolean' },
+            escalation_reason: { type: 'string' }
+          }
+        }
       });
 
       return {
-        response,
-        shouldEscalate: response.includes('[ESCALATE_TO_HUMAN]'),
-        userContext
+        message: result.message,
+        isEscalation: result.should_escalate,
+        escalationReason: result.escalation_reason
       };
-    },
-    onSuccess: ({ response, shouldEscalate, userContext }) => {
-      const cleanResponse = response.replace('[ESCALATE_TO_HUMAN]', '').trim();
-      
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: cleanResponse,
-        timestamp: new Date().toISOString()
-      }]);
-
-      if (shouldEscalate) {
-        // Show escalation option
-        setMessages(prev => [...prev, {
-          role: 'system',
-          content: 'escalate_option',
-          timestamp: new Date().toISOString()
-        }]);
-      }
-
-      setIsTyping(false);
-    },
-    onError: () => {
-      toast.error('Failed to get response');
-      setIsTyping(false);
     }
   });
 
   const escalateToHumanMutation = useMutation({
-    mutationFn: async () => {
-      const chatHistory = messages.filter(m => m.role !== 'system');
-      
-      const ticket = await base44.entities.SupportTicket.create({
+    mutationFn: async (reason) => {
+      await base44.entities.SupportTicket.create({
         user_id: user.id,
-        user_email: user.email,
-        user_name: user.full_name,
-        category: 'user_support',
+        category: 'escalation',
         subject: 'Escalated from AI Chat',
-        description: `User conversation escalated from AI support.\n\nChat History:\n${chatHistory.map(m => `${m.role}: ${m.content}`).join('\n\n')}`,
-        status: 'open',
-        priority: 'medium',
-        escalated_from_ai: true,
-        chat_history: chatHistory,
-        player_data_snapshot: {
-          total_earnings: user.total_earnings,
-          total_surveys_completed: user.total_surveys_completed,
-          game_library: user.game_library,
-          current_balance: user.current_balance
-        }
+        description: `Conversation escalated from AI support.\n\nReason: ${reason}\n\nConversation ID: ${conversationId}`,
+        priority: 'high',
+        status: 'open'
       });
-
-      return ticket;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['supportTickets']);
-      toast.success('Ticket created! Our team will respond within 24 hours.');
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: "✅ I've created a support ticket for you. A human agent will review your case and respond via email within 24 hours. Your ticket includes our full conversation and your account details.",
-        timestamp: new Date().toISOString()
-      }]);
+      const escalationMsg = {
+        id: `escalation_${Date.now()}`,
+        sender_type: 'support_ai',
+        message: "✅ I've escalated your issue to our human support team. They'll reach out within 24 hours. Your ticket has been created and you'll receive email updates.",
+        message_type: 'escalation',
+        created_date: new Date().toISOString()
+      };
+      setMessages(prev => [...prev, escalationMsg]);
+      toast.success('Escalated to human support');
     }
   });
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSendMessage = async (messageText = null) => {
+    const msgToSend = messageText || inputMessage.trim();
+    if (!msgToSend) return;
 
-    const userMessage = {
-      role: 'user',
-      content: input,
-      timestamp: new Date().toISOString()
+    const userMsg = {
+      id: `user_${Date.now()}`,
+      sender_type: 'user',
+      message: msgToSend,
+      created_date: new Date().toISOString()
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsTyping(true);
-    sendMessageMutation.mutate(input);
+    setMessages(prev => [...prev, userMsg]);
+    setInputMessage('');
+
+    // Show typing indicator
+    const typingMsg = {
+      id: 'typing',
+      sender_type: 'support_ai',
+      message: '...',
+      isTyping: true,
+      created_date: new Date().toISOString()
+    };
+    setMessages(prev => [...prev, typingMsg]);
+
+    try {
+      const response = await sendAIMessageMutation.mutateAsync(msgToSend);
+      
+      setMessages(prev => prev.filter(m => m.id !== 'typing'));
+
+      const aiMsg = {
+        id: `ai_${Date.now()}`,
+        sender_type: 'support_ai',
+        message: response.message,
+        created_date: new Date().toISOString()
+      };
+      setMessages(prev => [...prev, aiMsg]);
+
+      if (response.isEscalation) {
+        const confirmMsg = {
+          id: `confirm_${Date.now()}`,
+          sender_type: 'support_ai',
+          message: "This seems like something our human support team should handle. Would you like me to escalate this to them?",
+          showEscalateButton: true,
+          escalationReason: response.escalationReason,
+          created_date: new Date().toISOString()
+        };
+        setMessages(prev => [...prev, confirmMsg]);
+      }
+    } catch (error) {
+      setMessages(prev => prev.filter(m => m.id !== 'typing'));
+      toast.error('Failed to send message');
+    }
   };
 
-  const quickQuestions = [
-    "How do I cash out my earnings?",
-    "Why was my game not approved?",
-    "How do in-app purchases work?",
-    "I can't log into my account"
-  ];
+  const handleEscalate = (reason) => {
+    escalateToHumanMutation.mutate(reason);
+  };
+
+  if (!isOpen) return null;
 
   return (
-    <Card className="fixed bottom-4 right-4 w-96 h-[600px] flex flex-col shadow-2xl z-50">
-      <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+    <div className="fixed bottom-4 right-4 z-50">
+      <Card className={`border-2 border-blue-300 shadow-2xl transition-all ${isMinimized ? 'w-80' : 'w-96'}`}>
+        <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 flex flex-row items-center justify-between">
+          <div className="flex items-center gap-2">
             <Bot className="w-5 h-5" />
-            AI Support Assistant
-          </CardTitle>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/20">
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-        <Badge className="bg-green-500 w-fit">Online</Badge>
-      </CardHeader>
-
-      <CardContent className="flex-1 overflow-y-auto p-4 space-y-3">
-        <AnimatePresence>
-          {messages.map((msg, idx) => (
-            <React.Fragment key={idx}>
-              {msg.role === 'system' && msg.content === 'escalate_option' ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-orange-50 border-2 border-orange-300 p-4 rounded-lg"
-                >
-                  <div className="flex items-start gap-2 mb-3">
-                    <AlertCircle className="w-5 h-5 text-orange-600" />
-                    <div>
-                      <p className="font-semibold text-orange-900">Need Human Support?</p>
-                      <p className="text-sm text-orange-700">
-                        This issue might need a human agent. Would you like to create a support ticket?
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={() => escalateToHumanMutation.mutate()}
-                    disabled={escalateToHumanMutation.isPending}
-                    className="w-full bg-orange-600 hover:bg-orange-700"
-                  >
-                    Create Support Ticket
-                  </Button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className={`max-w-[80%] rounded-lg p-3 ${
-                    msg.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-900'
-                  }`}>
-                    {msg.role === 'assistant' && (
-                      <div className="flex items-center gap-2 mb-1">
-                        <Bot className="w-4 h-4" />
-                        <span className="text-xs font-semibold">AI Assistant</span>
-                      </div>
-                    )}
-                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                    <p className={`text-xs mt-1 ${msg.role === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
-                      {new Date(msg.timestamp).toLocaleTimeString()}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </React.Fragment>
-          ))}
-        </AnimatePresence>
-
-        {isTyping && (
-          <div className="flex items-center gap-2 text-gray-500">
-            <Bot className="w-4 h-4" />
-            <div className="flex gap-1">
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div>
+              <CardTitle className="text-base">AI Support Assistant</CardTitle>
+              <Badge className="bg-green-400 text-green-900 text-xs">Online</Badge>
             </div>
           </div>
-        )}
-
-        <div ref={messagesEndRef} />
-      </CardContent>
-
-      {messages.length === 1 && (
-        <div className="px-4 pb-2 space-y-2">
-          <p className="text-xs text-gray-500">Quick questions:</p>
-          <div className="flex flex-wrap gap-2">
-            {quickQuestions.map((q, idx) => (
-              <Button
-                key={idx}
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setInput(q);
-                  handleSend();
-                }}
-                className="text-xs"
-              >
-                {q}
-              </Button>
-            ))}
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white hover:bg-white/20 h-8 w-8"
+              onClick={() => setIsMinimized(!isMinimized)}
+            >
+              {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white hover:bg-white/20 h-8 w-8"
+              onClick={onClose}
+            >
+              <X className="w-4 h-4" />
+            </Button>
           </div>
-        </div>
-      )}
+        </CardHeader>
 
-      <div className="border-t p-4">
-        <div className="flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Type your question..."
-            disabled={isTyping}
-          />
-          <Button onClick={handleSend} disabled={isTyping || !input.trim()}>
-            <Send className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-    </Card>
+        {!isMinimized && (
+          <>
+            <CardContent className="p-4 h-96 overflow-y-auto bg-gray-50">
+              <div className="space-y-4">
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`flex gap-2 ${msg.sender_type === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    {msg.sender_type !== 'user' && (
+                      <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                        <Bot className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                    <div className={`max-w-[75%] rounded-lg p-3 ${
+                      msg.sender_type === 'user' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-white border border-gray-200'
+                    }`}>
+                      {msg.isTyping ? (
+                        <div className="flex gap-1">
+                          <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                          {msg.showEscalateButton && (
+                            <Button
+                              size="sm"
+                              className="mt-3 w-full bg-orange-600 hover:bg-orange-700"
+                              onClick={() => handleEscalate(msg.escalationReason)}
+                            >
+                              <AlertCircle className="w-3 h-3 mr-2" />
+                              Escalate to Human Support
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                    {msg.sender_type === 'user' && (
+                      <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                        <User className="w-4 h-4 text-gray-600" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+            </CardContent>
+
+            <div className="border-t p-4 bg-white">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Type your question..."
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  disabled={sendAIMessageMutation.isPending}
+                />
+                <Button 
+                  onClick={() => handleSendMessage()}
+                  disabled={!inputMessage.trim() || sendAIMessageMutation.isPending}
+                  className="bg-blue-600"
+                >
+                  {sendAIMessageMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                Powered by AI • Escalate anytime for human help
+              </p>
+            </div>
+          </>
+        )}
+      </Card>
+    </div>
   );
 }
