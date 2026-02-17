@@ -52,29 +52,7 @@ export default function Layout({ children, currentPageName }) {
     checkAuth();
   }, []);
 
-  // Check if contest participation is mandatory
-  useEffect(() => {
-    const checkContestRequirement = async () => {
-      if (!user || !isAuthenticated) return;
-      if (currentPageName === 'ReferralContest') return;
-      
-      const totalEarnings = user.total_earnings || 0;
-      if (totalEarnings < 2) return;
-      
-      // Check if user participated today
-      const today = new Date().toISOString().split('T')[0];
-      const participations = await base44.entities.ContestParticipation.filter({
-        user_id: user.id,
-        date: today
-      });
-      
-      if (participations.length === 0 || (!participations[0].part1_completed && !participations[0].opted_out)) {
-        window.location.href = createPageUrl('ReferralContest');
-      }
-    };
-    
-    checkContestRequirement();
-  }, [user, isAuthenticated, currentPageName]);
+
 
   // Fetch active events for contextual triggers
   const { data: activeEvents = [] } = useQuery({
