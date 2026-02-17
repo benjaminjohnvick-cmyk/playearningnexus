@@ -5,20 +5,6 @@ import { MessageCircle } from 'lucide-react';
 import AISupportChatbot from './AISupportChatbot';
 
 export default function SupportChatButton() {
-  const [user, setUser] = useState(null);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const currentUser = await base44.auth.me();
-        setUser(currentUser);
-      } catch (error) {
-        // User not logged in
-      }
-    };
-    fetchUser();
-  }, []);
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -40,13 +26,13 @@ export default function SupportChatButton() {
     <>
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 z-40"
+        className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 z-40 animate-pulse"
         size="icon"
       >
         <MessageCircle className="w-6 h-6" />
       </Button>
 
-      {isOpen && <AISupportChatbot user={user} onClose={() => setIsOpen(false)} />}
+      {isOpen && <AISupportChatbot user={user} isOpen={isOpen} onClose={() => setIsOpen(false)} />}
     </>
   );
 }
