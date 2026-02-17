@@ -19,9 +19,9 @@ export default function Home() {
   useEffect(() => {
     const checkNewUser = async () => {
       try {
-        const tutorialCompleted = localStorage.getItem('tutorial_completed');
-        if (tutorialCompleted) {
-          return; // Don't show if already completed
+        // Always check localStorage first
+        if (localStorage.getItem('tutorial_completed') === 'true') {
+          return;
         }
 
         const currentUser = await base44.auth.me();
@@ -29,7 +29,7 @@ export default function Home() {
         
         // Check if user needs tutorial (new signup)
         const accountAge = new Date() - new Date(currentUser.created_date);
-        const isNewUser = accountAge < 24 * 60 * 60 * 1000; // Less than 24 hours old
+        const isNewUser = accountAge < 24 * 60 * 60 * 1000;
         
         if (isNewUser) {
           setShowTutorial(true);
@@ -42,8 +42,8 @@ export default function Home() {
   }, []);
 
   const handleTutorialComplete = () => {
-    setShowTutorial(false);
     localStorage.setItem('tutorial_completed', 'true');
+    setShowTutorial(false);
   };
 
   // Track referral link clicks
