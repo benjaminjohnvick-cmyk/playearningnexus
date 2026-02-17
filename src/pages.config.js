@@ -53,6 +53,8 @@ import AdminUsers from './pages/AdminUsers';
 import BusinessDashboard from './pages/BusinessDashboard';
 import CRMDashboard from './pages/CRMDashboard';
 import ContactUs from './pages/ContactUs';
+import CreatorDashboard from './pages/CreatorDashboard';
+import CreatorMarketplace from './pages/CreatorMarketplace';
 import DailyChallenges from './pages/DailyChallenges';
 import DeveloperAIDashboard from './pages/DeveloperAIDashboard';
 import DeveloperAnalytics from './pages/DeveloperAnalytics';
@@ -90,8 +92,6 @@ import UserDashboard from './pages/UserDashboard';
 import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
-import CreatorMarketplace from './pages/CreatorMarketplace';
-import CreatorDashboard from './pages/CreatorDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -102,6 +102,8 @@ export const PAGES = {
     "BusinessDashboard": BusinessDashboard,
     "CRMDashboard": CRMDashboard,
     "ContactUs": ContactUs,
+    "CreatorDashboard": CreatorDashboard,
+    "CreatorMarketplace": CreatorMarketplace,
     "DailyChallenges": DailyChallenges,
     "DeveloperAIDashboard": DeveloperAIDashboard,
     "DeveloperAnalytics": DeveloperAnalytics,
@@ -139,8 +141,6 @@ export const PAGES = {
     "UserInbox": UserInbox,
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
-    "CreatorMarketplace": CreatorMarketplace,
-    "CreatorDashboard": CreatorDashboard,
 }
 
 export const pagesConfig = {

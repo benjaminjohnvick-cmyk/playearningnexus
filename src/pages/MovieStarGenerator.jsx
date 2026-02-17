@@ -12,10 +12,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function MovieStarGenerator() {
   const [user, setUser] = useState(null);
-  const [movieStar, setMovieStar] = useState('');
-  const [creativePrompt, setCreativePrompt] = useState('as_superhero');
+  const [imageDescription, setImageDescription] = useState('');
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
   const [generatedImage, setGeneratedImage] = useState(null);
   const [captionCopied, setCaptionCopied] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -29,29 +31,53 @@ export default function MovieStarGenerator() {
     fetchUser();
   }, []);
 
-  const creativePrompts = {
-    as_superhero: 'as a superhero saving the day',
-    cyberpunk: 'in a futuristic cyberpunk setting with neon lights',
-    fantasy: 'as a fantasy character in a magical world',
-    space: 'as a space explorer on an alien planet',
-    vintage: 'in a classic vintage Hollywood style',
-    action: 'in an epic action movie scene',
-    animated: 'as an animated character in a Pixar style',
-    retro_gaming: 'in a retro 8-bit video game style'
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const result = await base44.integrations.Core.UploadFile({ file });
+      setUploadedImageUrl(result.file_url);
+      setUploadedImage(file);
+      toast.success('Image uploaded successfully!');
+    } catch (error) {
+      toast.error('Failed to upload image');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const generateImageMutation = useMutation({
     mutationFn: async () => {
-      const prompt = `Create a high-quality, cinematic image inspired by ${movieStar} ${creativePrompts[creativePrompt]}. 
-      Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
-      The image should be vibrant, professional, and social media ready. 
-      Style: photorealistic, dynamic lighting, 4K quality.`;
-
-      const result = await base44.integrations.Core.GenerateImage({
-        prompt
-      });
-
-      return result.url;
+      let prompt;
+      
+      if (uploadedImageUrl) {
+        // Using uploaded image as reference
+        prompt = `Create a high-quality, creative transformation of the person in the reference image. ${imageDescription ? imageDescription : 'Transform them into an epic, cinematic style'}.
+        Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
+        The image should be vibrant, professional, and social media ready. 
+        Style: photorealistic, dynamic lighting, 4K quality.`;
+        
+        const result = await base44.integrations.Core.GenerateImage({
+          prompt,
+          existing_image_urls: [uploadedImageUrl]
+        });
+        
+        return result.url;
+      } else {
+        // Using text description only
+        prompt = `Create a high-quality, cinematic image: ${imageDescription}. 
+        Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
+        The image should be vibrant, professional, and social media ready. 
+        Style: photorealistic, dynamic lighting, 4K quality.`;
+        
+        const result = await base44.integrations.Core.GenerateImage({
+          prompt
+        });
+        
+        return result.url;
+      }
     },
     onSuccess: (imageUrl) => {
       setGeneratedImage(imageUrl);
@@ -71,7 +97,7 @@ export default function MovieStarGenerator() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${movieStar.replace(/\s+/g, '_')}_GamerGain.png`;
+      link.download = `GamerGain_AI_Image.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -82,11 +108,11 @@ export default function MovieStarGenerator() {
     }
   };
 
-  const shareCaption = `🌟 Check out this amazing AI-generated image inspired by ${movieStar}! 
+  const shareCaption = `🌟 Check out this amazing AI-generated image! 
 
 Created with GamerGain's AI Image Generator 🎮✨
 
-#GamerGain #AIArt #${movieStar.replace(/\s+/g, '')} #AIGenerated #Gaming #CreativeAI`;
+#GamerGain #AIArt #AIGenerated #Gaming #CreativeAI`;
 
   const handleCopyCaption = () => {
     navigator.clipboard.writeText(shareCaption);
@@ -117,9 +143,9 @@ Created with GamerGain's AI Image Generator 🎮✨
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent mb-2">
-            AI Movie Star Image Generator
+            AI Image Generator
           </h1>
-          <p className="text-gray-600">Create unique AI-generated images inspired by your favorite stars</p>
+          <p className="text-gray-600">Upload your photo or describe an image, and let AI create something amazing</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -133,43 +159,57 @@ Created with GamerGain's AI Image Generator 🎮✨
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label>Favorite Movie Star</Label>
-                <Input
-                  placeholder="e.g., Tom Hanks, Scarlett Johansson"
-                  value={movieStar}
-                  onChange={(e) => setMovieStar(e.target.value)}
-                  className="mt-2"
-                />
+                <Label>Upload Your Photo (Optional)</Label>
+                <div className="mt-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={isUploading}
+                    className="cursor-pointer"
+                  />
+                  {uploadedImage && (
+                    <div className="mt-2 relative">
+                      <img
+                        src={URL.createObjectURL(uploadedImage)}
+                        alt="Uploaded"
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="absolute top-2 right-2"
+                        onClick={() => {
+                          setUploadedImage(null);
+                          setUploadedImageUrl(null);
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Upload a photo to transform it, or leave blank to generate from description
+                </p>
               </div>
 
               <div>
-                <Label>Creative Style</Label>
-                <Select value={creativePrompt} onValueChange={setCreativePrompt}>
-                  <SelectTrigger className="mt-2">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="as_superhero">🦸 Superhero</SelectItem>
-                    <SelectItem value="cyberpunk">🌃 Cyberpunk</SelectItem>
-                    <SelectItem value="fantasy">🧙 Fantasy</SelectItem>
-                    <SelectItem value="space">🚀 Space Explorer</SelectItem>
-                    <SelectItem value="vintage">📽️ Vintage Hollywood</SelectItem>
-                    <SelectItem value="action">💥 Action Scene</SelectItem>
-                    <SelectItem value="animated">🎨 Animated Style</SelectItem>
-                    <SelectItem value="retro_gaming">🎮 Retro Gaming</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-800">
-                  <strong>Preview:</strong> {creativePrompts[creativePrompt]}
+                <Label>Image Description</Label>
+                <Input
+                  placeholder={uploadedImage ? "e.g., as a superhero, cyberpunk style, fantasy character" : "e.g., A dragon flying over a futuristic city"}
+                  value={imageDescription}
+                  onChange={(e) => setImageDescription(e.target.value)}
+                  className="mt-2"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {uploadedImage ? "Describe how to transform your photo" : "Describe the image you want to create"}
                 </p>
               </div>
 
               <Button
                 onClick={() => generateImageMutation.mutate()}
-                disabled={!movieStar.trim() || generateImageMutation.isPending}
+                disabled={!imageDescription.trim() || generateImageMutation.isPending}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600"
               >
                 {generateImageMutation.isPending ? (
@@ -208,7 +248,7 @@ Created with GamerGain's AI Image Generator 🎮✨
                   >
                     <img
                       src={generatedImage}
-                      alt={`AI-generated ${movieStar}`}
+                      alt="AI-generated image"
                       className="w-full rounded-lg shadow-lg"
                     />
 
@@ -304,22 +344,22 @@ Created with GamerGain's AI Image Generator 🎮✨
                 <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-purple-700 font-bold">1</span>
                 </div>
-                <p className="text-sm font-semibold">Enter Movie Star</p>
-                <p className="text-xs text-gray-500">Type your favorite actor/actress</p>
+                <p className="text-sm font-semibold">Upload or Describe</p>
+                <p className="text-xs text-gray-500">Upload a photo or type a description</p>
               </div>
               <div className="text-center">
                 <div className="bg-pink-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-pink-700 font-bold">2</span>
                 </div>
-                <p className="text-sm font-semibold">Choose Style</p>
-                <p className="text-xs text-gray-500">Select creative prompt</p>
+                <p className="text-sm font-semibold">Add Details</p>
+                <p className="text-xs text-gray-500">Describe the transformation</p>
               </div>
               <div className="text-center">
                 <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-blue-700 font-bold">3</span>
                 </div>
                 <p className="text-sm font-semibold">Generate</p>
-                <p className="text-xs text-gray-500">AI creates unique image</p>
+                <p className="text-xs text-gray-500">AI creates your image</p>
               </div>
               <div className="text-center">
                 <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
