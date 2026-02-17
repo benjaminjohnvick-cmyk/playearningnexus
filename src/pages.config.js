@@ -91,6 +91,7 @@ import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import CreatorMarketplace from './pages/CreatorMarketplace';
+import CreatorDashboard from './pages/CreatorDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -139,6 +140,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
     "CreatorMarketplace": CreatorMarketplace,
+    "CreatorDashboard": CreatorDashboard,
 }
 
 export const pagesConfig = {

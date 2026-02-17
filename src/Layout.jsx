@@ -116,8 +116,10 @@ export default function Layout({ children, currentPageName }) {
 
   const navigation = [
     { name: 'Home', icon: Home, path: 'Home' },
+    { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
     { name: 'Store', icon: DollarSign, path: 'InAppGameStore' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
+    { name: 'Creator Hub', icon: Star, path: 'CreatorDashboard', requireAuth: true },
     { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
     { name: 'Referral Analytics', icon: TrendingUp, path: 'ReferralAnalytics', requireAuth: true },
     { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
