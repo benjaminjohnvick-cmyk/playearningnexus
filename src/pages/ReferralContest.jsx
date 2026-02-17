@@ -347,7 +347,7 @@ export default function ReferralContest() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Enter a Celebrity Name</label>
+                <label className="block text-sm font-medium mb-2">Enter a Name</label>
                 <Input
                   value={celebrityName}
                   onChange={(e) => setCelebrityName(e.target.value)}
