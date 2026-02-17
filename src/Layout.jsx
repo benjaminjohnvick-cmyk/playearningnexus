@@ -20,7 +20,8 @@ import {
   Swords,
   Mail,
   Star,
-  TrendingUp
+  TrendingUp,
+  User
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
@@ -119,6 +120,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
     { name: 'Store', icon: DollarSign, path: 'InAppGameStore' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
+    { name: 'Profile', icon: User, path: 'UserProfile', requireAuth: true },
     { name: 'Creator Hub', icon: Star, path: 'CreatorDashboard', requireAuth: true },
     { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
     { name: 'Referral Analytics', icon: TrendingUp, path: 'ReferralAnalytics', requireAuth: true },

@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageEditor from '@/components/image/ImageEditor';
 import ImageGallery from '@/components/image/ImageGallery';
+import SocialShareButtons from '@/components/social/SocialShareButtons';
 
 export default function MovieStarGenerator() {
   const [user, setUser] = useState(null);

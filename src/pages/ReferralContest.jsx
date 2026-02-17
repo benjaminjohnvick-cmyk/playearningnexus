@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import ContestLeaderboard from '@/components/contest/ContestLeaderboard';
 import TieredRewards from '@/components/contest/TieredRewards';
+import SocialShareButtons from '@/components/social/SocialShareButtons';
 
 export default function ReferralContest() {
   const [user, setUser] = useState(null);
@@ -478,6 +479,12 @@ export default function ReferralContest() {
                 <div className="mt-4 space-y-3">
                   <img src={generatedImage} alt="Generated" className="w-full rounded-lg shadow-lg" />
                   
+                  <SocialShareButtons
+                    imageUrl={generatedImage}
+                    caption={`🎮 Join me on GamerGain! Play games, complete surveys, and earn real money! ${celebrityName} approves! 💰 Sign up now and start earning: [Your Referral Link] #GamerGain #EarnMoney #Gaming`}
+                    platform={getPlatformName(todayContest.selected_platform)}
+                  />
+                  
                   <div>
                     <label className="block text-sm font-medium mb-2">
                       Post URL (optional - for verification)
@@ -495,7 +502,7 @@ export default function ReferralContest() {
                     }}
                     className="w-full bg-green-600 hover:bg-green-700"
                   >
-                    Complete Part 1 & Copy Caption
+                    Complete Part 1
                   </Button>
                 </div>
               )}
