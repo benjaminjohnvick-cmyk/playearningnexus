@@ -24,6 +24,10 @@ import AchievementsBadges from '../components/referral/AchievementsBadges';
 import AICampaignGenerator from '../components/referral/AICampaignGenerator';
 import SourcePerformance from '../components/referral/SourcePerformance';
 import CohortAnalysis from '../components/referral/CohortAnalysis';
+import ABTestingDashboard from '../components/analytics/ABTestingDashboard';
+import PredictiveAnalytics from '../components/analytics/PredictiveAnalytics';
+import CustomReportGenerator from '../components/analytics/CustomReportGenerator';
+import ReferralOnboarding from '../components/onboarding/ReferralOnboarding';
 import { 
   LineChart, 
   Line, 
@@ -43,12 +47,19 @@ import moment from 'moment';
 
 export default function ReferralAnalytics() {
   const [user, setUser] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
+        
+        // Check if user needs onboarding
+        const progs = await base44.entities.OnboardingProgress.filter({ user_id: currentUser.id });
+        if (progs.length === 0 || !progs[0].is_completed) {
+          setShowOnboarding(true);
+        }
       } catch (error) {
         base44.auth.redirectToLogin();
       }
@@ -357,6 +368,27 @@ export default function ReferralAnalytics() {
             <AICampaignGenerator user={user} />
           </TabsContent>
         </Tabs>
+
+        {/* Additional Analytics Tools */}
+        <div className="grid lg:grid-cols-2 gap-6 mt-6">
+          <ABTestingDashboard user={user} />
+          <CustomReportGenerator user={user} />
+        </div>
+
+        <PredictiveAnalytics user={user} />
+
+        {/* Onboarding Modal */}
+        {showOnboarding && (
+          <ReferralOnboarding 
+            user={user} 
+            isOpen={showOnboarding} 
+            onComplete={() => setShowOnboarding(false)} 
+          />
+        )}
+      </div>
+    </div>
+  );
+}
 
         {/* Detailed Leads Table */}
         <Card className="border-0 shadow-lg mt-6">
