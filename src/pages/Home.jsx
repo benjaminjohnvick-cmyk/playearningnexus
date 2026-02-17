@@ -9,10 +9,7 @@ import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 import AIChatbot from "../components/home/AIChatbot";
 import { base44 } from '@/api/base44Client';
 import SupportChatButton from '../components/support/SupportChatButton';
-import InteractiveTutorial from '../components/onboarding/InteractiveTutorial';
-
 export default function Home() {
-
   // Track referral link clicks
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -227,14 +224,6 @@ export default function Home() {
 
       {/* Support Chat Button */}
       <SupportChatButton />
-
-      {/* Interactive Tutorial */}
-      {showTutorial && (
-        <InteractiveTutorial 
-          isOpen={showTutorial} 
-          onComplete={handleTutorialComplete} 
-        />
-      )}
     </div>
   );
 }
