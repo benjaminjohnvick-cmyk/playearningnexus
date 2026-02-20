@@ -17,7 +17,11 @@ import {
   Share2,
   Calendar,
   Award,
-  TrendingUp
+  TrendingUp,
+  ShoppingBag,
+  Heart,
+  Gamepad2,
+  CreditCard
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ImageGallery from '@/components/image/ImageGallery';
@@ -52,6 +56,42 @@ export default function UserProfile() {
     enabled: !!user
   });
 
+  // Fetch game library
+  const { data: gameLibrary = [] } = useQuery({
+    queryKey: ['userGameLibrary', user?.id],
+    queryFn: async () => {
+      if (!user?.game_library?.length) return [];
+      const games = await Promise.all(
+        user.game_library.map(id => base44.entities.Game.get(id).catch(() => null))
+      );
+      return games.filter(Boolean);
+    },
+    enabled: !!user
+  });
+
+  // Fetch wishlist games
+  const { data: wishlistGames = [] } = useQuery({
+    queryKey: ['userWishlist', user?.id],
+    queryFn: async () => {
+      if (!user?.wishlist?.length) return [];
+      const games = await Promise.all(
+        user.wishlist.map(id => base44.entities.Game.get(id).catch(() => null))
+      );
+      return games.filter(Boolean);
+    },
+    enabled: !!user
+  });
+
+  // Fetch purchase history
+  const { data: purchaseHistory = [] } = useQuery({
+    queryKey: ['userPurchaseHistory', user?.id],
+    queryFn: () => base44.entities.Transaction.filter({ 
+      user_id: user.id,
+      transaction_type: 'game_purchase'
+    }, '-created_date'),
+    enabled: !!user
+  });
+
   // Calculate statistics
   const totalContests = contestHistory.length;
   const completedContests = contestHistory.filter(c => c.part1_completed && c.part2_completed).length;
@@ -70,6 +110,18 @@ export default function UserProfile() {
       setUser(updatedUser);
     } catch (error) {
       toast.error('Failed to update profile');
+    }
+  };
+
+  const handleRemoveFromWishlist = async (gameId) => {
+    try {
+      const updatedWishlist = user.wishlist.filter(id => id !== gameId);
+      await base44.auth.updateMe({ wishlist: updatedWishlist });
+      const updatedUser = await base44.auth.me();
+      setUser(updatedUser);
+      toast.success('Removed from wishlist');
+    } catch (error) {
+      toast.error('Failed to remove from wishlist');
     }
   };
 
@@ -115,11 +167,23 @@ export default function UserProfile() {
         </Card>
 
         {/* Tabs */}
-        <Tabs defaultValue="images" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs defaultValue="library" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-7 gap-2">
+            <TabsTrigger value="library">
+              <Gamepad2 className="w-4 h-4 mr-2" />
+              Library
+            </TabsTrigger>
+            <TabsTrigger value="wishlist">
+              <Heart className="w-4 h-4 mr-2" />
+              Wishlist
+            </TabsTrigger>
+            <TabsTrigger value="purchases">
+              <CreditCard className="w-4 h-4 mr-2" />
+              Purchases
+            </TabsTrigger>
             <TabsTrigger value="images">
               <ImageIcon className="w-4 h-4 mr-2" />
-              My Images
+              Images
             </TabsTrigger>
             <TabsTrigger value="contests">
               <Trophy className="w-4 h-4 mr-2" />
@@ -134,6 +198,148 @@ export default function UserProfile() {
               Settings
             </TabsTrigger>
           </TabsList>
+
+          {/* Game Library Tab */}
+          <TabsContent value="library">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Gamepad2 className="w-5 h-5" />
+                  My Game Library ({gameLibrary.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {gameLibrary.length === 0 ? (
+                  <div className="text-center py-12">
+                    <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">No games in your library yet</p>
+                    <Button className="mt-4" onClick={() => window.location.href = '/InAppGameStore'}>
+                      Browse Store
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid md:grid-cols-3 gap-4">
+                    {gameLibrary.map((game) => (
+                      <Card key={game.id} className="hover:shadow-lg transition-shadow">
+                        <CardContent className="p-4">
+                          {game.icon_url ? (
+                            <img src={game.icon_url} alt={game.title} className="w-full h-32 object-cover rounded-lg mb-3" />
+                          ) : (
+                            <div className="w-full h-32 bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg mb-3" />
+                          )}
+                          <h3 className="font-bold text-lg mb-1">{game.title}</h3>
+                          <p className="text-sm text-gray-600 line-clamp-2 mb-3">{game.description}</p>
+                          <Button className="w-full" size="sm">
+                            <Gamepad2 className="w-4 h-4 mr-2" />
+                            Play Now
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Wishlist Tab */}
+          <TabsContent value="wishlist">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="w-5 h-5" />
+                  Wishlist ({wishlistGames.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {wishlistGames.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">Your wishlist is empty</p>
+                    <Button className="mt-4" onClick={() => window.location.href = '/InAppGameStore'}>
+                      Browse Store
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {wishlistGames.map((game) => (
+                      <div key={game.id} className="flex items-center gap-4 p-4 border rounded-lg hover:shadow-md transition-shadow">
+                        {game.icon_url ? (
+                          <img src={game.icon_url} alt={game.title} className="w-20 h-20 object-cover rounded-lg" />
+                        ) : (
+                          <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg" />
+                        )}
+                        <div className="flex-1">
+                          <h3 className="font-bold text-lg">{game.title}</h3>
+                          <p className="text-sm text-gray-600 line-clamp-1">{game.description}</p>
+                          <p className="text-lg font-bold text-green-600 mt-1">${game.price.toFixed(2)}</p>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Button size="sm" onClick={() => window.location.href = '/InAppGameStore'}>
+                            <ShoppingBag className="w-4 h-4 mr-2" />
+                            Buy Now
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleRemoveFromWishlist(game.id)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Purchase History Tab */}
+          <TabsContent value="purchases">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="w-5 h-5" />
+                  Purchase History ({purchaseHistory.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {purchaseHistory.length === 0 ? (
+                  <div className="text-center py-12">
+                    <CreditCard className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">No purchase history yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {purchaseHistory.map((transaction) => (
+                      <div key={transaction.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-lg">Game Purchase</p>
+                            <p className="text-sm text-gray-600">
+                              {new Date(transaction.created_date).toLocaleString()}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1 capitalize">
+                              Payment: {transaction.payment_method || 'balance'}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-green-600">
+                              ${transaction.amount.toFixed(2)}
+                            </p>
+                            <p className="text-xs text-gray-500 uppercase">
+                              {transaction.status}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* My Images Tab */}
           <TabsContent value="images">

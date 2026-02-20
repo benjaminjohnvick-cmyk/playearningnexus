@@ -17,7 +17,8 @@ import {
   Check,
   CreditCard,
   Loader2,
-  FileText
+  FileText,
+  Heart
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -203,6 +204,25 @@ export default function InAppGameStore() {
     }
   });
 
+  const toggleWishlist = async (game) => {
+    try {
+      const wishlist = user.wishlist || [];
+      const isWishlisted = wishlist.includes(game.id);
+      
+      const updatedWishlist = isWishlisted
+        ? wishlist.filter(id => id !== game.id)
+        : [...wishlist, game.id];
+      
+      await base44.auth.updateMe({ wishlist: updatedWishlist });
+      const updatedUser = await base44.auth.me();
+      setUser(updatedUser);
+      
+      toast.success(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+    } catch (error) {
+      toast.error('Failed to update wishlist');
+    }
+  };
+
   const avgRating = reviews.length > 0
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : 0;
@@ -334,14 +354,27 @@ export default function InAppGameStore() {
                         </Badge>
                       ) : (
                         <div className="flex flex-col gap-2 w-full">
-                          <Button
-                            size="sm"
-                            onClick={() => setCheckoutGame(game)}
-                            className="bg-blue-600 w-full"
-                          >
-                            <ShoppingCart className="w-4 h-4 mr-2" />
-                            Buy
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => setCheckoutGame(game)}
+                              className="bg-blue-600 flex-1"
+                            >
+                              <ShoppingCart className="w-4 h-4 mr-2" />
+                              Buy
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleWishlist(game);
+                              }}
+                              className={user.wishlist?.includes(game.id) ? "bg-red-50 border-red-500 text-red-600" : "border-gray-300"}
+                            >
+                              <Heart className={`w-4 h-4 ${user.wishlist?.includes(game.id) ? 'fill-red-500' : ''}`} />
+                            </Button>
+                          </div>
                           <div className="flex gap-2">
                             <Button
                               size="sm"
