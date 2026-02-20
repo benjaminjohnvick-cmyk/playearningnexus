@@ -372,7 +372,8 @@ export default function InAppGameStore() {
                               }}
                               className={user.wishlist?.includes(game.id) ? "bg-red-50 border-red-500 text-red-600" : "border-gray-300"}
                             >
-                              <Heart className={`w-4 h-4 ${user.wishlist?.includes(game.id) ? 'fill-red-500' : ''}`} />
+                              <Heart className={`w-4 h-4 mr-1 ${user.wishlist?.includes(game.id) ? 'fill-red-500' : ''}`} />
+                              Wishlist
                             </Button>
                           </div>
                           <div className="flex gap-2">
