@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const stripePromise = loadStripe('pk_test_51234567890abcdef');
+const stripePromise = loadStripe('pk_test_51InKhbD7XbB7UglQhjTQggVtoFmHzDGqLP1V6tLnpe0jBw9Epz4ugxwvMVoXF9eu0Oqnbi1gNvmyhPaaWPumJGSX00BpS9Tu8F');
 
 function StripeCheckoutForm({ game, user, onSuccess }) {
   const stripe = useStripe();
@@ -36,48 +36,54 @@ function StripeCheckoutForm({ game, user, onSuccess }) {
     setProcessing(true);
 
     try {
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: elements.getElement(CardElement),
+      // Create payment intent on backend
+      const intentResponse = await fetch('/api/functions/createPaymentIntent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gameId: game.id,
+          userId: user.id
+        })
       });
 
-      if (error) {
-        toast.error(error.message);
+      const intentData = await intentResponse.json();
+      
+      if (!intentResponse.ok) {
+        throw new Error(intentData.error || 'Failed to create payment intent');
+      }
+
+      // Confirm payment with Stripe
+      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
+        intentData.clientSecret,
+        {
+          payment_method: {
+            card: elements.getElement(CardElement),
+          }
+        }
+      );
+
+      if (confirmError) {
+        toast.error(confirmError.message);
         setProcessing(false);
         return;
       }
 
-      // Create transaction
-      await base44.entities.Transaction.create({
-        user_id: user.id,
-        game_id: game.id,
-        business_client_id: game.developer_id,
-        amount: game.price,
-        transaction_type: 'game_purchase',
-        status: 'completed',
-        payment_method: 'stripe',
-        stripe_payment_method_id: paymentMethod.id
+      // Confirm payment on backend
+      const confirmResponse = await fetch('/api/functions/confirmPayment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paymentIntentId: paymentIntent.id,
+          gameId: game.id,
+          userId: user.id
+        })
       });
 
-      // Update user game library
-      await base44.auth.updateMe({
-        game_library: [...(user.game_library || []), game.id]
-      });
-
-      // Update game stats
-      await base44.entities.Game.update(game.id, {
-        total_revenue: (game.total_revenue || 0) + game.price,
-        total_installs: (game.total_installs || 0) + 1
-      });
-
-      // Log activity
-      await base44.entities.UserActivity.create({
-        user_id: user.id,
-        activity_type: 'game_installed',
-        points_earned: 50,
-        description: `Purchased ${game.title} with credit card`,
-        related_entity_id: game.id
-      });
+      const confirmData = await confirmResponse.json();
+      
+      if (!confirmResponse.ok) {
+        throw new Error(confirmData.error || 'Failed to confirm payment');
+      }
 
       toast.success('Game purchased successfully!');
       onSuccess();
