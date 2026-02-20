@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { 
   Search, 
   ShoppingCart, 
@@ -22,116 +21,82 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const stripePromise = loadStripe('pk_test_51InKhbD7XbB7UglQhjTQggVtoFmHzDGqLP1V6tLnpe0jBw9Epz4ugxwvMVoXF9eu0Oqnbi1gNvmyhPaaWPumJGSX00BpS9Tu8F');
-
-function StripeCheckoutForm({ game, user, onSuccess }) {
-  const stripe = useStripe();
-  const elements = useElements();
+function PayPalCheckoutForm({ game, user, onSuccess }) {
   const [processing, setProcessing] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!stripe || !elements) return;
-
-    setProcessing(true);
-
-    try {
-      // Create payment intent on backend
-      const intentResponse = await fetch('/api/functions/createPaymentIntent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gameId: game.id,
-          userId: user.id
-        })
-      });
-
-      const intentData = await intentResponse.json();
-      
-      if (!intentResponse.ok) {
-        throw new Error(intentData.error || 'Failed to create payment intent');
-      }
-
-      // Confirm payment with Stripe
-      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
-        intentData.clientSecret,
-        {
-          payment_method: {
-            card: elements.getElement(CardElement),
-          }
-        }
-      );
-
-      if (confirmError) {
-        toast.error(confirmError.message);
-        setProcessing(false);
-        return;
-      }
-
-      // Confirm payment on backend
-      const confirmResponse = await fetch('/api/functions/confirmPayment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paymentIntentId: paymentIntent.id,
-          gameId: game.id,
-          userId: user.id
-        })
-      });
-
-      const confirmData = await confirmResponse.json();
-      
-      if (!confirmResponse.ok) {
-        throw new Error(confirmData.error || 'Failed to confirm payment');
-      }
-
-      toast.success('Game purchased successfully!');
-      onSuccess();
-    } catch (error) {
-      toast.error(error.message || 'Payment failed');
-    } finally {
-      setProcessing(false);
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="p-4 border rounded-lg bg-white">
-        <CardElement
-          options={{
-            style: {
-              base: {
-                fontSize: '16px',
-                color: '#424770',
-                '::placeholder': {
-                  color: '#aab7c4',
-                },
-              },
-              invalid: {
-                color: '#9e2146',
-              },
-            },
-          }}
-        />
-      </div>
-      <Button
-        type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700"
-        disabled={!stripe || processing}
-      >
-        {processing ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Processing Payment...
-          </>
-        ) : (
-          <>
-            <CreditCard className="w-4 h-4 mr-2" />
-            Pay ${game.price.toFixed(2)}
-          </>
-        )}
-      </Button>
-    </form>
+    <div className="space-y-4">
+      <PayPalButtons
+        disabled={processing}
+        style={{ layout: "vertical" }}
+        createOrder={async () => {
+          setProcessing(true);
+          try {
+            const response = await fetch('/api/functions/createPayPalOrder', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                gameId: game.id,
+                userId: user.id
+              })
+            });
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+              throw new Error(data.error || 'Failed to create order');
+            }
+
+            return data.orderId;
+          } catch (error) {
+            toast.error(error.message || 'Failed to create order');
+            setProcessing(false);
+            throw error;
+          }
+        }}
+        onApprove={async (data) => {
+          try {
+            const response = await fetch('/api/functions/capturePayPalOrder', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                orderId: data.orderID,
+                gameId: game.id,
+                userId: user.id
+              })
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+              throw new Error(result.error || 'Failed to capture payment');
+            }
+
+            toast.success('Game purchased successfully!');
+            onSuccess();
+          } catch (error) {
+            toast.error(error.message || 'Payment failed');
+          } finally {
+            setProcessing(false);
+          }
+        }}
+        onError={(err) => {
+          console.error('PayPal error:', err);
+          toast.error('Payment failed. Please try again.');
+          setProcessing(false);
+        }}
+        onCancel={() => {
+          toast.info('Payment cancelled');
+          setProcessing(false);
+        }}
+      />
+      {processing && (
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Processing payment...
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -141,7 +106,7 @@ export default function InAppGameStore() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [processingPurchase, setProcessingPurchase] = useState(false);
-  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
+  const [showPayPalCheckout, setShowPayPalCheckout] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -383,12 +348,12 @@ export default function InAppGameStore() {
                               variant="outline"
                               onClick={() => {
                                 setCheckoutGame(game);
-                                setShowStripeCheckout(true);
+                                setShowPayPalCheckout(true);
                               }}
                               className="border-blue-600 text-blue-600 hover:bg-blue-50 flex-1"
                             >
                               <CreditCard className="w-4 h-4 mr-1" />
-                              Card
+                              PayPal
                             </Button>
                             <Button
                               size="sm"
@@ -415,21 +380,21 @@ export default function InAppGameStore() {
       {checkoutGame && (
         <Dialog open={!!checkoutGame} onOpenChange={() => {
           setCheckoutGame(null);
-          setShowStripeCheckout(false);
+          setShowPayPalCheckout(false);
         }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Purchase Game</DialogTitle>
             </DialogHeader>
             
-            <Tabs defaultValue={showStripeCheckout ? "creditcard" : "details"}>
+            <Tabs defaultValue={showPayPalCheckout ? "paypal" : "details"}>
               <TabsList>
                 <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="creditcard">Credit Card</TabsTrigger>
+                <TabsTrigger value="paypal">PayPal</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="creditcard" className="space-y-4">
+              <TabsContent value="paypal" className="space-y-4">
                 {checkoutGame.icon_url && (
                   <img
                     src={checkoutGame.icon_url}
@@ -447,21 +412,24 @@ export default function InAppGameStore() {
                   </p>
                 </div>
 
-                <Elements stripe={stripePromise}>
-                  <StripeCheckoutForm
+                <PayPalScriptProvider options={{ 
+                  "client-id": "AUvlkjr65sf0rZKzG2RGESnsJquTSkPU41frXFG-HS7DKcLYEJpK4Vm9Bo9AvdQqtvhC8vbaW69YFY0A",
+                  currency: "USD"
+                }}>
+                  <PayPalCheckoutForm
                     game={checkoutGame}
                     user={user}
                     onSuccess={() => {
                       queryClient.invalidateQueries();
                       setCheckoutGame(null);
-                      setShowStripeCheckout(false);
+                      setShowPayPalCheckout(false);
                       window.location.reload();
                     }}
                   />
-                </Elements>
+                </PayPalScriptProvider>
 
                 <p className="text-xs text-center text-gray-500">
-                  Secure payment powered by Stripe
+                  Secure payment powered by PayPal
                 </p>
               </TabsContent>
 
