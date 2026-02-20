@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { 
   Search, 
   ShoppingCart, 
@@ -20,12 +22,120 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+const stripePromise = loadStripe('pk_test_51234567890abcdef');
+
+function StripeCheckoutForm({ game, user, onSuccess }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [processing, setProcessing] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setProcessing(true);
+
+    try {
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: elements.getElement(CardElement),
+      });
+
+      if (error) {
+        toast.error(error.message);
+        setProcessing(false);
+        return;
+      }
+
+      // Create transaction
+      await base44.entities.Transaction.create({
+        user_id: user.id,
+        game_id: game.id,
+        business_client_id: game.developer_id,
+        amount: game.price,
+        transaction_type: 'game_purchase',
+        status: 'completed',
+        payment_method: 'stripe',
+        stripe_payment_method_id: paymentMethod.id
+      });
+
+      // Update user game library
+      await base44.auth.updateMe({
+        game_library: [...(user.game_library || []), game.id]
+      });
+
+      // Update game stats
+      await base44.entities.Game.update(game.id, {
+        total_revenue: (game.total_revenue || 0) + game.price,
+        total_installs: (game.total_installs || 0) + 1
+      });
+
+      // Log activity
+      await base44.entities.UserActivity.create({
+        user_id: user.id,
+        activity_type: 'game_installed',
+        points_earned: 50,
+        description: `Purchased ${game.title} with credit card`,
+        related_entity_id: game.id
+      });
+
+      toast.success('Game purchased successfully!');
+      onSuccess();
+    } catch (error) {
+      toast.error(error.message || 'Payment failed');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="p-4 border rounded-lg bg-white">
+        <CardElement
+          options={{
+            style: {
+              base: {
+                fontSize: '16px',
+                color: '#424770',
+                '::placeholder': {
+                  color: '#aab7c4',
+                },
+              },
+              invalid: {
+                color: '#9e2146',
+              },
+            },
+          }}
+        />
+      </div>
+      <Button
+        type="submit"
+        className="w-full bg-blue-600 hover:bg-blue-700"
+        disabled={!stripe || processing}
+      >
+        {processing ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Processing Payment...
+          </>
+        ) : (
+          <>
+            <CreditCard className="w-4 h-4 mr-2" />
+            Pay ${game.price.toFixed(2)}
+          </>
+        )}
+      </Button>
+    </form>
+  );
+}
+
 export default function InAppGameStore() {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [processingPurchase, setProcessingPurchase] = useState(false);
+  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -252,24 +362,38 @@ export default function InAppGameStore() {
                           Owned
                         </Badge>
                       ) : (
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2 w-full">
                           <Button
                             size="sm"
                             onClick={() => setCheckoutGame(game)}
-                            className="bg-blue-600"
+                            className="bg-blue-600 w-full"
                           >
                             <ShoppingCart className="w-4 h-4 mr-2" />
                             Buy
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => window.location.href = '/Surveys'}
-                            className="border-green-600 text-green-600 hover:bg-green-50"
-                          >
-                            <FileText className="w-4 h-4 mr-1" />
-                            Survey
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setCheckoutGame(game);
+                                setShowStripeCheckout(true);
+                              }}
+                              className="border-blue-600 text-blue-600 hover:bg-blue-50 flex-1"
+                            >
+                              <CreditCard className="w-4 h-4 mr-1" />
+                              Card
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => window.location.href = '/Surveys'}
+                              className="border-green-600 text-green-600 hover:bg-green-50 flex-1"
+                            >
+                              <FileText className="w-4 h-4 mr-1" />
+                              Survey
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -283,17 +407,57 @@ export default function InAppGameStore() {
 
       {/* Checkout Dialog */}
       {checkoutGame && (
-        <Dialog open={!!checkoutGame} onOpenChange={() => setCheckoutGame(null)}>
+        <Dialog open={!!checkoutGame} onOpenChange={() => {
+          setCheckoutGame(null);
+          setShowStripeCheckout(false);
+        }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Purchase Game</DialogTitle>
             </DialogHeader>
             
-            <Tabs defaultValue="details">
+            <Tabs defaultValue={showStripeCheckout ? "creditcard" : "details"}>
               <TabsList>
                 <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="creditcard">Credit Card</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="creditcard" className="space-y-4">
+                {checkoutGame.icon_url && (
+                  <img
+                    src={checkoutGame.icon_url}
+                    alt={checkoutGame.title}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                )}
+                
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                    {checkoutGame.title}
+                  </h3>
+                  <p className="text-2xl font-bold text-blue-600">
+                    ${checkoutGame.price.toFixed(2)}
+                  </p>
+                </div>
+
+                <Elements stripe={stripePromise}>
+                  <StripeCheckoutForm
+                    game={checkoutGame}
+                    user={user}
+                    onSuccess={() => {
+                      queryClient.invalidateQueries();
+                      setCheckoutGame(null);
+                      setShowStripeCheckout(false);
+                      window.location.reload();
+                    }}
+                  />
+                </Elements>
+
+                <p className="text-xs text-center text-gray-500">
+                  Secure payment powered by Stripe
+                </p>
+              </TabsContent>
 
               <TabsContent value="details" className="space-y-4">
                 {checkoutGame.icon_url && (
