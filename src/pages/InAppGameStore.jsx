@@ -18,9 +18,12 @@ import {
   CreditCard,
   Loader2,
   FileText,
-  Heart
+  Heart,
+  Package
 } from "lucide-react";
 import { toast } from "sonner";
+import ProductSearchBar from '../components/store/ProductSearchBar';
+import ProductSearchResults from '../components/store/ProductSearchResults';
 
 function PayPalCheckoutForm({ game, user, onSuccess }) {
   const [processing, setProcessing] = useState(false);
@@ -108,6 +111,8 @@ export default function InAppGameStore() {
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [processingPurchase, setProcessingPurchase] = useState(false);
   const [showPayPalCheckout, setShowPayPalCheckout] = useState(false);
+  const [showProductSearch, setShowProductSearch] = useState(false);
+  const [productSearchResults, setProductSearchResults] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -207,11 +212,11 @@ export default function InAppGameStore() {
   const toggleWishlist = async (game) => {
     try {
       const wishlist = user.wishlist || [];
-      const isWishlisted = wishlist.includes(game.id);
+      const isWishlisted = wishlist.some(item => item.id === game.id && item.type === 'game');
       
       const updatedWishlist = isWishlisted
-        ? wishlist.filter(id => id !== game.id)
-        : [...wishlist, game.id];
+        ? wishlist.filter(item => !(item.id === game.id && item.type === 'game'))
+        : [...wishlist, { id: game.id, type: 'game', added_date: new Date().toISOString() }];
       
       await base44.auth.updateMe({ wishlist: updatedWishlist });
       const updatedUser = await base44.auth.me();
@@ -221,6 +226,11 @@ export default function InAppGameStore() {
     } catch (error) {
       toast.error('Failed to update wishlist');
     }
+  };
+
+  const handleProductSearchResults = (products, searchQuery, searchImage) => {
+    setProductSearchResults({ products, searchQuery, searchImage });
+    setShowProductSearch(false);
   };
 
   const avgRating = reviews.length > 0
@@ -250,14 +260,23 @@ export default function InAppGameStore() {
               </h1>
               <p className="text-gray-600">Browse and purchase games with your balance</p>
             </div>
-            <Card className="p-4 border-2 border-green-500">
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Your Balance</p>
-                <p className="text-2xl font-bold text-green-600">
-                  ${(user.current_balance || 0).toFixed(2)}
-                </p>
-              </div>
-            </Card>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setShowProductSearch(true)}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <Package className="w-4 h-4 mr-2" />
+                Search Products
+              </Button>
+              <Card className="p-4 border-2 border-green-500">
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">Your Balance</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    ${(user.current_balance || 0).toFixed(2)}
+                  </p>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
 
@@ -305,6 +324,7 @@ export default function InAppGameStore() {
           <div className="grid md:grid-cols-3 gap-6">
             {games.map((game) => {
               const owned = user.game_library?.includes(game.id);
+              const isWishlisted = user.wishlist?.some(item => item.id === game.id && item.type === 'game');
               
               return (
                 <Card key={game.id} className="border-0 shadow-lg hover:shadow-xl transition-all">
@@ -370,9 +390,9 @@ export default function InAppGameStore() {
                                 e.stopPropagation();
                                 toggleWishlist(game);
                               }}
-                              className={user.wishlist?.includes(game.id) ? "bg-red-50 border-red-500 text-red-600" : "border-gray-300"}
+                              className={isWishlisted ? "bg-red-50 border-red-500 text-red-600" : "border-gray-300"}
                             >
-                              <Heart className={`w-4 h-4 mr-1 ${user.wishlist?.includes(game.id) ? 'fill-red-500' : ''}`} />
+                              <Heart className={`w-4 h-4 mr-1 ${isWishlisted ? 'fill-red-500' : ''}`} />
                               Wishlist
                             </Button>
                           </div>
@@ -571,6 +591,25 @@ export default function InAppGameStore() {
             </Tabs>
           </DialogContent>
         </Dialog>
+      )}
+
+      {/* Product Search Bar */}
+      {showProductSearch && (
+        <ProductSearchBar
+          onSearchResults={handleProductSearchResults}
+          onClose={() => setShowProductSearch(false)}
+        />
+      )}
+
+      {/* Product Search Results Sidebar */}
+      {productSearchResults && (
+        <ProductSearchResults
+          products={productSearchResults.products}
+          searchQuery={productSearchResults.searchQuery}
+          searchImage={productSearchResults.searchImage}
+          user={user}
+          onClose={() => setProductSearchResults(null)}
+        />
       )}
     </div>
   );
