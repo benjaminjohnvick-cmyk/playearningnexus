@@ -51,11 +51,29 @@ export default function Surveys() {
       });
 
       const newEarnings = (user.total_earnings || 0) + earnings;
+      const currentPoints = user.points || 0;
+      const pointsEarned = Math.floor(earnings * 10); // 10 points per dollar
+      const newPoints = currentPoints + pointsEarned;
+      const newLevel = Math.floor(newPoints / 1000) + 1;
+      
       await base44.auth.updateMe({
         total_earnings: newEarnings,
         daily_survey_completed: newEarnings >= 2,
-        last_survey_date: new Date().toISOString().split('T')[0]
+        last_survey_date: new Date().toISOString().split('T')[0],
+        points: newPoints,
+        level: newLevel
       });
+
+      // Award achievement notification
+      if (pointsEarned > 0) {
+        await base44.entities.Notification.create({
+          user_id: user.id,
+          type: 'points_earned',
+          title: 'Points Earned!',
+          message: `You earned ${pointsEarned} points from completing a survey!`,
+          action_url: '/Leaderboard'
+        });
+      }
 
       await base44.entities.Transaction.create({
         user_id: user.id,

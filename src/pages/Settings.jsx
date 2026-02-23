@@ -1,56 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { User, Bell, Globe, CreditCard, Shield } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  User, 
+  Bell, 
+  Shield, 
+  Globe, 
+  Settings as SettingsIcon,
+  Mail,
+  Smartphone,
+  Lock,
+  Check
+} from "lucide-react";
 import { toast } from "sonner";
 
 export default function Settings() {
   const [user, setUser] = useState(null);
-  const queryClient = useQueryClient();
-
-  const [settings, setSettings] = useState({
-    full_name: '',
-    phone: '',
-    notifications_enabled: true,
-    notification_preferences: {
-      contest_results: true,
-      new_surveys: true,
-      friend_activity: true,
-      announcements: true,
-      achievements: true,
-      events: true
-    },
-    preferred_language: 'en',
-    preferred_currency: 'USD',
-    prompt_before_logout: true
+  const [loading, setLoading] = useState(false);
+  
+  // Profile state
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  
+  // Notification preferences
+  const [notificationPrefs, setNotificationPrefs] = useState({
+    email_enabled: true,
+    sms_enabled: false,
+    in_app_enabled: true,
+    wishlist_price_drops: true,
+    referral_updates: true,
+    survey_opportunities: true,
+    achievement_unlocks: true
   });
+  
+  // Language preference
+  const [language, setLanguage] = useState('en');
+  
+  // Security settings
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-        setSettings({
-          full_name: currentUser.full_name || '',
-          phone: currentUser.phone || '',
-          notifications_enabled: currentUser.notifications_enabled ?? true,
-          notification_preferences: currentUser.notification_preferences || {
-            contest_results: true,
-            new_surveys: true,
-            friend_activity: true,
-            announcements: true,
-            achievements: true,
-            events: true
-          },
-          preferred_language: currentUser.preferred_language || 'en',
-          preferred_currency: currentUser.preferred_currency || 'USD',
-          prompt_before_logout: currentUser.prompt_before_logout ?? true
-        });
+        setFullName(currentUser.full_name || '');
+        setEmail(currentUser.email || '');
+        setNotificationPrefs(currentUser.notification_preferences || notificationPrefs);
+        setLanguage(currentUser.preferred_language || 'en');
+        setTwoFactorEnabled(currentUser.two_factor_enabled || false);
       } catch (error) {
         base44.auth.redirectToLogin();
       }
@@ -58,18 +63,67 @@ export default function Settings() {
     fetchUser();
   }, []);
 
-  const updateSettingsMutation = useMutation({
-    mutationFn: async (data) => {
-      await base44.auth.updateMe(data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-      toast.success('Settings updated successfully!');
+  const saveProfile = async () => {
+    setLoading(true);
+    try {
+      await base44.auth.updateMe({
+        full_name: fullName
+      });
+      toast.success('Profile updated successfully');
+      const updatedUser = await base44.auth.me();
+      setUser(updatedUser);
+    } catch (error) {
+      toast.error('Failed to update profile');
+    } finally {
+      setLoading(false);
     }
-  });
+  };
 
-  const handleSave = () => {
-    updateSettingsMutation.mutate(settings);
+  const saveNotifications = async () => {
+    setLoading(true);
+    try {
+      await base44.auth.updateMe({
+        notification_preferences: notificationPrefs
+      });
+      toast.success('Notification preferences saved');
+    } catch (error) {
+      toast.error('Failed to save preferences');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveLanguage = async () => {
+    setLoading(true);
+    try {
+      await base44.auth.updateMe({
+        preferred_language: language
+      });
+      toast.success('Language preference saved');
+    } catch (error) {
+      toast.error('Failed to save language');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleTwoFactor = async () => {
+    setLoading(true);
+    try {
+      await base44.auth.updateMe({
+        two_factor_enabled: !twoFactorEnabled
+      });
+      setTwoFactorEnabled(!twoFactorEnabled);
+      toast.success(
+        !twoFactorEnabled 
+          ? 'Two-factor authentication enabled' 
+          : 'Two-factor authentication disabled'
+      );
+    } catch (error) {
+      toast.error('Failed to update security settings');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!user) {
@@ -81,263 +135,351 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Settings</h1>
-          <p className="text-gray-600">Manage your account preferences</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+            <SettingsIcon className="w-10 h-10 text-blue-600" />
+            Settings
+          </h1>
+          <p className="text-gray-600">Manage your account preferences and security</p>
         </div>
 
-        <div className="space-y-6">
-          {/* Profile Settings */}
-          <Card className="p-6 border-0 shadow-lg">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <User className="w-5 h-5 text-blue-600" />
-              </div>
-              <h2 className="text-xl font-bold text-gray-900">Profile Information</h2>
-            </div>
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="profile">
+              <User className="w-4 h-4 mr-2" />
+              Profile
+            </TabsTrigger>
+            <TabsTrigger value="notifications">
+              <Bell className="w-4 h-4 mr-2" />
+              Notifications
+            </TabsTrigger>
+            <TabsTrigger value="language">
+              <Globe className="w-4 h-4 mr-2" />
+              Language
+            </TabsTrigger>
+            <TabsTrigger value="security">
+              <Shield className="w-4 h-4 mr-2" />
+              Security
+            </TabsTrigger>
+          </TabsList>
 
-            <div className="space-y-4">
-              <div>
-                <Label>Full Name</Label>
-                <Input
-                  value={settings.full_name}
-                  onChange={(e) => setSettings({ ...settings, full_name: e.target.value })}
-                  placeholder="Your name"
-                />
-              </div>
-
-              <div>
-                <Label>Email</Label>
-                <Input value={user.email} disabled className="bg-gray-50" />
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
-              </div>
-
-              <div>
-                <Label>Phone Number</Label>
-                <Input
-                  value={settings.phone}
-                  onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
-                  placeholder="+1 (555) 000-0000"
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Notification Settings */}
-          <Card className="p-6 border-0 shadow-lg">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Bell className="w-5 h-5 text-purple-600" />
-              </div>
-              <h2 className="text-xl font-bold text-gray-900">Notifications</h2>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
+          {/* Profile Tab */}
+          <TabsContent value="profile">
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div>
-                  <p className="font-medium text-gray-900">Push Notifications</p>
-                  <p className="text-sm text-gray-500">Get notified about new featured games</p>
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
+                  />
                 </div>
-                <Switch
-                  checked={settings.notifications_enabled}
-                  onCheckedChange={(checked) => setSettings({ ...settings, notifications_enabled: checked })}
-                />
-              </div>
 
-              <div className="flex items-center justify-between pt-4 border-t">
                 <div>
-                  <p className="font-medium text-gray-900">Logout Sharing Prompt</p>
-                  <p className="text-sm text-gray-500">Show reminder to share on social media before logging out</p>
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    value={email}
+                    disabled
+                    className="bg-gray-100"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Email cannot be changed
+                  </p>
                 </div>
-                <Switch
-                  checked={settings.prompt_before_logout}
-                  onCheckedChange={(checked) => setSettings({ ...settings, prompt_before_logout: checked })}
-                />
-              </div>
 
-              <div className="pt-4 border-t">
-                <h3 className="font-semibold text-gray-900 mb-3">Notification Preferences</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                <div className="pt-4 border-t">
+                  <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Contest Results</p>
-                      <p className="text-xs text-gray-500">Daily contest winners and results</p>
+                      <p className="font-medium text-gray-900">Account Level</p>
+                      <p className="text-sm text-gray-600">Level {user.level || 1}</p>
                     </div>
-                    <Switch
-                      checked={settings.notification_preferences.contest_results}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        notification_preferences: { ...settings.notification_preferences, contest_results: checked }
-                      })}
-                    />
+                    <div className="text-right">
+                      <p className="font-medium text-gray-900">Total Points</p>
+                      <p className="text-2xl font-bold text-purple-600">
+                        {user.points || 0}
+                      </p>
+                    </div>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">New Surveys</p>
-                      <p className="text-xs text-gray-500">When new surveys become available</p>
+                  
+                  <div>
+                    <p className="font-medium text-gray-900 mb-2">Role</p>
+                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-3">
+                      <p className="text-blue-900 font-medium capitalize">
+                        {user.role || 'user'}
+                      </p>
                     </div>
-                    <Switch
-                      checked={settings.notification_preferences.new_surveys}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        notification_preferences: { ...settings.notification_preferences, new_surveys: checked }
-                      })}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Friend Activity</p>
-                      <p className="text-xs text-gray-500">Updates from friends and connections</p>
-                    </div>
-                    <Switch
-                      checked={settings.notification_preferences.friend_activity}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        notification_preferences: { ...settings.notification_preferences, friend_activity: checked }
-                      })}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Announcements</p>
-                      <p className="text-xs text-gray-500">Platform updates and news</p>
-                    </div>
-                    <Switch
-                      checked={settings.notification_preferences.announcements}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        notification_preferences: { ...settings.notification_preferences, announcements: checked }
-                      })}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Achievements</p>
-                      <p className="text-xs text-gray-500">Badges, milestones, and rewards</p>
-                    </div>
-                    <Switch
-                      checked={settings.notification_preferences.achievements}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        notification_preferences: { ...settings.notification_preferences, achievements: checked }
-                      })}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Events</p>
-                      <p className="text-xs text-gray-500">Special events and tournaments</p>
-                    </div>
-                    <Switch
-                      checked={settings.notification_preferences.events}
-                      onCheckedChange={(checked) => setSettings({
-                        ...settings,
-                        notification_preferences: { ...settings.notification_preferences, events: checked }
-                      })}
-                    />
                   </div>
                 </div>
-              </div>
-            </div>
-          </Card>
 
-          {/* Regional Settings */}
-          <Card className="p-6 border-0 shadow-lg">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Globe className="w-5 h-5 text-green-600" />
-              </div>
-              <h2 className="text-xl font-bold text-gray-900">Regional Preferences</h2>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label>Language</Label>
-                <select
-                  value={settings.preferred_language}
-                  onChange={(e) => setSettings({ ...settings, preferred_language: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <Button
+                  onClick={saveProfile}
+                  disabled={loading}
+                  className="w-full"
                 >
-                  <option value="en">English</option>
-                  <option value="es">Español</option>
-                  <option value="fr">Français</option>
-                  <option value="de">Deutsch</option>
-                  <option value="zh">中文</option>
-                </select>
-              </div>
+                  {loading ? 'Saving...' : 'Save Profile'}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <div>
-                <Label>Currency</Label>
-                <select
-                  value={settings.preferred_currency}
-                  onChange={(e) => setSettings({ ...settings, preferred_currency: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="USD">USD - US Dollar</option>
-                  <option value="EUR">EUR - Euro</option>
-                  <option value="GBP">GBP - British Pound</option>
-                  <option value="JPY">JPY - Japanese Yen</option>
-                  <option value="CAD">CAD - Canadian Dollar</option>
-                </select>
-              </div>
-            </div>
-          </Card>
+          {/* Notifications Tab */}
+          <TabsContent value="notifications">
+            <Card>
+              <CardHeader>
+                <CardTitle>Notification Preferences</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-4">Delivery Methods</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Bell className="w-5 h-5 text-blue-600" />
+                        <div>
+                          <Label className="text-base font-medium">In-App Notifications</Label>
+                          <p className="text-sm text-gray-500">Receive notifications within the app</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationPrefs.in_app_enabled}
+                        onCheckedChange={(checked) => 
+                          setNotificationPrefs({...notificationPrefs, in_app_enabled: checked})
+                        }
+                      />
+                    </div>
 
-          {/* Account Info */}
-          <Card className="p-6 border-0 shadow-lg">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <Shield className="w-5 h-5 text-amber-600" />
-              </div>
-              <h2 className="text-xl font-bold text-gray-900">Account Information</h2>
-            </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Mail className="w-5 h-5 text-blue-600" />
+                        <div>
+                          <Label className="text-base font-medium">Email Notifications</Label>
+                          <p className="text-sm text-gray-500">Receive notifications via email</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationPrefs.email_enabled}
+                        onCheckedChange={(checked) => 
+                          setNotificationPrefs({...notificationPrefs, email_enabled: checked})
+                        }
+                      />
+                    </div>
 
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Account Status</span>
-                <span className="font-medium text-green-600">Active</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Member Since</span>
-                <span className="font-medium">
-                  {user.subscription_start_date
-                    ? new Date(user.subscription_start_date).toLocaleDateString()
-                    : new Date().toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">User Group</span>
-                <span className="font-medium">{user.user_group_id || 'Not assigned'}</span>
-              </div>
-              {user.referral_code && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Referral Code</span>
-                  <span className="font-mono font-medium bg-gray-100 px-2 py-1 rounded">
-                    {user.referral_code}
-                  </span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Smartphone className="w-5 h-5 text-blue-600" />
+                        <div>
+                          <Label className="text-base font-medium">SMS Notifications</Label>
+                          <p className="text-sm text-gray-500">Receive notifications via text message</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notificationPrefs.sms_enabled}
+                        onCheckedChange={(checked) => 
+                          setNotificationPrefs({...notificationPrefs, sms_enabled: checked})
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
-          </Card>
 
-          {/* Save Button */}
-          <div className="flex justify-end gap-3">
-            <Button
-              onClick={handleSave}
-              disabled={updateSettingsMutation.isPending}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
-            >
-              Save Changes
-            </Button>
-          </div>
-        </div>
+                <div className="border-t pt-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">Notification Types</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-base font-medium">Wishlist Price Drops</Label>
+                        <p className="text-sm text-gray-500">Get notified when items go on sale</p>
+                      </div>
+                      <Switch
+                        checked={notificationPrefs.wishlist_price_drops}
+                        onCheckedChange={(checked) => 
+                          setNotificationPrefs({...notificationPrefs, wishlist_price_drops: checked})
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-base font-medium">Referral Updates</Label>
+                        <p className="text-sm text-gray-500">Updates about your referrals</p>
+                      </div>
+                      <Switch
+                        checked={notificationPrefs.referral_updates}
+                        onCheckedChange={(checked) => 
+                          setNotificationPrefs({...notificationPrefs, referral_updates: checked})
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-base font-medium">Survey Opportunities</Label>
+                        <p className="text-sm text-gray-500">New survey opportunities</p>
+                      </div>
+                      <Switch
+                        checked={notificationPrefs.survey_opportunities}
+                        onCheckedChange={(checked) => 
+                          setNotificationPrefs({...notificationPrefs, survey_opportunities: checked})
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-base font-medium">Achievement Unlocks</Label>
+                        <p className="text-sm text-gray-500">When you unlock badges</p>
+                      </div>
+                      <Switch
+                        checked={notificationPrefs.achievement_unlocks}
+                        onCheckedChange={(checked) => 
+                          setNotificationPrefs({...notificationPrefs, achievement_unlocks: checked})
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={saveNotifications}
+                  disabled={loading}
+                  className="w-full"
+                >
+                  {loading ? 'Saving...' : 'Save Preferences'}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Language Tab */}
+          <TabsContent value="language">
+            <Card>
+              <CardHeader>
+                <CardTitle>Language & Region</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="language">Preferred Language</Label>
+                  <select
+                    id="language"
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    className="w-full border rounded-lg px-4 py-2 mt-2"
+                  >
+                    <option value="en">English</option>
+                    <option value="es">Español (Spanish)</option>
+                    <option value="fr">Français (French)</option>
+                    <option value="de">Deutsch (German)</option>
+                    <option value="zh">中文 (Chinese)</option>
+                    <option value="ja">日本語 (Japanese)</option>
+                    <option value="pt">Português (Portuguese)</option>
+                    <option value="ar">العربية (Arabic)</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Select your preferred language for the interface
+                  </p>
+                </div>
+
+                <Button
+                  onClick={saveLanguage}
+                  disabled={loading}
+                  className="w-full"
+                >
+                  {loading ? 'Saving...' : 'Save Language'}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Security Tab */}
+          <TabsContent value="security">
+            <Card>
+              <CardHeader>
+                <CardTitle>Security Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-4">Two-Factor Authentication</h3>
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Lock className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <Label className="text-base font-medium">2FA Status</Label>
+                        <p className="text-sm text-gray-500">
+                          {twoFactorEnabled ? 'Enabled' : 'Disabled'}
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={twoFactorEnabled}
+                      onCheckedChange={toggleTwoFactor}
+                      disabled={loading}
+                    />
+                  </div>
+                  {twoFactorEnabled && (
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center gap-2 text-green-800">
+                        <Check className="w-4 h-4" />
+                        <p className="text-sm font-medium">
+                          Your account is protected with two-factor authentication
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="border-t pt-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">Change Password</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="currentPassword">Current Password</Label>
+                      <Input
+                        id="currentPassword"
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="Enter current password"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="newPassword">New Password</Label>
+                      <Input
+                        id="newPassword"
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Enter new password"
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      disabled={!currentPassword || !newPassword}
+                      onClick={() => toast.info('Password change feature coming soon')}
+                    >
+                      Update Password
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="border-t pt-6">
+                  <h3 className="font-semibold text-gray-900 mb-2">Account Information</h3>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p>Account created: {new Date(user.created_date).toLocaleDateString()}</p>
+                    <p>User ID: {user.id}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
