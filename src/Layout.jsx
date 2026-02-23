@@ -21,7 +21,8 @@ import {
   Mail,
   Star,
   TrendingUp,
-  User
+  User,
+  Heart
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
@@ -120,9 +121,11 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Complete Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
     { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
     { name: 'Store', icon: DollarSign, path: 'InAppGameStore' },
+    { name: 'Wishlist', icon: Heart, path: 'Wishlist', requireAuth: true },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
     { name: 'Profile', icon: User, path: 'UserProfile', requireAuth: true },
     { name: 'Creator Hub', icon: Star, path: 'CreatorDashboard', requireAuth: true },
+    { name: 'Referrals', icon: Users, path: 'ReferralDashboard', requireAuth: true },
     { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
     { name: 'Referral Analytics', icon: TrendingUp, path: 'ReferralAnalytics', requireAuth: true },
     { name: 'Link Tracking', icon: TrendingUp, path: 'ReferralTracking', requireAuth: true },
