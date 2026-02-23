@@ -17,7 +17,8 @@ import {
   Loader2,
   ExternalLink,
   Check,
-  Package
+  Package,
+  Share2
 } from "lucide-react";
 import { toast } from "sonner";
 import ProductSearchBar from '../components/store/ProductSearchBar';
@@ -134,6 +135,27 @@ export default function Wishlist() {
     setShowProductSearch(false);
   };
 
+  const shareWishlist = () => {
+    const wishlistUrl = `${window.location.origin}/Wishlist?user=${user.id}`;
+    const shareText = `Check out my wishlist! Help me earn products through surveys: ${wishlistUrl}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: 'My Wishlist',
+        text: shareText,
+        url: wishlistUrl
+      }).then(() => {
+        toast.success('Wishlist shared!');
+      }).catch(() => {
+        navigator.clipboard.writeText(shareText);
+        toast.success('Link copied to clipboard!');
+      });
+    } else {
+      navigator.clipboard.writeText(shareText);
+      toast.success('Link copied to clipboard!');
+    }
+  };
+
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -168,13 +190,20 @@ export default function Wishlist() {
 
         {/* Search and Sorting Controls */}
         <div className="mb-6 space-y-4">
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-3">
             <Button
               onClick={() => setShowProductSearch(true)}
               className="bg-purple-600 hover:bg-purple-700"
             >
               <Package className="w-4 h-4 mr-2" />
               Search online for any products you want and pay with surveys
+            </Button>
+            <Button
+              onClick={shareWishlist}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Share Wishlist
             </Button>
           </div>
           
