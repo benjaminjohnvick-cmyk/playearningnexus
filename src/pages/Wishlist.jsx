@@ -16,15 +16,20 @@ import {
   FileText,
   Loader2,
   ExternalLink,
-  Check
+  Check,
+  Package
 } from "lucide-react";
 import { toast } from "sonner";
+import ProductSearchBar from '../components/store/ProductSearchBar';
+import ProductSearchResults from '../components/store/ProductSearchResults';
 
 export default function Wishlist() {
   const [user, setUser] = useState(null);
   const [sortBy, setSortBy] = useState('created_date');
   const [editingNotes, setEditingNotes] = useState(null);
   const [notesText, setNotesText] = useState('');
+  const [showProductSearch, setShowProductSearch] = useState(false);
+  const [productSearchResults, setProductSearchResults] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -124,6 +129,11 @@ export default function Wishlist() {
     return (user?.current_balance || 0) >= item.price_with_markup;
   };
 
+  const handleProductSearchResults = (products, searchQuery, searchImage) => {
+    setProductSearchResults({ products, searchQuery, searchImage });
+    setShowProductSearch(false);
+  };
+
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -156,41 +166,53 @@ export default function Wishlist() {
           </div>
         </div>
 
-        {/* Sorting Controls */}
-        <div className="mb-6 flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <ArrowUpDown className="w-5 h-5 text-gray-500" />
-            <span className="text-sm text-gray-600">Sort by:</span>
+        {/* Search and Sorting Controls */}
+        <div className="mb-6 space-y-4">
+          <div className="flex justify-center">
+            <Button
+              onClick={() => setShowProductSearch(true)}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Package className="w-4 h-4 mr-2" />
+              Search online for any products you want and pay with surveys
+            </Button>
           </div>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant={sortBy === 'created_date' ? 'default' : 'outline'}
-              onClick={() => setSortBy('created_date')}
-            >
-              Date Added
-            </Button>
-            <Button
-              size="sm"
-              variant={sortBy === 'name' ? 'default' : 'outline'}
-              onClick={() => setSortBy('name')}
-            >
-              Name
-            </Button>
-            <Button
-              size="sm"
-              variant={sortBy === 'price_asc' ? 'default' : 'outline'}
-              onClick={() => setSortBy('price_asc')}
-            >
-              Price (Low)
-            </Button>
-            <Button
-              size="sm"
-              variant={sortBy === 'price_desc' ? 'default' : 'outline'}
-              onClick={() => setSortBy('price_desc')}
-            >
-              Price (High)
-            </Button>
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="w-5 h-5 text-gray-500" />
+              <span className="text-sm text-gray-600">Sort by:</span>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant={sortBy === 'created_date' ? 'default' : 'outline'}
+                onClick={() => setSortBy('created_date')}
+              >
+                Date Added
+              </Button>
+              <Button
+                size="sm"
+                variant={sortBy === 'name' ? 'default' : 'outline'}
+                onClick={() => setSortBy('name')}
+              >
+                Name
+              </Button>
+              <Button
+                size="sm"
+                variant={sortBy === 'price_asc' ? 'default' : 'outline'}
+                onClick={() => setSortBy('price_asc')}
+              >
+                Price (Low)
+              </Button>
+              <Button
+                size="sm"
+                variant={sortBy === 'price_desc' ? 'default' : 'outline'}
+                onClick={() => setSortBy('price_desc')}
+              >
+                Price (High)
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -365,6 +387,25 @@ export default function Wishlist() {
           </div>
         )}
       </div>
+
+      {/* Product Search Bar */}
+      {showProductSearch && (
+        <ProductSearchBar
+          onSearchResults={handleProductSearchResults}
+          onClose={() => setShowProductSearch(false)}
+        />
+      )}
+
+      {/* Product Search Results Sidebar */}
+      {productSearchResults && (
+        <ProductSearchResults
+          products={productSearchResults.products}
+          searchQuery={productSearchResults.searchQuery}
+          searchImage={productSearchResults.searchImage}
+          user={user}
+          onClose={() => setProductSearchResults(null)}
+        />
+      )}
     </div>
   );
 }
