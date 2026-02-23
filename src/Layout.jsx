@@ -131,6 +131,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Link Tracking', icon: TrendingUp, path: 'ReferralTracking', requireAuth: true },
     { name: 'Payout Settings', icon: Settings, path: 'PayoutSettings', requireAuth: true },
     { name: 'Payout History', icon: DollarSign, path: 'PayoutHistory', requireAuth: true },
+    { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
     { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
     { name: 'AI Generator', icon: Bot, path: 'MovieStarGenerator', requireAuth: true },
     { name: 'Inbox', icon: Mail, path: 'UserInbox', requireAuth: true },

@@ -1,199 +1,227 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Trophy, Star, Zap, TrendingUp, Crown, Medal } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Trophy, DollarSign, Users, TrendingUp, Medal, Crown } from "lucide-react";
 
 export default function Leaderboard() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const user = await base44.auth.me();
-        setCurrentUser(user);
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
       } catch (error) {
-        console.error('Failed to fetch user');
+        base44.auth.redirectToLogin();
       }
     };
     fetchUser();
   }, []);
 
+  // Fetch all users for leaderboard
   const { data: allUsers = [] } = useQuery({
-    queryKey: ['allUsers'],
-    queryFn: () => base44.entities.User.list('-total_points', 100),
+    queryKey: ['leaderboard-users'],
+    queryFn: async () => {
+      const users = await base44.entities.User.list();
+      return users;
+    }
   });
 
-  const { data: topEarners = [] } = useQuery({
-    queryKey: ['topEarners'],
-    queryFn: () => base44.entities.User.list('-total_earnings', 50),
+  // Top Earners
+  const topEarners = [...allUsers]
+    .sort((a, b) => (b.total_earnings || 0) - (a.total_earnings || 0))
+    .slice(0, 50);
+
+  // Top by Points
+  const topByPoints = [...allUsers]
+    .sort((a, b) => (b.points || 0) - (a.points || 0))
+    .slice(0, 50);
+
+  // Fetch referrals for top referrers
+  const { data: allReferrals = [] } = useQuery({
+    queryKey: ['all-referrals'],
+    queryFn: async () => {
+      return await base44.entities.Referral.list();
+    }
   });
 
-  const { data: mostActive = [] } = useQuery({
-    queryKey: ['mostActive'],
-    queryFn: () => base44.entities.User.list('-total_surveys_completed', 50),
-  });
+  // Calculate top referrers
+  const referrerStats = allReferrals.reduce((acc, ref) => {
+    if (!acc[ref.referrer_user_id]) {
+      acc[ref.referrer_user_id] = {
+        count: 0,
+        totalEarnings: 0
+      };
+    }
+    acc[ref.referrer_user_id].count++;
+    acc[ref.referrer_user_id].totalEarnings += (ref.total_earnings || 0) * 0.25;
+    return acc;
+  }, {});
 
-  const getRankIcon = (rank) => {
-    if (rank === 1) return <Crown className="w-6 h-6 text-yellow-500" />;
-    if (rank === 2) return <Medal className="w-6 h-6 text-gray-400" />;
-    if (rank === 3) return <Medal className="w-6 h-6 text-amber-600" />;
-    return null;
+  const topReferrers = Object.entries(referrerStats)
+    .map(([userId, stats]) => ({
+      user: allUsers.find(u => u.id === userId),
+      ...stats
+    }))
+    .filter(item => item.user)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 50);
+
+  const getRankIcon = (index) => {
+    if (index === 0) return <Crown className="w-5 h-5 text-yellow-500" />;
+    if (index === 1) return <Medal className="w-5 h-5 text-gray-400" />;
+    if (index === 2) return <Medal className="w-5 h-5 text-orange-600" />;
+    return <span className="text-gray-600 font-bold">#{index + 1}</span>;
   };
 
-  const LeaderboardList = ({ users, metricKey, metricLabel, icon: Icon }) => (
-    <div className="space-y-3">
-      {users.map((user, idx) => {
-        const isCurrentUser = user.id === currentUser?.id;
-        const rank = idx + 1;
+  const getRankColor = (index) => {
+    if (index === 0) return 'bg-gradient-to-r from-yellow-400 to-yellow-600';
+    if (index === 1) return 'bg-gradient-to-r from-gray-300 to-gray-500';
+    if (index === 2) return 'bg-gradient-to-r from-orange-400 to-orange-600';
+    return 'bg-white';
+  };
 
-        return (
-          <motion.div
-            key={user.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.05 }}
-            className={`p-4 rounded-lg border-2 ${
-              isCurrentUser
-                ? 'bg-blue-50 border-blue-300'
-                : rank <= 3
-                ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300'
-                : 'bg-white border-gray-200'
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold text-lg">
-                {getRankIcon(rank) || rank}
-              </div>
-
-              <Avatar className="w-12 h-12">
-                <AvatarImage src={user.avatar_url} />
-                <AvatarFallback>
-                  {user.full_name?.substring(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold text-gray-900">{user.full_name}</p>
-                  {isCurrentUser && (
-                    <Badge className="bg-blue-600">You</Badge>
-                  )}
-                  {user.level && (
-                    <Badge variant="outline" className="text-purple-700 border-purple-300">
-                      Level {user.level}
-                    </Badge>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <Icon className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">
-                    {metricLabel}: <span className="font-bold">{user[metricKey]?.toLocaleString() || 0}</span>
-                  </span>
-                </div>
-              </div>
-
-              {rank <= 3 && (
-                <div className="text-right">
-                  <Trophy className={`w-8 h-8 ${
-                    rank === 1 ? 'text-yellow-500' : 
-                    rank === 2 ? 'text-gray-400' : 
-                    'text-amber-600'
-                  }`} />
-                </div>
-              )}
-            </div>
-          </motion.div>
-        );
-      })}
-    </div>
-  );
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 p-6">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50 p-6">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-700 to-blue-700 bg-clip-text text-transparent mb-2">
-            Global Leaderboards
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+            <Trophy className="w-10 h-10 text-yellow-600" />
+            Leaderboard
           </h1>
-          <p className="text-gray-600">Compete with players worldwide and climb the ranks!</p>
+          <p className="text-gray-600">See where you rank among top earners and referrers</p>
         </div>
 
-        <Tabs defaultValue="points" className="space-y-6">
+        <Tabs defaultValue="earners" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="points">
-              <Star className="w-4 h-4 mr-2" />
-              Top Points
-            </TabsTrigger>
-            <TabsTrigger value="earnings">
-              <TrendingUp className="w-4 h-4 mr-2" />
+            <TabsTrigger value="earners" className="flex items-center gap-2">
+              <DollarSign className="w-4 h-4" />
               Top Earners
             </TabsTrigger>
-            <TabsTrigger value="active">
-              <Zap className="w-4 h-4 mr-2" />
-              Most Active
+            <TabsTrigger value="referrers" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Top Referrers
+            </TabsTrigger>
+            <TabsTrigger value="points" className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" />
+              Top by Points
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="earners">
+            <div className="space-y-3">
+              {topEarners.map((rankUser, index) => (
+                <Card key={rankUser.id} className={`${getRankColor(index)} ${
+                  rankUser.id === user.id ? 'ring-2 ring-blue-500' : ''
+                }`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 flex items-center justify-center">
+                          {getRankIcon(index)}
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900">
+                            {rankUser.full_name}
+                            {rankUser.id === user.id && (
+                              <Badge className="ml-2 bg-blue-600">You</Badge>
+                            )}
+                          </p>
+                          <p className="text-sm text-gray-600">Level {rankUser.level || 1}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-green-600">
+                          ${(rankUser.total_earnings || 0).toFixed(2)}
+                        </p>
+                        <p className="text-xs text-gray-500">Total Earnings</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="referrers">
+            <div className="space-y-3">
+              {topReferrers.map((item, index) => (
+                <Card key={item.user.id} className={`${getRankColor(index)} ${
+                  item.user.id === user.id ? 'ring-2 ring-blue-500' : ''
+                }`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 flex items-center justify-center">
+                          {getRankIcon(index)}
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900">
+                            {item.user.full_name}
+                            {item.user.id === user.id && (
+                              <Badge className="ml-2 bg-blue-600">You</Badge>
+                            )}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            ${item.totalEarnings.toFixed(2)} from referrals
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-purple-600">{item.count}</p>
+                        <p className="text-xs text-gray-500">Referrals</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
           <TabsContent value="points">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Trophy className="w-6 h-6 text-yellow-500" />
-                  Top Players by Points
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <LeaderboardList
-                  users={allUsers}
-                  metricKey="total_points"
-                  metricLabel="Points"
-                  icon={Star}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="earnings">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
-                  Top Earners
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <LeaderboardList
-                  users={topEarners}
-                  metricKey="total_earnings"
-                  metricLabel="Earnings"
-                  icon={TrendingUp}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="active">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="w-6 h-6 text-orange-500" />
-                  Most Active Players
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <LeaderboardList
-                  users={mostActive}
-                  metricKey="total_surveys_completed"
-                  metricLabel="Surveys Completed"
-                  icon={Zap}
-                />
-              </CardContent>
-            </Card>
+            <div className="space-y-3">
+              {topByPoints.map((rankUser, index) => (
+                <Card key={rankUser.id} className={`${getRankColor(index)} ${
+                  rankUser.id === user.id ? 'ring-2 ring-blue-500' : ''
+                }`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 flex items-center justify-center">
+                          {getRankIcon(index)}
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900">
+                            {rankUser.full_name}
+                            {rankUser.id === user.id && (
+                              <Badge className="ml-2 bg-blue-600">You</Badge>
+                            )}
+                          </p>
+                          <p className="text-sm text-gray-600">Level {rankUser.level || 1}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-purple-600">
+                          {rankUser.points || 0}
+                        </p>
+                        <p className="text-xs text-gray-500">Points</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
         </Tabs>
       </div>
