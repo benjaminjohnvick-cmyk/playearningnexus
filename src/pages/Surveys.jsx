@@ -65,6 +65,81 @@ export default function Surveys() {
         notes: `Survey ${surveyId} completed via Pollfish`
       });
 
+      // Process referral rewards
+      const referrals = await base44.entities.Referral.filter({
+        referred_user_id: user.id
+      });
+
+      if (referrals.length > 0) {
+        const referral = referrals[0];
+        const referrer = await base44.entities.User.list();
+        const referrerUser = referrer.find(u => u.id === referral.referrer_user_id);
+
+        if (referrerUser) {
+          const oldTotal = referral.total_earnings || 0;
+          const newTotal = oldTotal + earnings;
+          
+          let bonusForReferrer = 0;
+          let commissionForReferrer = 0;
+
+          // Check if they crossed the $4 threshold
+          if (oldTotal < 4 && newTotal >= 4 && !referral.milestone_4_paid) {
+            bonusForReferrer += 1; // $1 bonus
+            await base44.entities.Referral.update(referral.id, {
+              milestone_4_paid: true,
+              total_earnings: newTotal
+            });
+
+            await base44.entities.Notification.create({
+              user_id: referral.referrer_user_id,
+              type: 'referral_earnings',
+              title: 'Referral Milestone Reached!',
+              message: `Your referral earned $4! You received a $1 bonus.`,
+              action_url: '/ReferralDashboard'
+            });
+          } else {
+            await base44.entities.Referral.update(referral.id, {
+              total_earnings: newTotal
+            });
+          }
+
+          // Calculate commission: $0.25 for every dollar earned after $4
+          if (newTotal > 4) {
+            const earningsAboveFour = newTotal - 4;
+            const lastTrackedAboveFour = Math.max(0, (referral.last_tracked_earning || 0) - 4);
+            const newEarningsToCommission = earningsAboveFour - lastTrackedAboveFour;
+            
+            if (newEarningsToCommission > 0) {
+              commissionForReferrer = newEarningsToCommission * 0.25; // 25% commission
+              
+              await base44.entities.Referral.update(referral.id, {
+                commission_earned: (referral.commission_earned || 0) + commissionForReferrer,
+                last_tracked_earning: newTotal
+              });
+            }
+          }
+
+          // Add rewards to referrer's balance
+          const totalReward = bonusForReferrer + commissionForReferrer;
+          if (totalReward > 0) {
+            await base44.entities.User.update(referrerUser.id, {
+              current_balance: (referrerUser.current_balance || 0) + totalReward,
+              total_earnings: (referrerUser.total_earnings || 0) + totalReward
+            });
+
+            if (commissionForReferrer > 0) {
+              await base44.entities.Notification.create({
+                user_id: referral.referrer_user_id,
+                type: 'referral_earnings',
+                title: 'Referral Commission Earned!',
+                message: `You earned $${commissionForReferrer.toFixed(2)} in commission from your referral's earnings.`,
+                action_url: '/ReferralDashboard'
+              });
+            }
+          }
+        }
+      }
+
       // Refresh user data
       const updatedUser = await base44.auth.me();
       setUser(updatedUser);
