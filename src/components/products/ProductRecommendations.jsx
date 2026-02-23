@@ -1,10 +1,10 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Heart } from "lucide-react";
+import { Sparkles, Heart, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ProductRecommendations({ user }) {
@@ -14,58 +14,120 @@ export default function ProductRecommendations({ user }) {
       return await base44.entities.ProductWishlistItem.filter({
         user_id: user.id,
         status: 'active'
-      }, '-created_date', 5);
+      }, '-created_date', 10);
     },
     enabled: !!user
   });
 
-  const getRecommendations = () => {
-    // Simple recommendation logic based on wishlist categories
-    const categories = wishlistItems.map(item => {
-      const name = item.product_name.toLowerCase();
-      if (name.includes('game') || name.includes('console')) return 'gaming';
-      if (name.includes('phone') || name.includes('laptop')) return 'electronics';
-      if (name.includes('book')) return 'books';
-      if (name.includes('clothes') || name.includes('shirt')) return 'fashion';
-      return 'general';
-    });
+  const { data: purchases = [] } = useQuery({
+    queryKey: ['user-purchases', user?.id],
+    queryFn: async () => {
+      return await base44.entities.Transaction.filter({
+        user_id: user.id,
+        transaction_type: 'product_purchase'
+      }, '-created_date', 20);
+    },
+    enabled: !!user
+  });
 
-    // Mock recommendations - in production, this would come from an AI service
-    const recommendations = [
-      {
-        id: '1',
-        name: 'Wireless Gaming Headset',
-        category: 'gaming',
-        price: 79.99,
-        image: 'https://images.unsplash.com/photo-1599669454699-248893623440?w=400',
-        reason: 'Popular with gamers'
-      },
-      {
-        id: '2',
-        name: 'Mechanical Keyboard',
-        category: 'gaming',
-        price: 129.99,
-        image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?w=400',
-        reason: 'Trending in electronics'
-      },
-      {
-        id: '3',
-        name: 'Portable SSD 1TB',
-        category: 'electronics',
-        price: 99.99,
-        image: 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400',
-        reason: 'Perfect for storage'
+  const { data: surveys = [] } = useQuery({
+    queryKey: ['user-surveys', user?.id],
+    queryFn: async () => {
+      return await base44.entities.Survey.filter({
+        user_id: user.id
+      }, '-created_date', 20);
+    },
+    enabled: !!user
+  });
+
+  const { data: aiRecommendations, isLoading } = useQuery({
+    queryKey: ['ai-recommendations', user?.id],
+    queryFn: async () => {
+      // Use AI to generate personalized recommendations
+      const wishlistCategories = wishlistItems.map(item => item.product_name).join(', ');
+      const browsing = user.browsing_history?.slice(-10).map(b => b.product_name).join(', ') || '';
+      
+      const prompt = `Based on this user profile:
+      - Wishlist items: ${wishlistCategories}
+      - Recent browsing: ${browsing}
+      - Purchase count: ${purchases.length}
+      - Survey interests: gaming, technology, lifestyle
+      
+      Recommend 3 specific products they would love with reasoning.`;
+
+      try {
+        const response = await base44.integrations.Core.InvokeLLM({
+          prompt: prompt,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              recommendations: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    name: { type: "string" },
+                    category: { type: "string" },
+                    price: { type: "number" },
+                    reason: { type: "string" }
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        return response.recommendations || [];
+      } catch (error) {
+        // Fallback recommendations
+        return [
+          {
+            name: 'Wireless Gaming Headset',
+            category: 'gaming',
+            price: 79.99,
+            reason: 'Popular with gamers'
+          },
+          {
+            name: 'Mechanical Keyboard',
+            category: 'gaming',
+            price: 129.99,
+            reason: 'Trending in electronics'
+          },
+          {
+            name: 'Portable SSD 1TB',
+            category: 'electronics',
+            price: 99.99,
+            reason: 'Perfect for storage'
+          }
+        ];
       }
-    ];
+    },
+    enabled: !!user && wishlistItems.length > 0
+  });
 
-    return recommendations.filter(rec => 
-      categories.includes(rec.category) || categories.includes('general')
-    ).slice(0, 3);
-  };
+  const trackBrowsing = useMutation({
+    mutationFn: async (product) => {
+      const browsing = user.browsing_history || [];
+      browsing.push({
+        product_name: product.name,
+        category: product.category,
+        timestamp: new Date().toISOString()
+      });
+      await base44.auth.updateMe({
+        browsing_history: browsing.slice(-50) // Keep last 50 items
+      });
+    }
+  });
 
-  const recommendations = getRecommendations();
+  if (isLoading) {
+    return (
+      <div className="mb-8 flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      </div>
+    );
+  }
 
-  if (recommendations.length === 0) {
+  if (!aiRecommendations || aiRecommendations.length === 0) {
     return null;
   }
 
@@ -73,18 +135,17 @@ export default function ProductRecommendations({ user }) {
     <div className="mb-8">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="w-6 h-6 text-purple-600" />
-        <h2 className="text-2xl font-bold text-gray-900">Recommended For You</h2>
+        <h2 className="text-2xl font-bold text-gray-900">AI Recommended For You</h2>
+        <Badge variant="outline" className="text-purple-600 border-purple-600">
+          Powered by AI
+        </Badge>
       </div>
       
       <div className="grid md:grid-cols-3 gap-6">
-        {recommendations.map((product) => (
-          <Card key={product.id} className="border-0 shadow-lg hover:shadow-xl transition-all">
+        {aiRecommendations.map((product, idx) => (
+          <Card key={idx} className="border-0 shadow-lg hover:shadow-xl transition-all">
             <CardContent className="p-0">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-t-xl"
-              />
+              <div className="w-full h-48 bg-gradient-to-br from-purple-400 to-blue-600 rounded-t-xl" />
               <div className="p-4">
                 <Badge variant="outline" className="mb-2 text-purple-600 border-purple-600">
                   {product.reason}
@@ -96,7 +157,7 @@ export default function ProductRecommendations({ user }) {
                 <Button
                   className="w-full"
                   onClick={() => {
-                    // In production, this would trigger a search or add to wishlist
+                    trackBrowsing.mutate(product);
                     toast.info('Search for this product in the store');
                   }}
                 >

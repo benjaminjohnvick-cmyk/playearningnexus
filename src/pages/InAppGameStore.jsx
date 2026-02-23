@@ -19,11 +19,13 @@ import {
   Loader2,
   FileText,
   Heart,
-  Package
+  Package,
+  SlidersHorizontal
 } from "lucide-react";
 import { toast } from "sonner";
 import ProductSearchBar from '../components/store/ProductSearchBar';
 import ProductSearchResults from '../components/store/ProductSearchResults';
+import ProductRecommendations from '../components/products/ProductRecommendations';
 
 function PayPalCheckoutForm({ game, user, onSuccess }) {
   const [processing, setProcessing] = useState(false);
@@ -108,6 +110,8 @@ export default function InAppGameStore() {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('popular');
+  const [priceRange, setPriceRange] = useState('all');
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [processingPurchase, setProcessingPurchase] = useState(false);
   const [showPayPalCheckout, setShowPayPalCheckout] = useState(false);
@@ -128,20 +132,48 @@ export default function InAppGameStore() {
   }, []);
 
   const { data: games = [], isLoading } = useQuery({
-    queryKey: ['store-games', selectedCategory, searchQuery],
+    queryKey: ['store-games', selectedCategory, searchQuery, sortBy, priceRange],
     queryFn: async () => {
       let filter = { marketplace_approved: true };
       if (selectedCategory !== 'all') {
         filter.category = selectedCategory;
       }
-      const allGames = await base44.entities.Game.filter(filter);
+      let allGames = await base44.entities.Game.filter(filter);
       
+      // Search filtering
       if (searchQuery) {
-        return allGames.filter(g => 
+        allGames = allGames.filter(g => 
           g.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           g.description?.toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
+
+      // Price range filtering
+      if (priceRange !== 'all') {
+        if (priceRange === 'free') {
+          allGames = allGames.filter(g => g.price === 0);
+        } else if (priceRange === 'under5') {
+          allGames = allGames.filter(g => g.price > 0 && g.price < 5);
+        } else if (priceRange === '5to10') {
+          allGames = allGames.filter(g => g.price >= 5 && g.price <= 10);
+        } else if (priceRange === 'over10') {
+          allGames = allGames.filter(g => g.price > 10);
+        }
+      }
+
+      // Sorting
+      if (sortBy === 'price_low') {
+        allGames.sort((a, b) => a.price - b.price);
+      } else if (sortBy === 'price_high') {
+        allGames.sort((a, b) => b.price - a.price);
+      } else if (sortBy === 'rating') {
+        allGames.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
+      } else if (sortBy === 'popular') {
+        allGames.sort((a, b) => (b.total_installs || 0) - (a.total_installs || 0));
+      } else if (sortBy === 'new') {
+        allGames.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+      }
+
       return allGames;
     }
   });
@@ -280,6 +312,9 @@ export default function InAppGameStore() {
           </div>
         </div>
 
+        {/* AI Recommendations */}
+        <ProductRecommendations user={user} />
+
         {/* Search & Filter */}
         <div className="mb-6 space-y-4">
           <div className="relative">
@@ -305,6 +340,39 @@ export default function InAppGameStore() {
                 {cat}
               </Button>
             ))}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-5 h-5 text-gray-500" />
+              <span className="text-sm text-gray-600">Sort:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="border rounded px-3 py-1 text-sm"
+              >
+                <option value="popular">Most Popular</option>
+                <option value="new">Newest</option>
+                <option value="rating">Highest Rated</option>
+                <option value="price_low">Price: Low to High</option>
+                <option value="price_high">Price: High to Low</option>
+              </select>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Price:</span>
+              <select
+                value={priceRange}
+                onChange={(e) => setPriceRange(e.target.value)}
+                className="border rounded px-3 py-1 text-sm"
+              >
+                <option value="all">All Prices</option>
+                <option value="free">Free</option>
+                <option value="under5">Under $5</option>
+                <option value="5to10">$5 - $10</option>
+                <option value="over10">Over $10</option>
+              </select>
+            </div>
           </div>
         </div>
 

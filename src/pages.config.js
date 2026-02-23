@@ -99,6 +99,7 @@ import VirtualStore from './pages/VirtualStore';
 import Wishlist from './pages/Wishlist';
 import NotificationSettings from './pages/NotificationSettings';
 import MoneyTransfer from './pages/MoneyTransfer';
+import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import __Layout from './Layout.jsx';
 
 
@@ -155,6 +156,7 @@ export const PAGES = {
     "Wishlist": Wishlist,
     "NotificationSettings": NotificationSettings,
     "MoneyTransfer": MoneyTransfer,
+    "AffiliateMarketplace": AffiliateMarketplace,
 }
 
 export const pagesConfig = {
