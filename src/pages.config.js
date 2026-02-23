@@ -98,6 +98,7 @@ import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import Wishlist from './pages/Wishlist';
 import NotificationSettings from './pages/NotificationSettings';
+import MoneyTransfer from './pages/MoneyTransfer';
 import __Layout from './Layout.jsx';
 
 
@@ -153,6 +154,7 @@ export const PAGES = {
     "VirtualStore": VirtualStore,
     "Wishlist": Wishlist,
     "NotificationSettings": NotificationSettings,
+    "MoneyTransfer": MoneyTransfer,
 }
 
 export const pagesConfig = {
