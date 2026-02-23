@@ -266,7 +266,7 @@ export default function InAppGameStore() {
                 className="bg-purple-600 hover:bg-purple-700"
               >
                 <Package className="w-4 h-4 mr-2" />
-                Search online for any products you want
+                Search online for any products you want and pay with surveys
               </Button>
               <Card className="p-4 border-2 border-green-500">
                 <div className="text-center">
