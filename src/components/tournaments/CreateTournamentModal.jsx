@@ -19,6 +19,7 @@ export default function CreateTournamentModal({ isOpen, onClose, user }) {
     max_participants: 16,
     prize_pool_type: 'virtual_currency',
     prize_pool_amount: 1000,
+    entry_fee: 0,
     start_time: '',
     registration_end: '',
     rules: ''
@@ -31,10 +32,31 @@ export default function CreateTournamentModal({ isOpen, onClose, user }) {
 
   const createMutation = useMutation({
     mutationFn: async (data) => {
+      // If real money prize pool, deduct seed money from creator
+      if (data.prize_pool_type === 'real_money' && data.prize_pool_amount > 0) {
+        const seedAmount = data.prize_pool_amount;
+        if ((user.total_earnings || 0) < seedAmount) {
+          throw new Error('Insufficient balance to create tournament');
+        }
+        
+        await base44.auth.updateMe({
+          total_earnings: (user.total_earnings || 0) - seedAmount
+        });
+        
+        await base44.entities.Transaction.create({
+          user_id: user.id,
+          amount: -seedAmount,
+          transaction_type: 'tournament_seed',
+          status: 'completed',
+          notes: `Seeded prize pool for tournament`
+        });
+      }
+      
       const tournament = await base44.entities.Tournament.create({
         ...data,
         host_user_id: user.id,
         registration_start: new Date().toISOString(),
+        entry_fee: data.entry_fee || 0,
         prize_distribution: {
           first: data.prize_pool_amount * 0.5,
           second: data.prize_pool_amount * 0.3,
@@ -172,6 +194,19 @@ export default function CreateTournamentModal({ isOpen, onClose, user }) {
                 min="0"
               />
             </div>
+          </div>
+
+          <div>
+            <Label>Entry Fee (optional)</Label>
+            <Input
+              type="number"
+              value={formData.entry_fee}
+              onChange={(e) => setFormData({ ...formData, entry_fee: parseFloat(e.target.value) })}
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+            />
+            <p className="text-xs text-gray-500 mt-1">Entry fees add to prize pool</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

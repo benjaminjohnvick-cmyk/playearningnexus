@@ -30,14 +30,40 @@ export default function TournamentCard({ tournament, user }) {
 
   const registerMutation = useMutation({
     mutationFn: async () => {
+      // Handle entry fee if required
+      if (tournament.entry_fee > 0) {
+        if ((user.total_earnings || 0) < tournament.entry_fee) {
+          throw new Error('Insufficient balance for entry fee');
+        }
+        
+        await base44.auth.updateMe({
+          total_earnings: (user.total_earnings || 0) - tournament.entry_fee
+        });
+        
+        // Add entry fee to prize pool
+        await base44.entities.Tournament.update(tournament.id, {
+          prize_pool_amount: (tournament.prize_pool_amount || 0) + tournament.entry_fee,
+          current_participants: tournament.current_participants + 1
+        });
+        
+        await base44.entities.Transaction.create({
+          user_id: user.id,
+          amount: -tournament.entry_fee,
+          transaction_type: 'tournament_entry',
+          status: 'completed',
+          notes: `Entry fee for ${tournament.title}`
+        });
+      } else {
+        await base44.entities.Tournament.update(tournament.id, {
+          current_participants: tournament.current_participants + 1
+        });
+      }
+      
       await base44.entities.TournamentParticipant.create({
         tournament_id: tournament.id,
         user_id: user.id,
-        seed: tournament.current_participants + 1
-      });
-
-      await base44.entities.Tournament.update(tournament.id, {
-        current_participants: tournament.current_participants + 1
+        seed: tournament.current_participants + 1,
+        entry_fee_paid: tournament.entry_fee || 0
       });
 
       await base44.entities.Notification.create({
@@ -60,6 +86,9 @@ export default function TournamentCard({ tournament, user }) {
       toast.success('Successfully registered!');
       queryClient.invalidateQueries(['tournamentRegistration']);
       queryClient.invalidateQueries(['tournaments']);
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Registration failed');
     }
   });
 
@@ -100,11 +129,18 @@ export default function TournamentCard({ tournament, user }) {
           </div>
 
           {tournament.prize_pool_amount > 0 && (
-            <div className="flex items-center gap-2 p-2 bg-yellow-50 rounded-lg">
-              <DollarSign className="w-4 h-4 text-yellow-600" />
-              <span className="text-sm font-semibold text-yellow-700">
-                {tournament.prize_pool_type === 'real_money' ? '$' : ''}{tournament.prize_pool_amount} Prize Pool
-              </span>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 p-2 bg-yellow-50 rounded-lg">
+                <DollarSign className="w-4 h-4 text-yellow-600" />
+                <span className="text-sm font-semibold text-yellow-700">
+                  {tournament.prize_pool_type === 'real_money' ? '$' : ''}{tournament.prize_pool_amount} Prize Pool
+                </span>
+              </div>
+              {tournament.entry_fee > 0 && (
+                <p className="text-xs text-gray-600">
+                  Entry Fee: {tournament.prize_pool_type === 'real_money' ? '$' : ''}{tournament.entry_fee}
+                </p>
+              )}
             </div>
           )}
 
