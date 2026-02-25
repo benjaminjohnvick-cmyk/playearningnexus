@@ -39,19 +39,18 @@ export default function Surveys() {
   });
 
   const completeSurveyMutation = useMutation({
-    mutationFn: async ({ provider, earnings, duration, surveyId }) => {
+    mutationFn: async ({ provider, earnings: surveyEarnings, duration, surveyId }) => {
       const survey = await base44.entities.Survey.create({
         user_id: user.id,
         survey_provider: provider || 'pollfish',
         survey_id: surveyId || `survey_${Date.now()}`,
-        earnings: earnings,
+        earnings: surveyEarnings,
         completion_date: new Date().toISOString(),
         status: 'completed',
         duration_minutes: duration || 5
       });
 
-      const actualEarnings = earnings || 0; // Use the earnings passed to the function
-      const userShare = actualEarnings * 0.50; // 50/50 split
+      const userShare = (surveyEarnings || 0) * 0.50; // 50/50 split
       const newEarnings = (user.total_earnings || 0) + userShare;
       
       // Track daily earnings for premium
