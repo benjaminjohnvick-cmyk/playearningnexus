@@ -26,7 +26,7 @@ export default function CPXResearchEmbed({ userId, onSurveyComplete }) {
     configScript.innerHTML = `
       const cpxConfig = {
         general_config: {
-          app_id: 'YOUR_CPX_APP_ID', // Replace with your CPX Research App ID
+          app_id: '31618',
           ext_user_id: '${userId}',
           email: '',
           username: '',
