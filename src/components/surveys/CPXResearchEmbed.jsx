@@ -11,34 +11,6 @@ export default function CPXResearchEmbed({ userId, onSurveyComplete }) {
     let script = null;
     let configScript = null;
     let mounted = true;
-    let cleanupExecuted = false;
-
-    const cleanup = () => {
-      if (cleanupExecuted) return;
-      cleanupExecuted = true;
-
-      // Remove scripts safely
-      if (script && document.body.contains(script)) {
-        try {
-          document.body.removeChild(script);
-        } catch (e) {
-          // Already removed
-        }
-      }
-      
-      if (configScript && document.head.contains(configScript)) {
-        try {
-          document.head.removeChild(configScript);
-        } catch (e) {
-          // Already removed
-        }
-      }
-      
-      // Clean up global variables
-      delete window.setCPXSurveyCount;
-      delete window.handleCPXTransaction;
-      delete window.config;
-    };
 
     // Load CPX Research script
     script = document.createElement('script');
@@ -119,9 +91,31 @@ export default function CPXResearchEmbed({ userId, onSurveyComplete }) {
 
     return () => {
       mounted = false;
-      requestAnimationFrame(() => {
-        cleanup();
-      });
+      
+      // Defer cleanup to next tick to avoid React lifecycle conflicts
+      setTimeout(() => {
+        // Only remove if still in DOM and still the same element
+        if (script && document.contains(script)) {
+          try {
+            script.remove();
+          } catch (e) {
+            // Already removed
+          }
+        }
+        
+        if (configScript && document.contains(configScript)) {
+          try {
+            configScript.remove();
+          } catch (e) {
+            // Already removed
+          }
+        }
+        
+        // Clean up global variables
+        delete window.setCPXSurveyCount;
+        delete window.handleCPXTransaction;
+        delete window.config;
+      }, 100);
     };
   }, [userId, onSurveyComplete]);
 
