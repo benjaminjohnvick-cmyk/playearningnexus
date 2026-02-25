@@ -105,6 +105,19 @@ export default function UserDashboard() {
     enabled: !!user
   });
 
+  const { data: todaysEarningsData } = useQuery({
+    queryKey: ['todays-earnings', user?.id],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const records = await base44.entities.DailyEarnings.filter({
+        user_id: user.id,
+        date: today
+      });
+      return records.length > 0 ? records[0].total_earned : 0;
+    },
+    enabled: !!user
+  });
+
   const { data: recentActivities = [] } = useQuery({
     queryKey: ['recent-activities', user?.id],
     queryFn: async () => {
@@ -277,6 +290,11 @@ export default function UserDashboard() {
             currentEarnings={todaysEarnings}
             todayCompleted={dailyGoalMet}
           />
+        </div>
+
+        {/* Daily Earnings Meter for Premium */}
+        <div className="mb-8">
+          <DailyEarningsMeter todaysEarnings={todaysEarningsData || 0} dailyGoal={3} />
         </div>
 
         {/* Active Events */}
