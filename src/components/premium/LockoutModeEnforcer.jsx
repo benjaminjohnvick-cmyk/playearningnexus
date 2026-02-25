@@ -38,6 +38,13 @@ export default function LockoutModeEnforcer({ user }) {
     refetchInterval: 5000
   });
 
+  // Auto-enable lockout mode for all premium users
+  useEffect(() => {
+    if (membership && !membership.lockout_mode_enabled) {
+      enableLockoutMode();
+    }
+  }, [membership]);
+
   useEffect(() => {
     if (membership?.lockout_mode_enabled && !todaySession) {
       createSession();
@@ -54,6 +61,24 @@ export default function LockoutModeEnforcer({ user }) {
       }
     }
   }, [dailyEarnings, todaySession]);
+
+  const enableLockoutMutation = useMutation({
+    mutationFn: async () => {
+      const endDate = new Date();
+      endDate.setFullYear(endDate.getFullYear() + 1);
+      return base44.entities.PremiumMembership.update(membership.id, {
+        lockout_mode_enabled: true,
+        lockout_start_date: new Date().toISOString().split('T')[0],
+        lockout_end_date: endDate.toISOString().split('T')[0],
+        lockout_cycle_count: 1,
+        days_completed: 0,
+        auto_renew_lockout: true
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['premium-membership']);
+    }
+  });
 
   const createSessionMutation = useMutation({
     mutationFn: async () => {
@@ -99,6 +124,7 @@ export default function LockoutModeEnforcer({ user }) {
     }
   });
 
+  const enableLockoutMode = () => enableLockoutMutation.mutate();
   const createSession = () => createSessionMutation.mutate();
   const updateSessionEarnings = (earned) => {
     if (todaySession && todaySession.amount_earned !== earned) {
@@ -107,8 +133,21 @@ export default function LockoutModeEnforcer({ user }) {
   };
   const markGoalMet = () => markGoalMetMutation.mutate();
 
-  if (!membership?.lockout_mode_enabled) {
+  if (!membership) {
     return null;
+  }
+
+  if (!membership.lockout_mode_enabled) {
+    return (
+      <Card className="border-2 border-purple-500 bg-purple-50">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-3">
+            <Lock className="w-5 h-5 text-purple-600 animate-pulse" />
+            <p className="text-sm text-purple-900">Activating lockout mode for your premium membership...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   if (isLoading) {
