@@ -68,7 +68,7 @@ export default function LockoutModal({ user, isOpen, onClose }) {
     return times;
   };
 
-  const needsToEarn = 2 - todaysEarnings;
+  const needsToEarn = 3 - todaysEarnings;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -100,7 +100,7 @@ export default function LockoutModal({ user, isOpen, onClose }) {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Required:</span>
-                  <span className="font-bold">$2.00</span>
+                  <span className="font-bold">$3.00</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Remaining:</span>
@@ -144,7 +144,7 @@ export default function LockoutModal({ user, isOpen, onClose }) {
         <div className="bg-gray-50 rounded-lg p-4">
           <h4 className="font-bold text-gray-900 mb-2">Important Information:</h4>
           <ul className="text-sm text-gray-700 space-y-1">
-            <li>• You cannot access apps until you've earned $2 from surveys today</li>
+            <li>• You cannot access apps until you've earned $3 from surveys today</li>
             <li>• This lockout activates daily at your scheduled time</li>
             <li>• This is part of your 1-year user agreement</li>
             <li>• After completing surveys, you can play all games in your library</li>
