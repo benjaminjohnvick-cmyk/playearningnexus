@@ -8,6 +8,7 @@ import { DollarSign, Clock, CheckCircle2, ExternalLink, Zap } from "lucide-react
 import { toast } from "sonner";
 import SurveyProgress from '../components/surveys/SurveyProgress';
 import PollfishEmbed from '../components/surveys/PollfishEmbed';
+import CPXResearchEmbed from '../components/surveys/CPXResearchEmbed';
 import SurveyEarningsCard from '../components/surveys/SurveyEarningsCard';
 
 export default function Surveys() {
@@ -243,6 +244,16 @@ export default function Surveys() {
     });
   };
 
+  const handleCPXComplete = async (earnings) => {
+    await completeSurveyMutation.mutateAsync({
+      provider: 'cpx_research',
+      earnings: earnings,
+      duration: 10,
+      surveyId: `cpx_${Date.now()}`
+    });
+    toast.success(`Survey completed! You earned $${(earnings * 0.5).toFixed(2)}`);
+  };
+
   const availableSurveys = [
     { id: 1, provider: 'pollfish', title: 'Consumer Preferences Survey', earnings: 1.20, duration: 5, category: 'Shopping', url: 'https://www.pollfish.com/survey' },
     { id: 2, provider: 'pollfish', title: 'Mobile App Usage Study', earnings: 1.50, duration: 8, category: 'Technology', url: 'https://www.pollfish.com/survey' },
@@ -295,10 +306,15 @@ export default function Surveys() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <Zap className="w-6 h-6 text-blue-600" />
-            <h2 className="text-2xl font-bold text-gray-900">Available Surveys</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Pollfish Surveys</h2>
             <Badge className="bg-green-100 text-green-700">Earn Real Money</Badge>
           </div>
           <PollfishEmbed onSurveyComplete={handlePollfishComplete} userEmail={user.email} />
+        </div>
+
+        {/* CPX Research Integration */}
+        <div className="mb-8">
+          <CPXResearchEmbed userId={user.id} onSurveyComplete={handleCPXComplete} />
         </div>
 
         {dailyGoalMet && (
@@ -321,14 +337,15 @@ export default function Surveys() {
               <DollarSign className="w-8 h-8 text-blue-600" />
             </div>
             <div className="flex-1">
-              <h3 className="font-bold text-lg text-gray-900 mb-2">Powered by Pollfish</h3>
+              <h3 className="font-bold text-lg text-gray-900 mb-2">Multiple Survey Providers</h3>
               <p className="text-sm text-gray-600 mb-3">
-                We partner with Pollfish, the industry-leading survey platform that pays <span className="font-bold text-green-600">$0.30 to $5.00 per survey</span> - the highest rates in the market. All surveys are vetted for quality and payments are processed instantly.
+                We partner with <span className="font-bold text-blue-600">Pollfish</span> and <span className="font-bold text-red-600">CPX Research</span>, industry-leading survey platforms that pay <span className="font-bold text-green-600">$0.30 to $5.00 per survey</span>. All surveys are vetted for quality and payments are processed instantly with our 50/50 revenue share.
               </p>
               <div className="flex flex-wrap gap-2 text-xs">
                 <Badge className="bg-green-100 text-green-700 border border-green-200">Highest Payouts</Badge>
                 <Badge className="bg-blue-100 text-blue-700 border border-blue-200">Instant Payments</Badge>
                 <Badge className="bg-purple-100 text-purple-700 border border-purple-200">Quality Surveys</Badge>
+                <Badge className="bg-red-100 text-red-700 border border-red-200">Fair Rewards</Badge>
               </div>
             </div>
           </div>
