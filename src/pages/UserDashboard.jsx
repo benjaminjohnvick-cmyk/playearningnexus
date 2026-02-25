@@ -50,18 +50,7 @@ export default function UserDashboard() {
           setShowULA(true);
         }
         
-        // Check if user needs to complete surveys today
-        const today = new Date().toISOString().split('T')[0];
-        const todaysSurveys = await base44.entities.Survey.filter({
-          user_id: currentUser.id,
-          completion_date: { $gte: today }
-        });
-        const todaysEarnings = todaysSurveys.reduce((sum, s) => sum + (s.earnings || 0), 0);
-
-        // Lock out user on login if they haven't completed $2 surveys
-        if (todaysEarnings < 2 && currentUser.onboarding_completed) {
-          setShowLockout(true);
-        }
+        // Lockout logic moved to Surveys page
       } catch (error) {
         base44.auth.redirectToLogin();
       }
@@ -185,7 +174,7 @@ export default function UserDashboard() {
   });
 
   const todaysEarnings = todaysSurveys.reduce((sum, survey) => sum + (survey.earnings || 0), 0);
-  const dailyGoalMet = todaysEarnings >= 2;
+  const dailyGoalMet = todaysEarnings >= 3;
 
   if (!user) {
     return (
@@ -216,7 +205,7 @@ export default function UserDashboard() {
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-gray-700">
-                Your 2-minute trial has ended. Complete ${(2 - todaysEarnings).toFixed(2)} worth of surveys to continue playing!
+                Your 2-minute trial has ended. Complete ${(3 - todaysEarnings).toFixed(2)} worth of surveys to continue playing!
               </p>
               <Link to={createPageUrl('Surveys')}>
                 <Button className="w-full bg-red-600 hover:bg-red-700">
@@ -288,7 +277,7 @@ export default function UserDashboard() {
         {/* Survey Progress */}
         <div className="mb-8">
           <SurveyProgress
-            dailyGoal={2}
+            dailyGoal={3}
             currentEarnings={todaysEarnings}
             todayCompleted={dailyGoalMet}
           />
@@ -346,7 +335,7 @@ export default function UserDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Complete Your Daily Surveys</h3>
-                <p className="text-gray-600">Earn ${(2 - todaysEarnings).toFixed(2)} more to unlock today's games</p>
+                <p className="text-gray-600">Earn ${(3 - todaysEarnings).toFixed(2)} more to unlock today's games</p>
               </div>
               <Link to={createPageUrl('Surveys')}>
                 <Button size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
