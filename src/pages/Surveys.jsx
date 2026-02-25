@@ -21,19 +21,6 @@ export default function Surveys() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-        
-        // Check today's earnings and trigger lockout if needed
-        const today = new Date().toISOString().split('T')[0];
-        const todaysSurveys = await base44.entities.Survey.filter({
-          user_id: currentUser.id,
-          completion_date: { $gte: today }
-        });
-        const todaysEarnings = todaysSurveys.reduce((sum, s) => sum + (s.earnings || 0), 0);
-        
-        // Lock out user if they haven't completed $3 surveys
-        if (todaysEarnings < 3 && currentUser.onboarding_completed) {
-          setShowLockout(true);
-        }
       } catch (error) {
         base44.auth.redirectToLogin();
       }
