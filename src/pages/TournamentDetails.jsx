@@ -5,9 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Trophy, Users, Calendar, Info, Award, Eye } from 'lucide-react';
+import { Trophy, Users, Calendar, Info, Award, Eye, Brain, Target } from 'lucide-react';
 import TournamentBracket from '../components/tournaments/TournamentBracket';
 import TournamentMatchSpectator from '../components/tournaments/TournamentMatchSpectator';
+import AITournamentInsights from '../components/tournaments/AITournamentInsights';
+import AITournamentChallenges from '../components/tournaments/AITournamentChallenges';
 
 export default function TournamentDetails() {
   const [user, setUser] = useState(null);
@@ -53,6 +55,8 @@ export default function TournamentDetails() {
     enabled: !!tournamentId,
     refetchInterval: 5000
   });
+
+  const myParticipant = participants.find(p => p.user_id === user?.id);
 
   if (tournamentLoading || !tournament || !user) {
     return (
@@ -109,7 +113,7 @@ export default function TournamentDetails() {
         </Card>
 
         <Tabs defaultValue="bracket" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="bracket">
               <Trophy className="w-4 h-4 mr-2" />
               Bracket
@@ -118,6 +122,16 @@ export default function TournamentDetails() {
               <Eye className="w-4 h-4 mr-2" />
               Watch Live
             </TabsTrigger>
+            <TabsTrigger value="insights">
+              <Brain className="w-4 h-4 mr-2" />
+              AI Insights
+            </TabsTrigger>
+            {myParticipant && (
+              <TabsTrigger value="challenges">
+                <Target className="w-4 h-4 mr-2" />
+                My Challenges
+              </TabsTrigger>
+            )}
             <TabsTrigger value="participants">
               <Users className="w-4 h-4 mr-2" />
               Participants
@@ -154,6 +168,16 @@ export default function TournamentDetails() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="insights">
+            <AITournamentInsights tournamentId={tournamentId} />
+          </TabsContent>
+
+          {myParticipant && (
+            <TabsContent value="challenges">
+              <AITournamentChallenges tournamentId={tournamentId} participantId={myParticipant.id} />
+            </TabsContent>
+          )}
 
           <TabsContent value="participants">
             <Card>
