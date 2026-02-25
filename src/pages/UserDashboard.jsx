@@ -23,6 +23,7 @@ import PersonalizedGameBundles from '../components/bundles/PersonalizedGameBundl
 import EnhancedPointsSystem from '../components/gamification/EnhancedPointsSystem';
 import PersonalizedRecommendations from '../components/ai/PersonalizedRecommendations';
 import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
+import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -296,6 +297,11 @@ export default function UserDashboard() {
         {/* Daily Earnings Meter for Premium */}
         <div className="mb-8">
           <DailyEarningsMeter todaysEarnings={todaysEarningsData || 0} dailyGoal={3} />
+        </div>
+
+        {/* Lockout Mode Enforcer */}
+        <div className="mb-8">
+          <LockoutModeEnforcer user={user} />
         </div>
 
         {/* Active Events */}
