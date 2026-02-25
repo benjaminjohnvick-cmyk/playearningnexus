@@ -9,6 +9,10 @@ import { toast } from "sonner";
 import SurveyProgress from '../components/surveys/SurveyProgress';
 import CPXResearchEmbed from '../components/surveys/CPXResearchEmbed';
 import SurveyEarningsCard from '../components/surveys/SurveyEarningsCard';
+import BitLabsEmbed from '../components/surveys/BitLabsEmbed';
+import PollfishWebEmbed from '../components/surveys/PollfishWebEmbed';
+import TheoremReachEmbed from '../components/surveys/TheoremReachEmbed';
+import TolunaEmbed from '../components/surveys/TolunaEmbed';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
@@ -244,6 +248,46 @@ export default function Surveys() {
     toast.success(`Survey completed! You earned $${(earnings * 0.5).toFixed(2)}`);
   };
 
+  const handleBitLabsComplete = async (earnings) => {
+    await completeSurveyMutation.mutateAsync({
+      provider: 'bitlabs',
+      earnings: earnings,
+      duration: 8,
+      surveyId: `bitlabs_${Date.now()}`
+    });
+    toast.success(`BitLabs survey completed! You earned $${(earnings * 0.5).toFixed(2)}`);
+  };
+
+  const handlePollfishComplete = async (earnings) => {
+    await completeSurveyMutation.mutateAsync({
+      provider: 'pollfish',
+      earnings: earnings,
+      duration: 7,
+      surveyId: `pollfish_${Date.now()}`
+    });
+    toast.success(`Pollfish survey completed! You earned $${(earnings * 0.5).toFixed(2)}`);
+  };
+
+  const handleTheoremReachComplete = async (earnings) => {
+    await completeSurveyMutation.mutateAsync({
+      provider: 'theoremreach',
+      earnings: earnings,
+      duration: 6,
+      surveyId: `theoremreach_${Date.now()}`
+    });
+    toast.success(`TheoremReach completed! You earned $${(earnings * 0.5).toFixed(2)}`);
+  };
+
+  const handleTolunaComplete = async (earnings) => {
+    await completeSurveyMutation.mutateAsync({
+      provider: 'toluna',
+      earnings: earnings,
+      duration: 12,
+      surveyId: `toluna_${Date.now()}`
+    });
+    toast.success(`Toluna survey completed! You earned $${(earnings * 0.5).toFixed(2)}`);
+  };
+
   const availableSurveys = [
     { id: 1, provider: 'pollfish', title: 'Consumer Preferences Survey', earnings: 1.20, duration: 5, category: 'Shopping', url: 'https://www.pollfish.com/survey' },
     { id: 2, provider: 'pollfish', title: 'Mobile App Usage Study', earnings: 1.50, duration: 8, category: 'Technology', url: 'https://www.pollfish.com/survey' },
@@ -292,9 +336,20 @@ export default function Surveys() {
           />
         </div>
 
-        {/* CPX Research Integration */}
-        <div className="mb-8">
+        {/* Survey Provider Integrations */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Survey Providers</h2>
+          <p className="text-gray-600 mb-6">
+            We've integrated with multiple survey providers to maximize your earning opportunities
+          </p>
+        </div>
+
+        <div className="grid gap-6 mb-8 md:grid-cols-2">
           <CPXResearchEmbed userId={user.id} onSurveyComplete={handleCPXComplete} />
+          <BitLabsEmbed userId={user.id} onSurveyComplete={handleBitLabsComplete} />
+          <PollfishWebEmbed userId={user.id} onSurveyComplete={handlePollfishComplete} />
+          <TheoremReachEmbed userId={user.id} onSurveyComplete={handleTheoremReachComplete} />
+          <TolunaEmbed userId={user.id} onSurveyComplete={handleTolunaComplete} />
         </div>
 
         {dailyGoalMet && (
@@ -317,15 +372,15 @@ export default function Surveys() {
               <DollarSign className="w-8 h-8 text-blue-600" />
             </div>
             <div className="flex-1">
-              <h3 className="font-bold text-lg text-gray-900 mb-2">Powered by CPX Research</h3>
+              <h3 className="font-bold text-lg text-gray-900 mb-2">Multi-Provider Survey Network</h3>
               <p className="text-sm text-gray-600 mb-3">
-                We partner with <span className="font-bold text-red-600">CPX Research</span>, an industry-leading survey platform that pays <span className="font-bold text-green-600">$0.30 to $5.00 per survey</span>. All surveys are vetted for quality and payments are processed instantly with our 50/50 revenue share.
+                We've integrated with <span className="font-bold text-red-600">5 leading survey providers</span> including CPX Research, BitLabs, Pollfish, TheoremReach, and Toluna. This ensures you always have access to the highest-paying surveys available, with earnings ranging from <span className="font-bold text-green-600">$0.30 to $5.00 per survey</span>. All payments are processed instantly with our 50/50 revenue share.
               </p>
               <div className="flex flex-wrap gap-2 text-xs">
-                <Badge className="bg-green-100 text-green-700 border border-green-200">Highest Payouts</Badge>
+                <Badge className="bg-green-100 text-green-700 border border-green-200">5 Survey Networks</Badge>
                 <Badge className="bg-blue-100 text-blue-700 border border-blue-200">Instant Payments</Badge>
                 <Badge className="bg-purple-100 text-purple-700 border border-purple-200">Quality Surveys</Badge>
-                <Badge className="bg-red-100 text-red-700 border border-red-200">Fair Rewards</Badge>
+                <Badge className="bg-red-100 text-red-700 border border-red-200">Fair 50/50 Split</Badge>
               </div>
             </div>
           </div>
