@@ -22,6 +22,7 @@ import AIChatSupport from '../components/support/AIChatSupport';
 import PersonalizedGameBundles from '../components/bundles/PersonalizedGameBundles';
 import EnhancedPointsSystem from '../components/gamification/EnhancedPointsSystem';
 import PersonalizedRecommendations from '../components/ai/PersonalizedRecommendations';
+import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";

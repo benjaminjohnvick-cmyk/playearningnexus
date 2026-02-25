@@ -38,8 +38,8 @@ export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 3 }
           </Badge>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-4">
+        {/* Progress Bar with Arrow */}
+        <div className="mb-4 relative">
           <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden relative">
             <div
               className={`${getMeterColor()} h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2`}
@@ -51,13 +51,16 @@ export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 3 }
                 </span>
               )}
             </div>
-            {/* Arrow indicator */}
-            {percentage < 100 && (
-              <div
-                className="absolute top-0 h-6 w-1 bg-gray-800"
-                style={{ left: `${percentage}%` }}
-              />
-            )}
+          </div>
+          {/* Moving Arrow indicator */}
+          <div
+            className="absolute -top-8 transform -translate-x-1/2 transition-all duration-500"
+            style={{ left: `${percentage}%` }}
+          >
+            <div className="flex flex-col items-center">
+              <span className="text-2xl animate-bounce">⬇️</span>
+              <span className="text-xs font-bold text-gray-700">${todaysEarnings.toFixed(2)}</span>
+            </div>
           </div>
         </div>
 
@@ -98,9 +101,14 @@ export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 3 }
           </div>
         </div>
 
-        <p className="text-xs text-gray-500 mt-3 text-center">
-          Note: Based on 50/50 split. Complete 6 surveys at $1 each to reach $3 goal.
-        </p>
+        <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+          <p className="text-xs font-medium text-purple-800 mb-1">📱 Premium Benefits</p>
+          <p className="text-xs text-gray-600">
+            • Daily SMS reminders to stay on track<br />
+            • Reach $3/day for 365 days to maintain premium status<br />
+            • Note: Based on 50/50 split (Complete $6 in surveys = $3 earned)
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
