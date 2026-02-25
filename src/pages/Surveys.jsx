@@ -9,11 +9,9 @@ import { toast } from "sonner";
 import SurveyProgress from '../components/surveys/SurveyProgress';
 import PollfishEmbed from '../components/surveys/PollfishEmbed';
 import SurveyEarningsCard from '../components/surveys/SurveyEarningsCard';
-import LockoutModal from '../components/user/LockoutModal';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
-  const [showLockout, setShowLockout] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -269,13 +267,6 @@ export default function Surveys() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-      {showLockout && (
-        <LockoutModal
-          user={user}
-          isOpen={showLockout}
-          onClose={() => setShowLockout(false)}
-        />
-      )}
       <div className="max-w-5xl mx-auto">
         <div className="mb-8 flex items-start justify-between">
           <div>
