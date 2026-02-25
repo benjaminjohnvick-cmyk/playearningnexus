@@ -11,6 +11,34 @@ export default function CPXResearchEmbed({ userId, onSurveyComplete }) {
     let script = null;
     let configScript = null;
     let mounted = true;
+    let cleanupExecuted = false;
+
+    const cleanup = () => {
+      if (cleanupExecuted) return;
+      cleanupExecuted = true;
+
+      // Remove scripts safely
+      if (script && document.body.contains(script)) {
+        try {
+          document.body.removeChild(script);
+        } catch (e) {
+          // Already removed
+        }
+      }
+      
+      if (configScript && document.head.contains(configScript)) {
+        try {
+          document.head.removeChild(configScript);
+        } catch (e) {
+          // Already removed
+        }
+      }
+      
+      // Clean up global variables
+      delete window.setCPXSurveyCount;
+      delete window.handleCPXTransaction;
+      delete window.config;
+    };
 
     // Load CPX Research script
     script = document.createElement('script');
@@ -91,29 +119,9 @@ export default function CPXResearchEmbed({ userId, onSurveyComplete }) {
 
     return () => {
       mounted = false;
-      
-      // Clean up with setTimeout to avoid React lifecycle conflicts
-      setTimeout(() => {
-        try {
-          if (script?.parentElement) {
-            script.parentElement.removeChild(script);
-          }
-        } catch (e) {
-          // Silently ignore
-        }
-        
-        try {
-          if (configScript?.parentElement) {
-            configScript.parentElement.removeChild(configScript);
-          }
-        } catch (e) {
-          // Silently ignore
-        }
-        
-        delete window.setCPXSurveyCount;
-        delete window.handleCPXTransaction;
-        delete window.config;
-      }, 0);
+      requestAnimationFrame(() => {
+        cleanup();
+      });
     };
   }, [userId, onSurveyComplete]);
 
