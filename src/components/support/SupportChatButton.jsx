@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
-import AISupportChatbot from './AISupportChatbot';
+import AICustomerSupport from './AICustomerSupport';
 
 export default function SupportChatButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function SupportChatButton() {
         <MessageCircle className="w-6 h-6" />
       </Button>
 
-      {isOpen && <AISupportChatbot user={user} isOpen={isOpen} onClose={() => setIsOpen(false)} />}
+      {isOpen && <AICustomerSupport user={user} isOpen={isOpen} onClose={() => setIsOpen(false)} />}
     </>
   );
 }

@@ -50,7 +50,72 @@ export default function Surveys() {
         duration_minutes: duration || 5
       });
 
+      const earnings = surveysLeft > 0 ? 0.50 : 0; // 50/50 split
       const newEarnings = (user.total_earnings || 0) + earnings;
+      
+      // Track daily earnings for premium
+      const today = new Date().toISOString().split('T')[0];
+      const dailyEarningsRecords = await base44.entities.DailyEarnings.filter({
+        user_id: user.id,
+        date: today
+      });
+      
+      const todaysEarnings = dailyEarningsRecords.length > 0 
+        ? dailyEarningsRecords[0].total_earned + earnings
+        : earnings;
+      
+      if (dailyEarningsRecords.length > 0) {
+        await base44.entities.DailyEarnings.update(dailyEarningsRecords[0].id, {
+          total_earned: todaysEarnings,
+          goal_met: todaysEarnings >= 3
+        });
+      } else {
+        await base44.entities.DailyEarnings.create({
+          user_id: user.id,
+          date: today,
+          total_earned: todaysEarnings,
+          goal_met: todaysEarnings >= 3
+        });
+      }
+      
+      // Check if user qualifies for premium
+      if (todaysEarnings >= 3) {
+        const premiumRecords = await base44.entities.PremiumMembership.filter({
+          user_id: user.id
+        });
+        
+        if (premiumRecords.length > 0) {
+          const premium = premiumRecords[0];
+          await base44.entities.PremiumMembership.update(premium.id, {
+            days_completed: (premium.days_completed || 0) + 1
+          });
+          
+          if ((premium.days_completed || 0) + 1 >= 365) {
+            await base44.entities.Notification.create({
+              user_id: user.id,
+              type: 'achievement_unlocked',
+              title: '🎉 Premium Year Complete!',
+              message: 'Congratulations! You completed 365 days of premium membership!',
+              action_url: '/UserDashboard'
+            });
+          }
+        } else {
+          await base44.entities.PremiumMembership.create({
+            user_id: user.id,
+            start_date: today,
+            days_completed: 1,
+            is_active: true
+          });
+          
+          await base44.entities.Notification.create({
+            user_id: user.id,
+            type: 'achievement_unlocked',
+            title: '⭐ Premium Member!',
+            message: 'You hit your $3 daily goal! Keep it up for 365 days for premium benefits!',
+            action_url: '/UserDashboard'
+          });
+        }
+      }
       const currentPoints = user.points || 0;
       const pointsEarned = Math.floor(earnings * 10); // 10 points per dollar
       const newPoints = currentPoints + pointsEarned;

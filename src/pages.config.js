@@ -50,6 +50,7 @@
 import AIAgents from './pages/AIAgents';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
+import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import BusinessDashboard from './pages/BusinessDashboard';
 import CRMDashboard from './pages/CRMDashboard';
 import ContactUs from './pages/ContactUs';
@@ -76,8 +77,10 @@ import InAppStore from './pages/InAppStore';
 import IntegrationSettings from './pages/IntegrationSettings';
 import Leaderboard from './pages/Leaderboard';
 import MonetizationHub from './pages/MonetizationHub';
+import MoneyTransfer from './pages/MoneyTransfer';
 import MovieStarGenerator from './pages/MovieStarGenerator';
 import MyPurchases from './pages/MyPurchases';
+import NotificationSettings from './pages/NotificationSettings';
 import PayPalManagement from './pages/PayPalManagement';
 import PayoutHistory from './pages/PayoutHistory';
 import PayoutSettings from './pages/PayoutSettings';
@@ -97,9 +100,6 @@ import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import Wishlist from './pages/Wishlist';
-import NotificationSettings from './pages/NotificationSettings';
-import MoneyTransfer from './pages/MoneyTransfer';
-import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import __Layout from './Layout.jsx';
 
 
@@ -107,6 +107,7 @@ export const PAGES = {
     "AIAgents": AIAgents,
     "AdminDashboard": AdminDashboard,
     "AdminUsers": AdminUsers,
+    "AffiliateMarketplace": AffiliateMarketplace,
     "BusinessDashboard": BusinessDashboard,
     "CRMDashboard": CRMDashboard,
     "ContactUs": ContactUs,
@@ -133,8 +134,10 @@ export const PAGES = {
     "IntegrationSettings": IntegrationSettings,
     "Leaderboard": Leaderboard,
     "MonetizationHub": MonetizationHub,
+    "MoneyTransfer": MoneyTransfer,
     "MovieStarGenerator": MovieStarGenerator,
     "MyPurchases": MyPurchases,
+    "NotificationSettings": NotificationSettings,
     "PayPalManagement": PayPalManagement,
     "PayoutHistory": PayoutHistory,
     "PayoutSettings": PayoutSettings,
@@ -154,9 +157,6 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
     "Wishlist": Wishlist,
-    "NotificationSettings": NotificationSettings,
-    "MoneyTransfer": MoneyTransfer,
-    "AffiliateMarketplace": AffiliateMarketplace,
 }
 
 export const pagesConfig = {
