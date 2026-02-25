@@ -344,6 +344,19 @@ export default function Settings() {
                         }
                       />
                     </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-base font-medium">Premium Daily Reminders</Label>
+                        <p className="text-sm text-gray-500">Daily SMS to complete your $3 goal</p>
+                      </div>
+                      <Switch
+                        checked={notificationPrefs.premium_daily_reminders}
+                        onCheckedChange={(checked) => 
+                          setNotificationPrefs({...notificationPrefs, premium_daily_reminders: checked})
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
 
