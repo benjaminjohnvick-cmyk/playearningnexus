@@ -9,9 +9,11 @@ import { toast } from "sonner";
 import SurveyProgress from '../components/surveys/SurveyProgress';
 import PollfishEmbed from '../components/surveys/PollfishEmbed';
 import SurveyEarningsCard from '../components/surveys/SurveyEarningsCard';
+import LockoutModal from '../components/user/LockoutModal';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
+  const [showLockout, setShowLockout] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -136,7 +138,7 @@ export default function Surveys() {
       
       await base44.auth.updateMe({
         total_earnings: newEarnings,
-        daily_survey_completed: newEarnings >= 2,
+        daily_survey_completed: newEarnings >= 3,
         last_survey_date: new Date().toISOString().split('T')[0],
         points: newPoints,
         level: newLevel
@@ -268,7 +270,7 @@ export default function Surveys() {
   ];
 
   const todaysEarnings = todaysSurveys.reduce((sum, survey) => sum + (survey.earnings || 0), 0);
-  const dailyGoalMet = todaysEarnings >= 2;
+  const dailyGoalMet = todaysEarnings >= 3;
 
   if (!user) {
     return (
@@ -280,6 +282,13 @@ export default function Surveys() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      {showLockout && (
+        <LockoutModal
+          user={user}
+          isOpen={showLockout}
+          onClose={() => setShowLockout(false)}
+        />
+      )}
       <div className="max-w-5xl mx-auto">
         <div className="mb-8 flex items-start justify-between">
           <div>
@@ -298,7 +307,7 @@ export default function Surveys() {
 
         <div className="mb-8">
           <SurveyProgress
-            dailyGoal={2}
+            dailyGoal={3}
             currentEarnings={todaysEarnings}
             todayCompleted={dailyGoalMet}
           />
