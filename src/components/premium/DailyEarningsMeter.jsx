@@ -1,0 +1,107 @@
+import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { DollarSign, Target, TrendingUp } from "lucide-react";
+
+export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 3 }) {
+  const percentage = Math.min((todaysEarnings / dailyGoal) * 100, 100);
+  
+  // Color progression: red (0-1), yellow (1-2), green (2-3)
+  const getColor = () => {
+    if (todaysEarnings >= 2) return 'from-green-500 to-green-600';
+    if (todaysEarnings >= 1) return 'from-yellow-500 to-yellow-600';
+    return 'from-red-500 to-red-600';
+  };
+
+  const getTextColor = () => {
+    if (todaysEarnings >= 2) return 'text-green-600';
+    if (todaysEarnings >= 1) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  const getMeterColor = () => {
+    if (todaysEarnings >= 2) return 'bg-green-600';
+    if (todaysEarnings >= 1) return 'bg-yellow-600';
+    return 'bg-red-600';
+  };
+
+  return (
+    <Card className="border-0 shadow-lg">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900">Daily Earnings Goal</h3>
+            <p className="text-sm text-gray-600">Premium Member</p>
+          </div>
+          <Badge className={`bg-gradient-to-r ${getColor()}`}>
+            ${todaysEarnings.toFixed(2)} / ${dailyGoal}
+          </Badge>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="mb-4">
+          <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden relative">
+            <div
+              className={`${getMeterColor()} h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2`}
+              style={{ width: `${percentage}%` }}
+            >
+              {percentage > 10 && (
+                <span className="text-white text-xs font-bold">
+                  {percentage.toFixed(0)}%
+                </span>
+              )}
+            </div>
+            {/* Arrow indicator */}
+            {percentage < 100 && (
+              <div
+                className="absolute top-0 h-6 w-1 bg-gray-800"
+                style={{ left: `${percentage}%` }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Color indicators */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className={`p-2 rounded-lg ${todaysEarnings >= 1 ? 'bg-red-100 border-2 border-red-500' : 'bg-gray-100'}`}>
+            <p className="text-xs text-center font-medium">$0 - $1</p>
+            <p className="text-center text-lg">🔴</p>
+          </div>
+          <div className={`p-2 rounded-lg ${todaysEarnings >= 2 ? 'bg-yellow-100 border-2 border-yellow-500' : 'bg-gray-100'}`}>
+            <p className="text-xs text-center font-medium">$1 - $2</p>
+            <p className="text-center text-lg">🟡</p>
+          </div>
+          <div className={`p-2 rounded-lg ${todaysEarnings >= 3 ? 'bg-green-100 border-2 border-green-500' : 'bg-gray-100'}`}>
+            <p className="text-xs text-center font-medium">$2 - $3</p>
+            <p className="text-center text-lg">🟢</p>
+          </div>
+        </div>
+
+        {/* Status message */}
+        <div className={`p-3 rounded-lg ${todaysEarnings >= dailyGoal ? 'bg-green-50 border border-green-200' : 'bg-blue-50 border border-blue-200'}`}>
+          <div className="flex items-center gap-2">
+            {todaysEarnings >= dailyGoal ? (
+              <>
+                <Target className="w-5 h-5 text-green-600" />
+                <p className="text-sm font-medium text-green-800">
+                  Goal achieved! Keep it up for premium benefits!
+                </p>
+              </>
+            ) : (
+              <>
+                <TrendingUp className="w-5 h-5 text-blue-600" />
+                <p className="text-sm font-medium text-blue-800">
+                  ${(dailyGoal - todaysEarnings).toFixed(2)} more to reach your daily goal
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+
+        <p className="text-xs text-gray-500 mt-3 text-center">
+          Note: Based on 50/50 split. Complete 6 surveys at $1 each to reach $3 goal.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
