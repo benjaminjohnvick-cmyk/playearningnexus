@@ -84,13 +84,23 @@ export default function CPXResearchEmbed({ userId, onSurveyComplete }) {
     };
 
     return () => {
-      // Safely remove scripts only if they're still in the DOM
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
+      // Safely remove scripts using try-catch to prevent errors
+      try {
+        if (script && document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      } catch (e) {
+        console.log('Script already removed');
       }
-      if (configScript.parentNode) {
-        configScript.parentNode.removeChild(configScript);
+      
+      try {
+        if (configScript && document.head.contains(configScript)) {
+          document.head.removeChild(configScript);
+        }
+      } catch (e) {
+        console.log('Config script already removed');
       }
+      
       delete window.setCPXSurveyCount;
       delete window.handleCPXTransaction;
       delete window.config;
