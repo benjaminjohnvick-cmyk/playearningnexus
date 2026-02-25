@@ -48,7 +48,7 @@ export default function PollfishEmbed({ onSurveyComplete, userEmail }) {
           provider: 'Pollfish',
           earnings: survey.earnings[variantIndex],
           duration: survey.duration[variantIndex],
-          url: 'https://www.pollfish.com/respondent',
+          url: 'https://www.pollfish.com/',
           description: survey.description,
           category: survey.category
         });
@@ -104,18 +104,18 @@ export default function PollfishEmbed({ onSurveyComplete, userEmail }) {
 
   return (
     <div className="space-y-4">
-      <Card className="p-6 border-2 border-green-200 bg-green-50">
+      <Card className="p-6 border-2 border-yellow-200 bg-yellow-50">
         <div className="flex items-start gap-3">
-          <DollarSign className="w-5 h-5 text-green-600 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-bold text-gray-900 mb-1">✓ Pollfish Connected - Fresh Surveys for {today}</h4>
+            <h4 className="font-bold text-gray-900 mb-1">Setup Required: Real Pollfish Integration</h4>
             <p className="text-sm text-gray-700 mb-2">
-              {liveSurveys.length} new surveys available today! Surveys refresh daily at midnight with new opportunities to earn.
+              To enable real Pollfish surveys, you need to sign up as a Pollfish publisher and integrate their SDK. For now, clicking "Take Survey" will open Pollfish's main site where you can sign up.
             </p>
             <div className="text-xs text-gray-600 space-y-1">
-              <p>• API Key: fd0a0dde-***-****</p>
-              <p>• Revenue Split: 50% platform / 50% user</p>
-              <p>• Payment Method: Instant to user balance</p>
+              <p>• Step 1: <a href="https://www.pollfish.com/publisher" target="_blank" className="text-blue-600 underline">Sign up as Pollfish Publisher</a></p>
+              <p>• Step 2: Get your API Key and integrate the SDK</p>
+              <p>• Step 3: Surveys will appear automatically for users</p>
             </div>
           </div>
         </div>
