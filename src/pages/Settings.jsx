@@ -18,6 +18,8 @@ import {
   Check
 } from "lucide-react";
 import { toast } from "sonner";
+import LockoutModeSettings from '../components/premium/LockoutModeSettings';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Settings() {
   const [user, setUser] = useState(null);
@@ -45,6 +47,12 @@ export default function Settings() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+
+  const { data: membership } = useQuery({
+    queryKey: ['premium-membership', user?.id],
+    queryFn: () => base44.entities.PremiumMembership.filter({ user_id: user.id }).then(m => m[0]),
+    enabled: !!user
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -146,7 +154,7 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile">
               <User className="w-4 h-4 mr-2" />
               Profile
@@ -154,6 +162,10 @@ export default function Settings() {
             <TabsTrigger value="notifications">
               <Bell className="w-4 h-4 mr-2" />
               Notifications
+            </TabsTrigger>
+            <TabsTrigger value="premium">
+              <Lock className="w-4 h-4 mr-2" />
+              Premium
             </TabsTrigger>
             <TabsTrigger value="language">
               <Globe className="w-4 h-4 mr-2" />
@@ -369,6 +381,22 @@ export default function Settings() {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Premium Tab */}
+          <TabsContent value="premium">
+            {membership ? (
+              <LockoutModeSettings user={user} membership={membership} />
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Premium Membership</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600">No premium membership found. Upgrade to access lockout mode.</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Language Tab */}
