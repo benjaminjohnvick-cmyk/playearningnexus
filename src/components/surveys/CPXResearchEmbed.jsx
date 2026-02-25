@@ -8,15 +8,21 @@ export default function CPXResearchEmbed({ userId, onSurveyComplete }) {
   const [surveyCount, setSurveyCount] = useState(0);
 
   useEffect(() => {
+    let script = null;
+    let configScript = null;
+    let mounted = true;
+
     // Load CPX Research script
-    const script = document.createElement('script');
+    script = document.createElement('script');
     script.src = 'https://cdn.cpx-research.com/assets/js/script_tag_v2.0.js';
     script.async = true;
-    script.onload = () => setIsScriptLoaded(true);
+    script.onload = () => {
+      if (mounted) setIsScriptLoaded(true);
+    };
     document.body.appendChild(script);
 
     // Configure CPX Research
-    const configScript = document.createElement('script');
+    configScript = document.createElement('script');
     configScript.innerHTML = `
       const cpxConfig = {
         general_config: {
@@ -73,37 +79,41 @@ export default function CPXResearchEmbed({ userId, onSurveyComplete }) {
 
     // Set up global callbacks
     window.setCPXSurveyCount = (count) => {
-      setSurveyCount(count);
+      if (mounted) setSurveyCount(count);
     };
 
     window.handleCPXTransaction = (transaction) => {
       console.log('CPX Survey completed:', transaction);
-      if (onSurveyComplete && transaction.reward_amount) {
+      if (mounted && onSurveyComplete && transaction.reward_amount) {
         onSurveyComplete(parseFloat(transaction.reward_amount));
       }
     };
 
     return () => {
-      // Safely remove scripts using try-catch to prevent errors
-      try {
-        if (script && document.body.contains(script)) {
-          document.body.removeChild(script);
-        }
-      } catch (e) {
-        console.log('Script already removed');
-      }
+      mounted = false;
       
-      try {
-        if (configScript && document.head.contains(configScript)) {
-          document.head.removeChild(configScript);
+      // Clean up with setTimeout to avoid React lifecycle conflicts
+      setTimeout(() => {
+        try {
+          if (script?.parentElement) {
+            script.parentElement.removeChild(script);
+          }
+        } catch (e) {
+          // Silently ignore
         }
-      } catch (e) {
-        console.log('Config script already removed');
-      }
-      
-      delete window.setCPXSurveyCount;
-      delete window.handleCPXTransaction;
-      delete window.config;
+        
+        try {
+          if (configScript?.parentElement) {
+            configScript.parentElement.removeChild(configScript);
+          }
+        } catch (e) {
+          // Silently ignore
+        }
+        
+        delete window.setCPXSurveyCount;
+        delete window.handleCPXTransaction;
+        delete window.config;
+      }, 0);
     };
   }, [userId, onSurveyComplete]);
 
