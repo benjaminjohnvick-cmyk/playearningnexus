@@ -50,8 +50,9 @@ export default function Surveys() {
         duration_minutes: duration || 5
       });
 
-      const earnings = surveysLeft > 0 ? 0.50 : 0; // 50/50 split
-      const newEarnings = (user.total_earnings || 0) + earnings;
+      const actualEarnings = earnings || 0; // Use the earnings passed to the function
+      const userShare = actualEarnings * 0.50; // 50/50 split
+      const newEarnings = (user.total_earnings || 0) + userShare;
       
       // Track daily earnings for premium
       const today = new Date().toISOString().split('T')[0];
@@ -61,8 +62,8 @@ export default function Surveys() {
       });
       
       const todaysEarnings = dailyEarningsRecords.length > 0 
-        ? dailyEarningsRecords[0].total_earned + earnings
-        : earnings;
+        ? dailyEarningsRecords[0].total_earned + userShare
+        : userShare;
       
       if (dailyEarningsRecords.length > 0) {
         await base44.entities.DailyEarnings.update(dailyEarningsRecords[0].id, {
@@ -117,7 +118,7 @@ export default function Surveys() {
         }
       }
       const currentPoints = user.points || 0;
-      const pointsEarned = Math.floor(earnings * 10); // 10 points per dollar
+      const pointsEarned = Math.floor(userShare * 10); // 10 points per dollar
       const newPoints = currentPoints + pointsEarned;
       const newLevel = Math.floor(newPoints / 1000) + 1;
       
@@ -142,10 +143,10 @@ export default function Surveys() {
 
       await base44.entities.Transaction.create({
         user_id: user.id,
-        amount: earnings,
+        amount: userShare,
         transaction_type: 'survey_earning',
         status: 'completed',
-        notes: `Survey ${surveyId} completed via Pollfish`
+        notes: `Survey ${surveyId} completed via Pollfish (50/50 split)`
       });
 
       // Process referral rewards
@@ -160,7 +161,7 @@ export default function Surveys() {
 
         if (referrerUser) {
           const oldTotal = referral.total_earnings || 0;
-          const newTotal = oldTotal + earnings;
+          const newTotal = oldTotal + userShare;
           
           let bonusForReferrer = 0;
           let commissionForReferrer = 0;
