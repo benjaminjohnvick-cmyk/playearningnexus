@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { BarChart3, DollarSign, Users, TrendingUp } from 'lucide-react';
+import { BarChart3, DollarSign, Users, TrendingUp, Activity } from 'lucide-react';
 import ContentCreatorMonetization from '@/components/creators/ContentCreatorMonetization';
 import CreatorAnalytics from '@/components/creators/CreatorAnalytics';
 import CreatorPayouts from '@/components/creators/CreatorPayouts';
+import GamePerformanceAnalytics from '@/components/creators/GamePerformanceAnalytics';
 
 export default function CreatorDashboard() {
   const [user, setUser] = useState(null);
@@ -42,8 +43,12 @@ export default function CreatorDashboard() {
           </p>
         </div>
 
-        <Tabs defaultValue="monetization" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs defaultValue="performance" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="performance" className="flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              Performance
+            </TabsTrigger>
             <TabsTrigger value="monetization" className="flex items-center gap-2">
               <DollarSign className="w-4 h-4" />
               Monetization
@@ -57,6 +62,10 @@ export default function CreatorDashboard() {
               Payouts
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="performance">
+            <GamePerformanceAnalytics user={user} />
+          </TabsContent>
 
           <TabsContent value="monetization">
             <ContentCreatorMonetization user={user} />

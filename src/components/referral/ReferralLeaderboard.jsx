@@ -22,7 +22,8 @@ export default function ReferralLeaderboard({ currentUser }) {
     const userReferrals = allReferrals.filter(r => r.referrer_user_id === user.id);
     const totalReferrals = userReferrals.length;
     const activeReferrals = userReferrals.filter(r => r.status === 'active').length;
-    const earnings = user.total_earnings || 0;
+    const referralEarnings = userReferrals.reduce((sum, r) => sum + (r.commission_earned || 0), 0);
+    const totalEarnings = user.total_earnings || 0;
 
     return {
       user_id: user.id,
@@ -30,12 +31,14 @@ export default function ReferralLeaderboard({ currentUser }) {
       email: user.email,
       total_referrals: totalReferrals,
       active_referrals: activeReferrals,
-      earnings: earnings
+      referral_earnings: referralEarnings,
+      total_earnings: totalEarnings
     };
   }).filter(s => s.total_referrals > 0);
 
   const topByReferrals = [...userStats].sort((a, b) => b.total_referrals - a.total_referrals).slice(0, 10);
-  const topByEarnings = [...userStats].sort((a, b) => b.earnings - a.earnings).slice(0, 10);
+  const topByEarnings = [...userStats].sort((a, b) => b.referral_earnings - a.referral_earnings).slice(0, 10);
+  const topByTotalEarnings = [...userStats].sort((a, b) => b.total_earnings - a.total_earnings).slice(0, 10);
 
   const currentUserRank = topByReferrals.findIndex(u => u.user_id === currentUser?.id) + 1;
 
@@ -90,10 +93,15 @@ export default function ReferralLeaderboard({ currentUser }) {
                     <div className="text-2xl font-bold text-gray-900">{user.total_referrals}</div>
                     <p className="text-xs text-gray-500">referrals</p>
                   </>
+                ) : type === 'referralEarnings' ? (
+                  <>
+                    <div className="text-2xl font-bold text-green-600">${user.referral_earnings.toFixed(2)}</div>
+                    <p className="text-xs text-gray-500">from referrals</p>
+                  </>
                 ) : (
                   <>
-                    <div className="text-2xl font-bold text-green-600">${user.earnings.toFixed(0)}</div>
-                    <p className="text-xs text-gray-500">earned</p>
+                    <div className="text-2xl font-bold text-blue-600">${user.total_earnings.toFixed(2)}</div>
+                    <p className="text-xs text-gray-500">total earnings</p>
                   </>
                 )}
               </div>
@@ -119,14 +127,18 @@ export default function ReferralLeaderboard({ currentUser }) {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="referrals">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="referrals">
               <TrendingUp className="w-4 h-4 mr-2" />
               Most Referrals
             </TabsTrigger>
             <TabsTrigger value="earnings">
               <DollarSign className="w-4 h-4 mr-2" />
-              Top Earners
+              Referral Earnings
+            </TabsTrigger>
+            <TabsTrigger value="total">
+              <Trophy className="w-4 h-4 mr-2" />
+              Total Earnings
             </TabsTrigger>
           </TabsList>
 
@@ -135,7 +147,11 @@ export default function ReferralLeaderboard({ currentUser }) {
           </TabsContent>
 
           <TabsContent value="earnings" className="mt-4">
-            <LeaderboardList data={topByEarnings} type="earnings" />
+            <LeaderboardList data={topByEarnings} type="referralEarnings" />
+          </TabsContent>
+
+          <TabsContent value="total" className="mt-4">
+            <LeaderboardList data={topByTotalEarnings} type="totalEarnings" />
           </TabsContent>
         </Tabs>
       </CardContent>
