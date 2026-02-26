@@ -7,7 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_YOUR_KEY");
 import { 
   Search, 
   ShoppingCart, 
@@ -27,68 +30,92 @@ import ProductSearchBar from '../components/store/ProductSearchBar';
 import ProductSearchResults from '../components/store/ProductSearchResults';
 import ProductRecommendations from '../components/products/ProductRecommendations';
 
-function PayPalCheckoutForm({ game, user, onSuccess }) {
+function StripeCheckoutForm({ game, user, onSuccess }) {
+  const stripe = useStripe();
+  const elements = useElements();
   const [processing, setProcessing] = useState(false);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setProcessing(true);
+
+    try {
+      const { data: intentData } = await base44.functions.invoke('createStripePaymentIntent', {
+        gameId: game.id,
+        amount: Math.round(game.price * 100)
+      });
+
+      if (intentData.error) {
+        throw new Error(intentData.error);
+      }
+
+      const { error, paymentIntent } = await stripe.confirmCardPayment(intentData.clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (paymentIntent.status === 'succeeded') {
+        const { data: result } = await base44.functions.invoke('completeStripePayment', {
+          paymentIntentId: paymentIntent.id,
+          gameId: game.id
+        });
+
+        if (result.error) {
+          throw new Error(result.error);
+        }
+
+        toast.success('Game purchased successfully!');
+        onSuccess();
+      }
+    } catch (error) {
+      toast.error(error.message || 'Payment failed');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      <PayPalButtons
-        disabled={processing}
-        style={{ layout: "vertical" }}
-        createOrder={async () => {
-          setProcessing(true);
-          try {
-            const response = await base44.functions.invoke('createPayPalOrder', {
-              gameId: game.id
-            });
-
-            if (response.data.error) {
-              throw new Error(response.data.error);
-            }
-
-            return response.data.orderId;
-          } catch (error) {
-            toast.error(error.message || 'Failed to create order');
-            setProcessing(false);
-            throw error;
-          }
-        }}
-        onApprove={async (data) => {
-          try {
-            const response = await base44.functions.invoke('capturePayPalOrder', {
-              orderId: data.orderID,
-              gameId: game.id
-            });
-            
-            if (response.data.error) {
-              throw new Error(response.data.error);
-            }
-
-            toast.success('Game purchased successfully!');
-            onSuccess();
-          } catch (error) {
-            toast.error(error.message || 'Payment failed');
-          } finally {
-            setProcessing(false);
-          }
-        }}
-        onError={(err) => {
-          console.error('PayPal error:', err);
-          toast.error('Payment failed. Please try again.');
-          setProcessing(false);
-        }}
-        onCancel={() => {
-          toast.info('Payment cancelled');
-          setProcessing(false);
-        }}
-      />
-      {processing && (
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
-          <Loader2 className="w-4 h-4 animate-spin" />
-          Processing payment...
-        </div>
-      )}
-    </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="p-4 border rounded-lg">
+        <CardElement options={{
+          style: {
+            base: {
+              fontSize: '16px',
+              color: '#424770',
+              '::placeholder': { color: '#aab7c4' },
+            },
+            invalid: { color: '#9e2146' },
+          },
+        }} />
+      </div>
+      <Button
+        type="submit"
+        disabled={!stripe || processing}
+        className="w-full bg-blue-600 hover:bg-blue-700"
+      >
+        {processing ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          <>
+            <CreditCard className="w-4 h-4 mr-2" />
+            Pay ${game.price.toFixed(2)}
+          </>
+        )}
+      </Button>
+      <p className="text-xs text-center text-gray-500">
+        Secure payment powered by Stripe
+      </p>
+    </form>
   );
 }
 
@@ -100,7 +127,7 @@ export default function InAppGameStore() {
   const [priceRange, setPriceRange] = useState('all');
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [processingPurchase, setProcessingPurchase] = useState(false);
-  const [showPayPalCheckout, setShowPayPalCheckout] = useState(false);
+  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
   const [showProductSearch, setShowProductSearch] = useState(false);
   const [productSearchResults, setProductSearchResults] = useState(null);
   const queryClient = useQueryClient();
@@ -455,12 +482,12 @@ export default function InAppGameStore() {
                             variant="outline"
                             onClick={() => {
                               setCheckoutGame(game);
-                              setShowPayPalCheckout(true);
+                              setShowStripeCheckout(true);
                             }}
                             className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full"
                           >
                             <CreditCard className="w-4 h-4 mr-1" />
-                            PayPal
+                            Pay with Card
                           </Button>
                         </div>
                       )}
@@ -477,21 +504,21 @@ export default function InAppGameStore() {
       {checkoutGame && (
         <Dialog open={!!checkoutGame} onOpenChange={() => {
           setCheckoutGame(null);
-          setShowPayPalCheckout(false);
+          setShowStripeCheckout(false);
         }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Purchase Game</DialogTitle>
             </DialogHeader>
             
-            <Tabs defaultValue={showPayPalCheckout ? "paypal" : "details"}>
+            <Tabs defaultValue={showStripeCheckout ? "stripe" : "details"}>
               <TabsList>
                 <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="paypal">PayPal</TabsTrigger>
+                <TabsTrigger value="stripe">Credit Card</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="paypal" className="space-y-4">
+              <TabsContent value="stripe" className="space-y-4">
                 {checkoutGame.icon_url && (
                   <img
                     src={checkoutGame.icon_url}
@@ -509,25 +536,18 @@ export default function InAppGameStore() {
                   </p>
                 </div>
 
-                <PayPalScriptProvider options={{ 
-                  "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID || "YOUR_PAYPAL_CLIENT_ID",
-                  currency: "USD"
-                }}>
-                  <PayPalCheckoutForm
+                <Elements stripe={stripePromise}>
+                  <StripeCheckoutForm
                     game={checkoutGame}
                     user={user}
                     onSuccess={() => {
                       queryClient.invalidateQueries();
                       setCheckoutGame(null);
-                      setShowPayPalCheckout(false);
+                      setShowStripeCheckout(false);
                       window.location.reload();
                     }}
                   />
-                </PayPalScriptProvider>
-
-                <p className="text-xs text-center text-gray-500">
-                  Secure payment powered by PayPal
-                </p>
+                </Elements>
               </TabsContent>
 
               <TabsContent value="details" className="space-y-4">
