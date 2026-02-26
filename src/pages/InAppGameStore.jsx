@@ -464,29 +464,18 @@ export default function InAppGameStore() {
                               Wishlist
                             </Button>
                           </div>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                setCheckoutGame(game);
-                                setShowPayPalCheckout(true);
-                              }}
-                              className="border-blue-600 text-blue-600 hover:bg-blue-50 flex-1"
-                            >
-                              <CreditCard className="w-4 h-4 mr-1" />
-                              PayPal
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => window.location.href = '/Surveys'}
-                              className="border-green-600 text-green-600 hover:bg-green-50 flex-1"
-                            >
-                              <FileText className="w-4 h-4 mr-1" />
-                              Survey
-                            </Button>
-                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setCheckoutGame(game);
+                              setShowPayPalCheckout(true);
+                            }}
+                            className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full"
+                          >
+                            <CreditCard className="w-4 h-4 mr-1" />
+                            PayPal
+                          </Button>
                         </div>
                       )}
                     </div>
