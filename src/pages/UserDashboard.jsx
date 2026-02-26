@@ -7,7 +7,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { DollarSign, Gamepad2, TrendingUp, Library, Star, Clock, Eye, Users } from "lucide-react";
 import StatsCard from '../components/dashboard/StatsCard';
 import GameCard from '../components/games/GameCard';
-import SurveyProgress from '../components/surveys/SurveyProgress';
 import LockoutModal from '../components/user/LockoutModal';
 import UserLicenseAgreement from '../components/user/UserLicenseAgreement';
 import AIRecommendations from '../components/dashboard/AIRecommendations';
@@ -84,30 +83,7 @@ export default function UserDashboard() {
     enabled: !!user
   });
 
-  const { data: todaysSurveys = [] } = useQuery({
-    queryKey: ['todays-surveys', user?.id],
-    queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      return await base44.entities.Survey.filter({
-        user_id: user.id,
-        completion_date: { $gte: today }
-      });
-    },
-    enabled: !!user
-  });
 
-  const { data: todaysEarningsData } = useQuery({
-    queryKey: ['todays-earnings', user?.id],
-    queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      const records = await base44.entities.DailyEarnings.filter({
-        user_id: user.id,
-        date: today
-      });
-      return records.length > 0 ? records[0].total_earned : 0;
-    },
-    enabled: !!user
-  });
 
   const { data: recentActivities = [] } = useQuery({
     queryKey: ['recent-activities', user?.id],
@@ -167,14 +143,13 @@ export default function UserDashboard() {
     onSuccess: (data, game) => {
       queryClient.invalidateQueries(['my-library']);
       queryClient.invalidateQueries(['featured-games']);
-      toast.success('2-minute trial started! Complete $2 surveys to continue playing.');
+      toast.success('2-minute trial started! Upgrade to premium for unlimited access.');
       setGameToShare(game);
       setShowSharePrompt(true);
     }
   });
 
-  const todaysEarnings = todaysSurveys.reduce((sum, survey) => sum + (survey.earnings || 0), 0);
-  const dailyGoalMet = todaysEarnings >= 3;
+
 
   if (!user) {
     return (
@@ -205,11 +180,11 @@ export default function UserDashboard() {
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-gray-700">
-                Your 2-minute trial has ended. Complete ${(3 - todaysEarnings).toFixed(2)} worth of surveys to continue playing!
+                Your 2-minute trial has ended. Upgrade to premium to continue playing!
               </p>
-              <Link to={createPageUrl('Surveys')}>
+              <Link to={createPageUrl('InAppGameStore')}>
                 <Button className="w-full bg-red-600 hover:bg-red-700">
-                  Complete Surveys Now
+                  Upgrade Now
                 </Button>
               </Link>
             </div>
@@ -261,9 +236,9 @@ export default function UserDashboard() {
           />
           <StatsCard
             icon={TrendingUp}
-            label="Today's Earnings"
-            value={`$${todaysEarnings.toFixed(2)}`}
-            trend={dailyGoalMet ? "Goal Met! ✓" : `$${(2 - todaysEarnings).toFixed(2)} to go`}
+            label="Points"
+            value={user.points || 0}
+            trend={`Level ${user.level || 1}`}
             color="amber"
           />
           <StatsCard
@@ -274,19 +249,7 @@ export default function UserDashboard() {
           />
         </div>
 
-        {/* Survey Progress */}
-        <div className="mb-8">
-          <SurveyProgress
-            dailyGoal={3}
-            currentEarnings={todaysEarnings}
-            todayCompleted={dailyGoalMet}
-          />
-        </div>
 
-        {/* Daily Earnings Meter for Premium */}
-        <div className="mb-8">
-          <DailyEarningsMeter todaysEarnings={todaysEarningsData || 0} dailyGoal={3} />
-        </div>
 
         {/* Lockout Mode Enforcer */}
         <div className="mb-8">
@@ -329,22 +292,7 @@ export default function UserDashboard() {
           </TabsContent>
         </Tabs>
 
-        {/* Surveys CTA */}
-        {!dailyGoalMet && (
-          <div className="mb-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Complete Your Daily Surveys</h3>
-                <p className="text-gray-600">Earn ${(3 - todaysEarnings).toFixed(2)} more to unlock today's games</p>
-              </div>
-              <Link to={createPageUrl('Surveys')}>
-                <Button size="lg" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
-                  Start Surveys
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
+
 
         {/* Games Tabs */}
         <Tabs defaultValue="featured" className="space-y-6">

@@ -119,7 +119,6 @@ export default function Layout({ children, currentPageName }) {
 
   const navigation = [
     { name: 'Home', icon: Home, path: 'Home' },
-    { name: 'Complete Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
     { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
     { name: 'Store', icon: DollarSign, path: 'InAppGameStore' },
     { name: 'Wishlist', icon: Heart, path: 'Wishlist', requireAuth: true },
@@ -141,7 +140,6 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Leaderboard', icon: Trophy, path: 'Leaderboard', requireAuth: true },
     { name: 'Tournaments', icon: Swords, path: 'Tournaments', requireAuth: true },
     { name: 'Guilds', icon: Users, path: 'Guilds', requireAuth: true },
-    { name: 'Surveys', icon: FileText, path: 'Surveys', requireAuth: true },
     { name: 'Rewards', icon: Trophy, path: 'Gamification', requireAuth: true },
     { name: 'Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
   ];
@@ -327,8 +325,8 @@ export default function Layout({ children, currentPageName }) {
                 </span>
               </div>
               <p className="text-gray-600 text-sm">
-                The premium game discovery platform with survey-based monetization.
-                Play games, complete surveys, earn rewards.
+                The premium game discovery platform.
+                Play games, earn rewards, connect with creators.
               </p>
             </div>
             
@@ -337,7 +335,7 @@ export default function Layout({ children, currentPageName }) {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li><Link to={createPageUrl('Home')} className="hover:text-blue-600">Home</Link></li>
                 <li><Link to={createPageUrl('UserDashboard')} className="hover:text-blue-600">Dashboard</Link></li>
-                <li><Link to={createPageUrl('Surveys')} className="hover:text-blue-600">Surveys</Link></li>
+                <li><Link to={createPageUrl('InAppGameStore')} className="hover:text-blue-600">Store</Link></li>
               </ul>
             </div>
             
@@ -352,7 +350,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
           
           <div className="border-t mt-8 pt-8 text-center text-sm text-gray-500">
-            <p>© 2024 GamerGain. All rights reserved. | Survey monetization platform with 50/50 revenue share</p>
+            <p>© 2024 GamerGain. All rights reserved. | Premium gaming platform</p>
           </div>
         </div>
       </footer>
