@@ -92,7 +92,6 @@ import Settings from './pages/Settings';
 import SocialMediaGenerator from './pages/SocialMediaGenerator';
 import StreamerAnalytics from './pages/StreamerAnalytics';
 import Support from './pages/Support';
-import Surveys from './pages/Surveys';
 import TournamentDetails from './pages/TournamentDetails';
 import Tournaments from './pages/Tournaments';
 import UserDashboard from './pages/UserDashboard';
@@ -149,7 +148,6 @@ export const PAGES = {
     "SocialMediaGenerator": SocialMediaGenerator,
     "StreamerAnalytics": StreamerAnalytics,
     "Support": Support,
-    "Surveys": Surveys,
     "TournamentDetails": TournamentDetails,
     "Tournaments": Tournaments,
     "UserDashboard": UserDashboard,
