@@ -524,7 +524,7 @@ export default function InAppGameStore() {
                 </div>
 
                 <PayPalScriptProvider options={{ 
-                  "client-id": "AUvlkjr65sf0rZKzG2RGESnsJquTSkPU41frXFG-HS7DKcLYEJpK4Vm9Bo9AvdQqtvhC8vbaW69YFY0A",
+                  "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID || "YOUR_PAYPAL_CLIENT_ID",
                   currency: "USD"
                 }}>
                   <PayPalCheckoutForm

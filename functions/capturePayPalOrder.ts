@@ -1,17 +1,25 @@
-export default async function capturePayPalOrder(request, context) {
-  const { orderId, gameId, userId } = request.body;
-  
-  const fetch = require('node-fetch');
-  const clientId = context.secrets.PAYPAL_CLIENT_ID;
-  const clientSecret = context.secrets.PAYPAL_SECRET_KEY;
-  
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+
+Deno.serve(async (req) => {
   try {
+    const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { orderId, gameId } = await req.json();
+    
+    const clientId = Deno.env.get('PAYPAL_CLIENT_ID');
+    const clientSecret = Deno.env.get('PAYPAL_SECRET_KEY');
+    
     // Get PayPal access token
-    const authResponse = await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
+    const authResponse = await fetch('https://api-m.paypal.com/v1/oauth2/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64')
+        'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret)
       },
       body: 'grant_type=client_credentials'
     });
@@ -20,7 +28,7 @@ export default async function capturePayPalOrder(request, context) {
     const accessToken = authData.access_token;
     
     // Capture the order
-    const captureResponse = await fetch(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderId}/capture`, {
+    const captureResponse = await fetch(`https://api-m.paypal.com/v2/checkout/orders/${orderId}/capture`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,16 +44,15 @@ export default async function capturePayPalOrder(request, context) {
     
     // Verify payment status
     if (captureData.status !== 'COMPLETED') {
-      return { status: 400, body: { error: 'Payment not completed' } };
+      return Response.json({ error: 'Payment not completed' }, { status: 400 });
     }
     
-    // Fetch game and user
-    const game = await context.entities.Game.get(gameId);
-    const user = await context.entities.User.get(userId);
+    // Fetch game
+    const game = await base44.entities.Game.get(gameId);
     
     // Create transaction record
-    await context.entities.Transaction.create({
-      user_id: userId,
+    await base44.entities.Transaction.create({
+      user_id: user.id,
       game_id: gameId,
       business_client_id: game.developer_id,
       amount: game.price,
@@ -56,33 +63,27 @@ export default async function capturePayPalOrder(request, context) {
     });
     
     // Update user game library
-    await context.entities.User.update(userId, {
+    await base44.entities.User.update(user.id, {
       game_library: [...(user.game_library || []), gameId]
     });
     
     // Update game stats
-    await context.entities.Game.update(gameId, {
+    await base44.entities.Game.update(gameId, {
       total_revenue: (game.total_revenue || 0) + game.price,
       total_installs: (game.total_installs || 0) + 1
     });
     
     // Log activity
-    await context.entities.UserActivity.create({
-      user_id: userId,
+    await base44.entities.UserActivity.create({
+      user_id: user.id,
       activity_type: 'game_installed',
       points_earned: 50,
       description: `Purchased ${game.title} with PayPal`,
       related_entity_id: gameId
     });
     
-    return {
-      status: 200,
-      body: { success: true, message: 'Purchase completed successfully' }
-    };
+    return Response.json({ success: true, message: 'Purchase completed successfully' });
   } catch (error) {
-    return {
-      status: 500,
-      body: { error: error.message }
-    };
+    return Response.json({ error: error.message }, { status: 500 });
   }
-}
+});
