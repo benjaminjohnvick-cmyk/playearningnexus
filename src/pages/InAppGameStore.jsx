@@ -7,11 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_YOUR_KEY");
 import { 
   Search, 
   ShoppingCart, 
@@ -130,7 +126,6 @@ export default function InAppGameStore() {
   const [priceRange, setPriceRange] = useState('all');
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [processingPurchase, setProcessingPurchase] = useState(false);
-  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
   const [showPayPalCheckout, setShowPayPalCheckout] = useState(false);
   const [showProductSearch, setShowProductSearch] = useState(false);
   const [productSearchResults, setProductSearchResults] = useState(null);
@@ -554,18 +549,6 @@ export default function InAppGameStore() {
                            variant="outline"
                            onClick={() => {
                              setCheckoutGame(game);
-                             setShowStripeCheckout(true);
-                           }}
-                           className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full"
-                          >
-                           <CreditCard className="w-4 h-4 mr-1" />
-                           Pay with Card
-                          </Button>
-                          <Button
-                           size="sm"
-                           variant="outline"
-                           onClick={() => {
-                             setCheckoutGame(game);
                              setShowPayPalCheckout(true);
                            }}
                            className="border-[#0070ba] text-[#0070ba] hover:bg-blue-50 w-full"
@@ -590,7 +573,6 @@ export default function InAppGameStore() {
       {checkoutGame && (
         <Dialog open={!!checkoutGame} onOpenChange={() => {
           setCheckoutGame(null);
-          setShowStripeCheckout(false);
           setShowPayPalCheckout(false);
         }}>
           <DialogContent className="max-w-2xl">
@@ -598,45 +580,12 @@ export default function InAppGameStore() {
               <DialogTitle>Purchase Game</DialogTitle>
             </DialogHeader>
             
-            <Tabs defaultValue={showStripeCheckout ? "stripe" : showPayPalCheckout ? "paypal" : "details"}>
+            <Tabs defaultValue={showPayPalCheckout ? "paypal" : "details"}>
               <TabsList>
                 <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="stripe">Credit Card</TabsTrigger>
                 <TabsTrigger value="paypal">PayPal</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="stripe" className="space-y-4">
-                {checkoutGame.icon_url && (
-                  <img
-                    src={checkoutGame.icon_url}
-                    alt={checkoutGame.title}
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
-                )}
-                
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">
-                    {checkoutGame.title}
-                  </h3>
-                  <p className="text-2xl font-bold text-blue-600">
-                    ${checkoutGame.price.toFixed(2)}
-                  </p>
-                </div>
-
-                <Elements stripe={stripePromise}>
-                  <StripeCheckoutForm
-                    game={checkoutGame}
-                    user={user}
-                    onSuccess={() => {
-                      queryClient.invalidateQueries();
-                      setCheckoutGame(null);
-                      setShowStripeCheckout(false);
-                      window.location.reload();
-                    }}
-                  />
-                </Elements>
-              </TabsContent>
 
               <TabsContent value="paypal" className="space-y-4">
                 {checkoutGame.icon_url && (
