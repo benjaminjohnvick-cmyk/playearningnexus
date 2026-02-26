@@ -30,6 +30,8 @@ import { toast } from "sonner";
 import ProductSearchBar from '../components/store/ProductSearchBar';
 import ProductSearchResults from '../components/store/ProductSearchResults';
 import ProductRecommendations from '../components/products/ProductRecommendations';
+import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
+import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
 
 function StripeCheckoutForm({ game, user, onSuccess }) {
   const stripe = useStripe();
@@ -132,7 +134,9 @@ export default function InAppGameStore() {
   const [showPayPalCheckout, setShowPayPalCheckout] = useState(false);
   const [showProductSearch, setShowProductSearch] = useState(false);
   const [productSearchResults, setProductSearchResults] = useState(null);
+  const [activeTab, setActiveTab] = useState('games');
   const queryClient = useQueryClient();
+  const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -200,6 +204,28 @@ export default function InAppGameStore() {
       return await base44.entities.GameReview.filter({ game_id: checkoutGame.id });
     },
     enabled: !!checkoutGame
+  });
+
+  const { data: dailyEarnings } = useQuery({
+    queryKey: ['daily-earnings', user?.id, today],
+    queryFn: async () => {
+      const earnings = await base44.entities.DailyEarnings.filter({ 
+        user_id: user.id, 
+        date: today 
+      });
+      return earnings[0];
+    },
+    enabled: !!user,
+    refetchInterval: 5000
+  });
+
+  const { data: premiumMembership } = useQuery({
+    queryKey: ['premium-membership', user?.id],
+    queryFn: async () => {
+      const memberships = await base44.entities.PremiumMembership.filter({ user_id: user.id });
+      return memberships[0];
+    },
+    enabled: !!user
   });
 
   const purchaseGameMutation = useMutation({
@@ -327,10 +353,54 @@ export default function InAppGameStore() {
           </div>
         </div>
 
-        {/* AI Recommendations */}
-        <ProductRecommendations user={user} />
+        {/* Tabs for Games vs Surveys */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="games" className="text-lg">
+              <ShoppingCart className="w-5 h-5 mr-2" />
+              Browse Games
+            </TabsTrigger>
+            <TabsTrigger value="surveys" className="text-lg">
+              <DollarSign className="w-5 h-5 mr-2" />
+              Complete Surveys
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Search & Filter */}
+          <TabsContent value="surveys" className="space-y-6">
+            {/* Daily Earnings Meter */}
+            <DailyEarningsMeter 
+              todaysEarnings={dailyEarnings?.total_earned || 0}
+              dailyGoal={premiumMembership?.daily_goal || 3}
+            />
+
+            {/* Lockout Mode (if premium member) */}
+            {premiumMembership && (
+              <LockoutModeEnforcer user={user} />
+            )}
+
+            {/* Survey Placeholder */}
+            <Card className="p-8 text-center border-2 border-blue-200">
+              <DollarSign className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Complete Surveys to Earn</h3>
+              <p className="text-gray-600 mb-4">
+                Earn money by completing surveys. Your earnings go towards your daily goal and can be used to purchase games.
+              </p>
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
+                Start Survey
+              </Button>
+              <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <p className="text-sm text-gray-700">
+                  <strong>Note:</strong> 50/50 revenue split applies. Complete $6 in surveys to earn $3.
+                </p>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="games" className="space-y-6">
+            {/* AI Recommendations */}
+            <ProductRecommendations user={user} />
+
+            {/* Search & Filter */}
         <div className="mb-6 space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -512,6 +582,8 @@ export default function InAppGameStore() {
             })}
           </div>
         )}
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Checkout Dialog */}
