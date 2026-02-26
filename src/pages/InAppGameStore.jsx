@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_YOUR_KEY");
 import { 
@@ -128,6 +129,7 @@ export default function InAppGameStore() {
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [processingPurchase, setProcessingPurchase] = useState(false);
   const [showStripeCheckout, setShowStripeCheckout] = useState(false);
+  const [showPayPalCheckout, setShowPayPalCheckout] = useState(false);
   const [showProductSearch, setShowProductSearch] = useState(false);
   const [productSearchResults, setProductSearchResults] = useState(null);
   const queryClient = useQueryClient();
@@ -478,16 +480,28 @@ export default function InAppGameStore() {
                             </Button>
                           </div>
                           <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              setCheckoutGame(game);
-                              setShowStripeCheckout(true);
-                            }}
-                            className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full"
+                           size="sm"
+                           variant="outline"
+                           onClick={() => {
+                             setCheckoutGame(game);
+                             setShowStripeCheckout(true);
+                           }}
+                           className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full"
                           >
-                            <CreditCard className="w-4 h-4 mr-1" />
-                            Pay with Card
+                           <CreditCard className="w-4 h-4 mr-1" />
+                           Pay with Card
+                          </Button>
+                          <Button
+                           size="sm"
+                           variant="outline"
+                           onClick={() => {
+                             setCheckoutGame(game);
+                             setShowPayPalCheckout(true);
+                           }}
+                           className="border-[#0070ba] text-[#0070ba] hover:bg-blue-50 w-full"
+                          >
+                           <DollarSign className="w-4 h-4 mr-1" />
+                           Pay with PayPal
                           </Button>
                         </div>
                       )}
@@ -505,16 +519,18 @@ export default function InAppGameStore() {
         <Dialog open={!!checkoutGame} onOpenChange={() => {
           setCheckoutGame(null);
           setShowStripeCheckout(false);
+          setShowPayPalCheckout(false);
         }}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Purchase Game</DialogTitle>
             </DialogHeader>
             
-            <Tabs defaultValue={showStripeCheckout ? "stripe" : "details"}>
+            <Tabs defaultValue={showStripeCheckout ? "stripe" : showPayPalCheckout ? "paypal" : "details"}>
               <TabsList>
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="stripe">Credit Card</TabsTrigger>
+                <TabsTrigger value="paypal">PayPal</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews ({reviews.length})</TabsTrigger>
               </TabsList>
 
@@ -548,6 +564,94 @@ export default function InAppGameStore() {
                     }}
                   />
                 </Elements>
+              </TabsContent>
+
+              <TabsContent value="paypal" className="space-y-4">
+                {checkoutGame.icon_url && (
+                  <img
+                    src={checkoutGame.icon_url}
+                    alt={checkoutGame.title}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                )}
+                
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                    {checkoutGame.title}
+                  </h3>
+                  <p className="text-2xl font-bold text-[#0070ba]">
+                    ${checkoutGame.price.toFixed(2)}
+                  </p>
+                </div>
+
+                <PayPalScriptProvider options={{ 
+                  "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID || "test",
+                  currency: "USD"
+                }}>
+                  <PayPalButtons
+                    style={{ layout: "vertical" }}
+                    createOrder={(data, actions) => {
+                      return actions.order.create({
+                        purchase_units: [{
+                          amount: {
+                            value: checkoutGame.price.toFixed(2),
+                          },
+                          description: checkoutGame.title,
+                        }],
+                      });
+                    }}
+                    onApprove={async (data, actions) => {
+                      const order = await actions.order.capture();
+                      
+                      // Process purchase
+                      try {
+                        await base44.auth.updateMe({
+                          game_library: [...(user.game_library || []), checkoutGame.id]
+                        });
+
+                        await base44.entities.Transaction.create({
+                          user_id: user.id,
+                          game_id: checkoutGame.id,
+                          business_client_id: checkoutGame.developer_id,
+                          amount: checkoutGame.price,
+                          transaction_type: 'game_purchase',
+                          status: 'completed',
+                          payment_method: 'paypal',
+                          payment_intent_id: order.id
+                        });
+
+                        await base44.entities.Game.update(checkoutGame.id, {
+                          total_revenue: (checkoutGame.total_revenue || 0) + checkoutGame.price,
+                          total_installs: (checkoutGame.total_installs || 0) + 1
+                        });
+
+                        await base44.entities.UserActivity.create({
+                          user_id: user.id,
+                          activity_type: 'game_installed',
+                          points_earned: 50,
+                          description: `Purchased ${checkoutGame.title}`,
+                          related_entity_id: checkoutGame.id
+                        });
+
+                        toast.success('Game purchased successfully with PayPal!');
+                        queryClient.invalidateQueries();
+                        setCheckoutGame(null);
+                        setShowPayPalCheckout(false);
+                        window.location.reload();
+                      } catch (error) {
+                        toast.error('Purchase processing failed');
+                      }
+                    }}
+                    onError={(err) => {
+                      toast.error('PayPal payment failed');
+                      console.error(err);
+                    }}
+                  />
+                </PayPalScriptProvider>
+
+                <p className="text-xs text-center text-gray-500">
+                  Secure payment powered by PayPal
+                </p>
               </TabsContent>
 
               <TabsContent value="details" className="space-y-4">
