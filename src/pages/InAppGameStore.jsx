@@ -38,22 +38,15 @@ function PayPalCheckoutForm({ game, user, onSuccess }) {
         createOrder={async () => {
           setProcessing(true);
           try {
-            const response = await fetch('/api/functions/createPayPalOrder', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                gameId: game.id,
-                userId: user.id
-              })
+            const response = await base44.functions.invoke('createPayPalOrder', {
+              gameId: game.id
             });
 
-            const data = await response.json();
-            
-            if (!response.ok) {
-              throw new Error(data.error || 'Failed to create order');
+            if (response.data.error) {
+              throw new Error(response.data.error);
             }
 
-            return data.orderId;
+            return response.data.orderId;
           } catch (error) {
             toast.error(error.message || 'Failed to create order');
             setProcessing(false);
@@ -62,20 +55,13 @@ function PayPalCheckoutForm({ game, user, onSuccess }) {
         }}
         onApprove={async (data) => {
           try {
-            const response = await fetch('/api/functions/capturePayPalOrder', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                orderId: data.orderID,
-                gameId: game.id,
-                userId: user.id
-              })
+            const response = await base44.functions.invoke('capturePayPalOrder', {
+              orderId: data.orderID,
+              gameId: game.id
             });
-
-            const result = await response.json();
             
-            if (!response.ok) {
-              throw new Error(result.error || 'Failed to capture payment');
+            if (response.data.error) {
+              throw new Error(response.data.error);
             }
 
             toast.success('Game purchased successfully!');
