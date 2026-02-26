@@ -7,7 +7,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { DollarSign, Gamepad2, TrendingUp, Library, Star, Clock, Eye, Users } from "lucide-react";
 import StatsCard from '../components/dashboard/StatsCard';
 import GameCard from '../components/games/GameCard';
-import LockoutModal from '../components/user/LockoutModal';
 import UserLicenseAgreement from '../components/user/UserLicenseAgreement';
 import AIRecommendations from '../components/dashboard/AIRecommendations';
 import SocialSharePrompt from '../components/social/SocialSharePrompt';
@@ -29,7 +28,6 @@ import { createPageUrl } from "@/utils";
 
 export default function UserDashboard() {
   const [user, setUser] = useState(null);
-  const [showLockout, setShowLockout] = useState(false);
   const [showULA, setShowULA] = useState(false);
   const [showTrialExpired, setShowTrialExpired] = useState(false);
   const [trialStartTime, setTrialStartTime] = useState(null);
@@ -205,14 +203,7 @@ export default function UserDashboard() {
         />
       )}
       
-      {showLockout && (
-        <LockoutModal
-          user={user}
-          isOpen={showLockout}
-          onClose={() => setShowLockout(false)}
-        />
-      )}
-      
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
