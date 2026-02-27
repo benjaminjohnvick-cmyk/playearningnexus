@@ -135,10 +135,11 @@ export default function GamificationHub({ user, stats = {}, todayEarnings = 0, t
             <p className="text-4xl font-bold text-yellow-700">{points.toLocaleString()}</p>
             <p className="text-xs text-gray-500 mt-1 mb-4">Total XP earned</p>
             <div className="space-y-1 text-xs text-gray-600">
-              <div className="flex justify-between"><span>Surveys completed</span><span className="font-medium">+{totalSurveys * 10} pts</span></div>
-              <div className="flex justify-between"><span>Referrals made</span><span className="font-medium">+{totalReferrals * 25} pts</span></div>
-              <div className="flex justify-between"><span>Daily goals hit</span><span className="font-medium">+{daysGoalMet * 15} pts</span></div>
-              <div className="flex justify-between"><span>Earnings ($)</span><span className="font-medium">+{Math.floor(totalEarnings * 5)} pts</span></div>
+              <div className="flex justify-between"><span>📋 Surveys completed</span><span className="font-medium text-blue-600">+{totalSurveys * 10} pts</span></div>
+              <div className="flex justify-between"><span>👥 Referrals made</span><span className="font-medium text-green-600">+{totalReferrals * 25} pts</span></div>
+              <div className="flex justify-between"><span>🎯 Daily goals hit</span><span className="font-medium text-teal-600">+{daysGoalMet * 15} pts</span></div>
+              <div className="flex justify-between"><span>🛍️ Purchases made</span><span className="font-medium text-purple-600">+{purchases * 50} pts</span></div>
+              <div className="flex justify-between"><span>💵 Earnings ($)</span><span className="font-medium text-yellow-600">+{Math.floor(totalEarnings * 5)} pts</span></div>
             </div>
           </CardContent>
         </Card>
