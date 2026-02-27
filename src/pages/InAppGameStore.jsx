@@ -20,7 +20,7 @@ import GameCheckoutModal from '@/components/store/GameCheckoutModal';
 const CATEGORIES = ['all', 'puzzle', 'action', 'strategy', 'casual', 'rpg', 'simulation', 'sports', 'racing', 'adventure'];
 
 export default function InAppGameStore() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(undefined);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
