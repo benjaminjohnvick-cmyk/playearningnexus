@@ -249,26 +249,26 @@ export default function InAppGameStore() {
                               <span className="text-sm font-medium">{(game.average_rating || 0).toFixed(1)}</span>
                               <span className="text-xs text-gray-400">({game.total_ratings || 0})</span>
                             </div>
-                            <div className="flex items-center justify-between pt-3 border-t gap-2">
-                              <p className="text-xl font-bold text-green-600">${game.price.toFixed(2)}</p>
+                            <div className="pt-3 border-t">
+                              <p className="text-xl font-bold text-green-600 mb-2">${game.price.toFixed(2)}</p>
                               {owned ? (
                                 <Badge className="bg-green-100 text-green-700 text-xs">In Library</Badge>
                               ) : (
-                                <div className="flex gap-2">
+                                <div className="flex gap-1.5 w-full">
                                   <Button size="sm" variant="outline"
                                     onClick={() => toggleWishlist(game)}
                                     className={isWishlisted ? 'border-red-400 text-red-600 bg-red-50' : ''}>
                                     <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
                                   </Button>
                                   <Button size="sm" variant="outline"
-                                    className="border-green-500 text-green-700 hover:bg-green-50"
+                                    className="border-green-500 text-green-700 hover:bg-green-50 flex-1 text-xs"
                                     onClick={() => { setCheckoutGame({ ...game, payWithSurvey: true }); }}
                                     disabled={(user?.current_balance || 0) < game.price}>
-                                    <DollarSign className="w-4 h-4 mr-1" /> Survey $
+                                    <DollarSign className="w-3.5 h-3.5 mr-0.5" /> Survey $
                                   </Button>
-                                  <Button size="sm" className="bg-red-600 hover:bg-red-700"
+                                  <Button size="sm" className="bg-red-600 hover:bg-red-700 flex-1 text-xs"
                                     onClick={() => setCheckoutGame(game)}>
-                                    <ShoppingCart className="w-4 h-4 mr-1" /> Buy
+                                    <ShoppingCart className="w-3.5 h-3.5 mr-0.5" /> Buy
                                   </Button>
                                 </div>
                               )}
