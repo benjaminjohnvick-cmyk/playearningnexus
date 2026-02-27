@@ -376,25 +376,20 @@ export default function InAppGameStore() {
               <LockoutModeEnforcer user={user} />
             )}
 
-            {/* Survey Placeholder */}
-            <Card className="p-8 text-center border-2 border-blue-200">
-              <DollarSign className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Complete Surveys to Earn</h3>
-              <p className="text-gray-600 mb-4">
-                Earn money by completing surveys. Your earnings go towards your daily goal and can be used to purchase games.
-              </p>
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600">
-                Start Survey
-              </Button>
-              <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <p className="text-sm text-gray-700">
-                  <strong>Note:</strong> 50/50 revenue split applies. Complete $6 in surveys to earn $3.
-                </p>
-              </div>
-            </Card>
+            {/* BitLabs Survey Wall */}
+            <BitLabsSurveys
+              user={user}
+              onEarningsUpdate={() => queryClient.invalidateQueries(['daily-earnings'])}
+            />
           </TabsContent>
 
           <TabsContent value="games" className="space-y-6">
+            {/* Survey Gate - must earn $3 before accessing store */}
+            <SurveyGate
+              todaysEarnings={dailyEarnings?.total_earned || 0}
+              dailyGoal={3}
+              onGoToSurveys={() => setActiveTab('surveys')}
+            >
             {/* AI Recommendations */}
             <ProductRecommendations user={user} />
 
