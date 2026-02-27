@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Bell, MessageSquare, Mail, User, Check, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import NotificationsTab from '../components/inbox/NotificationsTab';
 
 export default function UserInbox() {
   const [user, setUser] = useState(null);
@@ -193,68 +194,7 @@ export default function UserInbox() {
           </TabsContent>
 
           <TabsContent value="notifications">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-purple-600" />
-                  Daily Updates & Notifications ({notifications.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {notifications.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">No notifications yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {notifications.map((notification, idx) => (
-                      <motion.div
-                        key={notification.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                        className={`p-4 rounded-lg border-2 ${
-                          notification.is_read 
-                            ? 'bg-gray-50 border-gray-200' 
-                            : 'bg-purple-50 border-purple-200'
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="bg-white rounded-full p-2 border-2 border-purple-200">
-                            <Bell className="w-5 h-5 text-purple-600" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <p className="font-bold text-gray-900">{notification.title}</p>
-                              <Badge 
-                                variant="outline"
-                                className={notification.notification_type === 'achievement' ? 'border-yellow-500 text-yellow-700' : ''}
-                              >
-                                {notification.notification_type}
-                              </Badge>
-                            </div>
-                            <p className="text-gray-700 mb-2">{notification.message}</p>
-                            <div className="flex items-center justify-between">
-                              <p className="text-xs text-gray-500">
-                                {new Date(notification.created_date).toLocaleString()}
-                              </p>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => deleteNotificationMutation.mutate(notification.id)}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <NotificationsTab notifications={notifications} userId={user?.id} />
           </TabsContent>
         </Tabs>
       </div>
