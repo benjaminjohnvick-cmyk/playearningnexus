@@ -30,16 +30,6 @@ export default function ProductRecommendations({ user }) {
     enabled: !!user
   });
 
-  const { data: surveys = [] } = useQuery({
-    queryKey: ['user-surveys', user?.id],
-    queryFn: async () => {
-      return await base44.entities.Survey.filter({
-        user_id: user.id
-      }, '-created_date', 20);
-    },
-    enabled: !!user
-  });
-
   const { data: aiRecommendations, isLoading } = useQuery({
     queryKey: ['ai-recommendations', user?.id],
     queryFn: async () => {
