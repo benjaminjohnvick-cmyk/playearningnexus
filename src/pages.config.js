@@ -86,7 +86,6 @@ import PayoutHistory from './pages/PayoutHistory';
 import PayoutSettings from './pages/PayoutSettings';
 import ReferralAnalytics from './pages/ReferralAnalytics';
 import ReferralContest from './pages/ReferralContest';
-import ReferralDashboard from './pages/ReferralDashboard';
 import ReferralTracking from './pages/ReferralTracking';
 import Settings from './pages/Settings';
 import SocialMediaGenerator from './pages/SocialMediaGenerator';
@@ -142,7 +141,6 @@ export const PAGES = {
     "PayoutSettings": PayoutSettings,
     "ReferralAnalytics": ReferralAnalytics,
     "ReferralContest": ReferralContest,
-    "ReferralDashboard": ReferralDashboard,
     "ReferralTracking": ReferralTracking,
     "Settings": Settings,
     "SocialMediaGenerator": SocialMediaGenerator,
@@ -158,7 +156,7 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "ReferralDashboard",
+    mainPage: "AIAgents",
     Pages: PAGES,
     Layout: __Layout,
 };
