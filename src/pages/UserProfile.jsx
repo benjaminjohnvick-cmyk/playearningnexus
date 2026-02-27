@@ -14,6 +14,9 @@ import {
   Users, Star, Zap, Target, Award, Camera, Edit2, Check, X,
   Crown, Shield, Medal, ClipboardList, TrendingUp
 } from 'lucide-react';
+import AboutMeEditor from '../components/profile/AboutMeEditor';
+import SocialLinksEditor from '../components/profile/SocialLinksEditor';
+import FeaturedBadges from '../components/profile/FeaturedBadges';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
