@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   DollarSign,
+  ShoppingCart,
   Bot,
   Trophy,
   Users,
