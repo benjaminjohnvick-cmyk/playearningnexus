@@ -3,10 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lock, DollarSign, TrendingUp, CheckCircle } from "lucide-react";
 
-export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 3, onGoToSurveys, children }) {
+export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 3, onGoToSurveys }) {
   const earned = Math.min(todaysEarnings, dailyGoal);
   const percentage = (earned / dailyGoal) * 100;
-  const goalMet = earned >= dailyGoal;
 
   const getBarColor = () => {
     if (earned >= 3) return 'bg-green-500';
@@ -14,8 +13,6 @@ export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 3, onGoToSu
     if (earned >= 1) return 'bg-yellow-500';
     return 'bg-red-500';
   };
-
-  if (goalMet) return <>{children}</>;
 
   return (
     <div className="relative">
