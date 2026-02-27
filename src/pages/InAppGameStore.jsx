@@ -153,7 +153,7 @@ export default function InAppGameStore() {
 
           {/* Games Tab */}
           <TabsContent value="games" className="space-y-6">
-            {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' ? (
+            {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' && !!user ? (
               <SurveyGate
                 todaysEarnings={dailyEarnings?.total_earned || 0}
                 dailyGoal={3}
