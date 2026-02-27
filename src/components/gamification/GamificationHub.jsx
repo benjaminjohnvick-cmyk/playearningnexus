@@ -75,6 +75,14 @@ export default function GamificationHub({ user, stats = {}, todayEarnings = 0, t
 
   return (
     <div className="space-y-6">
+      {/* Daily Goal System */}
+      <DailyGoalSystem
+        user={user}
+        todayEarnings={todayEarnings}
+        todaySurveys={todaySurveys}
+        referrals={referrals}
+      />
+
       {/* Points & Tier Summary */}
       <div className="grid md:grid-cols-2 gap-4">
         <Card className={`border-2 ${currentTier.border}`}>
