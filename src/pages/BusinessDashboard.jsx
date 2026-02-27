@@ -1,459 +1,253 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DollarSign, Download, TrendingUp, Users, Plus, Upload, Bot, Zap, Gamepad2 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import StatsCard from '../components/dashboard/StatsCard';
-import AppUploadForm from '../components/developer/AppUploadForm';
-import MonetizationDashboard from '../components/developer/MonetizationDashboard';
-import DeveloperSDK from '../components/developer/DeveloperSDK';
-import AIDynamicPricing from '../components/developer/AIDynamicPricing';
-import GameManagementPortal from '../components/developer/GameManagementPortal';
-import AIOptimizationTools from '../components/developer/AIOptimizationTools';
-import AdvancedMonetizationTools from '../components/developer/AdvancedMonetizationTools';
-import PerformanceAnalyticsDashboard from '../components/developer/PerformanceAnalyticsDashboard';
-import DeveloperSupportChatbot from '../components/support/DeveloperSupportChatbot';
-import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { TrendingUp, Users, DollarSign, Activity, Zap, Target } from 'lucide-react';
 
 export default function BusinessDashboard() {
   const [user, setUser] = useState(null);
-  const [businessClient, setBusinessClient] = useState(null);
-  const [showNewGameForm, setShowNewGameForm] = useState(false);
-  const [showSupportChat, setShowSupportChat] = useState(false);
-  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(true);
+  const [revenueData, setRevenueData] = useState([
+    { month: 'Jan', revenue: 4000, target: 3500 },
+    { month: 'Feb', revenue: 5200, target: 3800 },
+    { month: 'Mar', revenue: 4800, target: 4000 },
+    { month: 'Apr', revenue: 6100, target: 4500 },
+    { month: 'May', revenue: 7200, target: 5000 },
+  ]);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-        
-        const clients = await base44.entities.BusinessClient.filter({
-          owner_user_id: currentUser.id
-        });
-        
-        if (clients.length > 0) {
-          setBusinessClient(clients[0]);
-        }
       } catch (error) {
-        base44.auth.redirectToLogin();
+        console.error('Error fetching user:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchUser();
   }, []);
 
-  const { data: myGames = [] } = useQuery({
-    queryKey: ['my-games', businessClient?.id],
-    queryFn: async () => {
-      if (!businessClient) return [];
-      return await base44.entities.Game.filter({
-        developer_id: businessClient.id
-      }, '-created_date');
-    },
-    enabled: !!businessClient
-  });
+  if (loading) return <div className="p-8 text-center">Loading...</div>;
+  if (!user) return <div className="p-8 text-center">Please log in to access the dashboard.</div>;
 
-  const createBusinessMutation = useMutation({
-    mutationFn: async (data) => {
-      return await base44.entities.BusinessClient.create({
-        ...data,
-        owner_user_id: user.id
-      });
-    },
-    onSuccess: (data) => {
-      setBusinessClient(data);
-      toast.success('Business account created successfully!');
-    }
-  });
-
-  const handleUploadSuccess = () => {
-    queryClient.invalidateQueries(['my-games']);
-    setShowNewGameForm(false);
-  };
-
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  if (!businessClient) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-        <div className="max-w-2xl mx-auto">
-          <Card className="p-8 border-0 shadow-xl">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Business Account</h1>
-            <p className="text-gray-600 mb-6">Set up your developer account to start submitting games</p>
-            
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.target);
-              createBusinessMutation.mutate({
-                company_name: formData.get('company_name'),
-                contact_email: formData.get('contact_email'),
-                contact_phone: formData.get('contact_phone'),
-                paypal_email: formData.get('paypal_email')
-              });
-            }} className="space-y-4">
-              <div>
-                <Label>Company Name</Label>
-                <Input name="company_name" required placeholder="Your Game Studio" />
-              </div>
-              <div>
-                <Label>Contact Email</Label>
-                <Input name="contact_email" type="email" required placeholder="contact@studio.com" />
-              </div>
-              <div>
-                <Label>Contact Phone</Label>
-                <Input name="contact_phone" placeholder="+1 (555) 000-0000" />
-              </div>
-              <div>
-                <Label>PayPal Email (for payments)</Label>
-                <Input name="paypal_email" type="email" required placeholder="payments@studio.com" />
-              </div>
-              <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-blue-700" disabled={createBusinessMutation.isPending}>
-                Create Business Account
-              </Button>
-            </form>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  const totalRevenue = myGames.reduce((sum, game) => sum + (game.total_revenue || 0), 0);
-  const totalInstalls = myGames.reduce((sum, game) => sum + (game.total_installs || 0), 0);
+  const metrics = [
+    { title: 'Total Revenue', value: '$28.3K', icon: DollarSign, change: '+12.5%' },
+    { title: 'Active Users', value: '1,247', icon: Users, change: '+8.2%' },
+    { title: 'Engagement Rate', value: '64.3%', icon: Activity, change: '+3.1%' },
+    { title: 'Conversion Rate', value: '3.8%', icon: Target, change: '+1.2%' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <div className="mb-4">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">{businessClient.company_name}</h1>
-            <p className="text-gray-600">Developer Dashboard</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link to={createPageUrl('MonetizationHub')}>
-              <Button className="bg-gradient-to-r from-purple-600 to-pink-700">
-                <DollarSign className="w-4 h-4 mr-2" />
-                Monetization Hub
-              </Button>
-            </Link>
-            <Link to={createPageUrl('DeveloperAIDashboard')}>
-              <Button className="bg-gradient-to-r from-indigo-600 to-purple-700">
-                <Zap className="w-4 h-4 mr-2" />
-                AI Dashboard
-              </Button>
-            </Link>
-            <Link to={createPageUrl('DeveloperAnalytics')}>
-              <Button className="bg-gradient-to-r from-blue-600 to-cyan-700">
-                <TrendingUp className="w-4 h-4 mr-2" />
-                Advanced Analytics
-              </Button>
-            </Link>
-            <Link to={createPageUrl('GameStore')}>
-              <Button className="bg-gradient-to-r from-green-600 to-emerald-700">
-                <DollarSign className="w-4 h-4 mr-2" />
-                Game Store
-              </Button>
-            </Link>
-            <Link to={createPageUrl('SocialMediaGenerator')}>
-              <Button className="bg-gradient-to-r from-pink-600 to-purple-700">
-                <Zap className="w-4 h-4 mr-2" />
-                Social Media
-              </Button>
-            </Link>
-            <Button
-              onClick={() => setShowNewGameForm(!showNewGameForm)}
-              className="bg-gradient-to-r from-red-600 to-red-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Submit New Game
-            </Button>
-            <Button
-              onClick={() => setShowSupportChat(true)}
-              variant="outline"
-            >
-              <Bot className="w-4 h-4 mr-2" />
-              AI Support
-            </Button>
-          </div>
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Business Dashboard</h1>
+          <p className="text-slate-600">AI-powered analytics and insights for your platform</p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <StatsCard
-            icon={DollarSign}
-            label="Total Revenue"
-            value={`$${totalRevenue.toFixed(2)}`}
-            color="green"
-          />
-          <StatsCard
-            icon={Download}
-            label="Total Installs"
-            value={totalInstalls}
-            color="blue"
-          />
-          <StatsCard
-            icon={TrendingUp}
-            label="Games Submitted"
-            value={myGames.length}
-            color="purple"
-          />
-          <StatsCard
-            icon={Users}
-            label="Avg Rating"
-            value={myGames.length > 0 ? (myGames.reduce((sum, g) => sum + (g.average_rating || 0), 0) / myGames.length).toFixed(1) : '0.0'}
-            color="amber"
-          />
-        </div>
-
-        {showNewGameForm && (
-          <AppUploadForm 
-            businessClient={businessClient}
-            onSuccess={handleUploadSuccess}
-            onCancel={() => setShowNewGameForm(false)}
-          />
-        )}
-
-        <Tabs defaultValue="games" className="mb-8">
-          <TabsList className="bg-white shadow-md border-2 border-red-200">
-            <TabsTrigger value="games">My Games</TabsTrigger>
-            <TabsTrigger value="analytics">Performance Analytics</TabsTrigger>
-            <TabsTrigger value="management">Game Management</TabsTrigger>
-            <TabsTrigger value="monetization">Monetization Tools</TabsTrigger>
-            <TabsTrigger value="optimization">AI Optimization</TabsTrigger>
-            <TabsTrigger value="sdk">SDK & API</TabsTrigger>
-            <TabsTrigger value="pricing">AI Pricing</TabsTrigger>
-            <TabsTrigger value="portfolio">Portfolio Settings</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="portfolio">
-            <Card className="p-6 border-0 shadow-xl">
-              <h2 className="text-2xl font-bold mb-6">Portfolio Settings</h2>
-              <div className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Logo URL</Label>
-                    <Input 
-                      placeholder="https://example.com/logo.png"
-                      defaultValue={businessClient?.logo_url}
-                      onBlur={(e) => {
-                        if (e.target.value !== businessClient?.logo_url) {
-                          base44.entities.BusinessClient.update(businessClient.id, {
-                            logo_url: e.target.value
-                          });
-                        }
-                      }}
-                    />
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {metrics.map((metric, idx) => {
+            const Icon = metric.icon;
+            return (
+              <Card key={idx} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-medium text-slate-600">{metric.title}</CardTitle>
+                    <Icon className="w-5 h-5 text-blue-600" />
                   </div>
-                  <div>
-                    <Label>Tagline</Label>
-                    <Input 
-                      placeholder="Creating amazing games since 2020"
-                      defaultValue={businessClient?.tagline}
-                      onBlur={(e) => {
-                        if (e.target.value !== businessClient?.tagline) {
-                          base44.entities.BusinessClient.update(businessClient.id, {
-                            tagline: e.target.value
-                          });
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label>Bio</Label>
-                  <Textarea 
-                    placeholder="Tell users about your company and game development philosophy..."
-                    rows={4}
-                    defaultValue={businessClient?.bio}
-                    onBlur={(e) => {
-                      if (e.target.value !== businessClient?.bio) {
-                        base44.entities.BusinessClient.update(businessClient.id, {
-                          bio: e.target.value
-                        });
-                      }
-                    }}
-                  />
-                </div>
-
-                <div className="border-t pt-4">
-                  <h3 className="font-semibold mb-3">Social Media Links</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {['website', 'twitter', 'linkedin', 'github', 'facebook', 'instagram', 'youtube'].map(platform => (
-                      <div key={platform}>
-                        <Label className="capitalize">{platform}</Label>
-                        <Input 
-                          placeholder={`https://${platform}.com/yourprofile`}
-                          defaultValue={businessClient?.social_links?.[platform]}
-                          onBlur={(e) => {
-                            base44.entities.BusinessClient.update(businessClient.id, {
-                              social_links: {
-                                ...businessClient?.social_links,
-                                [platform]: e.target.value
-                              }
-                            });
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <Link to={createPageUrl('DeveloperPortfolio') + `?id=${businessClient?.id}`}>
-                    <Button variant="outline" className="w-full">
-                      View Public Portfolio
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="monetization">
-            {myGames.length > 0 ? (
-              <div className="space-y-6">
-                {myGames.map(game => (
-                  <AdvancedMonetizationTools key={game.id} game={game} developer={businessClient} />
-                ))}
-              </div>
-            ) : (
-              <Card><CardContent className="p-12 text-center text-gray-500">Upload a game first</CardContent></Card>
-            )}
-          </TabsContent>
-
-          <TabsContent value="analytics">
-            {myGames.length > 0 ? (
-              <div className="space-y-6">
-                {myGames.map(game => (
-                  <PerformanceAnalyticsDashboard key={game.id} game={game} developer={businessClient} />
-                ))}
-              </div>
-            ) : (
-              <Card><CardContent className="p-12 text-center text-gray-500">Upload a game first</CardContent></Card>
-            )}
-          </TabsContent>
-
-          <TabsContent value="management">
-            {myGames.length > 0 ? (
-              <div className="space-y-6">
-                {myGames.map(game => (
-                  <GameManagementPortal key={game.id} game={game} developer={businessClient} />
-                ))}
-              </div>
-            ) : (
-              <Card><CardContent className="p-12 text-center text-gray-500">Upload a game first</CardContent></Card>
-            )}
-          </TabsContent>
-
-          <TabsContent value="optimization">
-            {myGames.length > 0 ? (
-              <div className="space-y-6">
-                {myGames.map(game => (
-                  <AIOptimizationTools key={game.id} game={game} />
-                ))}
-              </div>
-            ) : (
-              <Card><CardContent className="p-12 text-center text-gray-500">Upload a game first</CardContent></Card>
-            )}
-          </TabsContent>
-
-          <TabsContent value="sdk">
-            <DeveloperSDK developer={businessClient} />
-          </TabsContent>
-
-          <TabsContent value="pricing">
-            {myGames.length > 0 ? (
-              <div className="space-y-6">
-                {myGames.map(game => (
-                  <AIDynamicPricing key={game.id} game={game} />
-                ))}
-              </div>
-            ) : (
-              <Card>
-                <CardContent className="p-12 text-center text-gray-500">
-                  Upload a game first to use AI pricing
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900 mb-1">{metric.value}</div>
+                  <p className="text-xs text-green-600 font-semibold">{metric.change} from last month</p>
                 </CardContent>
               </Card>
-            )}
-          </TabsContent>
+            );
+          })}
+        </div>
 
-          <TabsContent value="games">
-            <Card className="p-6 border-0 shadow-xl">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Games</h2>
-          {myGames.length > 0 ? (
-            <div className="space-y-4">
-              {myGames.map((game) => (
-                <Card key={game.id} className="p-4 border">
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-2xl">
-                      {game.icon_url ? <img src={game.icon_url} alt={game.title} className="w-full h-full object-cover rounded-lg" /> : <Gamepad2 className="w-8 h-8 text-gray-400" />}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="font-bold text-lg">{game.title}</h3>
-                          <p className="text-sm text-gray-600">{game.category}</p>
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          game.status === 'approved' ? 'bg-green-100 text-green-700' :
-                          game.status === 'featured' ? 'bg-amber-100 text-amber-700' :
-                          game.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                          'bg-gray-100 text-gray-700'
-                        }`}>
-                          {game.status}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-500">Installs:</span>
-                          <span className="font-medium ml-2">{game.total_installs || 0}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Revenue:</span>
-                          <span className="font-medium ml-2">${(game.total_revenue || 0).toFixed(2)}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Rating:</span>
-                          <span className="font-medium ml-2">{(game.average_rating || 0).toFixed(1)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-gray-500">
-              <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p>No games submitted yet</p>
-              <p className="text-sm">Submit your first game to get started</p>
-            </div>
-          )}
+        {/* Tabs */}
+        <Tabs defaultValue="analytics" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="ai-optimization">AI Optimization</TabsTrigger>
+            <TabsTrigger value="insights">AI Insights</TabsTrigger>
+            <TabsTrigger value="performance">Performance</TabsTrigger>
+          </TabsList>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle>Revenue Trends</CardTitle>
+                <CardDescription>Monthly revenue vs targets</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={revenueData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="month" stroke="#94a3b8" />
+                    <YAxis stroke="#94a3b8" />
+                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#e2e8f0' }} />
+                    <Legend />
+                    <Bar dataKey="revenue" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="target" fill="#cbd5e1" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
 
-        {showSupportChat && (
-          <DeveloperSupportChatbot
-            isOpen={showSupportChat}
-            onClose={() => setShowSupportChat(false)}
-            developerId={businessClient?.id}
-            developerEmail={user?.email}
-          />
-        )}
+          {/* AI Optimization Tab */}
+          <TabsContent value="ai-optimization" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-amber-500" />
+                    Optimization Recommendations
+                  </CardTitle>
+                  <CardDescription>AI-powered suggestions to boost performance</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h4 className="font-semibold text-blue-900 mb-1">Price Optimization</h4>
+                    <p className="text-sm text-blue-700">AI suggests a 5-8% price increase could improve margins without affecting conversion.</p>
+                  </div>
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <h4 className="font-semibold text-green-900 mb-1">User Engagement</h4>
+                    <p className="text-sm text-green-700">Increase notification frequency by 30% to boost daily active users.</p>
+                  </div>
+                  <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                    <h4 className="font-semibold text-purple-900 mb-1">Content Strategy</h4>
+                    <p className="text-sm text-purple-700">Focus on educational content - it drives 2.3x higher engagement than promotional.</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle>Performance Score</CardTitle>
+                  <CardDescription>AI-calculated business health</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium text-slate-700">Overall Score</span>
+                      <span className="font-bold text-lg text-blue-600">78/100</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                      <div className="bg-blue-600 h-full rounded-full" style={{ width: '78%' }}></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Revenue Growth</span>
+                      <span className="font-semibold text-slate-900">92%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">User Retention</span>
+                      <span className="font-semibold text-slate-900">76%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Conversion Efficiency</span>
+                      <span className="font-semibold text-slate-900">64%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* AI Insights Tab */}
+          <TabsContent value="insights" className="space-y-6">
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle>Predictive Analytics</CardTitle>
+                <CardDescription>AI forecasts for the next 3 months</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={revenueData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="month" stroke="#94a3b8" />
+                    <YAxis stroke="#94a3b8" />
+                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#e2e8f0' }} />
+                    <Legend />
+                    <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} dot={{ r: 5 }} />
+                    <Line type="monotone" dataKey="target" stroke="#10b981" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Performance Tab */}
+          <TabsContent value="performance" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle>User Behavior Analysis</CardTitle>
+                  <CardDescription>How users interact with your platform</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span>Average Session Duration</span>
+                      <span className="font-semibold">4m 32s</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Pages per Session</span>
+                      <span className="font-semibold">5.2</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Bounce Rate</span>
+                      <span className="font-semibold">28%</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Return Users</span>
+                      <span className="font-semibold">62%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle>Traffic Sources</CardTitle>
+                  <CardDescription>Where users come from</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Direct', value: 35 },
+                          { name: 'Organic', value: 28 },
+                          { name: 'Referral', value: 22 },
+                          { name: 'Social', value: 15 },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        dataKey="value"
+                      >
+                        <Cell fill="#3b82f6" />
+                        <Cell fill="#10b981" />
+                        <Cell fill="#f59e0b" />
+                        <Cell fill="#ef4444" />
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
