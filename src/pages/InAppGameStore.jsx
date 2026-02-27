@@ -563,6 +563,7 @@ export default function InAppGameStore() {
             })}
           </div>
         )}
+            </SurveyGate>
           </TabsContent>
         </Tabs>
       </div>
@@ -745,33 +746,39 @@ export default function InAppGameStore() {
               </TabsContent>
 
               <TabsContent value="reviews">
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {reviews.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">No reviews yet</p>
-                  ) : (
-                    reviews.map((review) => (
-                      <div key={review.id} className="p-4 bg-gray-50 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < review.rating
-                                    ? 'text-yellow-500 fill-yellow-500'
-                                    : 'text-gray-300'
-                                }`}
-                              />
-                            ))}
+                <div className="space-y-4">
+                  <WriteReviewForm game={checkoutGame} user={user} />
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {reviews.length === 0 ? (
+                      <p className="text-center text-gray-500 py-8">No reviews yet. Be the first!</p>
+                    ) : (
+                      reviews.map((review) => (
+                        <div key={review.id} className="p-4 bg-gray-50 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < review.rating
+                                      ? 'text-yellow-500 fill-yellow-500'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                              <span className="text-sm font-medium text-gray-700">
+                                {review.reviewer_name || 'Anonymous'}
+                              </span>
+                            </div>
+                            <span className="text-xs text-gray-500">
+                              {new Date(review.created_date).toLocaleDateString()}
+                            </span>
                           </div>
-                          <span className="text-xs text-gray-500">
-                            {new Date(review.created_date).toLocaleDateString()}
-                          </span>
+                          <p className="text-sm text-gray-700">{review.review_text}</p>
                         </div>
-                        <p className="text-sm text-gray-700">{review.review_text}</p>
-                      </div>
-                    ))
-                  )}
+                      ))
+                    )}
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
