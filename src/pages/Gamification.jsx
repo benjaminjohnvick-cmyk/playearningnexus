@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Flame, Users, TrendingUp } from "lucide-react";
-import StreakTracker from '../components/gamification/StreakTracker';
-import AchievementsList from '../components/gamification/AchievementsList';
+import { Trophy, Flame, Users, TrendingUp, Star } from "lucide-react";
+import GamificationHub from '../components/gamification/GamificationHub';
 import Leaderboard from '../components/gamification/Leaderboard';
 import GuildLeaderboard from '../components/gamification/GuildLeaderboard';
 
@@ -16,40 +15,66 @@ export default function Gamification() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
     fetchUser();
   }, []);
 
-  const { data: streak } = useQuery({
-    queryKey: ['user-streak', user?.id],
-    queryFn: async () => {
-      const streaks = await base44.entities.Streak.filter({ user_id: user.id });
-      return streaks[0] || null;
-    },
-    enabled: !!user
+  const today = new Date().toISOString().split('T')[0];
+
+  const { data: dailyEarnings } = useQuery({
+    queryKey: ['dailyEarnings', user?.id, today],
+    queryFn: () => base44.entities.DailyEarnings.filter({ user_id: user.id, date: today }),
+    enabled: !!user,
+    select: (d) => d[0] || null,
   });
 
-  const { data: achievements = [] } = useQuery({
-    queryKey: ['user-achievements', user?.id],
-    queryFn: () => base44.entities.Achievement.filter({ user_id: user.id }),
-    enabled: !!user
+  const { data: allDailyEarnings = [] } = useQuery({
+    queryKey: ['allDailyEarnings', user?.id],
+    queryFn: () => base44.entities.DailyEarnings.filter({ user_id: user.id }),
+    enabled: !!user,
+  });
+
+  const { data: referrals = [] } = useQuery({
+    queryKey: ['referrals', user?.id],
+    queryFn: () => base44.entities.Referral.filter({ referrer_user_id: user.id }),
+    enabled: !!user,
+  });
+
+  const { data: purchases = [] } = useQuery({
+    queryKey: ['purchases', user?.id],
+    queryFn: () => base44.entities.InAppPurchase.filter({ user_id: user.id }),
+    enabled: !!user,
   });
 
   const { data: leaderboard = [] } = useQuery({
     queryKey: ['leaderboard'],
-    queryFn: () => base44.entities.LeaderboardEntry.list('-total_earnings', 50)
+    queryFn: () => base44.entities.LeaderboardEntry.list('-total_earnings', 50),
   });
 
   const { data: myGuilds = [] } = useQuery({
     queryKey: ['myGuilds', user?.id],
-    queryFn: () => base44.entities.Guild.list().then(guilds => 
+    queryFn: () => base44.entities.Guild.list().then(guilds =>
       guilds.filter(g => g.leader_id === user.id || g.member_ids?.includes(user.id))
     ),
-    enabled: !!user
+    enabled: !!user,
   });
+
+  const activeReferrals = referrals.filter(r => r.status === 'active').length;
+  const daysGoalMet = allDailyEarnings.filter(d => d.goal_met).length;
+  const totalSurveys = allDailyEarnings.reduce((s, d) => s + (d.total_surveys_completed || 0), 0);
+
+  const stats = {
+    totalReferrals: referrals.length,
+    activeReferrals,
+    commissionEarned: referrals.reduce((s, r) => s + (r.commission_earned || 0), 0),
+    totalSurveys,
+    daysGoalMet,
+    streakDays: 0, // can hook up to streak entity if needed
+    purchases: purchases.length,
+  };
 
   if (!user) {
     return (
@@ -61,38 +86,39 @@ export default function Gamification() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Gamification Hub</h1>
-          <p className="text-gray-600">Track your progress, unlock achievements, and compete with others!</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+            <Star className="w-9 h-9 text-yellow-500" />
+            Rewards & Achievements
+          </h1>
+          <p className="text-gray-600">Earn points, unlock badges, complete daily goals, and climb the leaderboard!</p>
         </div>
 
-        <Tabs defaultValue="streaks" className="space-y-6">
+        <Tabs defaultValue="hub" className="space-y-6">
           <TabsList className="bg-white shadow-md border-2 border-red-200">
-            <TabsTrigger value="streaks" className="text-lg">
-              <Flame className="w-4 h-4 mr-2" />
-              Streaks
-            </TabsTrigger>
-            <TabsTrigger value="achievements" className="text-lg">
+            <TabsTrigger value="hub">
               <Trophy className="w-4 h-4 mr-2" />
-              Achievements
+              My Progress
             </TabsTrigger>
-            <TabsTrigger value="leaderboard" className="text-lg">
+            <TabsTrigger value="leaderboard">
               <TrendingUp className="w-4 h-4 mr-2" />
               Leaderboard
             </TabsTrigger>
-            <TabsTrigger value="guilds" className="text-lg">
+            <TabsTrigger value="guilds">
               <Users className="w-4 h-4 mr-2" />
               Guild Rankings
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="streaks">
-            <StreakTracker streak={streak} />
-          </TabsContent>
-
-          <TabsContent value="achievements">
-            <AchievementsList achievements={achievements} />
+          <TabsContent value="hub">
+            <GamificationHub
+              user={user}
+              stats={stats}
+              todayEarnings={dailyEarnings?.total_earned || 0}
+              todaySurveys={dailyEarnings?.total_surveys_completed || 0}
+              referrals={referrals}
+            />
           </TabsContent>
 
           <TabsContent value="leaderboard">
