@@ -87,3 +87,7 @@ export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 3, onGoToSu
     </div>
   );
 }
+
+export function isSurveyGoalMet(todaysEarnings = 0, dailyGoal = 3) {
+  return todaysEarnings >= dailyGoal;
+}
