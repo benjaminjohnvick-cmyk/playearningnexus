@@ -89,6 +89,9 @@ export default function ReferralDashboard() {
           <p className="text-gray-500 mt-1">Invite friends, earn commissions, climb the tiers</p>
         </div>
 
+        {/* Limited Time Bonuses */}
+        <LimitedTimeBonusBanner />
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
