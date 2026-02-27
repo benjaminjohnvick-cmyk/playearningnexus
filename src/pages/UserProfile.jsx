@@ -230,6 +230,15 @@ export default function UserProfile() {
 
           {/* ── Overview ── */}
           <TabsContent value="overview" className="space-y-4">
+            {/* Featured Badges */}
+            <FeaturedBadges user={user} userStats={userStats} onUpdate={handleUserUpdate} />
+
+            {/* About Me */}
+            <AboutMeEditor user={user} onUpdate={handleUserUpdate} />
+
+            {/* Social Links */}
+            <SocialLinksEditor user={user} onUpdate={handleUserUpdate} />
+
             <div className="grid md:grid-cols-3 gap-4">
               {/* Earnings */}
               <Card className="md:col-span-2 border-0 shadow-lg">
