@@ -60,7 +60,8 @@ export default function GamificationHub({ user, stats = {}, todayEarnings = 0, t
     totalSurveys * 10 +
     totalReferrals * 25 +
     totalEarnings * 5 +
-    daysGoalMet * 15
+    daysGoalMet * 15 +
+    purchases * 50
   );
 
   const earnedBadges = BADGES.filter(b => b.threshold(userStats));
