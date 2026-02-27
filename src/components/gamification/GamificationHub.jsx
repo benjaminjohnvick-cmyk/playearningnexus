@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { motion } from 'framer-motion';
-import { Trophy, Star, Zap, Target, Users, ClipboardList, Award, Medal, Crown, Shield } from 'lucide-react';
+import { Trophy, Star, Zap, Target, Users, ClipboardList, Award, Medal, Crown, Shield, ShoppingBag, Flame } from 'lucide-react';
+import DailyGoalSystem from './DailyGoalSystem';
 
 const BADGES = [
   { id: 'first_survey', icon: ClipboardList, label: 'First Survey', desc: 'Complete your first survey', color: 'text-blue-600', bg: 'bg-blue-100', threshold: (s) => (s.totalSurveys || 0) >= 1 },
