@@ -29,6 +29,7 @@ import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
 import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
+import MegaContestButton from '@/components/referral/MegaContestButton';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -55,22 +56,16 @@ export default function Layout({ children, currentPageName }) {
     checkAuth();
   }, []);
 
-
-
-  // Fetch active events for contextual triggers
   const { data: activeEvents = [] } = useQuery({
     queryKey: ['activeEvents'],
     queryFn: async () => {
       const now = new Date().toISOString();
-      const events = await base44.entities.LiveEvent.filter({
-        is_active: true
-      });
+      const events = await base44.entities.LiveEvent.filter({ is_active: true });
       return events.filter(e => new Date(e.start_time) <= new Date(now) && new Date(e.end_time) >= new Date(now));
     },
     enabled: isAuthenticated
   });
   
-  // PWA install prompt
   useEffect(() => {
     let deferredPrompt;
     const handleBeforeInstallPrompt = (e) => {
@@ -84,23 +79,16 @@ export default function Layout({ children, currentPageName }) {
   const shouldShowLogoutPrompt = () => {
     if (!user || !user.prompt_before_logout) return false;
     if (promptShownThisSession) return false;
-
-    // Check 24-hour cooldown
     const lastShown = localStorage.getItem('lastLogoutPromptShown');
     if (lastShown) {
       const hoursSinceLastShown = (new Date() - new Date(lastShown)) / (1000 * 60 * 60);
       if (hoursSinceLastShown < 24) return false;
     }
-
-    // Check 7-day inactivity for social posts
     if (user.last_social_post_date) {
       const daysSinceLastPost = (new Date() - new Date(user.last_social_post_date)) / (1000 * 60 * 60 * 24);
       if (daysSinceLastPost < 7) return false;
     }
-
-    // Check if there's an active campaign
     const hasActiveCampaign = activeEvents.length > 0;
-    
     return hasActiveCampaign || !user.last_social_post_date;
   };
 
@@ -113,9 +101,7 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
-  const handleActualLogout = () => {
-    base44.auth.logout();
-  };
+  const handleActualLogout = () => base44.auth.logout();
 
   const navigation = [
     { name: 'Home', icon: Home, path: 'Home' },
@@ -144,7 +130,6 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
   ];
 
-  // Add admin menu items
   if (user?.role === 'admin') {
     navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });
@@ -163,74 +148,64 @@ export default function Layout({ children, currentPageName }) {
         background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(254, 242, 242, 0.8))',
         boxShadow: '0 4px 30px rgba(220, 38, 38, 0.1)'
       }}>
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
             {/* Logo */}
-            <Link to={createPageUrl('Home')} className="flex items-center gap-3 group">
+            <Link to={createPageUrl('Home')} className="flex items-center gap-2 group flex-shrink-0">
               <div className="group-hover:scale-110 transition-transform">
-                <GamerGainLogo className="w-12 h-12" />
+                <GamerGainLogo className="w-10 h-10" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent hidden sm:inline">
                 GamerGain
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
-              {filteredNav.map((item) => (
+            <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center overflow-x-auto">
+              {filteredNav.slice(0, 8).map((item) => (
                 <Link key={item.name} to={createPageUrl(item.path)}>
                   <Button
                     variant={currentPageName === item.path ? "default" : "ghost"}
+                    size="sm"
                     className={currentPageName === item.path ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}
                   >
-                    <item.icon className="w-4 h-4 mr-2" />
+                    <item.icon className="w-3.5 h-3.5 mr-1" />
                     {item.name}
                   </Button>
                 </Link>
               ))}
             </nav>
 
-            {/* User Section */}
-            <div className="hidden md:flex items-center gap-4">
+            {/* Right section: Contest button + user controls */}
+            <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+              {/* 🏆 MEGA CONTEST BUTTON */}
+              <MegaContestButton />
+
               {isAuthenticated && user ? (
                 <>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">{user.full_name}</p>
-                    <p className="text-xs text-emerald-600 font-medium">
-                      ${(user.total_earnings || 0).toFixed(2)} earned
-                    </p>
+                  <div className="text-right hidden lg:block">
+                    <p className="text-xs font-medium text-gray-900">{user.full_name}</p>
+                    <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
                   </div>
                   <NotificationCenter user={user} />
                   <Link to={createPageUrl('Settings')}>
                     <Button variant="ghost" size="icon">
-                      <Settings className="w-5 h-5" />
+                      <Settings className="w-4 h-4" />
                     </Button>
                   </Link>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleLogoutClick}
-                  >
-                    <LogOut className="w-5 h-5" />
+                  <Button variant="ghost" size="icon" onClick={handleLogoutClick}>
+                    <LogOut className="w-4 h-4" />
                   </Button>
                 </>
               ) : (
-                <Button
-                  onClick={() => base44.auth.redirectToLogin()}
-                  className="bg-gradient-to-r from-red-600 to-red-700 shadow-lg"
-                >
+                <Button onClick={() => base44.auth.redirectToLogin()} className="bg-gradient-to-r from-red-600 to-red-700 shadow-lg" size="sm">
                   Sign In
                 </Button>
               )}
             </div>
 
             {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </Button>
           </div>
@@ -239,16 +214,16 @@ export default function Layout({ children, currentPageName }) {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t bg-white">
-            <div className="px-6 py-4 space-y-2">
+            <div className="px-4 py-3 space-y-1">
+              {/* Contest button in mobile menu */}
+              <div className="py-2">
+                <MegaContestButton />
+              </div>
               {filteredNav.map((item) => (
-                <Link
-                  key={item.name}
-                  to={createPageUrl(item.path)}
-                  onClick={() => setIsMenuOpen(false)}
-                >
+                <Link key={item.name} to={createPageUrl(item.path)} onClick={() => setIsMenuOpen(false)}>
                   <Button
                     variant={currentPageName === item.path ? "default" : "ghost"}
-                    className={`w-full justify-start ${currentPageName === item.path ? "bg-gradient-to-r from-blue-600 to-blue-700" : ""}`}
+                    className={`w-full justify-start text-sm ${currentPageName === item.path ? "bg-gradient-to-r from-blue-600 to-blue-700" : ""}`}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
                     {item.name}
@@ -258,38 +233,23 @@ export default function Layout({ children, currentPageName }) {
               
               {isAuthenticated && user ? (
                 <>
-                  <div className="pt-4 pb-2 border-t">
+                  <div className="pt-3 pb-1 border-t">
                     <p className="text-sm font-medium text-gray-900">{user.full_name}</p>
-                    <p className="text-xs text-emerald-600 font-medium">
-                      ${(user.total_earnings || 0).toFixed(2)} earned
-                    </p>
+                    <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)} earned</p>
                   </div>
                   <Link to={createPageUrl('Settings')} onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Settings
+                    <Button variant="ghost" className="w-full justify-start text-sm">
+                      <Settings className="w-4 h-4 mr-2" />Settings
                     </Button>
                   </Link>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      handleLogoutClick();
-                    }}
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
+                  <Button variant="ghost" className="w-full justify-start text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => { setIsMenuOpen(false); handleLogoutClick(); }}>
+                    <LogOut className="w-4 h-4 mr-2" />Logout
                   </Button>
                 </>
               ) : (
-                <Button
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    base44.auth.redirectToLogin();
-                  }}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700"
-                >
+                <Button onClick={() => { setIsMenuOpen(false); base44.auth.redirectToLogin(); }}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-sm">
                   Sign In
                 </Button>
               )}
@@ -301,10 +261,8 @@ export default function Layout({ children, currentPageName }) {
       {/* Main Content */}
       <main>{children}</main>
 
-      {/* AI Support Chat Button */}
       <SupportChatButton />
 
-      {/* Logout Prompt Modal */}
       <LogoutPromptModal
         isOpen={showLogoutPrompt}
         onClose={() => setShowLogoutPrompt(false)}
@@ -320,25 +278,19 @@ export default function Layout({ children, currentPageName }) {
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <GamerGainLogo className="w-10 h-10" />
-                <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">
-                  GamerGain
-                </span>
+                <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">GamerGain</span>
               </div>
-              <p className="text-gray-600 text-sm">
-                The premium game discovery platform.
-                Play games, earn rewards, connect with creators.
-              </p>
+              <p className="text-gray-600 text-sm">The premium game discovery platform. Play games, earn rewards, connect with creators.</p>
             </div>
-            
             <div>
               <h3 className="font-bold text-gray-900 mb-3">Platform</h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li><Link to={createPageUrl('Home')} className="hover:text-blue-600">Home</Link></li>
                 <li><Link to={createPageUrl('UserDashboard')} className="hover:text-blue-600">Dashboard</Link></li>
                 <li><Link to={createPageUrl('InAppGameStore')} className="hover:text-blue-600">Store</Link></li>
+                <li><Link to={createPageUrl('ReferralContest')} className="hover:text-yellow-600 font-medium">🏆 7M Contest</Link></li>
               </ul>
             </div>
-            
             <div>
               <h3 className="font-bold text-gray-900 mb-3">Developers</h3>
               <ul className="space-y-2 text-sm text-gray-600">
@@ -348,7 +300,6 @@ export default function Layout({ children, currentPageName }) {
               </ul>
             </div>
           </div>
-          
           <div className="border-t mt-8 pt-8 text-center text-sm text-gray-500">
             <p>© 2024 GamerGain. All rights reserved. | Premium gaming platform</p>
           </div>

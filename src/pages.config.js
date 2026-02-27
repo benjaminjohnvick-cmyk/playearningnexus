@@ -50,6 +50,7 @@
 import ReferralDashboard from './pages/ReferralDashboard';
 import Wishlist from './pages/Wishlist';
 import ReferralContest from './pages/ReferralContest';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -61,4 +62,5 @@ export const PAGES = {
 export const pagesConfig = {
     mainPage: "ReferralDashboard",
     Pages: PAGES,
+    Layout: __Layout,
 };
