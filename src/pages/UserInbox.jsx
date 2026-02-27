@@ -197,9 +197,6 @@ export default function UserInbox() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="notifications">
-            <NotificationsTab notifications={notifications} userId={user?.id} />
-          </TabsContent>
         </Tabs>
       </div>
     </div>
