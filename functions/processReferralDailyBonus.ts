@@ -90,6 +90,16 @@ Deno.serve(async (req) => {
       delivery_method: ['in_app']
     });
 
+    // Send notification to referred user about their goal achievement
+    await base44.asServiceRole.entities.Notification.create({
+      user_id: user_id,
+      type: 'points_earned',
+      title: '🎯 Daily Goal Achieved!',
+      message: `You hit your $3 daily goal today! The game store is now unlocked. +15 XP earned.`,
+      status: 'unread',
+      delivery_method: ['in_app']
+    });
+
     return Response.json({ ok: true, message: `Referral bonus of $${bonusAmount} paid to ${referrerId}` });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
