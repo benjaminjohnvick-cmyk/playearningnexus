@@ -212,7 +212,7 @@ export default function InAppGameStore() {
                 </div>
 
                 {/* Games Grid */}
-                {isLoading ? (
+                {gamesLoading ? (
                   <div className="grid md:grid-cols-3 gap-6">
                     {[1, 2, 3].map(i => <div key={i} className="h-96 bg-white rounded-xl animate-pulse" />)}
                   </div>
