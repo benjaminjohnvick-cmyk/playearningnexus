@@ -9,15 +9,17 @@ import { Trophy, Star, Zap, Target, Users, ClipboardList, Award, Medal, Crown, S
 import DailyGoalSystem from './DailyGoalSystem';
 
 const BADGES = [
-  { id: 'first_survey', icon: ClipboardList, label: 'First Survey', desc: 'Complete your first survey', color: 'text-blue-600', bg: 'bg-blue-100', threshold: (s) => (s.totalSurveys || 0) >= 1 },
-  { id: 'survey_champ', icon: Trophy, label: 'Survey Champion', desc: 'Complete 50 surveys', color: 'text-yellow-600', bg: 'bg-yellow-100', threshold: (s) => (s.totalSurveys || 0) >= 50 },
-  { id: 'first_referral', icon: Users, label: 'First Referral', desc: 'Refer your first user', color: 'text-green-600', bg: 'bg-green-100', threshold: (s) => (s.totalReferrals || 0) >= 1 },
-  { id: 'referral_master', icon: Crown, label: 'Referral Master', desc: 'Refer 10 active users', color: 'text-purple-600', bg: 'bg-purple-100', threshold: (s) => (s.activeReferrals || 0) >= 10 },
-  { id: 'daily_goal', icon: Target, label: 'Daily Achiever', desc: 'Hit $3 daily goal once', color: 'text-teal-600', bg: 'bg-teal-100', threshold: (s) => (s.daysGoalMet || 0) >= 1 },
-  { id: 'streak_7', icon: Zap, label: '7-Day Streak', desc: 'Hit daily goal 7 days in a row', color: 'text-orange-600', bg: 'bg-orange-100', threshold: (s) => (s.streakDays || 0) >= 7 },
-  { id: 'earner_10', icon: Star, label: 'Power Earner', desc: 'Earn $10 total', color: 'text-pink-600', bg: 'bg-pink-100', threshold: (s) => (s.totalEarnings || 0) >= 10 },
-  { id: 'top_earner', icon: Medal, label: 'Top Earner', desc: 'Earn $100 total', color: 'text-red-600', bg: 'bg-red-100', threshold: (s) => (s.totalEarnings || 0) >= 100 },
-  { id: 'shield', icon: Shield, label: 'Loyal Member', desc: 'Active for 30+ days', color: 'text-indigo-600', bg: 'bg-indigo-100', threshold: (s) => (s.memberDays || 0) >= 30 },
+  { id: 'first_survey',    icon: ClipboardList, label: 'First Survey',      desc: 'Complete your first survey',        color: 'text-blue-600',   bg: 'bg-blue-100',   threshold: (s) => (s.totalSurveys || 0) >= 1 },
+  { id: 'survey_master',   icon: Trophy,        label: 'Survey Master',     desc: 'Complete 25 surveys',               color: 'text-yellow-600', bg: 'bg-yellow-100', threshold: (s) => (s.totalSurveys || 0) >= 25 },
+  { id: 'survey_champ',    icon: Medal,         label: 'Survey Champion',   desc: 'Complete 50 surveys',               color: 'text-amber-600',  bg: 'bg-amber-100',  threshold: (s) => (s.totalSurveys || 0) >= 50 },
+  { id: 'first_referral',  icon: Users,         label: 'First Referral',    desc: 'Refer your first user',             color: 'text-green-600',  bg: 'bg-green-100',  threshold: (s) => (s.totalReferrals || 0) >= 1 },
+  { id: 'top_referrer',    icon: Crown,         label: 'Top Referrer',      desc: 'Refer 10 active users',             color: 'text-purple-600', bg: 'bg-purple-100', threshold: (s) => (s.activeReferrals || 0) >= 10 },
+  { id: 'first_purchase',  icon: ShoppingBag,   label: 'First Purchase',    desc: 'Make your first in-app purchase',   color: 'text-teal-600',   bg: 'bg-teal-100',   threshold: (s) => (s.purchases || 0) >= 1 },
+  { id: 'daily_goal',      icon: Target,        label: 'Daily Achiever',    desc: 'Hit $3 daily goal once',            color: 'text-teal-600',   bg: 'bg-teal-100',   threshold: (s) => (s.daysGoalMet || 0) >= 1 },
+  { id: 'streak_7',        icon: Flame,         label: '7-Day Streak',      desc: 'Hit daily goal 7 days in a row',    color: 'text-orange-600', bg: 'bg-orange-100', threshold: (s) => (s.streakDays || 0) >= 7 },
+  { id: 'earner_10',       icon: Star,          label: 'Power Earner',      desc: 'Earn $10 total',                    color: 'text-pink-600',   bg: 'bg-pink-100',   threshold: (s) => (s.totalEarnings || 0) >= 10 },
+  { id: 'top_earner',      icon: Zap,           label: 'Top Earner',        desc: 'Earn $100 total',                   color: 'text-red-600',    bg: 'bg-red-100',    threshold: (s) => (s.totalEarnings || 0) >= 100 },
+  { id: 'shield',          icon: Shield,        label: 'Loyal Member',      desc: 'Active for 30+ days',               color: 'text-indigo-600', bg: 'bg-indigo-100', threshold: (s) => (s.memberDays || 0) >= 30 },
 ];
 
 const TIERS = [
