@@ -84,6 +84,16 @@ export default function UserDashboard() {
 
 
 
+  const { data: todayEarnings } = useQuery({
+    queryKey: ['todayEarnings', user?.id],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const records = await base44.entities.DailyEarnings.filter({ user_id: user.id, date: today });
+      return records[0] || null;
+    },
+    enabled: !!user
+  });
+
   const { data: recentActivities = [] } = useQuery({
     queryKey: ['recent-activities', user?.id],
     queryFn: async () => {
@@ -242,6 +252,15 @@ export default function UserDashboard() {
         </div>
 
 
+
+        {/* Daily Goal Progress */}
+        <div className="mb-6">
+          <DailyGoalProgress
+            earned={todayEarnings?.total_earned || 0}
+            goal={3}
+            surveysToday={todayEarnings?.total_surveys_completed || 0}
+          />
+        </div>
 
         {/* Lockout Mode Enforcer */}
         <div className="mb-8">
