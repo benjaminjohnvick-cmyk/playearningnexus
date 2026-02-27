@@ -167,6 +167,15 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center flex-wrap">
+              <Link to={createPageUrl('ReferralContest')}>
+                <Button
+                  variant={currentPageName === 'ReferralContest' ? "default" : "ghost"}
+                  size="sm"
+                  className={currentPageName === 'ReferralContest' ? "bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-md" : "hover:bg-yellow-50 text-yellow-700 font-semibold"}
+                >
+                  🏆 Referral Contest
+                </Button>
+              </Link>
               {filteredNav.slice(0, 8).map((item) => (
                 <Link key={item.name} to={createPageUrl(item.path)}>
                   <Button
