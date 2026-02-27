@@ -122,7 +122,7 @@ export default function ReferralDashboard() {
             {links.length === 0 ? (
               <Card className="border-dashed border-2">
                 <CardContent className="py-12 text-center">
-                  <Link className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <Link2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                   <p className="text-gray-400 mb-3">No referral links yet</p>
                   <Button onClick={() => createLinkMutation.mutate()} className="bg-red-600 hover:bg-red-700">Create Your First Link</Button>
                 </CardContent>
