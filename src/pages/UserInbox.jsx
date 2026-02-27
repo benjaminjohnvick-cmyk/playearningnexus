@@ -90,29 +90,29 @@ export default function UserInbox() {
   const unreadNotifications = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent mb-2">
-            Inbox
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+            <Bell className="w-9 h-9 text-red-600" /> Inbox
           </h1>
-          <p className="text-gray-600">Your messages and daily updates</p>
+          <p className="text-gray-500">Your messages and system notifications</p>
         </div>
 
-        <Tabs defaultValue="messages" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="notifications" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 bg-white shadow-md">
+            <TabsTrigger value="notifications" className="relative data-[state=active]:bg-red-600 data-[state=active]:text-white">
+              <Bell className="w-4 h-4 mr-2" />
+              Notifications
+              {unreadNotifications > 0 && (
+                <Badge className="ml-2 bg-red-600 data-[state=active]:bg-white data-[state=active]:text-red-600">{unreadNotifications}</Badge>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="messages">
               <MessageSquare className="w-4 h-4 mr-2" />
               Messages
               {unreadMessages > 0 && (
-                <Badge className="ml-2 bg-red-600">{unreadMessages}</Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="notifications">
-              <Bell className="w-4 h-4 mr-2" />
-              Notifications
-              {unreadNotifications > 0 && (
-                <Badge className="ml-2 bg-red-600">{unreadNotifications}</Badge>
+                <Badge className="ml-2 bg-gray-700">{unreadMessages}</Badge>
               )}
             </TabsTrigger>
           </TabsList>
