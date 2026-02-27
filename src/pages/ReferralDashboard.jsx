@@ -106,7 +106,7 @@ export default function ReferralDashboard() {
 
         <Tabs defaultValue="links">
           <TabsList className="bg-white shadow border w-full grid grid-cols-3">
-            <TabsTrigger value="links"><Link className="w-4 h-4 mr-1" />My Links</TabsTrigger>
+            <TabsTrigger value="links"><Link2 className="w-4 h-4 mr-1" />My Links</TabsTrigger>
             <TabsTrigger value="referrals"><Users className="w-4 h-4 mr-1" />My Referrals</TabsTrigger>
             <TabsTrigger value="tiers"><Crown className="w-4 h-4 mr-1" />Tiers</TabsTrigger>
           </TabsList>
