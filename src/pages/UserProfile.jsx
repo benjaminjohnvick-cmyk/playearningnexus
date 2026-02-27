@@ -1,237 +1,439 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { 
-  User, 
-  Image as ImageIcon, 
-  Trophy, 
-  DollarSign, 
-  Settings, 
-  Download,
-  Share2,
-  Calendar,
-  Award,
-  TrendingUp,
-  ShoppingBag,
-  Heart,
-  Gamepad2,
-  CreditCard
+import {
+  User, Trophy, DollarSign, Settings, Gamepad2, CreditCard,
+  Users, Star, Zap, Target, Award, Camera, Edit2, Check, X,
+  Crown, Shield, Medal, ClipboardList, TrendingUp
 } from 'lucide-react';
 import { toast } from 'sonner';
-import ImageGallery from '@/components/image/ImageGallery';
+import { motion } from 'framer-motion';
+
+// ── Badge definitions (same as GamificationHub) ──────────────────────────────
+const BADGES = [
+  { id: 'first_survey', icon: ClipboardList, label: 'First Survey', color: 'text-blue-600', bg: 'bg-blue-100', threshold: (s) => (s.totalSurveys || 0) >= 1 },
+  { id: 'survey_champ', icon: Trophy, label: 'Survey Champion', color: 'text-yellow-600', bg: 'bg-yellow-100', threshold: (s) => (s.totalSurveys || 0) >= 50 },
+  { id: 'first_referral', icon: Users, label: 'First Referral', color: 'text-green-600', bg: 'bg-green-100', threshold: (s) => (s.totalReferrals || 0) >= 1 },
+  { id: 'referral_master', icon: Crown, label: 'Referral Master', color: 'text-purple-600', bg: 'bg-purple-100', threshold: (s) => (s.activeReferrals || 0) >= 10 },
+  { id: 'daily_goal', icon: Target, label: 'Daily Achiever', color: 'text-teal-600', bg: 'bg-teal-100', threshold: (s) => (s.daysGoalMet || 0) >= 1 },
+  { id: 'streak_7', icon: Zap, label: '7-Day Streak', color: 'text-orange-600', bg: 'bg-orange-100', threshold: (s) => (s.streakDays || 0) >= 7 },
+  { id: 'earner_10', icon: Star, label: 'Power Earner', color: 'text-pink-600', bg: 'bg-pink-100', threshold: (s) => (s.totalEarnings || 0) >= 10 },
+  { id: 'top_earner', icon: Medal, label: 'Top Earner', color: 'text-red-600', bg: 'bg-red-100', threshold: (s) => (s.totalEarnings || 0) >= 100 },
+  { id: 'shield', icon: Shield, label: 'Loyal Member', color: 'text-indigo-600', bg: 'bg-indigo-100', threshold: (s) => (s.memberDays || 0) >= 30 },
+];
+
+const TIERS = [
+  { name: 'Bronze', minReferrals: 0, minEarnings: 0, color: 'text-amber-700', bg: 'bg-amber-100', border: 'border-amber-300', multiplier: 1.0 },
+  { name: 'Silver', minReferrals: 3, minEarnings: 5, color: 'text-gray-600', bg: 'bg-gray-100', border: 'border-gray-400', multiplier: 1.1 },
+  { name: 'Gold', minReferrals: 10, minEarnings: 25, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-400', multiplier: 1.25 },
+  { name: 'Platinum', minReferrals: 25, minEarnings: 75, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-400', multiplier: 1.5 },
+  { name: 'Diamond', minReferrals: 50, minEarnings: 200, color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-500', multiplier: 2.0 },
+];
+
+function getUserTier(activeReferrals = 0, commission = 0) {
+  let tier = TIERS[0];
+  for (const t of TIERS) {
+    if (activeReferrals >= t.minReferrals && commission >= t.minEarnings) tier = t;
+  }
+  return tier;
+}
 
 export default function UserProfile() {
   const [user, setUser] = useState(null);
+  const [editName, setEditName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const currentUser = await base44.auth.me();
-        setUser(currentUser);
-      } catch (error) {
-        base44.auth.redirectToLogin();
-      }
-    };
-    fetchUser();
+    base44.auth.me().then(u => { setUser(u); setEditName(u.full_name); setAvatarUrl(u.avatar_url || ''); })
+      .catch(() => base44.auth.redirectToLogin());
   }, []);
 
-  // Fetch generated images
-  const { data: generatedImages = [] } = useQuery({
-    queryKey: ['userGeneratedImages', user?.id],
-    queryFn: () => base44.entities.GeneratedImage.filter({ user_id: user.id }),
+  // ── Data fetching ────────────────────────────────────────────────────────
+  const { data: referrals = [] } = useQuery({
+    queryKey: ['profileReferrals', user?.id],
+    queryFn: () => base44.entities.Referral.filter({ referrer_user_id: user.id }),
     enabled: !!user
   });
 
-  // Fetch contest history
-  const { data: contestHistory = [] } = useQuery({
-    queryKey: ['userContestHistory', user?.id],
-    queryFn: () => base44.entities.ContestParticipation.filter({ user_id: user.id }),
-    enabled: !!user
-  });
-
-  // Fetch game library
   const { data: gameLibrary = [] } = useQuery({
-    queryKey: ['userGameLibrary', user?.id],
+    queryKey: ['profileGameLibrary', user?.id],
     queryFn: async () => {
       if (!user?.game_library?.length) return [];
-      const games = await Promise.all(
-        user.game_library.map(id => base44.entities.Game.get(id).catch(() => null))
-      );
+      const games = await Promise.all(user.game_library.map(id => base44.entities.Game.get(id).catch(() => null)));
       return games.filter(Boolean);
     },
     enabled: !!user
   });
 
-  // Fetch wishlist games
-  const { data: wishlistGames = [] } = useQuery({
-    queryKey: ['userWishlist', user?.id],
-    queryFn: async () => {
-      if (!user?.wishlist?.length) return [];
-      const games = await Promise.all(
-        user.wishlist.map(id => base44.entities.Game.get(id).catch(() => null))
-      );
-      return games.filter(Boolean);
-    },
-    enabled: !!user
-  });
-
-  // Fetch purchase history
   const { data: purchaseHistory = [] } = useQuery({
-    queryKey: ['userPurchaseHistory', user?.id],
-    queryFn: () => base44.entities.Transaction.filter({ 
-      user_id: user.id,
-      transaction_type: 'game_purchase'
-    }, '-created_date'),
+    queryKey: ['profilePurchases', user?.id],
+    queryFn: () => base44.entities.Transaction.filter({ user_id: user.id, transaction_type: 'game_purchase' }, '-created_date', 50),
     enabled: !!user
   });
 
-  // Calculate statistics
-  const totalContests = contestHistory.length;
-  const completedContests = contestHistory.filter(c => c.part1_completed && c.part2_completed).length;
-  const totalUsersReferred = contestHistory.reduce((sum, c) => sum + (c.users_referred || 0), 0);
-  const totalBusinessesReferred = contestHistory.reduce((sum, c) => sum + (c.businesses_referred || 0), 0);
+  const { data: dailyEarnings = [] } = useQuery({
+    queryKey: ['profileDailyEarnings', user?.id],
+    queryFn: () => base44.entities.DailyEarnings.filter({ user_id: user.id }, '-date', 30),
+    enabled: !!user
+  });
 
-  const handleUpdateProfile = async (e) => {
-    e.preventDefault();
-    try {
-      await base44.auth.updateMe({
-        full_name: e.target.full_name.value,
-      });
-      toast.success('Profile updated successfully!');
-      setIsEditing(false);
-      const updatedUser = await base44.auth.me();
-      setUser(updatedUser);
-    } catch (error) {
-      toast.error('Failed to update profile');
-    }
+  // ── Computed stats ───────────────────────────────────────────────────────
+  const totalReferrals = referrals.length;
+  const activeReferrals = referrals.filter(r => r.status === 'active').length;
+  const commissionEarned = referrals.reduce((s, r) => s + (r.commission_earned || 0), 0);
+  const totalEarnings = user?.total_earnings || 0;
+  const memberDays = user?.created_date ? Math.floor((Date.now() - new Date(user.created_date)) / 86400000) : 0;
+  const daysGoalMet = dailyEarnings.filter(d => d.goal_met).length;
+  const totalSurveys = dailyEarnings.reduce((s, d) => s + (d.total_surveys_completed || 0), 0);
+
+  const userStats = { totalReferrals, activeReferrals, commissionEarned, totalEarnings, memberDays, daysGoalMet, totalSurveys, streakDays: 0 };
+  const currentTier = getUserTier(activeReferrals, commissionEarned);
+  const nextTier = TIERS[TIERS.findIndex(t => t.name === currentTier.name) + 1];
+  const earnedBadges = BADGES.filter(b => b.threshold(userStats));
+  const points = Math.floor(totalSurveys * 10 + totalReferrals * 25 + totalEarnings * 5 + daysGoalMet * 15);
+
+  // ── Avatar upload ────────────────────────────────────────────────────────
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    await base44.auth.updateMe({ avatar_url: file_url });
+    setAvatarUrl(file_url);
+    const u = await base44.auth.me();
+    setUser(u);
+    setUploadingAvatar(false);
+    toast.success('Avatar updated!');
   };
 
-  const handleRemoveFromWishlist = async (gameId) => {
-    try {
-      const updatedWishlist = user.wishlist.filter(id => id !== gameId);
-      await base44.auth.updateMe({ wishlist: updatedWishlist });
-      const updatedUser = await base44.auth.me();
-      setUser(updatedUser);
-      toast.success('Removed from wishlist');
-    } catch (error) {
-      toast.error('Failed to remove from wishlist');
-    }
-  };
+  // ── Name edit ────────────────────────────────────────────────────────────
+  const saveNameMutation = useMutation({
+    mutationFn: async () => {
+      await base44.auth.updateMe({ full_name: editName });
+      const u = await base44.auth.me();
+      setUser(u);
+    },
+    onSuccess: () => { setIsEditing(false); toast.success('Name updated!'); }
+  });
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  if (!user) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600" />
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Profile Header */}
-        <Card className="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-          <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <Avatar className="w-24 h-24 border-4 border-white">
-                <AvatarFallback className="text-3xl bg-white text-blue-600">
-                  {user.full_name?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold mb-2">{user.full_name}</h1>
-                <p className="text-blue-100 mb-1">{user.email}</p>
-                <p className="text-sm opacity-90">Member since {new Date(user.created_date).toLocaleDateString()}</p>
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-4 md:p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+
+        {/* ── Hero Header ─────────────────────────────────────────────────── */}
+        <Card className="overflow-hidden border-0 shadow-xl">
+          <div className="bg-gradient-to-r from-red-600 via-red-700 to-rose-700 p-6 md:p-8">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+              {/* Avatar */}
+              <div className="relative flex-shrink-0">
+                <Avatar className="w-24 h-24 md:w-28 md:h-28 border-4 border-white shadow-lg">
+                  {avatarUrl ? <AvatarImage src={avatarUrl} /> : null}
+                  <AvatarFallback className="text-3xl bg-white text-red-600 font-bold">
+                    {user.full_name?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 right-0 bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors"
+                  disabled={uploadingAvatar}
+                >
+                  {uploadingAvatar ? <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" /> : <Camera className="w-4 h-4 text-red-600" />}
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
-                  <DollarSign className="w-6 h-6 mx-auto mb-1" />
-                  <p className="text-2xl font-bold">${(user.total_earnings || 0).toFixed(2)}</p>
-                  <p className="text-xs opacity-90">Total Earnings</p>
+
+              {/* Name & Email */}
+              <div className="flex-1 text-white text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                  {isEditing ? (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={editName}
+                        onChange={e => setEditName(e.target.value)}
+                        className="text-gray-900 font-bold text-lg h-9 w-48"
+                      />
+                      <button onClick={() => saveNameMutation.mutate()} className="bg-white/20 hover:bg-white/30 p-1.5 rounded-full">
+                        <Check className="w-4 h-4 text-white" />
+                      </button>
+                      <button onClick={() => { setIsEditing(false); setEditName(user.full_name); }} className="bg-white/20 hover:bg-white/30 p-1.5 rounded-full">
+                        <X className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <h1 className="text-2xl md:text-3xl font-bold">{user.full_name}</h1>
+                      <button onClick={() => setIsEditing(true)} className="bg-white/20 hover:bg-white/30 p-1 rounded-full transition-colors">
+                        <Edit2 className="w-4 h-4 text-white" />
+                      </button>
+                    </>
+                  )}
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
-                  <Trophy className="w-6 h-6 mx-auto mb-1" />
-                  <p className="text-2xl font-bold">{completedContests}</p>
-                  <p className="text-xs opacity-90">Contests Won</p>
+                <p className="text-red-200 text-sm mb-1">{user.email}</p>
+                <p className="text-red-300 text-xs">Member for {memberDays} days · {user.role || 'User'}</p>
+                <div className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full ${currentTier.bg}`}>
+                  <Crown className={`w-4 h-4 ${currentTier.color}`} />
+                  <span className={`text-sm font-bold ${currentTier.color}`}>{currentTier.name} Tier</span>
                 </div>
+              </div>
+
+              {/* Quick stats */}
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-3 flex-shrink-0">
+                {[
+                  { icon: DollarSign, label: 'Balance', value: `$${(user.current_balance || 0).toFixed(2)}`, color: 'text-green-300' },
+                  { icon: TrendingUp, label: 'Total Earned', value: `$${totalEarnings.toFixed(2)}`, color: 'text-blue-300' },
+                  { icon: Star, label: 'Points', value: points.toLocaleString(), color: 'text-yellow-300' },
+                  { icon: Award, label: 'Badges', value: `${earnedBadges.length}/${BADGES.length}`, color: 'text-purple-300' },
+                ].map(stat => (
+                  <div key={stat.label} className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center min-w-[90px]">
+                    <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.color}`} />
+                    <p className="text-white font-bold text-lg leading-tight">{stat.value}</p>
+                    <p className="text-white/70 text-xs">{stat.label}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          </CardContent>
+          </div>
         </Card>
 
-        {/* Tabs */}
-        <Tabs defaultValue="library" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 gap-2">
-            <TabsTrigger value="library">
-              <Gamepad2 className="w-4 h-4 mr-2" />
-              Library
-            </TabsTrigger>
-            <TabsTrigger value="wishlist">
-              <Heart className="w-4 h-4 mr-2" />
-              Wishlist
-            </TabsTrigger>
-            <TabsTrigger value="purchases">
-              <CreditCard className="w-4 h-4 mr-2" />
-              Purchases
-            </TabsTrigger>
-            <TabsTrigger value="images">
-              <ImageIcon className="w-4 h-4 mr-2" />
-              Images
-            </TabsTrigger>
-            <TabsTrigger value="contests">
-              <Trophy className="w-4 h-4 mr-2" />
-              Contests
-            </TabsTrigger>
-            <TabsTrigger value="earnings">
-              <DollarSign className="w-4 h-4 mr-2" />
-              Earnings
-            </TabsTrigger>
-            <TabsTrigger value="settings">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </TabsTrigger>
+        {/* ── Tabs ────────────────────────────────────────────────────────── */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 bg-white shadow-md">
+            <TabsTrigger value="overview"><User className="w-4 h-4 mr-1 hidden sm:inline" />Overview</TabsTrigger>
+            <TabsTrigger value="badges"><Award className="w-4 h-4 mr-1 hidden sm:inline" />Badges</TabsTrigger>
+            <TabsTrigger value="referrals"><Users className="w-4 h-4 mr-1 hidden sm:inline" />Referrals</TabsTrigger>
+            <TabsTrigger value="library"><Gamepad2 className="w-4 h-4 mr-1 hidden sm:inline" />Library</TabsTrigger>
+            <TabsTrigger value="settings"><Settings className="w-4 h-4 mr-1 hidden sm:inline" />Settings</TabsTrigger>
           </TabsList>
 
-          {/* Game Library Tab */}
+          {/* ── Overview ── */}
+          <TabsContent value="overview" className="space-y-4">
+            <div className="grid md:grid-cols-3 gap-4">
+              {/* Earnings */}
+              <Card className="md:col-span-2 border-0 shadow-lg">
+                <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-5 h-5 text-green-600" />Earnings & Balance</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200">
+                      <p className="text-xs text-gray-500 mb-1">Available Balance</p>
+                      <p className="text-3xl font-bold text-green-600">${(user.current_balance || 0).toFixed(2)}</p>
+                    </div>
+                    <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
+                      <p className="text-xs text-gray-500 mb-1">All-Time Earned</p>
+                      <p className="text-3xl font-bold text-blue-600">${totalEarnings.toFixed(2)}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-3 bg-purple-50 rounded-lg">
+                      <p className="text-xl font-bold text-purple-600">${commissionEarned.toFixed(2)}</p>
+                      <p className="text-xs text-gray-500">Referral Commission</p>
+                    </div>
+                    <div className="text-center p-3 bg-orange-50 rounded-lg">
+                      <p className="text-xl font-bold text-orange-600">{daysGoalMet}</p>
+                      <p className="text-xs text-gray-500">Daily Goals Hit</p>
+                    </div>
+                    <div className="text-center p-3 bg-teal-50 rounded-lg">
+                      <p className="text-xl font-bold text-teal-600">{totalSurveys}</p>
+                      <p className="text-xs text-gray-500">Surveys Done</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Points & Tier */}
+              <Card className={`border-2 ${currentTier.border} shadow-lg`}>
+                <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Crown className={`w-5 h-5 ${currentTier.color}`} />Tier & Points</CardTitle></CardHeader>
+                <CardContent>
+                  <div className={`rounded-xl p-4 text-center mb-4 ${currentTier.bg}`}>
+                    <p className={`text-2xl font-bold ${currentTier.color}`}>{currentTier.name}</p>
+                    <p className="text-xs text-gray-500">{currentTier.multiplier}x commission</p>
+                  </div>
+                  <div className="text-center mb-4">
+                    <p className="text-3xl font-bold text-yellow-600">{points.toLocaleString()}</p>
+                    <p className="text-xs text-gray-500">Total XP Points</p>
+                  </div>
+                  {nextTier && (
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Progress to {nextTier.name}</p>
+                      <Progress value={Math.min(100, (activeReferrals / nextTier.minReferrals) * 100)} className="h-2 mb-1" />
+                      <p className="text-xs text-gray-400">{activeReferrals}/{nextTier.minReferrals} active referrals</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent purchases summary */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><CreditCard className="w-5 h-5 text-gray-600" />Recent Purchases</CardTitle></CardHeader>
+              <CardContent>
+                {purchaseHistory.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center py-4">No purchases yet</p>
+                ) : (
+                  <div className="space-y-2">
+                    {purchaseHistory.slice(0, 5).map(tx => (
+                      <div key={tx.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-sm">Game Purchase</p>
+                          <p className="text-xs text-gray-400">{new Date(tx.created_date).toLocaleDateString()}</p>
+                        </div>
+                        <p className="font-bold text-green-600">${tx.amount?.toFixed(2)}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ── Badges ── */}
+          <TabsContent value="badges" className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card className="border-0 shadow-lg">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Award className="w-5 h-5 text-purple-600" />
+                    Earned Badges
+                    <Badge className="bg-purple-600">{earnedBadges.length}</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {earnedBadges.length === 0 ? (
+                    <p className="text-gray-400 text-sm text-center py-8">Complete actions to earn badges!</p>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-3">
+                      {earnedBadges.map((badge, idx) => {
+                        const Icon = badge.icon;
+                        return (
+                          <motion.div key={badge.id} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: idx * 0.06 }}
+                            className={`flex flex-col items-center p-3 rounded-xl ${badge.bg} border-2 border-current text-center`}>
+                            <Icon className={`w-8 h-8 mb-1 ${badge.color}`} />
+                            <p className={`text-xs font-bold ${badge.color}`}>{badge.label}</p>
+                            <p className="text-xs text-green-600 mt-0.5">✓ Earned</p>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-lg">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-gray-400" />
+                    Locked Badges
+                    <Badge variant="outline">{BADGES.length - earnedBadges.length}</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-3">
+                    {BADGES.filter(b => !b.threshold(userStats)).map((badge) => {
+                      const Icon = badge.icon;
+                      return (
+                        <div key={badge.id} className="flex flex-col items-center p-3 rounded-xl bg-gray-100 opacity-50 text-center">
+                          <Icon className="w-8 h-8 mb-1 text-gray-400" />
+                          <p className="text-xs font-bold text-gray-400">{badge.label}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* ── Referrals ── */}
+          <TabsContent value="referrals" className="space-y-4">
+            <div className="grid md:grid-cols-3 gap-4 mb-4">
+              {[
+                { label: 'Total Referrals', value: totalReferrals, color: 'text-blue-600', bg: 'bg-blue-50' },
+                { label: 'Active Referrals', value: activeReferrals, color: 'text-green-600', bg: 'bg-green-50' },
+                { label: 'Commission Earned', value: `$${commissionEarned.toFixed(2)}`, color: 'text-purple-600', bg: 'bg-purple-50' },
+              ].map(s => (
+                <Card key={s.label} className={`border-0 shadow-lg ${s.bg}`}>
+                  <CardContent className="pt-6 text-center">
+                    <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
+                    <p className="text-sm text-gray-600 mt-1">{s.label}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <Card className="border-0 shadow-lg">
+              <CardHeader className="pb-2"><CardTitle className="text-base">Your Referrals</CardTitle></CardHeader>
+              <CardContent>
+                {referrals.length === 0 ? (
+                  <p className="text-gray-400 text-center py-8">No referrals yet. Share your link to start earning!</p>
+                ) : (
+                  <div className="space-y-3">
+                    {referrals.map(r => (
+                      <div key={r.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-sm">User #{r.referred_user_id.slice(0, 8)}</p>
+                          <p className="text-xs text-gray-400">Joined {new Date(r.created_date).toLocaleDateString()}</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-sm font-bold text-green-600">${(r.commission_earned || 0).toFixed(2)}</p>
+                            <p className="text-xs text-gray-400">Your commission</p>
+                          </div>
+                          <Badge variant={r.status === 'active' ? 'default' : 'secondary'} className={r.status === 'active' ? 'bg-green-600' : ''}>
+                            {r.status}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ── Library ── */}
           <TabsContent value="library">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Gamepad2 className="w-5 h-5" />
-                  My Game Library ({gameLibrary.length})
+            <Card className="border-0 shadow-lg">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Gamepad2 className="w-5 h-5 text-blue-600" />
+                  Game Library ({gameLibrary.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {gameLibrary.length === 0 ? (
                   <div className="text-center py-12">
-                    <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">No games in your library yet</p>
-                    <Button className="mt-4" onClick={() => window.location.href = '/InAppGameStore'}>
-                      Browse Store
-                    </Button>
+                    <Gamepad2 className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                    <p className="text-gray-400 mb-4">No games in your library yet</p>
+                    <Button onClick={() => window.location.href = '/InAppGameStore'} className="bg-red-600 hover:bg-red-700">Browse Store</Button>
                   </div>
                 ) : (
                   <div className="grid md:grid-cols-3 gap-4">
-                    {gameLibrary.map((game) => (
-                      <Card key={game.id} className="hover:shadow-lg transition-shadow">
+                    {gameLibrary.map(game => (
+                      <Card key={game.id} className="hover:shadow-lg transition-shadow border border-gray-100">
                         <CardContent className="p-4">
-                          {game.icon_url ? (
-                            <img src={game.icon_url} alt={game.title} className="w-full h-32 object-cover rounded-lg mb-3" />
-                          ) : (
-                            <div className="w-full h-32 bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg mb-3" />
-                          )}
-                          <h3 className="font-bold text-lg mb-1">{game.title}</h3>
-                          <p className="text-sm text-gray-600 line-clamp-2 mb-3">{game.description}</p>
-                          <Button className="w-full" size="sm">
-                            <Gamepad2 className="w-4 h-4 mr-2" />
-                            Play Now
+                          {game.icon_url
+                            ? <img src={game.icon_url} alt={game.title} className="w-full h-28 object-cover rounded-lg mb-3" />
+                            : <div className="w-full h-28 bg-gradient-to-br from-red-400 to-rose-600 rounded-lg mb-3" />}
+                          <h3 className="font-bold mb-1 text-sm">{game.title}</h3>
+                          <p className="text-xs text-gray-500 line-clamp-2 mb-3">{game.description}</p>
+                          <Button size="sm" className="w-full bg-red-600 hover:bg-red-700">
+                            <Gamepad2 className="w-3 h-3 mr-1" /> Play Now
                           </Button>
                         </CardContent>
                       </Card>
@@ -242,291 +444,54 @@ export default function UserProfile() {
             </Card>
           </TabsContent>
 
-          {/* Wishlist Tab */}
-          <TabsContent value="wishlist">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="w-5 h-5" />
-                  Wishlist ({wishlistGames.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {wishlistGames.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">Your wishlist is empty</p>
-                    <Button className="mt-4" onClick={() => window.location.href = '/InAppGameStore'}>
-                      Browse Store
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {wishlistGames.map((game) => (
-                      <div key={game.id} className="flex items-center gap-4 p-4 border rounded-lg hover:shadow-md transition-shadow">
-                        {game.icon_url ? (
-                          <img src={game.icon_url} alt={game.title} className="w-20 h-20 object-cover rounded-lg" />
-                        ) : (
-                          <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg" />
-                        )}
-                        <div className="flex-1">
-                          <h3 className="font-bold text-lg">{game.title}</h3>
-                          <p className="text-sm text-gray-600 line-clamp-1">{game.description}</p>
-                          <p className="text-lg font-bold text-green-600 mt-1">${game.price.toFixed(2)}</p>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <Button size="sm" onClick={() => window.location.href = '/InAppGameStore'}>
-                            <ShoppingBag className="w-4 h-4 mr-2" />
-                            Buy Now
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleRemoveFromWishlist(game.id)}
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Purchase History Tab */}
-          <TabsContent value="purchases">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="w-5 h-5" />
-                  Purchase History ({purchaseHistory.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {purchaseHistory.length === 0 ? (
-                  <div className="text-center py-12">
-                    <CreditCard className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">No purchase history yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {purchaseHistory.map((transaction) => (
-                      <div key={transaction.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-semibold text-lg">Game Purchase</p>
-                            <p className="text-sm text-gray-600">
-                              {new Date(transaction.created_date).toLocaleString()}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1 capitalize">
-                              Payment: {transaction.payment_method || 'balance'}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-green-600">
-                              ${transaction.amount.toFixed(2)}
-                            </p>
-                            <p className="text-xs text-gray-500 uppercase">
-                              {transaction.status}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* My Images Tab */}
-          <TabsContent value="images">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ImageIcon className="w-5 h-5" />
-                  Generated Images ({generatedImages.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ImageGallery images={generatedImages} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Contests Tab */}
-          <TabsContent value="contests">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Trophy className="w-5 h-5" />
-                  Contest History
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-3 gap-4 mb-6">
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <Award className="w-8 h-8 text-blue-600 mb-2" />
-                    <p className="text-2xl font-bold">{totalContests}</p>
-                    <p className="text-sm text-gray-600">Total Contests</p>
-                  </div>
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <Trophy className="w-8 h-8 text-green-600 mb-2" />
-                    <p className="text-2xl font-bold">{completedContests}</p>
-                    <p className="text-sm text-gray-600">Completed</p>
-                  </div>
-                  <div className="bg-purple-50 p-4 rounded-lg">
-                    <TrendingUp className="w-8 h-8 text-purple-600 mb-2" />
-                    <p className="text-2xl font-bold">{totalUsersReferred + totalBusinessesReferred}</p>
-                    <p className="text-sm text-gray-600">Total Referrals</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  {contestHistory.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">No contest history yet</p>
-                  ) : (
-                    contestHistory.map((contest) => (
-                      <div key={contest.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <Calendar className="w-5 h-5 text-gray-400" />
-                            <div>
-                              <p className="font-semibold">{new Date(contest.date).toLocaleDateString()}</p>
-                              <p className="text-sm text-gray-600">
-                                {contest.part1_completed && contest.part2_completed ? (
-                                  <span className="text-green-600">✓ Completed</span>
-                                ) : contest.opted_out ? (
-                                  <span className="text-yellow-600">⚠ Opted Out</span>
-                                ) : (
-                                  <span className="text-gray-500">⋯ In Progress</span>
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm text-gray-600">Users: {contest.users_referred || 0}</p>
-                            <p className="text-sm text-gray-600">Businesses: {contest.businesses_referred || 0}</p>
-                            <p className="text-sm font-semibold text-green-600">
-                              ${((contest.users_referred || 0) * 0.25 + (contest.businesses_referred || 0) * 0.50).toFixed(2)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Earnings Tab */}
-          <TabsContent value="earnings">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
-                  Earnings Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-lg border-2 border-green-200">
-                    <h3 className="font-semibold text-gray-700 mb-4">Current Balance</h3>
-                    <p className="text-4xl font-bold text-green-600 mb-2">
-                      ${(user.current_balance || 0).toFixed(2)}
-                    </p>
-                    <p className="text-sm text-gray-600">Available for withdrawal</p>
-                  </div>
-                  
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg border-2 border-blue-200">
-                    <h3 className="font-semibold text-gray-700 mb-4">Total Earnings</h3>
-                    <p className="text-4xl font-bold text-blue-600 mb-2">
-                      ${(user.total_earnings || 0).toFixed(2)}
-                    </p>
-                    <p className="text-sm text-gray-600">All-time earnings</p>
-                  </div>
-                </div>
-
-                <div className="mt-6 bg-purple-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-3">Referral Statistics</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600">Users Referred</p>
-                      <p className="text-2xl font-bold text-purple-600">{totalUsersReferred}</p>
-                      <p className="text-xs text-green-600">${(totalUsersReferred * 0.25).toFixed(2)} earned</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Businesses Referred</p>
-                      <p className="text-2xl font-bold text-purple-600">{totalBusinessesReferred}</p>
-                      <p className="text-xs text-green-600">${(totalBusinessesReferred * 0.50).toFixed(2)} earned</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Settings Tab */}
+          {/* ── Settings ── */}
           <TabsContent value="settings">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
-                  Account Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isEditing ? (
-                  <form onSubmit={handleUpdateProfile} className="space-y-4">
-                    <div>
-                      <Label htmlFor="full_name">Full Name</Label>
-                      <Input
-                        id="full_name"
-                        name="full_name"
-                        defaultValue={user.full_name}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        value={user.email}
-                        disabled
-                        className="bg-gray-100"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
-                    </div>
-                    <div className="flex gap-3">
-                      <Button type="submit">Save Changes</Button>
-                      <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                        Cancel
-                      </Button>
-                    </div>
-                  </form>
-                ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <Label>Full Name</Label>
-                      <p className="text-lg font-medium mt-1">{user.full_name}</p>
-                    </div>
-                    <div>
-                      <Label>Email</Label>
-                      <p className="text-lg font-medium mt-1">{user.email}</p>
-                    </div>
-                    <div>
-                      <Label>Account Type</Label>
-                      <p className="text-lg font-medium mt-1 capitalize">{user.role || 'User'}</p>
-                    </div>
-                    <Button onClick={() => setIsEditing(true)}>
-                      <Settings className="w-4 h-4 mr-2" />
-                      Edit Profile
+            <Card className="border-0 shadow-lg">
+              <CardHeader><CardTitle className="text-base flex items-center gap-2"><Settings className="w-5 h-5 text-gray-600" />Account Settings</CardTitle></CardHeader>
+              <CardContent className="space-y-6">
+                {/* Avatar section */}
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                  <Avatar className="w-16 h-16 border-2 border-gray-200">
+                    {avatarUrl ? <AvatarImage src={avatarUrl} /> : null}
+                    <AvatarFallback className="text-xl bg-red-100 text-red-600 font-bold">{user.full_name?.charAt(0) || 'U'}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium text-gray-900">Profile Photo</p>
+                    <p className="text-sm text-gray-500 mb-2">Upload a photo to personalize your profile</p>
+                    <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploadingAvatar}>
+                      <Camera className="w-4 h-4 mr-1" />
+                      {uploadingAvatar ? 'Uploading...' : 'Change Photo'}
                     </Button>
                   </div>
-                )}
+                </div>
+
+                {/* Name */}
+                <div className="space-y-2">
+                  <Label>Display Name</Label>
+                  <div className="flex gap-2">
+                    <Input value={editName} onChange={e => setEditName(e.target.value)} />
+                    <Button onClick={() => saveNameMutation.mutate()} disabled={editName === user.full_name || saveNameMutation.isPending}>
+                      Save
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Read-only info */}
+                <div className="space-y-4">
+                  <div>
+                    <Label>Email</Label>
+                    <p className="mt-1 text-gray-700 bg-gray-50 rounded-lg px-3 py-2 text-sm">{user.email}</p>
+                    <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
+                  </div>
+                  <div>
+                    <Label>Account Role</Label>
+                    <p className="mt-1 text-gray-700 bg-gray-50 rounded-lg px-3 py-2 text-sm capitalize">{user.role || 'User'}</p>
+                  </div>
+                  <div>
+                    <Label>Member Since</Label>
+                    <p className="mt-1 text-gray-700 bg-gray-50 rounded-lg px-3 py-2 text-sm">{new Date(user.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
