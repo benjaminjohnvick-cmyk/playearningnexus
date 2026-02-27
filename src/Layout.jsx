@@ -217,10 +217,6 @@ export default function Layout({ children, currentPageName }) {
         {isMenuOpen && (
           <div className="md:hidden border-t bg-white">
             <div className="px-4 py-3 space-y-1">
-              {/* Contest button in mobile menu */}
-              <div className="py-2">
-                <MegaContestButton />
-              </div>
               {filteredNav.map((item) => (
                 <Link key={item.name} to={createPageUrl(item.path)} onClick={() => setIsMenuOpen(false)}>
                   <Button
