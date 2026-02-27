@@ -176,10 +176,13 @@ export default function Layout({ children, currentPageName }) {
               ))}
             </nav>
 
-            {/* Right section: Contest button + user controls */}
-            <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-              {/* 🏆 MEGA CONTEST BUTTON */}
+            {/* 🏆 MEGA CONTEST BUTTON - always visible */}
+            <div className="flex items-center flex-shrink-0">
               <MegaContestButton />
+            </div>
+
+            {/* Right section: user controls */}
+            <div className="hidden md:flex items-center gap-2 flex-shrink-0">
 
               {isAuthenticated && user ? (
                 <>
