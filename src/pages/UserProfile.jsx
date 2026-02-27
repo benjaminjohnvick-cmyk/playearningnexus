@@ -63,6 +63,8 @@ export default function UserProfile() {
       .catch(() => base44.auth.redirectToLogin());
   }, []);
 
+  const handleUserUpdate = (patch) => setUser(prev => ({ ...prev, ...patch }));
+
   // ── Data fetching ────────────────────────────────────────────────────────
   const { data: referrals = [] } = useQuery({
     queryKey: ['profileReferrals', user?.id],
