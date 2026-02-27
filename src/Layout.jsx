@@ -150,15 +150,19 @@ export default function Layout({ children, currentPageName }) {
       }}>
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-3">
-            {/* Logo */}
-            <Link to={createPageUrl('Home')} className="flex items-center gap-2 group flex-shrink-0">
-              <div className="group-hover:scale-110 transition-transform">
-                <GamerGainLogo className="w-10 h-10" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent hidden sm:inline">
-                GamerGain
-              </span>
-            </Link>
+            {/* Logo + Contest Button (top-left) */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Link to={createPageUrl('Home')} className="flex items-center gap-2 group">
+                <div className="group-hover:scale-110 transition-transform">
+                  <GamerGainLogo className="w-10 h-10" />
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent hidden sm:inline">
+                  GamerGain
+                </span>
+              </Link>
+              {/* 🏆 MEGA CONTEST BUTTON - beside logo */}
+              <MegaContestButton />
+            </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center overflow-x-auto">
@@ -175,11 +179,6 @@ export default function Layout({ children, currentPageName }) {
                 </Link>
               ))}
             </nav>
-
-            {/* 🏆 MEGA CONTEST BUTTON - always visible */}
-            <div className="flex items-center flex-shrink-0">
-              <MegaContestButton />
-            </div>
 
             {/* Right section: user controls */}
             <div className="hidden md:flex items-center gap-2 flex-shrink-0">
