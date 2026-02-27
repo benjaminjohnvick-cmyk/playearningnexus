@@ -166,8 +166,8 @@ export default function Layout({ children, currentPageName }) {
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center overflow-x-auto">
-              {filteredNav.slice(0, 12).map((item) => (
+            <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center flex-wrap">
+              {filteredNav.slice(0, 8).map((item) => (
                 <Link key={item.name} to={createPageUrl(item.path)}>
                   <Button
                     variant={currentPageName === item.path ? "default" : "ghost"}
