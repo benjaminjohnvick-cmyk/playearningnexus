@@ -43,8 +43,8 @@ function getNextTier(currentTier) {
   return idx < TIERS.length - 1 ? TIERS[idx + 1] : null;
 }
 
-export default function GamificationHub({ user, stats = {} }) {
-  const { totalReferrals = 0, activeReferrals = 0, commissionEarned = 0, totalSurveys = 0, daysGoalMet = 0, streakDays = 0 } = stats;
+export default function GamificationHub({ user, stats = {}, todayEarnings = 0, todaySurveys = 0, referrals = [] }) {
+  const { totalReferrals = 0, activeReferrals = 0, commissionEarned = 0, totalSurveys = 0, daysGoalMet = 0, streakDays = 0, purchases = 0 } = stats;
 
   const totalEarnings = user?.total_earnings || 0;
   const memberDays = user?.created_date
