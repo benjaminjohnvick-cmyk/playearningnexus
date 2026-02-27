@@ -205,7 +205,10 @@ export default function ReferralDashboard() {
               <Award className="w-4 h-4 mr-2" />
               Points & Badges
             </TabsTrigger>
-            <TabsTrigger value="links">My Links</TabsTrigger>
+            <TabsTrigger value="links">
+            <LinkIcon className="w-4 h-4 mr-2" />
+            Campaigns
+          </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
