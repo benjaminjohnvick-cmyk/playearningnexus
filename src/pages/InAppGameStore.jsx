@@ -36,7 +36,7 @@ export default function InAppGameStore() {
     base44.auth.me().then(setUser).catch(() => setUser(null));
   }, []);
 
-  const { data: games = [], isLoading } = useQuery({
+  const { data: games = [], isLoading: gamesLoading } = useQuery({
     queryKey: ['store-games', selectedCategory, searchQuery, sortBy, priceRange],
     queryFn: async () => {
       let filter = { marketplace_approved: true };
