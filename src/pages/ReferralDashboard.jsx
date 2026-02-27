@@ -19,9 +19,11 @@ import {
   CheckCircle,
   Trophy
 } from "lucide-react";
+import DailyGoalProgress from '../components/gamification/DailyGoalProgress';
 import { toast } from "sonner";
 import TieredRewardsDisplay from '../components/referral/TieredRewardsDisplay';
 import BadgesDisplay from '../components/referral/BadgesDisplay';
+import GamificationHub from '../components/gamification/GamificationHub';
 
 export default function ReferralDashboard() {
   const [user, setUser] = useState(null);
@@ -198,6 +200,10 @@ export default function ReferralDashboard() {
               <Trophy className="w-4 h-4 mr-2" />
               Tiers & Badges
             </TabsTrigger>
+            <TabsTrigger value="gamification">
+              <Award className="w-4 h-4 mr-2" />
+              Points & Badges
+            </TabsTrigger>
             <TabsTrigger value="links">My Links</TabsTrigger>
           </TabsList>
 
@@ -344,6 +350,10 @@ export default function ReferralDashboard() {
               <TieredRewardsDisplay user={user} referralStats={stats} />
               <BadgesDisplay user={user} referralStats={stats} />
             </div>
+          </TabsContent>
+
+          <TabsContent value="gamification">
+            <GamificationHub user={user} stats={stats} />
           </TabsContent>
 
           <TabsContent value="links">
