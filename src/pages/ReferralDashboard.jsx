@@ -120,6 +120,8 @@ export default function ReferralDashboard() {
 
           {/* Links Tab */}
           <TabsContent value="links" className="space-y-4 mt-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="font-semibold text-gray-700">Your Referral Links</h2>
               <Button onClick={() => createLinkMutation.mutate()} disabled={createLinkMutation.isPending} className="bg-red-600 hover:bg-red-700">
