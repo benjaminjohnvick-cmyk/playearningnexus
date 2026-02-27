@@ -98,6 +98,7 @@ import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import Wishlist from './pages/Wishlist';
+import ReferralDashboard from './pages/ReferralDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -153,6 +154,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
     "Wishlist": Wishlist,
+    "ReferralDashboard": ReferralDashboard,
 }
 
 export const pagesConfig = {
