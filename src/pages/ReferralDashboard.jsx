@@ -11,6 +11,9 @@ import { Link } from 'react-router-dom';
 import { Users, Copy, Share2, Trophy, Star, Crown, TrendingUp, CheckCircle, DollarSign, Link2, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import LimitedTimeBonusBanner from '@/components/referral/LimitedTimeBonusBanner';
+import SocialSharePanel from '@/components/referral/SocialSharePanel';
+import TieredRewardsMilestones from '@/components/referral/TieredRewardsMilestones';
 
 const TIERS = [
   { name: 'Bronze',   minReferrals: 0,  minEarnings: 0,   multiplier: 1.0,  color: 'text-amber-700', bg: 'bg-amber-100', border: 'border-amber-300' },

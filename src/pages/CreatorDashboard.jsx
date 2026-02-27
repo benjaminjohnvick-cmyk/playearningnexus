@@ -7,6 +7,9 @@ import ContentCreatorMonetization from '@/components/creators/ContentCreatorMone
 import CreatorAnalytics from '@/components/creators/CreatorAnalytics';
 import CreatorPayouts from '@/components/creators/CreatorPayouts';
 import GamePerformanceAnalytics from '@/components/creators/GamePerformanceAnalytics';
+import CreatorTippingPanel from '@/components/creators/CreatorTippingPanel';
+import ExclusiveSubscriptions from '@/components/creators/ExclusiveSubscriptions';
+import DigitalAssetMarketplace from '@/components/creators/DigitalAssetMarketplace';
 
 export default function CreatorDashboard() {
   const [user, setUser] = useState(null);
