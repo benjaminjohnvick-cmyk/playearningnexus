@@ -51,7 +51,7 @@ export default function GamificationHub({ user, stats = {}, todayEarnings = 0, t
     ? Math.floor((Date.now() - new Date(user.created_date)) / (1000 * 60 * 60 * 24))
     : 0;
 
-  const userStats = { totalReferrals, activeReferrals, commissionEarned, totalSurveys, daysGoalMet, streakDays, totalEarnings, memberDays };
+  const userStats = { totalReferrals, activeReferrals, commissionEarned, totalSurveys, daysGoalMet, streakDays, totalEarnings, memberDays, purchases };
   const currentTier = getUserTier(activeReferrals, commissionEarned);
   const nextTier = getNextTier(currentTier);
 
