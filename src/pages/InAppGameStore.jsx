@@ -384,13 +384,14 @@ export default function InAppGameStore() {
           </TabsContent>
 
           <TabsContent value="games" className="space-y-6">
-            {/* Survey Gate - must earn $3 before accessing store */}
-            <SurveyGate
-              todaysEarnings={dailyEarnings?.total_earned || 0}
-              dailyGoal={3}
-              onGoToSurveys={() => setActiveTab('surveys')}
-            >
-            {/* AI Recommendations */}
+            {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) ? (
+              <SurveyGate
+                todaysEarnings={dailyEarnings?.total_earned || 0}
+                dailyGoal={3}
+                onGoToSurveys={() => setActiveTab('surveys')}
+              />
+            ) : (
+            <>{/* AI Recommendations */}
             <ProductRecommendations user={user} />
 
             {/* Search & Filter */}
