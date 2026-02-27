@@ -47,22 +47,34 @@ export default function CreatorDashboard() {
         </div>
 
         <Tabs defaultValue="performance" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7">
             <TabsTrigger value="performance" className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
-              Performance
+              <span className="hidden sm:inline">Performance</span>
             </TabsTrigger>
             <TabsTrigger value="monetization" className="flex items-center gap-2">
               <DollarSign className="w-4 h-4" />
-              Monetization
+              <span className="hidden sm:inline">Monetization</span>
+            </TabsTrigger>
+            <TabsTrigger value="tips" className="flex items-center gap-2">
+              <span>💝</span>
+              <span className="hidden sm:inline">Tips</span>
+            </TabsTrigger>
+            <TabsTrigger value="subscriptions" className="flex items-center gap-2">
+              <span>👑</span>
+              <span className="hidden sm:inline">Subscriptions</span>
+            </TabsTrigger>
+            <TabsTrigger value="marketplace" className="flex items-center gap-2">
+              <span>🛍️</span>
+              <span className="hidden sm:inline">Marketplace</span>
             </TabsTrigger>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
-              Analytics
+              <span className="hidden sm:inline">Analytics</span>
             </TabsTrigger>
             <TabsTrigger value="payouts" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
-              Payouts
+              <span className="hidden sm:inline">Payouts</span>
             </TabsTrigger>
           </TabsList>
 
@@ -72,6 +84,22 @@ export default function CreatorDashboard() {
 
           <TabsContent value="monetization">
             <ContentCreatorMonetization user={user} />
+          </TabsContent>
+
+          <TabsContent value="tips">
+            <div className="max-w-lg">
+              <CreatorTippingPanel user={user} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="subscriptions">
+            <div className="max-w-2xl">
+              <ExclusiveSubscriptions user={user} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="marketplace">
+            <DigitalAssetMarketplace user={user} />
           </TabsContent>
 
           <TabsContent value="analytics">
