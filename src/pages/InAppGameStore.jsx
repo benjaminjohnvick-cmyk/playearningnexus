@@ -28,7 +28,7 @@ import ProductSearchResults from '../components/store/ProductSearchResults';
 import ProductRecommendations from '../components/products/ProductRecommendations';
 import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
 import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
-import SurveyGate from '../components/surveys/SurveyGate';
+import SurveyGate, { isSurveyGoalMet } from '../components/surveys/SurveyGate';
 import BitLabsSurveys from '../components/surveys/BitLabsSurveys';
 import WriteReviewForm from '../components/games/WriteReviewForm';
 
