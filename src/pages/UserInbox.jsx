@@ -117,6 +117,10 @@ export default function UserInbox() {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="notifications">
+            <NotificationsTab notifications={notifications} userId={user?.id} />
+          </TabsContent>
+
           <TabsContent value="messages">
             <Card>
               <CardHeader>
