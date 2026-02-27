@@ -107,10 +107,10 @@ export default function Layout({ children, currentPageName }) {
   const navigation = [
     { name: 'Home', icon: Home, path: 'Home' },
     { name: 'Game Store', icon: ShoppingCart, path: 'InAppGameStore' },
+    { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
     { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
     { name: 'Wishlist', icon: Heart, path: 'Wishlist', requireAuth: true },
     { name: 'Transfer Money', icon: ArrowRightLeft, path: 'MoneyTransfer', requireAuth: true },
-    { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
     { name: 'Profile', icon: User, path: 'UserProfile', requireAuth: true },
     { name: 'Creator Hub', icon: Star, path: 'CreatorDashboard', requireAuth: true },
     { name: 'Referrals', icon: Users, path: 'ReferralDashboard', requireAuth: true },
