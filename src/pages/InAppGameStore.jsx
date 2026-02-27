@@ -69,7 +69,7 @@ export default function InAppGameStore() {
     queryKey: ['daily-earnings', user?.id, today],
     queryFn: async () => {
       const earnings = await base44.entities.DailyEarnings.filter({ user_id: user.id, date: today });
-      return earnings[0];
+      return earnings[0] || null;
     },
     enabled: !!user,
     refetchInterval: 5000
@@ -79,7 +79,7 @@ export default function InAppGameStore() {
     queryKey: ['premium-membership', user?.id],
     queryFn: async () => {
       const m = await base44.entities.PremiumMembership.filter({ user_id: user.id });
-      return m[0];
+      return m[0] || null;
     },
     enabled: !!user
   });
