@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Copy, Share2, Trophy, Star, Crown, TrendingUp, CheckCircle, DollarSign, Link, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Users, Copy, Share2, Trophy, Star, Crown, TrendingUp, CheckCircle, DollarSign, Link2, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
