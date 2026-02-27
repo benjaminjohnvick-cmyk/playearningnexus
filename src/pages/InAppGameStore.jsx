@@ -33,7 +33,7 @@ export default function InAppGameStore() {
   const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => base44.auth.redirectToLogin());
+    base44.auth.me().then(setUser).catch(() => setUser(null));
   }, []);
 
   const { data: games = [], isLoading } = useQuery({
@@ -102,7 +102,8 @@ export default function InAppGameStore() {
     setCheckoutGame(null);
   };
 
-  if (!user) return (
+  const isLoading_ = user === undefined;
+  if (isLoading_) return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600" />
     </div>
