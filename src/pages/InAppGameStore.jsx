@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal } from "lucide-react";
+import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal, Coins } from "lucide-react";
 import { toast } from "sonner";
 import ProductSearchBar from '@/components/store/ProductSearchBar';
 import ProductSearchResults from '@/components/store/ProductSearchResults';
