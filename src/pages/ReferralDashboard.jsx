@@ -89,10 +89,8 @@ export default function ReferralDashboard() {
           <p className="text-gray-500 mt-1">Invite friends, earn commissions, climb the tiers</p>
         </div>
 
-        {/* Limited Time Bonuses */}
         <LimitedTimeBonusBanner />
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: 'Total Referrals', value: referrals.length, color: 'text-blue-600', bg: 'bg-blue-50', icon: Users },
@@ -118,7 +116,6 @@ export default function ReferralDashboard() {
             <TabsTrigger value="tiers"><Crown className="w-4 h-4 mr-1" />Tiers</TabsTrigger>
           </TabsList>
 
-          {/* Links Tab */}
           <TabsContent value="links" className="space-y-4 mt-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-4">
@@ -167,19 +164,16 @@ export default function ReferralDashboard() {
                   </div>
                 )}
               </div>
-              {/* Social Share Panel - shown alongside links */}
               <div>
                 <SocialSharePanel referralLink={links[0] ? `${window.location.origin}?ref=${links[0].link_code}` : `${window.location.origin}?ref=your-link`} />
               </div>
             </div>
           </TabsContent>
 
-          {/* Milestones Tab */}
           <TabsContent value="milestones" className="mt-4">
             <TieredRewardsMilestones totalReferrals={referrals.length} />
           </TabsContent>
 
-          {/* Referrals Tab */}
           <TabsContent value="referrals" className="mt-4">
             <Card>
               <CardContent className="pt-4">
@@ -211,7 +205,6 @@ export default function ReferralDashboard() {
             </Card>
           </TabsContent>
 
-          {/* Tiers Tab */}
           <TabsContent value="tiers" className="mt-4 space-y-4">
             <Card className={`border-2 ${currentTier.border}`}>
               <CardHeader className="pb-2">
