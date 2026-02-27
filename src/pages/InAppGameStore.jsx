@@ -564,7 +564,7 @@ export default function InAppGameStore() {
             })}
           </div>
         )}
-            </SurveyGate>
+            </>)}
           </TabsContent>
         </Tabs>
       </div>
