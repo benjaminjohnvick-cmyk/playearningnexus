@@ -133,7 +133,7 @@ export default function ReferralDashboard() {
             <Users className="w-10 h-10 text-blue-600" />
             Referral Dashboard
           </h1>
-          <p className="text-gray-600">Earn $1 when referrals hit $4, plus 25% commission on all earnings after that</p>
+          <p className="text-gray-600">Earn <strong>$0.25 every time a referred user earns $3 in a day</strong> — paid automatically!</p>
         </div>
 
         {/* Stats Overview */}
