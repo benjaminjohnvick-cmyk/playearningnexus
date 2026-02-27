@@ -166,6 +166,17 @@ export default function ReferralDashboard() {
                 ))}
               </div>
             )}
+              </div>
+              {/* Social Share Panel - shown alongside links */}
+              <div>
+                <SocialSharePanel referralLink={links[0] ? `${window.location.origin}?ref=${links[0].link_code}` : `${window.location.origin}?ref=your-link`} />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Milestones Tab */}
+          <TabsContent value="milestones" className="mt-4">
+            <TieredRewardsMilestones totalReferrals={referrals.length} />
           </TabsContent>
 
           {/* Referrals Tab */}
