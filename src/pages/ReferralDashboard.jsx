@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import TieredRewardsDisplay from '../components/referral/TieredRewardsDisplay';
 import BadgesDisplay from '../components/referral/BadgesDisplay';
 import GamificationHub from '../components/gamification/GamificationHub';
+import CampaignLinkBuilder from '../components/referral/CampaignLinkBuilder';
 
 export default function ReferralDashboard() {
   const [user, setUser] = useState(null);
