@@ -15,14 +15,9 @@ export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 3, onGoToSu
   };
 
   return (
-    <div className="relative">
-      {/* Blurred content behind */}
-      <div className="blur-sm pointer-events-none select-none opacity-40">
-        {children}
-      </div>
-
+    <div className="flex items-start justify-center pt-4">
+      <div className="w-full">
       {/* Lock overlay */}
-      <div className="absolute inset-0 flex items-start justify-center pt-16 z-10">
         <Card className="max-w-lg w-full mx-4 border-2 border-red-400 shadow-2xl bg-white">
           <CardContent className="p-8 text-center">
             <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
