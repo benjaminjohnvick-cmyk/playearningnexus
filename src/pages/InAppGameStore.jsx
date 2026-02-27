@@ -260,6 +260,12 @@ export default function InAppGameStore() {
                                     className={isWishlisted ? 'border-red-400 text-red-600 bg-red-50' : ''}>
                                     <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
                                   </Button>
+                                  <Button size="sm" variant="outline"
+                                    className="border-green-500 text-green-700 hover:bg-green-50"
+                                    onClick={() => { setCheckoutGame({ ...game, payWithSurvey: true }); }}
+                                    disabled={(user?.current_balance || 0) < game.price}>
+                                    <DollarSign className="w-4 h-4 mr-1" /> Survey $
+                                  </Button>
                                   <Button size="sm" className="bg-red-600 hover:bg-red-700"
                                     onClick={() => setCheckoutGame(game)}>
                                     <ShoppingCart className="w-4 h-4 mr-1" /> Buy
