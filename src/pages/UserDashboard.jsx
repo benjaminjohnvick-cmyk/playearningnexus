@@ -22,6 +22,7 @@ import EnhancedPointsSystem from '../components/gamification/EnhancedPointsSyste
 import PersonalizedRecommendations from '../components/ai/PersonalizedRecommendations';
 import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
 import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
+import DailyGoalProgress from '../components/gamification/DailyGoalProgress';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
