@@ -361,75 +361,7 @@ export default function ReferralDashboard() {
           </TabsContent>
 
           <TabsContent value="links">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Manage Referral Links</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {referralLinks.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">No referral links yet. Create one in the Overview tab!</p>
-                  ) : (
-                    referralLinks.map((link) => {
-                      const linkUrl = `${window.location.origin}/Home?ref=${link.link_code}`;
-                      const linkConversionRate = link.clicks > 0 ? (link.conversions / link.clicks * 100) : 0;
-                      
-                      return (
-                        <div key={link.id} className="p-4 border rounded-lg bg-gray-50">
-                          <div className="flex items-center justify-between mb-2">
-                            <div>
-                              <p className="font-medium text-gray-900">{link.campaign_name || 'Referral Link'}</p>
-                              <p className="text-xs text-gray-500">Code: {link.link_code}</p>
-                            </div>
-                            <div className="flex items-center gap-4 text-sm">
-                              <div className="text-center">
-                                <p className="font-bold text-blue-600">{link.clicks || 0}</p>
-                                <p className="text-xs text-gray-500">Clicks</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="font-bold text-green-600">{link.conversions || 0}</p>
-                                <p className="text-xs text-gray-500">Conversions</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="font-bold text-purple-600">${(link.total_earned || 0).toFixed(2)}</p>
-                                <p className="text-xs text-gray-500">Earned</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="font-bold text-orange-600">{linkConversionRate.toFixed(1)}%</p>
-                                <p className="text-xs text-gray-500">Rate</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Input value={linkUrl} readOnly className="text-sm" />
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => copyToClipboard(linkUrl)}
-                            >
-                              <Copy className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                if (navigator.share) {
-                                  navigator.share({ url: linkUrl, title: 'Join GamerGain!' });
-                                } else {
-                                  copyToClipboard(linkUrl);
-                                }
-                              }}
-                            >
-                              <Share2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <CampaignLinkBuilder user={user} referralLinks={referralLinks} />
           </TabsContent>
         </Tabs>
       </div>
