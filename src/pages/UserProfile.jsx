@@ -510,9 +510,68 @@ export default function UserProfile() {
                 </div>
               </CardContent>
             </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
     </div>
+  );
+}
+
+function ChatbotPreferences() {
+  const DEFAULT_PREFS = { tone: 'friendly', proactive: true, quickSuggestions: true, notifyTips: true };
+  const [prefs, setPrefs] = React.useState(() => {
+    try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem('chatbot_prefs') || '{}') }; }
+    catch { return DEFAULT_PREFS; }
+  });
+
+  const updatePref = (key, value) => {
+    const updated = { ...prefs, [key]: value };
+    setPrefs(updated);
+    localStorage.setItem('chatbot_prefs', JSON.stringify(updated));
+  };
+
+  return (
+    <Card className="border-0 shadow-lg">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base flex items-center gap-2">
+          <Star className="w-5 h-5 text-purple-600" />
+          AI Chatbot Preferences
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div>
+          <Label className="text-sm font-semibold mb-2 block">Response Tone</Label>
+          <div className="flex gap-3">
+            {['friendly', 'professional', 'casual'].map(t => (
+              <button key={t}
+                onClick={() => updatePref('tone', t)}
+                className={`px-4 py-2 rounded-full border transition-all capitalize text-sm font-medium ${prefs.tone === t ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-gray-200 hover:border-purple-300'}`}
+              >{t}</button>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-3">
+          {[
+            { key: 'proactive', label: 'Proactive suggestions', description: 'Let the AI offer help based on your activity' },
+            { key: 'quickSuggestions', label: 'Show quick prompts', description: 'Display shortcut buttons in the chat window' },
+            { key: 'notifyTips', label: 'Tip notifications', description: 'Show helpful tips as you browse the platform' },
+          ].map(({ key, label, description }) => (
+            <div key={key} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div>
+                <p className="font-medium text-sm text-gray-900">{label}</p>
+                <p className="text-xs text-gray-500">{description}</p>
+              </div>
+              <div
+                onClick={() => updatePref(key, !prefs[key])}
+                className={`w-10 h-5 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${prefs[key] ? 'bg-purple-600' : 'bg-gray-300'}`}
+              >
+                <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${prefs[key] ? 'translate-x-5' : 'translate-x-0.5'}`} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
