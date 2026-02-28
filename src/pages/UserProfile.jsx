@@ -461,55 +461,55 @@ export default function UserProfile() {
           {/* ── Settings ── */}
           <TabsContent value="settings">
             <div className="space-y-4">
-            <ChatbotPreferences />
-            <Card className="border-0 shadow-lg">
-              <CardHeader><CardTitle className="text-base flex items-center gap-2"><Settings className="w-5 h-5 text-gray-600" />Account Settings</CardTitle></CardHeader>
-              <CardContent className="space-y-6">
-                {/* Avatar section */}
-                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                  <Avatar className="w-16 h-16 border-2 border-gray-200">
-                    {avatarUrl ? <AvatarImage src={avatarUrl} /> : null}
-                    <AvatarFallback className="text-xl bg-red-100 text-red-600 font-bold">{user.full_name?.charAt(0) || 'U'}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium text-gray-900">Profile Photo</p>
-                    <p className="text-sm text-gray-500 mb-2">Upload a photo to personalize your profile</p>
-                    <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploadingAvatar}>
-                      <Camera className="w-4 h-4 mr-1" />
-                      {uploadingAvatar ? 'Uploading...' : 'Change Photo'}
-                    </Button>
+              <ChatbotPreferences />
+              <Card className="border-0 shadow-lg">
+                <CardHeader><CardTitle className="text-base flex items-center gap-2"><Settings className="w-5 h-5 text-gray-600" />Account Settings</CardTitle></CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Avatar section */}
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                    <Avatar className="w-16 h-16 border-2 border-gray-200">
+                      {avatarUrl ? <AvatarImage src={avatarUrl} /> : null}
+                      <AvatarFallback className="text-xl bg-red-100 text-red-600 font-bold">{user.full_name?.charAt(0) || 'U'}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium text-gray-900">Profile Photo</p>
+                      <p className="text-sm text-gray-500 mb-2">Upload a photo to personalize your profile</p>
+                      <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploadingAvatar}>
+                        <Camera className="w-4 h-4 mr-1" />
+                        {uploadingAvatar ? 'Uploading...' : 'Change Photo'}
+                      </Button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Name */}
-                <div className="space-y-2">
-                  <Label>Display Name</Label>
-                  <div className="flex gap-2">
-                    <Input value={editName} onChange={e => setEditName(e.target.value)} />
-                    <Button onClick={() => saveNameMutation.mutate()} disabled={editName === user.full_name || saveNameMutation.isPending}>
-                      Save
-                    </Button>
+                  {/* Name */}
+                  <div className="space-y-2">
+                    <Label>Display Name</Label>
+                    <div className="flex gap-2">
+                      <Input value={editName} onChange={e => setEditName(e.target.value)} />
+                      <Button onClick={() => saveNameMutation.mutate()} disabled={editName === user.full_name || saveNameMutation.isPending}>
+                        Save
+                      </Button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Read-only info */}
-                <div className="space-y-4">
-                  <div>
-                    <Label>Email</Label>
-                    <p className="mt-1 text-gray-700 bg-gray-50 rounded-lg px-3 py-2 text-sm">{user.email}</p>
-                    <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
+                  {/* Read-only info */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Email</Label>
+                      <p className="mt-1 text-gray-700 bg-gray-50 rounded-lg px-3 py-2 text-sm">{user.email}</p>
+                      <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
+                    </div>
+                    <div>
+                      <Label>Account Role</Label>
+                      <p className="mt-1 text-gray-700 bg-gray-50 rounded-lg px-3 py-2 text-sm capitalize">{user.role || 'User'}</p>
+                    </div>
+                    <div>
+                      <Label>Member Since</Label>
+                      <p className="mt-1 text-gray-700 bg-gray-50 rounded-lg px-3 py-2 text-sm">{new Date(user.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    </div>
                   </div>
-                  <div>
-                    <Label>Account Role</Label>
-                    <p className="mt-1 text-gray-700 bg-gray-50 rounded-lg px-3 py-2 text-sm capitalize">{user.role || 'User'}</p>
-                  </div>
-                  <div>
-                    <Label>Member Since</Label>
-                    <p className="mt-1 text-gray-700 bg-gray-50 rounded-lg px-3 py-2 text-sm">{new Date(user.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>
