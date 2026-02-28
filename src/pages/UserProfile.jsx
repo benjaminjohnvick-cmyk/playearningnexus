@@ -460,6 +460,8 @@ export default function UserProfile() {
 
           {/* ── Settings ── */}
           <TabsContent value="settings">
+            <div className="space-y-4">
+            <ChatbotPreferences />
             <Card className="border-0 shadow-lg">
               <CardHeader><CardTitle className="text-base flex items-center gap-2"><Settings className="w-5 h-5 text-gray-600" />Account Settings</CardTitle></CardHeader>
               <CardContent className="space-y-6">
