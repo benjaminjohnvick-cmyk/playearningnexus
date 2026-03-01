@@ -56,6 +56,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="rotation">Game Rotation</TabsTrigger>
             <TabsTrigger value="rewards">Reward Payouts</TabsTrigger>
             <TabsTrigger value="payouts">Payout Manager</TabsTrigger>
+            <TabsTrigger value="manual">Manual Payouts</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
 

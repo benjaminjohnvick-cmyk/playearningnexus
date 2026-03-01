@@ -12,7 +12,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   User, Trophy, DollarSign, Settings, Gamepad2, CreditCard,
   Users, Star, Zap, Target, Award, Camera, Edit2, Check, X,
-  Crown, Shield, Medal, ClipboardList, TrendingUp
+  Crown, Shield, Medal, ClipboardList, TrendingUp, AlertCircle
 } from 'lucide-react';
 import AboutMeEditor from '../components/profile/AboutMeEditor';
 import SocialLinksEditor from '../components/profile/SocialLinksEditor';
