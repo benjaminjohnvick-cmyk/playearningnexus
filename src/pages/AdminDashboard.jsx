@@ -79,6 +79,10 @@ export default function AdminDashboard() {
             <AdminPayoutManager />
           </TabsContent>
 
+          <TabsContent value="manual">
+            <ManualPayoutPanel />
+          </TabsContent>
+
           <TabsContent value="events">
             <Card className="p-6">
               <p className="text-gray-600 mb-4">Manage platform-wide events and special challenges</p>
