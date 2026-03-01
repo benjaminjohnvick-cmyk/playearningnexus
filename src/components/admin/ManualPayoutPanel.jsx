@@ -292,12 +292,27 @@ Consider: frequent low earners benefit from lower thresholds + monthly schedule.
                           <p className="text-xs text-gray-400">{u?.email}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap justify-end">
                         {!isEditing && (
                           <>
                             <Badge variant="outline" className="text-xs">{pref.payout_frequency || 'net_90'}</Badge>
                             <Badge variant="outline" className="text-xs">Min ${pref.minimum_payout_threshold || 50}</Badge>
                           </>
+                        )}
+                        {!isEditing && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-7 gap-1 text-purple-700 border-purple-200 hover:bg-purple-50"
+                            onClick={() => { startEditPref(pref); fetchAiSuggestion(pref, u); }}
+                            disabled={loadingAiFor === pref.id}
+                          >
+                            {loadingAiFor === pref.id
+                              ? <Loader2 className="w-3 h-3 animate-spin" />
+                              : <Brain className="w-3 h-3" />
+                            }
+                            AI Suggest
+                          </Button>
                         )}
                         <Button
                           size="sm"
