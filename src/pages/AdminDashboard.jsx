@@ -9,6 +9,7 @@ import RevenueTracker from '../components/admin/RevenueTracker';
 import RevenueDistribution from '../components/admin/RevenueDistribution';
 import RewardDistributionPanel from '../components/admin/RewardDistributionPanel';
 import AdminPayoutManager from '../components/admin/AdminPayoutManager';
+import ManualPayoutPanel from '../components/admin/ManualPayoutPanel';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);

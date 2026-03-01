@@ -19,6 +19,8 @@ import SocialLinksEditor from '../components/profile/SocialLinksEditor';
 import FeaturedBadges from '../components/profile/FeaturedBadges';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 // ── Badge definitions (same as GamificationHub) ──────────────────────────────
 const BADGES = [
