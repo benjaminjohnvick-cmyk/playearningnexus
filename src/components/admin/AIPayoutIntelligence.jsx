@@ -148,9 +148,26 @@ function OptimizationCard({ prediction, onAutoSchedule }) {
               </div>
             ))}
           </div>
-          <div className="flex gap-2 flex-wrap text-xs text-gray-400">
-            <span>Threshold: ${prediction.pref_threshold}</span>
-            <span>Frequency: {prediction.pref_frequency}</span>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex gap-2 flex-wrap text-xs text-gray-400">
+              <span>Threshold: ${prediction.pref_threshold}</span>
+              <span>Frequency: {prediction.pref_frequency}</span>
+            </div>
+            {rec.should_pay_now && (
+              <Button
+                size="sm"
+                className="h-7 text-xs bg-green-600 hover:bg-green-700 gap-1"
+                disabled={scheduling}
+                onClick={async () => {
+                  setScheduling(true);
+                  await onAutoSchedule(prediction);
+                  setScheduling(false);
+                }}
+              >
+                {scheduling ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
+                Process Now
+              </Button>
+            )}
           </div>
         </div>
       )}
