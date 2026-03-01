@@ -4,9 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { base44 } from '@/api/base44Client';
 import { toast } from "sonner";
-import { LifeBuoy, Send } from "lucide-react";
+import { LifeBuoy, Send, Sparkles, Loader2, Bot, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function SupportTicketForm({ user, onSuccess }) {
   const [formData, setFormData] = useState({
