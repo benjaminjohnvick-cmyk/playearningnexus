@@ -226,6 +226,7 @@ export default function UserProfile() {
             <TabsTrigger value="overview"><User className="w-4 h-4 mr-1 hidden sm:inline" />Overview</TabsTrigger>
             <TabsTrigger value="badges"><Award className="w-4 h-4 mr-1 hidden sm:inline" />Badges</TabsTrigger>
             <TabsTrigger value="referrals"><Users className="w-4 h-4 mr-1 hidden sm:inline" />Referrals</TabsTrigger>
+            <TabsTrigger value="payouts"><DollarSign className="w-4 h-4 mr-1 hidden sm:inline" />Payouts</TabsTrigger>
             <TabsTrigger value="library"><Gamepad2 className="w-4 h-4 mr-1 hidden sm:inline" />Library</TabsTrigger>
             <TabsTrigger value="settings"><Settings className="w-4 h-4 mr-1 hidden sm:inline" />Settings</TabsTrigger>
           </TabsList>
