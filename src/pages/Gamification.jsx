@@ -112,16 +112,23 @@ export default function Gamification() {
               <Users className="w-4 h-4 mr-2" />
               Guild Rankings
             </TabsTrigger>
+            <TabsTrigger value="ai">
+              <Sparkles className="w-4 h-4 mr-2" />
+              AI Rewards
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="hub">
-            <GamificationHub
-              user={user}
-              stats={stats}
-              todayEarnings={dailyEarnings?.total_earned || 0}
-              todaySurveys={dailyEarnings?.total_surveys_completed || 0}
-              referrals={referrals}
-            />
+            <div className="space-y-4">
+              <AIChurnPrevention user={user} />
+              <GamificationHub
+                user={user}
+                stats={stats}
+                todayEarnings={dailyEarnings?.total_earned || 0}
+                todaySurveys={dailyEarnings?.total_surveys_completed || 0}
+                referrals={referrals}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="leaderboard">
@@ -130,6 +137,13 @@ export default function Gamification() {
 
           <TabsContent value="guilds">
             <GuildLeaderboard currentGuildId={myGuilds[0]?.id} />
+          </TabsContent>
+
+          <TabsContent value="ai">
+            <div className="space-y-6">
+              <AITierSuggestion user={user} />
+              {user?.role === 'admin' && <AICampaignGenerator />}
+            </div>
           </TabsContent>
         </Tabs>
       </div>
