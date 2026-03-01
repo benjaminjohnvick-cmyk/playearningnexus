@@ -91,8 +91,9 @@ function FraudResultCard({ result }) {
   );
 }
 
-function OptimizationCard({ prediction }) {
+function OptimizationCard({ prediction, onAutoSchedule }) {
   const [expanded, setExpanded] = useState(false);
+  const [scheduling, setScheduling] = useState(false);
   const rec = prediction.ai_recommendation || {};
   const priority = rec.priority_score || 0;
 
