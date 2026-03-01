@@ -8,6 +8,7 @@ import FeaturedGameRotation from '../components/admin/FeaturedGameRotation';
 import RevenueTracker from '../components/admin/RevenueTracker';
 import RevenueDistribution from '../components/admin/RevenueDistribution';
 import RewardDistributionPanel from '../components/admin/RewardDistributionPanel';
+import AdminPayoutManager from '../components/admin/AdminPayoutManager';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
