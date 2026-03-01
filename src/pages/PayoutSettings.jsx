@@ -6,16 +6,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { CreditCard, Building2, CheckCircle2, AlertCircle, DollarSign } from 'lucide-react';
+import { Separator } from "@/components/ui/separator";
+import { 
+  CreditCard, Building2, CheckCircle2, AlertCircle, DollarSign, 
+  Clock, Shield, Zap, Info, Landmark
+} from 'lucide-react';
 import { toast } from 'sonner';
+
+const PAYOUT_METHODS = [
+  { value: 'paypal', label: 'PayPal', icon: CreditCard, desc: 'Fast, 1-3 business days' },
+  { value: 'bank_transfer', label: 'ACH Bank Transfer', icon: Landmark, desc: 'Direct deposit, 3-5 business days' },
+  { value: 'stripe', label: 'Stripe', icon: DollarSign, desc: 'Via Stripe Connect' },
+];
+
+const SCHEDULE_OPTIONS = [
+  { value: 'weekly', label: 'Weekly', desc: 'Every Friday' },
+  { value: 'biweekly', label: 'Bi-Weekly', desc: 'Every other Friday' },
+  { value: 'monthly', label: 'Monthly', desc: '1st of each month' },
+  { value: 'net_30', label: 'Net 30', desc: '30 days after period end' },
+  { value: 'net_60', label: 'Net 60', desc: '60 days after period end' },
+  { value: 'net_90', label: 'Net 90 (Default)', desc: '90 days after period end' },
+  { value: 'on_demand', label: 'On-Demand', desc: 'Request payout anytime' },
+];
+
+const THRESHOLD_OPTIONS = [10, 25, 50, 100, 250, 500];
 
 export default function PayoutSettings() {
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
-  
+
   const [formData, setFormData] = useState({
     payout_method: 'paypal',
     paypal_email: '',
@@ -23,6 +44,7 @@ export default function PayoutSettings() {
     bank_account_number: '',
     bank_routing_number: '',
     bank_name: '',
+    bank_swift_code: '',
     minimum_payout_threshold: 50,
     payout_frequency: 'net_90',
     tax_id: '',
@@ -30,18 +52,10 @@ export default function PayoutSettings() {
   });
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const currentUser = await base44.auth.me();
-        setUser(currentUser);
-      } catch (error) {
-        base44.auth.redirectToLogin();
-      }
-    };
-    fetchUser();
+    base44.auth.me().then(setUser).catch(() => base44.auth.redirectToLogin());
   }, []);
 
-  const { data: preferences = [], isLoading } = useQuery({
+  const { data: preferences = [] } = useQuery({
     queryKey: ['payoutPreferences', user?.id],
     queryFn: () => base44.entities.PayoutPreference.filter({ user_id: user.id }),
     enabled: !!user
@@ -52,12 +66,13 @@ export default function PayoutSettings() {
   useEffect(() => {
     if (currentPreference) {
       setFormData({
-        payout_method: currentPreference.payout_method,
+        payout_method: currentPreference.payout_method || 'paypal',
         paypal_email: currentPreference.paypal_email || '',
         bank_account_holder: currentPreference.bank_account_holder || '',
         bank_account_number: currentPreference.bank_account_number || '',
         bank_routing_number: currentPreference.bank_routing_number || '',
         bank_name: currentPreference.bank_name || '',
+        bank_swift_code: currentPreference.bank_swift_code || '',
         minimum_payout_threshold: currentPreference.minimum_payout_threshold || 50,
         payout_frequency: currentPreference.payout_frequency || 'net_90',
         tax_id: currentPreference.tax_id || '',
@@ -76,11 +91,9 @@ export default function PayoutSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['payoutPreferences']);
-      toast.success('Payout settings saved successfully!');
+      toast.success('Payout settings saved!');
     },
-    onError: (error) => {
-      toast.error('Failed to save settings: ' + error.message);
-    }
+    onError: (err) => toast.error('Failed to save: ' + err.message)
   });
 
   const handleSubmit = (e) => {
@@ -88,236 +101,275 @@ export default function PayoutSettings() {
     saveMutation.mutate(formData);
   };
 
+  const selectedSchedule = SCHEDULE_OPTIONS.find(s => s.value === formData.payout_frequency);
+
   if (!user) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
-      <div className="max-w-5xl mx-auto px-6">
+      <div className="max-w-4xl mx-auto px-6">
+
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Payout Settings</h1>
-          <p className="text-gray-600">Configure how you receive your referral earnings</p>
+          <p className="text-gray-600">Configure your preferred payment method and schedule</p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+        {/* Stats Row */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-500">Pending Earnings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">
-                ${((user.pending_earnings || 0)).toFixed(2)}
+            <CardContent className="pt-5 pb-4">
+              <p className="text-xs text-gray-500 mb-1">Pending Earnings</p>
+              <p className="text-2xl font-bold text-gray-900">${(user.pending_earnings || 0).toFixed(2)}</p>
+              <p className="text-xs text-gray-400 mt-0.5">Available for payout</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-5 pb-4">
+              <p className="text-xs text-gray-500 mb-1">Payout Schedule</p>
+              <p className="text-2xl font-bold text-gray-900 capitalize">{selectedSchedule?.label || '—'}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{selectedSchedule?.desc || 'Not configured'}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-5 pb-4">
+              <p className="text-xs text-gray-500 mb-1">Verification</p>
+              <div className="flex items-center gap-1.5 mt-1">
+                {currentPreference?.is_verified
+                  ? <><CheckCircle2 className="w-5 h-5 text-green-600" /><span className="font-semibold text-green-600">Verified</span></>
+                  : <><AlertCircle className="w-5 h-5 text-amber-500" /><span className="font-semibold text-amber-600">Pending</span></>
+                }
               </div>
-              <p className="text-sm text-gray-500 mt-1">Available for payout</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+
+          {/* Payout Method Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Method</CardTitle>
+              <CardDescription>Choose how you'd like to receive your earnings</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Method Selector */}
+              <div className="grid md:grid-cols-3 gap-3">
+                {PAYOUT_METHODS.map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, payout_method: m.value })}
+                    className={`p-4 rounded-xl border-2 text-left transition-all ${
+                      formData.payout_method === m.value
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    <m.icon className={`w-5 h-5 mb-2 ${formData.payout_method === m.value ? 'text-blue-600' : 'text-gray-400'}`} />
+                    <p className={`font-semibold text-sm ${formData.payout_method === m.value ? 'text-blue-700' : 'text-gray-800'}`}>
+                      {m.label}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">{m.desc}</p>
+                  </button>
+                ))}
+              </div>
+
+              <Separator />
+
+              {/* PayPal Fields */}
+              {formData.payout_method === 'paypal' && (
+                <div className="space-y-3">
+                  <Label htmlFor="paypal_email">PayPal Email Address</Label>
+                  <Input
+                    id="paypal_email"
+                    type="email"
+                    value={formData.paypal_email}
+                    onChange={(e) => setFormData({ ...formData, paypal_email: e.target.value })}
+                    placeholder="your.email@example.com"
+                  />
+                  <p className="text-xs text-gray-500">Payments will be sent to this PayPal account within 1–3 business days.</p>
+                </div>
+              )}
+
+              {/* ACH Bank Transfer Fields */}
+              {formData.payout_method === 'bank_transfer' && (
+                <div className="space-y-4">
+                  <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <Shield className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-blue-700">
+                      ACH direct deposits are processed via our secure banking partner. Account details are encrypted and never stored in plain text.
+                    </p>
+                  </div>
+                  <div>
+                    <Label htmlFor="bank_account_holder">Account Holder Name</Label>
+                    <Input
+                      id="bank_account_holder"
+                      value={formData.bank_account_holder}
+                      onChange={(e) => setFormData({ ...formData, bank_account_holder: e.target.value })}
+                      placeholder="Full legal name as on bank account"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="bank_name">Bank Name</Label>
+                    <Input
+                      id="bank_name"
+                      value={formData.bank_name}
+                      onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
+                      placeholder="e.g. Chase, Wells Fargo, Bank of America"
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="bank_routing_number">ACH Routing Number</Label>
+                      <Input
+                        id="bank_routing_number"
+                        value={formData.bank_routing_number}
+                        onChange={(e) => setFormData({ ...formData, bank_routing_number: e.target.value })}
+                        placeholder="9-digit routing number"
+                        maxLength={9}
+                      />
+                      <p className="text-xs text-gray-400 mt-1">Found at the bottom-left of your check</p>
+                    </div>
+                    <div>
+                      <Label htmlFor="bank_account_number">Account Number</Label>
+                      <Input
+                        id="bank_account_number"
+                        value={formData.bank_account_number}
+                        onChange={(e) => setFormData({ ...formData, bank_account_number: e.target.value })}
+                        placeholder="Checking or savings account number"
+                        type="password"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="bank_swift_code">SWIFT/BIC Code <span className="text-gray-400 font-normal">(optional, for international banks)</span></Label>
+                    <Input
+                      id="bank_swift_code"
+                      value={formData.bank_swift_code}
+                      onChange={(e) => setFormData({ ...formData, bank_swift_code: e.target.value })}
+                      placeholder="e.g. CHASUS33"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Stripe Fields */}
+              {formData.payout_method === 'stripe' && (
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <p className="text-sm text-purple-800 mb-3">
+                    Connect your Stripe account to receive payouts via Stripe Express.
+                  </p>
+                  <Button type="button" variant="outline" className="border-purple-400 text-purple-700 hover:bg-purple-100">
+                    Connect Stripe Account
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 
+          {/* Schedule & Threshold */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-500">Next Payout</CardTitle>
+            <CardHeader>
+              <CardTitle>Payout Schedule & Threshold</CardTitle>
+              <CardDescription>Control when and how much you need before getting paid</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">
-                {formData.payout_frequency === 'net_90' ? '90' : formData.payout_frequency === 'net_60' ? '60' : '30'} days
-              </div>
-              <p className="text-sm text-gray-500 mt-1">Payment schedule</p>
-            </CardContent>
-          </Card>
+            <CardContent className="space-y-6">
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-500">Verification Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                {currentPreference?.is_verified ? (
-                  <>
-                    <CheckCircle2 className="w-6 h-6 text-green-600" />
-                    <span className="text-lg font-semibold text-green-600">Verified</span>
-                  </>
-                ) : (
-                  <>
-                    <AlertCircle className="w-6 h-6 text-amber-600" />
-                    <span className="text-lg font-semibold text-amber-600">Pending</span>
-                  </>
+              {/* Schedule Picker */}
+              <div>
+                <Label className="mb-3 block">Payout Frequency</Label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {SCHEDULE_OPTIONS.map((s) => (
+                    <button
+                      key={s.value}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, payout_frequency: s.value })}
+                      className={`p-3 rounded-lg border-2 text-left transition-all ${
+                        formData.payout_frequency === s.value
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                      }`}
+                    >
+                      <p className={`font-semibold text-xs ${formData.payout_frequency === s.value ? 'text-green-700' : 'text-gray-800'}`}>
+                        {s.label}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">{s.desc}</p>
+                    </button>
+                  ))}
+                </div>
+                {(formData.payout_frequency === 'weekly' || formData.payout_frequency === 'biweekly') && (
+                  <div className="mt-2 flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                    <Info className="w-3.5 h-3.5 flex-shrink-0" />
+                    Weekly/bi-weekly schedules require a minimum $10 threshold and a verified account.
+                  </div>
                 )}
               </div>
+
+              <Separator />
+
+              {/* Threshold Picker */}
+              <div>
+                <Label className="mb-3 block">
+                  Minimum Payout Threshold — <span className="text-green-600 font-bold">${formData.minimum_payout_threshold}</span>
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {THRESHOLD_OPTIONS.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, minimum_payout_threshold: t })}
+                      className={`px-4 py-2 rounded-full border-2 text-sm font-semibold transition-all ${
+                        formData.minimum_payout_threshold === t
+                          ? 'border-blue-500 bg-blue-500 text-white'
+                          : 'border-gray-200 text-gray-700 hover:border-blue-300 bg-white'
+                      }`}
+                    >
+                      ${t}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-400 mt-2">Payouts only process when your balance reaches this amount</p>
+              </div>
+
+              <Separator />
+
+              {/* Auto-payout & Tax ID */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-sm text-gray-800">Automatic Payouts</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Trigger payout automatically when threshold is met</p>
+                </div>
+                <Switch
+                  checked={formData.auto_payout_enabled}
+                  onCheckedChange={(v) => setFormData({ ...formData, auto_payout_enabled: v })}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="tax_id">Tax ID (SSN / EIN) <span className="text-gray-400 font-normal">— required for 1099</span></Label>
+                <Input
+                  id="tax_id"
+                  value={formData.tax_id}
+                  onChange={(e) => setFormData({ ...formData, tax_id: e.target.value })}
+                  placeholder="XXX-XX-XXXX"
+                  type="password"
+                  className="mt-1"
+                />
+              </div>
             </CardContent>
           </Card>
-        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Payment Method Configuration</CardTitle>
-            <CardDescription>Choose how you want to receive your referral earnings</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <Label>Payout Method</Label>
-                <Tabs value={formData.payout_method} onValueChange={(value) => setFormData({...formData, payout_method: value})}>
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="paypal">
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      PayPal
-                    </TabsTrigger>
-                    <TabsTrigger value="bank_transfer">
-                      <Building2 className="w-4 h-4 mr-2" />
-                      Bank Transfer
-                    </TabsTrigger>
-                    <TabsTrigger value="stripe">
-                      <DollarSign className="w-4 h-4 mr-2" />
-                      Stripe
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="paypal" className="space-y-4 mt-4">
-                    <div>
-                      <Label htmlFor="paypal_email">PayPal Email Address</Label>
-                      <Input
-                        id="paypal_email"
-                        type="email"
-                        value={formData.paypal_email}
-                        onChange={(e) => setFormData({...formData, paypal_email: e.target.value})}
-                        placeholder="your.email@example.com"
-                        required
-                      />
-                      <p className="text-sm text-gray-500 mt-1">Payments will be sent to this PayPal account</p>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="bank_transfer" className="space-y-4 mt-4">
-                    <div>
-                      <Label htmlFor="bank_account_holder">Account Holder Name</Label>
-                      <Input
-                        id="bank_account_holder"
-                        value={formData.bank_account_holder}
-                        onChange={(e) => setFormData({...formData, bank_account_holder: e.target.value})}
-                        placeholder="John Doe"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="bank_name">Bank Name</Label>
-                      <Input
-                        id="bank_name"
-                        value={formData.bank_name}
-                        onChange={(e) => setFormData({...formData, bank_name: e.target.value})}
-                        placeholder="Chase Bank"
-                        required
-                      />
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="bank_routing_number">Routing Number</Label>
-                        <Input
-                          id="bank_routing_number"
-                          value={formData.bank_routing_number}
-                          onChange={(e) => setFormData({...formData, bank_routing_number: e.target.value})}
-                          placeholder="123456789"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="bank_account_number">Account Number</Label>
-                        <Input
-                          id="bank_account_number"
-                          value={formData.bank_account_number}
-                          onChange={(e) => setFormData({...formData, bank_account_number: e.target.value})}
-                          placeholder="••••••••1234"
-                          type="password"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="stripe" className="space-y-4 mt-4">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <p className="text-sm text-blue-800">
-                        Stripe payouts will be configured through Stripe Connect. Click the button below to connect your Stripe account.
-                      </p>
-                      <Button className="mt-3" variant="outline">
-                        Connect Stripe Account
-                      </Button>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
-
-              <div className="border-t pt-6 space-y-4">
-                <h3 className="font-semibold text-lg">Payout Preferences</h3>
-                
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="minimum_payout_threshold">Minimum Payout Threshold ($)</Label>
-                    <Input
-                      id="minimum_payout_threshold"
-                      type="number"
-                      min="25"
-                      step="25"
-                      value={formData.minimum_payout_threshold}
-                      onChange={(e) => setFormData({...formData, minimum_payout_threshold: parseFloat(e.target.value)})}
-                      required
-                    />
-                    <p className="text-sm text-gray-500 mt-1">Minimum $25</p>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="payout_frequency">Payout Frequency</Label>
-                    <Select 
-                      value={formData.payout_frequency} 
-                      onValueChange={(value) => setFormData({...formData, payout_frequency: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="net_30">Net 30 (Monthly)</SelectItem>
-                        <SelectItem value="net_60">Net 60 (Every 2 Months)</SelectItem>
-                        <SelectItem value="net_90">Net 90 (Quarterly)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-sm text-gray-500 mt-1">How often you receive payments</p>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="tax_id">Tax ID (SSN/EIN)</Label>
-                  <Input
-                    id="tax_id"
-                    value={formData.tax_id}
-                    onChange={(e) => setFormData({...formData, tax_id: e.target.value})}
-                    placeholder="XXX-XX-XXXX"
-                    type="password"
-                  />
-                  <p className="text-sm text-gray-500 mt-1">Required for tax reporting (1099 forms)</p>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <Label htmlFor="auto_payout">Automatic Payouts</Label>
-                    <p className="text-sm text-gray-500">Enable automatic payments when threshold is met</p>
-                  </div>
-                  <Switch
-                    id="auto_payout"
-                    checked={formData.auto_payout_enabled}
-                    onCheckedChange={(checked) => setFormData({...formData, auto_payout_enabled: checked})}
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Button 
-                  type="submit" 
-                  className="bg-gradient-to-r from-blue-600 to-blue-700"
-                  disabled={saveMutation.isPending}
-                >
-                  {saveMutation.isPending ? 'Saving...' : 'Save Settings'}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+          <div className="flex gap-3">
+            <Button
+              type="submit"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 px-8"
+              disabled={saveMutation.isPending}
+            >
+              {saveMutation.isPending ? 'Saving...' : 'Save Settings'}
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   );
