@@ -96,6 +96,18 @@ export default function UserProfile() {
     enabled: !!user
   });
 
+  const { data: payouts = [] } = useQuery({
+    queryKey: ['profilePayouts', user?.id],
+    queryFn: () => base44.entities.Payout.filter({ user_id: user.id }, '-created_date', 50),
+    enabled: !!user
+  });
+
+  const { data: payoutPrefs = [] } = useQuery({
+    queryKey: ['profilePayoutPrefs', user?.id],
+    queryFn: () => base44.entities.PayoutPreference.filter({ user_id: user.id }),
+    enabled: !!user
+  });
+
   // ── Computed stats ───────────────────────────────────────────────────────
   const totalReferrals = referrals.length;
   const activeReferrals = referrals.filter(r => r.status === 'active').length;
