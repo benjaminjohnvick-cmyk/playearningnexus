@@ -93,6 +93,51 @@ export default function ManualPayoutPanel() {
     });
   };
 
+  const applyAiSuggestion = (prefId, suggestion) => {
+    setPrefEdits(prev => ({
+      ...prev,
+      payout_frequency: suggestion.suggested_frequency || prev.payout_frequency,
+      minimum_payout_threshold: suggestion.suggested_threshold || prev.minimum_payout_threshold,
+      auto_payout_enabled: suggestion.suggested_auto_payout ?? prev.auto_payout_enabled,
+    }));
+    toast.success('AI suggestion applied — save to confirm');
+  };
+
+  const fetchAiSuggestion = async (pref, user) => {
+    setLoadingAiFor(pref.id);
+    try {
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a payout settings advisor for a gaming rewards platform.
+Suggest optimal payout settings for this user based on their profile:
+
+- User: ${user?.full_name || 'Unknown'}
+- Current frequency: ${pref.payout_frequency || 'net_90'}
+- Current threshold: $${pref.minimum_payout_threshold || 50}
+- Auto-payout: ${pref.auto_payout_enabled}
+- Pending earnings: $${user?.pending_earnings || 0}
+- Total earnings: $${user?.total_earnings || 0}
+- Account verified: ${pref.is_verified}
+- Payout method: ${pref.payout_method || 'not set'}
+
+Suggest the best frequency and threshold to maximize user satisfaction while minimizing transaction costs. 
+Consider: frequent low earners benefit from lower thresholds + monthly schedule. High earners benefit from weekly + higher thresholds.`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            suggested_frequency: { type: 'string' },
+            suggested_threshold: { type: 'number' },
+            suggested_auto_payout: { type: 'boolean' },
+            reason: { type: 'string' }
+          }
+        }
+      });
+      setAiSuggestions(prev => ({ ...prev, [pref.id]: res }));
+    } catch (e) {
+      toast.error('AI suggestion failed: ' + e.message);
+    }
+    setLoadingAiFor(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Manual Single Payout */}
