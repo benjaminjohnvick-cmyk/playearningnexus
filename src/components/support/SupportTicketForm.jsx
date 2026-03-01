@@ -45,7 +45,7 @@ export default function SupportTicketForm({ user, onSuccess }) {
     setSubmitting(true);
 
     try {
-      await base44.entities.SupportTicket.create({
+      const ticket = await base44.entities.SupportTicket.create({
         user_id: user.id,
         user_email: user.email,
         user_name: user.full_name,
@@ -53,6 +53,9 @@ export default function SupportTicketForm({ user, onSuccess }) {
         subject: formData.subject,
         description: formData.description
       });
+
+      // Generate AI response in background
+      generateAIResponse(ticket.id);
 
       // Send email notification to support
       await base44.integrations.Core.SendEmail({
