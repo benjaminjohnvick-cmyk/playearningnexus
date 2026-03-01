@@ -178,6 +178,36 @@ function OptimizationCard({ prediction, onAutoSchedule }) {
 export default function AIPayoutIntelligence() {
   const [fraudResults, setFraudResults] = useState(null);
   const [optimizationResults, setOptimizationResults] = useState(null);
+  const queryClient = useQueryClient();
+
+  const handleAutoSchedule = async (prediction) => {
+    try {
+      const res = await base44.functions.invoke('processRewardPayout', {
+        action: 'single',
+        target_user_id: prediction.user_id,
+        amount: prediction.pending_earnings,
+        reward_type: 'referral_commission',
+        reward_note: `AI-optimized payout (priority ${prediction.ai_recommendation?.priority_score}/10)`,
+      });
+      if (res.data?.ok) {
+        toast.success(`Payout of $${prediction.pending_earnings.toFixed(2)} sent to ${prediction.user_name}`);
+        queryClient.invalidateQueries(['admin-payouts']);
+        // Refresh predictions
+        setOptimizationResults(prev => ({
+          ...prev,
+          predictions: prev.predictions.map(p =>
+            p.user_id === prediction.user_id
+              ? { ...p, ai_recommendation: { ...p.ai_recommendation, should_pay_now: false } }
+              : p
+          )
+        }));
+      } else {
+        toast.error('Payout failed: ' + (res.data?.error || 'Unknown error'));
+      }
+    } catch (e) {
+      toast.error('Error: ' + e.message);
+    }
+  };
 
   const fraudMutation = useMutation({
     mutationFn: () => base44.functions.invoke('aiPayoutFraudDetection', {}),
