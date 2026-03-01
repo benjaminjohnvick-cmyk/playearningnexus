@@ -75,7 +75,7 @@ User ID: ${user.id}
         `
       });
 
-      toast.success('Support ticket submitted successfully!');
+      toast.success('Support ticket submitted! Generating AI response...');
       setFormData({ category: '', subject: '', description: '' });
       if (onSuccess) onSuccess();
     } catch (error) {
