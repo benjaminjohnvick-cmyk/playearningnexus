@@ -225,12 +225,19 @@ export default function UserDashboard() {
 
         {/* Stats Grid */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <StatsCard
-            icon={DollarSign}
-            label="Total Earnings"
-            value={`$${(user.total_earnings || 0).toFixed(2)}`}
-            color="green"
-          />
+          <div className="flex flex-col gap-2">
+            <StatsCard
+              icon={DollarSign}
+              label="Total Earnings"
+              value={`$${(user.total_earnings || 0).toFixed(2)}`}
+              color="green"
+            />
+            <Link to={createPageUrl('PayoutSettings')}>
+              <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold shadow" size="sm">
+                <Send className="w-4 h-4 mr-2" /> Transfer Earnings / Cashout
+              </Button>
+            </Link>
+          </div>
           <StatsCard
             icon={Gamepad2}
             label="Games in Library"
