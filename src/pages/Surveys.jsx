@@ -11,7 +11,6 @@ import {
   Target, Trophy, Zap
 } from "lucide-react";
 import { toast } from "sonner";
-import SurveyTakingModal from '@/components/surveys/SurveyTakingModal';
 import SurveyStatsBar from '@/components/surveys/SurveyStatsBar';
 
 export default function Surveys() {
