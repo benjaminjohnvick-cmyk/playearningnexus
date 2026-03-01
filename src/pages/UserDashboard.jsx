@@ -24,6 +24,7 @@ import PersonalizedRecommendations from '../components/ai/PersonalizedRecommenda
 import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
 import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
 import DailyGoalProgress from '../components/gamification/DailyGoalProgress';
+import PayPalTransferButton from '../components/payout/PayPalTransferButton';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
