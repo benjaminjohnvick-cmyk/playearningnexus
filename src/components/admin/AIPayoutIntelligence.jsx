@@ -399,7 +399,7 @@ export default function AIPayoutIntelligence() {
                     <div className="space-y-2">
                       <p className="text-xs text-gray-500 font-medium">Sorted by priority score (10 = pay immediately)</p>
                       {predictions.map((p, i) => (
-                        <OptimizationCard key={p.user_id + i} prediction={p} />
+                        <OptimizationCard key={p.user_id + i} prediction={p} onAutoSchedule={handleAutoSchedule} />
                       ))}
                     </div>
                   )}
