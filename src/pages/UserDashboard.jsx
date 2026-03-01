@@ -233,11 +233,7 @@ export default function UserDashboard() {
               value={`$${(user.total_earnings || 0).toFixed(2)}`}
               color="green"
             />
-            <Link to={createPageUrl('PayoutSettings')}>
-              <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold shadow" size="sm">
-                <Send className="w-4 h-4 mr-2" /> Transfer Earnings / Cashout
-              </Button>
-            </Link>
+            <PayPalTransferButton user={user} />
           </div>
           <StatsCard
             icon={Gamepad2}
