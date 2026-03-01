@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Flame, Users, TrendingUp, Star } from "lucide-react";
+import { Trophy, Flame, Users, TrendingUp, Star, Sparkles } from "lucide-react";
 import GamificationHub from '../components/gamification/GamificationHub';
 import Leaderboard from '../components/gamification/Leaderboard';
 import GuildLeaderboard from '../components/gamification/GuildLeaderboard';
+import AITierSuggestion from '../components/gamification/AITierSuggestion';
+import AIChurnPrevention from '../components/gamification/AIChurnPrevention';
+import AICampaignGenerator from '../components/gamification/AICampaignGenerator';
 
 export default function Gamification() {
   const [user, setUser] = useState(null);
