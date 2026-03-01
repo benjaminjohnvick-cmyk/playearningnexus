@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Card } from "@/components/ui/card";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import SupportTicketForm from '../components/support/SupportTicketForm';
+import AIFeedbackAnalyzer from '../components/support/AIFeedbackAnalyzer';
 
 export default function Support() {
   const [user, setUser] = useState(null);
