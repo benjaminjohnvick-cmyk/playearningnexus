@@ -16,6 +16,29 @@ export default function SupportTicketForm({ user, onSuccess }) {
     description: ''
   });
   const [submitting, setSubmitting] = useState(false);
+  const [aiResponse, setAiResponse] = useState(null);
+  const [generatingAI, setGeneratingAI] = useState(false);
+  const [showAiResponse, setShowAiResponse] = useState(true);
+
+  const generateAIResponse = async (ticketId) => {
+    if (!formData.subject || !formData.description) return;
+    setGeneratingAI(true);
+    try {
+      const res = await base44.functions.invoke('aiSupportEngine', {
+        action: 'generate_ticket_response',
+        ticket_id: ticketId,
+        category: formData.category,
+        subject: formData.subject,
+        description: formData.description,
+        user_name: user.full_name,
+      });
+      setAiResponse(res.data?.data || null);
+    } catch (e) {
+      // silently fail, don't block ticket submission
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
