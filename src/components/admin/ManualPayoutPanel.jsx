@@ -331,6 +331,24 @@ Consider: frequent low earners benefit from lower thresholds + monthly schedule.
                       </div>
                     </div>
 
+                    {isEditing && aiSuggestions[pref.id] && (
+                      <div className="px-4 pt-3 pb-0 bg-purple-50 border-t border-purple-100">
+                        <div className="flex items-start gap-2 text-xs text-purple-800 pb-3">
+                          <Sparkles className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-purple-500" />
+                          <div className="flex-1">
+                            <span className="font-semibold">AI recommends: </span>
+                            {aiSuggestions[pref.id].suggested_frequency} · ${aiSuggestions[pref.id].suggested_threshold} min · {aiSuggestions[pref.id].suggested_auto_payout ? 'Auto-pay on' : 'Manual'}
+                            {aiSuggestions[pref.id].reason && <span className="block text-purple-600 mt-0.5 italic">{aiSuggestions[pref.id].reason}</span>}
+                          </div>
+                          <Button
+                            size="sm"
+                            className="h-6 text-xs px-2 bg-purple-600 hover:bg-purple-700"
+                            onClick={() => applyAiSuggestion(pref.id, aiSuggestions[pref.id])}
+                          >Apply</Button>
+                        </div>
+                      </div>
+                    )}
+
                     {isEditing && (
                       <div className="p-4 grid sm:grid-cols-3 gap-4 bg-white border-t">
                         <div>
