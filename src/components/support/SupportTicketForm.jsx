@@ -138,6 +138,56 @@ User ID: ${user.id}
           {submitting ? 'Submitting...' : 'Submit Ticket'}
         </Button>
       </form>
+
+      {/* AI Response Section */}
+      {(generatingAI || aiResponse) && (
+        <div className="mt-4 border-t pt-4">
+          <button
+            className="flex items-center gap-2 text-sm font-semibold text-blue-700 mb-3 w-full"
+            onClick={() => setShowAiResponse(!showAiResponse)}
+          >
+            <Bot className="w-4 h-4" />
+            AI Instant Response
+            {aiResponse && <Badge className="bg-blue-100 text-blue-700 text-xs">{aiResponse.confidence}% confidence</Badge>}
+            <span className="ml-auto">{showAiResponse ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</span>
+          </button>
+
+          {showAiResponse && (
+            <div className="bg-blue-50 rounded-xl border border-blue-200 p-4">
+              {generatingAI && (
+                <div className="flex items-center gap-2 text-blue-600 text-sm">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Generating personalized response...
+                </div>
+              )}
+              {aiResponse && (
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{aiResponse.response_text}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {aiResponse.suggested_priority && (
+                      <Badge className="text-xs bg-gray-100 text-gray-600">Priority: {aiResponse.suggested_priority}</Badge>
+                    )}
+                    {aiResponse.resolution_type && (
+                      <Badge className="text-xs bg-blue-100 text-blue-700">{aiResponse.resolution_type?.replace('_', ' ')}</Badge>
+                    )}
+                  </div>
+                  {aiResponse.related_docs?.length > 0 && (
+                    <div className="flex gap-1 flex-wrap">
+                      <span className="text-xs text-gray-400">Related:</span>
+                      {aiResponse.related_docs.map((d, i) => (
+                        <span key={i} className="text-xs text-blue-500">{d}{i < aiResponse.related_docs.length - 1 ? ', ' : ''}</span>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" /> AI-generated response · A human agent will review if needed
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </Card>
   );
 }
