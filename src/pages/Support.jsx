@@ -68,6 +68,12 @@ export default function Support() {
 
         <SupportTicketForm user={user} />
 
+        {user?.role === 'admin' && (
+          <div className="mt-8">
+            <AIFeedbackAnalyzer />
+          </div>
+        )}
+
         <Card className="mt-8 p-6 bg-gradient-to-r from-red-50 to-white border-2 border-red-200">
           <div className="flex items-start gap-4">
             <MessageCircle className="w-6 h-6 text-red-600 mt-1" />
