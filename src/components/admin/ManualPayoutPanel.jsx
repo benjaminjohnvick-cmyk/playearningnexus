@@ -24,6 +24,8 @@ export default function ManualPayoutPanel() {
   const [bulkMode, setBulkMode] = useState(false);
   const [editingPrefId, setEditingPrefId] = useState(null);
   const [prefEdits, setPrefEdits] = useState({});
+  const [aiSuggestions, setAiSuggestions] = useState({}); // keyed by pref.id
+  const [loadingAiFor, setLoadingAiFor] = useState(null);
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['admin-all-users'],
