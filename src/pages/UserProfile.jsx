@@ -435,6 +435,104 @@ export default function UserProfile() {
             </Card>
           </TabsContent>
 
+          {/* ── Payouts ── */}
+          <TabsContent value="payouts" className="space-y-4">
+            {/* Stats */}
+            {(() => {
+              const pref = payoutPrefs[0];
+              const totalPaid = payouts.filter(p => p.status === 'completed').reduce((s, p) => s + (p.amount || 0), 0);
+              const pendingAmt = payouts.filter(p => p.status === 'pending' || p.status === 'processing').reduce((s, p) => s + (p.amount || 0), 0);
+              return (
+                <>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <Card className="border-0 shadow-lg bg-green-50">
+                      <CardContent className="pt-5 pb-4 text-center">
+                        <p className="text-3xl font-bold text-green-600">${totalPaid.toFixed(2)}</p>
+                        <p className="text-sm text-gray-500 mt-1">Total Received</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-0 shadow-lg bg-amber-50">
+                      <CardContent className="pt-5 pb-4 text-center">
+                        <p className="text-3xl font-bold text-amber-600">${pendingAmt.toFixed(2)}</p>
+                        <p className="text-sm text-gray-500 mt-1">Pending / Processing</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-0 shadow-lg bg-blue-50">
+                      <CardContent className="pt-5 pb-4 text-center">
+                        <p className="text-3xl font-bold text-blue-600">{payouts.length}</p>
+                        <p className="text-sm text-gray-500 mt-1">Total Payouts</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Payout method & verification */}
+                  <Card className="border-0 shadow-lg">
+                    <CardContent className="pt-5 pb-4">
+                      <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
+                        <p className="font-semibold text-gray-800 text-sm">Payout Configuration</p>
+                        <Link to={createPageUrl('PayoutSettings')}>
+                          <Button size="sm" variant="outline" className="text-xs">Edit Settings</Button>
+                        </Link>
+                      </div>
+                      {pref ? (
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="outline" className="capitalize">{pref.payout_method?.replace('_', ' ') || '—'}</Badge>
+                          <Badge variant="outline">{pref.payout_frequency || 'net_90'}</Badge>
+                          <Badge variant="outline">Min ${pref.minimum_payout_threshold || 50}</Badge>
+                          <Badge className={pref.is_verified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}>
+                            {pref.is_verified ? '✓ Verified' : '⚠ Pending Verification'}
+                          </Badge>
+                          <Badge className={pref.auto_payout_enabled ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}>
+                            {pref.auto_payout_enabled ? 'Auto-Pay On' : 'Manual'}
+                          </Badge>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-amber-600 text-sm">
+                          <AlertCircle className="w-4 h-4" />
+                          No payout method configured.
+                          <Link to={createPageUrl('PayoutSettings')} className="underline font-medium">Set up now →</Link>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Payout History */}
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <DollarSign className="w-4 h-4 text-green-600" /> Payout History
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {payouts.length === 0 ? (
+                        <p className="text-gray-400 text-sm text-center py-8">No payouts yet. Earn and configure payout settings to get started!</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {payouts.slice(0, 10).map(p => (
+                            <div key={p.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div>
+                                <p className="font-medium text-sm capitalize">{p.payout_type?.replace('_', ' ') || 'Payout'}</p>
+                                <p className="text-xs text-gray-400">{new Date(p.created_date).toLocaleDateString()} · {p.method}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-green-600">${(p.amount || 0).toFixed(2)}</p>
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                  p.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                  p.status === 'failed' ? 'bg-red-100 text-red-700' :
+                                  'bg-amber-100 text-amber-700'
+                                }`}>{p.status}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </>
+              );
+            })()}
+          </TabsContent>
+
           {/* ── Library ── */}
           <TabsContent value="library">
             <Card className="border-0 shadow-lg">
