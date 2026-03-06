@@ -157,7 +157,7 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
           disabled={searching}
         >
           <Search className="w-4 h-4 mr-2" />
-          {searching ? 'Searching...' : 'Search Products'}
+          {searching ? 'Searching...' : 'Search for any product you want, and pay with surveys'}
         </Button>
       </div>
     </div>
