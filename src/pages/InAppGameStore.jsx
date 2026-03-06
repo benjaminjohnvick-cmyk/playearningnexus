@@ -122,7 +122,7 @@ export default function InAppGameStore() {
           </div>
           <div className="flex items-center gap-3">
             <Button onClick={() => setShowProductSearch(true)} className="bg-purple-600 hover:bg-purple-700">
-              <Package className="w-4 h-4 mr-2" /> Search Products
+              <Package className="w-4 h-4 mr-2" /> Search for any product you want, and pay with surveys
             </Button>
             <Card className="px-4 py-2 border-2 border-green-500 bg-green-50">
               <p className="text-xs text-gray-500">Balance</p>
