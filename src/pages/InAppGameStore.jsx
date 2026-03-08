@@ -299,6 +299,30 @@ export default function InAppGameStore() {
         </Tabs>
       </div>
 
+      {/* Review Modal */}
+      {reviewGame && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-2xl my-8 shadow-2xl">
+            <div className="flex items-center justify-between p-5 border-b">
+              <div>
+                <h2 className="font-bold text-lg text-gray-900">{reviewGame.title}</h2>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                  <span className="text-sm font-medium">{(reviewGame.average_rating || 0).toFixed(1)}</span>
+                  <span className="text-xs text-gray-400">({reviewGame.total_ratings || 0} reviews)</span>
+                </div>
+              </div>
+              <button onClick={() => setReviewGame(null)} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            <div className="p-5">
+              <ReviewSection game={reviewGame} user={user} />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Checkout Modal */}
       <GameCheckoutModal
         game={checkoutGame}
