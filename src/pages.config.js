@@ -100,6 +100,7 @@ import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import Wishlist from './pages/Wishlist';
+import PPCMarketplace from './pages/PPCMarketplace';
 import __Layout from './Layout.jsx';
 
 
@@ -157,6 +158,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
     "Wishlist": Wishlist,
+    "PPCMarketplace": PPCMarketplace,
 }
 
 export const pagesConfig = {
