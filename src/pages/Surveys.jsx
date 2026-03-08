@@ -8,10 +8,11 @@ import { Progress } from "@/components/ui/progress";
 import { 
   DollarSign, CheckCircle2, Clock, TrendingUp, 
   RefreshCw, ChevronRight, X, Loader2, Star, 
-  Target, Trophy, Zap
+  Target, Trophy, Zap, Info
 } from "lucide-react";
 import { toast } from "sonner";
 import SurveyStatsBar from '@/components/surveys/SurveyStatsBar';
+import TierInfoModal from '@/components/ppc/TierInfoModal';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
