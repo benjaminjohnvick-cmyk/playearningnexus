@@ -506,75 +506,67 @@ export default function Withdrawal() {
                   </div>
                 </div>
 
-                {/* Recipient */}
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
-                    {selectedMethod?.label} {selectedMethod?.id === 'paypal' ? 'Email' : 'Details'}
-                  </label>
-                  <Input
-                    type={selectedMethod?.type || 'text'}
-                    placeholder={selectedMethod?.placeholder}
-                    value={recipient}
-                    onChange={e => setRecipient(e.target.value)}
-                    className="border-2"
-                  />
-                </div>
+                {/* CashApp uses its own Stripe card form */}
+                {method === 'cashapp' ? (
+                  <Elements stripe={stripePromise}>
+                    <CashAppWithdrawForm user={user} balance={balance} payouts={payouts} queryClient={queryClient} />
+                  </Elements>
+                ) : (
+                  <>
+                    {/* Recipient */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-1">
+                        {selectedMethod?.label} {method === 'paypal' ? 'Email' : method === 'venmo' ? 'Email or Phone' : 'Details'}
+                      </label>
+                      <Input
+                        type={selectedMethod?.type === 'card' ? 'text' : (selectedMethod?.type || 'text')}
+                        placeholder={selectedMethod?.placeholder}
+                        value={recipient}
+                        onChange={e => setRecipient(e.target.value)}
+                        className="border-2"
+                      />
+                      {selectedMethod?.hint && (
+                        <p className="text-xs text-gray-400 mt-1">{selectedMethod.hint}</p>
+                      )}
+                    </div>
 
-                {/* Amount */}
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Amount (USD)</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
-                    <Input
-                      type="number"
-                      placeholder={`Min $${MIN_WITHDRAWAL}`}
-                      value={amount}
-                      onChange={e => setAmount(e.target.value)}
-                      className="pl-7 border-2 text-lg"
-                      min={MIN_WITHDRAWAL}
-                      max={balance}
-                      step="0.01"
-                    />
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-400 mt-1">
-                    <span>Minimum: ${MIN_WITHDRAWAL}</span>
-                    <span>Available: ${balance.toFixed(2)}</span>
-                  </div>
-                </div>
+                    {/* Amount */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-1">Amount (USD)</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
+                        <Input type="number" placeholder={`Min $${MIN_WITHDRAWAL}`} value={amount}
+                          onChange={e => setAmount(e.target.value)} className="pl-7 border-2 text-lg"
+                          min={MIN_WITHDRAWAL} max={balance} step="0.01" />
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>Minimum: ${MIN_WITHDRAWAL}</span>
+                        <span>Available: ${balance.toFixed(2)}</span>
+                      </div>
+                    </div>
 
-                {/* Quick amounts */}
-                <div className="flex gap-2 flex-wrap">
-                  {[10, 25, 50, 100].map(amt => (
-                    <Button key={amt} variant="outline" size="sm"
-                      onClick={() => setAmount(Math.min(amt, balance).toString())}
-                      disabled={balance < amt}
-                      className="border-green-300 text-green-700 hover:bg-green-50">${amt}</Button>
-                  ))}
-                  <Button variant="outline" size="sm"
-                    onClick={() => setAmount(balance.toFixed(2))}
-                    disabled={balance < MIN_WITHDRAWAL}
-                    className="border-green-300 text-green-700 hover:bg-green-50">Max</Button>
-                </div>
+                    {/* Quick amounts */}
+                    <div className="flex gap-2 flex-wrap">
+                      {[10, 25, 50, 100].map(amt => (
+                        <Button key={amt} variant="outline" size="sm"
+                          onClick={() => setAmount(Math.min(amt, balance).toString())}
+                          disabled={balance < amt}
+                          className="border-green-300 text-green-700 hover:bg-green-50">${amt}</Button>
+                      ))}
+                      <Button variant="outline" size="sm" onClick={() => setAmount(balance.toFixed(2))}
+                        disabled={balance < MIN_WITHDRAWAL}
+                        className="border-green-300 text-green-700 hover:bg-green-50">Max</Button>
+                    </div>
 
-                {/* Info */}
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex gap-2 text-sm text-blue-700">
-                  <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                  <span>
-                    {method === 'paypal' ? 'PayPal payouts are processed instantly via the PayPal Payouts API.' :
-                     method === 'bank'   ? 'Bank transfers take 1-3 business days to arrive.' :
-                     `${selectedMethod?.label} payouts typically arrive within 24 hours.`}
-                  </span>
-                </div>
-
-                <Button
-                  onClick={handleWithdraw}
-                  disabled={submitting || !amount || parseFloat(amount) < MIN_WITHDRAWAL || parseFloat(amount) > balance}
-                  className="w-full bg-green-600 hover:bg-green-700 h-12 text-base"
-                >
-                  {submitting
-                    ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Submitting…</>
-                    : <><Send className="w-5 h-5 mr-2" /> Request ${amount || '0.00'} via {selectedMethod?.label}</>}
-                </Button>
+                    <Button onClick={handleWithdraw}
+                      disabled={submitting || !amount || parseFloat(amount) < MIN_WITHDRAWAL || parseFloat(amount) > balance}
+                      className="w-full bg-green-600 hover:bg-green-700 h-12 text-base">
+                      {submitting
+                        ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Submitting…</>
+                        : <><Send className="w-5 h-5 mr-2" /> Request ${amount || '0.00'} via {selectedMethod?.label}</>}
+                    </Button>
+                  </>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
