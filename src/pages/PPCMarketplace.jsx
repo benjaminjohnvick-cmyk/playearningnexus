@@ -158,7 +158,16 @@ export default function PPCMarketplace() {
           {/* Earn Tab */}
           <TabsContent value="earn" className="mt-6 space-y-6">
             {currentTier === 1 && (
-              <Tier1Overview currentTier={currentTier} onViewDetails={() => setShowTierModal(1)} />
+              <Card className="border-2 border-blue-200 bg-blue-50">
+                <CardContent className="p-6 text-center">
+                  <Zap className="w-12 h-12 text-blue-500 mx-auto mb-3" />
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">You're on Tier 1 — BitLabs Surveys</h3>
+                  <p className="text-gray-600 mb-4">Complete BitLabs surveys daily to earn $3/day. Reach 365 qualifying days (or $2,190 in referral earnings) to unlock Tier 2 PPC sessions.</p>
+                  <Button onClick={() => setShowTierModal(1)} className="bg-blue-600 hover:bg-blue-700 text-white">
+                    <Info className="w-4 h-4 mr-2" /> View Tier 1 Details
+                  </Button>
+                </CardContent>
+              </Card>
             )}
             {currentTier >= 2 && (
               <PPCSessionWidget user={user} tier={Math.min(currentTier, 3) >= 3 ? 3 : 2} />
