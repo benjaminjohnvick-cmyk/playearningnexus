@@ -125,6 +125,26 @@ export default function Surveys() {
           </Card>
         )}
 
+        {/* PPC Marketplace Banner */}
+        <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => setShowTierModal(1)}>
+          <CardContent className="p-4 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900">PPC Marketplace — 3 Tiers of Earning</p>
+                <p className="text-sm text-gray-600">Tier 1 uses BitLabs surveys. Advance to unlock higher-paying tiers with referral income up to $58,400+/year.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Info className="w-4 h-4 text-purple-600" />
+              <span className="text-purple-700 text-sm font-medium">Learn More</span>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Survey Wall */}
         <Card className="border-0 shadow-xl overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
