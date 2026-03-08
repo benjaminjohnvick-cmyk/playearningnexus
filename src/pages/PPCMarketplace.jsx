@@ -213,6 +213,11 @@ export default function PPCMarketplace() {
             <SurveyMarketplaceListing user={user} tier={currentTier} />
           </TabsContent>
 
+          {/* Store Tab */}
+          <TabsContent value="store" className="mt-6">
+            <ThirdPartySellerStore user={user} />
+          </TabsContent>
+
           {/* Publish Tab */}
           <TabsContent value="publish" className="mt-6">
             <SurveyPublisherForm user={user} />
