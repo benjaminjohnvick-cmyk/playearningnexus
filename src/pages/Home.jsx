@@ -11,6 +11,7 @@ import { base44 } from '@/api/base44Client';
 import SupportChatButton from '../components/support/SupportChatButton';
 import RecommendedSurveys from '../components/surveys/RecommendedSurveys';
 import ChallengeProgress from '../components/challenges/ChallengeProgress';
+import DailyStreakWidget from '../components/challenges/DailyStreakWidget';
 import EarningsSimulator from '../components/dashboard/EarningsSimulator';
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -232,9 +233,10 @@ export default function Home() {
       {user && (
         <div className="max-w-7xl mx-auto px-6 pb-16 space-y-8">
           <RecommendedSurveys user={user} />
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6">
             <EarningsSimulator user={user} />
             <ChallengeProgress user={user} />
+            <DailyStreakWidget user={user} />
           </div>
         </div>
       )}
