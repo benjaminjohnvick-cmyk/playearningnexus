@@ -53,6 +53,7 @@ import AdminUsers from './pages/AdminUsers';
 import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import BusinessDashboard from './pages/BusinessDashboard';
 import CRMDashboard from './pages/CRMDashboard';
+import Challenges from './pages/Challenges';
 import ContactUs from './pages/ContactUs';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorMarketplace from './pages/CreatorMarketplace';
@@ -80,13 +81,16 @@ import MonetizationHub from './pages/MonetizationHub';
 import MoneyTransfer from './pages/MoneyTransfer';
 import MovieStarGenerator from './pages/MovieStarGenerator';
 import MyPurchases from './pages/MyPurchases';
+import NotificationHistory from './pages/NotificationHistory';
 import NotificationSettings from './pages/NotificationSettings';
+import PPCMarketplace from './pages/PPCMarketplace';
 import PayPalManagement from './pages/PayPalManagement';
 import PayoutHistory from './pages/PayoutHistory';
 import PayoutSettings from './pages/PayoutSettings';
 import ReferralAnalytics from './pages/ReferralAnalytics';
 import ReferralContest from './pages/ReferralContest';
 import ReferralDashboard from './pages/ReferralDashboard';
+import ReferralHub from './pages/ReferralHub';
 import ReferralTracking from './pages/ReferralTracking';
 import Settings from './pages/Settings';
 import SocialMediaGenerator from './pages/SocialMediaGenerator';
@@ -100,11 +104,7 @@ import UserInbox from './pages/UserInbox';
 import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import Wishlist from './pages/Wishlist';
-import PPCMarketplace from './pages/PPCMarketplace';
 import Withdrawal from './pages/Withdrawal';
-import ReferralHub from './pages/ReferralHub';
-import NotificationHistory from './pages/NotificationHistory';
-import Challenges from './pages/Challenges';
 import __Layout from './Layout.jsx';
 
 
@@ -115,6 +115,7 @@ export const PAGES = {
     "AffiliateMarketplace": AffiliateMarketplace,
     "BusinessDashboard": BusinessDashboard,
     "CRMDashboard": CRMDashboard,
+    "Challenges": Challenges,
     "ContactUs": ContactUs,
     "CreatorDashboard": CreatorDashboard,
     "CreatorMarketplace": CreatorMarketplace,
@@ -142,13 +143,16 @@ export const PAGES = {
     "MoneyTransfer": MoneyTransfer,
     "MovieStarGenerator": MovieStarGenerator,
     "MyPurchases": MyPurchases,
+    "NotificationHistory": NotificationHistory,
     "NotificationSettings": NotificationSettings,
+    "PPCMarketplace": PPCMarketplace,
     "PayPalManagement": PayPalManagement,
     "PayoutHistory": PayoutHistory,
     "PayoutSettings": PayoutSettings,
     "ReferralAnalytics": ReferralAnalytics,
     "ReferralContest": ReferralContest,
     "ReferralDashboard": ReferralDashboard,
+    "ReferralHub": ReferralHub,
     "ReferralTracking": ReferralTracking,
     "Settings": Settings,
     "SocialMediaGenerator": SocialMediaGenerator,
@@ -162,11 +166,7 @@ export const PAGES = {
     "UserProfile": UserProfile,
     "VirtualStore": VirtualStore,
     "Wishlist": Wishlist,
-    "PPCMarketplace": PPCMarketplace,
     "Withdrawal": Withdrawal,
-    "ReferralHub": ReferralHub,
-    "NotificationHistory": NotificationHistory,
-    "Challenges": Challenges,
 }
 
 export const pagesConfig = {
