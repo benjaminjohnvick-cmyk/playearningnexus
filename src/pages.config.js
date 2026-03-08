@@ -103,6 +103,8 @@ import Wishlist from './pages/Wishlist';
 import PPCMarketplace from './pages/PPCMarketplace';
 import Withdrawal from './pages/Withdrawal';
 import ReferralHub from './pages/ReferralHub';
+import NotificationHistory from './pages/NotificationHistory';
+import Challenges from './pages/Challenges';
 import __Layout from './Layout.jsx';
 
 
@@ -163,6 +165,8 @@ export const PAGES = {
     "PPCMarketplace": PPCMarketplace,
     "Withdrawal": Withdrawal,
     "ReferralHub": ReferralHub,
+    "NotificationHistory": NotificationHistory,
+    "Challenges": Challenges,
 }
 
 export const pagesConfig = {
