@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ShoppingBag, Search, Star, ExternalLink, Tag, Package } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ShoppingBag, Search, ExternalLink, Tag, Package, Upload } from 'lucide-react';
+import SellerUploadForm from '@/components/ppc/SellerUploadForm';
 
 const CATEGORIES = ['all', 'electronics', 'gaming', 'fashion', 'home', 'beauty', 'sports', 'books', 'other'];
 
