@@ -60,6 +60,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="payouts">Payout Manager</TabsTrigger>
             <TabsTrigger value="manual">Manual Payouts</TabsTrigger>
             <TabsTrigger value="ai_payout">🤖 AI Intelligence</TabsTrigger>
+            <TabsTrigger value="followups">📧 Follow-Ups</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
 
