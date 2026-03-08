@@ -232,7 +232,10 @@ export default function Home() {
       {user && (
         <div className="max-w-7xl mx-auto px-6 pb-16 space-y-8">
           <RecommendedSurveys user={user} />
-          <ChallengeProgress user={user} />
+          <div className="grid lg:grid-cols-2 gap-8">
+            <EarningsSimulator user={user} />
+            <ChallengeProgress user={user} />
+          </div>
         </div>
       )}
 
