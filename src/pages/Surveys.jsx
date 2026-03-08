@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import SurveyStatsBar from '@/components/surveys/SurveyStatsBar';
 import TierInfoModal from '@/components/ppc/TierInfoModal';
 import SurveyMap from '@/components/surveys/SurveyMap';
+import SurveyHotspotHub from '@/components/surveys/SurveyHotspotHub';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
@@ -145,6 +146,9 @@ export default function Surveys() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Survey Hotspot Hub */}
+        <SurveyHotspotHub user={user} />
 
         {/* Survey Map */}
         <SurveyMap user={user} />
