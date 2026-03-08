@@ -146,6 +146,9 @@ export default function Surveys() {
           </CardContent>
         </Card>
 
+        {/* Survey Map */}
+        <SurveyMap user={user} />
+
         {/* Survey Wall */}
         <Card className="border-0 shadow-xl overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
