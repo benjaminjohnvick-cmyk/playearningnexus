@@ -51,7 +51,8 @@ export default function Withdrawal() {
 
     setSubmitting(true);
     try {
-      await base44.entities.Payout.create({
+      // 1. Create payout record in DB (status: pending)
+      const payout = await base44.entities.Payout.create({
         user_id: user.id,
         recipient_type: 'user',
         recipient_id: user.id,
@@ -63,12 +64,28 @@ export default function Withdrawal() {
         status: 'pending',
         description: `PayPal withdrawal request for $${amt.toFixed(2)}`
       });
+
+      // 2. Deduct balance immediately
       await base44.auth.updateMe({ current_balance: Math.max(0, balance - amt) });
+
+      // 3. Call PayPal Payouts API via backend function
+      const res = await base44.functions.invoke('paypalPayout', {
+        payoutId: payout.id,
+        recipientEmail: paypalEmail,
+        amount: amt,
+        currency: 'USD',
+      });
+
       const updated = await base44.auth.me();
       setUser(updated);
       queryClient.invalidateQueries(['withdrawal-history', user.id]);
       setAmount('');
-      toast.success(`Withdrawal request for $${amt.toFixed(2)} submitted! Processing within 3-5 business days.`);
+
+      if (res.data?.success) {
+        toast.success(`✅ $${amt.toFixed(2)} sent via PayPal! Batch ID: ${res.data.batch_id}`);
+      } else {
+        toast.success(`Withdrawal for $${amt.toFixed(2)} submitted — processing soon.`);
+      }
     } catch (e) {
       toast.error('Failed to submit withdrawal. Please try again.');
     } finally {
