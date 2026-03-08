@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 import PPCBadgeSystem from '@/components/referral/PPCBadgeSystem';
+import ReferralAnalyticsTab from '@/components/referral/ReferralAnalyticsTab';
 
 export default function ReferralHub() {
   const [user, setUser] = useState(null);
@@ -38,6 +39,12 @@ export default function ReferralHub() {
   const { data: dailyEarnings = [] } = useQuery({
     queryKey: ['daily-earnings-hub', user?.id],
     queryFn: () => base44.entities.DailyEarnings.filter({ user_id: user.id }, '-date', 60),
+    enabled: !!user
+  });
+
+  const { data: referralLinks = [] } = useQuery({
+    queryKey: ['referral-links-hub', user?.id],
+    queryFn: () => base44.entities.CustomReferralLink.filter({ user_id: user.id }),
     enabled: !!user
   });
 
@@ -108,11 +115,12 @@ export default function ReferralHub() {
         </div>
 
         <Tabs defaultValue="link">
-          <TabsList className="grid grid-cols-4 w-full">
+          <TabsList className="grid grid-cols-5 w-full">
             <TabsTrigger value="link">Share Link</TabsTrigger>
             <TabsTrigger value="progress">Tier Progress</TabsTrigger>
             <TabsTrigger value="badges">Badges</TabsTrigger>
             <TabsTrigger value="referrals">My Referrals</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="link" className="space-y-4 mt-4">
@@ -215,6 +223,10 @@ export default function ReferralHub() {
 
           <TabsContent value="badges" className="mt-4">
             <PPCBadgeSystem user={user} referrals={referrals} currentTier={currentTier} dailyEarnings={dailyEarnings} />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-4">
+            <ReferralAnalyticsTab referrals={referrals} referralLinks={referralLinks} />
           </TabsContent>
 
           <TabsContent value="referrals" className="mt-4">
