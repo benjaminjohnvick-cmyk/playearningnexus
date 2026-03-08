@@ -11,6 +11,7 @@ import SurveyPublisherForm from '@/components/ppc/SurveyPublisherForm';
 import TierProgressDashboard from '@/components/ppc/TierProgressDashboard';
 import PPCSessionWidget from '@/components/ppc/PPCSessionWidget';
 import SurveyMarketplaceListing from '@/components/ppc/SurveyMarketplaceListing';
+import ThirdPartySellerStore from '@/components/ppc/ThirdPartySellerStore';
 
 
 export default function PPCMarketplace() {
