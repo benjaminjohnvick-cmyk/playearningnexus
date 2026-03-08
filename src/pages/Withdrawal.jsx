@@ -265,6 +265,35 @@ export default function Withdrawal() {
         } catch (_) {
           toast.success(`Withdrawal for $${amt.toFixed(2)} submitted — we'll process it shortly.`);
         }
+      } else if (method === 'venmo') {
+        try {
+          const res = await base44.functions.invoke('venmoPayout', {
+            payoutId: payout.id, venmoUsername: recipient, amount: amt, currency: 'USD',
+          });
+          if (res.data?.success) {
+            const msg = res.data.status === 'queued'
+              ? `💙 Venmo payout queued! You'll receive $${amt.toFixed(2)} within 24 hours.`
+              : `💙 $${amt.toFixed(2)} sent via Venmo! Batch ID: ${res.data.batch_id}`;
+            toast.success(msg);
+          } else {
+            toast.success(`Venmo withdrawal for $${amt.toFixed(2)} submitted — processing soon.`);
+          }
+        } catch (_) {
+          toast.success(`Venmo withdrawal for $${amt.toFixed(2)} submitted — we'll process it shortly.`);
+        }
+      } else if (method === 'cashapp') {
+        try {
+          const res = await base44.functions.invoke('cashappPayout', {
+            payoutId: payout.id, cashtag: recipient, amount: amt, currency: 'usd',
+          });
+          if (res.data?.success) {
+            toast.success(`💚 Cash App payout queued! You'll receive $${amt.toFixed(2)} within 24 hours.`);
+          } else {
+            toast.success(`Cash App withdrawal for $${amt.toFixed(2)} submitted — processing soon.`);
+          }
+        } catch (_) {
+          toast.success(`Cash App withdrawal for $${amt.toFixed(2)} submitted — we'll process it shortly.`);
+        }
       } else {
         toast.success(`$${amt.toFixed(2)} withdrawal via ${selectedMethod?.label} submitted! Processing in 1-3 business days.`);
       }
