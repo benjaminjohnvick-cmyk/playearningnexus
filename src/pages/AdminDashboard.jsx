@@ -91,6 +91,10 @@ export default function AdminDashboard() {
             <AIPayoutIntelligence />
           </TabsContent>
 
+          <TabsContent value="followups">
+            <ReferralFollowUpAdmin />
+          </TabsContent>
+
           <TabsContent value="events">
             <Card className="p-6">
               <p className="text-gray-600 mb-4">Manage platform-wide events and special challenges</p>
