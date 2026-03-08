@@ -5,41 +5,52 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  DollarSign, Zap, Trophy, TrendingUp, Users, Star, 
-  ChevronRight, Info, Lock, CheckCircle2, Loader2
-} from "lucide-react";
+import { DollarSign, Zap, Trophy, TrendingUp, Info, Lock, CheckCircle2, Loader2, ShoppingBag, BarChart2 } from "lucide-react";
 import TierInfoModal from '@/components/ppc/TierInfoModal';
 import SurveyPublisherForm from '@/components/ppc/SurveyPublisherForm';
+import TierProgressDashboard from '@/components/ppc/TierProgressDashboard';
+import PPCSessionWidget from '@/components/ppc/PPCSessionWidget';
+import SurveyMarketplaceListing from '@/components/ppc/SurveyMarketplaceListing';
 import Tier1Overview from '@/components/ppc/Tier1Overview';
 import Tier2Overview from '@/components/ppc/Tier2Overview';
 import Tier3Overview from '@/components/ppc/Tier3Overview';
 
 export default function PPCMarketplace() {
   const [user, setUser] = useState(null);
-  const [showTierModal, setShowTierModal] = useState(null); // 1, 2, or 3
-  const [showPublisherForm, setShowPublisherForm] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [showTierModal, setShowTierModal] = useState(null);
+  const [activeTab, setActiveTab] = useState('earn');
+  const [showEntryModal, setShowEntryModal] = useState(true);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => base44.auth.redirectToLogin());
+    base44.auth.me().then(u => {
+      setUser(u);
+    }).catch(() => base44.auth.redirectToLogin());
   }, []);
 
   const { data: premiumMembership } = useQuery({
     queryKey: ['premium-membership-ppc', user?.id],
+    queryFn: () => base44.entities.PremiumMembership.filter({ user_id: user.id }).then(r => r[0] || null),
+    enabled: !!user
+  });
+
+  const { data: tierRecord } = useQuery({
+    queryKey: ['ppc-user-tier', user?.id],
+    queryFn: () => base44.entities.PPCUserTier.filter({ user_id: user.id }).then(r => r[0] || null),
+    enabled: !!user
+  });
+
+  const { data: totalEarnings = 0 } = useQuery({
+    queryKey: ['ppc-user-earnings', user?.id],
     queryFn: async () => {
-      const m = await base44.entities.PremiumMembership.filter({ user_id: user.id });
-      return m[0] || null;
+      const records = await base44.entities.DailyEarnings.filter({ user_id: user.id });
+      return records.reduce((s, r) => s + (r.total_earned || 0), 0);
     },
     enabled: !!user
   });
 
-  const { data: totalEarnings } = useQuery({
-    queryKey: ['ppc-user-earnings', user?.id],
-    queryFn: async () => {
-      const records = await base44.entities.DailyEarnings.filter({ user_id: user.id });
-      return records.reduce((sum, r) => sum + (r.total_earned || 0), 0);
-    },
+  const { data: ppcTransactions = [] } = useQuery({
+    queryKey: ['ppc-transactions', user?.id],
+    queryFn: () => base44.entities.PPCTransaction.filter({ user_id: user.id }, '-created_date', 20),
     enabled: !!user
   });
 
@@ -50,244 +61,243 @@ export default function PPCMarketplace() {
   );
 
   const daysActive = premiumMembership?.days_completed || 0;
-  const currentTier = daysActive >= 730 ? 3 : daysActive >= 365 ? 2 : 1;
+  const currentTier = tierRecord?.current_tier || (daysActive >= 730 ? 3 : daysActive >= 365 ? 2 : 1);
 
-  const tiers = [
-    {
-      num: 1,
-      name: 'Tier 1 — BitLabs Surveys',
-      color: 'from-blue-500 to-blue-700',
-      badge: 'bg-blue-100 text-blue-800',
-      icon: <Zap className="w-6 h-6" />,
-      requirement: 'Earn $3/day for 365 days',
-      earning: '$3/day via BitLabs (50% split)',
-      locked: false,
-    },
-    {
-      num: 2,
-      name: 'Tier 2 — PPC Network',
-      color: 'from-purple-500 to-purple-700',
-      badge: 'bg-purple-100 text-purple-800',
-      icon: <TrendingUp className="w-6 h-6" />,
-      requirement: 'Complete Tier 1 + refer 200 users',
-      earning: '$8/day via PPC + $58,400/yr referrals',
-      locked: currentTier < 2,
-    },
-    {
-      num: 3,
-      name: 'Tier 3 — Brand Partner Network',
-      color: 'from-yellow-500 to-yellow-700',
-      badge: 'bg-yellow-100 text-yellow-800',
-      icon: <Trophy className="w-6 h-6" />,
-      requirement: 'Complete Tier 2 + partner brands',
-      earning: '$240/day + $9,600/day referrals',
-      locked: currentTier < 3,
-    }
-  ];
+  const tierColors = { 1: 'from-blue-500 to-blue-700', 2: 'from-purple-500 to-purple-700', 3: 'from-yellow-500 to-yellow-700' };
+  const tierLabels = { 1: 'Tier 1 — BitLabs', 2: 'Tier 2 — PPC Network', 3: 'Tier 3 — Brand Partners' };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 p-6">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 p-4 md:p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
 
         {/* Header */}
         <div className="text-center">
-          <Badge className="bg-purple-100 text-purple-800 mb-3 text-sm px-4 py-1">PPC Survey Network</Badge>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">Third-Party Marketplace</h1>
-          <p className="text-gray-500 max-w-2xl mx-auto text-lg">
-            A three-tier Pay-Per-Click survey network. Complete surveys, refer users, and grow through the tiers to unlock higher earning potential.
+          <Badge className="bg-purple-100 text-purple-800 mb-3 text-sm px-4 py-1.5">PPC Survey Marketplace</Badge>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Third-Party Survey Network</h1>
+          <p className="text-gray-500 max-w-2xl mx-auto">
+            A three-tier Pay-Per-Click marketplace. Complete surveys, publish your own, and grow through tiers to unlock massive earning potential.
           </p>
         </div>
 
-        {/* Current Status Bar */}
+        {/* Status bar */}
         <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
-          <CardContent className="p-5 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                {currentTier}
+          <CardContent className="p-5">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className={`w-14 h-14 bg-gradient-to-br ${tierColors[currentTier]} rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg`}>
+                  {currentTier}
+                </div>
+                <div>
+                  <p className="font-bold text-gray-900 text-lg">{tierLabels[currentTier]}</p>
+                  <p className="text-gray-500 text-sm">{daysActive} active days · {tierRecord?.total_ppc_earnings?.toFixed(2) || '0.00'} earned via PPC</p>
+                </div>
               </div>
-              <div>
-                <p className="font-bold text-gray-900 text-lg">Current Tier: {tiers[currentTier - 1].name}</p>
-                <p className="text-gray-500 text-sm">{daysActive} active days completed</p>
+              <div className="flex items-center gap-6 text-center">
+                <div>
+                  <p className="text-2xl font-bold text-green-600">${(totalEarnings || 0).toFixed(2)}</p>
+                  <p className="text-xs text-gray-500">Total Earned</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-purple-600">${(tierRecord?.total_referral_commissions || 0).toFixed(2)}</p>
+                  <p className="text-xs text-gray-500">Referral Commissions</p>
+                </div>
+                <Button onClick={() => setShowTierModal(currentTier)} className={`bg-gradient-to-r ${tierColors[currentTier]} text-white`}>
+                  <Info className="w-4 h-4 mr-2" /> Tier Details
+                </Button>
               </div>
-            </div>
-            <div className="flex items-center gap-6 text-center">
-              <div>
-                <p className="text-2xl font-bold text-green-600">${(totalEarnings || 0).toFixed(2)}</p>
-                <p className="text-xs text-gray-500">Total Earned</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-purple-600">{daysActive}</p>
-                <p className="text-xs text-gray-500">Days Active</p>
-              </div>
-              <Button
-                onClick={() => setShowTierModal(currentTier)}
-                className="bg-gradient-to-r from-purple-600 to-blue-600"
-              >
-                <Info className="w-4 h-4 mr-2" /> Tier Details
-              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Tier Cards */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {tiers.map((tier) => (
-            <Card
-              key={tier.num}
-              className={`border-0 shadow-lg overflow-hidden relative ${tier.locked ? 'opacity-70' : ''}`}
-            >
-              <div className={`h-2 bg-gradient-to-r ${tier.color}`} />
-              <CardContent className="p-5">
-                {tier.locked && (
-                  <div className="absolute top-3 right-3">
-                    <Lock className="w-5 h-5 text-gray-400" />
+        {/* Tier cards */}
+        <div className="grid md:grid-cols-3 gap-4">
+          {[
+            { num: 1, name: 'BitLabs Surveys', icon: Zap, earning: '$3/day · 50% split', req: 'Earn $3/day for 365 days' },
+            { num: 2, name: 'PPC Network', icon: TrendingUp, earning: '$8/day PPC · $58,400/yr refs', req: 'Complete Tier 1 + 8 min/day' },
+            { num: 3, name: 'Brand Partners', icon: Trophy, earning: '$240/day · $3.5M/yr refs', req: 'Complete Tier 2 + brand partners' },
+          ].map(t => {
+            const Icon = t.icon;
+            const locked = currentTier < t.num;
+            const active = currentTier === t.num;
+            return (
+              <Card key={t.num} className={`border-0 shadow-lg overflow-hidden ${locked ? 'opacity-60' : ''}`}>
+                <div className={`h-2 bg-gradient-to-r ${tierColors[t.num]}`} />
+                <CardContent className="p-5">
+                  {active && <Badge className="bg-green-100 text-green-700 mb-2 text-xs">Your Current Tier</Badge>}
+                  <div className={`w-10 h-10 bg-gradient-to-br ${tierColors[t.num]} rounded-xl flex items-center justify-center text-white mb-3`}>
+                    {locked ? <Lock className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                   </div>
-                )}
-                {currentTier === tier.num && (
-                  <Badge className="bg-green-100 text-green-700 mb-2 text-xs">Current Tier</Badge>
-                )}
-                <div className={`w-12 h-12 bg-gradient-to-br ${tier.color} rounded-xl flex items-center justify-center text-white mb-4`}>
-                  {tier.icon}
-                </div>
-                <h3 className="font-bold text-gray-900 text-lg mb-2">{tier.name}</h3>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-gray-600">{tier.earning}</p>
+                  <h3 className="font-bold text-gray-900">Tier {t.num} — {t.name}</h3>
+                  <div className="mt-2 space-y-1.5">
+                    <div className="flex items-start gap-1.5 text-sm text-gray-600">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0 mt-0.5" />{t.earning}
+                    </div>
+                    <div className="flex items-start gap-1.5 text-sm text-gray-500">
+                      <Info className="w-3.5 h-3.5 text-gray-400 flex-shrink-0 mt-0.5" />{t.req}
+                    </div>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Star className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-gray-600">{tier.requirement}</p>
-                  </div>
-                </div>
-                <Button
-                  variant={tier.locked ? "outline" : "default"}
-                  className={`w-full ${!tier.locked ? `bg-gradient-to-r ${tier.color} text-white` : ''}`}
-                  onClick={() => setShowTierModal(tier.num)}
-                  disabled={tier.locked}
-                >
-                  {tier.locked ? <><Lock className="w-4 h-4 mr-2" /> Locked</> : <><Info className="w-4 h-4 mr-2" /> View Details</>}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  <Button variant={locked ? "outline" : "default"} size="sm"
+                    className={`w-full mt-4 ${!locked ? `bg-gradient-to-r ${tierColors[t.num]} text-white` : ''}`}
+                    onClick={() => setShowTierModal(t.num)}
+                    disabled={locked}>
+                    {locked ? <><Lock className="w-3.5 h-3.5 mr-1" /> Locked</> : <><Info className="w-3.5 h-3.5 mr-1" /> View Details</>}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Network Overview</TabsTrigger>
-            <TabsTrigger value="publish">Publish a Survey</TabsTrigger>
-            <TabsTrigger value="earnings">Earnings Calculator</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="earn">Earn PPC</TabsTrigger>
+            <TabsTrigger value="surveys">Survey Listings</TabsTrigger>
+            <TabsTrigger value="publish">Publish Survey</TabsTrigger>
+            <TabsTrigger value="progress">My Progress</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="mt-6 space-y-6">
-            <Tier1Overview currentTier={currentTier} onViewDetails={() => setShowTierModal(1)} />
-            <Tier2Overview currentTier={currentTier} onViewDetails={() => setShowTierModal(2)} />
-            <Tier3Overview currentTier={currentTier} onViewDetails={() => setShowTierModal(3)} />
+          {/* Earn Tab */}
+          <TabsContent value="earn" className="mt-6 space-y-6">
+            {currentTier === 1 && (
+              <Tier1Overview currentTier={currentTier} onViewDetails={() => setShowTierModal(1)} />
+            )}
+            {currentTier >= 2 && (
+              <PPCSessionWidget user={user} tier={Math.min(currentTier, 3) >= 3 ? 3 : 2} />
+            )}
+            {currentTier >= 2 && (
+              <Card className="border-0 shadow-lg">
+                <CardHeader><CardTitle className="flex items-center gap-2"><DollarSign className="w-5 h-5 text-green-500" />Recent PPC Transactions</CardTitle></CardHeader>
+                <CardContent>
+                  {ppcTransactions.length === 0 ? (
+                    <p className="text-gray-400 text-center py-6">No PPC transactions yet — complete your first session above!</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {ppcTransactions.slice(0, 10).map(tx => (
+                        <div key={tx.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                          <div>
+                            <p className="text-sm font-medium text-gray-800">{tx.description}</p>
+                            <p className="text-xs text-gray-400">{tx.transaction_type} · Tier {tx.tier}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-green-600">+${tx.net_amount?.toFixed(2) || tx.amount?.toFixed(2)}</p>
+                            {tx.fee_amount > 0 && <p className="text-xs text-gray-400">-${tx.fee_amount?.toFixed(2)} fee</p>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
+          {/* Survey Listings Tab */}
+          <TabsContent value="surveys" className="mt-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">Active Survey Listings</h2>
+              <div className="flex gap-2">
+                <Badge className="bg-blue-100 text-blue-700"><BarChart2 className="w-3 h-3 mr-1" />Data Collection: $4/completion</Badge>
+                <Badge className="bg-orange-100 text-orange-700"><ShoppingBag className="w-3 h-3 mr-1" />Product Listing: $4/sale</Badge>
+              </div>
+            </div>
+            <SurveyMarketplaceListing user={user} tier={currentTier} />
+          </TabsContent>
+
+          {/* Publish Tab */}
           <TabsContent value="publish" className="mt-6">
             <SurveyPublisherForm user={user} />
           </TabsContent>
 
-          <TabsContent value="earnings" className="mt-6">
+          {/* Progress Tab */}
+          <TabsContent value="progress" className="mt-6 space-y-6">
+            <TierProgressDashboard
+              tierRecord={tierRecord}
+              currentTier={currentTier}
+              onViewDetails={setShowTierModal}
+            />
             <EarningsCalculator currentTier={currentTier} />
           </TabsContent>
         </Tabs>
       </div>
 
-      {/* Tier Info Modal */}
-      {showTierModal && (
-        <TierInfoModal
-          tier={showTierModal}
-          onClose={() => setShowTierModal(null)}
-        />
+      {/* Entry info modal */}
+      {showEntryModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowEntryModal(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 text-center" onClick={e => e.stopPropagation()}>
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <TrendingUp className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to the PPC Marketplace</h2>
+            <p className="text-gray-600 mb-4 text-sm">This is a three-tier Pay-Per-Click Survey Network. Here's how it works:</p>
+            <div className="space-y-3 text-left mb-6">
+              {[
+                { tier: '1', color: 'bg-blue-100 text-blue-800', text: 'BitLabs surveys · $3/day · 50% revenue split · advance with $2,190 in referral fees' },
+                { tier: '2', color: 'bg-purple-100 text-purple-800', text: 'PPC questions · $1/min · 8 min/day · $58,400/yr referral potential' },
+                { tier: '3', color: 'bg-yellow-100 text-yellow-800', text: 'Brand partners · $1/min · 4 hrs/day · $3.5M/yr referral potential' },
+              ].map(item => (
+                <div key={item.tier} className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+                  <Badge className={item.color}>Tier {item.tier}</Badge>
+                  <p className="text-sm text-gray-700">{item.text}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 mb-4">A 10% platform fee applies to all purchases and payouts. Moving up each tier requires 365 days of active participation.</p>
+            <Button onClick={() => setShowEntryModal(false)} className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+              Got It — Let's Earn!
+            </Button>
+          </div>
+        </div>
       )}
+
+      {showTierModal && <TierInfoModal tier={showTierModal} onClose={() => setShowTierModal(null)} />}
     </div>
   );
 }
 
 function EarningsCalculator({ currentTier }) {
   const [tier, setTier] = useState(currentTier);
-
-  const calculations = {
-    1: {
-      title: 'Tier 1 Earnings Breakdown',
-      color: 'blue',
-      rows: [
-        { label: 'Daily earnings (50% of BitLabs)', value: '$3.00' },
-        { label: 'Annual personal earnings', value: '$1,095' },
-        { label: 'Referral fee per active user (10%)', value: '$109.50' },
-        { label: 'Active users needed (5% of referred)', value: '20 active = 400 referrals' },
-        { label: 'Total referral earnings at target', value: '$2,190' },
-        { label: 'Platform share of referral fees', value: '$1,095' },
-        { label: 'Your share of referral fees', value: '$1,095' },
-      ]
-    },
-    2: {
-      title: 'Tier 2 Earnings Breakdown',
-      color: 'purple',
-      rows: [
-        { label: 'PPC rate', value: '$0.10/question' },
-        { label: 'Questions per minute', value: '10 questions' },
-        { label: 'Earnings per minute', value: '$1.00/min' },
-        { label: 'Daily session (8 min)', value: '$8.00/day' },
-        { label: 'Annual daily earnings', value: '$2,920/year' },
-        { label: 'Referral commission rate', value: '10% of referee earnings' },
-        { label: 'Per referral (200 active users)', value: '$292/referral' },
-        { label: 'Total referral earnings (200 refs)', value: '$58,400/year' },
-        { label: 'Referrals needed (5% daily active)', value: '200 active = 4,000 referrals' },
-      ]
-    },
-    3: {
-      title: 'Tier 3 Earnings Breakdown',
-      color: 'yellow',
-      rows: [
-        { label: 'PPC rate', value: '$1.00/minute' },
-        { label: 'Daily sessions', value: '4 hours' },
-        { label: 'Daily personal earnings', value: '$240/day' },
-        { label: 'Referral commission rate', value: '10%' },
-        { label: 'Commission per referral', value: '$24/person/day' },
-        { label: 'Active referrals needed (5%)', value: '4,000 active = 80,000 referrals' },
-        { label: 'Daily referral earnings', value: '$9,600/day' },
-        { label: 'Annual referral earnings', value: '$3,504,000/year' },
-        { label: 'Note', value: 'Must be spent with Tier 3 brand partners' },
-      ]
-    }
+  const calcs = {
+    1: { title: 'Tier 1 Earnings', rows: [
+      ['Daily earnings (50% BitLabs)', '$3.00'],['Annual personal', '$1,095'],
+      ['Referral fee per active user (10%)', '$109.50'],['Active users needed (5% of referred)', '20 active = 400 referrals'],
+      ['Target referral earnings', '$2,190'],['Platform share', '$1,095'],['Your share', '$1,095'],
+    ]},
+    2: { title: 'Tier 2 Earnings', rows: [
+      ['PPC rate', '$0.10/question'],['Questions per minute', '10'],['Per minute', '$1.00'],
+      ['Daily session', '8 min = $8.00'],['Annual', '$2,920'],['Per referral commission', '$292/year'],
+      ['Target active referrals', '200 (4,000 total)'],['Annual referral earnings', '$58,400'],
+    ]},
+    3: { title: 'Tier 3 Earnings', rows: [
+      ['PPC rate', '$1.00/min'],['Daily sessions', '4 hrs = $240'],['Annual personal', '$87,600'],
+      ['Referral commission', '10% = $24/person/day'],['Target active referrals', '4,000 (80,000 total)'],
+      ['Daily referral earnings', '$9,600'],['Annual referral earnings', '$3,504,000'],
+      ['Note', 'Must spend with Tier 3 brand partners'],
+    ]}
   };
-
-  const calc = calculations[tier];
-  const colorMap = { blue: 'blue', purple: 'purple', yellow: 'yellow' };
-  const c = colorMap[calc.color];
-
+  const c = calcs[tier];
   return (
     <Card className="border-0 shadow-lg">
       <CardHeader>
         <div className="flex items-center justify-between flex-wrap gap-3">
           <CardTitle>Earnings Calculator</CardTitle>
           <div className="flex gap-2">
-            {[1, 2, 3].map(t => (
-              <Button
-                key={t}
-                size="sm"
-                variant={tier === t ? 'default' : 'outline'}
+            {[1,2,3].map(t => (
+              <Button key={t} size="sm" variant={tier===t?'default':'outline'}
                 onClick={() => setTier(t)}
-                className={tier === t ? `bg-gradient-to-r ${t === 1 ? 'from-blue-500 to-blue-700' : t === 2 ? 'from-purple-500 to-purple-700' : 'from-yellow-500 to-yellow-700'}` : ''}
-              >
-                Tier {t}
-              </Button>
+                className={tier===t?`bg-gradient-to-r ${t===1?'from-blue-500 to-blue-700':t===2?'from-purple-500 to-purple-700':'from-yellow-500 to-yellow-700'}`:''}
+              >Tier {t}</Button>
             ))}
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <h3 className="font-bold text-gray-900 mb-4 text-lg">{calc.title}</h3>
-        <div className="space-y-2">
-          {calc.rows.map((row, i) => (
-            <div key={i} className={`flex items-center justify-between p-3 rounded-lg ${i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-              <span className="text-sm text-gray-600">{row.label}</span>
-              <span className="font-bold text-gray-900 text-sm text-right ml-4">{row.value}</span>
+        <h3 className="font-bold text-gray-900 mb-4">{c.title}</h3>
+        <div className="space-y-1.5">
+          {c.rows.map(([label, value], i) => (
+            <div key={i} className={`flex items-center justify-between p-3 rounded-xl ${i%2===0?'bg-gray-50':'bg-white'}`}>
+              <span className="text-sm text-gray-600">{label}</span>
+              <span className="font-bold text-gray-900 text-sm ml-4 text-right">{value}</span>
             </div>
           ))}
         </div>

@@ -4,58 +4,98 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DollarSign, Info, CheckCircle2, Image, AlignLeft } from "lucide-react";
+import { DollarSign, Info, CheckCircle2, Loader2, Image } from "lucide-react";
 import { toast } from "sonner";
+import { base44 } from '@/api/base44Client';
+import { useQueryClient } from '@tanstack/react-query';
+import AISurveyBuilder from '@/components/ppc/AISurveyBuilder';
 
 const SURVEY_TYPES = {
-  type1: {
+  data_collection: {
     label: 'Type 1 — Data Collection Survey',
-    description: 'Collect data from a sample of 100 users. Cost: $4.00 per completed survey. Minimum spend: $400 (100 responses required).',
+    description: 'Collect data from 100 users. $4 per completed response. Minimum spend: $400.',
     costPerResponse: 4,
     minResponses: 100,
     minSpend: 400,
   },
-  type2: {
+  product_listing: {
     label: 'Type 2 — Product Listing Survey',
-    description: 'Promote a product with 10 questions sent to all users. Cost: $4.00 per survey that generates a sale. Includes a product photo and 180-character description. 4 answer choices (A, B, C, D). A 10% platform fee is automatically added to the sale price.',
+    description: 'Promote your product with 10 questions sent to all users. $4 per survey that generates a sale. +10% platform fee added to sale price.',
     costPerSale: 4,
     feePct: 10,
-    maxDescChars: 180,
-    questions: 10,
   }
 };
 
 export default function SurveyPublisherForm({ user }) {
   const [surveyType, setSurveyType] = useState('');
+  const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const queryClient = useQueryClient();
+
   const [formData, setFormData] = useState({
     title: '',
     productDescription: '',
     productPrice: '',
     productImageUrl: '',
     sampleSize: 100,
-    questions: ['', '', '', '', '', '', '', '', '', ''],
-    answerOptions: [
-      { a: '', b: '', c: '', d: '' },
-    ]
+    questions: Array(10).fill(null).map(() => ({ question: '', option_a: '', option_b: '', option_c: '', option_d: '' })),
   });
-  const [submitted, setSubmitted] = useState(false);
 
   const selectedType = SURVEY_TYPES[surveyType];
+  const totalCost = surveyType === 'data_collection'
+    ? Math.max(formData.sampleSize, 100) * 4
+    : null;
+  const priceWithFee = formData.productPrice ? (parseFloat(formData.productPrice) * 1.10).toFixed(2) : null;
 
-  const handleSubmit = () => {
-    if (!surveyType) { toast.error('Please select a survey type'); return; }
-    if (!formData.title) { toast.error('Please enter a survey title'); return; }
-    if (surveyType === 'type2' && formData.productDescription.length > 180) {
-      toast.error('Product description must be 180 characters or less'); return;
-    }
-    toast.success('Survey submitted for review! Our team will contact you within 24 hours.');
-    setSubmitted(true);
+  const handleQuestionsFromAI = (questions, title) => {
+    setFormData(prev => ({
+      ...prev,
+      questions: questions.slice(0, 10),
+      title: prev.title || title,
+    }));
+    setStep(3);
   };
 
-  const updateQuestion = (index, value) => {
+  const updateQuestion = (i, field, value) => {
     const updated = [...formData.questions];
-    updated[index] = value;
+    updated[i] = { ...updated[i], [field]: value };
     setFormData(prev => ({ ...prev, questions: updated }));
+  };
+
+  const handleSubmit = async () => {
+    if (!surveyType) { toast.error('Please select a survey type'); return; }
+    if (!formData.title) { toast.error('Please enter a survey title'); return; }
+    const hasQuestions = formData.questions.some(q => q.question.trim());
+    if (!hasQuestions) { toast.error('Please add at least some questions (or use AI to generate them)'); return; }
+
+    setSubmitting(true);
+    try {
+      const price = parseFloat(formData.productPrice) || 0;
+      await base44.entities.PPCSurvey.create({
+        creator_user_id: user.id,
+        tier: 1,
+        survey_type: surveyType,
+        title: formData.title,
+        product_description: formData.productDescription,
+        product_image_url: formData.productImageUrl,
+        product_price: price,
+        price_with_fee: price * 1.10,
+        sample_size: formData.sampleSize,
+        cost_per_response: 4,
+        min_spend: surveyType === 'data_collection' ? Math.max(formData.sampleSize, 100) * 4 : 400,
+        questions: formData.questions.filter(q => q.question.trim()),
+        status: 'draft',
+        ai_generated: formData.questions.some(q => q.question.trim()),
+      });
+      queryClient.invalidateQueries(['ppc-surveys-active']);
+      setSubmitted(true);
+      toast.success('Survey submitted! It will go live after review.');
+    } catch {
+      toast.error('Submission failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -66,8 +106,10 @@ export default function SurveyPublisherForm({ user }) {
             <CheckCircle2 className="w-10 h-10 text-green-600" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">Survey Submitted!</h3>
-          <p className="text-gray-500 mb-6">Our team will review your survey and reach out within 24 hours to process payment and launch.</p>
-          <Button onClick={() => setSubmitted(false)} variant="outline">Submit Another Survey</Button>
+          <p className="text-gray-500 mb-6">Your survey will be reviewed and activated within 24 hours.</p>
+          <Button onClick={() => { setSubmitted(false); setStep(1); setSurveyType(''); }} variant="outline">
+            Submit Another Survey
+          </Button>
         </CardContent>
       </Card>
     );
@@ -80,50 +122,53 @@ export default function SurveyPublisherForm({ user }) {
         <CardContent className="p-4 flex items-start gap-3">
           <Info className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-purple-900 mb-1">Publish a Survey on the PPC Network</p>
-            <p className="text-sm text-purple-800">
-              Choose from two survey types below. Surveys are distributed to our active user base. 
-              Select Type 1 for data collection or Type 2 to drive product sales.
+            <p className="font-semibold text-purple-900">Publish a Survey — One-Click AI Creation</p>
+            <p className="text-sm text-purple-800 mt-0.5">
+              Select your survey type, describe what you want, and let AI generate 10 professional questions with A/B/C/D answers instantly. A 10% platform fee is applied to all purchases.
             </p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Survey Type Selector */}
+      {/* Step 1 — Type */}
       <Card className="border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle>Step 1 — Choose Survey Type</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle>Step 1 — Select Survey Type</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          <Select value={surveyType} onValueChange={setSurveyType}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select survey type..." />
+          <Select value={surveyType} onValueChange={v => { setSurveyType(v); setStep(2); }}>
+            <SelectTrigger className="w-full border-2">
+              <SelectValue placeholder="Choose survey type…" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="type1">Type 1 — Data Collection Survey ($4/completed response)</SelectItem>
-              <SelectItem value="type2">Type 2 — Product Listing Survey ($4/sale generated)</SelectItem>
+              <SelectItem value="data_collection">
+                Type 1 — Data Collection ($4/completed response · min $400)
+              </SelectItem>
+              <SelectItem value="product_listing">
+                Type 2 — Product Listing ($4/sale generated · +10% fee)
+              </SelectItem>
             </SelectContent>
           </Select>
 
           {selectedType && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
               <p className="font-semibold text-blue-900 mb-1">{selectedType.label}</p>
               <p className="text-sm text-blue-800">{selectedType.description}</p>
-              {surveyType === 'type1' && (
-                <div className="mt-3 flex gap-4">
-                  <Badge className="bg-blue-200 text-blue-800">$4 per response</Badge>
-                  <Badge className="bg-blue-200 text-blue-800">Min. 100 responses</Badge>
-                  <Badge className="bg-blue-200 text-blue-800">Min. spend: $400</Badge>
-                </div>
-              )}
-              {surveyType === 'type2' && (
-                <div className="mt-3 flex gap-4 flex-wrap">
-                  <Badge className="bg-purple-200 text-purple-800">$4 per sale</Badge>
-                  <Badge className="bg-purple-200 text-purple-800">10 questions</Badge>
-                  <Badge className="bg-purple-200 text-purple-800">Sent to all users</Badge>
-                  <Badge className="bg-purple-200 text-purple-800">+10% platform fee on sale</Badge>
-                </div>
-              )}
+              <div className="flex gap-2 flex-wrap mt-3">
+                {surveyType === 'data_collection' && (
+                  <>
+                    <Badge className="bg-blue-200 text-blue-800">$4 per response</Badge>
+                    <Badge className="bg-blue-200 text-blue-800">Min. 100 responses</Badge>
+                    <Badge className="bg-blue-200 text-blue-800">Min. $400 spend</Badge>
+                  </>
+                )}
+                {surveyType === 'product_listing' && (
+                  <>
+                    <Badge className="bg-purple-200 text-purple-800">$4 per sale</Badge>
+                    <Badge className="bg-purple-200 text-purple-800">10 questions</Badge>
+                    <Badge className="bg-purple-200 text-purple-800">Sent to all users</Badge>
+                    <Badge className="bg-orange-200 text-orange-800">+10% platform fee</Badge>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </CardContent>
@@ -131,87 +176,60 @@ export default function SurveyPublisherForm({ user }) {
 
       {surveyType && (
         <>
-          {/* Basic Info */}
+          {/* Step 2 — Details */}
           <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Step 2 — Survey Details</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Step 2 — Survey Details</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1 block">Survey Title</label>
-                <Input
-                  placeholder="Enter survey title..."
-                  value={formData.title}
-                  onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                />
+                <Input placeholder="Enter survey title…" value={formData.title}
+                  onChange={e => setFormData(p => ({ ...p, title: e.target.value }))} className="border-2" />
               </div>
 
-              {surveyType === 'type1' && (
+              {surveyType === 'data_collection' && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">
-                    Sample Size (min. 100)
-                  </label>
-                  <Input
-                    type="number"
-                    min={100}
-                    value={formData.sampleSize}
-                    onChange={e => setFormData(prev => ({ ...prev, sampleSize: parseInt(e.target.value) || 100 }))}
-                  />
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Sample Size (min. 100)</label>
+                  <Input type="number" min={100} value={formData.sampleSize}
+                    onChange={e => setFormData(p => ({ ...p, sampleSize: parseInt(e.target.value) || 100 }))} className="border-2" />
                   <p className="text-xs text-gray-500 mt-1">
-                    Estimated cost: <strong>${(Math.max(formData.sampleSize, 100) * 4).toLocaleString()}</strong>
+                    Estimated total cost: <strong>${(Math.max(formData.sampleSize, 100) * 4).toLocaleString()}</strong>
                   </p>
                 </div>
               )}
 
-              {surveyType === 'type2' && (
+              {surveyType === 'product_listing' && (
                 <>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">
-                      Product Image URL
-                    </label>
-                    <div className="flex gap-2">
-                      <Image className="w-5 h-5 text-gray-400 mt-2 flex-shrink-0" />
-                      <Input
-                        placeholder="https://..."
-                        value={formData.productImageUrl}
-                        onChange={e => setFormData(prev => ({ ...prev, productImageUrl: e.target.value }))}
-                      />
-                    </div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Product Image URL</label>
+                    <Input placeholder="https://..." value={formData.productImageUrl}
+                      onChange={e => setFormData(p => ({ ...p, productImageUrl: e.target.value }))} className="border-2" />
                     {formData.productImageUrl && (
-                      <img src={formData.productImageUrl} alt="Preview" className="mt-2 h-32 object-contain rounded border" />
+                      <img src={formData.productImageUrl} alt="Preview" className="mt-2 h-32 w-full object-contain rounded-xl border" />
                     )}
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block flex items-center gap-2">
-                      <AlignLeft className="w-4 h-4" />
+                    <label className="text-sm font-medium text-gray-700 mb-1 block flex justify-between">
                       Product Description
-                      <span className={`text-xs ml-auto ${formData.productDescription.length > 180 ? 'text-red-500 font-bold' : 'text-gray-400'}`}>
+                      <span className={`text-xs ${formData.productDescription.length > 180 ? 'text-red-500 font-bold' : 'text-gray-400'}`}>
                         {formData.productDescription.length}/180
                       </span>
                     </label>
-                    <textarea
-                      maxLength={180}
-                      rows={3}
-                      placeholder="Describe your product in 180 characters or less..."
+                    <textarea rows={3} maxLength={180}
+                      placeholder="Describe your product in 180 characters or less…"
                       value={formData.productDescription}
-                      onChange={e => setFormData(prev => ({ ...prev, productDescription: e.target.value }))}
-                      className="w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
-                    />
+                      onChange={e => setFormData(p => ({ ...p, productDescription: e.target.value }))}
+                      className="w-full border-2 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-400" />
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-1 block">Sale Price ($)</label>
                     <div className="flex items-center gap-2">
-                      <DollarSign className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                      <Input
-                        type="number"
-                        placeholder="0.00"
-                        value={formData.productPrice}
-                        onChange={e => setFormData(prev => ({ ...prev, productPrice: e.target.value }))}
-                      />
+                      <span className="text-gray-500 font-bold">$</span>
+                      <Input type="number" placeholder="0.00" value={formData.productPrice}
+                        onChange={e => setFormData(p => ({ ...p, productPrice: e.target.value }))} className="border-2" />
                     </div>
-                    {formData.productPrice && (
+                    {priceWithFee && (
                       <p className="text-xs text-gray-500 mt-1">
-                        Buyer pays: <strong>${(parseFloat(formData.productPrice) * 1.1).toFixed(2)}</strong> (includes 10% platform fee)
+                        Buyer pays: <strong>${priceWithFee}</strong> (includes 10% platform fee)
                       </p>
                     )}
                   </div>
@@ -220,37 +238,33 @@ export default function SurveyPublisherForm({ user }) {
             </CardContent>
           </Card>
 
-          {/* Questions */}
+          {/* Step 3 — AI Question Builder */}
+          <AISurveyBuilder
+            surveyType={surveyType}
+            productName={formData.title}
+            onQuestionsGenerated={handleQuestionsFromAI}
+          />
+
+          {/* Step 4 — Review/Edit Questions */}
           <Card className="border-0 shadow-lg">
             <CardHeader>
-              <CardTitle>Step 3 — Survey Questions (10)</CardTitle>
+              <CardTitle>Step 3 — Review Questions (10)</CardTitle>
+              <p className="text-sm text-gray-500">Each question needs A, B, C, D answer options. Use AI above to auto-fill.</p>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-gray-500">
-                Each question has 4 answer choices (A, B, C, D). Users will select one answer per question.
-              </p>
+            <CardContent className="space-y-4 max-h-96 overflow-y-auto">
               {formData.questions.map((q, i) => (
-                <div key={i}>
-                  <label className="text-xs font-medium text-gray-500 mb-1 block">Question {i + 1}</label>
-                  <Input
-                    placeholder={`Enter question ${i + 1}...`}
-                    value={q}
-                    onChange={e => updateQuestion(i, e.target.value)}
-                  />
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {['A', 'B', 'C', 'D'].map(letter => (
-                      <Input
-                        key={letter}
-                        placeholder={`Answer ${letter}`}
-                        className="text-xs"
-                        value={formData.answerOptions[i]?.[letter.toLowerCase()] || ''}
-                        onChange={e => {
-                          const updated = [...formData.answerOptions];
-                          if (!updated[i]) updated[i] = { a: '', b: '', c: '', d: '' };
-                          updated[i][letter.toLowerCase()] = e.target.value;
-                          setFormData(prev => ({ ...prev, answerOptions: updated }));
-                        }}
-                      />
+                <div key={i} className="border border-gray-100 rounded-xl p-3 space-y-2 bg-gray-50">
+                  <label className="text-xs font-semibold text-gray-400">Question {i + 1}</label>
+                  <Input placeholder={`Question ${i + 1}…`} value={q.question}
+                    onChange={e => updateQuestion(i, 'question', e.target.value)} className="bg-white" />
+                  <div className="grid grid-cols-2 gap-2">
+                    {['a', 'b', 'c', 'd'].map(opt => (
+                      <div key={opt} className="flex items-center gap-1">
+                        <span className="text-xs font-bold text-purple-500 uppercase w-4">{opt}.</span>
+                        <Input placeholder={`Answer ${opt.toUpperCase()}`} value={q[`option_${opt}`] || ''}
+                          onChange={e => updateQuestion(i, `option_${opt}`, e.target.value)}
+                          className="text-xs bg-white h-8" />
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -260,23 +274,21 @@ export default function SurveyPublisherForm({ user }) {
 
           {/* Submit */}
           <Card className="border-0 shadow-lg bg-gradient-to-r from-purple-50 to-blue-50">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <div>
-                  <p className="font-bold text-gray-900">Ready to Submit?</p>
-                  <p className="text-sm text-gray-500">
-                    {surveyType === 'type1'
-                      ? `Estimated cost: $${(Math.max(formData.sampleSize, 100) * 4).toLocaleString()}`
-                      : 'Cost: $4.00 per sale generated + 10% fee on sale price'}
-                  </p>
-                </div>
-                <Button
-                  onClick={handleSubmit}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8"
-                >
-                  Submit Survey for Review
-                </Button>
+            <CardContent className="p-6 flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <p className="font-bold text-gray-900">Ready to Launch?</p>
+                <p className="text-sm text-gray-500">
+                  {surveyType === 'data_collection'
+                    ? `Total estimated cost: $${(Math.max(formData.sampleSize, 100) * 4).toLocaleString()}`
+                    : 'Cost: $4.00 per sale + 10% on sale price'}
+                </p>
               </div>
+              <Button onClick={handleSubmit} disabled={submitting}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8">
+                {submitting
+                  ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting…</>
+                  : 'Submit Survey for Review'}
+              </Button>
             </CardContent>
           </Card>
         </>
