@@ -28,6 +28,17 @@ export default function ThirdPartySellerStore({ user }) {
 
   return (
     <div className="space-y-5">
+      <Tabs defaultValue="browse">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsTrigger value="browse"><ShoppingBag className="w-4 h-4 mr-1.5" />Browse Store</TabsTrigger>
+          <TabsTrigger value="sell"><Upload className="w-4 h-4 mr-1.5" />Sell a Product</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="sell">
+          <SellerUploadForm user={user} />
+        </TabsContent>
+
+        <TabsContent value="browse">
       {/* Store Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div>
