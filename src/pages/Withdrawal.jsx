@@ -177,9 +177,9 @@ export default function Withdrawal() {
                     disabled={balance < MIN_WITHDRAWAL}
                     className="border-green-300 text-green-700 hover:bg-green-50">Max</Button>
                 </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex gap-2 text-sm text-blue-700">
+                <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex gap-2 text-sm text-green-700">
                   <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                  <span>Withdrawals are processed within 3–5 business days. You'll receive a confirmation once approved.</span>
+                  <span>Instant PayPal payout via PayPal Payouts API. Funds typically arrive within minutes once submitted.</span>
                 </div>
                 <Button onClick={handleWithdraw}
                   disabled={submitting || !amount || parseFloat(amount) < MIN_WITHDRAWAL || parseFloat(amount) > balance}
