@@ -63,7 +63,6 @@ export default function Withdrawal() {
         status: 'pending',
         description: `PayPal withdrawal request for $${amt.toFixed(2)}`
       });
-      // Deduct from balance
       await base44.auth.updateMe({ current_balance: Math.max(0, balance - amt) });
       const updated = await base44.auth.me();
       setUser(updated);
@@ -166,7 +165,6 @@ export default function Withdrawal() {
                   </div>
                 </div>
 
-                {/* Quick amount buttons */}
                 <div className="flex gap-2 flex-wrap">
                   {[10, 25, 50, 100].map(amt => (
                     <Button key={amt} variant="outline" size="sm"
@@ -186,7 +184,7 @@ export default function Withdrawal() {
 
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex gap-2 text-sm text-blue-700">
                   <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                  <span>Withdrawals are processed within 3–5 business days. You'll receive an email confirmation once approved.</span>
+                  <span>Withdrawals are processed within 3–5 business days. You'll receive a confirmation once approved.</span>
                 </div>
 
                 <Button
@@ -223,7 +221,6 @@ export default function Withdrawal() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {/* Filter summary */}
                     <div className="flex gap-3 text-xs flex-wrap mb-2">
                       {['pending', 'processing', 'completed', 'failed'].map(s => {
                         const count = payouts.filter(p => p.status === s).length;
