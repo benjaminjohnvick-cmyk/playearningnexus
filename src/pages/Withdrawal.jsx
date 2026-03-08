@@ -24,10 +24,10 @@ const MIN_WITHDRAWAL = 10;
 const FULL_ELIGIBILITY_AMOUNT = 50; // $50 = 100% eligible
 
 const PAYOUT_METHODS = [
-  { id: 'paypal',   label: 'PayPal',         icon: '🅿️', field: 'paypal_email',   placeholder: 'your@paypal.com',         type: 'email' },
-  { id: 'venmo',    label: 'Venmo',          icon: '💙', field: 'venmo_username', placeholder: '@username',               type: 'text' },
-  { id: 'cashapp',  label: 'Cash App',       icon: '💚', field: 'cashapp_username',placeholder: '$cashtag',               type: 'text' },
-  { id: 'bank',     label: 'Bank Transfer',  icon: '🏦', field: 'bank_account_number', placeholder: 'Account number',    type: 'text' },
+  { id: 'paypal',   label: 'PayPal',         icon: '🅿️', placeholder: 'your@paypal.com',                   type: 'email', hint: 'Enter your PayPal email address.' },
+  { id: 'venmo',    label: 'Venmo',          icon: '💙', placeholder: 'Email or phone linked to Venmo',    type: 'text',  hint: 'Enter the email or phone number linked to your Venmo account for instant automated payout.' },
+  { id: 'cashapp',  label: 'Cash App',       icon: '💚', placeholder: null,                                type: 'card',  hint: 'Enter your Cash Card details for an instant payout via Stripe (arrives in ~30 min).' },
+  { id: 'bank',     label: 'Bank Transfer',  icon: '🏦', placeholder: 'Account number',                   type: 'text',  hint: 'Bank transfers take 1-3 business days.' },
 ];
 
 const statusConfig = {
