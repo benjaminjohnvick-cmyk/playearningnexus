@@ -17,6 +17,7 @@ import TierInfoModal from '@/components/ppc/TierInfoModal';
 export default function Surveys() {
   const [user, setUser] = useState(null);
   const [activeSurvey, setActiveSurvey] = useState(null);
+  const [showTierModal, setShowTierModal] = useState(null);
   const queryClient = useQueryClient();
   const today = new Date().toISOString().split('T')[0];
 
