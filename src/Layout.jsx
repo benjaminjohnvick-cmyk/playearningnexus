@@ -31,6 +31,7 @@ import SupportChatButton from '@/components/support/SupportChatButton';
 import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 import MegaContestButton from '@/components/referral/MegaContestButton';
+import SurveyAlertWatcher from '@/components/surveys/SurveyAlertWatcher';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -274,6 +275,8 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main>{children}</main>
+      {/* Survey alert watcher — invisible, runs globally for logged-in users */}
+      {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
 
       <SupportChatButton />
 
