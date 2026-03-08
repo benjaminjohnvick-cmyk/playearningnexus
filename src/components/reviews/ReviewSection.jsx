@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Star, ThumbsUp } from 'lucide-react';
+import { Star, ThumbsUp, Badge as BadgeIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -28,6 +29,17 @@ export default function ReviewSection({ game, user }) {
       user_id: user.id 
     }).then(res => res[0]),
     enabled: !!game && !!user
+  });
+
+  const likeReviewMutation = useMutation({
+    mutationFn: async (reviewId) => {
+      const review = reviews.find(r => r.id === reviewId);
+      if (!review) return;
+      await base44.entities.GameReview.update(reviewId, {
+        helpful_count: (review.helpful_count || 0) + 1,
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries(['reviews', game?.id]),
   });
 
   const submitReviewMutation = useMutation({
@@ -191,11 +203,21 @@ export default function ReviewSection({ game, user }) {
                         {review.playtime_hours} hours played
                       </p>
                     )}
-                    {review.is_verified_purchase && (
-                      <span className="inline-flex items-center gap-1 text-xs text-green-600 mt-2">
-                        Verified Purchase
-                      </span>
-                    )}
+                    <div className="flex items-center gap-3 mt-3">
+                      {review.is_verified_purchase && (
+                        <span className="inline-flex items-center gap-1 text-xs text-green-600">
+                          ✓ Verified Purchase
+                        </span>
+                      )}
+                      <button
+                        onClick={() => user && likeReviewMutation.mutate(review.id)}
+                        disabled={!user || likeReviewMutation.isPending}
+                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600 transition-colors ml-auto disabled:opacity-40"
+                      >
+                        <ThumbsUp className="w-3.5 h-3.5" />
+                        <span>{review.helpful_count || 0} helpful</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
