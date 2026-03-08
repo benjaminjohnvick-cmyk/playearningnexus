@@ -378,7 +378,7 @@ export default function Withdrawal() {
       } else if (method === 'venmo') {
         try {
           const res = await base44.functions.invoke('venmoPayout', {
-            payoutId: payout.id, venmoUsername: recipient, amount: amt, currency: 'USD',
+            payoutId: payout.id, venmoContact: recipient, amount: amt, currency: 'USD',
           });
           if (res.data?.success) {
             const msg = res.data.status === 'queued'
