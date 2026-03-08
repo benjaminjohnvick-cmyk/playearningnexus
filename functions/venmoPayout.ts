@@ -1,9 +1,11 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
-// Venmo is owned by PayPal — users can receive PayPal payouts to their Venmo-linked email/phone
+// Venmo is owned by PayPal. PayPal Payouts API sends directly to Venmo-linked email or phone.
+// This is fully automated — money arrives in the recipient's Venmo balance instantly.
+
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
-const PAYPAL_BASE = 'https://api-m.sandbox.paypal.com'; // switch to api-m.paypal.com for live
+const PAYPAL_BASE = 'https://api-m.paypal.com'; // Live endpoint
 
 async function getPayPalAccessToken() {
   const credentials = btoa(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET_KEY}`);
@@ -26,42 +28,19 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { payoutId, venmoUsername, amount, currency = 'USD' } = await req.json();
-    if (!payoutId || !venmoUsername || !amount) {
-      return Response.json({ error: 'Missing required fields: payoutId, venmoUsername, amount' }, { status: 400 });
+    const { payoutId, venmoContact, amount, currency = 'USD' } = await req.json();
+    if (!payoutId || !venmoContact || !amount) {
+      return Response.json({ error: 'Missing required fields: payoutId, venmoContact, amount' }, { status: 400 });
     }
     if (amount < 10) return Response.json({ error: 'Minimum payout is $10' }, { status: 400 });
 
-    // Venmo usernames can be sent via PayPal Payouts using the PHONE or EMAIL receiver type.
-    // If the user provided an email, use EMAIL type; otherwise use PHONE for phone numbers.
-    // For @username format, we queue as manual since Venmo doesn't have direct username API.
-    const isEmail = venmoUsername.includes('@') && venmoUsername.includes('.');
-    const isPhone = /^\+?[\d\s\-()]{7,15}$/.test(venmoUsername);
+    // Determine recipient type: EMAIL or PHONE
+    const isEmail = venmoContact.includes('@') && venmoContact.includes('.');
+    const recipientType = isEmail ? 'EMAIL' : 'PHONE';
+    const recipientValue = isEmail ? venmoContact : venmoContact.replace(/\D/g, '');
 
-    let recipientType, recipientValue;
-    if (isEmail) {
-      recipientType = 'EMAIL';
-      recipientValue = venmoUsername;
-    } else if (isPhone) {
-      recipientType = 'PHONE';
-      recipientValue = venmoUsername.replace(/\D/g, '');
-    } else {
-      // Venmo @username — queue for manual processing by admin
-      await base44.asServiceRole.entities.Payout.update(payoutId, {
-        status: 'pending',
-        description: `Venmo manual payout to ${venmoUsername} — awaiting admin processing`,
-      });
-
-      await base44.asServiceRole.entities.Notification.create({
-        user_id: user.id,
-        type: 'purchase_complete',
-        title: '💙 Venmo Payout Queued',
-        message: `Your $${amount.toFixed(2)} Venmo payout to ${venmoUsername} is queued for processing within 24 hours.`,
-        status: 'unread',
-        delivery_method: ['in_app'],
-      });
-
-      return Response.json({ success: true, status: 'queued', message: 'Venmo payout queued for manual processing within 24 hours.' });
+    if (!isEmail && recipientValue.length < 7) {
+      return Response.json({ error: 'Please provide a valid email or phone number linked to your Venmo account.' }, { status: 400 });
     }
 
     const accessToken = await getPayPalAccessToken();
@@ -70,15 +49,15 @@ Deno.serve(async (req) => {
     const payload = {
       sender_batch_header: {
         sender_batch_id: batchId,
-        email_subject: 'Your GamerGain Venmo Payout Has Arrived!',
-        email_message: `Your earnings of $${amount.toFixed(2)} have been sent to your Venmo account.`,
+        email_subject: 'Your GamerGain Payout Has Arrived!',
+        email_message: `Your GamerGain earnings of $${amount.toFixed(2)} have been sent to your Venmo account.`,
       },
       items: [
         {
           recipient_type: recipientType,
           amount: { value: amount.toFixed(2), currency },
           receiver: recipientValue,
-          note: 'GamerGain earnings payout via Venmo',
+          note: 'GamerGain earnings payout',
           sender_item_id: payoutId,
         },
       ],
@@ -96,11 +75,8 @@ Deno.serve(async (req) => {
     const ppData = await ppRes.json();
 
     if (!ppRes.ok) {
-      const errMsg = ppData.message || ppData.name || `PayPal/Venmo error ${ppRes.status}`;
-      await base44.asServiceRole.entities.Payout.update(payoutId, {
-        status: 'failed',
-        error_message: errMsg,
-      });
+      const errMsg = ppData.message || ppData.name || `Venmo payout error ${ppRes.status}`;
+      await base44.asServiceRole.entities.Payout.update(payoutId, { status: 'failed', error_message: errMsg });
       return Response.json({ error: errMsg }, { status: 400 });
     }
 
@@ -115,8 +91,8 @@ Deno.serve(async (req) => {
     await base44.asServiceRole.entities.Notification.create({
       user_id: user.id,
       type: 'purchase_complete',
-      title: '💙 Venmo Payout Processing!',
-      message: `Your $${amount.toFixed(2)} Venmo payout is on its way. Batch ID: ${batchPayoutId}`,
+      title: '💙 Venmo Payout Sent!',
+      message: `Your $${amount.toFixed(2)} Venmo payout is on its way to ${venmoContact}. Batch ID: ${batchPayoutId}`,
       status: 'unread',
       delivery_method: ['in_app'],
     });
