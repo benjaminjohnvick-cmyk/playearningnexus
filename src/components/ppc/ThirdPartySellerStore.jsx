@@ -38,71 +38,71 @@ export default function ThirdPartySellerStore({ user }) {
           <SellerUploadForm user={user} />
         </TabsContent>
 
-        <TabsContent value="browse">
-      {/* Store Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-purple-600" />
-            Third-Party Seller Store
-          </h2>
-          <p className="text-sm text-gray-500 mt-0.5">Browse products from independent sellers. Earn commissions by sharing links.</p>
-        </div>
-        <div className="relative w-full md:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
-            className="pl-9"
-            placeholder="Search products..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
+        <TabsContent value="browse" className="space-y-5">
+          {/* Store Header */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <ShoppingBag className="w-5 h-5 text-purple-600" />
+                Third-Party Seller Store
+              </h2>
+              <p className="text-sm text-gray-500 mt-0.5">Browse products from independent sellers. Earn commissions by sharing links.</p>
+            </div>
+            <div className="relative w-full md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                className="pl-9"
+                placeholder="Search products..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+          </div>
 
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-2">
-        {CATEGORIES.map(cat => (
-          <Button
-            key={cat}
-            size="sm"
-            variant={category === cat ? 'default' : 'outline'}
-            className={category === cat ? 'bg-purple-600 hover:bg-purple-700 text-white capitalize' : 'capitalize'}
-            onClick={() => setCategory(cat)}
-          >
-            {cat}
-          </Button>
-        ))}
-      </div>
+          {/* Category Filter */}
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map(cat => (
+              <Button
+                key={cat}
+                size="sm"
+                variant={category === cat ? 'default' : 'outline'}
+                className={category === cat ? 'bg-purple-600 hover:bg-purple-700 text-white capitalize' : 'capitalize'}
+                onClick={() => setCategory(cat)}
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
 
-      {/* Product Grid */}
-      {isLoading ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="animate-pulse border-0 shadow">
-              <div className="h-40 bg-gray-200 rounded-t-xl" />
-              <CardContent className="p-4 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-3 bg-gray-100 rounded w-full" />
-                <div className="h-8 bg-gray-200 rounded" />
+          {/* Product Grid */}
+          {isLoading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <Card key={i} className="animate-pulse border-0 shadow">
+                  <div className="h-40 bg-gray-200 rounded-t-xl" />
+                  <CardContent className="p-4 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-100 rounded w-full" />
+                    <div className="h-8 bg-gray-200 rounded" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <Card className="border-dashed border-2 border-gray-200">
+              <CardContent className="p-10 text-center text-gray-400">
+                <Package className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                <p className="font-medium">No products found</p>
+                <p className="text-sm mt-1">Try a different search or category</p>
               </CardContent>
             </Card>
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <Card className="border-dashed border-2 border-gray-200">
-          <CardContent className="p-10 text-center text-gray-400">
-            <Package className="w-10 h-10 mx-auto mb-3 opacity-40" />
-            <p className="font-medium">No products found</p>
-            <p className="text-sm mt-1">Try a different search or category</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(product => (
-            <ProductCard key={product.id} product={product} user={user} />
-          ))}
-        </div>
-      )}
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map(product => (
+                <ProductCard key={product.id} product={product} user={user} />
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
