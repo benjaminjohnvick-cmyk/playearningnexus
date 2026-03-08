@@ -17,6 +17,7 @@ import {
 import AboutMeEditor from '../components/profile/AboutMeEditor';
 import SocialLinksEditor from '../components/profile/SocialLinksEditor';
 import FeaturedBadges from '../components/profile/FeaturedBadges';
+import SurveyInterestPicker from '../components/profile/SurveyInterestPicker';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -234,7 +235,7 @@ export default function UserProfile() {
 
         {/* ── Tabs ────────────────────────────────────────────────────────── */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-white shadow-md">
+          <TabsList className="grid w-full grid-cols-6 bg-white shadow-md">
             <TabsTrigger value="overview"><User className="w-4 h-4 mr-1 hidden sm:inline" />Overview</TabsTrigger>
             <TabsTrigger value="badges"><Award className="w-4 h-4 mr-1 hidden sm:inline" />Badges</TabsTrigger>
             <TabsTrigger value="referrals"><Users className="w-4 h-4 mr-1 hidden sm:inline" />Referrals</TabsTrigger>
@@ -574,6 +575,7 @@ export default function UserProfile() {
           {/* ── Settings ── */}
           <TabsContent value="settings">
             <div className="space-y-4">
+              <SurveyInterestPicker user={user} onUpdate={handleUserUpdate} />
               <ChatbotPreferences />
               <Card className="border-0 shadow-lg">
                 <CardHeader><CardTitle className="text-base flex items-center gap-2"><Settings className="w-5 h-5 text-gray-600" />Account Settings</CardTitle></CardHeader>
