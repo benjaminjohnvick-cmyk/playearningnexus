@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import SurveyStatsBar from '@/components/surveys/SurveyStatsBar';
 import TierInfoModal from '@/components/ppc/TierInfoModal';
+import SurveyMap from '@/components/surveys/SurveyMap';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
