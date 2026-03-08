@@ -11,6 +11,7 @@ import { base44 } from '@/api/base44Client';
 import SupportChatButton from '../components/support/SupportChatButton';
 import RecommendedSurveys from '../components/surveys/RecommendedSurveys';
 import ChallengeProgress from '../components/challenges/ChallengeProgress';
+import EarningsSimulator from '../components/dashboard/EarningsSimulator';
 export default function Home() {
   const [user, setUser] = useState(null);
 
