@@ -11,9 +11,7 @@ import SurveyPublisherForm from '@/components/ppc/SurveyPublisherForm';
 import TierProgressDashboard from '@/components/ppc/TierProgressDashboard';
 import PPCSessionWidget from '@/components/ppc/PPCSessionWidget';
 import SurveyMarketplaceListing from '@/components/ppc/SurveyMarketplaceListing';
-import Tier1Overview from '@/components/ppc/Tier1Overview';
-import Tier2Overview from '@/components/ppc/Tier2Overview';
-import Tier3Overview from '@/components/ppc/Tier3Overview';
+
 
 export default function PPCMarketplace() {
   const [user, setUser] = useState(null);
