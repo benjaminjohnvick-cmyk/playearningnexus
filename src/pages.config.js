@@ -101,8 +101,6 @@ import UserProfile from './pages/UserProfile';
 import VirtualStore from './pages/VirtualStore';
 import Wishlist from './pages/Wishlist';
 import PPCMarketplace from './pages/PPCMarketplace';
-import ReferralHub from './pages/ReferralHub';
-import Withdrawal from './pages/Withdrawal';
 import __Layout from './Layout.jsx';
 
 
@@ -161,8 +159,6 @@ export const PAGES = {
     "VirtualStore": VirtualStore,
     "Wishlist": Wishlist,
     "PPCMarketplace": PPCMarketplace,
-    "ReferralHub": ReferralHub,
-    "Withdrawal": Withdrawal,
 }
 
 export const pagesConfig = {
