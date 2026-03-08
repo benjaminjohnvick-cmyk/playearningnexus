@@ -183,6 +183,15 @@ export default function Layout({ children, currentPageName }) {
                   🏆 Referral Contest
                 </Button>
               </Link>
+              <Link to={createPageUrl('PPCMarketplace')}>
+                <Button
+                  variant={currentPageName === 'PPCMarketplace' ? "default" : "ghost"}
+                  size="sm"
+                  className={currentPageName === 'PPCMarketplace' ? "bg-gradient-to-r from-purple-600 to-blue-600 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}
+                >
+                  💰 PPC Marketplace
+                </Button>
+              </Link>
               {filteredNav.slice(0, 8).map((item) => (
                 <Link key={item.name} to={createPageUrl(item.path)}>
                   <Button
