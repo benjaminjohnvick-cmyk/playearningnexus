@@ -192,6 +192,15 @@ export default function Layout({ children, currentPageName }) {
                   💰 PPC Marketplace
                 </Button>
               </Link>
+              <Link to={createPageUrl('Withdrawal')}>
+                <Button
+                  variant={currentPageName === 'Withdrawal' ? "default" : "ghost"}
+                  size="sm"
+                  className={currentPageName === 'Withdrawal' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200"}
+                >
+                  💵 Withdraw Funds
+                </Button>
+              </Link>
               {filteredNav.slice(0, 8).map((item) => (
                 <Link key={item.name} to={createPageUrl(item.path)}>
                   <Button
