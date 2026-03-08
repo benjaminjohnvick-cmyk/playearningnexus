@@ -223,6 +223,10 @@ export default function Surveys() {
 
       </div>
     </div>
+
+    {showTierModal && (
+      <TierInfoModal tier={showTierModal} onClose={() => setShowTierModal(null)} />
+    )}
   );
 }
 
