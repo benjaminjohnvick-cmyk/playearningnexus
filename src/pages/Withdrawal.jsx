@@ -205,6 +205,112 @@ function TransactionRow({ payout }) {
   );
 }
 
+// Inner CashApp form that has access to Stripe hooks
+function CashAppWithdrawForm({ user, balance, payouts, queryClient }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [amount, setAmount] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleCashAppWithdraw = async () => {
+    const amt = parseFloat(amount);
+    if (!amt || amt < MIN_WITHDRAWAL) return toast.error(`Minimum withdrawal is $${MIN_WITHDRAWAL}`);
+    if (amt > balance) return toast.error('Amount exceeds your available balance');
+    if (!stripe || !elements) return toast.error('Stripe not loaded yet.');
+
+    setSubmitting(true);
+    try {
+      const cardElement = elements.getElement(CardElement);
+      const { token, error } = await stripe.createToken(cardElement, { currency: 'usd' });
+      if (error) { toast.error(error.message); setSubmitting(false); return; }
+
+      const payout = await base44.entities.Payout.create({
+        user_id: user.id,
+        recipient_type: 'user',
+        recipient_id: user.id,
+        recipient_email: user.email,
+        amount: amt,
+        currency: 'USD',
+        method: 'cashapp',
+        payout_type: 'manual',
+        status: 'pending',
+        description: `Cash App Instant Payout — $${amt.toFixed(2)}`,
+      });
+
+      await base44.auth.updateMe({ current_balance: Math.max(0, balance - amt) });
+
+      const res = await base44.functions.invoke('cashappPayout', {
+        payoutId: payout.id, cardToken: token.id, amount: amt, currency: 'usd',
+      });
+
+      if (res.data?.success) {
+        toast.success(`💚 $${amt.toFixed(2)} sent to your Cash Card! Arrives ~30 minutes.`);
+      } else {
+        toast.error(res.data?.error || 'Cash App payout failed.');
+      }
+
+      queryClient.invalidateQueries(['withdrawal-history', user.id]);
+      setAmount('');
+    } catch (e) {
+      toast.error('Failed to process Cash App payout. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const pendingTotal = payouts.filter(p => p.status === 'pending' || p.status === 'processing').reduce((s, p) => s + (p.amount || 0), 0);
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex gap-2 text-sm text-green-700">
+        <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+        Enter your Cash Card (Visa debit) details. Money arrives in your Cash App balance within ~30 minutes via Stripe Instant Payout.
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-gray-700 block mb-2">Cash Card Details</label>
+        <div className="border-2 border-gray-200 rounded-lg p-3 bg-white">
+          <CardElement options={{ style: { base: { fontSize: '16px', color: '#374151' } } }} />
+        </div>
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-gray-700 block mb-1">Amount (USD)</label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
+          <Input type="number" placeholder={`Min $${MIN_WITHDRAWAL}`} value={amount}
+            onChange={e => setAmount(e.target.value)} className="pl-7 border-2 text-lg"
+            min={MIN_WITHDRAWAL} max={balance} step="0.01" />
+        </div>
+        <div className="flex justify-between text-xs text-gray-400 mt-1">
+          <span>Minimum: ${MIN_WITHDRAWAL}</span>
+          <span>Available: ${balance.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <div className="flex gap-2 flex-wrap">
+        {[10, 25, 50, 100].map(amt => (
+          <Button key={amt} variant="outline" size="sm"
+            onClick={() => setAmount(Math.min(amt, balance).toString())}
+            disabled={balance < amt}
+            className="border-green-300 text-green-700 hover:bg-green-50">${amt}</Button>
+        ))}
+        <Button variant="outline" size="sm" onClick={() => setAmount(balance.toFixed(2))}
+          disabled={balance < MIN_WITHDRAWAL}
+          className="border-green-300 text-green-700 hover:bg-green-50">Max</Button>
+      </div>
+
+      <Button onClick={handleCashAppWithdraw}
+        disabled={submitting || !amount || parseFloat(amount) < MIN_WITHDRAWAL || parseFloat(amount) > balance}
+        className="w-full bg-green-600 hover:bg-green-700 h-12 text-base">
+        {submitting
+          ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Processing…</>
+          : <><Send className="w-5 h-5 mr-2" /> Send ${amount || '0.00'} to Cash Card</>}
+      </Button>
+    </div>
+  );
+}
+
 export default function Withdrawal() {
   const [user, setUser] = useState(null);
   const [amount, setAmount] = useState('');
