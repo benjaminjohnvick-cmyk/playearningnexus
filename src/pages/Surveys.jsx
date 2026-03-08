@@ -222,11 +222,11 @@ export default function Surveys() {
         </Card>
 
       </div>
-    </div>
 
-    {showTierModal && (
-      <TierInfoModal tier={showTierModal} onClose={() => setShowTierModal(null)} />
-    )}
+      {showTierModal && (
+        <TierInfoModal tier={showTierModal} onClose={() => setShowTierModal(null)} />
+      )}
+    </div>
   );
 }
 
