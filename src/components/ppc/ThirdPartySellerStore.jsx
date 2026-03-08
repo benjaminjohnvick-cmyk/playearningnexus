@@ -103,6 +103,8 @@ export default function ThirdPartySellerStore({ user }) {
           ))}
         </div>
       )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
