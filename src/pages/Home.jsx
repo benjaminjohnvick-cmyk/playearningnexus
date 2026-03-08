@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp } from "lucide-react";
@@ -9,7 +9,15 @@ import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 import AIChatbot from "../components/home/AIChatbot";
 import { base44 } from '@/api/base44Client';
 import SupportChatButton from '../components/support/SupportChatButton';
+import RecommendedSurveys from '../components/surveys/RecommendedSurveys';
+import ChallengeProgress from '../components/challenges/ChallengeProgress';
 export default function Home() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
   // Track referral link clicks
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -218,6 +226,14 @@ export default function Home() {
           </Link>
         </motion.div>
       </div>
+
+      {/* Recommended Surveys + Challenges for logged-in users */}
+      {user && (
+        <div className="max-w-7xl mx-auto px-6 pb-16 space-y-8">
+          <RecommendedSurveys user={user} />
+          <ChallengeProgress user={user} />
+        </div>
+      )}
 
       {/* AI Chatbot */}
       <AIChatbot />
