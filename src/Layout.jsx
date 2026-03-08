@@ -124,6 +124,8 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', requireAuth: true },
     { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', requireAuth: true },
     { name: 'Payout History', icon: DollarSign, path: 'PayoutHistory', requireAuth: true },
+    { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },
+    { name: 'Challenges', icon: Trophy, path: 'Challenges', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
     { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
     { name: 'AI Generator', icon: Bot, path: 'MovieStarGenerator', requireAuth: true },
