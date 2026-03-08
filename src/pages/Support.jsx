@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import SupportTicketForm from '../components/support/SupportTicketForm';
 import AIFeedbackAnalyzer from '../components/support/AIFeedbackAnalyzer';
+import SurveyDisputeForm from '../components/support/SurveyDisputeForm';
 
 export default function Support() {
   const [user, setUser] = useState(null);
@@ -65,6 +66,8 @@ export default function Support() {
             </p>
           </Card>
         </div>
+
+        <SurveyDisputeForm user={user} />
 
         <SupportTicketForm user={user} />
 
