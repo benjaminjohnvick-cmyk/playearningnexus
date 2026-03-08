@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -30,20 +32,44 @@ const iconMap = {
   points_earned: Trophy
 };
 
+// Fire a browser push notification for critical events
+function firePush(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, { body, icon: '/favicon.ico' });
+  }
+}
+
 export default function NotificationCenter({ user }) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const prevCountRef = useRef(null);
 
   const { data: notifications = [] } = useQuery({
     queryKey: ['notifications', user?.id],
     queryFn: async () => {
-      const notifs = await base44.entities.Notification.filter({
-        user_id: user.id
-      }, '-created_date', 50);
+      const notifs = await base44.entities.Notification.filter({ user_id: user.id }, '-created_date', 50);
       return notifs;
     },
-    enabled: !!user
+    enabled: !!user,
+    refetchInterval: 20000,
   });
+
+  // Fire push alert when new critical notifications arrive
+  useEffect(() => {
+    const unread = notifications.filter(n => n.status === 'unread');
+    if (prevCountRef.current === null) { prevCountRef.current = unread.length; return; }
+    if (unread.length > prevCountRef.current) {
+      const newest = unread[0];
+      const isCritical = newest && (
+        newest.type === 'referral_earnings' ||
+        (newest.title || '').toLowerCase().includes('withdrawal') ||
+        (newest.title || '').toLowerCase().includes('approved') ||
+        (newest.title || '').toLowerCase().includes('bonus')
+      );
+      if (isCritical) firePush(newest.title, newest.message);
+    }
+    prevCountRef.current = unread.length;
+  }, [notifications]);
 
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId) => {
@@ -111,16 +137,16 @@ export default function NotificationCenter({ user }) {
               <Bell className="w-5 h-5" />
               Notifications
             </SheetTitle>
-            {unreadCount > 0 && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => markAllAsReadMutation.mutate()}
-              >
-                <Check className="w-4 h-4 mr-1" />
-                Mark all read
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {unreadCount > 0 && (
+                <Button size="sm" variant="outline" onClick={() => markAllAsReadMutation.mutate()}>
+                  <Check className="w-4 h-4 mr-1" /> Mark all read
+                </Button>
+              )}
+              <Link to={createPageUrl('NotificationHistory')} onClick={() => setOpen(false)}>
+                <Button size="sm" variant="ghost" className="text-xs text-blue-600">History</Button>
+              </Link>
+            </div>
           </div>
         </SheetHeader>
 
