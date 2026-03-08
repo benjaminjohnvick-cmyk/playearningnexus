@@ -123,7 +123,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Payout Settings', icon: Settings, path: 'PayoutSettings', requireAuth: true },
     { name: 'Referral Hub', icon: Users, path: 'ReferralHub', requireAuth: true },
     { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', requireAuth: true },
-    { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', requireAuth: true },
+    { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', requireAuth: true, highlight: true },
     { name: 'Payout History', icon: DollarSign, path: 'PayoutHistory', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },
     { name: 'Challenges', icon: Trophy, path: 'Challenges', requireAuth: true },
