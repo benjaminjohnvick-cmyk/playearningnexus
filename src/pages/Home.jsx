@@ -13,6 +13,7 @@ import RecommendedSurveys from '../components/surveys/RecommendedSurveys';
 import ChallengeProgress from '../components/challenges/ChallengeProgress';
 import DailyStreakWidget from '../components/challenges/DailyStreakWidget';
 import EarningsSimulator from '../components/dashboard/EarningsSimulator';
+import RecentEarningsFeed from '../components/feed/RecentEarningsFeed';
 export default function Home() {
   const [user, setUser] = useState(null);
 
@@ -227,6 +228,21 @@ export default function Home() {
             </Button>
           </Link>
         </motion.div>
+      </div>
+
+      {/* Live feed — visible to everyone for social proof */}
+      <div className="max-w-7xl mx-auto px-6 pb-8">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <RecentEarningsFeed />
+          </div>
+          <div className="space-y-4 text-center flex flex-col justify-center">
+            <div className="text-4xl font-black text-green-600">$12,847</div>
+            <p className="text-gray-500 text-sm">Paid out to users this month</p>
+            <div className="text-2xl font-bold text-purple-600">4,231</div>
+            <p className="text-gray-500 text-sm">Surveys completed today</p>
+          </div>
+        </div>
       </div>
 
       {/* Recommended Surveys + Challenges for logged-in users */}
