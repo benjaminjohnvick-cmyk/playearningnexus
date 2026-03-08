@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal, Coins } from "lucide-react";
+import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal, Coins, MessageSquare, X } from "lucide-react";
 import { toast } from "sonner";
 import ProductSearchBar from '@/components/store/ProductSearchBar';
 import ProductSearchResults from '@/components/store/ProductSearchResults';
@@ -16,6 +16,8 @@ import LockoutModeEnforcer from '@/components/premium/LockoutModeEnforcer';
 import SurveyGate, { isSurveyGoalMet } from '@/components/surveys/SurveyGate';
 import BitLabsSurveys from '@/components/surveys/BitLabsSurveys';
 import GameCheckoutModal from '@/components/store/GameCheckoutModal';
+import ReviewSection from '@/components/reviews/ReviewSection';
+import { Dialog } from '@/components/ui/dialog';
 
 const CATEGORIES = ['all', 'puzzle', 'action', 'strategy', 'casual', 'rpg', 'simulation', 'sports', 'racing', 'adventure'];
 
@@ -26,6 +28,7 @@ export default function InAppGameStore() {
   const [sortBy, setSortBy] = useState('popular');
   const [priceRange, setPriceRange] = useState('all');
   const [checkoutGame, setCheckoutGame] = useState(null);
+  const [reviewGame, setReviewGame] = useState(null);
   const [showProductSearch, setShowProductSearch] = useState(false);
   const [productSearchResults, setProductSearchResults] = useState(null);
   const [activeTab, setActiveTab] = useState('games');
@@ -251,8 +254,19 @@ export default function InAppGameStore() {
                             </div>
                             <div className="pt-3 border-t">
                               <p className="text-xl font-bold text-green-600 mb-2">${game.price.toFixed(2)}</p>
-                              {owned ? (
-                                <Badge className="bg-green-100 text-green-700 text-xs">In Library</Badge>
+                              <button
+                              onClick={() => setReviewGame(game)}
+                              className="flex items-center gap-1 text-xs text-gray-400 hover:text-yellow-600 transition-colors mb-2"
+                            >
+                              <MessageSquare className="w-3 h-3" /> Reviews
+                            </button>
+                          {owned ? (
+                                <div className="flex gap-1.5">
+                                  <Badge className="bg-green-100 text-green-700 text-xs flex-1 justify-center py-1">In Library</Badge>
+                                  <Button size="sm" variant="outline" className="text-xs" onClick={() => setReviewGame(game)}>
+                                    <Star className="w-3 h-3 mr-1" /> Review
+                                  </Button>
+                                </div>
                               ) : (
                                 <div className="flex gap-1.5 w-full">
                                   <Button size="sm" variant="outline"
