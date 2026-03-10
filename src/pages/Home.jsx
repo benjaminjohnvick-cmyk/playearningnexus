@@ -14,6 +14,9 @@ import ChallengeProgress from '../components/challenges/ChallengeProgress';
 import DailyStreakWidget from '../components/challenges/DailyStreakWidget';
 import EarningsSimulator from '../components/dashboard/EarningsSimulator';
 import RecentEarningsFeed from '../components/feed/RecentEarningsFeed';
+import TopEarnersLeaderboard from '../components/home/TopEarnersLeaderboard';
+import MilestoneBadges from '../components/home/MilestoneBadges';
+import ReferralInviteCard from '../components/home/ReferralInviteCard';
 export default function Home() {
   const [user, setUser] = useState(null);
 
