@@ -22,6 +22,8 @@ export default function Surveys() {
   const [user, setUser] = useState(null);
   const [activeSurvey, setActiveSurvey] = useState(null);
   const [showTierModal, setShowTierModal] = useState(null);
+  const [showDisputeModal, setShowDisputeModal] = useState(false);
+  const [surveyFilters, setSurveyFilters] = useState({ category: 'All', payoutIdx: 0, timeIdx: 0 });
   const queryClient = useQueryClient();
   const today = new Date().toISOString().split('T')[0];
 
@@ -149,6 +151,9 @@ export default function Surveys() {
           </CardContent>
         </Card>
 
+        {/* Survey Filter Bar */}
+        <SurveyFilterBar filters={surveyFilters} onChange={setSurveyFilters} />
+
         {/* Survey Hotspot Hub */}
         <SurveyHotspotHub user={user} />
 
@@ -205,6 +210,14 @@ export default function Surveys() {
           </Card>
         )}
 
+        {/* Dispute Link */}
+        <div className="text-center">
+          <button onClick={() => setShowDisputeModal(true)}
+            className="text-sm text-amber-600 hover:text-amber-800 underline underline-offset-2">
+            ⚠️ Didn't receive credit for a completed survey? Submit a dispute
+          </button>
+        </div>
+
         {/* How it works */}
         <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-white">
           <CardHeader>
@@ -236,6 +249,7 @@ export default function Surveys() {
       {showTierModal && (
         <TierInfoModal tier={showTierModal} onClose={() => setShowTierModal(null)} />
       )}
+      <SurveyDisputeModal user={user} isOpen={showDisputeModal} onClose={() => setShowDisputeModal(false)} />
     </div>
   );
 }
