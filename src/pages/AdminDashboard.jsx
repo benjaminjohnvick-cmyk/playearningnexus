@@ -12,6 +12,7 @@ import AdminPayoutManager from '../components/admin/AdminPayoutManager';
 import ManualPayoutPanel from '../components/admin/ManualPayoutPanel';
 import AIPayoutIntelligence from '../components/admin/AIPayoutIntelligence';
 import ReferralFollowUpAdmin from '../components/admin/ReferralFollowUpAdmin';
+import DisputeManager from '../components/admin/DisputeManager';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);

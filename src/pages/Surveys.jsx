@@ -15,6 +15,8 @@ import SurveyStatsBar from '@/components/surveys/SurveyStatsBar';
 import TierInfoModal from '@/components/ppc/TierInfoModal';
 import SurveyMap from '@/components/surveys/SurveyMap';
 import SurveyHotspotHub from '@/components/surveys/SurveyHotspotHub';
+import SurveyFilterBar from '@/components/surveys/SurveyFilterBar';
+import SurveyDisputeModal from '@/components/surveys/SurveyDisputeModal';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
