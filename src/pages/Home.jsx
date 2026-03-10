@@ -257,6 +257,23 @@ export default function Home() {
             <ChallengeProgress user={user} />
             <DailyStreakWidget user={user} />
           </div>
+          {/* Gamified Progress Dashboard */}
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">📊 Your Progress</h2>
+            <div className="grid lg:grid-cols-3 gap-6">
+              <MilestoneBadges user={user} />
+              <TopEarnersLeaderboard />
+              <ReferralInviteCard user={user} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Top Earners visible to guests too */}
+      {!user && (
+        <div className="max-w-4xl mx-auto px-6 pb-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">🏆 Top Earners</h2>
+          <TopEarnersLeaderboard />
         </div>
       )}
 
