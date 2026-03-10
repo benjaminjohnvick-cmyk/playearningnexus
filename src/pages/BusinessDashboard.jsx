@@ -72,8 +72,9 @@ export default function BusinessDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="analytics" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-5 mb-6">
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="game-metrics">🎮 Game Metrics</TabsTrigger>
             <TabsTrigger value="ai-optimization">AI Optimization</TabsTrigger>
             <TabsTrigger value="insights">AI Insights</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
@@ -100,6 +101,11 @@ export default function BusinessDashboard() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Game Metrics Tab */}
+          <TabsContent value="game-metrics">
+            <GamePerformanceMetrics user={user} />
           </TabsContent>
 
           {/* AI Optimization Tab */}

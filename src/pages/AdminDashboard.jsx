@@ -62,6 +62,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="manual">Manual Payouts</TabsTrigger>
             <TabsTrigger value="ai_payout">🤖 AI Intelligence</TabsTrigger>
             <TabsTrigger value="followups">📧 Follow-Ups</TabsTrigger>
+            <TabsTrigger value="disputes">⚠️ Disputes</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
 
@@ -94,6 +95,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="followups">
             <ReferralFollowUpAdmin />
+          </TabsContent>
+
+          <TabsContent value="disputes">
+            <DisputeManager />
           </TabsContent>
 
           <TabsContent value="events">
