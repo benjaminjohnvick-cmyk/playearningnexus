@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import LockoutModeSettings from '../components/premium/LockoutModeSettings';
+import LocaleSettings from '../components/locale/LocaleSettings';
 import { useQuery } from '@tanstack/react-query';
 
 export default function Settings() {
@@ -401,42 +402,7 @@ export default function Settings() {
 
           {/* Language Tab */}
           <TabsContent value="language">
-            <Card>
-              <CardHeader>
-                <CardTitle>Language & Region</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="language">Preferred Language</Label>
-                  <select
-                    id="language"
-                    value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                    className="w-full border rounded-lg px-4 py-2 mt-2"
-                  >
-                    <option value="en">English</option>
-                    <option value="es">Español (Spanish)</option>
-                    <option value="fr">Français (French)</option>
-                    <option value="de">Deutsch (German)</option>
-                    <option value="zh">中文 (Chinese)</option>
-                    <option value="ja">日本語 (Japanese)</option>
-                    <option value="pt">Português (Portuguese)</option>
-                    <option value="ar">العربية (Arabic)</option>
-                  </select>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Select your preferred language for the interface
-                  </p>
-                </div>
-
-                <Button
-                  onClick={saveLanguage}
-                  disabled={loading}
-                  className="w-full"
-                >
-                  {loading ? 'Saving...' : 'Save Language'}
-                </Button>
-              </CardContent>
-            </Card>
+            <LocaleSettings />
           </TabsContent>
 
           {/* Security Tab */}
