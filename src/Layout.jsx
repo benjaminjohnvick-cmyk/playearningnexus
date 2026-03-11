@@ -32,6 +32,8 @@ import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 import MegaContestButton from '@/components/referral/MegaContestButton';
 import SurveyAlertWatcher from '@/components/surveys/SurveyAlertWatcher';
+import { LocaleProvider } from '@/components/locale/LocaleContext';
+import CurrencySelector from '@/components/locale/CurrencySelector';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
