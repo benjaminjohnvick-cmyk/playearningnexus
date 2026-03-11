@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocale } from '@/lib/LocaleContext';
+import { useLocale } from '@/components/locale/LocaleContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Globe, DollarSign, Check, Zap } from 'lucide-react';
 import { toast } from 'sonner';

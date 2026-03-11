@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocale } from '@/lib/LocaleContext';
+import { useLocale } from '@/components/locale/LocaleContext';
 
 export default function CurrencySelector() {
   const { language, currency, setCurrency, setLanguage, supportedLanguages, currencies } = useLocale();
