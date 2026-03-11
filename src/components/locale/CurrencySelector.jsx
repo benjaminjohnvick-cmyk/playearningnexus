@@ -9,16 +9,27 @@ export default function CurrencySelector() {
   const currentLang = supportedLanguages.find(l => l.code === language) || supportedLanguages[0];
   const currentCurr = currencies.find(c => c.code === currency) || currencies[0];
 
+  const openTab = (t) => { setTab(t); setOpen(true); };
+
   return (
-    <div className="relative">
+    <div className="relative flex items-center gap-1">
+      {/* Currency Button */}
       <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm font-medium text-gray-700 transition-all"
-        title="Language & Currency"
+        onClick={() => openTab('currency')}
+        className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-green-50 text-sm font-medium text-green-700 transition-all"
+        title="Currency"
+      >
+        <span className="font-bold">{currentCurr.symbol}</span>
+        <span className="text-xs text-gray-500">{currentCurr.code}</span>
+      </button>
+      {/* Language Button */}
+      <button
+        onClick={() => openTab('language')}
+        className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-gray-200 hover:bg-blue-50 text-sm font-medium text-blue-700 transition-all"
+        title="Language"
       >
         <span className="text-base">{currentLang.flag}</span>
-        <span className="hidden sm:inline font-semibold text-green-700">{currentCurr.symbol}</span>
-        <span className="hidden sm:inline text-gray-500 text-xs">{currentCurr.code}</span>
+        <span className="hidden sm:inline text-xs text-gray-500">{currentLang.code.toUpperCase()}</span>
       </button>
 
       {open && (
