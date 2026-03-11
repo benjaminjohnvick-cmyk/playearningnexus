@@ -149,6 +149,7 @@ export default function Layout({ children, currentPageName }) {
   const filteredNav = navigation.filter(item => !item.requireAuth || isAuthenticated);
 
   return (
+    <LocaleProvider>
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50" style={{
       background: 'linear-gradient(135deg, rgba(254, 242, 242, 0.95) 0%, rgba(255, 255, 255, 0.98) 50%, rgba(254, 242, 242, 0.95) 100%)',
       backdropFilter: 'blur(10px)'
