@@ -239,9 +239,12 @@ export default function Layout({ children, currentPageName }) {
                   </Button>
                 </>
               ) : (
-                <Button onClick={() => base44.auth.redirectToLogin()} className="bg-gradient-to-r from-red-600 to-red-700 shadow-lg" size="sm">
-                  Sign In
-                </Button>
+                <>
+                  <CurrencySelector />
+                  <Button onClick={() => base44.auth.redirectToLogin()} className="bg-gradient-to-r from-red-600 to-red-700 shadow-lg" size="sm">
+                    Sign In
+                  </Button>
+                </>
               )}
             </div>
 
