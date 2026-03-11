@@ -248,8 +248,10 @@ export default function Layout({ children, currentPageName }) {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {/* Mobile: Currency Selector + Menu Button */}
+            <div className="md:hidden flex items-center gap-1">
+              <CurrencySelector />
+              <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </Button>
           </div>
