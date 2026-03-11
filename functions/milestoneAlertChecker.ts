@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
-const ADMIN_EMAIL = 'admin@gamergain.com'; // Change to your admin email
+const ADMIN_EMAIL = 'benjaminjohnvick@gmail.com';
 const MILESTONES = [100, 250, 500, 1000, 2500, 5000];
 
 Deno.serve(async (req) => {

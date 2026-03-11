@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
-const ADMIN_EMAIL = 'admin@gamergain.com'; // Change to your admin email
+const ADMIN_EMAIL = 'benjaminjohnvick@gmail.com';
 const LARGE_WITHDRAWAL_THRESHOLD = 50; // $50+
 const HIGH_VALUE_MILESTONE_THRESHOLD = 100; // $100+ total earnings
 
