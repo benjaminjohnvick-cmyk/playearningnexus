@@ -227,6 +227,7 @@ export default function Layout({ children, currentPageName }) {
                     <p className="text-xs font-medium text-gray-900">{user.full_name}</p>
                     <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
                   </div>
+                  <CurrencySelector />
                   <NotificationCenter user={user} />
                   <Link to={createPageUrl('Settings')}>
                     <Button variant="ghost" size="icon">
