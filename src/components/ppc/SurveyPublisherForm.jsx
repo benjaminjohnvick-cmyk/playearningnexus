@@ -95,7 +95,6 @@ export default function SurveyPublisherForm({ user }) {
         min_spend: surveyType === 'data_collection' ? Math.max(formData.sampleSize, 100) * 4 : 400,
         questions: formData.questions.filter(q => q.question.trim()),
         skip_logic: formData.skipLogic || [],
-        targeting: targeting,
         status: 'draft',
         ai_generated: formData.questions.some(q => q.question.trim()),
       });
