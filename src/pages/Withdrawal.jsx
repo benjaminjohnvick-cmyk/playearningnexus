@@ -575,6 +575,10 @@ export default function Withdrawal() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="earnings" className="mt-4">
+            <TransactionHistory user={user} />
+          </TabsContent>
+
           <TabsContent value="history" className="mt-4">
             <Card className="border-0 shadow-lg">
               <CardHeader>
