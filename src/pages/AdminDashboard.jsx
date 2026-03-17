@@ -13,6 +13,7 @@ import ManualPayoutPanel from '../components/admin/ManualPayoutPanel';
 import AIPayoutIntelligence from '../components/admin/AIPayoutIntelligence';
 import ReferralFollowUpAdmin from '../components/admin/ReferralFollowUpAdmin';
 import DisputeManager from '../components/admin/DisputeManager';
+import ComplianceReview from '../components/admin/ComplianceReview';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
@@ -63,6 +64,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="ai_payout">🤖 AI Intelligence</TabsTrigger>
             <TabsTrigger value="followups">📧 Follow-Ups</TabsTrigger>
             <TabsTrigger value="disputes">⚠️ Disputes</TabsTrigger>
+            <TabsTrigger value="compliance">🛡️ Compliance</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
 
@@ -99,6 +101,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="disputes">
             <DisputeManager />
+          </TabsContent>
+
+          <TabsContent value="compliance">
+            <ComplianceReview />
           </TabsContent>
 
           <TabsContent value="events">
