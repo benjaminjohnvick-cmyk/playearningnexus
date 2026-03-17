@@ -138,79 +138,53 @@ ${payout.transaction_id ? `Transaction ID: ${payout.transaction_id}` : ''}
           <p className="text-gray-600">Track earnings, manage payouts, and optimize your referrals</p>
         </div>
 
-        <EnhancedPayoutDashboard user={user} />
-        
-        <div className="grid lg:grid-cols-2 gap-6">
-          <CampaignAutomation user={user} />
-          <AutomatedFollowUps user={user} />
+        {/* Stats */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { label: 'Total Earnings', value: `$${totalEarnings.toFixed(2)}`, sub: `${completedPayouts} completed`, color: 'text-green-600' },
+            { label: 'Pending', value: `$${pendingAmount.toFixed(2)}`, sub: 'Scheduled for payment', color: 'text-amber-600' },
+            { label: 'Total Referrals', value: totalReferrals, sub: `${userReferrals} users · ${businessReferrals} biz`, color: 'text-blue-600' },
+            { label: 'Lifetime Value', value: `$${totalLifetimeValue.toFixed(2)}`, sub: 'From all referrals', color: 'text-purple-600' },
+          ].map(s => (
+            <Card key={s.label} className="border-0 shadow-md">
+              <CardContent className="p-5">
+                <p className="text-xs text-gray-500 mb-1">{s.label}</p>
+                <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{s.sub}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Detailed Payout History</h2>
-        </div>
+        <Tabs defaultValue="history">
+          <TabsList className="grid grid-cols-4 w-full max-w-xl">
+            <TabsTrigger value="history" className="flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> History</TabsTrigger>
+            <TabsTrigger value="schedule" className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> Schedule</TabsTrigger>
+            <TabsTrigger value="tax" className="flex items-center gap-1"><DollarSign className="w-3.5 h-3.5" /> Tax Docs</TabsTrigger>
+            <TabsTrigger value="tiers" className="flex items-center gap-1"><Trophy className="w-3.5 h-3.5" /> Tiers</TabsTrigger>
+          </TabsList>
 
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-500">Total Earnings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-gray-900">${totalEarnings.toFixed(2)}</span>
-              </div>
-              <p className="text-sm text-gray-500 mt-1">{completedPayouts} completed payouts</p>
-            </CardContent>
-          </Card>
+          <TabsContent value="schedule" className="mt-4 grid md:grid-cols-2 gap-6">
+            <PendingPayoutSchedule pendingPayouts={payouts.filter(p => p.status === 'pending' || p.status === 'scheduled')} />
+            <EnhancedPayoutDashboard user={user} />
+          </TabsContent>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-500">Pending Payouts</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-amber-600">${pendingAmount.toFixed(2)}</span>
-              </div>
-              <p className="text-sm text-gray-500 mt-1">Scheduled for payment</p>
-            </CardContent>
-          </Card>
+          <TabsContent value="tax" className="mt-4 max-w-2xl">
+            <PayoutTaxDocs user={user} payouts={payouts} />
+          </TabsContent>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-500">Total Referrals</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-gray-900">{totalReferrals}</span>
-              </div>
-              <div className="flex gap-3 mt-1 text-sm text-gray-500">
-                <span className="flex items-center gap-1">
-                  <Users className="w-3 h-3" />
-                  {userReferrals}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Building2 className="w-3 h-3" />
-                  {businessReferrals}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+          <TabsContent value="tiers" className="mt-4 max-w-2xl">
+            <TierAdvancement
+              currentTier={tierRecord?.current_tier || 1}
+              activeReferrals={referrals.filter(r => r.status === 'active').length}
+              totalCommission={totalEarnings}
+              tier2Days={tierRecord?.tier2_days_active || 0}
+            />
+          </TabsContent>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-500">Lifetime Value</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-green-600">${totalLifetimeValue.toFixed(2)}</span>
-              </div>
-              <p className="text-sm text-gray-500 mt-1">From all referrals</p>
-            </CardContent>
-          </Card>
-        </div>
-
+          <TabsContent value="history" className="mt-4">
         {/* Payout History */}
-        <Card>
+        <Card className="border-0 shadow-md">
           <CardHeader>
             <CardTitle>Payout History</CardTitle>
             <CardDescription>Detailed breakdown of all your referral payments</CardDescription>
