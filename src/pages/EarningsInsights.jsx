@@ -12,6 +12,7 @@ import { TrendingUp, DollarSign, Users, Zap } from 'lucide-react';
 import EarningsFeed from '@/components/earnings/EarningsFeed';
 import CategoryBreakdown from '@/components/earnings/CategoryBreakdown';
 import PayoutProgressDashboard from '@/components/earnings/PayoutProgressDashboard';
+import EarningsPotentialCalculator from '@/components/earnings/EarningsPotentialCalculator';
 import { format, subDays, parseISO } from 'date-fns';
 
 export default function EarningsInsights() {
@@ -278,6 +279,17 @@ export default function EarningsInsights() {
             transactions={transactions}
             payouts={payouts}
             dailyEarnings={dailyEarnings}
+          />
+        </div>
+
+        {/* Earnings Calculator */}
+        <div className="mt-12">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span>🎯</span> Earnings Potential
+          </h2>
+          <EarningsPotentialCalculator
+            currentBalance={user?.total_earnings || 0}
+            nextPayoutThreshold={50}
           />
         </div>
       </div>

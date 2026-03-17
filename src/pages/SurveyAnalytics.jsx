@@ -16,6 +16,7 @@ import {
   RefreshCw, Globe, Shield, Clock, Users, Star, AlertCircle, Tag, AlertTriangle
 } from 'lucide-react';
 import ResponseReviewPanel from '@/components/surveys/ResponseReviewPanel';
+import SurveyScheduleBuilder from '@/components/surveys/SurveyScheduleBuilder';
 import { toast } from 'sonner';
 
 const COLORS = ['#7c3aed', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
