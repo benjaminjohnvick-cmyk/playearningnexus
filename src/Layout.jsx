@@ -129,6 +129,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },
     { name: 'Challenges', icon: Trophy, path: 'Challenges', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
+    { name: 'Manage Payouts', icon: DollarSign, path: 'ManagePayouts', requireAuth: true },
     { name: 'Survey Analytics', icon: TrendingUp, path: 'SurveyAnalytics', requireAuth: true },
     { name: 'Business Analytics', icon: TrendingUp, path: 'BusinessSurveyAnalytics', requireAuth: true },
     { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
