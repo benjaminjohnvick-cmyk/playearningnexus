@@ -230,7 +230,7 @@ Let me know if you have any questions. Highly recommend giving it a shot.
         id: 'em_formal',
         label: '💼 Semi-Formal',
         tone: 'Professional',
-        subject: 'Thought you'd find this useful — GamerGain',
+        subject: "Thought you'd find this useful — GamerGain",
         body: `Hi,
 
 I wanted to share a platform I've been using for supplemental income: GamerGain.
