@@ -279,6 +279,7 @@ export default function EarningsInsights() {
             payouts={payouts}
             dailyEarnings={dailyEarnings}
           />
+        </div>
       </div>
     </div>
   );
