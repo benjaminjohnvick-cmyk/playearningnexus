@@ -173,6 +173,9 @@ export default function Surveys() {
         {/* Personalized Survey Task Cards */}
         <PersonalizedSurveyCards user={user} onSurveyStart={() => {}} />
 
+        {/* AI Survey Creator */}
+        <AISurveyBuilder onSurveyCreated={() => {}} />
+
         {/* AI Survey Matcher */}
         <div id="ai-survey-matcher">
           <AISurveyMatcher user={user} />
