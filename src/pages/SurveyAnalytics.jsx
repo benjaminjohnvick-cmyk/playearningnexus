@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import ResponseReviewPanel from '@/components/surveys/ResponseReviewPanel';
 import SurveyScheduleBuilder from '@/components/surveys/SurveyScheduleBuilder';
+import SurveyABTestBuilder from '@/components/surveys/SurveyABTestBuilder';
+import SurveyABTestMonitor from '@/components/surveys/SurveyABTestMonitor';
 import { toast } from 'sonner';
 
 const COLORS = ['#7c3aed', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
@@ -80,6 +82,16 @@ export default function SurveyAnalytics() {
   const [selectedSurveyId, setSelectedSurveyId] = useState('');
   const [aiReport, setAiReport] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
+
+  // Fetch A/B tests
+  const { data: abTests = [] } = useQuery({
+    queryKey: ['abTests', user?.id],
+    queryFn: async () => {
+      const tests = await base44.entities.SurveyABTest.filter({ creator_user_id: user.id });
+      return tests;
+    },
+    enabled: !!user?.id
+  });
   const [themes, setThemes] = useState(null);
   const [loadingThemes, setLoadingThemes] = useState(false);
 
@@ -266,12 +278,13 @@ export default function SurveyAnalytics() {
             </div>
 
             <Tabs defaultValue="responses">
-              <TabsList className="grid grid-cols-6 w-full">
+              <TabsList className="grid grid-cols-7 w-full">
                 <TabsTrigger value="responses">Responses</TabsTrigger>
                 <TabsTrigger value="themes">Themes</TabsTrigger>
                 <TabsTrigger value="review">Review</TabsTrigger>
                 <TabsTrigger value="quality">Data Quality</TabsTrigger>
                 <TabsTrigger value="languages">Languages</TabsTrigger>
+                <TabsTrigger value="tests">A/B Tests</TabsTrigger>
                 <TabsTrigger value="ai">AI Report</TabsTrigger>
               </TabsList>
 
@@ -490,6 +503,27 @@ export default function SurveyAnalytics() {
               {/* Tab: Response Review */}
               <TabsContent value="review" className="space-y-4 mt-4">
                 <ResponseReviewPanel surveyId={selectedSurveyId} />
+              </TabsContent>
+
+              {/* Tab: A/B Tests */}
+              <TabsContent value="tests" className="space-y-5 mt-4">
+                <Tabs defaultValue="monitor" className="w-full">
+                  <TabsList className="grid grid-cols-2 w-full">
+                    <TabsTrigger value="monitor">Active Tests</TabsTrigger>
+                    <TabsTrigger value="create">New Test</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="monitor" className="mt-4">
+                    <SurveyABTestMonitor
+                      tests={abTests}
+                      surveys={Object.fromEntries(surveys.map(s => [s.id, s]))}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="create" className="mt-4">
+                    <SurveyABTestBuilder userSurveys={surveys} />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
 
               {/* Tab: AI Report */}
