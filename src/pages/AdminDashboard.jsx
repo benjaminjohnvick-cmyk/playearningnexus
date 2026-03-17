@@ -18,6 +18,7 @@ import ContentLibraryManager from '../components/admin/ContentLibraryManager';
 import ContestManager from '../components/admin/ContestManager';
 import FraudAlertPanel from '../components/admin/FraudAlertPanel';
 import DataExportCenter from '../components/admin/DataExportCenter';
+import CustomDomainManager from '../components/admin/CustomDomainManager';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
@@ -71,6 +72,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="compliance">🛡️ Compliance</TabsTrigger>
             <TabsTrigger value="content_library">📚 Content Library</TabsTrigger>
             <TabsTrigger value="contests">🏆 Contests</TabsTrigger>
+            <TabsTrigger value="custom_domains">🌐 Custom Domains</TabsTrigger>
             <TabsTrigger value="fraud_alerts">🚨 Fraud Alerts</TabsTrigger>
             <TabsTrigger value="exports">📊 Export</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
@@ -121,6 +123,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="contests">
             <ContestManager />
+          </TabsContent>
+
+          <TabsContent value="custom_domains">
+            <CustomDomainManager />
           </TabsContent>
 
           <TabsContent value="fraud_alerts">
