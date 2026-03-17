@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
 import AISurveyBuilder from '@/components/ppc/AISurveyBuilder';
 import SkipLogicBuilder from '@/components/ppc/SkipLogicBuilder';
+import { useCollabSession, CollabAvatars, CollabFieldHighlight } from '@/components/ppc/CollabCursors';
+import SurveyTargetingFilter from '@/components/ppc/SurveyTargetingFilter';
 
 const SURVEY_TYPES = {
   data_collection: {
@@ -32,7 +34,12 @@ export default function SurveyPublisherForm({ user }) {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [collabSurveyId, setCollabSurveyId] = useState(null);
+  const [targeting, setTargeting] = useState({});
   const queryClient = useQueryClient();
+
+  // Live collaboration (only active once a survey draft is created/selected)
+  const { collaborators, updateCursor } = useCollabSession(collabSurveyId, user);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -88,6 +95,7 @@ export default function SurveyPublisherForm({ user }) {
         min_spend: surveyType === 'data_collection' ? Math.max(formData.sampleSize, 100) * 4 : 400,
         questions: formData.questions.filter(q => q.question.trim()),
         skip_logic: formData.skipLogic || [],
+        targeting: targeting,
         status: 'draft',
         ai_generated: formData.questions.some(q => q.question.trim()),
       });
@@ -265,8 +273,11 @@ export default function SurveyPublisherForm({ user }) {
               {formData.questions.map((q, i) => (
                 <div key={i} className="border border-gray-100 rounded-xl p-3 space-y-2 bg-gray-50">
                   <label className="text-xs font-semibold text-gray-400">Question {i + 1}</label>
-                  <Input placeholder={`Question ${i + 1}…`} value={q.question}
-                    onChange={e => updateQuestion(i, 'question', e.target.value)} className="bg-white" />
+                  <CollabFieldHighlight collaborators={collaborators} questionIndex={i} field="question">
+                   <Input placeholder={`Question ${i + 1}…`} value={q.question}
+                     onFocus={() => updateCursor(i, 'question')}
+                     onChange={e => updateQuestion(i, 'question', e.target.value)} className="bg-white" />
+                  </CollabFieldHighlight>
                   <div className="grid grid-cols-2 gap-2">
                     {['a', 'b', 'c', 'd'].map(opt => (
                       <div key={opt} className="flex items-center gap-1">
