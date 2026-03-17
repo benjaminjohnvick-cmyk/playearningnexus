@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import { TrendingUp, DollarSign, Users, Zap } from 'lucide-react';
 import EarningsFeed from '@/components/earnings/EarningsFeed';
+import CategoryBreakdown from '@/components/earnings/CategoryBreakdown';
 import { format, subDays, parseISO } from 'date-fns';
 
 export default function EarningsInsights() {
@@ -251,6 +252,9 @@ export default function EarningsInsights() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Category Breakdown */}
+            <CategoryBreakdown transactions={transactions} />
 
             {/* Live Feed */}
             <EarningsFeed />
