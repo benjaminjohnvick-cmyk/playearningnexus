@@ -4,10 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, DollarSign, TrendingUp, Trophy, Link as LinkIcon, Loader2 } from 'lucide-react';
+import { Users, DollarSign, TrendingUp, Trophy, Link as LinkIcon, Loader2, Megaphone } from 'lucide-react';
 import InvitationLinkGenerator from '@/components/referral/InvitationLinkGenerator';
 import TierMilestoneProgress from '@/components/referral/TierMilestoneProgress';
 import ReferralLeaderboardPanel from '@/components/referral/ReferralLeaderboardPanel';
+import ReferralMarketingHub from '@/components/referral/ReferralMarketingHub';
 
 export default function ReferralDashboard() {
   const [user, setUser] = useState(null);
