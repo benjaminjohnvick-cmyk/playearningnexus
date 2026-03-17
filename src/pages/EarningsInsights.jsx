@@ -64,7 +64,7 @@ export default function EarningsInsights() {
   }, [dailyEarnings, transactions]);
 
   // Predictions: simple linear trend over last 7 days projected 14 days
-  const predictions = React.useMemo(() => {
+  const predictions = useMemo(() => {
     const recent = chartData.slice(-7);
     if (recent.length < 2) return [];
     const avg = recent.reduce((sum, d) => sum + d.total, 0) / recent.length;
