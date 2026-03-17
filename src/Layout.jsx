@@ -32,6 +32,7 @@ import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 import MegaContestButton from '@/components/referral/MegaContestButton';
 import SurveyAlertWatcher from '@/components/surveys/SurveyAlertWatcher';
+import PushNotificationManager from '@/components/notifications/PushNotificationManager';
 import { LocaleProvider } from '@/components/locale/LocaleContext';
 import CurrencySelector from '@/components/locale/CurrencySelector';
 
@@ -236,6 +237,7 @@ export default function Layout({ children, currentPageName }) {
                       <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
                     </div>
                     <CurrencySelector />
+                    <PushNotificationManager />
                     <NotificationCenter user={user} />
                     <Link to={createPageUrl('Settings')}>
                       <Button variant="ghost" size="icon">
