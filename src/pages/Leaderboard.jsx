@@ -192,8 +192,15 @@ export default function Leaderboard() {
               </Card>
             ) : (
               dailyTop10.map(({ user: u, earned, surveys }, i) => (
-                <LeaderRow key={u.id} rankUser={u} index={i} currentUserId={user.id}
-                  value={`$${earned.toFixed(2)}`} valueLabel={`${surveys} surveys today`} valueColor="text-orange-600" />
+                <div key={u.id} className="relative">
+                  <LeaderRow rankUser={u} index={i} currentUserId={user.id}
+                    value={`$${earned.toFixed(2)}`} valueLabel={`${surveys} surveys today`} valueColor="text-orange-600" />
+                  {u.id === user?.id && (
+                    <div className="absolute top-3 right-3">
+                      <InspireShareButton user={user} rank={i + 1} dailyEarned={earned} weeklyEarned={earned} />
+                    </div>
+                  )}
+                </div>
               ))
             )}
           </TabsContent>
