@@ -152,12 +152,15 @@ export default function PPCMarketplace() {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="earn">Earn PPC</TabsTrigger>
-            <TabsTrigger value="surveys">Survey Listings</TabsTrigger>
-            <TabsTrigger value="publish">Publish Survey</TabsTrigger>
+            <TabsTrigger value="surveys">Listings</TabsTrigger>
+            <TabsTrigger value="publish">Publish</TabsTrigger>
             <TabsTrigger value="store">🛍️ Store</TabsTrigger>
-            <TabsTrigger value="progress">My Progress</TabsTrigger>
+            <TabsTrigger value="progress">Progress</TabsTrigger>
+            <TabsTrigger value="analytics">📊 Analytics</TabsTrigger>
+            <TabsTrigger value="distribute">📤 Distribute</TabsTrigger>
+            <TabsTrigger value="translate">🌍 Translate</TabsTrigger>
           </TabsList>
 
           {/* Earn Tab */}
