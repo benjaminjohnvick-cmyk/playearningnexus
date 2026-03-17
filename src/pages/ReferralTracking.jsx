@@ -176,74 +176,8 @@ export default function ReferralTracking() {
           </div>
         )}
 
-        {/* Links Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Link2 className="w-4 h-4" /> Your Referral Links ({referralLinks.length})
-            </CardTitle>
-            <CardDescription>Each link has a unique code. Share them to track exactly where sign-ups come from.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="text-center py-12 text-gray-400">Loading...</div>
-            ) : referralLinks.length === 0 ? (
-              <div className="text-center py-12">
-                <Link2 className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                <p className="text-gray-500 mb-1">No referral links yet</p>
-                <p className="text-sm text-gray-400">Create your first link to start tracking performance</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {referralLinks.map(link => {
-                  const rate = link.clicks > 0 ? ((link.conversions / link.clicks) * 100).toFixed(1) : '0.0';
-                  return (
-                    <div key={link.id} className="border rounded-xl p-4 bg-white hover:shadow-sm transition-shadow">
-                      <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-gray-900 text-sm">{link.campaign_name || 'Unnamed Link'}</h3>
-                            <Badge variant="outline" className="text-xs capitalize">{link.link_type}</Badge>
-                            {link.referral_source && <Badge variant="outline" className="text-xs capitalize">{link.referral_source}</Badge>}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Input
-                              value={`${window.location.origin}/?ref=${link.link_code}`}
-                              readOnly
-                              className="text-xs bg-gray-50 h-8 w-72 font-mono"
-                            />
-                            <Button size="sm" variant="outline" className="h-8" onClick={() => copyLink(link)}>
-                              <Copy className="w-3.5 h-3.5" />
-                            </Button>
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-400 flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {format(new Date(link.created_date), 'MMM d, yyyy')}
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-4 gap-3">
-                        {[
-                          { label: 'Clicks', value: link.clicks || 0, color: 'text-blue-600', bg: 'bg-blue-50', icon: MousePointerClick },
-                          { label: 'Sign-Ups', value: link.conversions || 0, color: 'text-green-600', bg: 'bg-green-50', icon: Users },
-                          { label: 'Earned', value: `$${(link.total_earned || 0).toFixed(2)}`, color: 'text-purple-600', bg: 'bg-purple-50', icon: DollarSign },
-                          { label: 'Conv. Rate', value: `${rate}%`, color: 'text-orange-600', bg: 'bg-orange-50', icon: ArrowUpRight },
-                        ].map(s => (
-                          <div key={s.label} className={`${s.bg} rounded-lg p-2.5 text-center`}>
-                            <s.icon className={`w-3.5 h-3.5 ${s.color} mx-auto mb-1`} />
-                            <p className={`text-base font-bold ${s.color}`}>{s.value}</p>
-                            <p className="text-xs text-gray-500">{s.label}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Custom Link Builder */}
+        <CustomLinkBuilder user={user} referralLinks={referralLinks} isLoading={isLoading} />
 
         {/* Tips */}
         <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
