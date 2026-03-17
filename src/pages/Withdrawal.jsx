@@ -14,6 +14,8 @@ import {
   TrendingUp, Zap, BarChart2
 } from 'lucide-react';
 import TransactionHistory from '@/components/earnings/TransactionHistory';
+import PayoutTimeline from '@/components/payout/PayoutTimeline';
+import SmartPayoutTips from '@/components/payout/SmartPayoutTips';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { loadStripe } from '@stripe/stripe-js';
@@ -467,16 +469,17 @@ export default function Withdrawal() {
         <EligibilityBar balance={balance} />
 
         <Tabs defaultValue="withdraw">
-          <TabsList className="grid grid-cols-3 w-full">
+          <TabsList className="grid grid-cols-4 w-full">
             <TabsTrigger value="withdraw">Request Payout</TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-1.5">
-              Withdrawals
+              Timeline
               {payouts.filter(p => p.status === 'processing').length > 0 && (
                 <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
               )}
             </TabsTrigger>
+            <TabsTrigger value="tips">💡 Smart Tips</TabsTrigger>
             <TabsTrigger value="earnings" className="flex items-center gap-1.5">
-              <BarChart2 className="w-3.5 h-3.5" /> Earnings History
+              <BarChart2 className="w-3.5 h-3.5" /> Earnings
             </TabsTrigger>
           </TabsList>
 
@@ -580,52 +583,11 @@ export default function Withdrawal() {
           </TabsContent>
 
           <TabsContent value="history" className="mt-4">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-gray-500" /> Transaction History
-                  </CardTitle>
-                  <button onClick={() => queryClient.invalidateQueries(['withdrawal-history', user?.id])}
-                    className="text-gray-400 hover:text-gray-600">
-                    <RefreshCw className="w-4 h-4" />
-                  </button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="text-center py-10"><Loader2 className="w-8 h-8 animate-spin text-gray-400 mx-auto" /></div>
-                ) : payouts.length === 0 ? (
-                  <div className="text-center py-12">
-                    <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500 font-medium">No withdrawals yet</p>
-                    <p className="text-sm text-gray-400 mt-1">Submit your first withdrawal request above</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {/* Summary chips */}
-                    <div className="flex gap-2 flex-wrap mb-4">
-                      {['pending','processing','completed','failed'].map(s => {
-                        const count = payouts.filter(p => p.status === s).length;
-                        if (!count) return null;
-                        const cfg = statusConfig[s];
-                        return (
-                          <span key={s} className={`px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.color}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot} inline-block mr-1`} />
-                            {cfg.label}: {count}
-                          </span>
-                        );
-                      })}
-                      <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 ml-auto">
-                        Total: {payouts.length} transactions
-                      </span>
-                    </div>
+            <PayoutTimeline payouts={payouts} isLoading={isLoading} />
+          </TabsContent>
 
-                    {payouts.map(p => <TransactionRow key={p.id} payout={p} />)}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          <TabsContent value="tips" className="mt-4">
+            <SmartPayoutTips payouts={payouts} />
           </TabsContent>
         </Tabs>
       </div>
