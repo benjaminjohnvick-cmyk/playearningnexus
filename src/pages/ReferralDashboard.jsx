@@ -9,6 +9,8 @@ import InvitationLinkGenerator from '@/components/referral/InvitationLinkGenerat
 import TierMilestoneProgress from '@/components/referral/TierMilestoneProgress';
 import ReferralLeaderboardPanel from '@/components/referral/ReferralLeaderboardPanel';
 import ReferralMarketingHub from '@/components/referral/ReferralMarketingHub';
+import ContentLibraryBrowser from '@/components/referral/ContentLibraryBrowser';
+import ContestLeaderboardWidget from '@/components/referral/ContestLeaderboardWidget';
 
 export default function ReferralDashboard() {
   const [user, setUser] = useState(null);
@@ -78,8 +80,11 @@ export default function ReferralDashboard() {
         </div>
 
         {/* Tabs */}
+        {/* Active Contests Widget */}
+        <ContestLeaderboardWidget user={user} />
+
         <Tabs defaultValue="invite">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="invite" className="flex items-center gap-1.5">
               <LinkIcon className="w-3.5 h-3.5" /> Invite
             </TabsTrigger>
@@ -95,6 +100,9 @@ export default function ReferralDashboard() {
             <TabsTrigger value="referrals" className="flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5" /> My Referrals
             </TabsTrigger>
+            <TabsTrigger value="content_library" className="flex items-center gap-1.5">
+              📚 Content Library
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="invite" className="mt-5">
@@ -103,6 +111,10 @@ export default function ReferralDashboard() {
 
           <TabsContent value="marketing" className="mt-5">
             <ReferralMarketingHub user={user} />
+          </TabsContent>
+
+          <TabsContent value="content_library" className="mt-5">
+            <ContentLibraryBrowser user={user} />
           </TabsContent>
 
           <TabsContent value="leaderboard" className="mt-5">
