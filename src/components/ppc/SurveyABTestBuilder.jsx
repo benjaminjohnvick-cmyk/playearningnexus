@@ -100,12 +100,12 @@ export default function SurveyABTestBuilder() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
   // Handle PayPal return for A/B test
-  React.useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const paypalStatus = params.get('paypal_ab');
     const stored = sessionStorage.getItem('pp_ab_order');

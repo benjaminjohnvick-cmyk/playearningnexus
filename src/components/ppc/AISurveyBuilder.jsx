@@ -95,7 +95,7 @@ function SingleSurveyBuilder({ onSurveyCreated, onQuestionsGenerated }) {
   const totalCost = Math.max(sampleSize, MIN_SAMPLE_SIZE) * COST_PER_RESPONSE;
 
   // Handle PayPal return
-  React.useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const paypalStatus = params.get('paypal');
     const stored = sessionStorage.getItem('pp_survey_order');
