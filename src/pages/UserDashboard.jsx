@@ -25,6 +25,7 @@ import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
 import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
 import DailyGoalProgress from '../components/gamification/DailyGoalProgress';
 import PayPalTransferButton from '../components/payout/PayPalTransferButton';
+import EarningProgressPath from '../components/dashboard/EarningProgressPath';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -257,6 +258,11 @@ export default function UserDashboard() {
         </div>
 
 
+
+        {/* Earning Progress Path */}
+        <div className="mb-6">
+          <EarningProgressPath totalEarned={user.total_earnings || 0} />
+        </div>
 
         {/* Daily Goal Progress */}
         <div className="mb-6">
