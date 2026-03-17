@@ -38,7 +38,7 @@ export default function EarningsInsights() {
   });
 
   // Build last-30-day chart data
-  const chartData = React.useMemo(() => {
+  const chartData = useMemo(() => {
     const days = Array.from({ length: 30 }, (_, i) => {
       const d = subDays(new Date(), 29 - i);
       return format(d, 'yyyy-MM-dd');
