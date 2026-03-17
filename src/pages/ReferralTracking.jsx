@@ -101,66 +101,10 @@ export default function ReferralTracking() {
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Referral Tracking</h1>
-            <p className="text-gray-500 mt-1">Unique links, performance charts, and sign-up analytics</p>
-          </div>
-          <Button onClick={() => setShowCreate(v => !v)} className="bg-blue-600 hover:bg-blue-700 gap-2">
-            <Plus className="w-4 h-4" /> Create Link
-          </Button>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Referral Tracking</h1>
+          <p className="text-gray-500 mt-1">Unique links, performance charts, and sign-up analytics</p>
         </div>
-
-        {/* Create Link Panel */}
-        {showCreate && (
-          <Card className="border-2 border-blue-200 bg-blue-50/50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2"><Link2 className="w-4 h-4 text-blue-600" />New Referral Link</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid sm:grid-cols-3 gap-4 mb-4">
-                <div>
-                  <Label className="text-xs mb-1 block">Campaign Name</Label>
-                  <Input
-                    placeholder="e.g. Instagram March"
-                    value={newLink.campaign_name}
-                    onChange={e => setNewLink(p => ({ ...p, campaign_name: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs mb-1 block">Link Type</Label>
-                  <Select value={newLink.link_type} onValueChange={v => setNewLink(p => ({ ...p, link_type: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="general">General</SelectItem>
-                      <SelectItem value="game">Game</SelectItem>
-                      <SelectItem value="campaign">Campaign</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs mb-1 block">Traffic Source</Label>
-                  <Select value={newLink.referral_source} onValueChange={v => setNewLink(p => ({ ...p, referral_source: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {SOURCES.map(s => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => createLinkMutation.mutate(newLink)}
-                  disabled={createLinkMutation.isPending || !newLink.campaign_name}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  {createLinkMutation.isPending ? 'Creating...' : 'Generate Link'}
-                </Button>
-                <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
