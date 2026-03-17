@@ -35,7 +35,37 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
   }
 
   const questions = activeQuestions;
+  const skipLogic = survey.skip_logic || [];
   const progress = ((currentQ) / questions.length) * 100;
+
+  // Resolve the next question index respecting skip logic rules
+  const resolveNext = (questionIndex, selectedOption) => {
+    const matchingRule = skipLogic.find(
+      r => r.source_question_index === questionIndex && r.selected_option === selectedOption
+    );
+    if (matchingRule) {
+      if (matchingRule.action === 'end_survey') return 'end';
+      if (matchingRule.action === 'skip_to' && matchingRule.target_question_index !== undefined) {
+        return matchingRule.target_question_index;
+      }
+    }
+    // Default: go to next question
+    return questionIndex + 1;
+  };
+
+  // Simple device fingerprint (canvas + navigator combination)
+  const getFingerprint = () => {
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.textBaseline = 'top';
+      ctx.font = '14px Arial';
+      ctx.fillText('GamerGain🎮', 2, 2);
+      const canvasStr = canvas.toDataURL().slice(-50);
+      const nav = `${navigator.language}|${navigator.hardwareConcurrency}|${screen.width}x${screen.height}`;
+      return btoa(canvasStr + nav).slice(0, 32);
+    } catch { return 'unknown'; }
+  };
 
   const handleSelect = (option) => {
     setSelectedAnswer(option);
@@ -43,10 +73,11 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
     setAnswers(newAnswers);
 
     setTimeout(() => {
-      if (currentQ + 1 >= questions.length) {
+      const next = resolveNext(currentQ, option);
+      if (next === 'end' || next >= questions.length) {
         submitResponses(newAnswers);
       } else {
-        setCurrentQ(q => q + 1);
+        setCurrentQ(next);
         setSelectedAnswer(null);
       }
     }, 400);
@@ -71,6 +102,15 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
       base44.functions.invoke('scoreSurveyResponse', {
         response_id: responseRecord.id,
         survey_id: survey.id,
+      }).catch(() => {});
+
+      // Fraud / proxy check (fire-and-forget)
+      base44.functions.invoke('checkSurveyFraud', {
+        response_id: responseRecord.id,
+        survey_id: survey.id,
+        user_agent: navigator.userAgent,
+        fingerprint: getFingerprint(),
+        ip_address: 'unknown', // resolved server-side from req headers
       }).catch(() => {});
 
       // Increment response count on survey
