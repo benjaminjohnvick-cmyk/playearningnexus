@@ -129,6 +129,8 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },
     { name: 'Challenges', icon: Trophy, path: 'Challenges', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
+    { name: 'Survey Analytics', icon: BarChart2, path: 'SurveyAnalytics', requireAuth: true },
+    { name: 'Business Analytics', icon: TrendingUp, path: 'BusinessSurveyAnalytics', requireAuth: true },
     { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
     { name: 'AI Generator', icon: Bot, path: 'MovieStarGenerator', requireAuth: true },
     { name: 'Inbox', icon: Mail, path: 'UserInbox', requireAuth: true },
