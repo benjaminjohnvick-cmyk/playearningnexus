@@ -104,13 +104,23 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
         survey_id: survey.id,
       }).catch(() => {});
 
-      // Fraud / proxy check (fire-and-forget)
+      // Fraud / proxy check then trigger micro-payout if clean
       base44.functions.invoke('checkSurveyFraud', {
         response_id: responseRecord.id,
         survey_id: survey.id,
         user_agent: navigator.userAgent,
         fingerprint: getFingerprint(),
-        ip_address: 'unknown', // resolved server-side from req headers
+        ip_address: 'unknown',
+      }).then(fraudRes => {
+        const action = fraudRes?.data?.action;
+        // Only pay out if not blocked
+        if (action !== 'block') {
+          return base44.functions.invoke('respondentMicroPayout', {
+            response_id: responseRecord.id,
+            survey_id: survey.id,
+            respondent_user_id: user.id,
+          });
+        }
       }).catch(() => {});
 
       // Increment response count on survey
