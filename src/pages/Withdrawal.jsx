@@ -467,13 +467,16 @@ export default function Withdrawal() {
         <EligibilityBar balance={balance} />
 
         <Tabs defaultValue="withdraw">
-          <TabsList className="grid grid-cols-2 w-full">
+          <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="withdraw">Request Payout</TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-1.5">
-              Transaction History
+              Withdrawals
               {payouts.filter(p => p.status === 'processing').length > 0 && (
                 <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
               )}
+            </TabsTrigger>
+            <TabsTrigger value="earnings" className="flex items-center gap-1.5">
+              <BarChart2 className="w-3.5 h-3.5" /> Earnings History
             </TabsTrigger>
           </TabsList>
 
