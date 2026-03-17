@@ -164,9 +164,17 @@ export default function ContentLibraryBrowser({ user }) {
                       {copiedId === asset.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                       {copiedId === asset.id ? 'Copied!' : 'Copy'}
                     </Button>
-                    {SHARE_URLS[asset.platform] && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleNativeShare(asset)}
+                      className="gap-1.5 text-purple-700 border-purple-300 hover:bg-purple-50"
+                    >
+                      <Share2 className="w-3.5 h-3.5" /> Share
+                    </Button>
+                    {SHARE_URLS[asset.platform] && asset.platform !== 'universal' && (
                       <Button size="sm" variant="outline" onClick={() => handleShare(asset, asset.platform)} className="gap-1.5">
-                        <ExternalLink className="w-3.5 h-3.5" /> Share
+                        <ExternalLink className="w-3.5 h-3.5" /> Open
                       </Button>
                     )}
                     {asset.platform === 'universal' && (
