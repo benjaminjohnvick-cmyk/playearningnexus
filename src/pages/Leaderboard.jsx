@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, DollarSign, Users, TrendingUp, Medal, Crown, Star, Flame, Award, Zap } from "lucide-react";
+import { Trophy, DollarSign, Users, TrendingUp, Medal, Crown, Star, Flame, Award, Zap, Calendar } from "lucide-react";
 import { format } from 'date-fns';
 import InspireShareButton from '@/components/leaderboard/InspireShareButton';
 
@@ -77,6 +77,14 @@ export default function Leaderboard() {
     queryFn: () => base44.entities.Referral.list(),
   });
 
+  const sevenDaysAgo = format(new Date(Date.now() - 7 * 86400000), 'yyyy-MM-dd');
+  const { data: weeklyEarnings = [] } = useQuery({
+    queryKey: ['weekly-earnings', sevenDaysAgo],
+    queryFn: () => base44.entities.DailyEarnings.filter({}),
+    select: (data) => data.filter(e => e.date >= sevenDaysAgo),
+    refetchInterval: 60000,
+  });
+
   const { data: todayEarnings = [] } = useQuery({
     queryKey: ['daily-earnings-today', today],
     queryFn: () => base44.entities.DailyEarnings.filter({ date: today }),
@@ -115,6 +123,19 @@ export default function Leaderboard() {
       .filter(u => (u.total_earnings || 0) >= milestone.threshold)
       .sort((a, b) => (b.total_earnings || 0) - (a.total_earnings || 0)),
   }));
+
+  // Weekly top earners
+  const weeklyTotals = {};
+  weeklyEarnings.forEach(e => {
+    if (!weeklyTotals[e.user_id]) weeklyTotals[e.user_id] = { earned: 0, surveys: 0 };
+    weeklyTotals[e.user_id].earned += (e.total_earned || 0);
+    weeklyTotals[e.user_id].surveys += (e.total_surveys_completed || 0);
+  });
+  const weeklyTop5 = Object.entries(weeklyTotals)
+    .map(([userId, stats]) => ({ user: allUsers.find(u => u.id === userId), ...stats }))
+    .filter(x => x.user && x.earned > 0)
+    .sort((a, b) => b.earned - a.earned)
+    .slice(0, 5);
 
   // User's own ranks
   const myEarningsRank = topEarners.findIndex(u => u.id === user?.id) + 1;
@@ -167,13 +188,37 @@ export default function Leaderboard() {
           </Card>
         )}
 
-        <Tabs defaultValue="daily">
-          <TabsList className="grid w-full grid-cols-4 bg-white shadow-md">
-            <TabsTrigger value="daily" className="flex items-center gap-1"><Flame className="w-4 h-4" /><span className="hidden sm:inline">Daily</span> Top 10</TabsTrigger>
+        <Tabs defaultValue="weekly">
+          <TabsList className="grid w-full grid-cols-5 bg-white shadow-md">
+            <TabsTrigger value="weekly" className="flex items-center gap-1"><Calendar className="w-4 h-4" /><span className="hidden sm:inline">Weekly</span></TabsTrigger>
+            <TabsTrigger value="daily" className="flex items-center gap-1"><Flame className="w-4 h-4" /><span className="hidden sm:inline">Daily</span></TabsTrigger>
             <TabsTrigger value="earners" className="flex items-center gap-1"><DollarSign className="w-4 h-4" /><span className="hidden sm:inline">All-Time</span></TabsTrigger>
             <TabsTrigger value="referrers" className="flex items-center gap-1"><Users className="w-4 h-4" /><span className="hidden sm:inline">Referrers</span></TabsTrigger>
             <TabsTrigger value="hof" className="flex items-center gap-1"><Award className="w-4 h-4" /><span className="hidden sm:inline">Hall of Fame</span></TabsTrigger>
           </TabsList>
+
+          {/* Weekly Top 5 */}
+          <TabsContent value="weekly" className="space-y-3 mt-4">
+            <Card className="border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-amber-50 mb-2">
+              <CardContent className="p-3 flex items-center gap-2 text-sm text-yellow-800">
+                <Calendar className="w-4 h-4 text-yellow-600 flex-shrink-0" />
+                <span>Weekly rankings are based on earnings from the past 7 days. Winners are notified every Monday! 🏆</span>
+              </CardContent>
+            </Card>
+            {weeklyTop5.length === 0 ? (
+              <Card className="border-0 shadow-md">
+                <CardContent className="py-12 text-center text-gray-400">
+                  <Calendar className="w-12 h-12 mx-auto mb-3 text-gray-200" />
+                  <p>No weekly earnings yet. Complete surveys to compete!</p>
+                </CardContent>
+              </Card>
+            ) : weeklyTop5.map(({ user: u, earned, surveys }, i) => (
+              <div key={u.id} className="relative">
+                <LeaderRow rankUser={u} index={i} currentUserId={user.id}
+                  value={`$${earned.toFixed(2)}`} valueLabel={`${surveys} surveys this week`} valueColor="text-yellow-700" />
+              </div>
+            ))}
+          </TabsContent>
 
           {/* Daily Top 10 */}
           <TabsContent value="daily" className="space-y-3 mt-4">

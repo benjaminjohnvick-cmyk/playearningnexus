@@ -11,6 +11,7 @@ import {
 import { TrendingUp, DollarSign, Users, Zap } from 'lucide-react';
 import EarningsFeed from '@/components/earnings/EarningsFeed';
 import CategoryBreakdown from '@/components/earnings/CategoryBreakdown';
+import PayoutProgressDashboard from '@/components/earnings/PayoutProgressDashboard';
 import { format, subDays, parseISO } from 'date-fns';
 
 export default function EarningsInsights() {
@@ -35,6 +36,12 @@ export default function EarningsInsights() {
   const { data: transactions = [] } = useQuery({
     queryKey: ['ppcTransactions', user?.id],
     queryFn: () => base44.entities.PPCTransaction.filter({ user_id: user.id }, '-created_date', 60),
+    enabled: !!user
+  });
+
+  const { data: payouts = [] } = useQuery({
+    queryKey: ['payouts', user?.id],
+    queryFn: () => base44.entities.Payout.filter({ user_id: user.id }, '-created_date', 20),
     enabled: !!user
   });
 
@@ -260,6 +267,18 @@ export default function EarningsInsights() {
             <EarningsFeed />
           </div>
         </div>
+
+        {/* Payout Progress Dashboard */}
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span>💳</span> Payout Tracker
+          </h2>
+          <PayoutProgressDashboard
+            user={user}
+            transactions={transactions}
+            payouts={payouts}
+            dailyEarnings={dailyEarnings}
+          />
       </div>
     </div>
   );

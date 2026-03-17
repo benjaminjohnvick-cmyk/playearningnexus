@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import {
   Loader2, Sparkles, BarChart2, TrendingUp, MessageSquare,
-  RefreshCw, Globe, Shield, Clock, Users, Star, AlertCircle
+  RefreshCw, Globe, Shield, Clock, Users, Star, AlertCircle, Tag
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -78,6 +78,8 @@ export default function SurveyAnalytics() {
   const [selectedSurveyId, setSelectedSurveyId] = useState('');
   const [aiReport, setAiReport] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
+  const [themes, setThemes] = useState(null);
+  const [loadingThemes, setLoadingThemes] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -153,6 +155,21 @@ export default function SurveyAnalytics() {
     trendMap[day] = (trendMap[day] || 0) + 1;
   });
   const trendData = Object.entries(trendMap).sort().map(([date, count]) => ({ date: date.slice(5), count }));
+
+  const classifyThemes = async () => {
+    if (!selectedSurveyId || responses.length === 0) return;
+    setLoadingThemes(true);
+    try {
+      const res = await base44.functions.invoke('classifyResponseThemes', {
+        survey_id: selectedSurveyId,
+        survey_title: selectedSurvey?.title,
+        responses,
+      });
+      if (res.data?.success) { setThemes(res.data); toast.success('Themes classified!'); }
+      else toast.error('Theme classification failed');
+    } catch { toast.error('Failed to classify themes'); }
+    finally { setLoadingThemes(false); }
+  };
 
   const generateAIReport = async () => {
     if (!selectedSurveyId) return;
@@ -242,8 +259,9 @@ export default function SurveyAnalytics() {
             </div>
 
             <Tabs defaultValue="responses">
-              <TabsList className="grid grid-cols-4 w-full">
+              <TabsList className="grid grid-cols-5 w-full">
                 <TabsTrigger value="responses">Responses</TabsTrigger>
+                <TabsTrigger value="themes">Themes</TabsTrigger>
                 <TabsTrigger value="quality">Data Quality</TabsTrigger>
                 <TabsTrigger value="languages">Languages</TabsTrigger>
                 <TabsTrigger value="ai">AI Report</TabsTrigger>
@@ -305,6 +323,66 @@ export default function SurveyAnalytics() {
                   <CardHeader><CardTitle className="text-sm flex items-center gap-2"><MessageSquare className="w-4 h-4 text-indigo-600" /> Open Response Word Cloud</CardTitle></CardHeader>
                   <CardContent><WordCloud responses={responses} /></CardContent>
                 </Card>
+              </TabsContent>
+
+              {/* Tab: Themes */}
+              <TabsContent value="themes" className="space-y-5 mt-4">
+                {!themes ? (
+                  <Card className="border-0 shadow-md">
+                    <CardContent className="p-10 text-center space-y-4">
+                      <Tag className="w-10 h-10 text-purple-400 mx-auto" />
+                      <p className="text-gray-600">AI will read all open-text responses and group them into recurring themes so you can instantly see what topics are generating the most buzz.</p>
+                      <Button onClick={classifyThemes} disabled={loadingThemes || responses.length === 0}
+                        className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+                        {loadingThemes ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Classifying…</> : <><Tag className="w-4 h-4 mr-2" />Classify Themes with AI</>}
+                      </Button>
+                      {responses.length === 0 && <p className="text-xs text-gray-400">No responses to analyze yet.</p>}
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      {themes.overall_summary && (
+                        <p className="text-sm text-gray-600 italic max-w-xl">"{themes.overall_summary}"</p>
+                      )}
+                      <Button size="sm" variant="outline" onClick={classifyThemes} disabled={loadingThemes}>
+                        <RefreshCw className={`w-3 h-3 mr-1 ${loadingThemes ? 'animate-spin' : ''}`} /> Re-classify
+                      </Button>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {(themes.themes || []).map((theme, i) => {
+                        const sentimentColor = theme.sentiment === 'positive' ? 'bg-green-50 border-green-200' :
+                          theme.sentiment === 'negative' ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-200';
+                        const sentimentBadge = theme.sentiment === 'positive' ? 'bg-green-100 text-green-700' :
+                          theme.sentiment === 'negative' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700';
+                        return (
+                          <Card key={i} className={`border-2 shadow-sm ${sentimentColor}`}>
+                            <CardContent className="p-4 space-y-2">
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <p className="font-bold text-gray-900">{theme.title}</p>
+                                  <p className="text-xs text-gray-500 mt-0.5">{theme.description}</p>
+                                </div>
+                                <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                                  <span className="text-xl font-black text-purple-600">{theme.percentage}%</span>
+                                  <Badge className={`text-xs ${sentimentBadge}`}>{theme.sentiment}</Badge>
+                                </div>
+                              </div>
+                              <Progress value={theme.percentage} className="h-2" />
+                              {theme.example_quotes?.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {theme.example_quotes.map((q, qi) => (
+                                    <p key={qi} className="text-xs text-gray-500 italic border-l-2 border-purple-300 pl-2">"{q}"</p>
+                                  ))}
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </TabsContent>
 
               {/* Tab: Data Quality */}
