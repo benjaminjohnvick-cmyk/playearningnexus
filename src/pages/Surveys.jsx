@@ -103,6 +103,21 @@ export default function Surveys() {
           goalMet={goalMet}
         />
 
+        {/* AI Survey Generator Button */}
+        <button
+          onClick={() => document.getElementById('ai-survey-matcher')?.scrollIntoView({ behavior: 'smooth' })}
+          className="w-full flex items-center justify-between gap-3 px-5 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-6 h-6 flex-shrink-0" />
+            <div className="text-left">
+              <p className="font-bold text-base">AI Survey Generator</p>
+              <p className="text-indigo-200 text-sm">Find your best-matched surveys with AI</p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 flex-shrink-0" />
+        </button>
+
         {/* Daily Goal Banner */}
         {goalMet ? (
           <Card className="border-2 border-green-400 bg-gradient-to-r from-green-50 to-emerald-50">
