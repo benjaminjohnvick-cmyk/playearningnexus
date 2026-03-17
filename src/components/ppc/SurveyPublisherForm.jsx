@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
 import AISurveyBuilder from '@/components/ppc/AISurveyBuilder';
+import SkipLogicBuilder from '@/components/ppc/SkipLogicBuilder';
 
 const SURVEY_TYPES = {
   data_collection: {
@@ -40,6 +41,7 @@ export default function SurveyPublisherForm({ user }) {
     productImageUrl: '',
     sampleSize: 100,
     questions: Array(10).fill(null).map(() => ({ question: '', option_a: '', option_b: '', option_c: '', option_d: '' })),
+    skipLogic: [],
   });
 
   const selectedType = SURVEY_TYPES[surveyType];
@@ -85,6 +87,7 @@ export default function SurveyPublisherForm({ user }) {
         cost_per_response: 4,
         min_spend: surveyType === 'data_collection' ? Math.max(formData.sampleSize, 100) * 4 : 400,
         questions: formData.questions.filter(q => q.question.trim()),
+        skip_logic: formData.skipLogic || [],
         status: 'draft',
         ai_generated: formData.questions.some(q => q.question.trim()),
       });
@@ -243,6 +246,13 @@ export default function SurveyPublisherForm({ user }) {
             surveyType={surveyType}
             productName={formData.title}
             onQuestionsGenerated={handleQuestionsFromAI}
+          />
+
+          {/* Skip Logic Builder */}
+          <SkipLogicBuilder
+            questions={formData.questions}
+            skipLogic={formData.skipLogic}
+            onChange={rules => setFormData(p => ({ ...p, skipLogic: rules }))}
           />
 
           {/* Step 4 — Review/Edit Questions */}
