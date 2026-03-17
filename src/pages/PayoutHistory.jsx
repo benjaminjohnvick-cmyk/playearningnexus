@@ -301,6 +301,8 @@ ${payout.transaction_id ? `Transaction ID: ${payout.transaction_id}` : ''}
             )}
           </CardContent>
         </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
