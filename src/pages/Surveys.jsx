@@ -20,6 +20,7 @@ import SurveyDisputeModal from '@/components/surveys/SurveyDisputeModal';
 import AISurveyMatcher from '@/components/surveys/AISurveyMatcher';
 import PersonalizedSurveyCards from '@/components/surveys/PersonalizedSurveyCards';
 import SelfServiceDisputeModule from '@/components/surveys/SelfServiceDisputeModule';
+import AISurveyBuilder from '@/components/ppc/AISurveyBuilder';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
