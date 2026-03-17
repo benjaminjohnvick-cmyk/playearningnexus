@@ -101,6 +101,10 @@ export default function ReferralDashboard() {
             <InvitationLinkGenerator user={user} />
           </TabsContent>
 
+          <TabsContent value="marketing" className="mt-5">
+            <ReferralMarketingHub user={user} />
+          </TabsContent>
+
           <TabsContent value="leaderboard" className="mt-5">
             <ReferralLeaderboardPanel currentUserId={user.id} />
           </TabsContent>
