@@ -270,6 +270,11 @@ export default function Home() {
         </div>
       )}
 
+      {/* Active Referral Contest — visible to all */}
+      <div className="bg-gradient-to-br from-yellow-50 via-white to-orange-50 border-y border-yellow-100">
+        <ActiveReferralContestSection user={user} />
+      </div>
+
       {/* Top Earners visible to guests too */}
       {!user && (
         <div className="max-w-4xl mx-auto px-6 pb-16">
