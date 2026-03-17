@@ -241,6 +241,11 @@ export default function SurveyAnalytics() {
 
         {selectedSurvey && (
           <>
+            {/* Schedule Builder */}
+            <div className="mb-6">
+              <SurveyScheduleBuilder surveyId={selectedSurveyId} onScheduled={() => {}} />
+            </div>
+
             {/* KPIs */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {[
