@@ -19,6 +19,7 @@ import SurveyFilterBar from '@/components/surveys/SurveyFilterBar';
 import SurveyDisputeModal from '@/components/surveys/SurveyDisputeModal';
 import AISurveyMatcher from '@/components/surveys/AISurveyMatcher';
 import PersonalizedSurveyCards from '@/components/surveys/PersonalizedSurveyCards';
+import SelfServiceDisputeModule from '@/components/surveys/SelfServiceDisputeModule';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
@@ -218,13 +219,8 @@ export default function Surveys() {
           </Card>
         )}
 
-        {/* Dispute Link */}
-        <div className="text-center">
-          <button onClick={() => setShowDisputeModal(true)}
-            className="text-sm text-amber-600 hover:text-amber-800 underline underline-offset-2">
-            ⚠️ Didn't receive credit for a completed survey? Submit a dispute
-          </button>
-        </div>
+        {/* Self-Service Dispute Module */}
+        <SelfServiceDisputeModule user={user} />
 
         {/* How it works */}
         <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-white">
