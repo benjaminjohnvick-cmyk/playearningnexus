@@ -18,6 +18,7 @@ import AboutMeEditor from '../components/profile/AboutMeEditor';
 import SocialLinksEditor from '../components/profile/SocialLinksEditor';
 import FeaturedBadges from '../components/profile/FeaturedBadges';
 import SurveyInterestPicker from '../components/profile/SurveyInterestPicker';
+import SurveyNotificationSettings from '../components/profile/SurveyNotificationSettings';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -575,6 +576,7 @@ export default function UserProfile() {
           {/* ── Settings ── */}
           <TabsContent value="settings">
             <div className="space-y-4">
+              <SurveyNotificationSettings user={user} onUpdate={handleUserUpdate} />
               <SurveyInterestPicker user={user} onUpdate={handleUserUpdate} />
               <ChatbotPreferences />
               <Card className="border-0 shadow-lg">
