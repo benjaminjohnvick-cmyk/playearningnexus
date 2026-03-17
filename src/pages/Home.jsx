@@ -17,6 +17,7 @@ import RecentEarningsFeed from '../components/feed/RecentEarningsFeed';
 import TopEarnersLeaderboard from '../components/home/TopEarnersLeaderboard';
 import MilestoneBadges from '../components/home/MilestoneBadges';
 import ReferralInviteCard from '../components/home/ReferralInviteCard';
+import ActiveReferralContestSection from '../components/referral/ActiveReferralContestSection';
 export default function Home() {
   const [user, setUser] = useState(null);
 
