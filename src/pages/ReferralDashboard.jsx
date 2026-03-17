@@ -79,9 +79,12 @@ export default function ReferralDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="invite">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="invite" className="flex items-center gap-1.5">
               <LinkIcon className="w-3.5 h-3.5" /> Invite
+            </TabsTrigger>
+            <TabsTrigger value="marketing" className="flex items-center gap-1.5">
+              <Megaphone className="w-3.5 h-3.5" /> Marketing Hub
             </TabsTrigger>
             <TabsTrigger value="leaderboard" className="flex items-center gap-1.5">
               <Trophy className="w-3.5 h-3.5" /> Leaderboard
