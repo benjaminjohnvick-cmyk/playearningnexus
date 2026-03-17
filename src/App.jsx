@@ -8,6 +8,7 @@ import PageNotFound from './lib/PageNotFound';
 import EarningsInsights from './pages/EarningsInsights';
 import ExploreSurveys from './pages/ExploreSurveys';
 import SurveyAnalytics from './pages/SurveyAnalytics';
+import AIGeneratorPage from './pages/AIGeneratorPage';
 import BusinessSurveyAnalytics from './pages/BusinessSurveyAnalytics';
 import ManagePayouts from './pages/ManagePayouts';
 import RespondentProfile from './pages/RespondentProfile';
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
       <Route path="/ManagePayouts" element={<LayoutWrapper currentPageName="ManagePayouts"><ManagePayouts /></LayoutWrapper>} />
       <Route path="/RespondentProfile" element={<LayoutWrapper currentPageName="RespondentProfile"><RespondentProfile /></LayoutWrapper>} />
       <Route path="/AdvancedSurveyAnalytics" element={<LayoutWrapper currentPageName="AdvancedSurveyAnalytics"><AdvancedSurveyAnalytics /></LayoutWrapper>} />
+      <Route path="/AIGeneratorPage" element={<LayoutWrapper currentPageName="AIGeneratorPage"><AIGeneratorPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

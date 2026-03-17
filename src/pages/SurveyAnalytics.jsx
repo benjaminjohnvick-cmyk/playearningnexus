@@ -13,8 +13,9 @@ import {
 } from 'recharts';
 import {
   Loader2, Sparkles, BarChart2, TrendingUp, MessageSquare,
-  RefreshCw, Globe, Shield, Clock, Users, Star, AlertCircle, Tag
+  RefreshCw, Globe, Shield, Clock, Users, Star, AlertCircle, Tag, AlertTriangle
 } from 'lucide-react';
+import ResponseReviewPanel from '@/components/surveys/ResponseReviewPanel';
 import { toast } from 'sonner';
 
 const COLORS = ['#7c3aed', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
@@ -259,9 +260,10 @@ export default function SurveyAnalytics() {
             </div>
 
             <Tabs defaultValue="responses">
-              <TabsList className="grid grid-cols-5 w-full">
+              <TabsList className="grid grid-cols-6 w-full">
                 <TabsTrigger value="responses">Responses</TabsTrigger>
                 <TabsTrigger value="themes">Themes</TabsTrigger>
+                <TabsTrigger value="review">Review</TabsTrigger>
                 <TabsTrigger value="quality">Data Quality</TabsTrigger>
                 <TabsTrigger value="languages">Languages</TabsTrigger>
                 <TabsTrigger value="ai">AI Report</TabsTrigger>
@@ -477,6 +479,11 @@ export default function SurveyAnalytics() {
                     )}
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              {/* Tab: Response Review */}
+              <TabsContent value="review" className="space-y-4 mt-4">
+                <ResponseReviewPanel surveyId={selectedSurveyId} />
               </TabsContent>
 
               {/* Tab: AI Report */}
