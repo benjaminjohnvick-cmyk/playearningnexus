@@ -18,6 +18,7 @@ import SurveyHotspotHub from '@/components/surveys/SurveyHotspotHub';
 import SurveyFilterBar from '@/components/surveys/SurveyFilterBar';
 import SurveyDisputeModal from '@/components/surveys/SurveyDisputeModal';
 import AISurveyMatcher from '@/components/surveys/AISurveyMatcher';
+import PersonalizedSurveyCards from '@/components/surveys/PersonalizedSurveyCards';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
@@ -151,6 +152,9 @@ export default function Surveys() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Personalized Survey Task Cards */}
+        <PersonalizedSurveyCards user={user} onSurveyStart={() => {}} />
 
         {/* AI Survey Matcher */}
         <AISurveyMatcher user={user} />
