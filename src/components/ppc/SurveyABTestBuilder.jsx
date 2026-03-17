@@ -47,29 +47,42 @@ function ABTestCard({ test, onToggle }) {
 
         {/* Comparison table */}
         <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: 'Variant A', responses: test.variant_a_responses, completions: test.variant_a_completions, rate: completionA, quality: qualityA, progress: progressA, color: 'purple' },
-            { label: 'Variant B', responses: test.variant_b_responses, completions: test.variant_b_completions, rate: completionB, quality: qualityB, progress: progressB, color: 'blue' },
-          ].map(v => (
-            <div key={v.label} className={`bg-${v.color}-50 border border-${v.color}-100 rounded-xl p-3 space-y-1`}>
-              <p className={`text-xs font-bold text-${v.color}-700 uppercase tracking-wide`}>{v.label}</p>
-              <div className="flex justify-between text-xs text-gray-600">
-                <span><Users className="w-3 h-3 inline mr-0.5" />{v.responses} responses</span>
-                <span><CheckCircle2 className="w-3 h-3 inline mr-0.5" />{v.completions} complete</span>
-              </div>
-              <div>
-                <div className="flex justify-between text-xs mb-0.5">
-                  <span className="text-gray-500">Completion</span>
-                  <span className={`font-bold text-${v.color}-700`}>{v.rate.toFixed(1)}%</span>
-                </div>
-                <Progress value={v.rate} className="h-1.5" />
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500">Quality Score</span>
-                <span className="font-bold text-gray-700">{v.quality.toFixed(0)}/100</span>
-              </div>
+            <div className="bg-purple-50 border border-purple-100 rounded-xl p-3 space-y-1">
+            <p className="text-xs font-bold text-purple-700 uppercase tracking-wide">Variant A</p>
+            <div className="flex justify-between text-xs text-gray-600">
+              <span><Users className="w-3 h-3 inline mr-0.5" />{test.variant_a_responses || 0} responses</span>
+              <span><CheckCircle2 className="w-3 h-3 inline mr-0.5" />{test.variant_a_completions || 0} complete</span>
             </div>
-          ))}
+            <div>
+              <div className="flex justify-between text-xs mb-0.5">
+                <span className="text-gray-500">Completion</span>
+                <span className="font-bold text-purple-700">{completionA.toFixed(1)}%</span>
+              </div>
+              <Progress value={completionA} className="h-1.5" />
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-500">Quality Score</span>
+              <span className="font-bold text-gray-700">{qualityA.toFixed(0)}/100</span>
+            </div>
+          </div>
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 space-y-1">
+            <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">Variant B</p>
+            <div className="flex justify-between text-xs text-gray-600">
+              <span><Users className="w-3 h-3 inline mr-0.5" />{test.variant_b_responses || 0} responses</span>
+              <span><CheckCircle2 className="w-3 h-3 inline mr-0.5" />{test.variant_b_completions || 0} complete</span>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs mb-0.5">
+                <span className="text-gray-500">Completion</span>
+                <span className="font-bold text-blue-700">{completionB.toFixed(1)}%</span>
+              </div>
+              <Progress value={completionB} className="h-1.5" />
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-gray-500">Quality Score</span>
+              <span className="font-bold text-gray-700">{qualityB.toFixed(0)}/100</span>
+            </div>
+          </div>
         </div>
 
         {/* Overall progress */}
