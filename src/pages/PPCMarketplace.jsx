@@ -238,6 +238,21 @@ export default function PPCMarketplace() {
             />
             <EarningsCalculator currentTier={currentTier} />
           </TabsContent>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="mt-6">
+            <SurveyAnalyticsDashboard user={user} />
+          </TabsContent>
+
+          {/* Distribution Tab */}
+          <TabsContent value="distribute" className="mt-6">
+            <SurveyDistributionScheduler user={user} />
+          </TabsContent>
+
+          {/* Translate Tab */}
+          <TabsContent value="translate" className="mt-6">
+            <SurveyTranslator user={user} />
+          </TabsContent>
         </Tabs>
       </div>
 
