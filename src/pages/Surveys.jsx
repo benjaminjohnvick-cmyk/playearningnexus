@@ -17,6 +17,7 @@ import SurveyMap from '@/components/surveys/SurveyMap';
 import SurveyHotspotHub from '@/components/surveys/SurveyHotspotHub';
 import SurveyFilterBar from '@/components/surveys/SurveyFilterBar';
 import SurveyDisputeModal from '@/components/surveys/SurveyDisputeModal';
+import AISurveyMatcher from '@/components/surveys/AISurveyMatcher';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
