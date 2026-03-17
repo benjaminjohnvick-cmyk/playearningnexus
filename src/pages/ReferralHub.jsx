@@ -16,6 +16,7 @@ import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 import PPCBadgeSystem from '@/components/referral/PPCBadgeSystem';
 import ReferralAnalyticsTab from '@/components/referral/ReferralAnalyticsTab';
+import CustomSubdomainRequest from '@/components/referral/CustomSubdomainRequest';
 
 export default function ReferralHub() {
   const [user, setUser] = useState(null);
@@ -115,12 +116,13 @@ export default function ReferralHub() {
         </div>
 
         <Tabs defaultValue="link">
-          <TabsList className="grid grid-cols-5 w-full">
+          <TabsList className="grid grid-cols-6 w-full">
             <TabsTrigger value="link">Share Link</TabsTrigger>
             <TabsTrigger value="progress">Tier Progress</TabsTrigger>
             <TabsTrigger value="badges">Badges</TabsTrigger>
             <TabsTrigger value="referrals">My Referrals</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="domain">🌐 Domain</TabsTrigger>
           </TabsList>
 
           <TabsContent value="link" className="space-y-4 mt-4">
@@ -227,6 +229,10 @@ export default function ReferralHub() {
 
           <TabsContent value="analytics" className="mt-4">
             <ReferralAnalyticsTab referrals={referrals} referralLinks={referralLinks} />
+          </TabsContent>
+
+          <TabsContent value="domain" className="mt-4">
+            <CustomSubdomainRequest user={user} activeReferrals={activeReferrals} />
           </TabsContent>
 
           <TabsContent value="referrals" className="mt-4">
