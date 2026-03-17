@@ -44,7 +44,8 @@ function ProfileCompletionBar({ profile }) {
   );
 }
 
-function TagPicker({ label, icon: Icon, options, selected = [], onChange, max = 8 }) {
+function TagPicker({ label, icon: IconComp, options, selected = [], onChange, max = 8 }) {
+  const Icon = IconComp;
   return (
     <div className="space-y-2">
       <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">

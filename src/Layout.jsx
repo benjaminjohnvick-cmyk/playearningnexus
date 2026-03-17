@@ -130,6 +130,8 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Challenges', icon: Trophy, path: 'Challenges', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
     { name: 'Manage Payouts', icon: DollarSign, path: 'ManagePayouts', requireAuth: true },
+    { name: 'My Respondent Profile', icon: User, path: 'RespondentProfile', requireAuth: true },
+    { name: 'Advanced Analytics', icon: TrendingUp, path: 'AdvancedSurveyAnalytics', requireAuth: true },
     { name: 'Survey Analytics', icon: TrendingUp, path: 'SurveyAnalytics', requireAuth: true },
     { name: 'Business Analytics', icon: TrendingUp, path: 'BusinessSurveyAnalytics', requireAuth: true },
     { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
