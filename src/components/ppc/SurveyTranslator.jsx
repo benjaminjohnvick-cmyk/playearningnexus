@@ -75,13 +75,14 @@ export default function SurveyTranslator({ user }) {
     if (!translatedSurvey) return;
     setSaving(true);
     try {
+      // Save as a linked translated copy
       await base44.entities.PPCSurvey.create({
         creator_user_id: user.id,
         survey_type: selectedSurvey.survey_type,
         title: translatedSurvey.title,
         product_description: translatedSurvey.description,
         questions: translatedSurvey.questions,
-        status: 'draft',
+        status: 'active',
         ai_generated: true,
         ai_prompt: `Translated from: "${selectedSurvey.title}" to ${selectedLang?.label}`,
         tier: selectedSurvey.tier || 1,
@@ -91,8 +92,28 @@ export default function SurveyTranslator({ user }) {
         responses_count: 0,
         total_spent: 0,
         budget_remaining: 0,
+        language_code: targetLanguage,
+        parent_survey_id: selectedSurveyId,
       });
-      toast.success('Translated survey saved as a new draft!');
+
+      // Also embed the translation inline on the parent survey for respondent language routing
+      const existingLangs = selectedSurvey.available_languages || ['en'];
+      const existingTranslations = selectedSurvey.translations || {};
+      await base44.entities.PPCSurvey.update(selectedSurveyId, {
+        translations: {
+          ...existingTranslations,
+          [targetLanguage]: {
+            title: translatedSurvey.title,
+            description: translatedSurvey.description,
+            questions: translatedSurvey.questions,
+          },
+        },
+        available_languages: existingLangs.includes(targetLanguage)
+          ? existingLangs
+          : [...existingLangs, targetLanguage],
+      });
+
+      toast.success(`✅ Saved as active ${selectedLang?.label} survey + linked to original for auto-routing!`);
     } catch {
       toast.error('Failed to save translated survey');
     } finally {

@@ -14,9 +14,27 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
   const [answers, setAnswers] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [phase, setPhase] = useState('taking'); // taking | submitting | done
+  const [startTime] = useState(Date.now());
   const queryClient = useQueryClient();
 
-  const questions = survey.questions || [];
+  // Language routing: pick the best matching language version for this user
+  const userLang = user?.preferred_language || user?.language || 'en';
+  const surveyLang = survey.language_code || 'en';
+  let activeQuestions = survey.questions || [];
+  let activeTitle = survey.title;
+  let usedLanguage = surveyLang;
+
+  if (userLang !== 'en' && userLang !== surveyLang) {
+    // Check if inline translation exists
+    const inlineTranslation = survey.translations?.[userLang];
+    if (inlineTranslation?.questions?.length) {
+      activeQuestions = inlineTranslation.questions;
+      activeTitle = inlineTranslation.title || survey.title;
+      usedLanguage = userLang;
+    }
+  }
+
+  const questions = activeQuestions;
   const progress = ((currentQ) / questions.length) * 100;
 
   const handleSelect = (option) => {
@@ -36,15 +54,24 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
 
   const submitResponses = async (finalAnswers) => {
     setPhase('submitting');
+    const timeTaken = Math.round((Date.now() - startTime) / 1000);
     try {
-      await base44.entities.PPCSurveyResponse.create({
+      const responseRecord = await base44.entities.PPCSurveyResponse.create({
         survey_id: survey.id,
         user_id: user.id,
         answers: finalAnswers,
         completed: true,
         generated_sale: survey.survey_type === 'product_listing' ? Math.random() > 0.7 : false,
         payout_to_user: 0,
+        language: usedLanguage,
+        time_taken_seconds: timeTaken,
       });
+
+      // Score the response asynchronously (fire-and-forget)
+      base44.functions.invoke('scoreSurveyResponse', {
+        response_id: responseRecord.id,
+        survey_id: survey.id,
+      }).catch(() => {});
 
       // Increment response count on survey
       await base44.entities.PPCSurvey.update(survey.id, {
@@ -106,6 +133,7 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
   }
 
   const q = questions[currentQ];
+  const showLangBadge = usedLanguage !== 'en';
 
   return (
     <div className="space-y-4">
@@ -113,7 +141,10 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
         <Button variant="ghost" size="sm" onClick={onClose}>
           <ArrowLeft className="w-4 h-4 mr-1" /> Back
         </Button>
-        <Badge className="bg-purple-100 text-purple-700">{currentQ + 1} / {questions.length}</Badge>
+        <div className="flex items-center gap-2">
+          {showLangBadge && <Badge className="bg-blue-100 text-blue-700 text-xs">{usedLanguage.toUpperCase()}</Badge>}
+          <Badge className="bg-purple-100 text-purple-700">{currentQ + 1} / {questions.length}</Badge>
+        </div>
       </div>
 
       <Card className="border-0 shadow-lg">
