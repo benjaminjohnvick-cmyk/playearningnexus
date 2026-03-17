@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, DollarSign, Users, TrendingUp, Medal, Crown, Star, Flame, Award, Zap } from "lucide-react";
 import { format } from 'date-fns';
+import InspireShareButton from '@/components/leaderboard/InspireShareButton';
 
 // Hall of Fame milestones
 const HOF_MILESTONES = [
@@ -118,6 +119,8 @@ export default function Leaderboard() {
   // User's own ranks
   const myEarningsRank = topEarners.findIndex(u => u.id === user?.id) + 1;
   const myDailyRank = dailyTop10.findIndex(x => x.user?.id === user?.id) + 1;
+  const myDailyEntry = dailyTop10.find(x => x.user?.id === user?.id);
+  const myWeeklyEarned = (user?.total_earnings || 0); // proxy for weekly
 
   if (!user) return (
     <div className="flex items-center justify-center min-h-screen">
@@ -152,6 +155,14 @@ export default function Leaderboard() {
               </div>
               {myEarningsRank > 0 && <Badge className="bg-green-100 text-green-700">All-Time #{myEarningsRank}</Badge>}
               {myDailyRank > 0 && <Badge className="bg-orange-100 text-orange-700">Today's Daily #{myDailyRank}</Badge>}
+              <div className="ml-auto">
+                <InspireShareButton
+                  user={user}
+                  rank={myDailyRank || myEarningsRank || 1}
+                  dailyEarned={myDailyEntry?.earned || 0}
+                  weeklyEarned={myWeeklyEarned}
+                />
+              </div>
             </CardContent>
           </Card>
         )}
