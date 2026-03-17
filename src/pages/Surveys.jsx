@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { 
   DollarSign, CheckCircle2, Clock, TrendingUp, 
   RefreshCw, ChevronRight, X, Loader2, Star, 
-  Target, Trophy, Zap, Info
+  Target, Trophy, Zap, Info, Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import SurveyStatsBar from '@/components/surveys/SurveyStatsBar';
