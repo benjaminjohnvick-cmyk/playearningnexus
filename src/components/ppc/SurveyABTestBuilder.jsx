@@ -255,21 +255,26 @@ export default function SurveyABTestBuilder() {
           </div>
 
           <div className="grid grid-cols-1 gap-3">
-            {[
-              { label: 'Variant A', value: promptA, setter: setPromptA, color: 'purple', placeholder: 'e.g. "Consumer attitudes toward EVs — broad questions"' },
-              { label: 'Variant B', value: promptB, setter: setPromptB, color: 'blue', placeholder: 'e.g. "Consumer attitudes toward EVs — focused on price sensitivity"' },
-            ].map(v => (
-              <div key={v.label} className={`bg-${v.color}-50 border-2 border-${v.color}-100 rounded-xl p-3`}>
-                <label className={`text-xs font-bold text-${v.color}-700 uppercase tracking-wide block mb-1.5`}>{v.label} — Survey Prompt</label>
-                <textarea
-                  rows={2}
-                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                  placeholder={v.placeholder}
-                  value={v.value}
-                  onChange={e => v.setter(e.target.value)}
-                />
-              </div>
-            ))}
+            <div className="bg-purple-50 border-2 border-purple-100 rounded-xl p-3">
+              <label className="text-xs font-bold text-purple-700 uppercase tracking-wide block mb-1.5">Variant A — Survey Prompt</label>
+              <textarea
+                rows={2}
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                placeholder='e.g. "Consumer attitudes toward EVs — broad questions"'
+                value={promptA}
+                onChange={e => setPromptA(e.target.value)}
+              />
+            </div>
+            <div className="bg-blue-50 border-2 border-blue-100 rounded-xl p-3">
+              <label className="text-xs font-bold text-blue-700 uppercase tracking-wide block mb-1.5">Variant B — Survey Prompt</label>
+              <textarea
+                rows={2}
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                placeholder='e.g. "Consumer attitudes toward EVs — focused on price sensitivity"'
+                value={promptB}
+                onChange={e => setPromptB(e.target.value)}
+              />
+            </div>
           </div>
 
           <div>
