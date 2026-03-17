@@ -11,6 +11,7 @@ import ReferralLeaderboardPanel from '@/components/referral/ReferralLeaderboardP
 import ReferralMarketingHub from '@/components/referral/ReferralMarketingHub';
 import ContentLibraryBrowser from '@/components/referral/ContentLibraryBrowser';
 import ContestLeaderboardWidget from '@/components/referral/ContestLeaderboardWidget';
+import EliteReferrerDashboard from '@/components/referral/EliteReferrerDashboard';
 
 export default function ReferralDashboard() {
   const [user, setUser] = useState(null);
@@ -100,6 +101,9 @@ export default function ReferralDashboard() {
             <TabsTrigger value="referrals" className="flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5" /> My Referrals
             </TabsTrigger>
+            <TabsTrigger value="elite" className="flex items-center gap-1.5">
+              👑 Elite Dashboard
+            </TabsTrigger>
             <TabsTrigger value="content_library" className="flex items-center gap-1.5">
               📚 Content Library
             </TabsTrigger>
@@ -128,6 +132,10 @@ export default function ReferralDashboard() {
               tier2Days={tier2Days}
               currentTier={currentTier}
             />
+          </TabsContent>
+
+          <TabsContent value="elite" className="mt-5">
+            <EliteReferrerDashboard user={user} referrals={referrals} />
           </TabsContent>
 
           <TabsContent value="referrals" className="mt-5">
