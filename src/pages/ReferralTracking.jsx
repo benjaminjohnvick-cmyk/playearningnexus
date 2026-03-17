@@ -15,6 +15,7 @@ import {
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import CustomLinkBuilder from '../components/referral/CustomLinkBuilder';
 
 const SOURCES = ['facebook', 'twitter', 'instagram', 'youtube', 'tiktok', 'linkedin', 'email', 'direct', 'other'];
 

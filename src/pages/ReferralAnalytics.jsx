@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
   TrendingUp, Users, DollarSign, Globe, Target, Activity,
-  BarChart3, Award, Sparkles, Loader2
+  BarChart3, Award, Sparkles, Loader2, PieChart
 } from "lucide-react";
 import MultiTierReferralSystem from '../components/referral/MultiTierReferralSystem';
 import ReferralLeaderboard from '../components/referral/ReferralLeaderboard';
@@ -16,6 +16,7 @@ import ReferralGrowthChart from '../components/referral/ReferralGrowthChart';
 import TrafficSourceAnalysis from '../components/referral/TrafficSourceAnalysis';
 import ConversionFunnel from '../components/referral/ConversionFunnel';
 import ReferralFollowUpSystem from '../components/automation/ReferralFollowUpSystem';
+import ConversionTrendWidget from '../components/referral/ConversionTrendWidget';
 
 export default function ReferralAnalytics() {
   const [user, setUser] = useState(null);
