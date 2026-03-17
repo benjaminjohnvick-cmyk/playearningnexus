@@ -57,6 +57,16 @@ export default function ContentLibraryBrowser({ user }) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleNativeShare = async (asset) => {
+    const text = resolveContent(asset.content);
+    if (navigator.share) {
+      await navigator.share({ title: asset.title, text, url: referralLink });
+      trackUseMutation.mutate({ id: asset.id, times_used: asset.times_used });
+    } else {
+      handleCopy(asset);
+    }
+  };
+
   const handleShare = (asset, platform) => {
     const text = resolveContent(asset.content);
     const url = SHARE_URLS[platform]?.(text);
