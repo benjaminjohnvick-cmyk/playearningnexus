@@ -80,29 +80,29 @@ export default function SurveyNotificationSettings({ user, onUpdate }) {
           {[
             {
               key: 'survey_opportunities',
-              icon: Target,
+              IconComp: Target,
               label: 'Survey Opportunity Alerts',
               description: 'Get notified when a new survey matches your demographics and interests',
               color: 'text-purple-600',
             },
             {
               key: 'in_app_enabled',
-              icon: Bell,
+              IconComp: Bell,
               label: 'In-App Notifications',
               description: 'Show survey alerts inside the platform (notification bell)',
               color: 'text-blue-600',
             },
             {
               key: 'email_enabled',
-              icon: Mail,
+              IconComp: Mail,
               label: 'Email Notifications',
               description: `Receive survey invites at ${user?.email || 'your email'}`,
               color: 'text-green-600',
             },
-          ].map(({ key, icon: Icon, label, description, color }) => (
+          ].map(({ key, IconComp, label, description, color }) => (
             <div key={key} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl gap-3">
               <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                <Icon className={`w-4 h-4 ${color} flex-shrink-0 mt-0.5`} />
+                <IconComp className={`w-4 h-4 ${color} flex-shrink-0 mt-0.5`} />
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-gray-900">{label}</p>
                   <p className="text-xs text-gray-400 truncate">{description}</p>
