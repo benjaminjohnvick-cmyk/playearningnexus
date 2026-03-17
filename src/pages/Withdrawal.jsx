@@ -11,8 +11,9 @@ import {
   DollarSign, Clock, CheckCircle2, XCircle,
   Loader2, Send, ArrowDownCircle, RefreshCw, Info,
   CreditCard, Wallet, Copy, ChevronDown, ChevronUp, Shield,
-  TrendingUp, Zap
+  TrendingUp, Zap, BarChart2
 } from 'lucide-react';
+import TransactionHistory from '@/components/earnings/TransactionHistory';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { loadStripe } from '@stripe/stripe-js';
