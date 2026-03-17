@@ -60,6 +60,15 @@ export default function PayoutHistory() {
     enabled: !!user
   });
 
+  const { data: tierRecord } = useQuery({
+    queryKey: ['userTier', user?.id],
+    queryFn: async () => {
+      const records = await base44.entities.PPCUserTier.filter({ user_id: user.id });
+      return records[0] || null;
+    },
+    enabled: !!user
+  });
+
   // Calculate stats
   const totalEarnings = payouts.reduce((sum, p) => sum + (p.net_amount || 0), 0);
   const pendingAmount = payouts
