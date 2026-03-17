@@ -84,6 +84,7 @@ export default function ReferralAnalytics() {
         {/* Main Analytics Tabs */}
         <Tabs defaultValue="growth">
           <TabsList className="bg-white shadow-md flex-wrap h-auto gap-1 p-1">
+            <TabsTrigger value="conversions"><TrendingUp className="w-4 h-4 mr-1" /> Conversions</TabsTrigger>
             <TabsTrigger value="growth"><Activity className="w-4 h-4 mr-1" /> Growth</TabsTrigger>
             <TabsTrigger value="funnel"><Target className="w-4 h-4 mr-1" /> Funnel</TabsTrigger>
             <TabsTrigger value="sources"><Globe className="w-4 h-4 mr-1" /> Traffic Sources</TabsTrigger>
@@ -92,6 +93,10 @@ export default function ReferralAnalytics() {
             <TabsTrigger value="achievements"><Sparkles className="w-4 h-4 mr-1" /> Achievements</TabsTrigger>
             <TabsTrigger value="ai"><Sparkles className="w-4 h-4 mr-1" /> AI Campaigns</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="conversions" className="mt-4">
+            <ConversionTrendWidget referrals={userReferrals} />
+          </TabsContent>
 
           <TabsContent value="growth" className="mt-4">
             <ReferralGrowthChart referrals={userReferrals} />
