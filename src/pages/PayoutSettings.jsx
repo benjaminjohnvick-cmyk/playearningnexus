@@ -15,6 +15,7 @@ import {
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import AutoPayoutScheduler from '../components/payout/AutoPayoutScheduler';
 
 const PAYOUT_METHODS = [
   {
@@ -403,6 +404,17 @@ export default function PayoutSettings() {
                   <Shield className="w-3 h-3" /> Encrypted and stored securely. Required when earnings exceed $600/year.
                 </p>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Auto Payout Scheduler */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">⚡ Auto-Payout Scheduler</CardTitle>
+              <CardDescription>Set a threshold and automatically trigger payouts with email confirmation</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AutoPayoutScheduler user={user} />
             </CardContent>
           </Card>
 
