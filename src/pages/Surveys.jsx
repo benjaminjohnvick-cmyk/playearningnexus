@@ -152,6 +152,9 @@ export default function Surveys() {
           </CardContent>
         </Card>
 
+        {/* AI Survey Matcher */}
+        <AISurveyMatcher user={user} />
+
         {/* Survey Filter Bar */}
         <SurveyFilterBar filters={surveyFilters} onChange={setSurveyFilters} />
 
