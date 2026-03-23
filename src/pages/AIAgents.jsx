@@ -193,6 +193,20 @@ export default function AIAgents() {
           </p>
         </div>
 
+        {/* Game Store Banner */}
+        <Link to={createPageUrl('InAppGameStore')} className="block mb-6">
+          <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Search className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-lg">Search for any product you want</p>
+              <p className="text-purple-100 text-sm">Pay with surveys — browse the full game store and use your survey earnings to purchase</p>
+            </div>
+            <ShoppingBag className="w-8 h-8 text-white/70 flex-shrink-0" />
+          </div>
+        </Link>
+
         <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
           <div className="flex items-start gap-4">
             <Zap className="w-6 h-6 text-blue-600 mt-1" />
