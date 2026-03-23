@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Zap, Trophy, TrendingUp, Info, Lock, CheckCircle2, Loader2, ShoppingBag, BarChart2 } from "lucide-react";
+import { DollarSign, Zap, Trophy, TrendingUp, Info, Lock, CheckCircle2, Loader2, ShoppingBag, BarChart2, Search } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import TierInfoModal from '@/components/ppc/TierInfoModal';
 import SurveyPublisherForm from '@/components/ppc/SurveyPublisherForm';
 import TierProgressDashboard from '@/components/ppc/TierProgressDashboard';
@@ -220,7 +222,19 @@ export default function PPCMarketplace() {
           </TabsContent>
 
           {/* Store Tab */}
-          <TabsContent value="store" className="mt-6">
+          <TabsContent value="store" className="mt-6 space-y-4">
+            <Link to={createPageUrl('InAppGameStore')}>
+              <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Search className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-bold text-lg">Search for any product you want</p>
+                  <p className="text-purple-100 text-sm">Pay with surveys — browse the full game store and use your survey earnings to purchase</p>
+                </div>
+                <ShoppingBag className="w-8 h-8 text-white/70 flex-shrink-0" />
+              </div>
+            </Link>
             <ThirdPartySellerStore user={user} />
           </TabsContent>
 
