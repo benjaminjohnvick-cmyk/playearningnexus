@@ -29,7 +29,10 @@ export default function InAppGameStore() {
   const [priceRange, setPriceRange] = useState('all');
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [reviewGame, setReviewGame] = useState(null);
-  const [showProductSearch, setShowProductSearch] = useState(false);
+  const [showProductSearch, setShowProductSearch] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('openSearch') === '1';
+  });
   const [productSearchResults, setProductSearchResults] = useState(null);
   const [activeTab, setActiveTab] = useState('games');
 
