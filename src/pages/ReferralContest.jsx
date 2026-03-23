@@ -9,12 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Trophy, Users, DollarSign, AlertCircle, Star, Infinity,
   Clock, Gift, Crown, Medal, Award, Flame, CheckCircle2,
-  Loader2, ArrowUpCircle, Lock
+  Loader2, ArrowUpCircle, Lock, Link2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
+import MyReferralsTab from '@/components/referral/MyReferralsTab';
 
 // Contest config: monthly contest, resets on 1st of each month
 const getContestWindow = () => {
@@ -154,13 +155,30 @@ export default function ReferralContest() {
         {/* Hero */}
         <div className="text-center py-6">
           <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-bold mb-4">
-            <Trophy className="w-4 h-4" /> MONTHLY REFERRAL CONTEST
+            <Trophy className="w-4 h-4" /> REFERRAL CONTEST / REFERRAL TRACKING
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight mb-2">
             Compete. Refer. <span className="text-yellow-500">Win Cash.</span>
           </h1>
           <p className="text-gray-500 text-lg">Top 10 referrers every month share the prize pool.</p>
         </div>
+
+        {/* Main Tabs */}
+        <Tabs defaultValue="contest">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="contest" className="flex items-center gap-2">
+              <Trophy className="w-4 h-4" /> Referral Contest
+            </TabsTrigger>
+            <TabsTrigger value="referrals" className="flex items-center gap-2">
+              <Link2 className="w-4 h-4" /> My Referrals
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="referrals">
+            {user && <MyReferralsTab user={user} />}
+          </TabsContent>
+
+          <TabsContent value="contest" className="space-y-8">
 
         {/* Countdown + Prize */}
         <div className="grid md:grid-cols-2 gap-6">
