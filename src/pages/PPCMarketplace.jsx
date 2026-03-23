@@ -19,6 +19,7 @@ import ThirdPartySellerStore from '@/components/ppc/ThirdPartySellerStore';
 import SurveyAnalyticsDashboard from '@/components/ppc/SurveyAnalyticsDashboard';
 import SurveyDistributionScheduler from '@/components/ppc/SurveyDistributionScheduler';
 import SurveyTranslator from '@/components/ppc/SurveyTranslator';
+import SurveyStreakTracker from '@/components/ppc/SurveyStreakTracker';
 
 
 export default function PPCMarketplace() {
@@ -256,6 +257,7 @@ export default function PPCMarketplace() {
               currentTier={currentTier}
               onViewDetails={setShowTierModal}
             />
+            <SurveyStreakTracker user={user} currentTier={currentTier} />
             <EarningsCalculator currentTier={currentTier} />
           </TabsContent>
 
