@@ -14,6 +14,7 @@ import ManagePayouts from './pages/ManagePayouts';
 import RespondentProfile from './pages/RespondentProfile';
 import AdvancedSurveyAnalytics from './pages/AdvancedSurveyAnalytics';
 import MyPayouts from './pages/MyPayouts';
+import Campaigns from './pages/Campaigns';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -76,6 +77,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdvancedSurveyAnalytics" element={<LayoutWrapper currentPageName="AdvancedSurveyAnalytics"><AdvancedSurveyAnalytics /></LayoutWrapper>} />
       <Route path="/AIGeneratorPage" element={<LayoutWrapper currentPageName="AIGeneratorPage"><AIGeneratorPage /></LayoutWrapper>} />
       <Route path="/MyPayouts" element={<LayoutWrapper currentPageName="MyPayouts"><MyPayouts /></LayoutWrapper>} />
+      <Route path="/Campaigns" element={<LayoutWrapper currentPageName="Campaigns"><Campaigns /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
