@@ -218,6 +218,15 @@ export default function Layout({ children, currentPageName }) {
                     💵 Withdraw Funds
                   </Button>
                 </Link>
+                <Link to={createPageUrl('MyOrders')}>
+                  <Button
+                    variant={currentPageName === 'MyOrders' ? "default" : "ghost"}
+                    size="sm"
+                    className={currentPageName === 'MyOrders' ? "bg-gradient-to-r from-purple-600 to-purple-700 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}
+                  >
+                    📦 My Orders
+                  </Button>
+                </Link>
                 {filteredNav.slice(0, 8).map((item) => (
                   <Link key={item.name} to={createPageUrl(item.path)}>
                     <Button
