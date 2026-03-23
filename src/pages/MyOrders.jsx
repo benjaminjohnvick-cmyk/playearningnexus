@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
@@ -148,7 +148,7 @@ export default function MyOrders() {
   const [user, setUser] = React.useState(null);
   const [search, setSearch] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     base44.auth.me().then(setUser).catch(() => base44.auth.redirectToLogin());
   }, []);
 
