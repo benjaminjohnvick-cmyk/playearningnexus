@@ -76,6 +76,19 @@ Deno.serve(async (req) => {
       base44.asServiceRole.entities.User.list(),
     ]);
 
+    // No prefs yet — not an error, just nothing to process
+    if (!allPrefs || allPrefs.length === 0) {
+      return Response.json({
+        success: true,
+        mode: 'scheduled',
+        date: todayStr,
+        processed: 0,
+        skipped: 0,
+        errors: [],
+        message: 'No payout preferences configured yet. Nothing to process.',
+      });
+    }
+
     const userMap = Object.fromEntries(allUsers.map(u => [u.id, u]));
 
     let processed = 0;
