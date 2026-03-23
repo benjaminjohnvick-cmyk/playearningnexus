@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DollarSign, Zap, Trophy, TrendingUp, Info, Lock, CheckCircle2, Loader2, ShoppingBag, BarChart2, Search, Package } from "lucide-react";
+import { Link } from 'react-router-dom';
 import ProductSearchBar from '@/components/store/ProductSearchBar';
 import ProductSearchResults from '@/components/store/ProductSearchResults';
 import TierInfoModal from '@/components/ppc/TierInfoModal';
