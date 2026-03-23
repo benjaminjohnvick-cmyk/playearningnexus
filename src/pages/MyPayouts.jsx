@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DollarSign, Clock, CheckCircle2, AlertCircle, Settings, CreditCard, Calendar, TrendingUp, Send, Megaphone } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle2, Settings, CreditCard, Calendar, TrendingUp, Send } from 'lucide-react';
 import { format, addDays, addWeeks, addMonths, startOfMonth } from 'date-fns';
 import { Link } from 'react-router-dom';
 import ReferralLinkGenerator from '@/components/referral/ReferralLinkGenerator';
