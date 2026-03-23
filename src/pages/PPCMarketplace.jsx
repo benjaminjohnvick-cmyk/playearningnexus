@@ -303,6 +303,22 @@ export default function PPCMarketplace() {
       )}
 
       {showTierModal && <TierInfoModal tier={showTierModal} onClose={() => setShowTierModal(null)} />}
+
+      {showProductSearch && (
+        <ProductSearchBar
+          onSearchResults={(products, sq, si) => { setProductSearchResults({ products, searchQuery: sq, searchImage: si }); setShowProductSearch(false); }}
+          onClose={() => setShowProductSearch(false)}
+        />
+      )}
+      {productSearchResults && (
+        <ProductSearchResults
+          products={productSearchResults.products}
+          searchQuery={productSearchResults.searchQuery}
+          searchImage={productSearchResults.searchImage}
+          user={user}
+          onClose={() => setProductSearchResults(null)}
+        />
+      )}
     </div>
   );
 }
