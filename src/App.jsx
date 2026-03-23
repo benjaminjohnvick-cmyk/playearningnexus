@@ -13,6 +13,7 @@ import BusinessSurveyAnalytics from './pages/BusinessSurveyAnalytics';
 import ManagePayouts from './pages/ManagePayouts';
 import RespondentProfile from './pages/RespondentProfile';
 import AdvancedSurveyAnalytics from './pages/AdvancedSurveyAnalytics';
+import MyPayouts from './pages/MyPayouts';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -74,6 +75,7 @@ const AuthenticatedApp = () => {
       <Route path="/RespondentProfile" element={<LayoutWrapper currentPageName="RespondentProfile"><RespondentProfile /></LayoutWrapper>} />
       <Route path="/AdvancedSurveyAnalytics" element={<LayoutWrapper currentPageName="AdvancedSurveyAnalytics"><AdvancedSurveyAnalytics /></LayoutWrapper>} />
       <Route path="/AIGeneratorPage" element={<LayoutWrapper currentPageName="AIGeneratorPage"><AIGeneratorPage /></LayoutWrapper>} />
+      <Route path="/MyPayouts" element={<LayoutWrapper currentPageName="MyPayouts"><MyPayouts /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
