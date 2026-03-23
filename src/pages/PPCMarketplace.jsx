@@ -235,6 +235,7 @@ export default function PPCMarketplace() {
                 <div className="flex-1">
                   <p className="font-bold text-lg">Search for any product you want, and pay with surveys</p>
                   <p className="text-purple-100 text-sm">Pay with surveys — use your survey earnings to purchase any product</p>
+                  <p className="text-purple-200 text-xs mt-1">This is a link to the product search button in the game store, located at the top of that page.</p>
                 </div>
                 <ShoppingBag className="w-8 h-8 text-white/70 flex-shrink-0" />
               </div>
