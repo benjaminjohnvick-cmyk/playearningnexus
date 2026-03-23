@@ -56,6 +56,7 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
 
       const result = await base44.integrations.Core.InvokeLLM({
         prompt,
+        model: "gemini_3_flash",
         add_context_from_internet: true,
         file_urls: searchImage ? [searchImage] : undefined,
         response_json_schema: {
