@@ -32,6 +32,13 @@ export default function InAppGameStore() {
   const [showProductSearch, setShowProductSearch] = useState(false);
   const [productSearchResults, setProductSearchResults] = useState(null);
   const [activeTab, setActiveTab] = useState('games');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('openSearch') === '1') {
+      setShowProductSearch(true);
+    }
+  }, []);
   const queryClient = useQueryClient();
   const today = new Date().toISOString().split('T')[0];
 
