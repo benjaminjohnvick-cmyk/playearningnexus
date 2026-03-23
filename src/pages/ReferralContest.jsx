@@ -387,6 +387,8 @@ export default function ReferralContest() {
             </Button>
           </Link>
         </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
