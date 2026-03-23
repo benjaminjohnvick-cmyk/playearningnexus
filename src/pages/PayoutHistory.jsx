@@ -15,17 +15,17 @@ import {
   DollarSign,
   TrendingUp,
   Calendar,
-  Download,
   CheckCircle2,
   Clock,
   XCircle,
   AlertCircle,
   FileText,
   Users,
-  Building2,
   Trophy
 } from 'lucide-react';
 import { format } from 'date-fns';
+import PayoutReceiptDownloader from '@/components/payout/PayoutReceiptDownloader';
+import EarningsBreakdownPanel from '@/components/payout/EarningsBreakdownPanel';
 
 export default function PayoutHistory() {
   const [user, setUser] = useState(null);
@@ -69,6 +69,20 @@ export default function PayoutHistory() {
     enabled: !!user
   });
 
+  // Fetch all transactions for earnings breakdown
+  const { data: transactions = [] } = useQuery({
+    queryKey: ['transactions-breakdown', user?.id],
+    queryFn: () => base44.entities.PPCTransaction.filter({ user_id: user.id }, '-created_date', 200),
+    enabled: !!user
+  });
+
+  // Fetch Payout entity (the real payout records from processScheduledPayouts)
+  const { data: realPayouts = [] } = useQuery({
+    queryKey: ['real-payouts', user?.id],
+    queryFn: () => base44.entities.Payout.filter({ user_id: user.id }, '-created_date', 100),
+    enabled: !!user
+  });
+
   const totalEarnings = payouts.reduce((sum, p) => sum + (p.net_amount || 0), 0);
   const pendingAmount = payouts
     .filter(p => p.status === 'pending' || p.status === 'scheduled')
@@ -88,36 +102,7 @@ export default function PayoutHistory() {
     cancelled: { icon: AlertCircle, color: 'bg-gray-100 text-gray-800', label: 'Cancelled' }
   };
 
-  const downloadReport = (payout) => {
-    const report = `
-PAYOUT REPORT
-Invoice: ${payout.invoice_number || 'N/A'}
-Period: ${format(new Date(payout.period_start), 'MMM dd, yyyy')} - ${format(new Date(payout.period_end), 'MMM dd, yyyy')}
 
-REFERRAL BREAKDOWN:
-- User Referrals: ${payout.user_referrals}
-- Business Referrals: ${payout.business_referrals}
-- Total Referrals: ${payout.total_referrals}
-
-EARNINGS:
-Gross Amount: $${payout.gross_amount.toFixed(2)}
-Platform Fee: -$${payout.platform_fee.toFixed(2)}
-Tax Withheld: -$${payout.tax_withheld.toFixed(2)}
-Net Payout: $${payout.net_amount.toFixed(2)}
-
-Payment Method: ${payout.payout_method}
-Status: ${payout.status}
-${payout.paid_date ? `Paid: ${format(new Date(payout.paid_date), 'MMM dd, yyyy HH:mm')}` : ''}
-${payout.transaction_id ? `Transaction ID: ${payout.transaction_id}` : ''}
-    `.trim();
-
-    const blob = new Blob([report], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `payout-${payout.invoice_number || payout.id}.txt`;
-    a.click();
-  };
 
   if (!user) {
     return (
@@ -154,9 +139,12 @@ ${payout.transaction_id ? `Transaction ID: ${payout.transaction_id}` : ''}
         </div>
 
         <Tabs defaultValue="history">
-          <TabsList className="grid grid-cols-4 w-full max-w-xl">
+          <TabsList className="grid grid-cols-5 w-full max-w-2xl">
             <TabsTrigger value="history" className="flex items-center gap-1">
               <FileText className="w-3.5 h-3.5" /> History
+            </TabsTrigger>
+            <TabsTrigger value="breakdown" className="flex items-center gap-1">
+              <TrendingUp className="w-3.5 h-3.5" /> Breakdown
             </TabsTrigger>
             <TabsTrigger value="schedule" className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5" /> Schedule
@@ -168,6 +156,10 @@ ${payout.transaction_id ? `Transaction ID: ${payout.transaction_id}` : ''}
               <Trophy className="w-3.5 h-3.5" /> Tiers
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="breakdown" className="mt-4">
+            <EarningsBreakdownPanel transactions={transactions} />
+          </TabsContent>
 
           <TabsContent value="schedule" className="mt-4">
             <div className="grid md:grid-cols-2 gap-6">
@@ -193,7 +185,44 @@ ${payout.transaction_id ? `Transaction ID: ${payout.transaction_id}` : ''}
             </div>
           </TabsContent>
 
-          <TabsContent value="history" className="mt-4">
+          <TabsContent value="history" className="mt-4 space-y-6">
+            {/* Real payouts from processScheduledPayouts */}
+            {realPayouts.length > 0 && (
+              <Card className="border-0 shadow-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-green-600" /> Processed Payouts
+                  </CardTitle>
+                  <CardDescription>Scheduled and manual payout requests</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {realPayouts.map(p => {
+                      const StatusIcon = statusConfig[p.status]?.icon || Clock;
+                      return (
+                        <div key={p.id} className="flex items-center justify-between border rounded-lg p-4 hover:shadow-sm transition-shadow">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-9 h-9 rounded-full flex items-center justify-center ${p.status === 'completed' ? 'bg-green-100' : p.status === 'failed' ? 'bg-red-100' : 'bg-amber-100'}`}>
+                              <StatusIcon className={`w-4 h-4 ${p.status === 'completed' ? 'text-green-600' : p.status === 'failed' ? 'text-red-600' : 'text-amber-600'}`} />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-gray-900">${(p.amount || 0).toFixed(2)} via {(p.method || 'paypal').toUpperCase()}</p>
+                              <p className="text-xs text-gray-500">{p.description || 'Payout'}</p>
+                              <p className="text-xs text-gray-400">{p.created_date ? format(new Date(p.created_date), 'MMM dd, yyyy') : ''}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className={statusConfig[p.status]?.color || ''}>{statusConfig[p.status]?.label || p.status}</Badge>
+                            <PayoutReceiptDownloader payout={p} user={user} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="border-0 shadow-md">
               <CardHeader>
                 <CardTitle>Payout History</CardTitle>
@@ -232,10 +261,7 @@ ${payout.transaction_id ? `Transaction ID: ${payout.transaction_id}` : ''}
                                 <p className="text-xs text-gray-400 mt-1">Invoice: {payout.invoice_number}</p>
                               )}
                             </div>
-                            <Button variant="outline" size="sm" onClick={() => downloadReport(payout)}>
-                              <Download className="w-4 h-4 mr-2" />
-                              Report
-                            </Button>
+                            <PayoutReceiptDownloader payout={payout} user={user} />
                           </div>
 
                           <div className="grid md:grid-cols-3 gap-4 mb-4">

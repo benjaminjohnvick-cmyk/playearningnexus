@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Users, DollarSign, Copy, TrendingUp, Link as LinkIcon,
   CheckCircle2, Clock, Twitter, Facebook, MessageCircle,
-  Loader2, Shield, Star, Crown
+  Loader2, Shield, Star, Crown, Trophy
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createPageUrl } from '@/utils';
@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import PPCBadgeSystem from '@/components/referral/PPCBadgeSystem';
 import ReferralAnalyticsTab from '@/components/referral/ReferralAnalyticsTab';
 import CustomSubdomainRequest from '@/components/referral/CustomSubdomainRequest';
+import ReferralLeaderboardPanel from '@/components/referral/ReferralLeaderboardPanel';
 
 export default function ReferralHub() {
   const [user, setUser] = useState(null);
@@ -47,6 +48,26 @@ export default function ReferralHub() {
     queryKey: ['referral-links-hub', user?.id],
     queryFn: () => base44.entities.CustomReferralLink.filter({ user_id: user.id }),
     enabled: !!user
+  });
+
+  // Leaderboard: top referrers by commission
+  const { data: topReferrers = [] } = useQuery({
+    queryKey: ['referral-leaderboard'],
+    queryFn: async () => {
+      const allReferrals = await base44.entities.Referral.list('-commission_earned', 50);
+      // Aggregate by referrer
+      const map = {};
+      allReferrals.forEach(r => {
+        const uid = r.referrer_user_id;
+        if (!uid) return;
+        if (!map[uid]) map[uid] = { user_id: uid, name: r.referrer_name || 'User', total_commission: 0, active_referrals: 0 };
+        map[uid].total_commission += r.commission_earned || 0;
+        if (r.status === 'active') map[uid].active_referrals++;
+      });
+      return Object.values(map).sort((a, b) => b.total_commission - a.total_commission).slice(0, 20);
+    },
+    enabled: !!user,
+    refetchInterval: 60000
   });
 
   const totalCommission = referrals.reduce((sum, r) => sum + (r.commission_earned || 0), 0);
@@ -116,11 +137,12 @@ export default function ReferralHub() {
         </div>
 
         <Tabs defaultValue="link">
-          <TabsList className="grid grid-cols-6 w-full">
+          <TabsList className="grid grid-cols-7 w-full">
             <TabsTrigger value="link">Share Link</TabsTrigger>
             <TabsTrigger value="progress">Tier Progress</TabsTrigger>
             <TabsTrigger value="badges">Badges</TabsTrigger>
             <TabsTrigger value="referrals">My Referrals</TabsTrigger>
+            <TabsTrigger value="leaderboard">🏆 Leaderboard</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="domain">🌐 Domain</TabsTrigger>
           </TabsList>
@@ -225,6 +247,18 @@ export default function ReferralHub() {
 
           <TabsContent value="badges" className="mt-4">
             <PPCBadgeSystem user={user} referrals={referrals} currentTier={currentTier} dailyEarnings={dailyEarnings} />
+          </TabsContent>
+
+          <TabsContent value="leaderboard" className="mt-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-yellow-500" /> Top Referral Earners
+                </h3>
+                <Badge className="bg-indigo-100 text-indigo-700">Live · updates every minute</Badge>
+              </div>
+              <ReferralLeaderboardPanel leaderboard={topReferrers} currentUserId={user?.id} />
+            </div>
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-4">

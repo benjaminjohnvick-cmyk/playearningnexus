@@ -33,6 +33,7 @@ import NotificationCenter from '@/components/notifications/NotificationCenter';
 import MegaContestButton from '@/components/referral/MegaContestButton';
 import SurveyAlertWatcher from '@/components/surveys/SurveyAlertWatcher';
 import PushNotificationManager from '@/components/notifications/PushNotificationManager';
+import SurveyNotificationBanner from '@/components/notifications/SurveyNotificationBanner';
 import { LocaleProvider } from '@/components/locale/LocaleContext';
 import CurrencySelector from '@/components/locale/CurrencySelector';
 
@@ -320,6 +321,7 @@ export default function Layout({ children, currentPageName }) {
         <main>{children}</main>
 
         {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
+        {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
 
         <SupportChatButton />
 

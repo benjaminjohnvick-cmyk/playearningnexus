@@ -21,17 +21,21 @@ const TYPE_CONFIG = {
   social_milestone:     { icon: Users,        color: 'text-blue-500',   bg: 'bg-blue-50',   label: 'Social' },
   referral_earnings:    { icon: Users,        color: 'text-green-500',  bg: 'bg-green-50',  label: 'Referral' },
   survey_available:     { icon: FileText,     color: 'text-indigo-500', bg: 'bg-indigo-50', label: 'Survey' },
+  survey_approved:      { icon: Check,        color: 'text-green-600',  bg: 'bg-green-50',  label: 'Approved' },
+  earnings_milestone:   { icon: Trophy,       color: 'text-yellow-500', bg: 'bg-yellow-50', label: 'Milestone' },
+  payout_processed:     { icon: ArrowDownCircle, color: 'text-purple-500', bg: 'bg-purple-50', label: 'Payout' },
   achievement_unlocked: { icon: Trophy,       color: 'text-yellow-500', bg: 'bg-yellow-50', label: 'Achievement' },
   purchase_complete:    { icon: ShoppingCart, color: 'text-orange-500', bg: 'bg-orange-50', label: 'Purchase' },
   points_earned:        { icon: Zap,          color: 'text-purple-500', bg: 'bg-purple-50', label: 'Points' },
 };
 
 const FILTER_TABS = [
-  { key: 'all',        label: 'All' },
+  { key: 'all',               label: 'All' },
+  { key: 'survey_available',  label: 'New Surveys' },
+  { key: 'survey_approved',   label: 'Approved' },
+  { key: 'earnings_milestone',label: 'Milestones' },
+  { key: 'payout_processed',  label: 'Payouts' },
   { key: 'referral_earnings', label: 'Referrals' },
-  { key: 'achievement_unlocked', label: 'Achievements' },
-  { key: 'survey_available', label: 'Surveys' },
-  { key: 'purchase_complete', label: 'Payments' },
 ];
 
 export default function NotificationHistory() {
