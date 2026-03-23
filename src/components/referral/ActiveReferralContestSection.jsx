@@ -52,7 +52,7 @@ function CountdownTimer({ targetDate }) {
         { label: 'M', value: time.minutes },
         { label: 'S', value: time.seconds },
       ].map((u, i) => (
-        <React.Fragment key={u.label}>
+        <div key={u.label} className="flex items-center gap-2">
           {i > 0 && <span className="text-white/60 font-bold text-lg mb-3">:</span>}
           <div className="text-center">
             <div className={`rounded-lg w-12 h-12 flex items-center justify-center text-xl font-black tabular-nums ${isUrgent ? 'bg-red-500 text-white' : 'bg-white/20 text-white'}`}>
@@ -60,7 +60,7 @@ function CountdownTimer({ targetDate }) {
             </div>
             <p className="text-xs text-white/70 mt-1 font-medium">{u.label}</p>
           </div>
-        </React.Fragment>
+        </div>
       ))}
     </div>
   );

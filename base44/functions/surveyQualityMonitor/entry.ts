@@ -10,20 +10,11 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    // Can be called by scheduler (service role) or by creator
-    let userId = null;
-    let isScheduled = false;
-    try {
-      const user = await base44.auth.me();
-      userId = user?.id;
-    } catch {
-      isScheduled = true; // called from automation without user token
-    }
+    let survey_id = null;
+    try { const body = await req.json(); survey_id = body?.survey_id; } catch (_) {}
 
-    const { survey_id } = await req.json();
-
-    // If scheduled (no user), process ALL active surveys
-    if (!survey_id && isScheduled) {
+    // If no survey_id, run bulk scheduled mode across all active surveys
+    if (!survey_id) {
       const activeSurveys = await base44.asServiceRole.entities.PPCSurvey.filter({ status: 'active' });
       const results = [];
       for (const s of activeSurveys) {
@@ -33,6 +24,7 @@ Deno.serve(async (req) => {
       return Response.json({ success: true, processed: results.length, results });
     }
 
+    // survey_id is required when called manually
     if (!survey_id) return Response.json({ error: 'survey_id required' }, { status: 400 });
 
     const surveys = await base44.asServiceRole.entities.PPCSurvey.filter({ id: survey_id });
