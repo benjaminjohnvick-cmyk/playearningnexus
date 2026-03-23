@@ -239,6 +239,7 @@ export default function PPCMarketplace() {
                 <ShoppingBag className="w-8 h-8 text-white/70 flex-shrink-0" />
               </div>
             </Link>
+            <p className="text-xs text-gray-400 text-center -mt-2">This button is simply a link to the product search button on the game store page located at the top of the game store page.</p>
             <ThirdPartySellerStore user={user} />
           </TabsContent>
 
