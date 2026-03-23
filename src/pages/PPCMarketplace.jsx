@@ -25,6 +25,8 @@ export default function PPCMarketplace() {
   const [showTierModal, setShowTierModal] = useState(null);
   const [activeTab, setActiveTab] = useState('earn');
   const [showEntryModal, setShowEntryModal] = useState(true);
+  const [showProductSearch, setShowProductSearch] = useState(false);
+  const [productSearchResults, setProductSearchResults] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(u => {
