@@ -224,7 +224,9 @@ export default function PPCMarketplace() {
                 <Badge className="bg-orange-100 text-orange-700"><ShoppingBag className="w-3 h-3 mr-1" />Product Listing: $4/sale</Badge>
               </div>
             </div>
-            <SurveyMarketplaceListing user={user} tier={currentTier} />
+            <div>
+              <SurveyMarketplaceListing user={user} tier={currentTier} />
+            </div>
             <SurveyEmbedPanel user={user} />
           </TabsContent>
 
