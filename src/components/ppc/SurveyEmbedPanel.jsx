@@ -5,17 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Code2, Copy, Check, Globe, ChevronDown, ChevronUp } from 'lucide-react';
-import { toast } from 'sonner';
+import { useToast } from '@/components/ui/use-toast';
 
 const WIDGET_API = 'https://base44app.com/api/functions/surveyWidget';
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
   return (
     <Button variant="outline" size="sm" className="gap-2 shrink-0" onClick={() => {
       navigator.clipboard.writeText(text);
       setCopied(true);
-      toast.success('Copied!');
+      toast({ title: 'Copied!' });
       setTimeout(() => setCopied(false), 2000);
     }}>
       {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}

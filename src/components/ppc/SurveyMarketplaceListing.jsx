@@ -15,30 +15,30 @@ export default function SurveyMarketplaceListing({ user, tier }) {
     queryFn: () => base44.entities.PPCSurvey.filter({ status: 'active', tier }),
   });
 
-  if (isLoading) return (
-    <div className="text-center py-10"><Loader2 className="w-8 h-8 animate-spin text-purple-500 mx-auto" /></div>
-  );
-
   if (activeSurvey) {
     return <PPCSurveyTaker survey={activeSurvey} user={user} onClose={() => setActiveSurvey(null)} />;
   }
 
-  if (surveys.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h3 className="font-semibold text-gray-600">No active surveys yet</h3>
-        <p className="text-sm text-gray-400 mt-1">Check back soon — surveys are added regularly</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="grid md:grid-cols-2 gap-4">
-      {surveys.map(survey => (
-        <SurveyCard key={survey.id} survey={survey} onTake={() => setActiveSurvey(survey)} />
-      ))}
-    </div>
+    <>
+      {isLoading && (
+        <div className="text-center py-10"><Loader2 className="w-8 h-8 animate-spin text-purple-500 mx-auto" /></div>
+      )}
+      {!isLoading && surveys.length === 0 && (
+        <div className="text-center py-12">
+          <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="font-semibold text-gray-600">No active surveys yet</h3>
+          <p className="text-sm text-gray-400 mt-1">Check back soon — surveys are added regularly</p>
+        </div>
+      )}
+      {!isLoading && surveys.length > 0 && (
+        <div className="grid md:grid-cols-2 gap-4">
+          {surveys.map(survey => (
+            <SurveyCard key={survey.id} survey={survey} onTake={() => setActiveSurvey(survey)} />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
