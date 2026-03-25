@@ -20,6 +20,7 @@ import SurveyAnalyticsDashboard from '@/components/ppc/SurveyAnalyticsDashboard'
 import SurveyDistributionScheduler from '@/components/ppc/SurveyDistributionScheduler';
 import SurveyTranslator from '@/components/ppc/SurveyTranslator';
 import SurveyStreakTracker from '@/components/ppc/SurveyStreakTracker';
+import SurveyEmbedPanel from '@/components/ppc/SurveyEmbedPanel';
 
 
 export default function PPCMarketplace() {
@@ -246,8 +247,9 @@ export default function PPCMarketplace() {
           </TabsContent>
 
           {/* Publish Tab */}
-          <TabsContent value="publish" className="mt-6">
+          <TabsContent value="publish" className="mt-6 space-y-6">
             <SurveyPublisherForm user={user} />
+            <SurveyEmbedPanel user={user} />
           </TabsContent>
 
           {/* Progress Tab */}
