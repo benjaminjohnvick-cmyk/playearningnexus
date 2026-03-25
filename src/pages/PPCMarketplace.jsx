@@ -225,6 +225,7 @@ export default function PPCMarketplace() {
               </div>
             </div>
             <SurveyMarketplaceListing user={user} tier={currentTier} />
+            <SurveyEmbedPanel user={user} />
           </TabsContent>
 
           {/* Store Tab */}
