@@ -25,7 +25,8 @@ import {
   User,
   Heart,
   ArrowRightLeft,
-  Globe
+  Globe,
+  BarChart2
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
@@ -137,6 +138,9 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Campaigns', icon: TrendingUp, path: 'Campaigns', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },
     { name: 'Challenges', icon: Trophy, path: 'Challenges', requireAuth: true },
+    { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
+    { name: 'Survey Builder', icon: FileText, path: 'SurveyTemplateBuilder', requireAuth: true },
+    { name: 'Survey Analytics', icon: BarChart2, path: 'SurveyAdminDashboard', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
     { name: 'Manage Payouts', icon: DollarSign, path: 'ManagePayouts', requireAuth: true },
     { name: 'My Respondent Profile', icon: User, path: 'RespondentProfile', requireAuth: true },

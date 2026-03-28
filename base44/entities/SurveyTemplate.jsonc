@@ -1,0 +1,102 @@
+{
+  "name": "SurveyTemplate",
+  "type": "object",
+  "properties": {
+    "creator_user_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "multiple_choice",
+              "rating",
+              "text",
+              "yes_no"
+            ]
+          },
+          "question": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "default": true
+          },
+          "rating_max": {
+            "type": "number",
+            "default": 5
+          }
+        }
+      },
+      "default": []
+    },
+    "branch_logic": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_question_id": {
+            "type": "string"
+          },
+          "condition_value": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "skip_to",
+              "end_survey"
+            ]
+          },
+          "target_question_id": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "category": {
+      "type": "string"
+    },
+    "estimated_time_minutes": {
+      "type": "number",
+      "default": 5
+    },
+    "times_used": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "creator_user_id",
+    "title"
+  ]
+}
