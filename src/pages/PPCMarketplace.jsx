@@ -22,6 +22,7 @@ import SurveyTranslator from '@/components/ppc/SurveyTranslator';
 import SurveyStreakTracker from '@/components/ppc/SurveyStreakTracker';
 import SurveyEmbedPanel from '@/components/ppc/SurveyEmbedPanel';
 import AILaunchOptimizer from '@/components/ppc/AILaunchOptimizer';
+import PPCMilestoneTracker from '@/components/ppc/PPCMilestoneTracker';
 
 
 export default function PPCMarketplace() {
@@ -162,7 +163,7 @@ export default function PPCMarketplace() {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="earn">Earn PPC</TabsTrigger>
             <TabsTrigger value="surveys">Listings</TabsTrigger>
             <TabsTrigger value="publish">Publish</TabsTrigger>
@@ -172,6 +173,7 @@ export default function PPCMarketplace() {
             <TabsTrigger value="distribute">📤 Distribute</TabsTrigger>
             <TabsTrigger value="translate">🌍 Translate</TabsTrigger>
             <TabsTrigger value="ai-schedule">🧠 AI Schedule</TabsTrigger>
+            <TabsTrigger value="milestones">🏆 Milestones</TabsTrigger>
           </TabsList>
 
           {/* Earn Tab */}
@@ -282,6 +284,11 @@ export default function PPCMarketplace() {
           {/* Translate Tab */}
           <TabsContent value="translate" className="mt-6">
             <SurveyTranslator user={user} />
+          </TabsContent>
+
+          {/* Milestones Tab */}
+          <TabsContent value="milestones" className="mt-6">
+            <PPCMilestoneTracker user={user} />
           </TabsContent>
 
           {/* AI Schedule Tab */}

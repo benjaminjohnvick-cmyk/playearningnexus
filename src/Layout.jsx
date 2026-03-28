@@ -37,6 +37,7 @@ import MegaContestButton from '@/components/referral/MegaContestButton';
 import SurveyAlertWatcher from '@/components/surveys/SurveyAlertWatcher';
 import PushNotificationManager from '@/components/notifications/PushNotificationManager';
 import SurveyNotificationBanner from '@/components/notifications/SurveyNotificationBanner';
+import SurveyDemandAlerts from '@/components/ppc/SurveyDemandAlerts';
 import { LocaleProvider } from '@/components/locale/LocaleContext';
 import CurrencySelector from '@/components/locale/CurrencySelector';
 
@@ -262,6 +263,7 @@ export default function Layout({ children, currentPageName }) {
                     </div>
                     <CurrencySelector />
                     <PushNotificationManager />
+                    <SurveyDemandAlerts user={user} />
                     <NotificationCenter user={user} />
                     <Link to={createPageUrl('Settings')}>
                       <Button variant="ghost" size="icon">
