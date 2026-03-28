@@ -9,10 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Wand2, Target, Lightbulb, Copy, Check } from 'lucide-react';
-import { toast } from 'sonner';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function AICampaignGenerator({ user }) {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [campaignGoal, setCampaignGoal] = useState('');
   const [targetAudience, setTargetAudience] = useState('');
   const [platform, setPlatform] = useState('');
@@ -21,48 +22,29 @@ export default function AICampaignGenerator({ user }) {
 
   const generateCampaignMutation = useMutation({
     mutationFn: async () => {
-      const prompt = `Generate a referral campaign for GamerGain platform.
-
-Campaign Goal: ${campaignGoal}
-Target Audience: ${targetAudience}
-Platform: ${platform}
-
-Please provide:
-1. Campaign Name (catchy and memorable)
-2. Campaign Description (2-3 sentences)
-3. Promotional Content (ready-to-post social media copy with hashtags)
-4. Target Audience Strategy (who to target and why)
-5. 3 Creative Campaign Ideas
-6. Recommended posting times and frequency
-
-Format as JSON with keys: campaign_name, description, promotional_content, audience_strategy, creative_ideas (array), posting_schedule`;
-
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            campaign_name: { type: 'string' },
-            description: { type: 'string' },
-            promotional_content: { type: 'string' },
-            audience_strategy: { type: 'string' },
-            creative_ideas: {
-              type: 'array',
-              items: { type: 'string' }
-            },
-            posting_schedule: { type: 'string' }
-          }
-        }
+      const res = await base44.functions.invoke('aiMarketingCopyGenerator', {
+        platform,
+        goal: campaignGoal,
+        audience: targetAudience,
+        tone: 'enthusiastic'
       });
-
-      return result;
+      const copy = res.data?.copy;
+      // Map to expected shape
+      return {
+        campaign_name: copy?.headline || campaignGoal,
+        description: copy?.hook || '',
+        promotional_content: copy?.full_post || copy?.body_copy || '',
+        audience_strategy: `Target ${targetAudience} on ${platform}. ${copy?.platform_tips || ''}`,
+        creative_ideas: [copy?.ab_variant || '', copy?.cta || '', (copy?.hashtags || []).join(' ')].filter(Boolean),
+        posting_schedule: copy?.platform_tips || 'Post during peak hours for best engagement.'
+      };
     },
     onSuccess: (data) => {
       setGeneratedContent(data);
-      toast.success('Campaign generated successfully!');
+      toast({ title: '✅ Campaign generated!' });
     },
     onError: () => {
-      toast.error('Failed to generate campaign');
+      toast({ title: 'Failed to generate campaign', variant: 'destructive' });
     }
   });
 
@@ -84,7 +66,7 @@ Format as JSON with keys: campaign_name, description, promotional_content, audie
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['campaigns']);
-      toast.success('Campaign saved to drafts!');
+      toast({ title: '✅ Campaign saved to drafts!' });
       setGeneratedContent(null);
       setCampaignGoal('');
       setTargetAudience('');
@@ -95,7 +77,7 @@ Format as JSON with keys: campaign_name, description, promotional_content, audie
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
-    toast.success('Copied to clipboard!');
+    toast({ title: '✅ Copied to clipboard!' });
     setTimeout(() => setCopied(false), 2000);
   };
 

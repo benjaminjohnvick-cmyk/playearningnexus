@@ -21,6 +21,7 @@ import AIChatSupport from '../components/support/AIChatSupport';
 import PersonalizedGameBundles from '../components/bundles/PersonalizedGameBundles';
 import EnhancedPointsSystem from '../components/gamification/EnhancedPointsSystem';
 import PersonalizedRecommendations from '../components/ai/PersonalizedRecommendations';
+import AIPersonalizedRecommendations from '../components/ai/AIPersonalizedRecommendations';
 import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
 import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
 import DailyGoalProgress from '../components/gamification/DailyGoalProgress';
@@ -286,6 +287,11 @@ export default function UserDashboard() {
         {/* AI Recommendations */}
         <div className="mb-8">
           <PersonalizedRecommendations user={user} />
+        </div>
+
+        {/* AI Personalized Earning Recommendations */}
+        <div className="mb-8">
+          <AIPersonalizedRecommendations user={user} />
         </div>
 
         {/* Personalized Game Bundles */}

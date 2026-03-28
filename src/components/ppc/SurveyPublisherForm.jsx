@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
 import AISurveyBuilder from '@/components/ppc/AISurveyBuilder';
+import AIQuestionGenerator from '@/components/ppc/AIQuestionGenerator';
 import SkipLogicBuilder from '@/components/ppc/SkipLogicBuilder';
 import { useCollabSession, CollabAvatars, CollabFieldHighlight } from '@/components/ppc/CollabCursors';
 import SurveyTargetingFilter from '@/components/ppc/SurveyTargetingFilter';
@@ -248,7 +249,14 @@ export default function SurveyPublisherForm({ user }) {
             </CardContent>
           </Card>
 
-          {/* Step 3 — AI Question Builder */}
+          {/* AI Quick Question Generator */}
+          <AIQuestionGenerator
+            surveyTitle={formData.title}
+            surveyType={surveyType}
+            onQuestionsGenerated={handleQuestionsFromAI}
+          />
+
+          {/* Step 3 — AI Question Builder (full paid flow) */}
           <AISurveyBuilder
             surveyType={surveyType}
             productName={formData.title}
