@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import {
   AlertCircle, Upload, FileText, Clock, CheckCircle2,
   XCircle, RefreshCw, Plus, Image as ImageIcon, Loader2,
-  ChevronDown, ChevronUp, Search, Zap, Info
+  ChevronDown, ChevronUp, Search, Zap, Info, Bot
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -53,8 +53,25 @@ function DisputeStatusTracker({ dispute }) {
 
 function DisputeCard({ dispute }) {
   const [expanded, setExpanded] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiResult, setAiResult] = useState(null);
+  const queryClient = useQueryClient();
   const cfg = STATUS_CFG[dispute.status] || STATUS_CFG.pending;
   const Icon = cfg.icon;
+
+  const runAIReview = async () => {
+    setAiLoading(true);
+    try {
+      const res = await base44.functions.invoke('aiDisputeReview', { dispute_id: dispute.id });
+      setAiResult(res.data);
+      queryClient.invalidateQueries(['self-service-disputes']);
+      toast.success('AI review complete!');
+    } catch {
+      toast.error('AI review failed. Try again.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   return (
     <div className="border-2 border-gray-100 rounded-xl overflow-hidden hover:border-gray-200 transition-colors">
@@ -118,6 +135,31 @@ function DisputeCard({ dispute }) {
           {dispute.status === 'approved' && dispute.resolved_amount > 0 && (
             <div className="bg-green-100 rounded-lg p-3 text-center">
               <p className="text-sm font-bold text-green-700">✅ Credited ${dispute.resolved_amount.toFixed(2)} to your balance</p>
+            </div>
+          )}
+
+          {/* AI Review button — only for pending disputes */}
+          {dispute.status === 'pending' && (
+            <div className="pt-2 border-t border-gray-100">
+              <Button
+                size="sm"
+                className="w-full gap-2 bg-indigo-600 hover:bg-indigo-700 text-xs"
+                onClick={runAIReview}
+                disabled={aiLoading}
+              >
+                {aiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bot className="w-3.5 h-3.5" />}
+                {aiLoading ? 'AI Reviewing Evidence…' : '🤖 Request AI Evidence Review'}
+              </Button>
+              {aiResult && (
+                <div className={`mt-2 p-2 rounded-lg text-xs border ${
+                  aiResult.recommendation === 'approve' ? 'bg-green-50 border-green-200 text-green-700' :
+                  aiResult.recommendation === 'reject' ? 'bg-red-50 border-red-200 text-red-700' :
+                  'bg-blue-50 border-blue-200 text-blue-700'
+                }`}>
+                  <p className="font-bold">AI Recommendation: {aiResult.recommendation?.toUpperCase()} ({aiResult.confidence}% confidence)</p>
+                  <p className="mt-0.5">{aiResult.reasoning}</p>
+                </div>
+              )}
             </div>
           )}
         </div>
