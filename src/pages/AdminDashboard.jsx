@@ -13,6 +13,7 @@ import ManualPayoutPanel from '../components/admin/ManualPayoutPanel';
 import AIPayoutIntelligence from '../components/admin/AIPayoutIntelligence';
 import ReferralFollowUpAdmin from '../components/admin/ReferralFollowUpAdmin';
 import DisputeManager from '../components/admin/DisputeManager';
+import AdminDisputeReviewPanel from '../components/disputes/AdminDisputeReviewPanel';
 import ComplianceReview from '../components/admin/ComplianceReview';
 import ContentLibraryManager from '../components/admin/ContentLibraryManager';
 import ContestManager from '../components/admin/ContestManager';
@@ -112,7 +113,10 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="disputes">
-            <DisputeManager />
+            <div className="space-y-6">
+              <AdminDisputeReviewPanel />
+              <DisputeManager />
+            </div>
           </TabsContent>
 
           <TabsContent value="compliance">
