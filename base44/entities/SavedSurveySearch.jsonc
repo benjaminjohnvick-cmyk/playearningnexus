@@ -1,0 +1,50 @@
+{
+  "name": "SavedSurveySearch",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "User-given label for this search"
+    },
+    "keyword": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "min_reward": {
+      "type": "number",
+      "default": 0
+    },
+    "max_reward": {
+      "type": "number"
+    },
+    "max_time_minutes": {
+      "type": "number"
+    },
+    "sort_by": {
+      "type": "string",
+      "enum": [
+        "reward_desc",
+        "time_asc",
+        "completion_rate"
+      ],
+      "default": "reward_desc"
+    },
+    "alerts_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "last_alerted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "name"
+  ]
+}

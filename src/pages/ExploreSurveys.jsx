@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
+import SurveySearchBar from '@/components/surveys/SurveySearchBar';
+import AISurveyCoach from '@/components/surveys/AISurveyCoach';
 
 // Fix Leaflet icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -197,6 +199,7 @@ export default function ExploreSurveys() {
   const [unlockedIds, setUnlockedIds] = useState(new Set());
   const [claims, setClaims] = useState([]);
   const [tab, setTab] = useState('map');
+  const [filteredSurveys, setFilteredSurveys] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -226,10 +229,12 @@ export default function ExploreSurveys() {
 
   const hotspots = useMemo(() => location ? generateHotspots(location.lat, location.lng) : [], [location]);
 
-  const filtered = useMemo(() =>
+  const categoryFiltered = useMemo(() =>
     hotspots.filter(h => selectedCategory === 'all' || h.category === selectedCategory),
     [hotspots, selectedCategory]
   );
+
+  const filtered = filteredSurveys !== null ? filteredSurveys : categoryFiltered;
 
   const availableTotal = filtered.filter(h => !h.locked || unlockedIds.has(h.id)).reduce((s, h) => s + h.totalEarn, 0);
   const availableCount = filtered.filter(h => !h.locked || unlockedIds.has(h.id)).length;
@@ -351,6 +356,13 @@ export default function ExploreSurveys() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-4">
+        {/* Search & Filter Bar */}
+        <SurveySearchBar
+          surveys={categoryFiltered}
+          onFiltered={(result) => setFilteredSurveys(result)}
+          user={user}
+        />
+
         {/* Category filter strip */}
         <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
           {CATEGORIES.map(cat => {
@@ -382,6 +394,9 @@ export default function ExploreSurveys() {
             </TabsTrigger>
             <TabsTrigger value="list" className="flex items-center gap-1.5">
               <List className="w-4 h-4" /> List View
+            </TabsTrigger>
+            <TabsTrigger value="coach" className="flex items-center gap-1.5">
+              <Zap className="w-4 h-4" /> AI Coach
             </TabsTrigger>
             <TabsTrigger value="activity" className="flex items-center gap-1.5 relative">
               <Activity className="w-4 h-4" /> My Activity
@@ -592,6 +607,13 @@ export default function ExploreSurveys() {
                     />
                   ))
               )}
+            </div>
+          </TabsContent>
+
+          {/* AI COACH TAB */}
+          <TabsContent value="coach">
+            <div className="max-w-2xl">
+              <AISurveyCoach user={user} />
             </div>
           </TabsContent>
 

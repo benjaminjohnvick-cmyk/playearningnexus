@@ -15,6 +15,7 @@ import {
   Crown, Shield, Medal, ClipboardList, TrendingUp, AlertCircle
 } from 'lucide-react';
 import AboutMeEditor from '../components/profile/AboutMeEditor';
+import AchievementBadgeSystem, { useAchievements } from '@/components/achievements/AchievementBadgeSystem';
 import SocialLinksEditor from '../components/profile/SocialLinksEditor';
 import FeaturedBadges from '../components/profile/FeaturedBadges';
 import SurveyInterestPicker from '../components/profile/SurveyInterestPicker';
@@ -119,11 +120,22 @@ export default function UserProfile() {
   const daysGoalMet = dailyEarnings.filter(d => d.goal_met).length;
   const totalSurveys = dailyEarnings.reduce((s, d) => s + (d.total_surveys_completed || 0), 0);
 
-  const userStats = { totalReferrals, activeReferrals, commissionEarned, totalEarnings, memberDays, daysGoalMet, totalSurveys, streakDays: 0 };
+  const { data: surveyResponses = [] } = useQuery({
+    queryKey: ['profileResponses', user?.id],
+    queryFn: () => base44.entities.PPCSurveyResponse.filter({ user_id: user.id, completed: true }, '-created_date', 200),
+    enabled: !!user
+  });
+
+  const avgQuality = surveyResponses.length > 0
+    ? surveyResponses.reduce((s, r) => s + (r.quality_score || 70), 0) / surveyResponses.length : 0;
+  const surveysCompleted = surveyResponses.length || totalSurveys;
+
+  const userStats = { totalReferrals, activeReferrals, commissionEarned, totalEarnings, memberDays, daysGoalMet, totalSurveys, surveysCompleted, streakDays: 0, avgQuality };
   const currentTier = getUserTier(activeReferrals, commissionEarned);
   const nextTier = TIERS[TIERS.findIndex(t => t.name === currentTier.name) + 1];
   const earnedBadges = BADGES.filter(b => b.threshold(userStats));
   const points = Math.floor(totalSurveys * 10 + totalReferrals * 25 + totalEarnings * 5 + daysGoalMet * 15);
+  const { earnedCount: achievementCount } = useAchievements(user, userStats);
 
   // ── Avatar upload ────────────────────────────────────────────────────────
   const handleAvatarChange = async (e) => {
@@ -336,59 +348,7 @@ export default function UserProfile() {
 
           {/* ── Badges ── */}
           <TabsContent value="badges" className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <Card className="border-0 shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Award className="w-5 h-5 text-purple-600" />
-                    Earned Badges
-                    <Badge className="bg-purple-600">{earnedBadges.length}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {earnedBadges.length === 0 ? (
-                    <p className="text-gray-400 text-sm text-center py-8">Complete actions to earn badges!</p>
-                  ) : (
-                    <div className="grid grid-cols-3 gap-3">
-                      {earnedBadges.map((badge, idx) => {
-                        const Icon = badge.icon;
-                        return (
-                          <motion.div key={badge.id} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: idx * 0.06 }}
-                            className={`flex flex-col items-center p-3 rounded-xl ${badge.bg} border-2 border-current text-center`}>
-                            <Icon className={`w-8 h-8 mb-1 ${badge.color}`} />
-                            <p className={`text-xs font-bold ${badge.color}`}>{badge.label}</p>
-                            <p className="text-xs text-green-600 mt-0.5">✓ Earned</p>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-gray-400" />
-                    Locked Badges
-                    <Badge variant="outline">{BADGES.length - earnedBadges.length}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-3">
-                    {BADGES.filter(b => !b.threshold(userStats)).map((badge) => {
-                      const Icon = badge.icon;
-                      return (
-                        <div key={badge.id} className="flex flex-col items-center p-3 rounded-xl bg-gray-100 opacity-50 text-center">
-                          <Icon className="w-8 h-8 mb-1 text-gray-400" />
-                          <p className="text-xs font-bold text-gray-400">{badge.label}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <AchievementBadgeSystem user={user} userStats={userStats} />
           </TabsContent>
 
           {/* ── Referrals ── */}
