@@ -1,0 +1,97 @@
+{
+  "name": "RetentionRisk",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "churn_probability": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 churn probability score"
+    },
+    "lifetime_value": {
+      "type": "number",
+      "default": 0
+    },
+    "days_since_last_survey": {
+      "type": "number",
+      "default": 0
+    },
+    "days_since_last_login": {
+      "type": "number",
+      "default": 0
+    },
+    "survey_freq_drop_pct": {
+      "type": "number",
+      "default": 0,
+      "description": "% drop in survey frequency vs prior 30d"
+    },
+    "referral_drop_pct": {
+      "type": "number",
+      "default": 0
+    },
+    "session_length_drop_pct": {
+      "type": "number",
+      "default": 0
+    },
+    "risk_signals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "ai_analysis": {
+      "type": "string"
+    },
+    "recommended_action": {
+      "type": "string"
+    },
+    "notification_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "notification_sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "contacted",
+        "recovered",
+        "churned",
+        "dismissed"
+      ],
+      "default": "active"
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

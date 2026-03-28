@@ -1,0 +1,94 @@
+{
+  "name": "GlobalPrestige",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "prestige_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-1000 holistic engagement score"
+    },
+    "prestige_tier": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum",
+        "diamond"
+      ],
+      "default": "bronze"
+    },
+    "survey_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Contribution from survey activity"
+    },
+    "gameplay_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Contribution from game playtime"
+    },
+    "marketplace_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Contribution from marketplace spending"
+    },
+    "referral_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Contribution from referral activity"
+    },
+    "streak_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Contribution from daily streaks"
+    },
+    "total_surveys_completed": {
+      "type": "number",
+      "default": 0
+    },
+    "total_game_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "total_marketplace_spend": {
+      "type": "number",
+      "default": 0
+    },
+    "total_referrals": {
+      "type": "number",
+      "default": 0
+    },
+    "current_streak_days": {
+      "type": "number",
+      "default": 0
+    },
+    "fee_discount_pct": {
+      "type": "number",
+      "default": 0,
+      "description": "Platform fee reduction % earned"
+    },
+    "unlocked_survey_pools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of exclusive high-earning survey pools unlocked"
+    },
+    "last_calculated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ai_insights": {
+      "type": "string",
+      "description": "AI-generated personalized insights"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

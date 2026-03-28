@@ -29,6 +29,8 @@ import PartnerTiersPanel from '../components/admin/PartnerTiersPanel';
 import PPCAbTestManager from '../components/admin/PPCAbTestManager';
 import AdminCredentialsPanel from '../components/admin/AdminCredentialsPanel';
 import FeedbackAdminDashboard from './FeedbackAdminDashboard';
+import RetentionRiskPanel from '../components/admin/RetentionRiskPanel';
+import SurveyABTestDashboard from '../components/admin/SurveyABTestDashboard';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
@@ -88,6 +90,8 @@ export default function AdminDashboard() {
             <TabsTrigger value="reconciliation">💰 Reconciliation</TabsTrigger>
             <TabsTrigger value="exports">📊 Export</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="retention_risk">⚠️ Retention Risk</TabsTrigger>
+            <TabsTrigger value="survey_ab">🧪 Survey A/B Tests</TabsTrigger>
             <TabsTrigger value="dropoff">📉 Drop-off Analytics</TabsTrigger>
             <TabsTrigger value="smart_payouts">💸 Smart Payouts</TabsTrigger>
             <TabsTrigger value="fraud_monitor">🛡️ Fraud Monitor</TabsTrigger>
@@ -174,6 +178,14 @@ export default function AdminDashboard() {
                 Go to Events Management →
               </a>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="retention_risk">
+            <RetentionRiskPanel />
+          </TabsContent>
+
+          <TabsContent value="survey_ab">
+            <SurveyABTestDashboard />
           </TabsContent>
 
           <TabsContent value="dropoff">

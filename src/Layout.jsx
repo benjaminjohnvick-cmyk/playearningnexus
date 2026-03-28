@@ -146,6 +146,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
     { name: 'Survey Builder', icon: FileText, path: 'SurveyTemplateBuilder', requireAuth: true },
     { name: 'Dispute Center', icon: AlertCircle, path: 'DisputeCenter', requireAuth: true },
+    { name: 'Global Prestige', icon: Star, path: 'GlobalPrestigeHub', requireAuth: true },
     { name: 'Referral Leaderboard', icon: Trophy, path: 'ReferralLeaderboardPage', requireAuth: true },
     { name: 'Survey Analytics', icon: BarChart2, path: 'SurveyAdminDashboard', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },

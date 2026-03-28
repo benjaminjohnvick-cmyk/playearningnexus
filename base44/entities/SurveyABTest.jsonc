@@ -1,0 +1,160 @@
+{
+  "name": "SurveyABTest",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "test_type": {
+      "type": "string",
+      "enum": [
+        "survey_landing",
+        "ppc_questions",
+        "cta_text",
+        "reward_display"
+      ],
+      "default": "survey_landing"
+    },
+    "survey_id": {
+      "type": "string",
+      "description": "Base survey being tested"
+    },
+    "variant_a": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "headline": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "cta_text": {
+          "type": "string"
+        },
+        "question_order": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "reward_display": {
+          "type": "string"
+        }
+      }
+    },
+    "variant_b": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "headline": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "cta_text": {
+          "type": "string"
+        },
+        "question_order": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "reward_display": {
+          "type": "string"
+        }
+      }
+    },
+    "traffic_split_a": {
+      "type": "number",
+      "default": 50,
+      "description": "% traffic to variant A (auto-adjusts)"
+    },
+    "variant_a_impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_a_starts": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_starts": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_a_completions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_completions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_a_revenue": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_revenue": {
+      "type": "number",
+      "default": 0
+    },
+    "auto_optimize": {
+      "type": "boolean",
+      "default": true,
+      "description": "Automatically shift traffic to winning variant"
+    },
+    "winner": {
+      "type": "string",
+      "enum": [
+        "a",
+        "b",
+        "tie",
+        "inconclusive",
+        "pending"
+      ],
+      "default": "pending"
+    },
+    "confidence_pct": {
+      "type": "number",
+      "default": 0
+    },
+    "ai_recommendation": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused",
+        "completed"
+      ],
+      "default": "draft"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "name",
+    "test_type"
+  ]
+}
