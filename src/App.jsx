@@ -24,6 +24,7 @@ const MyOrders = lazy(() => import('./pages/MyOrders'));
 const SurveyEmbedManager = lazy(() => import('./pages/SurveyEmbedManager'));
 const AIAutomationCenter = lazy(() => import('./pages/AIAutomationCenter'));
 const PayoutStatus = lazy(() => import('./pages/PayoutStatus'));
+const UserAnalytics = lazy(() => import('./pages/UserAnalytics'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -96,6 +97,7 @@ const AuthenticatedApp = () => {
       <Route path="/SurveyEmbedManager" element={<LayoutWrapper currentPageName="SurveyEmbedManager"><SurveyEmbedManager /></LayoutWrapper>} />
       <Route path="/AIAutomationCenter" element={<LayoutWrapper currentPageName="AIAutomationCenter"><AIAutomationCenter /></LayoutWrapper>} />
       <Route path="/PayoutStatus" element={<LayoutWrapper currentPageName="PayoutStatus"><PayoutStatus /></LayoutWrapper>} />
+      <Route path="/UserAnalytics" element={<LayoutWrapper currentPageName="UserAnalytics"><UserAnalytics /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

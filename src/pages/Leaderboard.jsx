@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, DollarSign, Users, TrendingUp, Medal, Crown, Star, Flame, Award, Zap, Calendar } from "lucide-react";
 import { format } from 'date-fns';
 import InspireShareButton from '@/components/leaderboard/InspireShareButton';
+import GlobalLeaderboardPanel from '@/components/leaderboard/GlobalLeaderboardPanel';
 
 // Hall of Fame milestones
 const HOF_MILESTONES = [
@@ -195,6 +196,7 @@ export default function Leaderboard() {
             <TabsTrigger value="earners" className="flex items-center gap-1"><DollarSign className="w-4 h-4" /><span className="hidden sm:inline">All-Time</span></TabsTrigger>
             <TabsTrigger value="referrers" className="flex items-center gap-1"><Users className="w-4 h-4" /><span className="hidden sm:inline">Referrers</span></TabsTrigger>
             <TabsTrigger value="hof" className="flex items-center gap-1"><Award className="w-4 h-4" /><span className="hidden sm:inline">Hall of Fame</span></TabsTrigger>
+            <TabsTrigger value="global" className="flex items-center gap-1"><Trophy className="w-4 h-4" /><span className="hidden sm:inline">Top 100</span></TabsTrigger>
           </TabsList>
 
           {/* Weekly Top 5 */}
@@ -272,6 +274,11 @@ export default function Leaderboard() {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          {/* Global Top 100 */}
+          <TabsContent value="global" className="mt-4">
+            <GlobalLeaderboardPanel currentUserId={user?.id} />
           </TabsContent>
 
           {/* Hall of Fame */}
