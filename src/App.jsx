@@ -17,6 +17,7 @@ import MyPayouts from './pages/MyPayouts';
 import Campaigns from './pages/Campaigns';
 import MyOrders from './pages/MyOrders';
 import SurveyEmbedManager from './pages/SurveyEmbedManager';
+import AIAutomationCenter from './pages/AIAutomationCenter';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -82,6 +83,7 @@ const AuthenticatedApp = () => {
       <Route path="/Campaigns" element={<LayoutWrapper currentPageName="Campaigns"><Campaigns /></LayoutWrapper>} />
       <Route path="/MyOrders" element={<LayoutWrapper currentPageName="MyOrders"><MyOrders /></LayoutWrapper>} />
       <Route path="/SurveyEmbedManager" element={<LayoutWrapper currentPageName="SurveyEmbedManager"><SurveyEmbedManager /></LayoutWrapper>} />
+      <Route path="/AIAutomationCenter" element={<LayoutWrapper currentPageName="AIAutomationCenter"><AIAutomationCenter /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

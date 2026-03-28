@@ -129,6 +129,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', requireAuth: true },
     { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', requireAuth: true },
     { name: 'Survey Embed', icon: Globe, path: 'SurveyEmbedManager', requireAuth: true },
+    { name: 'AI Automation Center', icon: Bot, path: 'AIAutomationCenter', requireAuth: true },
     { name: 'Payout History', icon: DollarSign, path: 'PayoutHistory', requireAuth: true },
     { name: 'My Payouts', icon: DollarSign, path: 'MyPayouts', requireAuth: true },
     { name: 'My Orders', icon: ShoppingCart, path: 'MyOrders', requireAuth: true },
