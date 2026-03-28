@@ -14,6 +14,9 @@ import { format, addDays } from 'date-fns';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import PayoutNotificationBell from '@/components/notifications/PayoutNotificationBell';
+import EarningsAnalyticsTab from '@/components/payout/EarningsAnalyticsTab';
+import WishlistGoalShare from '@/components/referral/WishlistGoalShare';
 
 const STATUS_CONFIG = {
   pending:    { label: 'Queued',     color: 'bg-yellow-100 text-yellow-800',  icon: Clock,         bar: 'bg-yellow-400' },
@@ -231,6 +234,23 @@ function WishlistGoalPanel({ user }) {
   );
 }
 
+function ShareTab({ user }) {
+  const { data: wishlist = [] } = useQuery({
+    queryKey: ['wishlist-share', user?.id],
+    queryFn: () => base44.entities.ProductWishlistItem.filter({ user_id: user.id, status: 'active', use_for_payout_goal: true }),
+    enabled: !!user?.id,
+  });
+  const balance = user?.total_earnings || 0;
+  const threshold = wishlist.reduce((s, i) => s + (i.price_with_markup || i.best_price || 0), 0) || 50;
+  const progress = Math.min((balance / threshold) * 100, 100);
+
+  return (
+    <div className="space-y-4">
+      <WishlistGoalShare user={user} balance={balance} threshold={threshold} progress={progress} />
+    </div>
+  );
+}
+
 export default function PayoutStatus() {
   const qc = useQueryClient();
   const [running, setRunning] = useState(false);
@@ -283,7 +303,8 @@ export default function PayoutStatus() {
           <h1 className="text-3xl font-bold text-gray-900">Payout Status</h1>
           <p className="text-gray-500 mt-1">Track your automated transfers and wishlist-based payout goals</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <PayoutNotificationBell userId={user?.id} />
           <Button
             variant="outline"
             size="sm"
@@ -330,10 +351,12 @@ export default function PayoutStatus() {
       </div>
 
       <Tabs defaultValue="goal">
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 flex-wrap">
           <TabsTrigger value="goal">🎯 Wishlist Goal</TabsTrigger>
           <TabsTrigger value="active">⚡ Active Transfers</TabsTrigger>
           <TabsTrigger value="history">📋 History</TabsTrigger>
+          <TabsTrigger value="analytics">📊 Analytics</TabsTrigger>
+          <TabsTrigger value="share">🔗 Share & Refer</TabsTrigger>
         </TabsList>
 
         {/* Wishlist Goal Tab */}
@@ -382,6 +405,16 @@ export default function PayoutStatus() {
               {allPayouts.map(p => <PayoutCard key={p.id} payout={p} />)}
             </div>
           )}
+        </TabsContent>
+
+        {/* Analytics Tab */}
+        <TabsContent value="analytics">
+          <EarningsAnalyticsTab user={user} />
+        </TabsContent>
+
+        {/* Share & Refer Tab */}
+        <TabsContent value="share">
+          <ShareTab user={user} />
         </TabsContent>
       </Tabs>
     </div>
