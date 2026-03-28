@@ -132,6 +132,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'AI Automation Center', icon: Bot, path: 'AIAutomationCenter', requireAuth: true },
     { name: 'Payout History', icon: DollarSign, path: 'PayoutHistory', requireAuth: true },
     { name: 'My Payouts', icon: DollarSign, path: 'MyPayouts', requireAuth: true },
+    { name: 'Payout Status', icon: DollarSign, path: 'PayoutStatus', requireAuth: true },
     { name: 'My Orders', icon: ShoppingCart, path: 'MyOrders', requireAuth: true },
     { name: 'Campaigns', icon: TrendingUp, path: 'Campaigns', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },
