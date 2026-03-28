@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, User, CheckCircle2, Plus, X, Shield, Star, Target, Briefcase, BookOpen, DollarSign } from 'lucide-react';
+import { Loader2, User, CheckCircle2, Plus, X, Shield, Star, Target, Briefcase, BookOpen, DollarSign, Home, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 
 const INTERESTS = [
@@ -19,6 +19,12 @@ const SKILLS = [
   'Software Development', 'Marketing', 'Graphic Design', 'Data Analysis', 'Writing',
   'Teaching', 'Healthcare', 'Finance & Accounting', 'Legal', 'Engineering',
   'Sales', 'Customer Service', 'Project Management', 'Photography', 'Cooking'
+];
+
+const LIFESTYLE_TAGS = [
+  'Remote Worker', 'Commuter', 'Homeowner', 'Renter', 'Vegan', 'Vegetarian',
+  'Fitness Enthusiast', 'Online Shopper', 'Early Adopter', 'Coffee Lover',
+  'Outdoor Enthusiast', 'Night Owl', 'Morning Person', 'Social Media User', 'Gamer'
 ];
 
 function ProfileCompletionBar({ profile }) {
@@ -171,12 +177,34 @@ export default function RespondentProfile() {
           </CardContent>
         </Card>
 
+        {/* Household Info */}
+        <Card className="border-0 shadow-md">
+          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Home className="w-4 h-4 text-green-600" /> Household</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-2 gap-3">
+            {[
+              { field: 'marital_status', label: 'Marital Status', options: ['single', 'married', 'partnered', 'divorced', 'widowed', 'prefer_not_to_say'] },
+              { field: 'household_size', label: 'Household Size', options: ['1', '2', '3', '4', '5', '6+'] },
+              { field: 'has_children', label: 'Has Children', options: ['yes', 'no', 'prefer_not_to_say'] },
+              { field: 'housing_type', label: 'Housing Type', options: ['own_home', 'renting', 'with_family', 'student_housing', 'other'] },
+            ].map(({ field, label, options }) => (
+              <div key={field}>
+                <label className="text-xs font-semibold text-gray-500 block mb-1">{label}</label>
+                <Select value={profile[field] || ''} onValueChange={v => update(field, v)}>
+                  <SelectTrigger className="border-2 h-9 text-sm"><SelectValue placeholder="Select…" /></SelectTrigger>
+                  <SelectContent>{options.map(o => <SelectItem key={o} value={o}>{o.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
         {/* Interests & Skills */}
         <Card className="border-0 shadow-md">
-          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500" /> Interests & Skills</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500" /> Interests, Skills & Lifestyle</CardTitle></CardHeader>
           <CardContent className="space-y-5">
             <TagPicker label="Interests (select at least 3)" icon={Star} options={INTERESTS} selected={profile.interests || []} onChange={v => update('interests', v)} max={10} />
             <TagPicker label="Verified Skills" icon={CheckCircle2} options={SKILLS} selected={profile.verified_skills || []} onChange={v => update('verified_skills', v)} max={8} />
+            <TagPicker label="Lifestyle Tags" icon={Heart} options={LIFESTYLE_TAGS} selected={profile.lifestyle_tags || []} onChange={v => update('lifestyle_tags', v)} max={8} />
           </CardContent>
         </Card>
 

@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
 import SurveySearchBar from '@/components/surveys/SurveySearchBar';
 import AISurveyCoach from '@/components/surveys/AISurveyCoach';
+import { computeMatchScore, MatchScoreBadge } from '@/components/surveys/SurveyMatchScore';
 
 // Fix Leaflet icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -152,10 +153,11 @@ function ClaimStatusTracker({ claims }) {
 
 // ─── Survey Card (list view) ───────────────────────────────────────────────────
 
-function SurveyCard({ survey, isUnlocked, onSelect, onClaim, isClaiming }) {
+function SurveyCard({ survey, isUnlocked, onSelect, onClaim, isClaiming, respondentProfile }) {
   const color = CATEGORY_COLORS[survey.category] || '#6366f1';
   const available = !survey.locked || isUnlocked;
   const CatIcon = CATEGORIES.find(c => c.id === survey.category)?.icon || Globe;
+  const matchScore = respondentProfile ? computeMatchScore(survey, respondentProfile) : null;
 
   return (
     <div
@@ -173,6 +175,7 @@ function SurveyCard({ survey, isUnlocked, onSelect, onClaim, isClaiming }) {
           <p className="text-sm font-semibold text-gray-800 truncate">{survey.title}</p>
           {survey.hot && available && <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-xs py-0">🔥 Hot</Badge>}
           {survey.slots <= 3 && available && <Badge className="bg-red-100 text-red-700 border-red-200 text-xs py-0">{survey.slots} left</Badge>}
+          {matchScore !== null && <MatchScoreBadge score={matchScore} />}
         </div>
         <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-400">
           <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />{survey.time}m</span>
@@ -205,6 +208,8 @@ export default function ExploreSurveys() {
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => base44.auth.redirectToLogin());
   }, []);
+
+  const respondentProfile = user?.respondent_profile || null;
 
   // Simulate claim progress updates
   useEffect(() => {
@@ -595,7 +600,11 @@ export default function ExploreSurveys() {
                 </div>
               ) : (
                 filtered
-                  .sort((a, b) => b.totalEarn - a.totalEarn)
+                  .sort((a, b) => {
+                    const scoreA = respondentProfile ? computeMatchScore(a, respondentProfile) : 50;
+                    const scoreB = respondentProfile ? computeMatchScore(b, respondentProfile) : 50;
+                    return scoreB !== scoreA ? scoreB - scoreA : b.totalEarn - a.totalEarn;
+                  })
                   .map(h => (
                     <SurveyCard
                       key={h.id}
@@ -604,6 +613,7 @@ export default function ExploreSurveys() {
                       onSelect={s => { setSelected({ ...s, locked: !(!s.locked || unlockedIds.has(s.id)) }); setTab('map'); }}
                       onClaim={s => claimMutation.mutate(s)}
                       isClaiming={claimMutation.isPending}
+                      respondentProfile={respondentProfile}
                     />
                   ))
               )}

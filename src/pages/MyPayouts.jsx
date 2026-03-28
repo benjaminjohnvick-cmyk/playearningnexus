@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DollarSign, Clock, CheckCircle2, Settings, CreditCard, Calendar, TrendingUp, Send } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle2, Settings, CreditCard, Calendar, TrendingUp, Send, Zap } from 'lucide-react';
+import PayoutOptimizer from '@/components/payout/PayoutOptimizer';
 import { format, addDays, addWeeks, addMonths, startOfMonth } from 'date-fns';
 import { Link } from 'react-router-dom';
 import ReferralLinkGenerator from '@/components/referral/ReferralLinkGenerator';
@@ -162,6 +163,7 @@ export default function MyPayouts() {
           <TabsTrigger value="manual">Request Payout</TabsTrigger>
           <TabsTrigger value="referrals">Referral Links</TabsTrigger>
           <TabsTrigger value="referral-history">Referral History</TabsTrigger>
+          <TabsTrigger value="optimizer">🧠 Optimizer</TabsTrigger>
           <TabsTrigger value="settings">Payment Settings</TabsTrigger>
         </TabsList>
 
@@ -283,6 +285,11 @@ export default function MyPayouts() {
         {/* Referral History */}
         <TabsContent value="referral-history">
           {user && <ReferralHistoryTable user={user} />}
+        </TabsContent>
+
+        {/* Payout Optimizer */}
+        <TabsContent value="optimizer">
+          {user && <PayoutOptimizer user={user} payoutPref={payoutPref} />}
         </TabsContent>
 
         {/* Payment Settings */}

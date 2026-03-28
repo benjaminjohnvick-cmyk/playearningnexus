@@ -13,6 +13,7 @@ import {
 import { toast } from 'sonner';
 import { differenceInDays, format, subDays } from 'date-fns';
 import confetti from 'canvas-confetti';
+import DailyChallengeBanner from '@/components/challenges/DailyChallengeBanner';
 
 // ─── Challenge definitions ───────────────────────────────────────────────────
 const CHALLENGES = [
@@ -265,6 +266,9 @@ export default function Challenges() {
             </div>
           </div>
         </div>
+
+        {/* Daily challenge */}
+        <DailyChallengeBanner user={user} />
 
         {/* Live metrics bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
