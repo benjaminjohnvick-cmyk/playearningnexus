@@ -4,23 +4,32 @@ import { queryClientInstance } from '@/lib/query-client'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import PageNotFound from './lib/PageNotFound';
-import EarningsInsights from './pages/EarningsInsights';
-import ExploreSurveys from './pages/ExploreSurveys';
-import SurveyAnalytics from './pages/SurveyAnalytics';
-import AIGeneratorPage from './pages/AIGeneratorPage';
-import BusinessSurveyAnalytics from './pages/BusinessSurveyAnalytics';
-import ManagePayouts from './pages/ManagePayouts';
-import RespondentProfile from './pages/RespondentProfile';
-import AdvancedSurveyAnalytics from './pages/AdvancedSurveyAnalytics';
-import MyPayouts from './pages/MyPayouts';
-import Campaigns from './pages/Campaigns';
-import MyOrders from './pages/MyOrders';
-import SurveyEmbedManager from './pages/SurveyEmbedManager';
-import AIAutomationCenter from './pages/AIAutomationCenter';
-import PayoutStatus from './pages/PayoutStatus';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+
+// Lazy-load heavy pages to reduce initial bundle size
+const EarningsInsights = lazy(() => import('./pages/EarningsInsights'));
+const ExploreSurveys = lazy(() => import('./pages/ExploreSurveys'));
+const SurveyAnalytics = lazy(() => import('./pages/SurveyAnalytics'));
+const AIGeneratorPage = lazy(() => import('./pages/AIGeneratorPage'));
+const BusinessSurveyAnalytics = lazy(() => import('./pages/BusinessSurveyAnalytics'));
+const ManagePayouts = lazy(() => import('./pages/ManagePayouts'));
+const RespondentProfile = lazy(() => import('./pages/RespondentProfile'));
+const AdvancedSurveyAnalytics = lazy(() => import('./pages/AdvancedSurveyAnalytics'));
+const MyPayouts = lazy(() => import('./pages/MyPayouts'));
+const Campaigns = lazy(() => import('./pages/Campaigns'));
+const MyOrders = lazy(() => import('./pages/MyOrders'));
+const SurveyEmbedManager = lazy(() => import('./pages/SurveyEmbedManager'));
+const AIAutomationCenter = lazy(() => import('./pages/AIAutomationCenter'));
+const PayoutStatus = lazy(() => import('./pages/PayoutStatus'));
+
+const PageLoader = () => (
+  <div className="fixed inset-0 flex items-center justify-center">
+    <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+  </div>
+);
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -55,6 +64,7 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route path="/" element={
         <LayoutWrapper currentPageName={mainPageKey}>
@@ -88,6 +98,7 @@ const AuthenticatedApp = () => {
       <Route path="/PayoutStatus" element={<LayoutWrapper currentPageName="PayoutStatus"><PayoutStatus /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 
