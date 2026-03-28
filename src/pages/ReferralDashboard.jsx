@@ -14,6 +14,7 @@ import ContestLeaderboardWidget from '@/components/referral/ContestLeaderboardWi
 import EliteReferrerDashboard from '@/components/referral/EliteReferrerDashboard';
 import ReferralManagementPanel from '@/components/referral/ReferralManagementPanel';
 import ReferralChannelAnalytics from '@/components/referral/ReferralChannelAnalytics';
+import ChannelROIPanel from '@/components/referral/ChannelROIPanel';
 
 export default function ReferralDashboard() {
   const [user, setUser] = useState(null);
@@ -87,7 +88,7 @@ export default function ReferralDashboard() {
         <ContestLeaderboardWidget user={user} />
 
         <Tabs defaultValue="invite">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="invite" className="flex items-center gap-1.5">
               <LinkIcon className="w-3.5 h-3.5" /> Invite
             </TabsTrigger>
@@ -115,6 +116,9 @@ export default function ReferralDashboard() {
             <TabsTrigger value="channel_analytics" className="flex items-center gap-1.5">
               📊 Channels
             </TabsTrigger>
+            <TabsTrigger value="channel_roi" className="flex items-center gap-1.5">
+              💰 Channel ROI
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="invite" className="mt-5">
@@ -131,6 +135,10 @@ export default function ReferralDashboard() {
 
           <TabsContent value="channel_analytics" className="mt-5">
             <ReferralChannelAnalytics user={user} />
+          </TabsContent>
+
+          <TabsContent value="channel_roi" className="mt-5">
+            <ChannelROIPanel user={user} />
           </TabsContent>
 
           <TabsContent value="leaderboard" className="mt-5">

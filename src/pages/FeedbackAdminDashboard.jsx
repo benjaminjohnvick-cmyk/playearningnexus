@@ -119,7 +119,7 @@ function ChangeCard({ change, analysisId, onUpdate }) {
   );
 }
 
-export default function FeedbackAdminDashboard() {
+export default function FeedbackAdminDashboard({ embedded = false }) {
   const [user, setUser] = useState(null);
   const [generatingSurvey, setGeneratingSurvey] = useState(false);
   const [runningAnalysis, setRunningAnalysis] = useState(false);
@@ -203,7 +203,7 @@ export default function FeedbackAdminDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
+      {!embedded && <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
             <Brain className="w-8 h-8 text-purple-600" />
@@ -222,9 +222,22 @@ export default function FeedbackAdminDashboard() {
             Run AI Analysis
           </Button>
         </div>
-      </div>
+      </div>}
 
-      {/* Stats Row */}
+      {embedded && (
+        <div className="flex gap-3 mb-6 flex-wrap">
+          <Button onClick={generateSurvey} disabled={generatingSurvey} variant="outline">
+            {generatingSurvey ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Play className="w-4 h-4 mr-2" />}
+            Generate Today's Survey
+          </Button>
+          <Button onClick={runAnalysis} disabled={runningAnalysis || !todaySurvey} className="bg-purple-600 hover:bg-purple-700">
+            {runningAnalysis ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Brain className="w-4 h-4 mr-2" />}
+            Run AI Analysis
+          </Button>
+        </div>
+      )}
+
+            {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <Card>
           <CardContent className="pt-5">

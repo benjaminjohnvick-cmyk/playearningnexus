@@ -1,0 +1,141 @@
+{
+  "name": "PPCAbTest",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "test_type": {
+      "type": "string",
+      "enum": [
+        "landing_page",
+        "signup_copy",
+        "survey_intro",
+        "cta_button"
+      ],
+      "default": "landing_page"
+    },
+    "variant_a": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "headline": {
+          "type": "string"
+        },
+        "body_copy": {
+          "type": "string"
+        },
+        "cta_text": {
+          "type": "string"
+        },
+        "color_scheme": {
+          "type": "string"
+        }
+      }
+    },
+    "variant_b": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "headline": {
+          "type": "string"
+        },
+        "body_copy": {
+          "type": "string"
+        },
+        "cta_text": {
+          "type": "string"
+        },
+        "color_scheme": {
+          "type": "string"
+        }
+      }
+    },
+    "target_segment": {
+      "type": "string",
+      "enum": [
+        "all",
+        "new_users",
+        "returning_users",
+        "high_earners",
+        "inactive_users"
+      ],
+      "default": "all"
+    },
+    "split_percentage": {
+      "type": "number",
+      "default": 50,
+      "description": "% of users who see variant A"
+    },
+    "variant_a_impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_a_completions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_completions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_a_dropoffs": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_dropoffs": {
+      "type": "number",
+      "default": 0
+    },
+    "winner": {
+      "type": "string",
+      "enum": [
+        "a",
+        "b",
+        "tie",
+        "inconclusive",
+        "pending"
+      ],
+      "default": "pending"
+    },
+    "ai_analysis": {
+      "type": "string"
+    },
+    "ai_confidence": {
+      "type": "number",
+      "description": "0-100"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "completed"
+      ],
+      "default": "draft"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "name",
+    "test_type"
+  ]
+}

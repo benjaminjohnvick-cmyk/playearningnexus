@@ -22,6 +22,10 @@ import DataExportCenter from '../components/admin/DataExportCenter';
 import CustomDomainManager from '../components/admin/CustomDomainManager';
 import IntegrityMonitorPanel from '../components/admin/IntegrityMonitorPanel';
 import ReconciliationPanel from '../components/admin/ReconciliationPanel';
+import PartnerTiersPanel from '../components/admin/PartnerTiersPanel';
+import PPCAbTestManager from '../components/admin/PPCAbTestManager';
+import AdminCredentialsPanel from '../components/admin/AdminCredentialsPanel';
+import FeedbackAdminDashboard from './FeedbackAdminDashboard';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
@@ -81,6 +85,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="reconciliation">💰 Reconciliation</TabsTrigger>
             <TabsTrigger value="exports">📊 Export</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="partner_tiers">🏅 Partner Tiers</TabsTrigger>
+            <TabsTrigger value="ab_tests">🧪 A/B Tests</TabsTrigger>
+            <TabsTrigger value="feedback">📋 Feedback</TabsTrigger>
+            <TabsTrigger value="credentials">🔐 Credentials</TabsTrigger>
           </TabsList>
 
           <TabsContent value="revenue">
@@ -160,6 +168,22 @@ export default function AdminDashboard() {
                 Go to Events Management →
               </a>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="partner_tiers">
+            <PartnerTiersPanel />
+          </TabsContent>
+
+          <TabsContent value="ab_tests">
+            <PPCAbTestManager />
+          </TabsContent>
+
+          <TabsContent value="feedback">
+            <FeedbackAdminDashboard embedded />
+          </TabsContent>
+
+          <TabsContent value="credentials">
+            <AdminCredentialsPanel />
           </TabsContent>
         </Tabs>
       </div>

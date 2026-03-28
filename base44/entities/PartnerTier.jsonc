@@ -1,0 +1,73 @@
+{
+  "name": "PartnerTier",
+  "type": "object",
+  "properties": {
+    "partner_id": {
+      "type": "string",
+      "description": "BusinessClient ID"
+    },
+    "company_name": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "bronze"
+    },
+    "commission_rate": {
+      "type": "number",
+      "default": 30,
+      "description": "Payout % to partner"
+    },
+    "install_volume_30d": {
+      "type": "number",
+      "default": 0
+    },
+    "survey_completion_rate_30d": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100%"
+    },
+    "avg_quality_score_30d": {
+      "type": "number",
+      "default": 0
+    },
+    "ai_suggested_tier": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ]
+    },
+    "ai_suggested_rate": {
+      "type": "number"
+    },
+    "ai_rationale": {
+      "type": "string"
+    },
+    "admin_override": {
+      "type": "boolean",
+      "default": false
+    },
+    "admin_override_rate": {
+      "type": "number"
+    },
+    "admin_override_notes": {
+      "type": "string"
+    },
+    "last_evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "partner_id"
+  ]
+}

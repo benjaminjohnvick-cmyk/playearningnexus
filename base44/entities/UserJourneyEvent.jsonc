@@ -1,0 +1,61 @@
+{
+  "name": "UserJourneyEvent",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "referral_click",
+        "signup",
+        "first_survey",
+        "survey_complete",
+        "payout_requested",
+        "payout_completed",
+        "purchase"
+      ],
+      "description": "Stage in the user journey"
+    },
+    "referral_channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "twitter",
+        "facebook",
+        "instagram",
+        "youtube",
+        "tiktok",
+        "direct",
+        "organic",
+        "linkedin",
+        "whatsapp",
+        "other"
+      ],
+      "default": "direct"
+    },
+    "referrer_user_id": {
+      "type": "string"
+    },
+    "referral_link_id": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Revenue/payout amount at this event"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "session_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "event_type"
+  ]
+}
