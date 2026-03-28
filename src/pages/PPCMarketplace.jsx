@@ -21,6 +21,7 @@ import SurveyDistributionScheduler from '@/components/ppc/SurveyDistributionSche
 import SurveyTranslator from '@/components/ppc/SurveyTranslator';
 import SurveyStreakTracker from '@/components/ppc/SurveyStreakTracker';
 import SurveyEmbedPanel from '@/components/ppc/SurveyEmbedPanel';
+import AILaunchOptimizer from '@/components/ppc/AILaunchOptimizer';
 
 
 export default function PPCMarketplace() {
@@ -30,6 +31,7 @@ export default function PPCMarketplace() {
   const [showEntryModal, setShowEntryModal] = useState(true);
   const [showProductSearch, setShowProductSearch] = useState(false);
   const [productSearchResults, setProductSearchResults] = useState(null);
+  const [aiSelectedWindow, setAiSelectedWindow] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -160,7 +162,7 @@ export default function PPCMarketplace() {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="earn">Earn PPC</TabsTrigger>
             <TabsTrigger value="surveys">Listings</TabsTrigger>
             <TabsTrigger value="publish">Publish</TabsTrigger>
@@ -169,6 +171,7 @@ export default function PPCMarketplace() {
             <TabsTrigger value="analytics">📊 Analytics</TabsTrigger>
             <TabsTrigger value="distribute">📤 Distribute</TabsTrigger>
             <TabsTrigger value="translate">🌍 Translate</TabsTrigger>
+            <TabsTrigger value="ai-schedule">🧠 AI Schedule</TabsTrigger>
           </TabsList>
 
           {/* Earn Tab */}
@@ -273,12 +276,23 @@ export default function PPCMarketplace() {
 
           {/* Distribution Tab */}
           <TabsContent value="distribute" className="mt-6">
-            <SurveyDistributionScheduler user={user} />
+            <SurveyDistributionScheduler user={user} aiWindow={aiSelectedWindow} />
           </TabsContent>
 
           {/* Translate Tab */}
           <TabsContent value="translate" className="mt-6">
             <SurveyTranslator user={user} />
+          </TabsContent>
+
+          {/* AI Schedule Tab */}
+          <TabsContent value="ai-schedule" className="mt-6">
+            <AILaunchOptimizer
+              user={user}
+              onWindowSelected={(window) => {
+                setAiSelectedWindow(window);
+                setActiveTab('distribute');
+              }}
+            />
           </TabsContent>
         </Tabs>
       </div>

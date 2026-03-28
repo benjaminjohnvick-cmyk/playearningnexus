@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Send, Mail, Twitter, Facebook, Linkedin, Calendar, Users, CheckCircle2 } from 'lucide-react';
+import { Loader2, Send, Mail, Twitter, Facebook, Linkedin, Calendar, Users, CheckCircle2, Brain, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 const CHANNELS = [
@@ -25,7 +25,7 @@ const AUDIENCE_SEGMENTS = [
   'Survey Power Users (10+ surveys)',
 ];
 
-export default function SurveyDistributionScheduler({ user }) {
+export default function SurveyDistributionScheduler({ user, aiWindow }) {
   const [selectedSurveyId, setSelectedSurveyId] = useState('');
   const [selectedChannels, setSelectedChannels] = useState([]);
   const [selectedSegment, setSelectedSegment] = useState('');
@@ -109,6 +109,25 @@ export default function SurveyDistributionScheduler({ user }) {
           </div>
         </CardContent>
       </Card>
+
+      {/* AI Window Banner */}
+      {aiWindow && (
+        <Card className="border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-purple-50">
+          <CardContent className="p-4 flex items-start gap-3">
+            <Brain className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-bold text-indigo-900 flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5" /> AI Recommended Window Applied
+              </p>
+              <p className="text-xs text-indigo-700 mt-0.5">
+                <strong>{aiWindow.window_label}</strong> · {aiWindow.utc_day} {aiWindow.utc_start_hour}:00–{aiWindow.utc_end_hour}:00 UTC ·{' '}
+                Estimated completion rate: <strong>{aiWindow.estimated_completion_rate}%</strong> · Confidence: <strong>{aiWindow.confidence}%</strong>
+              </p>
+              <p className="text-xs text-indigo-600 mt-1">{aiWindow.reasoning}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Step 1 — Survey */}
       <Card className="border-0 shadow-lg">
