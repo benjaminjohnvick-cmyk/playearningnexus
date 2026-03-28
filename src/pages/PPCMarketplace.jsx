@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Zap, Trophy, TrendingUp, Info, Lock, CheckCircle2, Loader2, ShoppingBag, BarChart2, Search, Package } from "lucide-react";
+import { DollarSign, Zap, Trophy, TrendingUp, Info, Lock, CheckCircle2, Loader2, ShoppingBag, BarChart2, Search, Package, Sparkles } from "lucide-react";
 import { Link } from 'react-router-dom';
 import ProductSearchBar from '@/components/store/ProductSearchBar';
 import ProductSearchResults from '@/components/store/ProductSearchResults';
@@ -23,6 +23,7 @@ import SurveyStreakTracker from '@/components/ppc/SurveyStreakTracker';
 import SurveyEmbedPanel from '@/components/ppc/SurveyEmbedPanel';
 import AILaunchOptimizer from '@/components/ppc/AILaunchOptimizer';
 import PPCMilestoneTracker from '@/components/ppc/PPCMilestoneTracker';
+import RankedSurveyList from '@/components/surveys/RankedSurveyList';
 
 
 export default function PPCMarketplace() {
@@ -222,13 +223,25 @@ export default function PPCMarketplace() {
 
           {/* Survey Listings Tab */}
           <TabsContent value="surveys" className="mt-6 space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <h2 className="text-xl font-bold text-gray-900">Active Survey Listings</h2>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Badge className="bg-blue-100 text-blue-700"><BarChart2 className="w-3 h-3 mr-1" />Data Collection: $4/completion</Badge>
                 <Badge className="bg-orange-100 text-orange-700"><ShoppingBag className="w-3 h-3 mr-1" />Product Listing: $4/sale</Badge>
               </div>
             </div>
+            {/* AI Personalized Rankings */}
+            <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-600" /> Personalized For You
+                </CardTitle>
+                <p className="text-xs text-gray-500">AI ranks surveys by your interests, past completions, and demographic fit</p>
+              </CardHeader>
+              <CardContent>
+                <RankedSurveyList user={user} />
+              </CardContent>
+            </Card>
             <div>
               <SurveyMarketplaceListing user={user} tier={currentTier} />
             </div>

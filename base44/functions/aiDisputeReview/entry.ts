@@ -1,10 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
-/**
- * AI-powered dispute evidence review.
- * Fetches the disputed response, runs quality guidelines check via LLM,
- * returns a structured recommendation (approve / reject / manual_review).
- */
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -12,132 +7,146 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { dispute_id } = await req.json();
-    if (!dispute_id) return Response.json({ error: 'Missing dispute_id' }, { status: 400 });
+    if (!dispute_id) return Response.json({ error: 'dispute_id required' }, { status: 400 });
 
+    // Fetch dispute and related data in parallel
     const disputeArr = await base44.asServiceRole.entities.SurveyDispute.filter({ id: dispute_id });
     const dispute = disputeArr[0];
     if (!dispute) return Response.json({ error: 'Dispute not found' }, { status: 404 });
 
-    // Mark as reviewing
-    await base44.asServiceRole.entities.SurveyDispute.update(dispute_id, { status: 'reviewing' });
+    const [responseArr, trustArr] = await Promise.all([
+      dispute.response_id
+        ? base44.asServiceRole.entities.PPCSurveyResponse.filter({ id: dispute.response_id })
+        : Promise.resolve([]),
+      base44.asServiceRole.entities.RespondentTrustScore.filter({ user_id: dispute.user_id }),
+    ]);
 
-    // Fetch related transaction & response data for evidence
-    let responseData = null;
-    let transactionData = null;
-    let trustScore = null;
+    const surveyResponse = responseArr[0] || null;
+    const trustScore = trustArr[0] || null;
 
-    if (dispute.transaction_id) {
-      const txArr = await base44.asServiceRole.entities.PPCTransaction.filter({ id: dispute.transaction_id });
-      transactionData = txArr[0] || null;
-    }
-    if (dispute.user_id) {
-      const trustArr = await base44.asServiceRole.entities.RespondentTrustScore.filter({ user_id: dispute.user_id });
-      trustScore = trustArr[0] || null;
-      // Also grab recent responses
-      const recentResps = await base44.asServiceRole.entities.PPCSurveyResponse.filter(
-        { user_id: dispute.user_id }, '-created_date', 20
-      );
-      responseData = {
-        total: recentResps.length,
-        completed: recentResps.filter(r => r.completed).length,
-        flagged: recentResps.filter(r => r.is_flagged).length,
-        avg_quality: recentResps.filter(r => r.quality_score).length
-          ? (recentResps.reduce((s, r) => s + (r.quality_score || 0), 0) / recentResps.filter(r => r.quality_score).length).toFixed(1)
-          : 'N/A',
-      };
-    }
+    // Build evidence summary
+    const evidence = {
+      dispute_type: dispute.dispute_type || 'missing_credit',
+      appeal_reason: dispute.appeal_reason,
+      user_description: dispute.description,
+      expected_amount: dispute.expected_amount,
+      screenshot_provided: !!dispute.screenshot_url,
+      transaction_id: dispute.transaction_id,
+      quality_score_at_time: dispute.quality_score_at_time,
+      fraud_reasons_at_time: dispute.fraud_reasons_at_time || [],
+    };
 
-    const prompt = `You are an AI dispute resolution specialist for a survey platform. Analyze this user's appeal and recommend an action.
+    const responseEvidence = surveyResponse ? {
+      quality_score: surveyResponse.quality_score,
+      time_taken_seconds: surveyResponse.time_taken_seconds,
+      completed: surveyResponse.completed,
+      fraud_risk_score: surveyResponse.fraud_risk_score,
+      fraud_reasons: surveyResponse.fraud_reasons || [],
+      fraud_action: surveyResponse.fraud_action,
+      quality_penalties: surveyResponse.quality_penalties || [],
+      is_flagged: surveyResponse.is_flagged,
+      is_blocked: surveyResponse.is_blocked,
+    } : null;
+
+    const userHistory = trustScore ? {
+      overall_trust_score: trustScore.overall_trust_score,
+      trust_tier: trustScore.trust_tier,
+      total_responses: trustScore.total_responses_count,
+      flagged_count: trustScore.flagged_responses_count,
+      flag_rate: trustScore.total_responses_count > 0
+        ? ((trustScore.flagged_responses_count / trustScore.total_responses_count) * 100).toFixed(1) + '%'
+        : '0%',
+    } : null;
+
+    const prompt = `You are an AI dispute resolution agent for a PPC survey marketplace.
+Analyze this dispute and make a resolution recommendation.
+
+PLATFORM RULES:
+- Surveys with fraud_risk_score > 70 are blocked and ineligible for payout
+- Surveys with quality_score < 50 may be penalized  
+- Completion time < 10s for a 5+ question survey is flagged as "too_fast"
+- Users with trust_tier "low" have additional scrutiny applied
+- Screenshot evidence adds credibility to missing credit claims
+- Technical errors (connection issues, server problems) should be credited if credible
 
 DISPUTE DETAILS:
-- Survey/Title: ${dispute.survey_title || 'Unknown'}
-- Expected amount: $${dispute.expected_amount || 'unspecified'}
-- User description: "${dispute.description}"
-- Screenshot provided: ${dispute.screenshot_url ? 'Yes' : 'No'}
-- Transaction ID on file: ${dispute.transaction_id || 'None'}
+${JSON.stringify(evidence, null, 2)}
 
-USER HISTORY:
-- Total responses: ${responseData?.total || 0}
-- Completed: ${responseData?.completed || 0}
-- Flagged responses: ${responseData?.flagged || 0}
-- Average quality score: ${responseData?.avg_quality || 'N/A'}/100
-- Trust tier: ${trustScore?.trust_tier || 'unknown'}
-- Overall trust score: ${trustScore?.overall_trust_score ?? 'N/A'}/100
+SURVEY RESPONSE DATA:
+${responseEvidence ? JSON.stringify(responseEvidence, null, 2) : 'No linked response found'}
 
-TRANSACTION DATA:
-${transactionData ? `- Type: ${transactionData.type}, Amount: $${transactionData.amount}, Status: ${transactionData.status}` : 'No matching transaction found'}
+USER TRUST HISTORY:
+${userHistory ? JSON.stringify(userHistory, null, 2) : 'No trust score on record'}
 
-QUALITY GUIDELINES:
-- Responses completed too fast (<7s/question) are invalid
-- Straight-lining (all same answers) is invalid
-- Users with trust score >= 65 are generally reliable
-- Screenshots/proof strongly support the user's claim
-- Missing transactions with matching tx IDs should be approved
+DECISION FRAMEWORK:
+- AUTO_APPROVE: Clear technical error, high trust user, no fraud signals, screenshot provided
+- AUTO_REJECT: High fraud risk score, multiple fraud reasons, too_fast flag with no explanation, low trust user
+- ESCALATE: Ambiguous case, moderate signals on both sides, disputed amount > $5, requires human judgment
 
-Provide a recommendation with reasoning. Be fair — high-trust users with genuine claims deserve fast approval.`;
+Provide your analysis and recommendation.`;
 
-    const aiResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
+    const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt,
       response_json_schema: {
         type: 'object',
         properties: {
-          recommendation: { type: 'string' }, // 'approve' | 'reject' | 'manual_review'
-          confidence: { type: 'number' },      // 0-100
+          decision: { type: 'string' }, // AUTO_APPROVE | AUTO_REJECT | ESCALATE
+          confidence: { type: 'number' }, // 0-100
+          recommended_credit_amount: { type: 'number' },
           reasoning: { type: 'string' },
-          suggested_resolution_amount: { type: 'number' },
-          key_factors: { type: 'array', items: { type: 'string' } }
+          key_factors: { type: 'array', items: { type: 'string' } },
+          rule_violations_found: { type: 'array', items: { type: 'string' } },
+          user_credibility_assessment: { type: 'string' }
         }
       }
     });
 
-    // Auto-resolve if high confidence
-    const rec = aiResult.recommendation || 'manual_review';
-    const conf = aiResult.confidence || 0;
-    let finalStatus = 'reviewing';
-    let adminNotes = `AI Analysis (${conf}% confidence): ${aiResult.reasoning}`;
+    // Map AI decision to dispute status
+    let newStatus = 'reviewing';
+    if (result.decision === 'AUTO_APPROVE') newStatus = 'approved';
+    else if (result.decision === 'AUTO_REJECT') newStatus = 'rejected';
+    // ESCALATE → stays 'reviewing' for human
 
-    if (rec === 'approve' && conf >= 80) {
-      finalStatus = 'approved';
-      adminNotes = `✅ Auto-approved by AI (${conf}% confidence). ${aiResult.reasoning}`;
-    } else if (rec === 'reject' && conf >= 85) {
-      finalStatus = 'rejected';
-      adminNotes = `❌ Auto-rejected by AI (${conf}% confidence). ${aiResult.reasoning}`;
-    }
-
-    const resolvedAmount = rec === 'approve' ? (aiResult.suggested_resolution_amount || dispute.expected_amount || 0) : 0;
+    const analysisNote = [
+      `🤖 AI Decision: ${result.decision} (${result.confidence}% confidence)`,
+      `📋 Reasoning: ${result.reasoning}`,
+      result.key_factors?.length ? `✅ Key Factors: ${result.key_factors.join('; ')}` : '',
+      result.rule_violations_found?.length ? `⚠️ Rule Violations: ${result.rule_violations_found.join('; ')}` : '',
+      `👤 User Credibility: ${result.user_credibility_assessment || 'N/A'}`,
+    ].filter(Boolean).join('\n');
 
     await base44.asServiceRole.entities.SurveyDispute.update(dispute_id, {
-      status: finalStatus,
-      admin_notes: adminNotes,
-      resolved_amount: resolvedAmount,
+      status: newStatus,
+      admin_notes: analysisNote,
+      resolved_amount: result.decision === 'AUTO_APPROVE' ? (result.recommended_credit_amount || dispute.expected_amount || 0) : 0,
+      resolved_by: 'AI Agent',
+      resolved_date: newStatus !== 'reviewing' ? new Date().toISOString() : undefined,
     });
 
-    // Notify user
-    await base44.asServiceRole.entities.Notification.create({
-      user_id: dispute.user_id,
-      type: finalStatus === 'approved' ? 'payout_processed' : 'status_changed',
-      title: finalStatus === 'approved' ? '✅ Dispute Approved' :
-             finalStatus === 'rejected' ? '❌ Dispute Rejected' : '🔍 Dispute Under AI Review',
-      message: finalStatus === 'approved'
-        ? `Your dispute for "${dispute.survey_title}" was approved. $${resolvedAmount.toFixed(2)} credited.`
-        : finalStatus === 'rejected'
-        ? `Your dispute was reviewed and could not be approved. Reason: ${aiResult.reasoning?.slice(0, 100)}`
-        : 'Your dispute is being analyzed by our AI review system. You will be notified of the decision shortly.',
-      status: 'unread',
-      delivery_method: ['in_app'],
-    });
+    // Send notification to user
+    if (newStatus === 'approved' || newStatus === 'rejected') {
+      await base44.asServiceRole.entities.Notification.create({
+        user_id: dispute.user_id,
+        type: newStatus === 'approved' ? 'payout_processed' : 'status_changed',
+        title: newStatus === 'approved' ? '✅ Dispute Auto-Approved' : '❌ Dispute Decision',
+        message: newStatus === 'approved'
+          ? `Your dispute was automatically approved by AI review. $${(result.recommended_credit_amount || 0).toFixed(2)} will be credited.`
+          : `Your dispute was reviewed by AI. ${result.reasoning?.slice(0, 120)}`,
+        status: 'unread',
+        delivery_method: ['in_app'],
+      });
+    }
 
     return Response.json({
       success: true,
-      recommendation: rec,
-      confidence: conf,
-      final_status: finalStatus,
-      resolved_amount: resolvedAmount,
-      reasoning: aiResult.reasoning,
-      key_factors: aiResult.key_factors || [],
+      decision: result.decision,
+      new_status: newStatus,
+      confidence: result.confidence,
+      reasoning: result.reasoning,
+      credit_amount: result.recommended_credit_amount,
     });
   } catch (error) {
-    console.error('AI dispute review error:', error);
+    console.error('aiDisputeReview error:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });

@@ -1,0 +1,45 @@
+{
+  "name": "Badge",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "badge_key": {
+      "type": "string",
+      "enum": [
+        "first_survey",
+        "survey_pro",
+        "survey_legend",
+        "speedster",
+        "accuracy_king",
+        "referral_starter",
+        "referral_master",
+        "referral_legend",
+        "streak_7",
+        "streak_30",
+        "early_bird",
+        "top_earner",
+        "loyal_member",
+        "dispute_winner",
+        "quality_champion"
+      ]
+    },
+    "earned_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "notified": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "user_id",
+    "badge_key"
+  ]
+}

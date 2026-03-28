@@ -28,7 +28,8 @@ import {
   Globe,
   BarChart2,
   AlertCircle,
-  Brain
+  Brain,
+  ShieldCheck
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
@@ -268,6 +269,13 @@ export default function Layout({ children, currentPageName }) {
                     <PushNotificationManager />
                     <SurveyDemandAlerts user={user} />
                     <NotificationCenter user={user} />
+                    {user?.role === 'admin' && (
+                      <Link to={createPageUrl('AdminDashboard')}>
+                        <Button variant="ghost" size="icon" title="Admin Dashboard">
+                          <ShieldCheck className="w-4 h-4 text-purple-600" />
+                        </Button>
+                      </Link>
+                    )}
                     <Link to={createPageUrl('Settings')}>
                       <Button variant="ghost" size="icon">
                         <Settings className="w-4 h-4" />

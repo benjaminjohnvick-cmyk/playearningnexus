@@ -15,6 +15,7 @@ import EliteReferrerDashboard from '@/components/referral/EliteReferrerDashboard
 import ReferralManagementPanel from '@/components/referral/ReferralManagementPanel';
 import ReferralChannelAnalytics from '@/components/referral/ReferralChannelAnalytics';
 import ChannelROIPanel from '@/components/referral/ChannelROIPanel';
+import { BadgeDisplay } from '@/components/achievements/BadgeSystem';
 
 export default function ReferralDashboard() {
   const [user, setUser] = useState(null);
@@ -86,6 +87,12 @@ export default function ReferralDashboard() {
         {/* Tabs */}
         {/* Active Contests Widget */}
         <ContestLeaderboardWidget user={user} />
+
+        {/* Badges strip */}
+        <div className="bg-white rounded-2xl border shadow-sm p-4">
+          <p className="text-sm font-semibold text-gray-700 mb-3">🏅 Your Badges</p>
+          <BadgeDisplay userId={user?.id} compact maxShow={8} />
+        </div>
 
         <Tabs defaultValue="invite">
           <TabsList className="grid w-full grid-cols-8">

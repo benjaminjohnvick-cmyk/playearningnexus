@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import AboutMeEditor from '../components/profile/AboutMeEditor';
 import AchievementBadgeSystem, { useAchievements } from '@/components/achievements/AchievementBadgeSystem';
+import { BadgeDisplay, useBadgeAwarder } from '@/components/achievements/BadgeSystem';
 import SocialLinksEditor from '../components/profile/SocialLinksEditor';
 import FeaturedBadges from '../components/profile/FeaturedBadges';
 import SurveyInterestPicker from '../components/profile/SurveyInterestPicker';
@@ -130,8 +131,12 @@ export default function UserProfile() {
     ? surveyResponses.reduce((s, r) => s + (r.quality_score || 70), 0) / surveyResponses.length : 0;
   const surveysCompleted = surveyResponses.length || totalSurveys;
 
-  const userStats = { totalReferrals, activeReferrals, commissionEarned, totalEarnings, memberDays, daysGoalMet, totalSurveys, surveysCompleted, streakDays: 0, avgQuality };
+  const fastCompletions = surveyResponses.filter(r => (r.time_taken_seconds || 999) < 30).length;
+  const highQualityCompletions = surveyResponses.filter(r => (r.quality_score || 0) >= 85).length;
+
+  const userStats = { totalReferrals, activeReferrals, commissionEarned, totalEarnings, memberDays, daysGoalMet, totalSurveys, surveysCompleted, streakDays: 0, avgQuality, fastCompletions, highQualityCompletions };
   const currentTier = getUserTier(activeReferrals, commissionEarned);
+  useBadgeAwarder(user, userStats);
   const nextTier = TIERS[TIERS.findIndex(t => t.name === currentTier.name) + 1];
   const earnedBadges = BADGES.filter(b => b.threshold(userStats));
   const points = Math.floor(totalSurveys * 10 + totalReferrals * 25 + totalEarnings * 5 + daysGoalMet * 15);
@@ -349,6 +354,14 @@ export default function UserProfile() {
           {/* ── Badges ── */}
           <TabsContent value="badges" className="space-y-4">
             <AchievementBadgeSystem user={user} userStats={userStats} />
+            <Card className="border-0 shadow-lg">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">🏅 Milestone Badges</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BadgeDisplay userId={user?.id} />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* ── Referrals ── */}
