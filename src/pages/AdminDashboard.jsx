@@ -22,6 +22,9 @@ import DataExportCenter from '../components/admin/DataExportCenter';
 import CustomDomainManager from '../components/admin/CustomDomainManager';
 import IntegrityMonitorPanel from '../components/admin/IntegrityMonitorPanel';
 import ReconciliationPanel from '../components/admin/ReconciliationPanel';
+import SurveyDropoffAnalytics from '../components/admin/SurveyDropoffAnalytics';
+import SmartPayoutScheduler from '../components/admin/SmartPayoutScheduler';
+import RealtimeFraudMonitor from '../components/admin/RealtimeFraudMonitor';
 import PartnerTiersPanel from '../components/admin/PartnerTiersPanel';
 import PPCAbTestManager from '../components/admin/PPCAbTestManager';
 import AdminCredentialsPanel from '../components/admin/AdminCredentialsPanel';
@@ -85,6 +88,9 @@ export default function AdminDashboard() {
             <TabsTrigger value="reconciliation">💰 Reconciliation</TabsTrigger>
             <TabsTrigger value="exports">📊 Export</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="dropoff">📉 Drop-off Analytics</TabsTrigger>
+            <TabsTrigger value="smart_payouts">💸 Smart Payouts</TabsTrigger>
+            <TabsTrigger value="fraud_monitor">🛡️ Fraud Monitor</TabsTrigger>
             <TabsTrigger value="partner_tiers">🏅 Partner Tiers</TabsTrigger>
             <TabsTrigger value="ab_tests">🧪 A/B Tests</TabsTrigger>
             <TabsTrigger value="feedback">📋 Feedback</TabsTrigger>
@@ -168,6 +174,18 @@ export default function AdminDashboard() {
                 Go to Events Management →
               </a>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="dropoff">
+            <SurveyDropoffAnalytics />
+          </TabsContent>
+
+          <TabsContent value="smart_payouts">
+            <SmartPayoutScheduler />
+          </TabsContent>
+
+          <TabsContent value="fraud_monitor">
+            <RealtimeFraudMonitor />
           </TabsContent>
 
           <TabsContent value="partner_tiers">
