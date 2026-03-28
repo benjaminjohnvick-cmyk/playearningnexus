@@ -10,6 +10,7 @@ import AIChatbot from "../components/home/AIChatbot";
 import { base44 } from '@/api/base44Client';
 import SupportChatButton from '../components/support/SupportChatButton';
 import RecommendedSurveys from '../components/surveys/RecommendedSurveys';
+import AISurveyMatchWidget from '../components/home/AISurveyMatchWidget';
 import ChallengeProgress from '../components/challenges/ChallengeProgress';
 import DailyStreakWidget from '../components/challenges/DailyStreakWidget';
 import EarningsSimulator from '../components/dashboard/EarningsSimulator';
@@ -252,6 +253,7 @@ export default function Home() {
       {/* Recommended Surveys + Challenges for logged-in users */}
       {user && (
         <div className="max-w-7xl mx-auto px-6 pb-16 space-y-8">
+          <AISurveyMatchWidget user={user} />
           <RecommendedSurveys user={user} />
           <div className="grid lg:grid-cols-3 gap-6">
             <EarningsSimulator user={user} />

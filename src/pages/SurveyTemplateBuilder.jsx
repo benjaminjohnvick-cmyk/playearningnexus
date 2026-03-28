@@ -11,7 +11,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { toast } from 'sonner';
 import {
   Plus, GripVertical, Trash2, CheckSquare, Star, Type, ToggleLeft,
-  Save, Send, Eye, ChevronDown, ChevronUp, Loader2, FileText, GitBranch
+  Save, Send, Eye, ChevronDown, ChevronUp, Loader2, FileText, GitBranch, Sparkles
 } from 'lucide-react';
 
 const QUESTION_TYPES = [
@@ -282,6 +282,7 @@ export default function SurveyTemplateBuilder() {
   const [estTime, setEstTime] = useState(5);
   const [questions, setQuestions] = useState([]);
   const [branchLogic, setBranchLogic] = useState([]);
+  const [aiGenerating, setAiGenerating] = useState(false);
   const qc = useQueryClient();
 
   useEffect(() => {
@@ -353,6 +354,33 @@ export default function SurveyTemplateBuilder() {
     setBranchLogic(prev => prev.filter(r => r.source_question_id !== id && r.target_question_id !== id));
   };
 
+  const generateAIQuestions = async () => {
+    if (!title) { toast.error('Add a survey title first'); return; }
+    setAiGenerating(true);
+    try {
+      const { data } = await base44.functions.invoke('generateAISurvey', {
+        prompt: `Generate 5 survey questions for: "${title}". Category: ${category || 'general'}. Include a mix of multiple_choice, rating, and text questions.`,
+        survey_title: title,
+      });
+      const generated = (data?.questions || []).map(q => ({
+        id: genId(),
+        type: q.type || 'multiple_choice',
+        question: q.question || q.text || '',
+        options: q.options || (q.type === 'multiple_choice' ? ['Option A', 'Option B', 'Option C'] : []),
+        required: true,
+        rating_max: q.rating_max || 5,
+      }));
+      if (generated.length > 0) {
+        setQuestions(prev => [...prev, ...generated]);
+        toast.success(`Added ${generated.length} AI-generated questions!`);
+      }
+    } catch {
+      toast.error('AI generation failed. Try again.');
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
   const onDragEnd = (result) => {
     if (!result.destination) return;
     const items = Array.from(questions);
@@ -419,6 +447,16 @@ export default function SurveyTemplateBuilder() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* AI Generate */}
+                <Button
+                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 gap-2 text-sm"
+                  onClick={generateAIQuestions}
+                  disabled={aiGenerating}
+                >
+                  {aiGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  {aiGenerating ? 'Generating…' : 'AI Generate Questions'}
+                </Button>
 
                 <Card className="border-0 shadow-md">
                   <CardHeader className="pb-2"><CardTitle className="text-sm">Add Question</CardTitle></CardHeader>

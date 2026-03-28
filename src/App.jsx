@@ -28,6 +28,7 @@ const UserAnalytics = lazy(() => import('./pages/UserAnalytics'));
 const NotificationInbox = lazy(() => import('./pages/NotificationInbox'));
 const SurveyAdminDashboard = lazy(() => import('./pages/SurveyAdminDashboard'));
 const SurveyTemplateBuilder = lazy(() => import('./pages/SurveyTemplateBuilder'));
+const ReferralLeaderboardPage = lazy(() => import('./pages/ReferralLeaderboardPage'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -104,6 +105,7 @@ const AuthenticatedApp = () => {
       <Route path="/NotificationInbox" element={<LayoutWrapper currentPageName="NotificationInbox"><NotificationInbox /></LayoutWrapper>} />
       <Route path="/SurveyAdminDashboard" element={<LayoutWrapper currentPageName="SurveyAdminDashboard"><SurveyAdminDashboard /></LayoutWrapper>} />
       <Route path="/SurveyTemplateBuilder" element={<LayoutWrapper currentPageName="SurveyTemplateBuilder"><SurveyTemplateBuilder /></LayoutWrapper>} />
+      <Route path="/ReferralLeaderboardPage" element={<LayoutWrapper currentPageName="ReferralLeaderboardPage"><ReferralLeaderboardPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
