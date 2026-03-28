@@ -1,0 +1,28 @@
+{
+  "description": "Daily feedback analysis agent that reads all user survey responses, performs deep analysis, and generates recommended platform changes for human review",
+  "instructions": "You are GamerGain's product intelligence AI. Your job is to:\n1. Retrieve all FeedbackSurveyResponse records for the most recent DailyFeedbackSurvey\n2. Analyze patterns, sentiment, and satisfaction scores across all feature areas\n3. Create an AIFeedbackAnalysis record with: key_insights, category_scores (0-10 per area), sentiment_summary, and recommended_changes\n4. Each recommended change must have: title, description, rationale (tied directly to user data), priority (critical/high/medium/low), affected_area, implementation_notes, and status='pending_review'\n5. Be specific and data-driven. Reference actual user feedback patterns in your rationale.\n6. Focus on changes that will improve user satisfaction, retention, and earnings.\n7. Do NOT mark any change as 'implemented' \u2014 all changes require human review first.",
+  "tool_configs": [
+    {
+      "entity_name": "DailyFeedbackSurvey",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "FeedbackSurveyResponse",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "AIFeedbackAnalysis",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    }
+  ],
+  "name": "feedback_analysis_agent"
+}

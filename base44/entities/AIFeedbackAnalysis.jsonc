@@ -1,0 +1,111 @@
+{
+  "name": "AIFeedbackAnalysis",
+  "type": "object",
+  "properties": {
+    "survey_id": {
+      "type": "string",
+      "description": "DailyFeedbackSurvey this analysis covers"
+    },
+    "survey_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "total_responses_analyzed": {
+      "type": "number",
+      "default": 0
+    },
+    "key_insights": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "category_scores": {
+      "type": "object",
+      "description": "Average satisfaction score per feature category",
+      "additionalProperties": true
+    },
+    "recommended_changes": {
+      "type": "array",
+      "description": "AI-proposed changes to apply to the platform",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "affected_area": {
+            "type": "string"
+          },
+          "implementation_notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending_review",
+              "approved",
+              "rejected",
+              "implemented"
+            ],
+            "default": "pending_review"
+          },
+          "reviewed_by": {
+            "type": "string"
+          },
+          "reviewed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewer_notes": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "sentiment_summary": {
+      "type": "string",
+      "description": "Overall sentiment and key findings"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "completed",
+        "failed"
+      ],
+      "default": "running"
+    },
+    "run_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "survey_id",
+    "survey_date"
+  ]
+}

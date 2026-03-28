@@ -27,7 +27,8 @@ import {
   ArrowRightLeft,
   Globe,
   BarChart2,
-  AlertCircle
+  AlertCircle,
+  Brain
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
@@ -38,6 +39,7 @@ import SurveyAlertWatcher from '@/components/surveys/SurveyAlertWatcher';
 import PushNotificationManager from '@/components/notifications/PushNotificationManager';
 import SurveyNotificationBanner from '@/components/notifications/SurveyNotificationBanner';
 import SurveyDemandAlerts from '@/components/ppc/SurveyDemandAlerts';
+import DailyFeedbackModal from '@/components/feedback/DailyFeedbackModal';
 import { LocaleProvider } from '@/components/locale/LocaleContext';
 import CurrencySelector from '@/components/locale/CurrencySelector';
 
@@ -165,6 +167,7 @@ export default function Layout({ children, currentPageName }) {
     navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });
     navigation.push({ name: 'Users', icon: Bot, path: 'AdminUsers', requireAuth: true });
+    navigation.push({ name: 'Feedback Intelligence', icon: Brain, path: 'FeedbackAdminDashboard', requireAuth: true });
   }
 
   const filteredNav = navigation.filter(item => !item.requireAuth || isAuthenticated);
@@ -348,6 +351,7 @@ export default function Layout({ children, currentPageName }) {
         {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
         {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
 
+        {isAuthenticated && user && <DailyFeedbackModal user={user} />}
         <SupportChatButton />
 
         <LogoutPromptModal

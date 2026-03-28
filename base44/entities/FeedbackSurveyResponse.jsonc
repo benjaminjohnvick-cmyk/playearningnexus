@@ -1,0 +1,54 @@
+{
+  "name": "FeedbackSurveyResponse",
+  "type": "object",
+  "properties": {
+    "survey_id": {
+      "type": "string",
+      "description": "DailyFeedbackSurvey ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who responded"
+    },
+    "survey_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_id": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          }
+        }
+      },
+      "default": []
+    },
+    "completion_time_seconds": {
+      "type": "number"
+    },
+    "dismissed_without_completing": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "survey_id",
+    "user_id",
+    "survey_date"
+  ]
+}
