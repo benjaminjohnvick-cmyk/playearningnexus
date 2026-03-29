@@ -33,6 +33,8 @@ const DisputeCenter = lazy(() => import('./pages/DisputeCenter'));
 const PartnerOnboarding = lazy(() => import('./pages/PartnerOnboarding'));
 const FeedbackAdminDashboard = lazy(() => import('./pages/FeedbackAdminDashboard'));
 const GlobalPrestigeHub = lazy(() => import('./pages/GlobalPrestigeHub'));
+const SurveyMarketplace = lazy(() => import('./pages/SurveyMarketplace'));
+const EarningsSimulatorPage = lazy(() => import('./pages/EarningsSimulatorPage'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -114,6 +116,8 @@ const AuthenticatedApp = () => {
       <Route path="/PartnerOnboarding" element={<LayoutWrapper currentPageName="PartnerOnboarding"><PartnerOnboarding /></LayoutWrapper>} />
       <Route path="/FeedbackAdminDashboard" element={<LayoutWrapper currentPageName="FeedbackAdminDashboard"><FeedbackAdminDashboard /></LayoutWrapper>} />
       <Route path="/GlobalPrestigeHub" element={<LayoutWrapper currentPageName="GlobalPrestigeHub"><GlobalPrestigeHub /></LayoutWrapper>} />
+      <Route path="/SurveyMarketplace" element={<LayoutWrapper currentPageName="SurveyMarketplace"><SurveyMarketplace /></LayoutWrapper>} />
+      <Route path="/EarningsSimulatorPage" element={<LayoutWrapper currentPageName="EarningsSimulatorPage"><EarningsSimulatorPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

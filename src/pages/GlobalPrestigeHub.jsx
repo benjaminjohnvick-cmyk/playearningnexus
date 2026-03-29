@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Star, Zap, Trophy, Globe, ShoppingCart, Users, Flame, Loader2, RefreshCw, Lock, Unlock } from 'lucide-react';
+import MilestoneAchievements from '@/components/achievements/MilestoneAchievements';
 import { toast } from 'sonner';
 
 const TIER_CONFIG = {
@@ -160,6 +161,14 @@ export default function GlobalPrestigeHub() {
             </CardContent>
           </Card>
         )}
+
+        {/* Milestone Badges */}
+        <Card className="bg-white/5 border-white/10 text-white">
+          <CardHeader className="pb-2"><CardTitle className="text-sm text-purple-200">🏅 Your Achievements</CardTitle></CardHeader>
+          <CardContent>
+            <MilestoneAchievements userId={user?.id} stats={{ surveysCompleted: prestige?.total_surveys_completed || 0, totalEarnings: user?.total_earnings || 0, streakDays: prestige?.current_streak_days || 0, activeReferrals: prestige?.total_referrals || 0, totalReferrals: prestige?.total_referrals || 0, memberDays: user?.created_date ? Math.floor((Date.now() - new Date(user.created_date)) / 86400000) : 0, avgQuality: 0, highQualityCompletions: 0, fastCompletions: 0, prestigeScore: prestige?.prestige_score || 0 }} compact />
+          </CardContent>
+        </Card>
 
         {/* Exclusive Survey Pools */}
         <div>

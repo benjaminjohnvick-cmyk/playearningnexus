@@ -17,6 +17,7 @@ import {
 import AboutMeEditor from '../components/profile/AboutMeEditor';
 import AchievementBadgeSystem, { useAchievements } from '@/components/achievements/AchievementBadgeSystem';
 import { BadgeDisplay, useBadgeAwarder } from '@/components/achievements/BadgeSystem';
+import MilestoneAchievements, { useMilestoneAwarder } from '@/components/achievements/MilestoneAchievements';
 import SocialLinksEditor from '../components/profile/SocialLinksEditor';
 import FeaturedBadges from '../components/profile/FeaturedBadges';
 import SurveyInterestPicker from '../components/profile/SurveyInterestPicker';
@@ -137,6 +138,7 @@ export default function UserProfile() {
   const userStats = { totalReferrals, activeReferrals, commissionEarned, totalEarnings, memberDays, daysGoalMet, totalSurveys, surveysCompleted, streakDays: 0, avgQuality, fastCompletions, highQualityCompletions };
   const currentTier = getUserTier(activeReferrals, commissionEarned);
   useBadgeAwarder(user, userStats);
+  useMilestoneAwarder(user, userStats);
   const nextTier = TIERS[TIERS.findIndex(t => t.name === currentTier.name) + 1];
   const earnedBadges = BADGES.filter(b => b.threshold(userStats));
   const points = Math.floor(totalSurveys * 10 + totalReferrals * 25 + totalEarnings * 5 + daysGoalMet * 15);
@@ -356,10 +358,10 @@ export default function UserProfile() {
             <AchievementBadgeSystem user={user} userStats={userStats} />
             <Card className="border-0 shadow-lg">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">🏅 Milestone Badges</CardTitle>
+                <CardTitle className="text-base flex items-center gap-2">🏅 Milestone Achievements</CardTitle>
               </CardHeader>
               <CardContent>
-                <BadgeDisplay userId={user?.id} />
+                <MilestoneAchievements userId={user?.id} stats={userStats} />
               </CardContent>
             </Card>
           </TabsContent>
