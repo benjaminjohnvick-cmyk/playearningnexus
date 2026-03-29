@@ -18,6 +18,7 @@ import PPCBadgeSystem from '@/components/referral/PPCBadgeSystem';
 import ReferralAnalyticsTab from '@/components/referral/ReferralAnalyticsTab';
 import CustomSubdomainRequest from '@/components/referral/CustomSubdomainRequest';
 import ReferralLeaderboardPanel from '@/components/referral/ReferralLeaderboardPanel';
+import ReferralFunnel from '@/components/referral/ReferralFunnel';
 
 export default function ReferralHub() {
   const [user, setUser] = useState(null);
@@ -262,7 +263,14 @@ export default function ReferralHub() {
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-4">
-            <ReferralAnalyticsTab referrals={referrals} referralLinks={referralLinks} />
+            <div className="space-y-4">
+              <Card className="border-0 shadow-md">
+                <CardContent className="p-5">
+                  <ReferralFunnel referrals={referrals} />
+                </CardContent>
+              </Card>
+              <ReferralAnalyticsTab referrals={referrals} referralLinks={referralLinks} />
+            </div>
           </TabsContent>
 
           <TabsContent value="domain" className="mt-4">

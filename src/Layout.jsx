@@ -151,6 +151,9 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Survey Marketplace', icon: ShoppingCart, path: 'SurveyMarketplace', requireAuth: true },
     { name: 'Earnings Simulator', icon: TrendingUp, path: 'EarningsSimulatorPage', requireAuth: true },
     { name: 'Achievements', icon: Trophy, path: 'AchievementsPage', requireAuth: true },
+    { name: 'Leaderboard', icon: Trophy, path: 'GlobalLeaderboard' },
+    { name: 'Daily Streak', icon: Star, path: 'DailyEarningStreak', requireAuth: true },
+    { name: 'Contact Us', icon: Mail, path: 'ContactUs' },
     { name: 'Referral Leaderboard', icon: Trophy, path: 'ReferralLeaderboardPage', requireAuth: true },
     { name: 'Survey Analytics', icon: BarChart2, path: 'SurveyAdminDashboard', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
@@ -401,7 +404,8 @@ export default function Layout({ children, currentPageName }) {
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li><Link to={createPageUrl('BusinessDashboard')} className="hover:text-blue-600">Developer Portal</Link></li>
                   <li><a href="#" className="hover:text-blue-600">Documentation</a></li>
-                  <li><a href="#" className="hover:text-blue-600">Support</a></li>
+                  <li><Link to={createPageUrl('ContactUs')} className="hover:text-blue-600">Contact Us</Link></li>
+              <li><a href="#" className="hover:text-blue-600">Support</a></li>
                 </ul>
               </div>
             </div>

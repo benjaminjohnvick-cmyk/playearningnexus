@@ -30,6 +30,7 @@ import EarningProgressPath from '../components/dashboard/EarningProgressPath';
 import SmartSavingsModule from '../components/dashboard/SmartSavingsModule';
 import OnboardingQuestWidget from '../components/onboarding/OnboardingQuestWidget';
 import EarningsForecastWidget from '../components/dashboard/EarningsForecastWidget';
+import MiniLeaderboardWidget from '../components/dashboard/MiniLeaderboardWidget';
 import RecommendedSurveysSection from '../components/dashboard/RecommendedSurveysSection';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -310,9 +311,10 @@ export default function UserDashboard() {
           <RecommendedSurveysSection user={user} />
         </div>
 
-        {/* Earnings Forecast */}
-        <div className="mb-8">
+        {/* Earnings Forecast + Mini Leaderboard */}
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
           <EarningsForecastWidget user={user} />
+          <MiniLeaderboardWidget user={user} />
         </div>
 
         {/* Smart Savings Vault */}

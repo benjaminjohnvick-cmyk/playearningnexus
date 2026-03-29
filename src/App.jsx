@@ -36,6 +36,9 @@ const GlobalPrestigeHub = lazy(() => import('./pages/GlobalPrestigeHub'));
 const SurveyMarketplace = lazy(() => import('./pages/SurveyMarketplace'));
 const EarningsSimulatorPage = lazy(() => import('./pages/EarningsSimulatorPage'));
 const AchievementsPage = lazy(() => import('./pages/AchievementsPage'));
+const DailyEarningStreak = lazy(() => import('./pages/DailyEarningStreak'));
+const GlobalLeaderboard = lazy(() => import('./pages/GlobalLeaderboard'));
+const ContactUs = lazy(() => import('./pages/ContactUs'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -120,6 +123,9 @@ const AuthenticatedApp = () => {
       <Route path="/SurveyMarketplace" element={<LayoutWrapper currentPageName="SurveyMarketplace"><SurveyMarketplace /></LayoutWrapper>} />
       <Route path="/EarningsSimulatorPage" element={<LayoutWrapper currentPageName="EarningsSimulatorPage"><EarningsSimulatorPage /></LayoutWrapper>} />
       <Route path="/AchievementsPage" element={<LayoutWrapper currentPageName="AchievementsPage"><AchievementsPage /></LayoutWrapper>} />
+      <Route path="/DailyEarningStreak" element={<LayoutWrapper currentPageName="DailyEarningStreak"><DailyEarningStreak /></LayoutWrapper>} />
+      <Route path="/GlobalLeaderboard" element={<LayoutWrapper currentPageName="GlobalLeaderboard"><GlobalLeaderboard /></LayoutWrapper>} />
+      <Route path="/ContactUs" element={<LayoutWrapper currentPageName="ContactUs"><ContactUs /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
