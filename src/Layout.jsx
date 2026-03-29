@@ -213,56 +213,74 @@ export default function Layout({ children, currentPageName }) {
                 <MegaContestButton />
               </div>
 
-              {/* Desktop Navigation */}
-              <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center flex-wrap">
-                <Link to={createPageUrl('ReferralContest')}>
-                  <Button
-                    variant={currentPageName === 'ReferralContest' ? "default" : "ghost"}
-                    size="sm"
-                    className={currentPageName === 'ReferralContest' ? "bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-md" : "hover:bg-yellow-50 text-yellow-700 font-semibold"}
-                  >
-                    🏆 Referral Contest
+              {/* Desktop Navigation — scrollable single row, visible md+ */}
+              <nav className="hidden md:flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar min-w-0 px-1">
+                <Link to={createPageUrl('Home')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'Home' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'Home' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    🏠 Home
                   </Button>
                 </Link>
-                <Link to={createPageUrl('PPCMarketplace')}>
-                  <Button
-                    variant={currentPageName === 'PPCMarketplace' ? "default" : "ghost"}
-                    size="sm"
-                    className={currentPageName === 'PPCMarketplace' ? "bg-gradient-to-r from-purple-600 to-blue-600 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}
-                  >
-                    💰 PPC Marketplace
+                <Link to={createPageUrl('InAppGameStore')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'InAppGameStore' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'InAppGameStore' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    🎮 Store
                   </Button>
                 </Link>
-                <Link to={createPageUrl('Withdrawal')}>
-                  <Button
-                    variant={currentPageName === 'Withdrawal' ? "default" : "ghost"}
-                    size="sm"
-                    className={currentPageName === 'Withdrawal' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200"}
-                  >
-                    💵 Withdraw Funds
+                <Link to={createPageUrl('Surveys')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'Surveys' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'Surveys' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    📋 Surveys
                   </Button>
                 </Link>
-                <Link to={createPageUrl('MyOrders')}>
-                  <Button
-                    variant={currentPageName === 'MyOrders' ? "default" : "ghost"}
-                    size="sm"
-                    className={currentPageName === 'MyOrders' ? "bg-gradient-to-r from-purple-600 to-purple-700 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}
-                  >
-                    📦 My Orders
+                <Link to={createPageUrl('UserDashboard')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'UserDashboard' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'UserDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    📊 Dashboard
                   </Button>
                 </Link>
-                {filteredNav.slice(0, 8).map((item) => (
-                  <Link key={item.name} to={createPageUrl(item.path)}>
-                    <Button
-                      variant={currentPageName === item.path ? "default" : "ghost"}
-                      size="sm"
-                      className={currentPageName === item.path ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}
-                    >
-                      <item.icon className="w-3.5 h-3.5 mr-1" />
-                      {item.name}
-                    </Button>
-                  </Link>
-                ))}
+                <Link to={createPageUrl('Wishlist')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'Wishlist' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'Wishlist' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    ❤️ Wishlist
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('ReferralContest')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'ReferralContest' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'ReferralContest' ? "bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-md" : "hover:bg-yellow-50 text-yellow-700 font-semibold"}>
+                    🏆 Contest
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('PPCMarketplace')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'PPCMarketplace' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'PPCMarketplace' ? "bg-gradient-to-r from-purple-600 to-blue-600 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}>
+                    💰 PPC
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('Withdrawal')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'Withdrawal' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'Withdrawal' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200"}>
+                    💵 Withdraw
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('MyOrders')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'MyOrders' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'MyOrders' ? "bg-gradient-to-r from-purple-600 to-purple-700 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}>
+                    📦 Orders
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('ReferralDashboard')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'ReferralDashboard' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'ReferralDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    👥 Referrals
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('UserProfile')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'UserProfile' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'UserProfile' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    👤 Profile
+                  </Button>
+                </Link>
               </nav>
 
               {/* Desktop Right: user controls */}
