@@ -27,6 +27,8 @@ import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
 import DailyGoalProgress from '../components/gamification/DailyGoalProgress';
 import PayPalTransferButton from '../components/payout/PayPalTransferButton';
 import EarningProgressPath from '../components/dashboard/EarningProgressPath';
+import SmartSavingsModule from '../components/dashboard/SmartSavingsModule';
+import RecommendedSurveysSection from '../components/dashboard/RecommendedSurveysSection';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -292,6 +294,16 @@ export default function UserDashboard() {
         {/* AI Personalized Earning Recommendations */}
         <div className="mb-8">
           <AIPersonalizedRecommendations user={user} />
+        </div>
+
+        {/* Recommended Surveys */}
+        <div className="mb-8">
+          <RecommendedSurveysSection user={user} />
+        </div>
+
+        {/* Smart Savings Vault */}
+        <div className="mb-8">
+          <SmartSavingsModule user={user} />
         </div>
 
         {/* Personalized Game Bundles */}

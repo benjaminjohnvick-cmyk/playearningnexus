@@ -10,8 +10,9 @@ import { Progress } from '@/components/ui/progress';
 import { 
   ClipboardList, Brain, CheckCircle, XCircle, Clock, 
   Loader2, Play, RefreshCw, AlertTriangle, TrendingUp,
-  Users, Star, Lightbulb, ChevronDown, ChevronUp
+  Users, Star, Lightbulb, ChevronDown, ChevronUp, PenLine
 } from 'lucide-react';
+import ManualFeedbackSurveyBuilder from '@/components/feedback/ManualFeedbackSurveyBuilder';
 import { toast } from 'sonner';
 
 const PRIORITY_COLORS = {
@@ -286,11 +287,12 @@ export default function FeedbackAdminDashboard({ embedded = false }) {
       </div>
 
       <Tabs defaultValue="review">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
+        <TabsList className="grid w-full grid-cols-5 mb-6">
           <TabsTrigger value="review">🔍 Change Review</TabsTrigger>
           <TabsTrigger value="insights">💡 AI Insights</TabsTrigger>
           <TabsTrigger value="surveys">📋 Surveys</TabsTrigger>
           <TabsTrigger value="responses">📊 Responses</TabsTrigger>
+          <TabsTrigger value="manual"><PenLine className="w-3 h-3 mr-1" />Manual Builder</TabsTrigger>
         </TabsList>
 
         {/* Change Review */}
@@ -414,6 +416,21 @@ export default function FeedbackAdminDashboard({ embedded = false }) {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        {/* Manual Builder */}
+        <TabsContent value="manual">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <PenLine className="w-5 h-5 text-blue-600" /> Manual Survey Builder
+              </CardTitle>
+              <p className="text-sm text-gray-500">Create and publish a custom feedback survey with a drag-and-drop question editor.</p>
+            </CardHeader>
+            <CardContent>
+              <ManualFeedbackSurveyBuilder onSaved={() => {}} />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Responses */}
