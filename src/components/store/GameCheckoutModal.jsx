@@ -6,19 +6,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import {
   Star, ShoppingCart, Wallet, DollarSign, Info,
-  Loader2, Check, AlertCircle, Shield
+  Loader2, Check, AlertCircle, Shield, CreditCard
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import WriteReviewForm from '@/components/games/WriteReviewForm';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import BNPLModal from '@/components/store/BNPLModal';
 
 const PLATFORM_FEE_RATE = 0.03; // 3% platform fee
 const TAX_RATE = 0.08; // 8% estimated tax
+// MARKUP_RATE defined per-instance below
+
+const MARKUP_RATE = 0.10; // 10% platform markup on all items
 
 export default function GameCheckoutModal({ game, user, onClose, onPurchaseComplete }) {
   const [activeTab, setActiveTab] = useState('checkout');
   const [purchasingBalance, setPurchasingBalance] = useState(false);
+  const [showBNPL, setShowBNPL] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: reviews = [] } = useQuery({
@@ -30,11 +35,14 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
   if (!game) return null;
 
   const subtotal = game.price;
+  const markup = parseFloat((subtotal * MARKUP_RATE).toFixed(2));
   const platformFee = parseFloat((subtotal * PLATFORM_FEE_RATE).toFixed(2));
   const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
-  const totalWithFees = parseFloat((subtotal + platformFee + tax).toFixed(2));
+  const totalWithFees = parseFloat((subtotal + markup + platformFee + tax).toFixed(2));
+  const priceWithMarkup = parseFloat((subtotal + markup).toFixed(2));
   const userBalance = user?.current_balance || 0;
-  const canAffordWithBalance = userBalance >= subtotal;
+  const canAffordWithBalance = userBalance >= priceWithMarkup;
+  const bnplBalance = user?.bnpl_active ? (user?.current_balance || 0) : 0;
   const avgRating = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   const recordPurchase = async (paymentMethod, paymentRef = null) => {
@@ -70,6 +78,7 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
   const handleBalancePurchase = async () => {
     setPurchasingBalance(true);
     await recordPurchase('balance');
+    await base44.auth.updateMe({ current_balance: userBalance - priceWithMarkup });
     setPurchasingBalance(false);
     toast.success(`🎮 ${game.title} added to your library!`);
     queryClient.invalidateQueries();
@@ -108,6 +117,17 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
 
           {/* ── CHECKOUT TAB ── */}
           <TabsContent value="checkout" className="space-y-4 mt-4">
+            {/* BNPL Banner */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                <span className="text-sm text-blue-800 font-medium">Buy Now, Pay with Surveys — up to $1,080 credit free</span>
+              </div>
+              <button onClick={() => setShowBNPL(true)} className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full hover:bg-blue-700 flex-shrink-0">
+                {user?.bnpl_active ? 'Active ✓' : 'Activate'}
+              </button>
+            </div>
+
             {/* Order Summary */}
             <div className="bg-gray-50 rounded-xl p-4 space-y-2 border">
               <p className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -116,6 +136,12 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
               <div className="flex justify-between text-sm text-gray-700">
                 <span>{game.title}</span>
                 <span>${subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-orange-600">
+                <span className="flex items-center gap-1">
+                  <Info className="w-3 h-3" /> Platform markup (10%)
+                </span>
+                <span>+${markup.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-500">
                 <span className="flex items-center gap-1">
@@ -142,7 +168,7 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
                   <Wallet className="w-5 h-5 text-green-600" />
                   <div>
                     <p className="font-semibold text-gray-800 text-sm">Pay with Survey Balance</p>
-                    <p className="text-xs text-gray-500">No fees — your balance: <span className="font-bold text-green-700">${userBalance.toFixed(2)}</span></p>
+                    <p className="text-xs text-gray-500">Balance: <span className="font-bold text-green-700">${userBalance.toFixed(2)}</span></p>
                   </div>
                 </div>
                 {canAffordWithBalance
@@ -157,12 +183,12 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
                 {purchasingBalance ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
                 ) : (
-                  <><Check className="w-4 h-4 mr-2" /> Buy for ${subtotal.toFixed(2)} (No fees)</>
+                  <><Check className="w-4 h-4 mr-2" /> Buy for ${priceWithMarkup.toFixed(2)} (with markup)</>
                 )}
               </Button>
               {!canAffordWithBalance && (
                 <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" /> Need ${(subtotal - userBalance).toFixed(2)} more — complete surveys to earn!
+                  <AlertCircle className="w-3 h-3" /> Need ${(priceWithMarkup - userBalance).toFixed(2)} more — complete surveys to earn!
                 </p>
               )}
             </div>
@@ -241,5 +267,12 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
         </Tabs>
       </DialogContent>
     </Dialog>
+
+    <BNPLModal
+      isOpen={showBNPL}
+      onClose={() => setShowBNPL(false)}
+      user={user}
+      purchaseAmount={priceWithMarkup}
+    />
   );
 }

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { X, Heart, ExternalLink, Loader2, ShoppingCart } from "lucide-react";
+import { X, Heart, ShoppingBag, Loader2, ShoppingCart, Info } from "lucide-react";
 import { base44 } from '@/api/base44Client';
 import { toast } from "sonner";
+import OrderViasite from '@/components/store/OrderViaSite';
 
 export default function ProductSearchResults({ products, searchQuery, searchImage, onClose, user }) {
   const [addingToWishlist, setAddingToWishlist] = useState(null);
+  const [orderProduct, setOrderProduct] = useState(null);
 
   const addToWishlist = async (product) => {
     setAddingToWishlist(product.name);
@@ -99,30 +101,18 @@ export default function ProductSearchResults({ products, searchQuery, searchImag
                         size="sm"
                         onClick={() => addToWishlist(product)}
                         disabled={isAdding}
+                        variant="outline"
                         className="flex-1"
                       >
-                        {isAdding ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                            Adding...
-                          </>
-                        ) : (
-                          <>
-                            <Heart className="w-4 h-4 mr-1" />
-                            Add to Wishlist
-                          </>
-                        )}
+                        {isAdding ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Heart className="w-4 h-4 mr-1" />}
+                        {isAdding ? 'Adding...' : 'Wishlist'}
                       </Button>
-                      
                       <Button
                         size="sm"
-                        variant="outline"
-                        asChild
+                        className="flex-1 bg-red-600 hover:bg-red-700"
+                        onClick={() => setOrderProduct({ ...product, product_name: product.name, price_with_markup: priceWithMarkup })}
                       >
-                        <a href={product.url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="w-4 h-4 mr-1" />
-                          View
-                        </a>
+                        <ShoppingBag className="w-4 h-4 mr-1" /> Order via Site
                       </Button>
                     </div>
                   </div>
@@ -134,13 +124,20 @@ export default function ProductSearchResults({ products, searchQuery, searchImag
       </div>
 
       <div className="sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent p-4">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
+          <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-gray-700">
-            <strong>💡 Tip:</strong> Products purchased with survey earnings include a 10% markup. 
-            Share your wishlist on social media to earn 25¢ for every $1 your referrals earn!
+            <strong>All purchases are made through GamerGain</strong> — we buy the item for you. Prices include a 10% platform fee. No money leaves our ecosystem.
           </p>
         </div>
       </div>
+
+      <OrderViasite
+        isOpen={!!orderProduct}
+        onClose={() => setOrderProduct(null)}
+        user={user}
+        product={orderProduct}
+      />
     </div>
   );
 }

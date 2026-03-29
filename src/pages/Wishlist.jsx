@@ -4,12 +4,16 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Trash2, Bell, BellOff, ExternalLink, ShoppingCart, Tag } from 'lucide-react';
+import { Heart, Trash2, Bell, BellOff, ShoppingBag, ShoppingCart, Tag, CreditCard } from 'lucide-react';
+import BNPLModal from '@/components/store/BNPLModal';
+import OrderViasite from '@/components/store/OrderViaSite';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Wishlist() {
   const [user, setUser] = useState(null);
+  const [showBNPL, setShowBNPL] = useState(false);
+  const [orderItem, setOrderItem] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -40,12 +44,17 @@ export default function Wishlist() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
             <Heart className="w-8 h-8 text-red-500 fill-red-500" />
             My Wishlist
           </h1>
-          <p className="text-gray-500 mt-1">Save items and get notified when prices drop</p>
+          <p className="text-gray-500 mt-1">Save items and order through GamerGain — prices include 10% platform fee</p>
+        </div>
+        <button onClick={() => setShowBNPL(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-colors">
+          <CreditCard className="w-4 h-4" />
+          {user?.bnpl_active ? `BNPL Active ($${(user?.bnpl_credit_limit || 1080).toLocaleString()})` : 'Get $1,080 Credit'}
+        </button>
         </div>
 
         {isLoading ? (
@@ -130,13 +139,9 @@ export default function Wishlist() {
                             {item.price_alert_enabled ? <Bell className="w-3 h-3 mr-1 fill-yellow-400" /> : <BellOff className="w-3 h-3 mr-1" />}
                             {item.price_alert_enabled ? 'Alert On' : 'Alert Off'}
                           </Button>
-                          {item.vendor_url && (
-                            <Button size="sm" className="flex-1 bg-red-600 hover:bg-red-700" asChild>
-                              <a href={item.vendor_url} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="w-3 h-3 mr-1" /> Buy Now
-                              </a>
-                            </Button>
-                          )}
+                          <Button size="sm" className="flex-1 bg-red-600 hover:bg-red-700" onClick={() => setOrderItem(item)}>
+                            <ShoppingBag className="w-3 h-3 mr-1" /> Order via Site
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
@@ -147,6 +152,9 @@ export default function Wishlist() {
           </div>
         )}
       </div>
+
+      <BNPLModal isOpen={showBNPL} onClose={() => setShowBNPL(false)} user={user} />
+      <OrderViasite isOpen={!!orderItem} onClose={() => setOrderItem(null)} user={user} product={orderItem} />
     </div>
   );
 }
