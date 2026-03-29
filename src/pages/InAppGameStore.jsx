@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal, Coins, MessageSquare, X, CreditCard, Info } from "lucide-react";
 import BNPLModal from '@/components/store/BNPLModal';
+import BNPLBanner from '@/components/store/BNPLBanner';
 import { toast } from "sonner";
 import ProductSearchBar from '@/components/store/ProductSearchBar';
 import ProductSearchResults from '@/components/store/ProductSearchResults';
@@ -139,10 +140,7 @@ export default function InAppGameStore() {
             <Button onClick={() => setShowProductSearch(true)} className="bg-purple-600 hover:bg-purple-700">
               <Package className="w-4 h-4 mr-2" /> Buy whatever you want and pay with surveys
             </Button>
-            <Button onClick={() => setShowBNPL(true)} variant="outline" className="border-blue-400 text-blue-700 hover:bg-blue-50">
-              <CreditCard className="w-4 h-4 mr-2" />
-              {user?.bnpl_active ? `BNPL: $${(user?.bnpl_credit_limit || 1080).toLocaleString()} Active` : 'Get $1,080 Credit'}
-            </Button>
+
             <Card className="px-4 py-2 border-2 border-green-500 bg-green-50">
               <p className="text-xs text-gray-500">Balance</p>
               <p className="text-xl font-bold text-green-600">${(user.current_balance || 0).toFixed(2)}</p>
@@ -156,6 +154,15 @@ export default function InAppGameStore() {
           <p className="text-sm text-amber-800">
             <strong>All purchases are made through GamerGain.</strong> Search any item using the purple button above — we'll buy it for you. Prices include a 10% platform fee. No cash leaves our ecosystem; all money is earned and spent here.
           </p>
+        </div>
+
+        {/* BNPL Banner */}
+        <div className="mb-4">
+          <BNPLBanner
+            onActivate={() => setShowBNPL(true)}
+            isActive={user?.bnpl_active}
+            creditLimit={user?.bnpl_credit_limit}
+          />
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
