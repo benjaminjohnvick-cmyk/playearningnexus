@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal, Coins, MessageSquare, X, CreditCard, Info } from "lucide-react";
+import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal, MessageSquare, X, CreditCard, Info } from "lucide-react";
 import BNPLModal from '@/components/store/BNPLModal';
 import BNPLBanner from '@/components/store/BNPLBanner';
 import { toast } from "sonner";
@@ -299,22 +299,38 @@ export default function InAppGameStore() {
                                   </Button>
                                 </div>
                               ) : (
-                                <div className="flex gap-1.5 w-full">
-                                  <Button size="sm" variant="outline"
-                                    onClick={() => toggleWishlist(game)}
-                                    className={isWishlisted ? 'border-red-400 text-red-600 bg-red-50' : ''}>
-                                    <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
-                                  </Button>
-                                  <Button size="sm" variant="outline"
-                                    className="border-green-500 text-green-700 hover:bg-green-50 flex-1 text-xs"
-                                    onClick={() => { setCheckoutGame({ ...game, payWithSurvey: true }); }}
-                                    disabled={(user?.current_balance || 0) < game.price}>
-                                    <DollarSign className="w-3.5 h-3.5 mr-0.5" /> Survey $
-                                  </Button>
-                                  <Button size="sm" className="bg-red-600 hover:bg-red-700 flex-1 text-xs"
-                                    onClick={() => setCheckoutGame(game)}>
-                                    <ShoppingCart className="w-3.5 h-3.5 mr-0.5" /> Buy
-                                  </Button>
+                                <div className="flex flex-col gap-1.5 w-full">
+                                 {user?.bnpl_active && (
+                                   <Button size="sm"
+                                     className="w-full bg-blue-600 hover:bg-blue-700 text-xs"
+                                     onClick={() => setCheckoutGame(game)}>
+                                     <CreditCard className="w-3.5 h-3.5 mr-1" /> Buy Now, Pay Later
+                                   </Button>
+                                 )}
+                                 {!user?.bnpl_active && (
+                                   <Button size="sm" variant="outline"
+                                     className="w-full border-blue-400 text-blue-700 hover:bg-blue-50 text-xs"
+                                     onClick={() => setShowBNPL(true)}>
+                                     <CreditCard className="w-3.5 h-3.5 mr-1" /> Get BNPL Credit
+                                   </Button>
+                                 )}
+                                 <div className="flex gap-1.5">
+                                   <Button size="sm" variant="outline"
+                                     onClick={() => toggleWishlist(game)}
+                                     className={isWishlisted ? 'border-red-400 text-red-600 bg-red-50' : ''}>
+                                     <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
+                                   </Button>
+                                   <Button size="sm" variant="outline"
+                                     className="border-green-500 text-green-700 hover:bg-green-50 flex-1 text-xs"
+                                     onClick={() => { setCheckoutGame({ ...game, payWithSurvey: true }); }}
+                                     disabled={(user?.current_balance || 0) < game.price}>
+                                     <DollarSign className="w-3.5 h-3.5 mr-0.5" /> Survey $
+                                   </Button>
+                                   <Button size="sm" className="bg-red-600 hover:bg-red-700 flex-1 text-xs"
+                                     onClick={() => setCheckoutGame(game)}>
+                                     <ShoppingCart className="w-3.5 h-3.5 mr-0.5" /> Buy
+                                   </Button>
+                                 </div>
                                 </div>
                               )}
                             </div>
