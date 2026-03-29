@@ -29,6 +29,7 @@ import PayPalTransferButton from '../components/payout/PayPalTransferButton';
 import EarningProgressPath from '../components/dashboard/EarningProgressPath';
 import SmartSavingsModule from '../components/dashboard/SmartSavingsModule';
 import OnboardingQuestWidget from '../components/onboarding/OnboardingQuestWidget';
+import EarningsForecastWidget from '../components/dashboard/EarningsForecastWidget';
 import RecommendedSurveysSection from '../components/dashboard/RecommendedSurveysSection';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -307,6 +308,11 @@ export default function UserDashboard() {
         {/* Recommended Surveys */}
         <div className="mb-8">
           <RecommendedSurveysSection user={user} />
+        </div>
+
+        {/* Earnings Forecast */}
+        <div className="mb-8">
+          <EarningsForecastWidget user={user} />
         </div>
 
         {/* Smart Savings Vault */}

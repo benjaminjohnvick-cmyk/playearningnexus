@@ -7,6 +7,7 @@ import { Loader2, Shield, Plus, History, Bot, AlertCircle, Info } from 'lucide-r
 import AppealSubmissionForm from '@/components/disputes/AppealSubmissionForm';
 import AppealHistoryList from '@/components/disputes/AppealHistoryList';
 import SelfServiceDisputeModule from '@/components/surveys/SelfServiceDisputeModule';
+import AutoDisputeWorkflow from '@/components/disputes/AutoDisputeWorkflow';
 
 export default function DisputeCenter() {
   const [user, setUser] = useState(null);
@@ -57,6 +58,9 @@ export default function DisputeCenter() {
             <TabsTrigger value="history" className="flex-1">
               <History className="w-3.5 h-3.5 mr-1" /> My Appeals
             </TabsTrigger>
+            <TabsTrigger value="auto" className="flex-1">
+              <Bot className="w-3.5 h-3.5 mr-1" /> Smart Dispute
+            </TabsTrigger>
             <TabsTrigger value="missing" className="flex-1">
               <AlertCircle className="w-3.5 h-3.5 mr-1" /> Missing Credits
             </TabsTrigger>
@@ -85,6 +89,20 @@ export default function DisputeCenter() {
               </CardHeader>
               <CardContent>
                 <AppealHistoryList user={user} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="auto">
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Bot className="w-4 h-4 text-indigo-500" /> AI-Powered Self-Service Dispute
+                </CardTitle>
+                <p className="text-xs text-gray-500">Submit a dispute and get an instant AI decision. High-quality users receive automatic goodwill credits.</p>
+              </CardHeader>
+              <CardContent>
+                <AutoDisputeWorkflow user={user} />
               </CardContent>
             </Card>
           </TabsContent>

@@ -35,6 +35,7 @@ const FeedbackAdminDashboard = lazy(() => import('./pages/FeedbackAdminDashboard
 const GlobalPrestigeHub = lazy(() => import('./pages/GlobalPrestigeHub'));
 const SurveyMarketplace = lazy(() => import('./pages/SurveyMarketplace'));
 const EarningsSimulatorPage = lazy(() => import('./pages/EarningsSimulatorPage'));
+const AchievementsPage = lazy(() => import('./pages/AchievementsPage'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -118,6 +119,7 @@ const AuthenticatedApp = () => {
       <Route path="/GlobalPrestigeHub" element={<LayoutWrapper currentPageName="GlobalPrestigeHub"><GlobalPrestigeHub /></LayoutWrapper>} />
       <Route path="/SurveyMarketplace" element={<LayoutWrapper currentPageName="SurveyMarketplace"><SurveyMarketplace /></LayoutWrapper>} />
       <Route path="/EarningsSimulatorPage" element={<LayoutWrapper currentPageName="EarningsSimulatorPage"><EarningsSimulatorPage /></LayoutWrapper>} />
+      <Route path="/AchievementsPage" element={<LayoutWrapper currentPageName="AchievementsPage"><AchievementsPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

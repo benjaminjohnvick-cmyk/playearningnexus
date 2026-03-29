@@ -150,6 +150,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Global Prestige', icon: Star, path: 'GlobalPrestigeHub', requireAuth: true },
     { name: 'Survey Marketplace', icon: ShoppingCart, path: 'SurveyMarketplace', requireAuth: true },
     { name: 'Earnings Simulator', icon: TrendingUp, path: 'EarningsSimulatorPage', requireAuth: true },
+    { name: 'Achievements', icon: Trophy, path: 'AchievementsPage', requireAuth: true },
     { name: 'Referral Leaderboard', icon: Trophy, path: 'ReferralLeaderboardPage', requireAuth: true },
     { name: 'Survey Analytics', icon: BarChart2, path: 'SurveyAdminDashboard', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
