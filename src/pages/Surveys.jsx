@@ -21,10 +21,12 @@ import AISurveyMatcher from '@/components/surveys/AISurveyMatcher';
 import PersonalizedSurveyCards from '@/components/surveys/PersonalizedSurveyCards';
 import SelfServiceDisputeModule from '@/components/surveys/SelfServiceDisputeModule';
 import AISurveyBuilder from '@/components/ppc/AISurveyBuilder';
+import SmartRoutingEngine from '@/components/surveys/SmartRoutingEngine';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
   const [activeSurvey, setActiveSurvey] = useState(null);
+  const handleSmartRoute = (survey) => setActiveSurvey(survey);
   const [showTierModal, setShowTierModal] = useState(null);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
   const [surveyFilters, setSurveyFilters] = useState({ category: 'All', payoutIdx: 0, timeIdx: 0 });
@@ -275,6 +277,7 @@ export default function Surveys() {
         <TierInfoModal tier={showTierModal} onClose={() => setShowTierModal(null)} />
       )}
       <SurveyDisputeModal user={user} isOpen={showDisputeModal} onClose={() => setShowDisputeModal(false)} />
+      <SmartRoutingEngine user={user} onSelectSurvey={handleSmartRoute} />
     </div>
   );
 }

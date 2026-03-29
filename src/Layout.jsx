@@ -41,6 +41,7 @@ import PushNotificationManager from '@/components/notifications/PushNotification
 import SurveyNotificationBanner from '@/components/notifications/SurveyNotificationBanner';
 import SurveyDemandAlerts from '@/components/ppc/SurveyDemandAlerts';
 import DailyFeedbackModal from '@/components/feedback/DailyFeedbackModal';
+import SurveyRewardNotifier from '@/components/surveys/SurveyRewardNotifier';
 import { LocaleProvider } from '@/components/locale/LocaleContext';
 import CurrencySelector from '@/components/locale/CurrencySelector';
 
@@ -363,6 +364,7 @@ export default function Layout({ children, currentPageName }) {
         {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
 
         {isAuthenticated && user && <DailyFeedbackModal user={user} />}
+        {isAuthenticated && user && <SurveyRewardNotifier user={user} />}
         <SupportChatButton />
 
         <LogoutPromptModal

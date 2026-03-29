@@ -30,14 +30,17 @@ export default function BitLabsSurveys({ user, onEarningsUpdate }) {
     }
   };
 
-  // Listen for survey completion via postMessage
+  // Listen for survey completion / disqualification via postMessage
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data?.type === 'survey_completed') {
-        // $6 survey = $3 user earnings (50/50 split)
         const userEarnings = (event.data.reward || 0) / 2;
         toast.success(`Survey completed! You earned $${userEarnings.toFixed(2)}`);
         if (onEarningsUpdate) onEarningsUpdate(userEarnings);
+      }
+      // BitLabs sends 'survey_screenout' or 'survey_disqualified' on DQ
+      if (event.data?.type === 'survey_screenout' || event.data?.type === 'survey_disqualified') {
+        window.__smartRouting?.triggerDisqualification(event.data?.survey_id || null);
       }
     };
     window.addEventListener('message', handleMessage);

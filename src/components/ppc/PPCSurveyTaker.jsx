@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, CheckCircle2, DollarSign, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, DollarSign, Loader2, PiggyBank } from "lucide-react";
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -132,6 +132,15 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
       const userEarning = survey.survey_type === 'data_collection' ? 2.00 : 0; // $2 user share of $4
       if (userEarning > 0) {
         await base44.auth.updateMe({ current_balance: (user.current_balance || 0) + userEarning });
+        // Fire a reward notification for the notifier to pick up
+        await base44.entities.Notification.create({
+          user_id: user.id,
+          type: 'points_earned',
+          title: '💰 Survey Reward Credited!',
+          message: `$${userEarning.toFixed(2)} added to your balance for completing "${survey.title}"`,
+          status: 'unread',
+          delivery_method: ['in_app'],
+        }).catch(() => {});
       }
 
       queryClient.invalidateQueries(['ppc-surveys-active']);
@@ -153,20 +162,46 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
     );
   }
 
+  const handleReinvest = async () => {
+    const earning = survey.survey_type === 'data_collection' ? 2.00 : 0;
+    if (earning <= 0) return;
+    const currentUser = await base44.auth.me();
+    const currentBalance = currentUser?.current_balance || 0;
+    const sweepAmt = parseFloat(Math.min(earning, currentBalance).toFixed(2));
+    if (sweepAmt <= 0) return;
+    await base44.auth.updateMe({
+      current_balance: parseFloat((currentBalance - sweepAmt).toFixed(2)),
+      vault_balance: parseFloat(((currentUser?.vault_balance || 0) + sweepAmt).toFixed(2)),
+    });
+    toast.success(`$${sweepAmt.toFixed(2)} swept into your Gift Card Vault! 🎁`);
+    onClose();
+  };
+
   if (phase === 'done') {
+    const earning = survey.survey_type === 'data_collection' ? 2.00 : 0;
     return (
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
         <Card className="border-2 border-green-300">
           <CardContent className="p-10 text-center">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Survey Complete!</h3>
-            {survey.survey_type === 'data_collection' && (
-              <p className="text-lg text-green-600 font-bold">+$2.00 added to your balance</p>
+            {earning > 0 && (
+              <>
+                <p className="text-lg text-green-600 font-bold">+${earning.toFixed(2)} added to your balance</p>
+                <div className="flex gap-2 mt-4 justify-center">
+                  <Button onClick={handleReinvest} className="bg-violet-600 hover:bg-violet-700 gap-2">
+                    <PiggyBank className="w-4 h-4" /> Quick Re-invest into Vault
+                  </Button>
+                  <Button onClick={onClose} variant="outline">Keep in Balance</Button>
+                </div>
+              </>
             )}
-            <p className="text-gray-500 text-sm mt-2">Thank you for completing this survey.</p>
-            <Button onClick={onClose} className="mt-6 bg-green-600 hover:bg-green-700">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Surveys
-            </Button>
+            {earning === 0 && (
+              <Button onClick={onClose} className="mt-6 bg-green-600 hover:bg-green-700">
+                <ArrowLeft className="w-4 h-4 mr-2" /> Back to Surveys
+              </Button>
+            )}
+            <p className="text-gray-400 text-xs mt-3">Thank you for completing this survey.</p>
           </CardContent>
         </Card>
       </motion.div>

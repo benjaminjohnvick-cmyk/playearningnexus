@@ -28,6 +28,7 @@ import DailyGoalProgress from '../components/gamification/DailyGoalProgress';
 import PayPalTransferButton from '../components/payout/PayPalTransferButton';
 import EarningProgressPath from '../components/dashboard/EarningProgressPath';
 import SmartSavingsModule from '../components/dashboard/SmartSavingsModule';
+import OnboardingQuestWidget from '../components/onboarding/OnboardingQuestWidget';
 import RecommendedSurveysSection from '../components/dashboard/RecommendedSurveysSection';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -261,6 +262,13 @@ export default function UserDashboard() {
         </div>
 
 
+
+        {/* Onboarding Quest - shown for new users */}
+        {(user?.created_date && Math.floor((Date.now() - new Date(user.created_date)) / 86400000) <= 14) && (
+          <div className="mb-6">
+            <OnboardingQuestWidget user={user} />
+          </div>
+        )}
 
         {/* Earning Progress Path */}
         <div className="mb-6">
