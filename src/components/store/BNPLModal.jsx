@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CreditCard, Users, DollarSign, AlertCircle, CheckCircle2, Info, X, Plus, Trash2, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
+import PayPalCardCapture from './PayPalCardCapture';
 
 const INDIVIDUAL_CREDIT = 1080;
 const MAX_GROUP = 10;
@@ -17,9 +18,7 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
   const [step, setStep] = useState('overview'); // overview | group | card | confirm
   const [groupMembers, setGroupMembers] = useState([]);
   const [newEmail, setNewEmail] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCVC, setCardCVC] = useState('');
+  const [paypalOrderId, setPaypalOrderId] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const groupSize = groupMembers.length + 1; // +1 for primary user
@@ -35,8 +34,7 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
     setNewEmail('');
   };
 
-  const handleActivate = async () => {
-    if (!cardNumber || !cardExpiry || !cardCVC) { toast.error('Please enter card details'); return; }
+  const handleActivate = async (ppOrderId) => {
     setSaving(true);
     try {
       // Save BNPL credit to user — issued as site credit
@@ -182,28 +180,11 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-gray-900 mb-1">Backup Payment Card</h3>
-              <p className="text-xs text-gray-500">Only charged if a group member misses their daily $3 earning. Secured and encrypted.</p>
+              <p className="text-xs text-gray-500">Only charged if a group member misses their daily $3 earning. Required to activate BNPL credit.</p>
             </div>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
               <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-amber-800">Your card is charged <strong>${DAILY_EARN_PER_PERSON} per person per missed day</strong>. For {groupSize} people, that's up to <strong>${groupSize * DAILY_EARN_PER_PERSON}/day</strong> if everyone misses.</p>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-medium text-gray-700 mb-1 block">Card Number</label>
-                <Input placeholder="1234 5678 9012 3456" value={cardNumber} onChange={e => setCardNumber(e.target.value)} maxLength={19} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">Expiry (MM/YY)</label>
-                  <Input placeholder="MM/YY" value={cardExpiry} onChange={e => setCardExpiry(e.target.value)} maxLength={5} />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">CVC</label>
-                  <Input placeholder="123" value={cardCVC} onChange={e => setCardCVC(e.target.value)} maxLength={4} type="password" />
-                </div>
-              </div>
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-1 text-sm">
@@ -213,13 +194,15 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
               <p className="text-blue-700">🔒 Card backup: <strong>${DAILY_EARN_PER_PERSON} × {groupSize} per missed day</strong></p>
             </div>
 
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setStep('group')} className="flex-1">Back</Button>
-              <Button onClick={handleActivate} disabled={saving} className="flex-1 bg-green-600 hover:bg-green-700">
-                {saving ? 'Activating...' : `✅ Activate $${(groupSize * INDIVIDUAL_CREDIT).toLocaleString()} Credit`}
-              </Button>
-            </div>
-            <p className="text-xs text-center text-gray-400 flex items-center justify-center gap-1"><Shield className="w-3 h-3" /> Secured by 256-bit encryption</p>
+            <PayPalCardCapture
+              onSuccess={(cardData) => handleActivate(cardData.paypalOrderId)}
+              onCancel={() => setStep('group')}
+              label={`Activate $${(groupSize * INDIVIDUAL_CREDIT).toLocaleString()} Credit`}
+              amount="1.00"
+            />
+            {saving && <p className="text-xs text-center text-blue-600">Activating your credit...</p>}
+
+            <Button variant="outline" onClick={() => setStep('group')} className="w-full">Back</Button>
           </div>
         ) : null}
       </DialogContent>
