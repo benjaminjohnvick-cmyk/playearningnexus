@@ -42,19 +42,21 @@ export default function Wishlist() {
   if (!user) return <div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600" /></div>;
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
         <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Heart className="w-8 h-8 text-red-500 fill-red-500" />
-            My Wishlist
-          </h1>
-          <p className="text-gray-500 mt-1">Save items and order through GamerGain — prices include 10% platform fee</p>
-        </div>
-        <button onClick={() => setShowBNPL(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-colors">
-          <CreditCard className="w-4 h-4" />
-          {user?.bnpl_active ? `BNPL Active ($${(user?.bnpl_credit_limit || 1080).toLocaleString()})` : 'Get $1,080 Credit'}
-        </button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <Heart className="w-8 h-8 text-red-500 fill-red-500" />
+              My Wishlist
+            </h1>
+            <p className="text-gray-500 mt-1">Save items and order through GamerGain — prices include 10% platform fee</p>
+          </div>
+          <button onClick={() => setShowBNPL(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-colors">
+            <CreditCard className="w-4 h-4" />
+            {user?.bnpl_active ? `BNPL Active ($${(user?.bnpl_credit_limit || 1080).toLocaleString()})` : 'Get $1,080 Credit'}
+          </button>
         </div>
 
         {isLoading ? (
@@ -152,9 +154,10 @@ export default function Wishlist() {
           </div>
         )}
       </div>
+    </div>
 
       <BNPLModal isOpen={showBNPL} onClose={() => setShowBNPL(false)} user={user} />
       <OrderViasite isOpen={!!orderItem} onClose={() => setOrderItem(null)} user={user} product={orderItem} />
-    </div>
+    </>
   );
 }

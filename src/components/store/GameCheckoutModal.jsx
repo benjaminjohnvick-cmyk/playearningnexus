@@ -94,6 +94,7 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
   };
 
   return (
+    <>
     <Dialog open={!!game} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -274,5 +275,6 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
       user={user}
       purchaseAmount={priceWithMarkup}
     />
+  </>
   );
 }
