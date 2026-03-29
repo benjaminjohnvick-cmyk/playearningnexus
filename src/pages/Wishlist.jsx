@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Trash2, Bell, BellOff, ShoppingBag, ShoppingCart, Tag, CreditCard } from 'lucide-react';
 import BNPLModal from '@/components/store/BNPLModal';
+import BNPLBanner from '@/components/store/BNPLBanner';
 import OrderViasite from '@/components/store/OrderViaSite';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -45,7 +46,7 @@ export default function Wishlist() {
     <>
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
+        <div className="mb-6 flex flex-col gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
               <Heart className="w-8 h-8 text-red-500 fill-red-500" />
@@ -53,10 +54,13 @@ export default function Wishlist() {
             </h1>
             <p className="text-gray-500 mt-1">Save items and order through GamerGain — prices include 10% platform fee</p>
           </div>
-          <button onClick={() => setShowBNPL(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition-colors">
-            <CreditCard className="w-4 h-4" />
-            {user?.bnpl_active ? `BNPL Active ($${(user?.bnpl_credit_limit || 1080).toLocaleString()})` : 'Get $1,080 Credit'}
-          </button>
+          <div className="w-full mt-4">
+            <BNPLBanner
+              onActivate={() => setShowBNPL(true)}
+              isActive={user?.bnpl_active}
+              creditLimit={user?.bnpl_credit_limit}
+            />
+          </div>
         </div>
 
         {isLoading ? (

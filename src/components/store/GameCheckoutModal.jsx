@@ -13,6 +13,7 @@ import { base44 } from '@/api/base44Client';
 import WriteReviewForm from '@/components/games/WriteReviewForm';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import BNPLModal from '@/components/store/BNPLModal';
+import BNPLBanner from '@/components/store/BNPLBanner';
 
 const PLATFORM_FEE_RATE = 0.03; // 3% platform fee
 const TAX_RATE = 0.08; // 8% estimated tax
@@ -119,15 +120,11 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
           {/* ── CHECKOUT TAB ── */}
           <TabsContent value="checkout" className="space-y-4 mt-4">
             {/* BNPL Banner */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                <span className="text-sm text-blue-800 font-medium">Buy Now, Pay with Surveys — up to $1,080 credit free</span>
-              </div>
-              <button onClick={() => setShowBNPL(true)} className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full hover:bg-blue-700 flex-shrink-0">
-                {user?.bnpl_active ? 'Active ✓' : 'Activate'}
-              </button>
-            </div>
+            <BNPLBanner
+              onActivate={() => setShowBNPL(true)}
+              isActive={user?.bnpl_active}
+              creditLimit={user?.bnpl_credit_limit}
+            />
 
             {/* Order Summary */}
             <div className="bg-gray-50 rounded-xl p-4 space-y-2 border">

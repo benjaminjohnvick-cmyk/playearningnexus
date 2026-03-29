@@ -6,6 +6,8 @@ import { ShoppingCart, CheckCircle2, Loader2, Shield, Info, CreditCard, External
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PayPalCardCapture from './PayPalCardCapture';
+import BNPLBanner from './BNPLBanner';
+import BNPLModal from './BNPLModal';
 
 // Used for wishlist items & product search results to place an in-site order
 export default function OrderViasite({ isOpen, onClose, user, product }) {
@@ -13,6 +15,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
   const [submitting, setSubmitting] = useState(false);
   const [paypalOrderId, setPaypalOrderId] = useState(null);
   const [payMethod, setPayMethod] = useState('survey_balance');
+  const [showBNPL, setShowBNPL] = useState(false);
 
   if (!product) return null;
 
@@ -93,6 +96,8 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
   };
 
   return (
+    <>
+    <BNPLModal isOpen={showBNPL} onClose={() => setShowBNPL(false)} user={user} />
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
@@ -132,6 +137,13 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
 
         ) : (
           <div className="space-y-4">
+            {/* BNPL Banner */}
+            <BNPLBanner
+              onActivate={() => setShowBNPL(true)}
+              isActive={user?.bnpl_active}
+              creditLimit={user?.bnpl_credit_limit}
+            />
+
             <div className="flex gap-3 items-start">
               {(product.product_image_url || product.image_url) && (
                 <img src={product.product_image_url || product.image_url} alt="" className="w-20 h-20 object-cover rounded-lg flex-shrink-0" />
@@ -181,5 +193,6 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
         )}
       </DialogContent>
     </Dialog>
+    </>
   );
 }
