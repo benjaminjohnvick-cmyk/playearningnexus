@@ -43,7 +43,8 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
   const priceWithMarkup = parseFloat((subtotal + markup).toFixed(2));
   const userBalance = user?.current_balance || 0;
   const canAffordWithBalance = userBalance >= priceWithMarkup;
-  const bnplBalance = user?.bnpl_active ? (user?.current_balance || 0) : 0;
+  const bnplCreditLimit = user?.bnpl_active ? (user?.bnpl_credit_limit || 1080) : 0;
+  const canAffordWithBnpl = bnplCreditLimit >= priceWithMarkup;
   const avgRating = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   const recordPurchase = async (paymentMethod, paymentRef = null) => {
@@ -74,6 +75,15 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
         related_entity_id: game.id
       })
     ]);
+  };
+
+  const handleBnplPurchase = async () => {
+    setPurchasingBalance(true);
+    await recordPurchase('bnpl_credit');
+    setPurchasingBalance(false);
+    toast.success(`🎮 ${game.title} added to your library! Repay with survey earnings.`);
+    queryClient.invalidateQueries();
+    onPurchaseComplete();
   };
 
   const handleBalancePurchase = async () => {
@@ -190,6 +200,34 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
                 </p>
               )}
             </div>
+
+            {/* BNPL Payment */}
+            {user?.bnpl_active ? (
+              <div className={`rounded-xl border-2 p-4 ${canAffordWithBnpl ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <p className="font-semibold text-gray-800 text-sm">Pay with BNPL Credit</p>
+                      <p className="text-xs text-gray-500">Credit limit: <span className="font-bold text-blue-700">${bnplCreditLimit.toFixed(2)}</span></p>
+                    </div>
+                  </div>
+                  <Badge className="bg-blue-600 text-xs">BNPL Active</Badge>
+                </div>
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700 mt-1"
+                  disabled={!canAffordWithBnpl || purchasingBalance}
+                  onClick={handleBnplPurchase}
+                >
+                  {purchasingBalance ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...</>
+                  ) : (
+                    <><CreditCard className="w-4 h-4 mr-2" /> Buy for ${priceWithMarkup.toFixed(2)} — Repay with Surveys</>
+                  )}
+                </Button>
+                <p className="text-xs text-gray-400 mt-1 text-center">Repay automatically through your daily survey earnings</p>
+              </div>
+            ) : null}
 
             {/* PayPal */}
             <div className="rounded-xl border-2 border-[#0070ba]/30 bg-blue-50/50 p-4">
