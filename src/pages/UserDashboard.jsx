@@ -32,6 +32,7 @@ import OnboardingQuestWidget from '../components/onboarding/OnboardingQuestWidge
 import EarningsForecastWidget from '../components/dashboard/EarningsForecastWidget';
 import MiniLeaderboardWidget from '../components/dashboard/MiniLeaderboardWidget';
 import RecommendedSurveysSection from '../components/dashboard/RecommendedSurveysSection';
+import SurveyAlertCenter from '../components/surveys/SurveyAlertCenter';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -264,6 +265,11 @@ export default function UserDashboard() {
         </div>
 
 
+
+        {/* Survey Alert Center */}
+        <div className="mb-6">
+          <SurveyAlertCenter user={user} />
+        </div>
 
         {/* Onboarding Quest - shown for new users */}
         {(user?.created_date && Math.floor((Date.now() - new Date(user.created_date)) / 86400000) <= 14) && (
