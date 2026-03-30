@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Shield, Plus, History, Bot, AlertCircle, Info, Settings, Upload } from 'lucide-react';
+import { Loader2, Shield, Plus, History, Bot, AlertCircle, Info, Settings, Upload, Gamepad2 } from 'lucide-react';
 import AdminDisputeDashboard from '@/components/disputes/AdminDisputeDashboard';
 import AppealSubmissionForm from '@/components/disputes/AppealSubmissionForm';
 import AppealHistoryList from '@/components/disputes/AppealHistoryList';
@@ -11,6 +11,8 @@ import SelfServiceDisputeModule from '@/components/surveys/SelfServiceDisputeMod
 import AutoDisputeWorkflow from '@/components/disputes/AutoDisputeWorkflow';
 import EvidenceUploader from '@/components/disputes/EvidenceUploader';
 import AIDisputeReviewer from '@/components/disputes/AIDisputeReviewer';
+import GameSurveyClaimForm from '@/components/disputes/GameSurveyClaimForm';
+import AdminClaimsPanel from '@/components/disputes/AdminClaimsPanel';
 
 export default function DisputeCenter() {
   const [user, setUser] = useState(null);
@@ -67,9 +69,17 @@ export default function DisputeCenter() {
             <TabsTrigger value="missing" className="flex-1">
               <AlertCircle className="w-3.5 h-3.5 mr-1" /> Missing Credits
             </TabsTrigger>
+            <TabsTrigger value="claims" className="flex-1">
+              <Gamepad2 className="w-3.5 h-3.5 mr-1" /> Game/Survey Claims
+            </TabsTrigger>
             {user?.role === 'admin' && (
               <TabsTrigger value="admin" className="flex-1 text-purple-700">
                 <Settings className="w-3.5 h-3.5 mr-1" /> Admin
+              </TabsTrigger>
+            )}
+            {user?.role === 'admin' && (
+              <TabsTrigger value="admin_claims" className="flex-1 text-red-700">
+                <Shield className="w-3.5 h-3.5 mr-1" /> Review Claims
               </TabsTrigger>
             )}
           </TabsList>
@@ -120,6 +130,20 @@ export default function DisputeCenter() {
             <SelfServiceDisputeModule user={user} />
           </TabsContent>
 
+          <TabsContent value="claims">
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Gamepad2 className="w-4 h-4 text-purple-500" /> Submit Game / Survey Credit Claim
+                </CardTitle>
+                <p className="text-xs text-gray-500">Completed a game or survey that wasn't credited? Submit proof and we'll review it within 24–48 hours.</p>
+              </CardHeader>
+              <CardContent>
+                <GameSurveyClaimForm user={user} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {user?.role === 'admin' && (
             <TabsContent value="admin">
               <Card className="border-0 shadow-md">
@@ -131,6 +155,21 @@ export default function DisputeCenter() {
                 </CardHeader>
                 <CardContent>
                   <AdminDisputeDashboard />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+          {user?.role === 'admin' && (
+            <TabsContent value="admin_claims">
+              <Card className="border-0 shadow-md">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-red-500" /> Review Game / Survey Claims
+                  </CardTitle>
+                  <p className="text-xs text-gray-500">Approve or deny user credit claims. Email notifications sent automatically.</p>
+                </CardHeader>
+                <CardContent>
+                  <AdminClaimsPanel />
                 </CardContent>
               </Card>
             </TabsContent>

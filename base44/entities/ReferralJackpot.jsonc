@@ -1,0 +1,50 @@
+{
+  "name": "ReferralJackpot",
+  "type": "object",
+  "properties": {
+    "period": {
+      "type": "string",
+      "description": "e.g. 2026-Q1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paid_out",
+        "cancelled"
+      ],
+      "default": "active"
+    },
+    "jackpot_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "10% of after-tax profits"
+    },
+    "total_entries": {
+      "type": "number",
+      "default": 0
+    },
+    "winner_user_id": {
+      "type": "string"
+    },
+    "winner_name": {
+      "type": "string"
+    },
+    "winner_entries": {
+      "type": "number",
+      "default": 0
+    },
+    "paid_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "entry_breakdown": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "user_id -> entry count"
+    }
+  },
+  "required": [
+    "period"
+  ]
+}

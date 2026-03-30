@@ -4,8 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, DollarSign, TrendingUp, Trophy, Link as LinkIcon, Loader2, Megaphone } from 'lucide-react';
+import { Users, DollarSign, TrendingUp, Trophy, Link as LinkIcon, Loader2, Megaphone, Ticket } from 'lucide-react';
 import InvitationLinkGenerator from '@/components/referral/InvitationLinkGenerator';
+import ReferralMilestoneJackpot from '@/components/referral/ReferralMilestoneJackpot';
 import TierMilestoneProgress from '@/components/referral/TierMilestoneProgress';
 import ReferralLeaderboardPanel from '@/components/referral/ReferralLeaderboardPanel';
 import ReferralMarketingHub from '@/components/referral/ReferralMarketingHub';
@@ -108,6 +109,9 @@ export default function ReferralDashboard() {
             <TabsTrigger value="milestones" className="flex items-center gap-1.5">
               <TrendingUp className="w-3.5 h-3.5" /> Tier Progress
             </TabsTrigger>
+            <TabsTrigger value="jackpot" className="flex items-center gap-1.5 text-purple-700 font-bold">
+              <Ticket className="w-3.5 h-3.5" /> 🎰 Jackpot
+            </TabsTrigger>
             <TabsTrigger value="referrals" className="flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5" /> My Referrals
             </TabsTrigger>
@@ -159,6 +163,10 @@ export default function ReferralDashboard() {
               tier2Days={tier2Days}
               currentTier={currentTier}
             />
+          </TabsContent>
+
+          <TabsContent value="jackpot" className="mt-5">
+            <ReferralMilestoneJackpot userId={user.id} totalReferrals={referrals.length} />
           </TabsContent>
 
           <TabsContent value="elite" className="mt-5">
