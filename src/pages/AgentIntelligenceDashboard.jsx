@@ -178,7 +178,7 @@ export default function AgentIntelligenceDashboard() {
               <GitBranch className="w-3 h-3" />↩ Loop
             </div>
           </div>
-          <p className="text-indigo-200 text-xs mt-3">Runs automatically every 12 hours · Human approval required for learning memories before injection</p>
+          <p className="text-indigo-200 text-xs mt-3">Runs automatically every 12 hours · Learning memories are applied instantly and autonomously</p>
         </div>
 
         {/* Action Buttons */}
@@ -244,8 +244,8 @@ export default function AgentIntelligenceDashboard() {
             <p className="text-xs text-gray-500 mt-1">Revenue Recovered</p>
           </Card>
           <Card className="p-4 text-center">
-            <p className="text-2xl font-bold text-purple-600">{learningMemories.filter(m => !m.admin_approved).length}</p>
-            <p className="text-xs text-gray-500 mt-1">Memories Awaiting Approval</p>
+            <p className="text-2xl font-bold text-purple-600">{learningMemories.filter(m => m.is_active).length}</p>
+            <p className="text-xs text-gray-500 mt-1">Active Learning Memories</p>
           </Card>
         </div>
 
@@ -366,10 +366,7 @@ export default function AgentIntelligenceDashboard() {
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <Badge className="bg-indigo-100 text-indigo-700">{AGENT_META[m.agent_name]?.label || m.agent_name}</Badge>
                         <Badge variant="outline">{m.memory_type}</Badge>
-                        {m.admin_approved
-                          ? <Badge className="bg-green-100 text-green-700">✅ Approved — Agent is using this</Badge>
-                          : <Badge className="bg-yellow-100 text-yellow-700">⏳ Awaiting approval</Badge>
-                        }
+                        <Badge className="bg-green-100 text-green-700">✅ Active — Agent is using this</Badge>
                       </div>
                       <p className="text-sm text-gray-800 mb-2">{m.content}</p>
                       <div className="flex gap-3 text-xs text-gray-400">
@@ -378,16 +375,9 @@ export default function AgentIntelligenceDashboard() {
                         {m.evaluated_at && <span>{format(new Date(m.evaluated_at), 'MMM d, yyyy')}</span>}
                       </div>
                     </div>
-                    {!m.admin_approved && (
-                      <div className="flex flex-col gap-2 flex-shrink-0">
-                        <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white text-xs" onClick={() => approveMemory(m)}>
-                          <CheckCircle className="w-3 h-3 mr-1" /> Approve
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-red-600 border-red-200 text-xs" onClick={() => rejectMemory(m)}>
-                          <XCircle className="w-3 h-3 mr-1" /> Reject
-                        </Button>
-                      </div>
-                    )}
+                    <Button size="sm" variant="outline" className="text-red-600 border-red-200 text-xs flex-shrink-0" onClick={() => rejectMemory(m)}>
+                      <XCircle className="w-3 h-3 mr-1" /> Disable
+                    </Button>
                   </div>
                 </Card>
               ))}

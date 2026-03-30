@@ -184,7 +184,7 @@ Return JSON:
         approval_rate_at_creation: approvalRate,
         accuracy_rate_at_creation: accuracyRate,
         is_active: true,
-        admin_approved: false, // requires human approval before use
+        admin_approved: true, // auto-approved — no human gate
         evaluated_at: new Date().toISOString()
       });
 
@@ -197,7 +197,7 @@ Return JSON:
           approval_rate_at_creation: approvalRate,
           accuracy_rate_at_creation: accuracyRate,
           is_active: true,
-          admin_approved: false,
+          admin_approved: true,
           evaluated_at: new Date().toISOString()
         });
       }
@@ -211,7 +211,7 @@ Return JSON:
           approval_rate_at_creation: approvalRate,
           accuracy_rate_at_creation: accuracyRate,
           is_active: true,
-          admin_approved: false,
+          admin_approved: true,
           evaluated_at: new Date().toISOString()
         });
       }
