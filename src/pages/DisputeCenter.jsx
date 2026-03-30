@@ -3,7 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Shield, Plus, History, Bot, AlertCircle, Info } from 'lucide-react';
+import { Loader2, Shield, Plus, History, Bot, AlertCircle, Info, Settings } from 'lucide-react';
+import AdminDisputeDashboard from '@/components/disputes/AdminDisputeDashboard';
 import AppealSubmissionForm from '@/components/disputes/AppealSubmissionForm';
 import AppealHistoryList from '@/components/disputes/AppealHistoryList';
 import SelfServiceDisputeModule from '@/components/surveys/SelfServiceDisputeModule';
@@ -51,7 +52,7 @@ export default function DisputeCenter() {
         </div>
 
         <Tabs defaultValue="appeal">
-          <TabsList className="bg-white shadow-sm border w-full">
+          <TabsList className="bg-white shadow-sm border w-full flex-wrap h-auto">
             <TabsTrigger value="appeal" className="flex-1">
               <Plus className="w-3.5 h-3.5 mr-1" /> New Appeal
             </TabsTrigger>
@@ -64,6 +65,11 @@ export default function DisputeCenter() {
             <TabsTrigger value="missing" className="flex-1">
               <AlertCircle className="w-3.5 h-3.5 mr-1" /> Missing Credits
             </TabsTrigger>
+            {user?.role === 'admin' && (
+              <TabsTrigger value="admin" className="flex-1 text-purple-700">
+                <Settings className="w-3.5 h-3.5 mr-1" /> Admin
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="appeal">
@@ -110,6 +116,22 @@ export default function DisputeCenter() {
           <TabsContent value="missing">
             <SelfServiceDisputeModule user={user} />
           </TabsContent>
+
+          {user?.role === 'admin' && (
+            <TabsContent value="admin">
+              <Card className="border-0 shadow-md">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Settings className="w-4 h-4 text-purple-500" /> Admin Dispute Management
+                  </CardTitle>
+                  <p className="text-xs text-gray-500">Review, AI-verify, and resolve all platform disputes.</p>
+                </CardHeader>
+                <CardContent>
+                  <AdminDisputeDashboard />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
         </Tabs>
 
         {/* Guidelines */}
