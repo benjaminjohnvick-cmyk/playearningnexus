@@ -414,14 +414,22 @@ export default function Layout({ children, currentPageName }) {
           )}
         </header>}
 
+        {/* PPC Widget Top Bar */}
+        {isAuthenticated && user && (
+          <div className="sticky top-0 z-40 bg-white border-b border-red-200 shadow-sm">
+            <div className="max-w-7xl mx-auto px-4 py-2">
+              <PPCAdSearchWidget variant="compact" />
+            </div>
+          </div>
+        )}
+
         {/* Main Content */}
         <main>{children}</main>
         
-        {/* Global AI Daily Goal + PPC Widget Sidebar */}
+        {/* Global AI Daily Goal Sidebar */}
         {isAuthenticated && user && (
-          <div className="fixed right-4 top-20 z-50 w-80 max-h-[calc(100vh-120px)] overflow-y-auto space-y-4 hidden lg:block">
+          <div className="fixed right-4 top-32 z-30 w-80 max-h-[calc(100vh-150px)] overflow-y-auto hidden lg:block">
             <AIPersonalizedDailyGoal user={user} />
-            <PPCAdSearchWidget variant="compact" />
           </div>
         )}
 
