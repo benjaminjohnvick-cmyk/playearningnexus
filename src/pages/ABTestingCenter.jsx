@@ -9,8 +9,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { TestTube, Plus, Zap, Trophy, TrendingUp, BarChart2, Loader2, RefreshCw, CheckCircle, Bot } from 'lucide-react';
+import { TestTube, Plus, Zap, Loader2, Bot, Wand2, LayoutGrid, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
+import FeatureSurveyForm from '@/components/abtesting/FeatureSurveyForm';
+import FeatureSurveyVoteCard from '@/components/abtesting/FeatureSurveyVoteCard';
+import MockupVoteCard from '@/components/abtesting/MockupVoteCard';
 
 const TEST_TYPES = ['survey_landing', 'ppc_questions', 'cta_text', 'reward_display'];
 
@@ -73,9 +76,21 @@ Return JSON: { "variant_a": { "label": "Control", "headline": "string", "descrip
     },
   });
 
+  const [showFeatureForm, setShowFeatureForm] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState(null);
+
+  const { data: featureMockups = [], refetch: refetchFeatures } = useQuery({
+    queryKey: ['feature-mockups'],
+    queryFn: () => base44.entities.FeatureMockup.list('-created_date', 50),
+    enabled: !!user,
+  });
+
   const activeTests = tests.filter(t => t.status === 'active');
   const completedTests = tests.filter(t => t.status === 'completed');
   const draftTests = tests.filter(t => t.status === 'draft');
+  const surveyPhaseFeatures = featureMockups.filter(f => f.phase === 'survey_phase');
+  const votePhaseFeatures = featureMockups.filter(f => f.phase === 'vote_phase');
+  const implementedFeatures = featureMockups.filter(f => f.phase === 'implemented');
 
   const ConversionBar = ({ test }) => {
     const aImpr = test.variant_a_impressions || 0;
@@ -228,13 +243,99 @@ Return JSON: { "variant_a": { "label": "Control", "headline": "string", "descrip
           </Card>
         )}
 
-        {/* Tests Tabs */}
-        <Tabs defaultValue="active">
-          <TabsList>
-            <TabsTrigger value="active">Active ({activeTests.length})</TabsTrigger>
+        {/* Main Tabs */}
+        <Tabs defaultValue="features">
+          <TabsList className="flex-wrap h-auto">
+            <TabsTrigger value="features" className="gap-1"><LayoutGrid className="w-3.5 h-3.5" /> Platform Features</TabsTrigger>
+            <TabsTrigger value="active">Survey Tests ({activeTests.length})</TabsTrigger>
             <TabsTrigger value="draft">Drafts ({draftTests.length})</TabsTrigger>
             <TabsTrigger value="completed">Completed ({completedTests.length})</TabsTrigger>
           </TabsList>
+
+          {/* ---- PLATFORM FEATURES TAB ---- */}
+          <TabsContent value="features" className="mt-4 space-y-4">
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-4 text-sm text-indigo-800">
+              <p className="font-bold mb-1">🗳️ Community Feature Voting Pipeline</p>
+              <p className="text-xs text-indigo-600">
+                Step 1: Survey users on feature preferences → Step 2: AI generates mockups from top responses → Step 3: Community votes on mockups → Step 4: AI implements winning mockup automatically.
+              </p>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <p className="text-sm font-semibold text-gray-700">Feature Surveys</p>
+              {user?.role === 'admin' && (
+                <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 gap-1" onClick={() => setShowFeatureForm(v => !v)}>
+                  <Plus className="w-4 h-4" /> New Feature Survey
+                </Button>
+              )}
+            </div>
+
+            {showFeatureForm && (
+              <div className="border-2 border-indigo-200 rounded-xl p-4 bg-white">
+                <FeatureSurveyForm
+                  onCreated={() => { refetchFeatures(); setShowFeatureForm(false); }}
+                  onCancel={() => setShowFeatureForm(false)}
+                />
+              </div>
+            )}
+
+            {/* Survey Phase */}
+            {surveyPhaseFeatures.length > 0 && (
+              <div>
+                <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">📋 Collecting Votes</p>
+                <div className="grid md:grid-cols-2 gap-3">
+                  {surveyPhaseFeatures.map(f => (
+                    <FeatureSurveyVoteCard key={f.id} record={f} user={user} isAdmin={user?.role === 'admin'} onUpdate={refetchFeatures} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Mockup Vote Phase */}
+            {votePhaseFeatures.length > 0 && (
+              <div>
+                <p className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-2">🎨 Mockup Voting</p>
+                <div className="space-y-4">
+                  {votePhaseFeatures.map(f => (
+                    <div key={f.id} className="border-2 border-purple-100 rounded-xl p-4 bg-white">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <p className="font-semibold text-sm text-gray-900">{f.feature_name}</p>
+                          <p className="text-xs text-gray-400">{f.category?.replace(/_/g, ' ')} · Community chose: "{f.top_response}"</p>
+                        </div>
+                        <button onClick={() => setSelectedFeature(selectedFeature?.id === f.id ? null : f)} className="text-xs text-purple-600 underline flex items-center gap-1">
+                          {selectedFeature?.id === f.id ? 'Hide' : 'Vote on Mockups'}
+                          <ChevronDown className={`w-3 h-3 transition-transform ${selectedFeature?.id === f.id ? 'rotate-180' : ''}`} />
+                        </button>
+                      </div>
+                      {selectedFeature?.id === f.id && (
+                        <MockupVoteCard record={f} user={user} onVoted={refetchFeatures} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Implemented */}
+            {implementedFeatures.length > 0 && (
+              <div>
+                <p className="text-xs font-bold text-green-600 uppercase tracking-wider mb-2">✅ Implemented</p>
+                <div className="grid md:grid-cols-2 gap-3">
+                  {implementedFeatures.map(f => (
+                    <FeatureSurveyVoteCard key={f.id} record={f} user={user} isAdmin={user?.role === 'admin'} onUpdate={refetchFeatures} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {featureMockups.length === 0 && !showFeatureForm && (
+              <div className="text-center py-12 text-gray-400 text-sm">
+                No feature surveys yet. {user?.role === 'admin' ? 'Create one above!' : 'Check back soon!'}
+              </div>
+            )}
+          </TabsContent>
+
           {[['active', activeTests], ['draft', draftTests], ['completed', completedTests]].map(([tab, list]) => (
             <TabsContent key={tab} value={tab} className="mt-4">
               {isLoading ? (

@@ -1,0 +1,135 @@
+{
+  "name": "FeatureMockup",
+  "type": "object",
+  "properties": {
+    "feature_name": {
+      "type": "string",
+      "description": "Name of the platform feature or game feature being tested"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "platform_ui",
+        "game_mechanic",
+        "reward_system",
+        "survey_flow",
+        "dashboard",
+        "onboarding",
+        "store"
+      ],
+      "description": "Category of the feature"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "survey_phase",
+        "mockup_phase",
+        "vote_phase",
+        "implementing",
+        "implemented",
+        "rejected"
+      ],
+      "default": "survey_phase",
+      "description": "Pipeline phase"
+    },
+    "survey_question": {
+      "type": "string",
+      "description": "The survey question that gathered initial preference data"
+    },
+    "survey_responses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "option": {
+            "type": "string"
+          },
+          "votes": {
+            "type": "number"
+          },
+          "pct": {
+            "type": "number"
+          }
+        }
+      },
+      "default": [],
+      "description": "Aggregated survey response data"
+    },
+    "top_response": {
+      "type": "string",
+      "description": "Highest-voted survey response"
+    },
+    "mockups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "ui_spec": {
+            "type": "string",
+            "description": "AI-generated UI specification / layout description"
+          },
+          "image_url": {
+            "type": "string",
+            "description": "AI-generated preview image URL"
+          },
+          "votes": {
+            "type": "number",
+            "default": 0
+          },
+          "voter_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          }
+        }
+      },
+      "default": [],
+      "description": "List of AI-generated mockup options for voting"
+    },
+    "winning_mockup_id": {
+      "type": "string"
+    },
+    "winning_mockup_title": {
+      "type": "string"
+    },
+    "implementation_spec": {
+      "type": "string",
+      "description": "AI-generated implementation plan for the winning mockup"
+    },
+    "implementation_notes": {
+      "type": "string",
+      "description": "Admin notes or AI output from implementation run"
+    },
+    "total_survey_votes": {
+      "type": "number",
+      "default": 0
+    },
+    "total_mockup_votes": {
+      "type": "number",
+      "default": 0
+    },
+    "vote_deadline": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "implemented_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "feature_name",
+    "category"
+  ]
+}
