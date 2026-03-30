@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Brain, TrendingUp, CheckCircle, XCircle, Clock, Zap, 
   RefreshCw, Play, Users, Mail, MessageSquare, Target, 
-  AlertTriangle, BarChart2, Shield, Star
+  AlertTriangle, BarChart2, Shield, Star, Cpu, GitBranch,
+  ArrowRight, Activity, Database, Sparkles
 } from 'lucide-react';
 import { toast } from "sonner";
 import { format } from 'date-fns';
@@ -146,24 +148,64 @@ export default function AgentIntelligenceDashboard() {
           </div>
         </div>
 
+        {/* Closed-Loop Pipeline Visualizer */}
+        <div className="bg-gradient-to-r from-indigo-900 to-purple-900 rounded-2xl p-5 mb-6 text-white">
+          <div className="flex items-center gap-2 mb-4">
+            <Activity className="w-5 h-5 text-indigo-300" />
+            <span className="font-bold text-lg">Autonomous Closed-Loop Pipeline</span>
+            <span className="ml-auto text-xs bg-green-500 px-2 py-0.5 rounded-full font-semibold">● LIVE</span>
+          </div>
+          <div className="flex items-center gap-1 flex-wrap text-xs font-medium">
+            {[
+              { label: 'Quality Scan', icon: Star, color: 'bg-blue-500' },
+              { label: 'Fraud Scan', icon: Shield, color: 'bg-red-500' },
+              { label: 'Churn Predict', icon: TrendingUp, color: 'bg-amber-500' },
+              { label: 'Campaigns', icon: Mail, color: 'bg-orange-500' },
+              { label: 'Verify Outcomes', icon: CheckCircle, color: 'bg-green-500' },
+              { label: 'Survey Intel', icon: Brain, color: 'bg-indigo-500' },
+              { label: 'Learn & Improve', icon: Sparkles, color: 'bg-purple-500' },
+            ].map((step, i, arr) => (
+              <React.Fragment key={step.label}>
+                <div className={`flex items-center gap-1.5 ${step.color} px-2.5 py-1.5 rounded-lg`}>
+                  <step.icon className="w-3 h-3" />
+                  {step.label}
+                </div>
+                {i < arr.length - 1 && <ArrowRight className="w-3 h-3 text-indigo-300 flex-shrink-0" />}
+              </React.Fragment>
+            ))}
+            <ArrowRight className="w-3 h-3 text-indigo-300 flex-shrink-0" />
+            <div className="flex items-center gap-1.5 bg-indigo-600 border border-indigo-400 px-2.5 py-1.5 rounded-lg">
+              <GitBranch className="w-3 h-3" />↩ Loop
+            </div>
+          </div>
+          <p className="text-indigo-200 text-xs mt-3">Runs automatically every 12 hours · Human approval required for learning memories before injection</p>
+        </div>
+
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
+          <Button
+            onClick={() => runFunction('aiOrchestrator', { dry_run: false }, 'Full AI Pipeline')}
+            disabled={!!running}
+            className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white h-auto py-3 flex-col gap-1 lg:col-span-2"
+          >
+            {running === 'aiOrchestrator' ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Cpu className="w-4 h-4" />}
+            <span className="text-xs font-semibold">Run Full Pipeline Now</span>
+          </Button>
           <Button
             onClick={() => runFunction('retentionCampaignEngine', { dry_run: false, risk_levels: ['high', 'critical'] }, 'Retention Campaign')}
             disabled={!!running}
             className="bg-gradient-to-r from-amber-500 to-orange-500 text-white h-auto py-3 flex-col gap-1"
           >
             {running === 'retentionCampaignEngine' ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-            <span className="text-xs font-semibold">Run Retention Engine</span>
+            <span className="text-xs font-semibold">Retention Engine</span>
           </Button>
           <Button
-            onClick={() => runFunction('retentionCampaignEngine', { dry_run: true, risk_levels: ['medium','high','critical'] }, 'Dry Run Preview')}
+            onClick={() => runFunction('fraudScanEngine', { lookback_hours: 24 }, 'Fraud Scan')}
             disabled={!!running}
-            variant="outline"
-            className="h-auto py-3 flex-col gap-1"
+            className="bg-gradient-to-r from-red-500 to-red-600 text-white h-auto py-3 flex-col gap-1"
           >
-            {running === 'retentionCampaignEngine_dry' ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-            <span className="text-xs font-semibold">Dry Run Preview</span>
+            {running === 'fraudScanEngine' ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
+            <span className="text-xs font-semibold">Fraud Scan</span>
           </Button>
           <Button
             onClick={() => runFunction('evaluateAgentPerformance', {}, 'Agent Evaluation')}
@@ -174,12 +216,12 @@ export default function AgentIntelligenceDashboard() {
             <span className="text-xs font-semibold">Evaluate Agents</span>
           </Button>
           <Button
-            onClick={() => runFunction('verifyCampaignOutcomes', {}, 'Outcome Verification')}
+            onClick={() => runFunction('applyApprovedLearnings', {}, 'Apply Learnings')}
             disabled={!!running}
-            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white h-auto py-3 flex-col gap-1"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white h-auto py-3 flex-col gap-1"
           >
-            {running === 'verifyCampaignOutcomes' ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-            <span className="text-xs font-semibold">Verify Outcomes</span>
+            {running === 'applyApprovedLearnings' ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            <span className="text-xs font-semibold">Apply Learnings</span>
           </Button>
         </div>
 
