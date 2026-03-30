@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Facebook, Twitter, Instagram, Zap, Trash2, Plus, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Zap, Trash2, Plus, CheckCircle2, AlertCircle, Gift } from 'lucide-react';
 
 const PLATFORMS = {
   facebook: {
@@ -121,29 +121,43 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
       </Card>
 
       {availablePlatforms.length > 0 && (
-        <Card>
+        <Card className="border-green-200 bg-green-50">
           <CardHeader>
             <CardTitle>Connect New Account</CardTitle>
             <CardDescription>
-              Connect additional social media accounts
+              Connect additional social media accounts and earn jackpot entries!
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <div className="bg-white border border-green-200 rounded-lg p-3 flex items-start gap-2">
+              <Gift className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-semibold text-green-900">Earn Jackpot Entries!</p>
+                <p className="text-green-700 text-xs mt-1">
+                  • Facebook/Twitter: 50 entries each<br/>
+                  • Instagram/Snapchat: 75 entries each
+                </p>
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               {availablePlatforms.map(platform => {
                 const config = PLATFORMS[platform];
                 const Icon = config.icon;
+                const entries = platform === 'instagram' || platform === 'snapchat' ? 75 : 50;
                 
                 return (
                   <Button
                     key={platform}
                     onClick={() => handleConnect(platform)}
                     variant="outline"
-                    className="flex items-center gap-2"
+                    className="flex flex-col items-center gap-1 h-auto py-2"
                     disabled={connectingPlatform === platform}
                   >
                     <Icon className={`w-4 h-4 ${config.color}`} />
-                    {connectingPlatform === platform ? 'Connecting...' : `Connect ${config.label}`}
+                    <span className="text-xs">{config.label}</span>
+                    {connectingPlatform !== platform && (
+                      <span className="text-xs font-semibold text-green-600">+{entries}</span>
+                    )}
                   </Button>
                 );
               })}

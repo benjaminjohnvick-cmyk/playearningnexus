@@ -50,7 +50,17 @@ Deno.serve(async (req) => {
       connected_at: new Date().toISOString()
     });
 
-    return Response.json({ success: true, connection });
+    // Award jackpot entries
+    const jackpotResult = await base44.functions.invoke('awardSocialMediaJackpotEntries', {
+      platform
+    }).catch(err => ({ data: { success: false, error: err.message } }));
+
+    return Response.json({ 
+      success: true, 
+      connection,
+      jackpotAwarded: jackpotResult.data.entriesAwarded,
+      jackpotMessage: jackpotResult.data.message
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

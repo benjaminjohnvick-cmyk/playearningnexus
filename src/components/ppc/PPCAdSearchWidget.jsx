@@ -6,15 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Zap, TrendingUp, Target, X, DollarSign, Clock, Download } from 'lucide-react';
+import { Search, Zap, TrendingUp, Target, X, DollarSign, Clock, Download, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePushNotificationTriggers } from '@/hooks/usePushNotificationTriggers';
 import AnimatedJackpotCounter from '@/components/jackpot/AnimatedJackpotCounter';
+import SocialMediaConnectionManager from '@/components/social/SocialMediaConnectionManager';
 
 export default function PPCAdSearchWidget({ variant = 'compact' }) {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showSocialManager, setShowSocialManager] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -83,6 +85,11 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
     toast.success('Extension download started! Follow the installation guide.');
   };
 
+  const handleSocialConnectionsChange = () => {
+    toast.success('Account connected! You earned bonus jackpot entries!');
+    setShowSocialManager(false);
+  };
+
   // Swagbucks-style search bar for top
   if (variant === 'compact') {
     return (
@@ -109,6 +116,17 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
           {/* Animated Jackpot Counter */}
           <AnimatedJackpotCounter showAnimation={true} />
 
+          {/* Social Media Button */}
+          <Button 
+            size="sm"
+            variant="ghost"
+            className="text-white hover:bg-blue-500"
+            onClick={() => setShowSocialManager(true)}
+            title="Connect social media accounts and earn bonus entries"
+          >
+            <Share2 className="w-4 h-4" />
+          </Button>
+
           {/* Download Button */}
           <Button 
             size="sm"
@@ -120,6 +138,37 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
             <Download className="w-4 h-4" />
           </Button>
         </div>
+
+        {/* Social Media Manager Modal */}
+        <AnimatePresence>
+          {showSocialManager && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+              onClick={() => setShowSocialManager(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-96 overflow-y-auto"
+              >
+                <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-900">Connect Social Media</h3>
+                  <button onClick={() => setShowSocialManager(false)}>
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+                <div className="p-4">
+                  <SocialMediaConnectionManager onConnectionsChange={handleSocialConnectionsChange} />
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Search Results Dropdown */}
         <AnimatePresence>
