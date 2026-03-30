@@ -47,9 +47,11 @@ import { LocaleProvider } from '@/components/locale/LocaleContext';
 import { initTracker, setPage, trackEvent } from '@/lib/uxTracker';
 import CurrencySelector from '@/components/locale/CurrencySelector';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
+import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
+  useRealtimeNotifications(user?.id);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLogoutPrompt, setShowLogoutPrompt] = useState(false);

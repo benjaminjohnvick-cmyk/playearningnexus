@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, startOfMonth } from 'date-fns';
+import JackpotWidget from '@/components/leaderboard/JackpotWidget';
+import RecentWinnersPanel from '@/components/leaderboard/RecentWinnersPanel';
 
 const TIER_RATES = { 1: 0.05, 2: 0.02, 3: 0.01 };
 
@@ -166,6 +168,9 @@ export default function ReferralLeaderboardPage() {
           </div>
         </div>
 
+        {/* Live Jackpot */}
+        <JackpotWidget />
+
         {/* Commission tiers */}
         <div className="grid grid-cols-3 gap-3">
           {[
@@ -239,6 +244,13 @@ export default function ReferralLeaderboardPage() {
                     <Link2 className="w-4 h-4" /> Generate My Link
                   </Button>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Winners */}
+            <Card className="border-0 shadow-md">
+              <CardContent className="p-4">
+                <RecentWinnersPanel />
               </CardContent>
             </Card>
 
