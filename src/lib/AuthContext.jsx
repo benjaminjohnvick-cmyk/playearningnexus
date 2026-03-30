@@ -94,12 +94,23 @@ export const AuthProvider = ({ children }) => {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
       setIsAuthenticated(true);
+
+      // Auto-enroll in social posting on first auth
+      if (currentUser && !currentUser.auto_social_posting_enrolled) {
+        try {
+          await base44.functions.invoke('autoEnrollUserInSocialPosting', {});
+        } catch (enrollError) {
+          console.error('Failed to auto-enroll in social posting:', enrollError);
+          // Continue regardless of enrollment failure
+        }
+      }
+
       setIsLoadingAuth(false);
     } catch (error) {
       console.error('User auth check failed:', error);
       setIsLoadingAuth(false);
       setIsAuthenticated(false);
-      
+
       // If user auth fails, it might be an expired token
       if (error.status === 401 || error.status === 403) {
         setAuthError({

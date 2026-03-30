@@ -20,20 +20,20 @@ Deno.serve(async (req) => {
 
         if (!userRecord) continue;
 
-        // Get a random PPC ad to post
+        // Get active PPC ads for context
         const ads = await base44.asServiceRole.entities.PPCSurvey.filter({
           status: 'active'
         });
 
         if (ads.length === 0) continue;
 
-        const randomAd = ads[Math.floor(Math.random() * ads.length)];
+        // Generate AI content tailored to platform
+        const aiContent = await generateAIContent(connection.platform, ads);
         
         // Post to platform
         const postResult = await postToSocialPlatform(
           connection,
-          randomAd,
-          userRecord
+          aiContent
         );
 
         // Update connection stats
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
           connectionId: connection.id,
           platform: connection.platform,
           success: true,
-          adPosted: randomAd.title
+          contentGenerated: true
         });
       } catch (error) {
         results.push({
@@ -81,25 +81,61 @@ Deno.serve(async (req) => {
   }
 });
 
-async function postToSocialPlatform(connection, ad, user) {
-  const content = `Check out ${ad.title}! Earn rewards: ${ad.reward_amount}`;
-  const imageUrl = ad.preview_image_url || null;
+async function generateAIContent(platform, ads) {
+  const platformPrompts = {
+    facebook: `Create an engaging Facebook post (100-150 chars) about taking surveys and earning rewards. Make it friendly and encouraging. Include a call-to-action. No hashtags.`,
+    twitter: `Create a catchy Twitter post (under 280 chars) about earning money by taking surveys. Use relevant hashtags like #SurveyRewards #EarnMoney. Make it punchy and engaging.`,
+    instagram: `Create an Instagram caption (150-200 chars) with emojis about survey opportunities and earning rewards. Include 3-5 relevant hashtags. Make it visual and appealing.`,
+    snapchat: `Create a Snapchat-style message (under 150 chars) that's casual and fun about making money taking surveys. Use casual language and appeal to younger audiences.`
+  };
 
+  const adContext = ads.slice(0, 3).map(ad => `${ad.title}: $${ad.reward_amount}`).join(', ');
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a social media content creator expert. Generate engaging, platform-specific content for a survey rewards platform.'
+        },
+        {
+          role: 'user',
+          content: `${platformPrompts[platform]}\n\nContext: Available surveys: ${adContext}`
+        }
+      ],
+      temperature: 0.8,
+      max_tokens: 300
+    })
+  });
+
+  const data = await response.json();
+  if (!response.ok) throw new Error('AI content generation failed');
+
+  return data.choices[0].message.content.trim();
+}
+
+async function postToSocialPlatform(connection, content) {
   switch (connection.platform) {
     case 'facebook':
-      return postToFacebook(connection, content, imageUrl);
+      return postToFacebook(connection, content);
     case 'twitter':
-      return postToTwitter(connection, content, imageUrl);
+      return postToTwitter(connection, content);
     case 'instagram':
-      return postToInstagram(connection, content, imageUrl);
+      return postToInstagram(connection, content);
     case 'snapchat':
-      return postToSnapchat(connection, content, imageUrl);
+      return postToSnapchat(connection, content);
     default:
       throw new Error(`Unknown platform: ${connection.platform}`);
   }
 }
 
-async function postToFacebook(connection, content, imageUrl) {
+async function postToFacebook(connection, content) {
   const response = await fetch(
     `https://graph.facebook.com/v18.0/${connection.account_id}/feed`,
     {
@@ -107,7 +143,6 @@ async function postToFacebook(connection, content, imageUrl) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         message: content,
-        ...(imageUrl && { picture: imageUrl }),
         access_token: connection.access_token
       }).toString()
     }
@@ -119,32 +154,8 @@ async function postToFacebook(connection, content, imageUrl) {
   return { postId: data.id };
 }
 
-async function postToTwitter(connection, content, imageUrl) {
-  let mediaId;
-
-  if (imageUrl) {
-    try {
-      const imageResponse = await fetch(imageUrl);
-      const imageBuffer = await imageResponse.arrayBuffer();
-
-      const uploadResponse = await fetch('https://upload.twitter.com/1.1/media/upload.json', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${connection.access_token}`,
-          'Content-Type': 'application/octet-stream'
-        },
-        body: imageBuffer
-      });
-
-      const uploadData = await uploadResponse.json();
-      mediaId = uploadData.media_id_string;
-    } catch (e) {
-      // Continue without image
-    }
-  }
-
+async function postToTwitter(connection, content) {
   const payload = { text: content };
-  if (mediaId) payload.media = { media_ids: [mediaId] };
 
   const response = await fetch('https://api.twitter.com/2/tweets', {
     method: 'POST',
@@ -161,16 +172,13 @@ async function postToTwitter(connection, content, imageUrl) {
   return { postId: data.data.id };
 }
 
-async function postToInstagram(connection, content, imageUrl) {
-  if (!imageUrl) return { postId: 'skipped_no_image' };
-
+async function postToInstagram(connection, content) {
   const response = await fetch(
     `https://graph.instagram.com/v18.0/${connection.account_id}/media`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        image_url: imageUrl,
         caption: content,
         access_token: connection.access_token
       }).toString()
@@ -183,9 +191,7 @@ async function postToInstagram(connection, content, imageUrl) {
   return { postId: data.id };
 }
 
-async function postToSnapchat(connection, content, imageUrl) {
-  if (!imageUrl) return { postId: 'skipped_no_image' };
-
+async function postToSnapchat(connection, content) {
   const response = await fetch(
     `https://adsapi.snapchat.com/v1/adaccounts/${connection.account_id}/campaigns`,
     {
