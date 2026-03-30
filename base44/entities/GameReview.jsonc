@@ -1,0 +1,93 @@
+{
+  "name": "GameReview",
+  "type": "object",
+  "properties": {
+    "game_id": {
+      "type": "string",
+      "description": "Game being reviewed"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who wrote the review"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name of reviewer"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Overall star rating (1-5)"
+    },
+    "category_ratings": {
+      "type": "object",
+      "description": "Per-dimension ratings (1-5)",
+      "properties": {
+        "gameplay": {
+          "type": "number"
+        },
+        "graphics": {
+          "type": "number"
+        },
+        "performance": {
+          "type": "number"
+        },
+        "fun_factor": {
+          "type": "number"
+        },
+        "value": {
+          "type": "number"
+        }
+      }
+    },
+    "review_text": {
+      "type": "string",
+      "description": "Written review content"
+    },
+    "input_method": {
+      "type": "string",
+      "enum": [
+        "typed",
+        "voice"
+      ],
+      "default": "typed",
+      "description": "How the review was entered"
+    },
+    "playtime_hours": {
+      "type": "number",
+      "description": "Hours played before review"
+    },
+    "is_verified_purchase": {
+      "type": "boolean",
+      "default": false
+    },
+    "helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "sentiment_label": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative"
+      ],
+      "description": "AI-tagged sentiment"
+    },
+    "included_in_report": {
+      "type": "boolean",
+      "default": false,
+      "description": "Included in a weekly sentiment report"
+    }
+  },
+  "required": [
+    "game_id",
+    "user_id",
+    "rating"
+  ]
+}
