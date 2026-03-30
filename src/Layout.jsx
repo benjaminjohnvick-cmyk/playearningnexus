@@ -212,8 +212,8 @@ export default function Layout({ children, currentPageName }) {
           backdropFilter: 'blur(10px)'
         }}
       >
-        {/* Header */}
-        <header
+        {/* Header - Only show on Home page */}
+        {currentPageName === 'Home' && <header
           className="sticky top-0 z-50 border-b-2 border-red-200 shadow-lg"
           style={{
             background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(254, 242, 242, 0.8))',
@@ -412,14 +412,14 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </div>
           )}
-        </header>
+        </header>}
 
         {/* Main Content */}
         <main>{children}</main>
         
         {/* Global AI Daily Goal + PPC Widget Sidebar */}
         {isAuthenticated && user && (
-          <div className="fixed right-6 top-32 z-30 w-96 max-h-[calc(100vh-200px)] overflow-y-auto space-y-4 hidden lg:block">
+          <div className="fixed right-4 top-20 z-50 w-80 max-h-[calc(100vh-120px)] overflow-y-auto space-y-4 hidden lg:block">
             <AIPersonalizedDailyGoal user={user} />
             <PPCAdSearchWidget variant="compact" />
           </div>
