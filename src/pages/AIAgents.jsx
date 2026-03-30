@@ -53,7 +53,7 @@ export default function AIAgents() {
       replaces: 'Retention Platform',
       color: 'amber',
       features: ['Churn scoring', 'SMS + Email campaigns', 'Win-back offers', 'Self-improving'],
-      dashboardPath: 'AgentIntelligenceDashboard',
+      dashboardPath: 'RetentionEngine',
       selfLearning: true,
     },
     {
