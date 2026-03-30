@@ -99,11 +99,33 @@ Deno.serve(async (req) => {
 
     score = Math.max(0, Math.min(100, score));
 
+    // Flag low-quality for review
+    const isLowQuality = score < 40;
+    const isFraudRisk = penalties.some(p => p.includes('Straight-lining') || p.includes('Suspiciously fast'));
+
     // Save score on response
     await base44.asServiceRole.entities.PPCSurveyResponse.update(response_id, {
       quality_score: score,
       quality_penalties: penalties,
+      is_flagged: isLowQuality || isFraudRisk,
+      flag_reason: isLowQuality || isFraudRisk ? penalties.join('; ') : null,
     });
+
+    // Log flagged responses to AgentPerformanceLog
+    if (isLowQuality || isFraudRisk) {
+      await base44.asServiceRole.entities.AgentPerformanceLog.create({
+        agent_name: 'survey_quality_scorer',
+        action_type: 'quality_flag',
+        target_entity: 'PPCSurveyResponse',
+        target_id: response_id,
+        input_data: { time_taken: timeTaken, completion_rate: completionRate, answer_count: answers.length },
+        output_data: { score, penalties, is_fraud_risk: isFraudRisk },
+        predicted_outcome: isFraudRisk ? 'Potential fraudulent response' : 'Low quality — needs review',
+        confidence_score: isFraudRisk ? 85 : 60,
+        tags: ['quality_scoring', isFraudRisk ? 'fraud_risk' : 'low_quality'],
+        human_review_status: 'pending',
+      });
+    }
 
     // Update rolling avg on survey
     const allResps = await base44.asServiceRole.entities.PPCSurveyResponse.filter({ survey_id, completed: true });

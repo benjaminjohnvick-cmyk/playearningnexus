@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, BarChart3, Clock, TrendingUp, Filter } from 'lucide-react';
+import SurveyHealthAlerts from '@/components/admin/SurveyHealthAlerts';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer, AreaChart, Area
@@ -170,6 +171,9 @@ export default function AdvancedInsights() {
             </Select>
           </div>
         </div>
+
+        {/* Health Alerts */}
+        <SurveyHealthAlerts user={user} />
 
         {/* Summary KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

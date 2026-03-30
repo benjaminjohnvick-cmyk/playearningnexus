@@ -32,6 +32,7 @@ import OnboardingQuestWidget from '../components/onboarding/OnboardingQuestWidge
 import EarningsForecastWidget from '../components/dashboard/EarningsForecastWidget';
 import MiniLeaderboardWidget from '../components/dashboard/MiniLeaderboardWidget';
 import RecommendedSurveysSection from '../components/dashboard/RecommendedSurveysSection';
+import EngagementTierModule from '../components/dashboard/EngagementTierModule';
 import SurveyAlertCenter from '../components/surveys/SurveyAlertCenter';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -277,6 +278,11 @@ export default function UserDashboard() {
             <OnboardingQuestWidget user={user} />
           </div>
         )}
+
+        {/* Engagement Tier Module */}
+        <div className="mb-6">
+          <EngagementTierModule user={user} />
+        </div>
 
         {/* Earning Progress Path */}
         <div className="mb-6">
