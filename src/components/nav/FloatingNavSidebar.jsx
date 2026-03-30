@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import {
@@ -98,9 +99,9 @@ export default function FloatingNavSidebar({ currentPageName }) {
     return () => el.removeEventListener('scroll', onScroll);
   }, []);
 
-  return (
+  const sidebar = (
     <div
-      className="fixed z-40 flex items-center transition-all duration-300"
+      className="fixed z-[9999] flex items-center transition-all duration-300"
       style={{
         top: '50%',
         right: 0,
@@ -165,4 +166,6 @@ export default function FloatingNavSidebar({ currentPageName }) {
       </div>
     </div>
   );
+
+  return createPortal(sidebar, document.body);
 }
