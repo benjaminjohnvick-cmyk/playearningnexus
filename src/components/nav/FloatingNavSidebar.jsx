@@ -6,7 +6,7 @@ import {
   Home, ShoppingCart, FileText, LayoutDashboard, Heart, Trophy,
   DollarSign, Users, User, TrendingUp, Star, Gamepad2, Mail,
   Settings, Swords, BarChart2, Globe, ArrowRightLeft, Briefcase,
-  ChevronLeft, ChevronRight, Activity, Wallet
+  ChevronLeft, ChevronRight, Activity, Wallet, Bell
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -26,7 +26,7 @@ const NAV_SECTIONS = [
   ]},
   { group: 'Social', items: [
     { name: 'Referrals', icon: Users, path: 'ReferralDashboard', color: 'blue' },
-    { name: 'Leaderboard', icon: Trophy, path: 'GlobalLeaderboard', color: 'blue' },
+    { name: 'Leaderboard & Seasons', icon: Trophy, path: 'GlobalLeaderboard', color: 'blue' },
     { name: 'Achievements', icon: Star, path: 'AchievementsPage', color: 'blue' },
     { name: 'Tournaments', icon: Swords, path: 'Tournaments', color: 'blue' },
     { name: 'Guilds', icon: Users, path: 'Guilds', color: 'blue' },
@@ -41,6 +41,9 @@ const NAV_SECTIONS = [
     { name: 'A/B Testing', icon: Activity, path: 'DevABTesting', color: 'red' },
     { name: 'Bug Reports', icon: Globe, path: 'DevBugReports', color: 'red' },
     { name: 'AI Growth Assistant', icon: Star, path: 'AIGrowthAssistant', color: 'red' },
+  ]},
+  { group: 'Smart Alerts', items: [
+    { name: 'Notification Engine', icon: Bell, path: 'SmartNotificationEngine', color: 'blue' },
   ]},
   { group: 'Account', items: [
     { name: 'Profile', icon: User, path: 'UserProfile', color: 'blue' },

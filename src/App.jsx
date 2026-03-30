@@ -52,6 +52,7 @@ const DevFinancialDashboard = lazy(() => import('./pages/DevFinancialDashboard')
 const DevABTesting = lazy(() => import('./pages/DevABTesting'));
 const DevBugReports = lazy(() => import('./pages/DevBugReports'));
 const AIGrowthAssistant = lazy(() => import('./pages/AIGrowthAssistant'));
+const SmartNotificationEngine = lazy(() => import('./pages/SmartNotificationEngine'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -152,6 +153,7 @@ const AuthenticatedApp = () => {
       <Route path="/DevABTesting" element={<LayoutWrapper currentPageName="DevABTesting"><DevABTesting /></LayoutWrapper>} />
       <Route path="/DevBugReports" element={<LayoutWrapper currentPageName="DevBugReports"><DevBugReports /></LayoutWrapper>} />
       <Route path="/AIGrowthAssistant" element={<LayoutWrapper currentPageName="AIGrowthAssistant"><AIGrowthAssistant /></LayoutWrapper>} />
+      <Route path="/SmartNotificationEngine" element={<LayoutWrapper currentPageName="SmartNotificationEngine"><SmartNotificationEngine /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

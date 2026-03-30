@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Crown, Medal, Star, Flame, Trophy, DollarSign, Award, Zap, TrendingUp } from 'lucide-react';
+import { Crown, Medal, Star, Flame, Trophy, DollarSign, Award, Zap, TrendingUp, Calendar } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { motion } from 'framer-motion';
+import SeasonPanel from '@/components/leaderboard/SeasonPanel';
 
 const TOP10_BADGES = [
   { rank: 1, badge: '👑', label: 'Champion', color: 'from-yellow-400 to-amber-500', border: 'border-yellow-300' },
@@ -106,6 +107,7 @@ function MiniPodium({ top3, currentUserId }) {
 export default function GlobalLeaderboard() {
   const [user, setUser] = useState(null);
   const [tab, setTab] = useState('daily');
+  const [mainTab, setMainTab] = useState('rankings');
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -205,35 +207,41 @@ export default function GlobalLeaderboard() {
         {/* Podium */}
         {top3.length >= 3 && <MiniPodium top3={top3} currentUserId={user?.id} />}
 
-        {/* Tabs */}
-        <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="w-full grid grid-cols-3 bg-white shadow">
-            <TabsTrigger value="daily"><Flame className="w-3.5 h-3.5 mr-1" /> Today</TabsTrigger>
-            <TabsTrigger value="weekly"><Zap className="w-3.5 h-3.5 mr-1" /> This Week</TabsTrigger>
-            <TabsTrigger value="alltime"><Trophy className="w-3.5 h-3.5 mr-1" /> All Time</TabsTrigger>
+        {/* Main Tabs: Rankings vs Season */}
+        <Tabs value={mainTab} onValueChange={setMainTab}>
+          <TabsList className="w-full grid grid-cols-2 bg-white shadow mb-4">
+            <TabsTrigger value="rankings"><Trophy className="w-3.5 h-3.5 mr-1" /> Rankings</TabsTrigger>
+            <TabsTrigger value="season"><Calendar className="w-3.5 h-3.5 mr-1" /> Season</TabsTrigger>
           </TabsList>
 
-          {['daily', 'weekly', 'alltime'].map(t => (
-            <TabsContent key={t} value={t} className="space-y-2 mt-3">
-              {ranked.length === 0 ? (
-                <div className="text-center py-16 text-gray-400">
-                  <Trophy className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                  <p>No data yet for this period</p>
-                </div>
-              ) : (
-                ranked.map((entry, i) => (
-                  <LeaderRow
-                    key={entry.user_id || i}
-                    entry={entry}
-                    index={i}
-                    currentUserId={user?.id}
-                    valueLabel={e => `$${(e.earned || 0).toFixed(2)}`}
-                    valueKey="earned"
-                  />
-                ))
-              )}
-            </TabsContent>
-          ))}
+          <TabsContent value="rankings">
+            <Tabs value={tab} onValueChange={setTab}>
+              <TabsList className="w-full grid grid-cols-3 bg-white shadow">
+                <TabsTrigger value="daily"><Flame className="w-3.5 h-3.5 mr-1" /> Today</TabsTrigger>
+                <TabsTrigger value="weekly"><Zap className="w-3.5 h-3.5 mr-1" /> This Week</TabsTrigger>
+                <TabsTrigger value="alltime"><Trophy className="w-3.5 h-3.5 mr-1" /> All Time</TabsTrigger>
+              </TabsList>
+              {['daily', 'weekly', 'alltime'].map(t => (
+                <TabsContent key={t} value={t} className="space-y-2 mt-3">
+                  {ranked.length === 0 ? (
+                    <div className="text-center py-16 text-gray-400">
+                      <Trophy className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                      <p>No data yet for this period</p>
+                    </div>
+                  ) : (
+                    ranked.map((entry, i) => (
+                      <LeaderRow key={entry.user_id || i} entry={entry} index={i}
+                        currentUserId={user?.id} valueLabel={e => `$${(e.earned || 0).toFixed(2)}`} valueKey="earned" />
+                    ))
+                  )}
+                </TabsContent>
+              ))}
+            </Tabs>
+          </TabsContent>
+
+          <TabsContent value="season">
+            <SeasonPanel currentUserId={user?.id} />
+          </TabsContent>
         </Tabs>
 
         {/* Top 10 badge legend */}

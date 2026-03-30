@@ -1,0 +1,74 @@
+{
+  "name": "Season",
+  "type": "object",
+  "properties": {
+    "season_number": {
+      "type": "number",
+      "description": "Sequential season number"
+    },
+    "name": {
+      "type": "string",
+      "description": "Season display name e.g. Season 1: Genesis"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "upcoming"
+      ],
+      "default": "upcoming"
+    },
+    "starts_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ends_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "top_100_rewards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rank_range": {
+            "type": "string"
+          },
+          "reward_name": {
+            "type": "string"
+          },
+          "reward_type": {
+            "type": "string",
+            "enum": [
+              "badge",
+              "avatar_frame",
+              "title",
+              "cosmetic",
+              "cash_bonus"
+            ]
+          },
+          "reward_icon": {
+            "type": "string"
+          },
+          "color_hex": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "total_participants": {
+      "type": "number",
+      "default": 0
+    },
+    "total_payouts": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "season_number",
+    "name"
+  ]
+}
