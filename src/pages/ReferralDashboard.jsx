@@ -4,10 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, DollarSign, TrendingUp, Trophy, Link as LinkIcon, Loader2, Megaphone, Ticket } from 'lucide-react';
+import { Users, DollarSign, TrendingUp, Trophy, Link as LinkIcon, Loader2, Megaphone, Ticket, Share2, Activity } from 'lucide-react';
 import InvitationLinkGenerator from '@/components/referral/InvitationLinkGenerator';
 import ReferralMilestoneJackpot from '@/components/referral/ReferralMilestoneJackpot';
 import TierMilestoneProgress from '@/components/referral/TierMilestoneProgress';
+import ReferralProgressTracker from '@/components/referral/ReferralProgressTracker';
+import SocialShareHub from '@/components/referral/SocialShareHub';
+import LiveReferralsFeed from '@/components/referral/LiveReferralsFeed';
 import ReferralLeaderboardPanel from '@/components/referral/ReferralLeaderboardPanel';
 import ReferralMarketingHub from '@/components/referral/ReferralMarketingHub';
 import ContentLibraryBrowser from '@/components/referral/ContentLibraryBrowser';
@@ -95,8 +98,17 @@ export default function ReferralDashboard() {
           <BadgeDisplay userId={user?.id} compact maxShow={8} />
         </div>
 
-        <Tabs defaultValue="invite">
-          <TabsList className="grid w-full grid-cols-8">
+        <Tabs defaultValue="progress">
+          <TabsList className="flex flex-wrap h-auto gap-1 bg-gray-100 p-1 rounded-lg">
+            <TabsTrigger value="progress" className="flex items-center gap-1.5">
+              <Trophy className="w-3.5 h-3.5" /> Milestones
+            </TabsTrigger>
+            <TabsTrigger value="share" className="flex items-center gap-1.5">
+              <Share2 className="w-3.5 h-3.5" /> Share Hub
+            </TabsTrigger>
+            <TabsTrigger value="live" className="flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5" /> Live Feed
+            </TabsTrigger>
             <TabsTrigger value="invite" className="flex items-center gap-1.5">
               <LinkIcon className="w-3.5 h-3.5" /> Invite
             </TabsTrigger>
@@ -131,6 +143,22 @@ export default function ReferralDashboard() {
               💰 Channel ROI
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="progress" className="mt-5">
+            <ReferralProgressTracker userId={user.id} totalReferrals={referrals.length} />
+          </TabsContent>
+
+          <TabsContent value="share" className="mt-5">
+            <SocialShareHub user={user} referralLink={`https://gamergain.app/ref/${user.id?.slice(0,8)}`} />
+          </TabsContent>
+
+          <TabsContent value="live" className="mt-5">
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-5">
+                <LiveReferralsFeed userId={user.id} />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="invite" className="mt-5">
             <InvitationLinkGenerator user={user} />

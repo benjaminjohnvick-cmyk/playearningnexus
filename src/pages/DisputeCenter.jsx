@@ -13,6 +13,7 @@ import EvidenceUploader from '@/components/disputes/EvidenceUploader';
 import AIDisputeReviewer from '@/components/disputes/AIDisputeReviewer';
 import GameSurveyClaimForm from '@/components/disputes/GameSurveyClaimForm';
 import AdminClaimsPanel from '@/components/disputes/AdminClaimsPanel';
+import ClaimStatusDashboard from '@/components/disputes/ClaimStatusDashboard';
 
 export default function DisputeCenter() {
   const [user, setUser] = useState(null);
@@ -71,6 +72,9 @@ export default function DisputeCenter() {
             </TabsTrigger>
             <TabsTrigger value="claims" className="flex-1">
               <Gamepad2 className="w-3.5 h-3.5 mr-1" /> Game/Survey Claims
+            </TabsTrigger>
+            <TabsTrigger value="claim_status" className="flex-1">
+              <Shield className="w-3.5 h-3.5 mr-1" /> My Claims
             </TabsTrigger>
             {user?.role === 'admin' && (
               <TabsTrigger value="admin" className="flex-1 text-purple-700">
@@ -140,6 +144,20 @@ export default function DisputeCenter() {
               </CardHeader>
               <CardContent>
                 <GameSurveyClaimForm user={user} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="claim_status">
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-indigo-500" /> My Claims — Real-Time Status
+                </CardTitle>
+                <p className="text-xs text-gray-500">Track every claim you've submitted. Get instant notifications when an admin approves your payout.</p>
+              </CardHeader>
+              <CardContent>
+                <ClaimStatusDashboard user={user} />
               </CardContent>
             </Card>
           </TabsContent>
