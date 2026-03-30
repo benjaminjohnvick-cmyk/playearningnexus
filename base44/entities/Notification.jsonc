@@ -19,7 +19,10 @@
         "points_earned",
         "payout_processed",
         "goal_reached",
-        "status_changed"
+        "status_changed",
+        "partner_new_review",
+        "partner_install_milestone",
+        "partner_game_featured"
       ],
       "description": "Type of notification"
     },
@@ -30,6 +33,15 @@
     "message": {
       "type": "string",
       "description": "Notification message"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "general",
+        "partner_exclusive"
+      ],
+      "default": "general",
+      "description": "Notification channel"
     },
     "status": {
       "type": "string",

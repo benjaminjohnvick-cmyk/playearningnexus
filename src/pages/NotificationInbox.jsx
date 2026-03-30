@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Bell, CheckCheck, DollarSign, Trophy, Zap, ShoppingBag, Star, TrendingUp, Clock, Info, Loader2 } from 'lucide-react';
+import { Bell, CheckCheck, DollarSign, Trophy, Zap, ShoppingBag, Star, TrendingUp, Clock, Info, Loader2, Gamepad2, Rocket, Crown } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const TYPE_CONFIG = {
@@ -17,7 +17,10 @@ const TYPE_CONFIG = {
   status_changed:      { icon: Clock,        color: 'text-orange-600', bg: 'bg-orange-50', label: 'Status Update' },
   purchase_complete:   { icon: ShoppingBag,  color: 'text-indigo-600', bg: 'bg-indigo-50', label: 'Purchase' },
   referral_earnings:   { icon: DollarSign,   color: 'text-teal-600',   bg: 'bg-teal-50',   label: 'Referral' },
-  price_drop:          { icon: TrendingUp,   color: 'text-red-600',    bg: 'bg-red-50',    label: 'Price Drop' },
+  price_drop:            { icon: TrendingUp,   color: 'text-red-600',    bg: 'bg-red-50',    label: 'Price Drop' },
+  partner_new_review:    { icon: Star,         color: 'text-amber-600',  bg: 'bg-amber-50',  label: 'New Review' },
+  partner_install_milestone: { icon: Rocket,   color: 'text-indigo-600', bg: 'bg-indigo-50', label: 'Milestone' },
+  partner_game_featured: { icon: Crown,        color: 'text-yellow-600', bg: 'bg-yellow-50', label: 'Featured!' },
 };
 
 function NotificationItem({ n, onMarkRead }) {
@@ -69,10 +72,13 @@ export default function NotificationInbox() {
     </div>
   );
 
+  const PARTNER_TYPES = ['partner_new_review', 'partner_install_milestone', 'partner_game_featured'];
+
   const filtered = tab === 'unread' ? notifications.filter(n => n.status === 'unread')
     : tab === 'surveys' ? notifications.filter(n => n.type === 'survey_available')
     : tab === 'payouts' ? notifications.filter(n => ['payout_processed', 'status_changed', 'goal_reached'].includes(n.type))
     : tab === 'achievements' ? notifications.filter(n => ['achievement_unlocked', 'points_earned'].includes(n.type))
+    : tab === 'partner' ? notifications.filter(n => PARTNER_TYPES.includes(n.type) || n.channel === 'partner_exclusive')
     : notifications;
 
   const categoryCounts = {
@@ -80,6 +86,7 @@ export default function NotificationInbox() {
     surveys: notifications.filter(n => n.type === 'survey_available').length,
     payouts: notifications.filter(n => ['payout_processed', 'status_changed', 'goal_reached'].includes(n.type)).length,
     achievements: notifications.filter(n => ['achievement_unlocked', 'points_earned'].includes(n.type)).length,
+    partner: notifications.filter(n => PARTNER_TYPES.includes(n.type) || n.channel === 'partner_exclusive').length,
   };
 
   return (
@@ -109,12 +116,13 @@ export default function NotificationInbox() {
         </div>
 
         {/* Stats bar */}
-        <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-5 gap-3 mb-6">
           {[
             { label: 'Unread', value: categoryCounts.unread, color: 'text-blue-600', bg: 'bg-blue-50' },
             { label: 'Surveys', value: categoryCounts.surveys, color: 'text-purple-600', bg: 'bg-purple-50' },
             { label: 'Payouts', value: categoryCounts.payouts, color: 'text-green-600', bg: 'bg-green-50' },
             { label: 'Achievements', value: categoryCounts.achievements, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+            { label: 'Partner', value: categoryCounts.partner, color: 'text-indigo-600', bg: 'bg-indigo-50' },
           ].map(s => (
             <Card key={s.label} className={`border-0 shadow-sm ${s.bg}`}>
               <CardContent className="p-3 text-center">
@@ -142,6 +150,14 @@ export default function NotificationInbox() {
                 <TabsTrigger value="surveys" className="flex-1">Surveys</TabsTrigger>
                 <TabsTrigger value="payouts" className="flex-1">Payouts</TabsTrigger>
                 <TabsTrigger value="achievements" className="flex-1">Achievements</TabsTrigger>
+                <TabsTrigger value="partner" className="flex-1 relative">
+                  🎮 Partner
+                  {categoryCounts.partner > 0 && (
+                    <span className="ml-1.5 px-1.5 py-0.5 bg-indigo-600 text-white text-xs rounded-full">
+                      {categoryCounts.partner}
+                    </span>
+                  )}
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </CardHeader>
