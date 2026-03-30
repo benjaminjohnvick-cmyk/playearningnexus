@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +9,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie, LineChart, Line, Legend
 } from 'recharts';
+import { Link } from 'react-router-dom';
 import {
   Loader2, BarChart2, TrendingUp, Users, Shield,
   Globe, ExternalLink, Clock, DollarSign, Star
@@ -72,11 +72,18 @@ export default function BusinessSurveyAnalytics() {
       <div className="max-w-6xl mx-auto space-y-6">
 
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <BarChart2 className="w-7 h-7 text-purple-600" /> Business Survey Analytics
-          </h1>
-          <p className="text-gray-500 text-sm">Portfolio overview for {user.full_name || user.email}</p>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <BarChart2 className="w-7 h-7 text-purple-600" /> Business Survey Analytics
+            </h1>
+            <p className="text-gray-500 text-sm">Portfolio overview for {user.full_name || user.email}</p>
+          </div>
+          <Link to="/DeveloperRevenueAnalytics">
+            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-shadow">
+              <DollarSign className="w-4 h-4" /> Revenue Analytics →
+            </button>
+          </Link>
         </div>
 
         {/* Top KPIs */}

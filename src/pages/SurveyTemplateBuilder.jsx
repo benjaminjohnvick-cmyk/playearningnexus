@@ -548,57 +548,92 @@ export default function SurveyTemplateBuilder() {
 
           {/* ── PREVIEW TAB ── */}
           <TabsContent value="preview">
-            <Card className="border-0 shadow-md max-w-xl mx-auto">
-              <CardHeader className="bg-indigo-600 text-white rounded-t-xl">
-                <CardTitle>{title || 'Untitled Survey'}</CardTitle>
-                {description && <p className="text-indigo-200 text-sm mt-1">{description}</p>}
-              </CardHeader>
-              <CardContent className="p-6 space-y-6">
-                {questions.length === 0 ? (
-                  <p className="text-center text-gray-400 py-8">Add questions to preview your survey.</p>
-                ) : questions.map((q, i) => (
-                  <div key={q.id} className="space-y-2">
-                    <p className="text-sm font-semibold text-gray-800">
-                      {i + 1}. {q.question || 'Untitled question'}
-                      {q.required && <span className="text-red-500 ml-0.5">*</span>}
-                    </p>
-                    {q.type === 'multiple_choice' && (
-                      <div className="space-y-1.5">
-                        {(q.options || []).map((opt, j) => (
-                          <label key={j} className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name={`q-${q.id}`} className="rounded-full" />
-                            <span className="text-sm text-gray-700">{opt}</span>
-                          </label>
-                        ))}
-                      </div>
-                    )}
-                    {q.type === 'rating' && (
-                      <div className="flex gap-2">
-                        {Array.from({ length: q.rating_max || 5 }).map((_, j) => (
-                          <Star key={j} className="w-6 h-6 text-gray-300 hover:text-yellow-400 cursor-pointer" />
-                        ))}
-                      </div>
-                    )}
-                    {q.type === 'yes_no' && (
-                      <div className="flex gap-3">
-                        <label className="flex items-center gap-1.5 cursor-pointer">
-                          <input type="radio" name={`q-${q.id}`} /> <span className="text-sm">Yes</span>
-                        </label>
-                        <label className="flex items-center gap-1.5 cursor-pointer">
-                          <input type="radio" name={`q-${q.id}`} /> <span className="text-sm">No</span>
-                        </label>
-                      </div>
-                    )}
-                    {q.type === 'text' && (
-                      <textarea className="w-full border-2 border-gray-200 rounded-lg p-2 text-sm resize-none" rows={3} placeholder="Your answer…" />
-                    )}
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-xs text-gray-400 flex items-center gap-1">
+                <Eye className="w-3.5 h-3.5" /> Mobile preview — exactly as respondents will see it
+              </p>
+              {/* Phone shell */}
+              <div className="relative mx-auto" style={{ width: 375 }}>
+                <div className="bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl">
+                  {/* Status bar */}
+                  <div className="bg-gray-900 rounded-t-[2rem] px-4 py-2 flex justify-between items-center">
+                    <span className="text-white text-xs font-medium">9:41</span>
+                    <div className="w-20 h-5 bg-gray-800 rounded-full" />
+                    <div className="flex gap-1 items-center">
+                      <div className="w-3 h-2 bg-white rounded-sm opacity-80" />
+                      <span className="text-white text-xs">●●●</span>
+                    </div>
                   </div>
-                ))}
-                {questions.length > 0 && (
-                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700">Submit Survey</Button>
-                )}
-              </CardContent>
-            </Card>
+                  {/* Screen content */}
+                  <div className="bg-white rounded-[1.75rem] overflow-hidden" style={{ minHeight: 580 }}>
+                    {/* Survey header */}
+                    <div className="bg-indigo-600 px-5 pt-5 pb-4">
+                      <p className="text-white font-bold text-base">{title || 'Untitled Survey'}</p>
+                      {description && <p className="text-indigo-200 text-xs mt-1">{description}</p>}
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="flex-1 h-1 bg-indigo-400 rounded-full">
+                          <div className="h-1 bg-white rounded-full w-1/3" />
+                        </div>
+                        <span className="text-indigo-200 text-xs">{questions.length}q · {estTime}m</span>
+                      </div>
+                    </div>
+                    {/* Questions */}
+                    <div className="px-5 py-4 space-y-5 overflow-y-auto" style={{ maxHeight: 480 }}>
+                      {questions.length === 0 ? (
+                        <div className="text-center py-12 text-gray-300">
+                          <FileText className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                          <p className="text-sm">Add questions to preview</p>
+                        </div>
+                      ) : questions.map((q, i) => (
+                        <div key={q.id} className="space-y-2">
+                          <p className="text-sm font-semibold text-gray-800 leading-snug">
+                            {i + 1}. {q.question || 'Untitled question'}
+                            {q.required && <span className="text-red-500 ml-0.5">*</span>}
+                          </p>
+                          {q.type === 'multiple_choice' && (
+                            <div className="space-y-1.5">
+                              {(q.options || []).map((opt, j) => (
+                                <label key={j} className="flex items-center gap-2.5 p-2.5 border border-gray-200 rounded-xl cursor-pointer hover:bg-indigo-50 hover:border-indigo-300 transition-colors">
+                                  <div className="w-4 h-4 rounded-full border-2 border-gray-300 flex-shrink-0" />
+                                  <span className="text-sm text-gray-700">{opt}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                          {q.type === 'rating' && (
+                            <div className="flex gap-2 py-1">
+                              {Array.from({ length: q.rating_max || 5 }).map((_, j) => (
+                                <Star key={j} className="w-7 h-7 text-gray-200" />
+                              ))}
+                            </div>
+                          )}
+                          {q.type === 'yes_no' && (
+                            <div className="flex gap-2">
+                              <div className="flex-1 py-2.5 border-2 border-green-300 rounded-xl text-center text-sm font-semibold text-green-700 bg-green-50">Yes</div>
+                              <div className="flex-1 py-2.5 border-2 border-red-300 rounded-xl text-center text-sm font-semibold text-red-700 bg-red-50">No</div>
+                            </div>
+                          )}
+                          {q.type === 'text' && (
+                            <div className="border-2 border-gray-200 rounded-xl p-3 text-xs text-gray-300 italic bg-gray-50">
+                              Type your answer here…
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {questions.length > 0 && (
+                        <button className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl text-sm mt-2">
+                          Next →
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {/* Home indicator */}
+                  <div className="flex justify-center py-2">
+                    <div className="w-24 h-1 bg-gray-600 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </TabsContent>
 
           {/* ── MY TEMPLATES TAB ── */}
