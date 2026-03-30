@@ -49,6 +49,8 @@ import { initTracker, setPage, trackEvent } from '@/lib/uxTracker';
 import CurrencySelector from '@/components/locale/CurrencySelector';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
+import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
+import AIPersonalizedDailyGoal from '@/components/dashboard/AIPersonalizedDailyGoal';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -414,6 +416,15 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Main Content */}
         <main>{children}</main>
+        
+        {/* Global AI Daily Goal + PPC Widget Sidebar */}
+        {isAuthenticated && user && (
+          <div className="fixed right-6 top-32 z-30 w-96 max-h-[calc(100vh-200px)] overflow-y-auto space-y-4 hidden lg:block">
+            <AIPersonalizedDailyGoal user={user} />
+            <PPCAdSearchWidget variant="compact" />
+          </div>
+        )}
+
         <FloatingNavSidebar currentPageName={currentPageName} />
 
         {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
