@@ -2,229 +2,184 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Star, ThumbsUp, Badge as BadgeIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
+import { Star, ThumbsUp, Mic } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import WriteReviewForm from '@/components/games/WriteReviewForm';
+
+const CATEGORY_LABELS = {
+  gameplay: 'Gameplay',
+  graphics: 'Graphics',
+  performance: 'Performance',
+  fun_factor: 'Fun Factor',
+  value: 'Value',
+};
+
+function StarDisplay({ value, size = 'sm' }) {
+  const sz = size === 'sm' ? 'w-4 h-4' : 'w-6 h-6';
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map(s => (
+        <Star key={s} className={`${sz} ${s <= value ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+      ))}
+    </div>
+  );
+}
 
 export default function ReviewSection({ game, user }) {
-  const [rating, setRating] = useState(0);
-  const [reviewText, setReviewText] = useState('');
-  const [hoveredRating, setHoveredRating] = useState(0);
   const queryClient = useQueryClient();
 
   const { data: reviews = [] } = useQuery({
     queryKey: ['reviews', game?.id],
     queryFn: () => base44.entities.GameReview.filter({ game_id: game.id }, '-created_date'),
-    enabled: !!game
-  });
-
-  const { data: userReview } = useQuery({
-    queryKey: ['userReview', game?.id, user?.id],
-    queryFn: () => base44.entities.GameReview.filter({ 
-      game_id: game.id, 
-      user_id: user.id 
-    }).then(res => res[0]),
-    enabled: !!game && !!user
+    enabled: !!game,
   });
 
   const likeReviewMutation = useMutation({
     mutationFn: async (reviewId) => {
       const review = reviews.find(r => r.id === reviewId);
       if (!review) return;
-      await base44.entities.GameReview.update(reviewId, {
-        helpful_count: (review.helpful_count || 0) + 1,
-      });
+      await base44.entities.GameReview.update(reviewId, { helpful_count: (review.helpful_count || 0) + 1 });
     },
     onSuccess: () => queryClient.invalidateQueries(['reviews', game?.id]),
   });
 
-  const submitReviewMutation = useMutation({
-    mutationFn: async ({ rating, reviewText }) => {
-      if (userReview) {
-        return await base44.entities.GameReview.update(userReview.id, {
-          rating,
-          review_text: reviewText
-        });
-      } else {
-        return await base44.entities.GameReview.create({
-          game_id: game.id,
-          user_id: user.id,
-          user_name: user.full_name,
-          rating,
-          review_text: reviewText,
-          is_verified_purchase: true
-        });
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['reviews', game.id]);
-      queryClient.invalidateQueries(['userReview', game.id, user.id]);
-      queryClient.invalidateQueries(['games']);
-      toast.success('Review submitted!');
-      setRating(0);
-      setReviewText('');
-    }
-  });
-
-  const handleSubmitReview = () => {
-    if (rating === 0) {
-      toast.error('Please select a rating');
-      return;
-    }
-    submitReviewMutation.mutate({ rating, reviewText });
-  };
-
-  const StarRating = ({ value, onRate, onHover, interactive = false }) => (
-    <div className="flex gap-1">
-      {[1, 2, 3, 4, 5].map(star => (
-        <Star
-          key={star}
-          className={`w-6 h-6 ${
-            star <= (interactive ? (hoveredRating || value) : value)
-              ? 'fill-yellow-400 text-yellow-400'
-              : 'text-gray-300'
-          } ${interactive ? 'cursor-pointer' : ''}`}
-          onClick={() => interactive && onRate(star)}
-          onMouseEnter={() => interactive && onHover(star)}
-          onMouseLeave={() => interactive && onHover(0)}
-        />
-      ))}
-    </div>
-  );
-
-  const averageRating = reviews.length > 0
-    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : 0;
 
   return (
-    <div className="space-y-6">
-      {/* Rating Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle>User Reviews</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-6 mb-6">
-            <div className="text-center">
-              <div className="text-5xl font-bold mb-2">{averageRating}</div>
-              <StarRating value={Math.round(parseFloat(averageRating))} />
-              <p className="text-sm text-gray-600 mt-2">{reviews.length} reviews</p>
-            </div>
-            
-            <div className="flex-1">
-              {[5, 4, 3, 2, 1].map(stars => {
-                const count = reviews.filter(r => r.rating === stars).length;
-                const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
-                return (
-                  <div key={stars} className="flex items-center gap-2 mb-2">
-                    <span className="text-sm w-12">{stars} star</span>
-                    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-yellow-400"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                    <span className="text-sm text-gray-600 w-12 text-right">{count}</span>
-                  </div>
-                );
-              })}
-            </div>
+    <Tabs defaultValue={user ? 'write' : 'read'} className="w-full">
+      <TabsList className="w-full mb-4">
+        <TabsTrigger value="write" className="flex-1">✍️ Write a Review</TabsTrigger>
+        <TabsTrigger value="read" className="flex-1">📖 Read Reviews ({reviews.length})</TabsTrigger>
+      </TabsList>
+
+      {/* Write Review Tab */}
+      <TabsContent value="write">
+        {user ? (
+          <WriteReviewForm
+            game={game}
+            user={user}
+            onSuccess={() => {
+              queryClient.invalidateQueries(['reviews', game?.id]);
+            }}
+          />
+        ) : (
+          <div className="text-center py-10 text-gray-400">
+            <Star className="w-10 h-10 mx-auto mb-3 text-gray-200" />
+            <p className="font-medium">Sign in to leave a review</p>
           </div>
+        )}
+      </TabsContent>
 
-          {/* Write Review */}
-          {user && (
-            <div className="border-t pt-6">
-              <h4 className="font-semibold mb-4">
-                {userReview ? 'Update Your Review' : 'Write a Review'}
-              </h4>
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">Your Rating</p>
-                <StarRating 
-                  value={rating || userReview?.rating || 0}
-                  onRate={setRating}
-                  onHover={setHoveredRating}
-                  interactive
-                />
+      {/* Read Reviews Tab */}
+      <TabsContent value="read">
+        {/* Rating Summary */}
+        <Card className="mb-4">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <p className="text-5xl font-black text-gray-900">{avgRating}</p>
+                <StarDisplay value={Math.round(parseFloat(avgRating))} size="md" />
+                <p className="text-xs text-gray-500 mt-1">{reviews.length} reviews</p>
               </div>
-              <Textarea
-                placeholder="Share your thoughts about this game..."
-                value={reviewText || (userReview?.review_text || '')}
-                onChange={(e) => setReviewText(e.target.value)}
-                className="mb-4"
-                rows={4}
-              />
-              <Button 
-                onClick={handleSubmitReview}
-                disabled={submitReviewMutation.isPending}
-              >
-                {userReview ? 'Update Review' : 'Submit Review'}
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Reviews List */}
-      <div className="space-y-4">
-        {reviews.map((review, index) => (
-          <motion.div
-            key={review.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex gap-4">
-                  <Avatar>
-                    <AvatarFallback>
-                      {review.user_name?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <p className="font-semibold">{review.user_name}</p>
-                        <StarRating value={review.rating} />
+              <div className="flex-1 space-y-1.5">
+                {[5, 4, 3, 2, 1].map(stars => {
+                  const count = reviews.filter(r => r.rating === stars).length;
+                  const pct = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                  return (
+                    <div key={stars} className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500 w-10">{stars} star</span>
+                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${pct}%` }} />
                       </div>
-                      <span className="text-sm text-gray-500">
-                        {new Date(review.created_date).toLocaleDateString()}
-                      </span>
+                      <span className="text-xs text-gray-400 w-6 text-right">{count}</span>
                     </div>
-                    {review.review_text && (
-                      <p className="text-gray-700 mb-3">{review.review_text}</p>
-                    )}
-                    {review.playtime_hours && (
-                      <p className="text-sm text-gray-500">
-                        {review.playtime_hours} hours played
-                      </p>
-                    )}
-                    <div className="flex items-center gap-3 mt-3">
-                      {review.is_verified_purchase && (
-                        <span className="inline-flex items-center gap-1 text-xs text-green-600">
-                          ✓ Verified Purchase
-                        </span>
-                      )}
-                      <button
-                        onClick={() => user && likeReviewMutation.mutate(review.id)}
-                        disabled={!user || likeReviewMutation.isPending}
-                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600 transition-colors ml-auto disabled:opacity-40"
-                      >
-                        <ThumbsUp className="w-3.5 h-3.5" />
-                        <span>{review.helpful_count || 0} helpful</span>
-                      </button>
+                  );
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Reviews list */}
+        {reviews.length === 0 ? (
+          <div className="text-center py-10 text-gray-400">
+            <Star className="w-10 h-10 mx-auto mb-3 text-gray-200" />
+            <p className="font-medium">No reviews yet — be the first!</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {reviews.map((review, i) => (
+              <motion.div key={review.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex gap-3">
+                      <Avatar className="w-9 h-9">
+                        <AvatarFallback className="text-sm bg-indigo-100 text-indigo-700">
+                          {review.user_name?.charAt(0) || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-semibold text-gray-900">{review.user_name || 'Player'}</p>
+                            {review.input_method === 'voice' && (
+                              <Badge variant="outline" className="text-xs gap-1 py-0">
+                                <Mic className="w-2.5 h-2.5" /> Voice
+                              </Badge>
+                            )}
+                            {review.is_verified_purchase && (
+                              <span className="text-xs text-green-600 font-medium">✓ Verified</span>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-400 flex-shrink-0">
+                            {new Date(review.created_date).toLocaleDateString()}
+                          </span>
+                        </div>
+
+                        <StarDisplay value={review.rating} />
+
+                        {/* Category ratings */}
+                        {review.category_ratings && Object.keys(review.category_ratings).length > 0 && (
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
+                            {Object.entries(review.category_ratings).map(([k, v]) => v ? (
+                              <span key={k} className="text-xs text-gray-500">
+                                <span className="font-medium">{CATEGORY_LABELS[k] || k}:</span> {v}⭐
+                              </span>
+                            ) : null)}
+                          </div>
+                        )}
+
+                        {review.review_text && (
+                          <p className="text-sm text-gray-700 mt-2 leading-relaxed">{review.review_text}</p>
+                        )}
+
+                        <div className="flex items-center justify-between mt-3">
+                          {review.playtime_hours ? (
+                            <span className="text-xs text-gray-400">{review.playtime_hours}h played</span>
+                          ) : <span />}
+                          <button
+                            onClick={() => user && likeReviewMutation.mutate(review.id)}
+                            disabled={!user || likeReviewMutation.isPending}
+                            className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600 transition-colors disabled:opacity-40"
+                          >
+                            <ThumbsUp className="w-3.5 h-3.5" />
+                            <span>{review.helpful_count || 0} helpful</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
-    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </TabsContent>
+    </Tabs>
   );
 }

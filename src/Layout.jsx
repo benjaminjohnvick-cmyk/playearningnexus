@@ -29,7 +29,8 @@ import {
   BarChart2,
   AlertCircle,
   Brain,
-  ShieldCheck
+  ShieldCheck,
+  Gamepad2
 } from 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
@@ -180,6 +181,9 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Guilds', icon: Users, path: 'Guilds', requireAuth: true },
     { name: 'Rewards', icon: Trophy, path: 'Gamification', requireAuth: true },
     { name: 'Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
+    { name: 'Game Voting Hub', icon: Gamepad2, path: 'GameVotingHub' },
+    { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
+    { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
   ];
 
   if (user?.role === 'admin') {
@@ -290,6 +294,18 @@ export default function Layout({ children, currentPageName }) {
                   <Button variant={currentPageName === 'UserProfile' ? "default" : "ghost"} size="sm"
                     className={currentPageName === 'UserProfile' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
                     👤 Profile
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('GameVotingHub')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'GameVotingHub' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'GameVotingHub' ? "bg-gradient-to-r from-indigo-600 to-purple-600 shadow-md" : "hover:bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200"}>
+                    🗳️ Vote
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('DeveloperOnboarding')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'DeveloperOnboarding' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'DeveloperOnboarding' ? "bg-gradient-to-r from-indigo-600 to-purple-600 shadow-md" : "hover:bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200"}>
+                    🚀 Dev Onboarding
                   </Button>
                 </Link>
               </nav>
