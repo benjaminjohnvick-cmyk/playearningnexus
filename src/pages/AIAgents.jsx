@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bot, MessageSquare, Zap, TrendingUp, Globe, Settings, TestTube, Store, DollarSign, Search, ShoppingBag } from "lucide-react";
+import { Bot, MessageSquare, Zap, TrendingUp, Globe, Settings, TestTube, Store, DollarSign, Search, ShoppingBag, Brain } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from "sonner";
@@ -24,6 +24,16 @@ export default function AIAgents() {
   }, []);
 
   const agents = [
+    {
+      name: 'survey_intelligence_agent',
+      title: 'Survey Intelligence AI',
+      icon: Brain,
+      description: 'Tracks all user survey answers & feedback, auto-improves low-performing survey questions, and generates prioritized admin recommendations based on real data.',
+      replaces: 'Manual Survey Review',
+      color: 'indigo',
+      features: ['Auto-improve surveys', 'Sentiment analysis', 'Admin recommendations', 'Direct modifications'],
+      dashboardPath: 'SurveyIntelligenceDashboard',
+    },
     {
       name: 'fraud_detection',
       title: 'Fraud Detection AI',
@@ -254,16 +264,28 @@ export default function AIAgents() {
                   </div>
                 </div>
 
-                <a 
-                  href={base44.agents.getWhatsAppConnectURL(agent.name)} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  <Button className={`w-full bg-gradient-to-r ${colorClasses[agent.color]}`}>
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Connect on WhatsApp
-                  </Button>
-                </a>
+                <div className="flex gap-2">
+                  {agent.dashboardPath && (
+                    <Link to={createPageUrl(agent.dashboardPath)} className="flex-1">
+                      <Button className={`w-full bg-gradient-to-r ${colorClasses[agent.color]}`}>
+                        <TrendingUp className="w-4 h-4 mr-2" />
+                        View Dashboard
+                      </Button>
+                    </Link>
+                  )}
+                  <a 
+                    href={base44.agents.getWhatsAppConnectURL(agent.name)} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={agent.dashboardPath ? '' : 'flex-1 w-full'}
+                  >
+                    <Button variant={agent.dashboardPath ? 'outline' : 'default'}
+                      className={agent.dashboardPath ? 'w-full' : `w-full bg-gradient-to-r ${colorClasses[agent.color]}`}>
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      {agent.dashboardPath ? 'WhatsApp' : 'Connect on WhatsApp'}
+                    </Button>
+                  </a>
+                </div>
               </Card>
             );
           })}
