@@ -1,0 +1,100 @@
+{
+  "name": "PayoutRequest",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "paypal",
+        "stripe",
+        "bank_transfer",
+        "digital_wallet"
+      ]
+    },
+    "payment_details": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Email/account info for payment processor"
+    },
+    "trust_score": {
+      "type": "number",
+      "description": "User's trust score at time of request"
+    },
+    "total_earnings": {
+      "type": "number",
+      "description": "User's lifetime earnings"
+    },
+    "earnings_history": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Last 90 days earnings breakdown"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "processing",
+        "completed",
+        "failed",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "risk_score": {
+      "type": "number",
+      "description": "0-100 fraud/risk score"
+    },
+    "risk_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "passes_safety_checks": {
+      "type": "boolean",
+      "default": false
+    },
+    "auto_approved": {
+      "type": "boolean",
+      "default": false
+    },
+    "processor_response": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Response from payment processor"
+    },
+    "processor_transaction_id": {
+      "type": "string"
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "processed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "admin_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "amount",
+    "payment_method"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "name": "RedemptionRecord",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "perk_id": {
+      "type": "string"
+    },
+    "perk_type": {
+      "type": "string"
+    },
+    "perk_title": {
+      "type": "string"
+    },
+    "cost_balance": {
+      "type": "number",
+      "default": 0
+    },
+    "balance_before": {
+      "type": "number"
+    },
+    "balance_after": {
+      "type": "number"
+    },
+    "redeemed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "For time-limited perks"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "False if expired or revoked"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Custom perk data (badge name, etc)"
+    }
+  },
+  "required": [
+    "user_id",
+    "perk_id",
+    "cost_balance"
+  ]
+}

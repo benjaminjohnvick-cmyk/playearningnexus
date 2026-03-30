@@ -1,0 +1,70 @@
+{
+  "name": "ReferralSquad",
+  "type": "object",
+  "properties": {
+    "squad_name": {
+      "type": "string"
+    },
+    "squad_code": {
+      "type": "string",
+      "description": "Unique invite code e.g. SQUAD-ABC123"
+    },
+    "description": {
+      "type": "string"
+    },
+    "leader_user_id": {
+      "type": "string"
+    },
+    "leader_name": {
+      "type": "string"
+    },
+    "member_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of member user IDs"
+    },
+    "member_count": {
+      "type": "number",
+      "default": 1
+    },
+    "total_referrals": {
+      "type": "number",
+      "default": 0,
+      "description": "Pooled referral count"
+    },
+    "total_active_referrals": {
+      "type": "number",
+      "default": 0
+    },
+    "total_jackpot_entries": {
+      "type": "number",
+      "default": 0,
+      "description": "Combined jackpot entries from all members"
+    },
+    "shared_jackpot_pool": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount reserved for squad payout"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "archived"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "squad_name",
+    "leader_user_id"
+  ]
+}

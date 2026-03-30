@@ -1,0 +1,57 @@
+{
+  "name": "GrowthHeatmapData",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "country_code": {
+      "type": "string",
+      "description": "ISO country code e.g. US, GB, CA"
+    },
+    "region": {
+      "type": "string",
+      "description": "State/province name"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "total_referrals": {
+      "type": "number",
+      "default": 0
+    },
+    "active_referrals": {
+      "type": "number",
+      "default": 0,
+      "description": "Referrals with at least 1 completed survey"
+    },
+    "conversion_rate": {
+      "type": "number",
+      "description": "active_referrals / total_referrals"
+    },
+    "avg_earnings_per_referral": {
+      "type": "number",
+      "default": 0
+    },
+    "quality_score": {
+      "type": "number",
+      "description": "0-100 composite quality metric"
+    },
+    "top_referrers_count": {
+      "type": "number",
+      "description": "Number of referrers in this region"
+    },
+    "churn_rate": {
+      "type": "number",
+      "description": "% of referrals inactive after 30 days"
+    }
+  },
+  "required": [
+    "date",
+    "country_code"
+  ]
+}

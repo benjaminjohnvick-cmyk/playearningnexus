@@ -53,6 +53,10 @@ const DevABTesting = lazy(() => import('./pages/DevABTesting'));
 const DevBugReports = lazy(() => import('./pages/DevBugReports'));
 const AIGrowthAssistant = lazy(() => import('./pages/AIGrowthAssistant'));
 const SmartNotificationEngine = lazy(() => import('./pages/SmartNotificationEngine'));
+const RewardsMarketplace = lazy(() => import('./pages/RewardsMarketplace'));
+const ReferralSquads = lazy(() => import('./pages/ReferralSquads'));
+const AdminRiskMonitoring = lazy(() => import('./pages/AdminRiskMonitoring'));
+const AdminGrowthHeatmap = lazy(() => import('./pages/AdminGrowthHeatmap'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -154,6 +158,10 @@ const AuthenticatedApp = () => {
       <Route path="/DevBugReports" element={<LayoutWrapper currentPageName="DevBugReports"><DevBugReports /></LayoutWrapper>} />
       <Route path="/AIGrowthAssistant" element={<LayoutWrapper currentPageName="AIGrowthAssistant"><AIGrowthAssistant /></LayoutWrapper>} />
       <Route path="/SmartNotificationEngine" element={<LayoutWrapper currentPageName="SmartNotificationEngine"><SmartNotificationEngine /></LayoutWrapper>} />
+      <Route path="/RewardsMarketplace" element={<LayoutWrapper currentPageName="RewardsMarketplace"><RewardsMarketplace /></LayoutWrapper>} />
+      <Route path="/ReferralSquads" element={<LayoutWrapper currentPageName="ReferralSquads"><ReferralSquads /></LayoutWrapper>} />
+      <Route path="/AdminRiskMonitoring" element={<LayoutWrapper currentPageName="AdminRiskMonitoring"><AdminRiskMonitoring /></LayoutWrapper>} />
+      <Route path="/AdminGrowthHeatmap" element={<LayoutWrapper currentPageName="AdminGrowthHeatmap"><AdminGrowthHeatmap /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

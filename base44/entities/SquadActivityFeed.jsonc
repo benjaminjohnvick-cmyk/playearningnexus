@@ -1,0 +1,40 @@
+{
+  "name": "SquadActivityFeed",
+  "type": "object",
+  "properties": {
+    "squad_id": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "member_joined",
+        "referral_added",
+        "milestone_achieved",
+        "message",
+        "member_left"
+      ]
+    },
+    "actor_user_id": {
+      "type": "string"
+    },
+    "actor_name": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "squad_id",
+    "event_type"
+  ]
+}
