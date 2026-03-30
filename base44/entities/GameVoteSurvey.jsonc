@@ -1,0 +1,86 @@
+{
+  "name": "GameVoteSurvey",
+  "type": "object",
+  "properties": {
+    "survey_type": {
+      "type": "string",
+      "enum": [
+        "game_preference",
+        "game_type_preference",
+        "developer_applications"
+      ],
+      "description": "What kind of voting survey this is"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "application_id": {
+            "type": "string",
+            "description": "Linked DeveloperApplication ID if applicable"
+          },
+          "votes": {
+            "type": "number",
+            "default": 0
+          },
+          "voter_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          }
+        }
+      },
+      "default": []
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "closed",
+        "processing"
+      ],
+      "default": "active"
+    },
+    "results_applied": {
+      "type": "boolean",
+      "default": false
+    },
+    "total_votes": {
+      "type": "number",
+      "default": 0
+    },
+    "closes_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ai_generated": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "survey_type",
+    "title"
+  ]
+}

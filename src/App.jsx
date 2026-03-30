@@ -45,6 +45,7 @@ const DeveloperRevenueAnalytics = lazy(() => import('./pages/DeveloperRevenueAna
 const AdvancedInsights = lazy(() => import('./pages/AdvancedInsights'));
 const UXHeatmapDashboard = lazy(() => import('./pages/UXHeatmapDashboard'));
 const ABTestingCenter = lazy(() => import('./pages/ABTestingCenter'));
+const GameVotingHub = lazy(() => import('./pages/GameVotingHub'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -138,6 +139,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdvancedInsights" element={<LayoutWrapper currentPageName="AdvancedInsights"><AdvancedInsights /></LayoutWrapper>} />
       <Route path="/UXHeatmapDashboard" element={<LayoutWrapper currentPageName="UXHeatmapDashboard"><UXHeatmapDashboard /></LayoutWrapper>} />
       <Route path="/ABTestingCenter" element={<LayoutWrapper currentPageName="ABTestingCenter"><ABTestingCenter /></LayoutWrapper>} />
+      <Route path="/GameVotingHub" element={<LayoutWrapper currentPageName="GameVotingHub"><GameVotingHub /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
