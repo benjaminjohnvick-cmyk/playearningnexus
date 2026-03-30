@@ -21,6 +21,8 @@ import { format, formatDistanceToNow } from 'date-fns';
 import SurveySearchBar from '@/components/surveys/SurveySearchBar';
 import AISurveyCoach from '@/components/surveys/AISurveyCoach';
 import { computeMatchScore, MatchScoreBadge } from '@/components/surveys/SurveyMatchScore';
+import TrustGate from '@/components/trust/TrustGate';
+import { useTrustScore } from '@/components/trust/UserTrustScoreCard';
 
 // Fix Leaflet icon paths
 delete L.Icon.Default.prototype._getIconUrl;
@@ -153,9 +155,9 @@ function ClaimStatusTracker({ claims }) {
 
 // ─── Survey Card (list view) ───────────────────────────────────────────────────
 
-function SurveyCard({ survey, isUnlocked, onSelect, onClaim, isClaiming, respondentProfile }) {
+function SurveyCard({ survey, isUnlocked, onSelect, onClaim, isClaiming, respondentProfile, trustLocked }) {
   const color = CATEGORY_COLORS[survey.category] || '#6366f1';
-  const available = !survey.locked || isUnlocked;
+  const available = (!survey.locked || isUnlocked) && !trustLocked;
   const CatIcon = CATEGORIES.find(c => c.id === survey.category)?.icon || Globe;
   const matchScore = respondentProfile ? computeMatchScore(survey, respondentProfile) : null;
 
@@ -175,6 +177,7 @@ function SurveyCard({ survey, isUnlocked, onSelect, onClaim, isClaiming, respond
           <p className="text-sm font-semibold text-gray-800 truncate">{survey.title}</p>
           {survey.hot && available && <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-xs py-0">🔥 Hot</Badge>}
           {survey.slots <= 3 && available && <Badge className="bg-red-100 text-red-700 border-red-200 text-xs py-0">{survey.slots} left</Badge>}
+          {trustLocked && <Badge className="bg-gray-100 text-gray-500 text-xs py-0">🔐 Trust Locked</Badge>}
           {matchScore !== null && <MatchScoreBadge score={matchScore} />}
         </div>
         <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-400">
@@ -195,6 +198,7 @@ function SurveyCard({ survey, isUnlocked, onSelect, onClaim, isClaiming, respond
 
 export default function ExploreSurveys() {
   const [user, setUser] = useState(null);
+  const { data: trustScore } = useTrustScore(user?.id);
   const [location, setLocation] = useState(null);
   const [geoLoading, setGeoLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -210,6 +214,15 @@ export default function ExploreSurveys() {
   }, []);
 
   const respondentProfile = user?.respondent_profile || null;
+  const trustTier = trustScore?.trust_tier || 'medium';
+  const trustRank = { low: 0, medium: 1, high: 2, premium: 3 }[trustTier] ?? 1;
+
+  // Apply trust-based locking: surveys ≥$4 need high tier, ≥$6 need premium
+  const getTrustLocked = (survey) => {
+    if (survey.totalEarn >= 6 && trustRank < 3) return true;
+    if (survey.totalEarn >= 4 && trustRank < 2) return true;
+    return false;
+  };
 
   // Simulate claim progress updates
   useEffect(() => {
@@ -542,30 +555,32 @@ export default function ExploreSurveys() {
               <div className="space-y-4">
                 {/* Availability summary */}
                 <Card className="border-0 shadow-lg">
-                  <CardHeader className="pb-2 pt-4 px-4">
-                    <CardTitle className="text-sm text-gray-700 flex items-center gap-2">
-                      <Flame className="w-4 h-4 text-orange-500" /> High-Value Opportunities
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-4 pb-4 space-y-3">
+                   <CardHeader className="pb-2 pt-4 px-4">
+                     <CardTitle className="text-sm text-gray-700 flex items-center gap-2">
+                       <Flame className="w-4 h-4 text-orange-500" /> High-Value Opportunities
+                       {trustRank < 2 && <Badge className="text-xs bg-amber-100 text-amber-700 ml-auto">🔐 Trust Required</Badge>}
+                     </CardTitle>
+                   </CardHeader>
+                   <CardContent className="px-4 pb-4 space-y-3">
                     {filtered.filter(h => h.totalEarn >= 4).slice(0, 4).map(h => {
                       const color = CATEGORY_COLORS[h.category] || '#6366f1';
                       const isAvail = !h.locked || unlockedIds.has(h.id);
+                      const isTrustLocked = getTrustLocked(h);
                       return (
                         <div key={h.id}
-                          onClick={() => setSelected({ ...h, locked: !isAvail })}
-                          className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg p-2 -mx-2 transition-colors">
+                          onClick={() => !isTrustLocked && setSelected({ ...h, locked: !isAvail })}
+                          className={`flex items-center gap-3 rounded-lg p-2 -mx-2 transition-colors ${isTrustLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'}`}>
                           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm"
-                            style={{ background: color }}>
-                            {h.hot ? '🔥' : '💰'}
+                            style={{ background: isTrustLocked ? '#9ca3af' : color }}>
+                            {isTrustLocked ? '🔐' : h.hot ? '🔥' : '💰'}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-semibold text-gray-800 truncate">{h.title}</p>
-                            <p className="text-xs text-gray-400">{h.region}</p>
+                            <p className="text-xs text-gray-400">{isTrustLocked ? `Requires ${h.totalEarn >= 6 ? 'Premium' : 'High'} Trust` : h.region}</p>
                           </div>
                           <div className="text-right flex-shrink-0">
-                            <p className="text-sm font-black text-green-600">${h.totalEarn.toFixed(2)}</p>
-                            {!isAvail && <Lock className="w-3 h-3 text-gray-400 ml-auto mt-0.5" />}
+                            <p className={`text-sm font-black ${isTrustLocked ? 'text-gray-400' : 'text-green-600'}`}>${h.totalEarn.toFixed(2)}</p>
+                            {isTrustLocked && <Lock className="w-3 h-3 text-gray-400 ml-auto mt-0.5" />}
                           </div>
                         </div>
                       );
@@ -610,10 +625,11 @@ export default function ExploreSurveys() {
                       key={h.id}
                       survey={h}
                       isUnlocked={unlockedIds.has(h.id)}
-                      onSelect={s => { setSelected({ ...s, locked: !(!s.locked || unlockedIds.has(s.id)) }); setTab('map'); }}
+                      onSelect={s => { if (!getTrustLocked(s)) { setSelected({ ...s, locked: !(!s.locked || unlockedIds.has(s.id)) }); setTab('map'); } }}
                       onClaim={s => claimMutation.mutate(s)}
                       isClaiming={claimMutation.isPending}
                       respondentProfile={respondentProfile}
+                      trustLocked={getTrustLocked(h)}
                     />
                   ))
               )}

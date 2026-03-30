@@ -22,6 +22,7 @@ import PersonalizedSurveyCards from '@/components/surveys/PersonalizedSurveyCard
 import SelfServiceDisputeModule from '@/components/surveys/SelfServiceDisputeModule';
 import AISurveyBuilder from '@/components/ppc/AISurveyBuilder';
 import SmartRoutingEngine from '@/components/surveys/SmartRoutingEngine';
+import UserTrustScoreCard from '@/components/trust/UserTrustScoreCard';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
@@ -151,6 +152,9 @@ export default function Surveys() {
             </CardContent>
           </Card>
         )}
+
+        {/* Trust Score */}
+        {user && <UserTrustScoreCard userId={user.id} />}
 
         {/* PPC Marketplace Banner */}
         <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 cursor-pointer hover:shadow-md transition-shadow"
