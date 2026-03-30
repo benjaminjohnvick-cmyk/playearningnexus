@@ -144,7 +144,8 @@ export default function AIAgents() {
       description: 'Automatically manages A/B tests, optimizes variants, and determines winners with statistical significance',
       replaces: 'Testing Platform',
       color: 'teal',
-      features: ['Test management', 'Auto-optimization', 'Winner detection', 'Statistical analysis']
+      features: ['Test management', 'Auto-optimization', 'Winner detection', 'Statistical analysis'],
+      dashboardPath: 'ABTestingCenter',
     },
     {
       name: 'market_analyzer',

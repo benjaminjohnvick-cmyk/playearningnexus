@@ -3,12 +3,14 @@ import { base44 } from '@/api/base44Client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Shield, Plus, History, Bot, AlertCircle, Info, Settings } from 'lucide-react';
+import { Loader2, Shield, Plus, History, Bot, AlertCircle, Info, Settings, Upload } from 'lucide-react';
 import AdminDisputeDashboard from '@/components/disputes/AdminDisputeDashboard';
 import AppealSubmissionForm from '@/components/disputes/AppealSubmissionForm';
 import AppealHistoryList from '@/components/disputes/AppealHistoryList';
 import SelfServiceDisputeModule from '@/components/surveys/SelfServiceDisputeModule';
 import AutoDisputeWorkflow from '@/components/disputes/AutoDisputeWorkflow';
+import EvidenceUploader from '@/components/disputes/EvidenceUploader';
+import AIDisputeReviewer from '@/components/disputes/AIDisputeReviewer';
 
 export default function DisputeCenter() {
   const [user, setUser] = useState(null);
@@ -107,7 +109,8 @@ export default function DisputeCenter() {
                 </CardTitle>
                 <p className="text-xs text-gray-500">Submit a dispute and get an instant AI decision. High-quality users receive automatic goodwill credits.</p>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <EvidenceUploader onUpload={(data) => {}} />
                 <AutoDisputeWorkflow user={user} />
               </CardContent>
             </Card>

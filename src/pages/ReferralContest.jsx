@@ -16,6 +16,7 @@ import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
 import MyReferralsTab from '@/components/referral/MyReferralsTab';
+import ShareableReferralCard from '@/components/referral/ShareableReferralCard';
 
 // Contest config: monthly contest, resets on 1st of each month
 const getContestWindow = () => {
@@ -174,7 +175,8 @@ export default function ReferralContest() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="referrals">
+          <TabsContent value="referrals" className="space-y-6">
+            {user && <ShareableReferralCard user={user} />}
             {user && <MyReferralsTab user={user} />}
           </TabsContent>
 
