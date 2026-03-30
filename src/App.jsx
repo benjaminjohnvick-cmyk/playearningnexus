@@ -43,6 +43,7 @@ const AgentIntelligenceDashboard = lazy(() => import('./pages/AgentIntelligenceD
 const RetentionEngine = lazy(() => import('./pages/RetentionEngine'));
 const DeveloperRevenueAnalytics = lazy(() => import('./pages/DeveloperRevenueAnalytics'));
 const AdvancedInsights = lazy(() => import('./pages/AdvancedInsights'));
+const UXHeatmapDashboard = lazy(() => import('./pages/UXHeatmapDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -134,6 +135,7 @@ const AuthenticatedApp = () => {
       <Route path="/RetentionEngine" element={<LayoutWrapper currentPageName="RetentionEngine"><RetentionEngine /></LayoutWrapper>} />
       <Route path="/DeveloperRevenueAnalytics" element={<LayoutWrapper currentPageName="DeveloperRevenueAnalytics"><DeveloperRevenueAnalytics /></LayoutWrapper>} />
       <Route path="/AdvancedInsights" element={<LayoutWrapper currentPageName="AdvancedInsights"><AdvancedInsights /></LayoutWrapper>} />
+      <Route path="/UXHeatmapDashboard" element={<LayoutWrapper currentPageName="UXHeatmapDashboard"><UXHeatmapDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

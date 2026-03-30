@@ -1,205 +1,223 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 /**
- * AI-driven churn prediction: scans high-value users for activity drops,
- * flags them in RetentionRisk, and triggers personalized re-engagement notifications.
+ * Churn Prediction Engine
+ * Analyzes user engagement + UX event patterns + survey feedback
+ * to identify at-risk users and trigger personalized retention campaigns
  */
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    let callerIsAdmin = false;
-    try { const u = await base44.auth.me(); callerIsAdmin = u?.role === 'admin'; } catch (_) { callerIsAdmin = true; }
-    if (!callerIsAdmin) return Response.json({ error: 'Forbidden' }, { status: 403 });
 
-    const body = await req.json().catch(() => ({}));
-    const { send_notifications = false } = body;
+    let user = null;
+    try { user = await base44.auth.me(); } catch {}
+    if (user && user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
-    const users = await base44.asServiceRole.entities.User.list();
-    const now = Date.now();
-    const day = 86400000;
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const sevenDaysAgo = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const fourteenDaysAgo = new Date(now - 14 * 24 * 60 * 60 * 1000).toISOString();
 
-    let flagged = 0;
-    let notified = 0;
-    const flaggedUsers = [];
+    const [allUsers, allJourneyEvents, surveyResponses, uxMemories, existingRisks] = await Promise.all([
+      base44.asServiceRole.entities.User.list(),
+      base44.asServiceRole.entities.UserJourneyEvent.list('-created_date', 5000),
+      base44.asServiceRole.entities.FeedbackSurveyResponse.list('-created_date', 1000),
+      base44.asServiceRole.entities.AgentLearningMemory.filter({ memory_type: 'ux_insight', is_active: true }),
+      base44.asServiceRole.entities.RetentionRisk.filter({ status: 'active' }),
+    ]);
 
-    for (const user of users) {
-      if (!user.id) continue;
+    const results = { flagged: 0, campaigns_triggered: 0, skipped: 0, errors: [] };
+    const existingRiskUserIds = new Set(existingRisks.map(r => r.user_id));
 
-      // Fetch user activity data
-      const [responses, sessions, referrals, prestige] = await Promise.all([
-        base44.asServiceRole.entities.PPCSurveyResponse.filter({ user_id: user.id }, '-created_date', 200),
-        base44.asServiceRole.entities.PPCSession.filter({ user_id: user.id }, '-created_date', 60),
-        base44.asServiceRole.entities.Referral.filter({ referrer_id: user.id }, '-created_date', 30),
-        base44.asServiceRole.entities.GlobalPrestige.filter({ user_id: user.id }),
-      ]);
+    for (const u of allUsers) {
+      if (existingRiskUserIds.has(u.id)) { results.skipped++; continue; }
 
-      const lifetimeValue = user.total_earnings || 0;
-      // Only analyze users with some value
-      if (lifetimeValue < 5 && responses.length < 5) continue;
+      const userEvents = allJourneyEvents.filter(e => e.user_id === u.id);
+      const recentEvents = userEvents.filter(e => e.created_date >= sevenDaysAgo);
+      const priorEvents = userEvents.filter(e => e.created_date >= thirtyDaysAgo && e.created_date < sevenDaysAgo);
+      const userSurveyResponses = surveyResponses.filter(r => r.user_id === u.id);
 
-      const prestigeScore = prestige[0]?.prestige_score || 0;
+      // Skip brand-new users
+      const daysSinceSignup = (now - new Date(u.created_date)) / (1000 * 60 * 60 * 24);
+      if (daysSinceSignup < 3) { results.skipped++; continue; }
 
-      // Time windows
-      const last30Responses = responses.filter(r => now - new Date(r.created_date) < 30 * day);
-      const prev30Responses = responses.filter(r => {
-        const age = now - new Date(r.created_date);
-        return age >= 30 * day && age < 60 * day;
-      });
-
-      const last30Sessions = sessions.filter(s => now - new Date(s.created_date) < 30 * day);
-      const prev30Sessions = sessions.filter(s => {
-        const age = now - new Date(s.created_date);
-        return age >= 30 * day && age < 60 * day;
-      });
-
-      const last30Referrals = referrals.filter(r => now - new Date(r.created_date) < 30 * day);
-      const prev30Referrals = referrals.filter(r => {
-        const age = now - new Date(r.created_date);
-        return age >= 30 * day && age < 60 * day;
-      });
-
-      const lastResponse = responses[0];
-      const daysSinceLastSurvey = lastResponse
-        ? Math.floor((now - new Date(lastResponse.created_date)) / day)
-        : 999;
-
-      const lastSession = sessions[0];
-      const daysSinceLastLogin = lastSession
-        ? Math.floor((now - new Date(lastSession.created_date)) / day)
-        : 999;
-
-      // Calculate drops (avoid div by zero)
-      const surveyDrop = prev30Responses.length > 0
-        ? Math.max(0, ((prev30Responses.length - last30Responses.length) / prev30Responses.length) * 100)
-        : (last30Responses.length === 0 ? 100 : 0);
-
-      const sessionDrop = prev30Sessions.length > 0
-        ? Math.max(0, ((prev30Sessions.length - last30Sessions.length) / prev30Sessions.length) * 100)
-        : 0;
-
-      const referralDrop = prev30Referrals.length > 0
-        ? Math.max(0, ((prev30Referrals.length - last30Referrals.length) / prev30Referrals.length) * 100)
-        : 0;
-
-      // Risk signals
+      // --- Compute churn signals ---
       const signals = [];
       let churnScore = 0;
 
-      if (daysSinceLastSurvey > 14) { signals.push(`no_survey_${daysSinceLastSurvey}d`); churnScore += 25; }
-      else if (daysSinceLastSurvey > 7) { signals.push(`inactive_survey_7d`); churnScore += 12; }
+      const recentSurveys = recentEvents.filter(e => e.event_type === 'survey_complete').length;
+      const priorSurveys = priorEvents.filter(e => e.event_type === 'survey_complete').length;
+      const surveyDropPct = priorSurveys > 0 ? Math.round(((priorSurveys - recentSurveys) / priorSurveys) * 100) : 0;
 
-      if (daysSinceLastLogin > 7) { signals.push(`no_login_${daysSinceLastLogin}d`); churnScore += 20; }
+      if (recentEvents.length === 0 && priorEvents.length > 0) {
+        signals.push('No activity in last 7 days');
+        churnScore += 35;
+      }
+      if (surveyDropPct > 50) {
+        signals.push(`Survey completions dropped ${surveyDropPct}%`);
+        churnScore += 20;
+      }
+      const abandonEvents = recentEvents.filter(e => ['form_abandon', 'survey_abandon'].includes(e.event_type));
+      if (abandonEvents.length > 3) {
+        signals.push(`High abandon rate: ${abandonEvents.length} abandons this week`);
+        churnScore += 15;
+      }
+      const errorEvents = recentEvents.filter(e => e.event_type === 'error_encountered');
+      if (errorEvents.length > 2) {
+        signals.push(`${errorEvents.length} errors encountered`);
+        churnScore += 10;
+      }
+      const daysSinceLastActivity = recentEvents.length > 0
+        ? 0
+        : priorEvents.length > 0
+          ? Math.round((now - new Date(priorEvents[0]?.created_date)) / (1000 * 60 * 60 * 24))
+          : Math.round(daysSinceSignup);
+      if (daysSinceLastActivity > 10) {
+        signals.push(`${daysSinceLastActivity} days since last activity`);
+        churnScore += 20;
+      }
 
-      if (surveyDrop > 60) { signals.push(`survey_drop_${Math.round(surveyDrop)}pct`); churnScore += 25; }
-      else if (surveyDrop > 30) { signals.push(`survey_slow_${Math.round(surveyDrop)}pct`); churnScore += 12; }
+      // Negative survey sentiment
+      const negativeFeedback = userSurveyResponses.filter(r =>
+        r.answers?.some(a => a.rating && a.rating <= 2)
+      ).length;
+      if (negativeFeedback > 0) {
+        signals.push(`${negativeFeedback} low-rating survey responses`);
+        churnScore += 10;
+      }
 
-      if (sessionDrop > 60) { signals.push(`session_drop_${Math.round(sessionDrop)}pct`); churnScore += 15; }
-      if (referralDrop > 60) { signals.push(`referral_drop_${Math.round(referralDrop)}pct`); churnScore += 10; }
-      if (lifetimeValue > 50 && daysSinceLastSurvey > 7) { signals.push('high_value_at_risk'); churnScore += 20; }
-      if (prestigeScore >= 400 && surveyDrop > 30) { signals.push('prestige_user_declining'); churnScore += 15; }
+      if (churnScore < 20 || signals.length === 0) { results.skipped++; continue; }
 
-      churnScore = Math.min(100, churnScore);
+      const riskLevel = churnScore >= 60 ? 'critical' : churnScore >= 40 ? 'high' : 'medium';
 
-      const riskLevel =
-        churnScore >= 75 ? 'critical' :
-        churnScore >= 50 ? 'high' :
-        churnScore >= 25 ? 'medium' : 'low';
+      // --- Use LLM to generate personalized campaign ---
+      const uxContextSnippets = uxMemories
+        .filter(m => m.feature_area)
+        .slice(0, 3)
+        .map(m => m.content)
+        .join('\n---\n');
 
-      // Only flag medium+ risk
-      if (riskLevel === 'low' || signals.length === 0) continue;
+      const campaignPrompt = `Generate a personalized retention campaign for this GamerGain user:
 
-      // AI analysis
-      let aiAnalysis = '';
-      let recommendedAction = '';
-      try {
-        const aiResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `User churn analysis:
-- Lifetime value: $${lifetimeValue.toFixed(2)}
-- Days since last survey: ${daysSinceLastSurvey}
-- Survey frequency drop: ${surveyDrop.toFixed(0)}%
-- Session drop: ${sessionDrop.toFixed(0)}%
-- Referral drop: ${referralDrop.toFixed(0)}%
-- Risk signals: ${signals.join(', ')}
-- Prestige score: ${prestigeScore}/1000
-Write: 1) A 1-sentence churn analysis. 2) A specific re-engagement action to take (email subject + 1 sentence body).
-Format as JSON: { "analysis": "...", "email_subject": "...", "email_body": "...", "push_message": "..." }`,
-          response_json_schema: {
-            type: 'object',
-            properties: {
-              analysis: { type: 'string' },
-              email_subject: { type: 'string' },
-              email_body: { type: 'string' },
-              push_message: { type: 'string' },
-            }
+Name: ${u.full_name || 'User'}
+Churn Risk: ${riskLevel} (score: ${churnScore}/100)
+Churn Signals:
+${signals.map(s => `- ${s}`).join('\n')}
+Total Earnings: $${(u.total_earnings || 0).toFixed(2)}
+Days on Platform: ${Math.round(daysSinceSignup)}
+
+Recent UX Insights from other users:
+${uxContextSnippets.slice(0, 1000) || 'No specific UX context available'}
+
+Create a compelling retention campaign. Be personal, specific to their signals, and offer real value.
+
+Return JSON:
+{
+  "email_subject": "string (personalized, max 60 chars)",
+  "email_body": "string (HTML, 3-4 paragraphs, mention their earnings and specific churn signals, include a clear CTA)",
+  "sms_message": "string (max 160 chars, direct and urgent)",
+  "offer_type": "bonus_cash|double_earnings|exclusive_survey|vip_tier_boost|streak_reset",
+  "offer_value": number,
+  "campaign_type": "winback_email|sms_offer|bonus_credit|personalized_survey|all_channels"
+}`;
+
+      const campaign = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt: campaignPrompt,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            email_subject: { type: 'string' },
+            email_body: { type: 'string' },
+            sms_message: { type: 'string' },
+            offer_type: { type: 'string' },
+            offer_value: { type: 'number' },
+            campaign_type: { type: 'string' }
           }
-        });
-        aiAnalysis = aiResult.analysis || '';
-        recommendedAction = aiResult.email_subject || 'We miss you! Come back and earn.';
-
-        // Send notifications if requested
-        if (send_notifications && (riskLevel === 'high' || riskLevel === 'critical')) {
-          await base44.asServiceRole.integrations.Core.SendEmail({
-            to: user.email,
-            subject: aiResult.email_subject || "We miss you on GamerGain!",
-            body: `<p>Hi ${user.full_name},</p><p>${aiResult.email_body || 'Come back and earn rewards!'}</p><p>Your current balance is $${lifetimeValue.toFixed(2)}. New surveys are waiting for you!</p><p>Best,<br/>The GamerGain Team</p>`,
-          });
-
-          await base44.asServiceRole.entities.Notification.create({
-            user_id: user.id,
-            type: 'survey_available',
-            title: '🎯 New opportunities waiting for you!',
-            message: aiResult.push_message || 'You have new high-paying surveys available. Come back and earn!',
-            status: 'unread',
-            delivery_method: ['in_app', 'email'],
-          });
-          notified++;
         }
-      } catch (_) {
-        aiAnalysis = `User shows ${riskLevel} churn risk with ${signals.length} warning signals.`;
-        recommendedAction = 'Send personalized re-engagement email with bonus offer.';
-      }
+      });
 
-      // Upsert RetentionRisk record
-      const existing = await base44.asServiceRole.entities.RetentionRisk.filter({ user_id: user.id });
-      const riskData = {
-        user_id: user.id,
-        user_email: user.email,
-        user_name: user.full_name,
+      // Create RetentionRisk record
+      const riskRecord = await base44.asServiceRole.entities.RetentionRisk.create({
+        user_id: u.id,
+        user_email: u.email,
+        user_name: u.full_name,
         risk_level: riskLevel,
-        churn_probability: churnScore,
-        lifetime_value: lifetimeValue,
-        days_since_last_survey: daysSinceLastSurvey,
-        days_since_last_login: daysSinceLastLogin,
-        survey_freq_drop_pct: Math.round(surveyDrop),
-        referral_drop_pct: Math.round(referralDrop),
-        session_length_drop_pct: Math.round(sessionDrop),
+        churn_probability: Math.min(99, churnScore),
+        lifetime_value: u.total_earnings || 0,
+        days_since_last_survey: Math.round((now - new Date(priorEvents.find(e => e.event_type === 'survey_complete')?.created_date || u.created_date)) / (1000 * 60 * 60 * 24)),
+        days_since_last_login: daysSinceLastActivity,
+        survey_freq_drop_pct: surveyDropPct,
         risk_signals: signals,
-        ai_analysis: aiAnalysis,
-        recommended_action: recommendedAction,
-        notification_sent: send_notifications && (riskLevel === 'high' || riskLevel === 'critical'),
-        notification_sent_at: send_notifications ? new Date().toISOString() : undefined,
-        status: existing[0]?.status === 'recovered' ? 'recovered' : 'active',
-      };
+        recommended_action: campaign?.campaign_type || 'winback_email',
+        status: 'active',
+      });
 
-      if (existing[0]) {
-        await base44.asServiceRole.entities.RetentionRisk.update(existing[0].id, riskData);
-      } else {
-        await base44.asServiceRole.entities.RetentionRisk.create(riskData);
+      // Create RetentionCampaign record
+      const offerExpiry = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      await base44.asServiceRole.entities.RetentionCampaign.create({
+        user_id: u.id,
+        user_email: u.email,
+        user_name: u.full_name,
+        risk_level: riskLevel,
+        churn_probability: Math.min(99, churnScore),
+        campaign_type: campaign?.campaign_type || 'winback_email',
+        email_subject: campaign?.email_subject || `We miss you, ${u.full_name?.split(' ')[0]}!`,
+        email_body: campaign?.email_body || '',
+        sms_message: campaign?.sms_message || '',
+        offer_type: campaign?.offer_type || 'bonus_cash',
+        offer_value: campaign?.offer_value || 2,
+        offer_expires_at: offerExpiry,
+        agent_log_id: riskRecord.id,
+        status: 'pending',
+      });
+
+      // Send in-app notification
+      await base44.asServiceRole.entities.Notification.create({
+        user_id: u.id,
+        type: 'points_earned',
+        title: campaign?.email_subject || `We have a special offer for you! 🎁`,
+        message: campaign?.sms_message || `We noticed you've been away. Come back and earn more rewards!`,
+        status: 'unread',
+        delivery_method: ['in_app'],
+        action_url: '/PPCMarketplace',
+        icon: 'gift',
+      });
+
+      // Send email
+      if (campaign?.email_body) {
+        await base44.asServiceRole.integrations.Core.SendEmail({
+          to: u.email,
+          subject: campaign.email_subject,
+          body: campaign.email_body,
+          from_name: 'GamerGain',
+        });
+        await base44.asServiceRole.entities.RetentionCampaign.update(riskRecord.id, {
+          email_sent: true,
+          email_sent_at: new Date().toISOString(),
+          status: 'sent',
+        });
       }
 
-      flagged++;
-      flaggedUsers.push({ user_id: user.id, email: user.email, risk_level: riskLevel, churn_probability: churnScore });
+      results.flagged++;
+      results.campaigns_triggered++;
     }
 
-    return Response.json({
-      success: true,
-      users_analyzed: users.length,
-      flagged,
-      notified,
-      flagged_users: flaggedUsers,
+    // Log run
+    await base44.asServiceRole.entities.AgentPerformanceLog.create({
+      agent_name: 'churn_predictor',
+      action_type: 'churn_prediction_run',
+      target_entity: 'User',
+      output_data: results,
+      predicted_outcome: `Flagged ${results.flagged} at-risk users and triggered ${results.campaigns_triggered} campaigns`,
+      confidence_score: 75,
+      tags: ['churn_prediction', 'retention_campaign'],
     });
+
+    return Response.json({ success: true, ...results });
+
   } catch (error) {
-    console.error('churnPredictionEngine error:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });

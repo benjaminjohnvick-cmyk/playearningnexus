@@ -43,6 +43,7 @@ import SurveyDemandAlerts from '@/components/ppc/SurveyDemandAlerts';
 import DailyFeedbackModal from '@/components/feedback/DailyFeedbackModal';
 import SurveyRewardNotifier from '@/components/surveys/SurveyRewardNotifier';
 import { LocaleProvider } from '@/components/locale/LocaleContext';
+import { initTracker, setPage, trackEvent } from '@/lib/uxTracker';
 import CurrencySelector from '@/components/locale/CurrencySelector';
 
 export default function Layout({ children, currentPageName }) {
@@ -61,6 +62,7 @@ export default function Layout({ children, currentPageName }) {
         try {
           const currentUser = await base44.auth.me();
           setUser(currentUser);
+          initTracker(currentUser.id);
         } catch (error) {
           console.error('Error fetching user:', error);
         }
@@ -68,6 +70,14 @@ export default function Layout({ children, currentPageName }) {
     };
     checkAuth();
   }, []);
+
+  // Track page changes
+  useEffect(() => {
+    if (currentPageName && user) {
+      setPage(currentPageName);
+      trackEvent('page_view', { page: currentPageName });
+    }
+  }, [currentPageName, user?.id]);
 
   const { data: activeEvents = [] } = useQuery({
     queryKey: ['activeEvents'],
@@ -177,6 +187,7 @@ export default function Layout({ children, currentPageName }) {
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });
     navigation.push({ name: 'Users', icon: Bot, path: 'AdminUsers', requireAuth: true });
     navigation.push({ name: 'Feedback Intelligence', icon: Brain, path: 'FeedbackAdminDashboard', requireAuth: true });
+    navigation.push({ name: 'UX Heatmap', icon: TrendingUp, path: 'UXHeatmapDashboard', requireAuth: true });
   }
 
   const filteredNav = navigation.filter(item => !item.requireAuth || isAuthenticated);

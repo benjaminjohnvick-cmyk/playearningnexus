@@ -5,6 +5,9 @@
     "user_id": {
       "type": "string"
     },
+    "session_id": {
+      "type": "string"
+    },
     "event_type": {
       "type": "string",
       "enum": [
@@ -14,9 +17,54 @@
         "survey_complete",
         "payout_requested",
         "payout_completed",
-        "purchase"
+        "purchase",
+        "page_view",
+        "feature_click",
+        "feature_ignored",
+        "button_click",
+        "tab_switch",
+        "form_start",
+        "form_abandon",
+        "survey_start",
+        "survey_abandon",
+        "modal_open",
+        "modal_close",
+        "search",
+        "scroll_depth",
+        "error_encountered",
+        "session_start",
+        "session_end"
       ],
-      "description": "Stage in the user journey"
+      "description": "Type of UX interaction or journey event"
+    },
+    "page": {
+      "type": "string",
+      "description": "Page/route where event occurred"
+    },
+    "feature_area": {
+      "type": "string",
+      "enum": [
+        "surveys",
+        "ppc_marketplace",
+        "referrals",
+        "withdrawal",
+        "game_store",
+        "dashboard",
+        "leaderboard",
+        "achievements",
+        "wishlist",
+        "social",
+        "creator_hub",
+        "settings",
+        "dispute_center",
+        "onboarding",
+        "other"
+      ],
+      "description": "Feature area for adoption tracking"
+    },
+    "element_id": {
+      "type": "string",
+      "description": "UI element clicked or interacted with"
     },
     "referral_channel": {
       "type": "string",
@@ -43,15 +91,24 @@
     },
     "amount": {
       "type": "number",
-      "default": 0,
-      "description": "Revenue/payout amount at this event"
+      "default": 0
+    },
+    "time_on_page_seconds": {
+      "type": "number",
+      "description": "Seconds spent on page before this event"
+    },
+    "scroll_pct": {
+      "type": "number",
+      "description": "Scroll depth percentage (0-100)"
+    },
+    "is_friction_point": {
+      "type": "boolean",
+      "default": false,
+      "description": "AI-tagged as a friction/drop-off event"
     },
     "metadata": {
       "type": "object",
       "additionalProperties": true
-    },
-    "session_id": {
-      "type": "string"
     }
   },
   "required": [
