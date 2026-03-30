@@ -20,6 +20,7 @@ import BitLabsSurveys from '@/components/surveys/BitLabsSurveys';
 import GameCheckoutModal from '@/components/store/GameCheckoutModal';
 import ReviewSection from '@/components/reviews/ReviewSection';
 import { Dialog } from '@/components/ui/dialog';
+import GameAssistantWidget from '@/components/games/GameAssistantWidget';
 
 const CATEGORIES = ['all', 'puzzle', 'action', 'strategy', 'casual', 'rpg', 'simulation', 'sports', 'racing', 'adventure'];
 
@@ -396,6 +397,9 @@ export default function InAppGameStore() {
           onClose={() => setProductSearchResults(null)}
         />
       )}
+
+      {/* Game Assistant Widget */}
+      <GameAssistantWidget />
     </div>
   );
 }
