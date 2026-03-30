@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Zap, TrendingUp, Target, X, DollarSign, Clock } from 'lucide-react';
+import { Search, Zap, TrendingUp, Target, X, DollarSign, Clock, Download } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function PPCAdSearchWidget({ variant = 'compact' }) {
@@ -55,86 +55,115 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
     base44.functions.invoke('trackAdClick', { adId: ad.ad_id, searchQuery }).catch(() => {});
   };
 
-  // Compact variant (for home page sidebar)
+  const handleDownload = () => {
+    // Create a manifest for the browser extension
+    const extensionData = {
+      name: 'GainerGain Search',
+      description: 'Search surveys and ads while you browse. Earn rewards instantly.',
+      version: '1.0.0',
+      type: 'extension'
+    };
+    
+    // Create downloadable file
+    const dataStr = JSON.stringify(extensionData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'gainergain-search-extension.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('Extension download started! Follow the installation guide.');
+  };
+
+  // Swagbucks-style search bar for top
   if (variant === 'compact') {
     return (
-      <div className="bg-gradient-to-br from-orange-50 to-pink-50 rounded-xl border-2 border-orange-200 p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <Zap className="w-5 h-5 text-orange-600" />
-          <h3 className="font-bold text-gray-900">PPC Marketplace</h3>
-        </div>
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 w-full">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+          {/* Logo/Branding */}
+          <div className="flex items-center gap-2 text-white min-w-fit">
+            <Zap className="w-5 h-5" />
+            <span className="font-bold text-sm">GainerGain Search</span>
+          </div>
 
-        <div className="relative">
-          <Search className="absolute left-2 top-2.5 w-4 h-4 text-gray-400" />
-          <Input
-            placeholder="Search ads & surveys..."
-            value={searchQuery}
-            onChange={handleSearch}
-            onClick={() => setIsExpanded(true)}
-            className="pl-8 text-sm h-9"
-          />
-        </div>
+          {/* Search Bar */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Search surveys, ads & more..."
+              value={searchQuery}
+              onChange={handleSearch}
+              onClick={() => setIsExpanded(true)}
+              className="pl-9 pr-4 text-sm h-9 rounded-full bg-white"
+            />
+          </div>
 
-        {/* Jackpot Counter */}
-        <div className="bg-white rounded-lg p-3 border-2 border-orange-300">
-          <p className="text-xs text-gray-600 mb-1">Total Jackpot Pool</p>
-          <motion.p 
-            className="text-2xl font-bold text-orange-600"
+          {/* Jackpot Badge */}
+          <motion.div 
+            className="bg-yellow-400 text-blue-900 px-3 py-1 rounded-full text-xs font-bold min-w-fit cursor-default"
             key={jackpotData?.totalJackpot}
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
+            initial={{ scale: 1 }}
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
-            ${(jackpotData?.totalJackpot || 0).toFixed(2)}
-          </motion.p>
-          <p className="text-xs text-gray-500 mt-1">Updates in real-time</p>
+            💰 ${(jackpotData?.totalJackpot || 0).toFixed(0)}
+          </motion.div>
+
+          {/* Download Button */}
+          <Button 
+            size="sm"
+            variant="ghost"
+            className="text-white hover:bg-blue-500 ml-2"
+            onClick={handleDownload}
+            title="Download GainerGain Search Extension"
+          >
+            <Download className="w-4 h-4" />
+          </Button>
         </div>
 
         {/* Search Results Dropdown */}
         <AnimatePresence>
           {isExpanded && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-72 overflow-y-auto"
-            >
-              {searchLoading && (
-                <div className="p-4 text-center">
-                  <div className="w-6 h-6 border-3 border-orange-200 border-t-orange-600 rounded-full animate-spin mx-auto" />
-                </div>
-              )}
-              {searchResults?.matches && searchResults.matches.length > 0 ? (
-                <div className="space-y-1 p-2">
-                  {searchResults.matches.map((ad, idx) => (
-                    <motion.button
-                      key={idx}
-                      onClick={() => handleAdClick(ad)}
-                      className="w-full text-left p-2 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 hover:border-green-400 transition-all"
-                      whileHover={{ x: 4 }}
-                    >
-                      <p className="text-sm font-semibold text-gray-900 truncate">{ad.actual_title}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge className="bg-green-600 text-white text-xs">${ad.actual_reward.toFixed(2)}</Badge>
-                        <Badge variant="outline" className="text-xs">{ad.relevance_score}% match</Badge>
-                      </div>
-                    </motion.button>
-                  ))}
-                </div>
-              ) : searchQuery && !searchLoading ? (
-                <div className="p-4 text-center text-sm text-gray-500">No ads found for "{searchQuery}"</div>
-              ) : null}
-              {searchResults && (
-                <div className="border-t p-2 text-xs text-gray-600 bg-gray-50">
-                  <p className="italic">{searchResults.search_insight}</p>
-                </div>
-              )}
-            </motion.div>
+            <>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-72 overflow-y-auto"
+              >
+                {searchLoading && (
+                  <div className="p-4 text-center">
+                    <div className="w-6 h-6 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto" />
+                  </div>
+                )}
+                {searchResults?.matches && searchResults.matches.length > 0 ? (
+                  <div className="space-y-1 p-2">
+                    {searchResults.matches.map((ad, idx) => (
+                      <motion.button
+                        key={idx}
+                        onClick={() => handleAdClick(ad)}
+                        className="w-full text-left p-2 rounded-lg bg-white border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all"
+                        whileHover={{ x: 4 }}
+                      >
+                        <p className="text-sm font-semibold text-gray-900 truncate">{ad.actual_title}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge className="bg-green-600 text-white text-xs">${ad.actual_reward.toFixed(2)}</Badge>
+                          <Badge variant="outline" className="text-xs">{ad.relevance_score}% match</Badge>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                ) : searchQuery && !searchLoading ? (
+                  <div className="p-4 text-center text-sm text-gray-500">No ads found for "{searchQuery}"</div>
+                ) : null}
+              </motion.div>
+              <div className="fixed inset-0 z-40" onClick={() => setIsExpanded(false)} />
+            </>
           )}
         </AnimatePresence>
-
-        {isExpanded && (
-          <div className="fixed inset-0 z-40" onClick={() => setIsExpanded(false)} />
-        )}
       </div>
     );
   }
