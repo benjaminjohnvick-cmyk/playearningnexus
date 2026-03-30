@@ -1,0 +1,55 @@
+{
+  "name": "SocialMediaConnection",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "twitter",
+        "instagram",
+        "snapchat"
+      ]
+    },
+    "account_id": {
+      "type": "string",
+      "description": "Platform-specific account/page ID"
+    },
+    "account_name": {
+      "type": "string",
+      "description": "Display name of the social account"
+    },
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token for posting"
+    },
+    "token_expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "connected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_post_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total_posts": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_id",
+    "platform",
+    "account_id"
+  ]
+}
