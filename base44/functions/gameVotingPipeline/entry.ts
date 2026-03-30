@@ -207,6 +207,121 @@ Return JSON: { "score": number, "notes": "2 sentence review", "recommendation": 
       return Response.json({ success: true, applied: implemented.length, ranking: implemented });
     }
 
+    // ---- on_onboarding_complete ----
+    // Called right after a developer finishes onboarding.
+    // AI reviews the new application, then checks if we have 60+ pending candidates.
+    // If yes, auto-generates the community voting survey.
+    if (action === 'on_onboarding_complete') {
+      const { application_id } = body;
+      if (!application_id) return Response.json({ error: 'application_id required' }, { status: 400 });
+
+      // 1. AI review the new application
+      const apps = await base44.asServiceRole.entities.DeveloperApplication.filter({ id: application_id });
+      const app = apps[0];
+      if (!app) return Response.json({ error: 'Application not found' }, { status: 404 });
+
+      const review = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt: `Review this developer application for GamerGain (gaming + survey earning platform):
+Game: "${app.game_title}" (${app.game_category})
+Company: ${app.company_name}
+Description: ${app.game_description}
+Platforms: ${(app.game_platform || []).join(', ')}
+Demo URL: ${app.demo_url || 'none'}
+
+Score 0-100 on: fit with platform, potential engagement, quality indicators.
+Return JSON: { "score": number, "notes": "2 sentence review", "recommendation": "approve|waitlist|reject" }`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            score: { type: 'number' },
+            notes: { type: 'string' },
+            recommendation: { type: 'string' }
+          }
+        }
+      });
+
+      const newStatus = review.recommendation === 'reject' ? 'rejected'
+        : review.recommendation === 'waitlist' ? 'waitlisted'
+        : 'pending_review';
+
+      await base44.asServiceRole.entities.DeveloperApplication.update(application_id, {
+        ai_review_score: review.score,
+        ai_review_notes: review.notes,
+        status: newStatus,
+      });
+
+      // 2. Count all eligible candidates (pending_review + in_survey, not rejected/waitlisted)
+      const THRESHOLD = 60;
+      const pending = await base44.asServiceRole.entities.DeveloperApplication.filter({ status: 'pending_review' });
+      const inSurvey = await base44.asServiceRole.entities.DeveloperApplication.filter({ status: 'in_survey' });
+      const totalCandidates = pending.length + inSurvey.length;
+
+      // 3. Check if an active voting survey already exists
+      const activeSurveys = await base44.asServiceRole.entities.GameVoteSurvey.filter({ status: 'active', survey_type: 'developer_applications' });
+
+      let surveyLaunched = false;
+      let surveyId = null;
+
+      if (totalCandidates >= THRESHOLD && activeSurveys.length === 0) {
+        // Threshold reached — auto-generate the AI voting survey
+        const allCandidates = [...pending, ...inSurvey].slice(0, 60);
+
+        // Build AI-enriched survey title/description
+        const surveyMeta = await base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `We have ${allCandidates.length} game developers who applied to host games on GamerGain, a gaming + survey earning platform.
+Write an exciting community voting survey title and description to hype users about voting.
+Keep it short and energetic. Return JSON: { "title": "string", "description": "string" }`,
+          response_json_schema: {
+            type: 'object',
+            properties: { title: { type: 'string' }, description: { type: 'string' } }
+          }
+        });
+
+        const appOptions = allCandidates.map(a => ({
+          id: `app_${a.id}`,
+          label: a.game_title,
+          description: `${a.game_category} · by ${a.company_name} · ${(a.game_description || '').slice(0, 90)}…`,
+          image_url: (a.screenshot_urls || [])[0] || '',
+          application_id: a.id,
+          votes: 0,
+          voter_ids: [],
+        }));
+
+        const closes = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+
+        const newSurvey = await base44.asServiceRole.entities.GameVoteSurvey.create({
+          survey_type: 'developer_applications',
+          title: surveyMeta.title || `🎮 Vote: Which ${allCandidates.length} Games Join GamerGain?`,
+          description: surveyMeta.description || 'The community decides which games get added first!',
+          options: appOptions,
+          status: 'active',
+          total_votes: 0,
+          closes_at: closes,
+          ai_generated: true,
+        });
+
+        // Mark all pending candidates as in_survey
+        for (const a of pending) {
+          await base44.asServiceRole.entities.DeveloperApplication.update(a.id, { status: 'in_survey' });
+        }
+
+        surveyLaunched = true;
+        surveyId = newSurvey.id;
+      }
+
+      return Response.json({
+        success: true,
+        ai_score: review.score,
+        ai_notes: review.notes,
+        application_status: newStatus,
+        total_candidates: totalCandidates,
+        threshold: THRESHOLD,
+        candidates_needed: Math.max(0, THRESHOLD - totalCandidates),
+        survey_launched: surveyLaunched,
+        survey_id: surveyId,
+      });
+    }
+
     return Response.json({ error: 'Unknown action' }, { status: 400 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
