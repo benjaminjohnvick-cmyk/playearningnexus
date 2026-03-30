@@ -49,6 +49,9 @@ const GameVotingHub = lazy(() => import('./pages/GameVotingHub'));
 const DeveloperOnboarding = lazy(() => import('./pages/DeveloperOnboarding'));
 const DevEngagementAnalytics = lazy(() => import('./pages/DevEngagementAnalytics'));
 const DevFinancialDashboard = lazy(() => import('./pages/DevFinancialDashboard'));
+const DevABTesting = lazy(() => import('./pages/DevABTesting'));
+const DevBugReports = lazy(() => import('./pages/DevBugReports'));
+const AIGrowthAssistant = lazy(() => import('./pages/AIGrowthAssistant'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -146,6 +149,9 @@ const AuthenticatedApp = () => {
       <Route path="/DeveloperOnboarding" element={<LayoutWrapper currentPageName="DeveloperOnboarding"><DeveloperOnboarding /></LayoutWrapper>} />
       <Route path="/DevEngagementAnalytics" element={<LayoutWrapper currentPageName="DevEngagementAnalytics"><DevEngagementAnalytics /></LayoutWrapper>} />
       <Route path="/DevFinancialDashboard" element={<LayoutWrapper currentPageName="DevFinancialDashboard"><DevFinancialDashboard /></LayoutWrapper>} />
+      <Route path="/DevABTesting" element={<LayoutWrapper currentPageName="DevABTesting"><DevABTesting /></LayoutWrapper>} />
+      <Route path="/DevBugReports" element={<LayoutWrapper currentPageName="DevBugReports"><DevBugReports /></LayoutWrapper>} />
+      <Route path="/AIGrowthAssistant" element={<LayoutWrapper currentPageName="AIGrowthAssistant"><AIGrowthAssistant /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

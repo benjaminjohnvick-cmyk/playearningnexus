@@ -37,6 +37,9 @@ const NAV_SECTIONS = [
     { name: 'Dev Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', color: 'red' },
     { name: 'Engagement Analytics', icon: BarChart2, path: 'DevEngagementAnalytics', color: 'red' },
     { name: 'Financial Dashboard', icon: DollarSign, path: 'DevFinancialDashboard', color: 'red' },
+    { name: 'A/B Testing', icon: Activity, path: 'DevABTesting', color: 'red' },
+    { name: 'Bug Reports', icon: Globe, path: 'DevBugReports', color: 'red' },
+    { name: 'AI Growth Assistant', icon: Star, path: 'AIGrowthAssistant', color: 'red' },
   ]},
   { group: 'Account', items: [
     { name: 'Profile', icon: User, path: 'UserProfile', color: 'blue' },
@@ -97,7 +100,12 @@ export default function FloatingNavSidebar({ currentPageName }) {
 
   return (
     <div
-      className={`fixed top-1/2 right-0 -translate-y-1/2 z-40 flex items-center transition-all duration-300 ${collapsed ? 'translate-x-[calc(100%-28px)]' : 'translate-x-0'}`}
+      className="fixed z-40 flex items-center transition-all duration-300"
+      style={{
+        top: '50%',
+        right: 0,
+        transform: `translateY(-50%) translateX(${collapsed ? 'calc(100% - 28px)' : '0px'})`,
+      }}
     >
       {/* Toggle Tab */}
       <button
