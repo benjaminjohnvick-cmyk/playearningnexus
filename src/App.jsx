@@ -47,6 +47,8 @@ const UXHeatmapDashboard = lazy(() => import('./pages/UXHeatmapDashboard'));
 const ABTestingCenter = lazy(() => import('./pages/ABTestingCenter'));
 const GameVotingHub = lazy(() => import('./pages/GameVotingHub'));
 const DeveloperOnboarding = lazy(() => import('./pages/DeveloperOnboarding'));
+const DevEngagementAnalytics = lazy(() => import('./pages/DevEngagementAnalytics'));
+const DevFinancialDashboard = lazy(() => import('./pages/DevFinancialDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -142,6 +144,8 @@ const AuthenticatedApp = () => {
       <Route path="/ABTestingCenter" element={<LayoutWrapper currentPageName="ABTestingCenter"><ABTestingCenter /></LayoutWrapper>} />
       <Route path="/GameVotingHub" element={<LayoutWrapper currentPageName="GameVotingHub"><GameVotingHub /></LayoutWrapper>} />
       <Route path="/DeveloperOnboarding" element={<LayoutWrapper currentPageName="DeveloperOnboarding"><DeveloperOnboarding /></LayoutWrapper>} />
+      <Route path="/DevEngagementAnalytics" element={<LayoutWrapper currentPageName="DevEngagementAnalytics"><DevEngagementAnalytics /></LayoutWrapper>} />
+      <Route path="/DevFinancialDashboard" element={<LayoutWrapper currentPageName="DevFinancialDashboard"><DevFinancialDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

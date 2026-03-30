@@ -46,6 +46,7 @@ import SurveyRewardNotifier from '@/components/surveys/SurveyRewardNotifier';
 import { LocaleProvider } from '@/components/locale/LocaleContext';
 import { initTracker, setPage, trackEvent } from '@/lib/uxTracker';
 import CurrencySelector from '@/components/locale/CurrencySelector';
+import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -408,6 +409,7 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Main Content */}
         <main>{children}</main>
+        <FloatingNavSidebar currentPageName={currentPageName} />
 
         {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
         {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
