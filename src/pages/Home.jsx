@@ -19,6 +19,8 @@ import TopEarnersLeaderboard from '../components/home/TopEarnersLeaderboard';
 import MilestoneBadges from '../components/home/MilestoneBadges';
 import ReferralInviteCard from '../components/home/ReferralInviteCard';
 import ActiveReferralContestSection from '../components/referral/ActiveReferralContestSection';
+import PPCAdSearchWidget from '../components/ppc/PPCAdSearchWidget';
+import AIPersonalizedDailyGoal from '../components/dashboard/AIPersonalizedDailyGoal';
 export default function Home() {
   const [user, setUser] = useState(null);
 
@@ -253,6 +255,12 @@ export default function Home() {
       {/* Recommended Surveys + Challenges for logged-in users */}
       {user && (
         <div className="max-w-7xl mx-auto px-6 pb-16 space-y-8">
+          {/* AI Personalized Daily Goal */}
+          <AIPersonalizedDailyGoal user={user} />
+
+          {/* PPC Ad Search Widget */}
+          <PPCAdSearchWidget variant="full" />
+
           <AISurveyMatchWidget user={user} />
           <RecommendedSurveys user={user} />
           <div className="grid lg:grid-cols-3 gap-6">

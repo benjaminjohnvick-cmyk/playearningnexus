@@ -21,6 +21,7 @@ import GameCheckoutModal from '@/components/store/GameCheckoutModal';
 import ReviewSection from '@/components/reviews/ReviewSection';
 import { Dialog } from '@/components/ui/dialog';
 import GameAssistantWidget from '@/components/games/GameAssistantWidget';
+import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
 
 const CATEGORIES = ['all', 'puzzle', 'action', 'strategy', 'casual', 'rpg', 'simulation', 'sports', 'racing', 'adventure'];
 
@@ -341,13 +342,17 @@ export default function InAppGameStore() {
                     })}
                   </div>
                 )}
+              {/* PPC Ad Widget - Compact */}
+              <div className="mt-8 pt-8 border-t">
+                <PPCAdSearchWidget variant="compact" />
+              </div>
               </>
-            )}
-          </TabsContent>
-        </Tabs>
-      </div>
+              )}
+              </TabsContent>
+              </Tabs>
+              </div>
 
-      {/* Review Modal */}
+              {/* Review Modal */}
       {reviewGame && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl w-full max-w-2xl my-8 shadow-2xl">
