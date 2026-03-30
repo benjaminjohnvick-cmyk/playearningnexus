@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Zap, TrendingUp, Target, X, DollarSign, Clock, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { usePushNotificationTriggers } from '@/hooks/usePushNotificationTriggers';
+import AnimatedJackpotCounter from '@/components/jackpot/AnimatedJackpotCounter';
 
 export default function PPCAdSearchWidget({ variant = 'compact' }) {
   const [user, setUser] = useState(null);
@@ -17,6 +19,9 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  // Activate push notification triggers when user is set
+  usePushNotificationTriggers(user);
 
   const { data: jackpotData } = useQuery({
     queryKey: ['jackpot-total'],
@@ -101,16 +106,8 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
             />
           </div>
 
-          {/* Jackpot Badge */}
-          <motion.div 
-            className="bg-yellow-400 text-blue-900 px-3 py-1 rounded-full text-xs font-bold min-w-fit cursor-default"
-            key={jackpotData?.totalJackpot}
-            initial={{ scale: 1 }}
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            💰 ${(jackpotData?.totalJackpot || 0).toFixed(0)}
-          </motion.div>
+          {/* Animated Jackpot Counter */}
+          <AnimatedJackpotCounter showAnimation={true} />
 
           {/* Download Button */}
           <Button 
