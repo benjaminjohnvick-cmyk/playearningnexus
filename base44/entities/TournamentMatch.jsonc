@@ -1,0 +1,77 @@
+{
+  "name": "TournamentMatch",
+  "type": "object",
+  "properties": {
+    "tournament_id": {
+      "type": "string"
+    },
+    "round_number": {
+      "type": "number"
+    },
+    "match_number": {
+      "type": "number",
+      "description": "Match position in the round"
+    },
+    "player1_id": {
+      "type": "string"
+    },
+    "player1_name": {
+      "type": "string"
+    },
+    "player2_id": {
+      "type": "string"
+    },
+    "player2_name": {
+      "type": "string"
+    },
+    "winner_id": {
+      "type": "string"
+    },
+    "winner_name": {
+      "type": "string"
+    },
+    "player1_score": {
+      "type": "number",
+      "default": 0
+    },
+    "player2_score": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "scheduled_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actual_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_live": {
+      "type": "boolean",
+      "default": false
+    },
+    "spectator_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "tournament_id",
+    "round_number",
+    "match_number"
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "name": "Tournament",
+  "type": "object",
+  "properties": {
+    "tournament_name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "game_id": {
+      "type": "string"
+    },
+    "game_title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "registration_open",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "upcoming"
+    },
+    "tournament_format": {
+      "type": "string",
+      "enum": [
+        "single_elimination",
+        "double_elimination",
+        "round_robin",
+        "ffa"
+      ],
+      "default": "single_elimination"
+    },
+    "entry_fee": {
+      "type": "number",
+      "default": 0
+    },
+    "max_participants": {
+      "type": "number",
+      "default": 64
+    },
+    "current_participants": {
+      "type": "number",
+      "default": 0
+    },
+    "total_prize_pool": {
+      "type": "number",
+      "default": 0,
+      "description": "Total jackpot available"
+    },
+    "prize_distribution": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "1st: 50%, 2nd: 30%, 3rd: 20%"
+    },
+    "registration_starts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "registration_ends": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tournament_starts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tournament_ends": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "winner_user_id": {
+      "type": "string"
+    },
+    "winner_name": {
+      "type": "string"
+    },
+    "first_place_prize": {
+      "type": "number"
+    },
+    "second_place_prize": {
+      "type": "number"
+    },
+    "third_place_prize": {
+      "type": "number"
+    },
+    "prizes_distributed": {
+      "type": "boolean",
+      "default": false
+    },
+    "distributed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Admin user who created the tournament"
+    },
+    "is_live": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "tournament_name",
+    "game_id"
+  ]
+}

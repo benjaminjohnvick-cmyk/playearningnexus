@@ -1,265 +1,252 @@
-import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Trophy, Users, Calendar, DollarSign, Plus, Crown } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Trophy, Zap, Users, DollarSign, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import CreateTournamentModal from '../components/tournaments/CreateTournamentModal';
-import TournamentCard from '../components/tournaments/TournamentCard';
-import AITournamentMatchmaking from '../components/tournaments/AITournamentMatchmaking';
-import EnhancedTournamentSystem from '../components/tournaments/EnhancedTournamentSystem';
-import AutomatedBracketSystem from '../components/tournaments/AutomatedBracketSystem';
-import CrossGameTournamentSystem from '../components/tournaments/CrossGameTournamentSystem';
+import TournamentCard from '@/components/tournaments/TournamentCard';
 
 export default function Tournaments() {
   const [user, setUser] = useState(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const currentUser = await base44.auth.me();
-        setUser(currentUser);
-      } catch (error) {
-        base44.auth.redirectToLogin();
-      }
-    };
-    fetchUser();
+  React.useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  const { data: activeTournaments = [] } = useQuery({
-    queryKey: ['tournaments', 'active'],
-    queryFn: () => base44.entities.Tournament.filter({
-      status: { $in: ['registration', 'in_progress'] },
-      is_public: true
-    }, '-start_time'),
-    enabled: !!user
-  });
-
-  const { data: myTournaments = [] } = useQuery({
-    queryKey: ['myTournaments', user?.id],
+  const { data: tournaments = [], isLoading: tournamentsLoading } = useQuery({
+    queryKey: ['tournaments'],
     queryFn: async () => {
-      const participations = await base44.entities.TournamentParticipant.filter({
-        user_id: user.id
-      });
-      const tournamentIds = participations.map(p => p.tournament_id);
-      if (tournamentIds.length === 0) return [];
-      return await base44.entities.Tournament.filter({
-        id: { $in: tournamentIds }
-      }, '-start_time');
+      const res = await base44.entities.Tournament.filter({});
+      return res.sort((a, b) => new Date(b.tournament_starts) - new Date(a.tournament_starts));
     },
-    enabled: !!user
   });
 
-  const { data: upcomingTournaments = [] } = useQuery({
-    queryKey: ['tournaments', 'upcoming'],
-    queryFn: () => base44.entities.Tournament.filter({
-      status: 'registration',
-      registration_end: { $gte: new Date().toISOString() }
-    }, 'start_time', 10),
-    enabled: !!user
+  const { data: userParticipations = [] } = useQuery({
+    queryKey: ['userTournaments', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const res = await base44.entities.TournamentParticipant.filter({ user_id: user.id });
+      return res;
+    },
+    enabled: !!user,
   });
 
-  const [selectedTournamentForAI, setSelectedTournamentForAI] = useState(null);
-
-  const { data: tournamentParticipants = [] } = useQuery({
-    queryKey: ['tournamentParticipants', selectedTournamentForAI?.id],
-    queryFn: () => base44.entities.TournamentParticipant.filter({
-      tournament_id: selectedTournamentForAI.id
-    }),
-    enabled: !!selectedTournamentForAI
+  const enterTournament = useMutation({
+    mutationFn: async (tournament_id) => {
+      const res = await base44.functions.invoke('enterTournament', { tournament_id });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      toast.success(`Joined ${data.tournament_name}!`);
+      queryClient.invalidateQueries({ queryKey: ['tournaments'] });
+      queryClient.invalidateQueries({ queryKey: ['userTournaments'] });
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to join tournament');
+    },
   });
+
+  const upcomingTournaments = tournaments.filter(t =>
+    new Date(t.registration_starts) <= new Date() && new Date(t.registration_ends) >= new Date()
+  );
+
+  const activeTournaments = tournaments.filter(t =>
+    new Date(t.tournament_starts) <= new Date() && new Date(t.tournament_ends) >= new Date()
+  );
+
+  const pastTournaments = tournaments.filter(t => new Date(t.tournament_ends) < new Date());
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6">
+        <div className="max-w-7xl mx-auto text-center py-20">
+          <Trophy className="w-16 h-16 mx-auto mb-4 text-yellow-600" />
+          <h1 className="text-3xl font-bold mb-2">Tournament Hub</h1>
+          <p className="text-gray-600 mb-6">Sign in to compete for cash jackpots</p>
+          <Button onClick={() => base44.auth.redirectToLogin()} size="lg" className="bg-purple-600">
+            Sign In to Play
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Tournaments</h1>
-            <p className="text-gray-600">Compete for glory and prizes</p>
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <Trophy className="w-8 h-8 text-yellow-600" />
+            <h1 className="text-4xl font-bold">Tournament Hub</h1>
           </div>
-          <Button 
-            onClick={() => setShowCreateModal(true)}
-            className="bg-gradient-to-r from-purple-600 to-pink-600"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Create Tournament
-          </Button>
-        </div>
+          <p className="text-gray-600">Compete in real-time bracket tournaments for cash prizes</p>
+        </motion.div>
 
         {/* Stats */}
-        <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Active Tournaments</p>
-                  <p className="text-2xl font-bold text-purple-600">{activeTournaments.length}</p>
-                </div>
-                <Trophy className="w-8 h-8 text-purple-600 opacity-50" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">My Tournaments</p>
-                  <p className="text-2xl font-bold text-blue-600">{myTournaments.length}</p>
-                </div>
-                <Users className="w-8 h-8 text-blue-600 opacity-50" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Upcoming</p>
-                  <p className="text-2xl font-bold text-green-600">{upcomingTournaments.length}</p>
-                </div>
-                <Calendar className="w-8 h-8 text-green-600 opacity-50" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Total Prizes</p>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    ${activeTournaments.reduce((sum, t) => sum + (t.prize_pool_amount || 0), 0).toFixed(0)}
-                  </p>
-                </div>
-                <DollarSign className="w-8 h-8 text-yellow-600 opacity-50" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="all" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="all">All Tournaments</TabsTrigger>
-            <TabsTrigger value="crossgame">Cross-Game</TabsTrigger>
-            <TabsTrigger value="my">My Tournaments</TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all" className="space-y-4">
-            {/* AI Matchmaking for Tournament Hosts */}
-            {activeTournaments.some(t => t.host_user_id === user.id) && (
-              <Card className="border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-purple-50 mb-6">
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-2">🤖 AI Tournament Management</h3>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Select one of your tournaments to use AI-powered matchmaking and bracket generation
-                  </p>
-                  <div className="flex gap-2">
-                    {activeTournaments
-                      .filter(t => t.host_user_id === user.id)
-                      .map(t => (
-                        <Button
-                          key={t.id}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSelectedTournamentForAI(t)}
-                        >
-                          {t.title}
-                        </Button>
-                      ))}
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid md:grid-cols-4 gap-4 mb-8"
+        >
+          {[
+            { icon: Trophy, label: 'Tournaments Active', value: activeTournaments.length },
+            { icon: Users, label: 'Your Entries', value: userParticipations.length },
+            { icon: Zap, label: 'Available to Join', value: upcomingTournaments.length },
+            { icon: DollarSign, label: 'Total Prizes', value: `$${tournaments.reduce((sum, t) => sum + t.total_prize_pool, 0).toFixed(0)}` },
+          ].map((stat, idx) => (
+            <motion.div key={idx} variants={item}>
+              <Card className="bg-white border-2">
+                <CardContent className="pt-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">{stat.label}</p>
+                      <p className="text-2xl font-bold">{stat.value}</p>
+                    </div>
+                    <stat.icon className="w-5 h-5 text-purple-600" />
                   </div>
                 </CardContent>
               </Card>
-            )}
+            </motion.div>
+          ))}
+        </motion.div>
 
-            {selectedTournamentForAI && (
-              <>
-                <AutomatedBracketSystem 
-                  tournament={selectedTournamentForAI}
-                  participants={tournamentParticipants}
-                />
-                <AITournamentMatchmaking 
-                  tournament={selectedTournamentForAI} 
-                  participants={tournamentParticipants}
-                />
-              </>
-            )}
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activeTournaments.map(tournament => (
-                <TournamentCard key={tournament.id} tournament={tournament} user={user} />
-              ))}
+        {/* Warning if insufficient balance */}
+        {tournaments.some(t => t.entry_fee > 0) && user.total_earnings < tournaments[0]?.entry_fee && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 mb-6 flex items-start gap-3"
+          >
+            <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-yellow-900">Low Balance</p>
+              <p className="text-sm text-yellow-800">Complete surveys to earn balance for tournament entry fees.</p>
             </div>
-            {activeTournaments.length === 0 && (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No active tournaments</p>
+          </motion.div>
+        )}
+
+        {/* Tabs */}
+        <Tabs defaultValue="active" className="space-y-6">
+          <TabsList className="bg-white border-2 border-gray-200 p-1">
+            <TabsTrigger value="active">
+              ⚡ Active ({activeTournaments.length})
+            </TabsTrigger>
+            <TabsTrigger value="upcoming">
+              📋 Join Now ({upcomingTournaments.length})
+            </TabsTrigger>
+            <TabsTrigger value="past">
+              🏆 Past ({pastTournaments.length})
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Active Tournaments */}
+          <TabsContent value="active">
+            {activeTournaments.length === 0 ? (
+              <Card className="bg-gray-50">
+                <CardContent className="pt-6 text-center text-gray-600">
+                  No active tournaments. Check back soon!
                 </CardContent>
               </Card>
+            ) : (
+              <motion.div
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {activeTournaments.map((tournament) => (
+                  <motion.div key={tournament.id} variants={item}>
+                    <TournamentCard
+                      tournament={tournament}
+                      onJoin={() => enterTournament.mutate(tournament.id)}
+                      isRegistered={userParticipations.some(p => p.tournament_id === tournament.id)}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
             )}
           </TabsContent>
 
-          <TabsContent value="crossgame">
-            <CrossGameTournamentSystem />
-          </TabsContent>
-
-          <TabsContent value="my" className="space-y-4">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {myTournaments.map(tournament => (
-                <TournamentCard key={tournament.id} tournament={tournament} user={user} />
-              ))}
-            </div>
-            {myTournaments.length === 0 && (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">You haven't joined any tournaments</p>
+          {/* Upcoming Tournaments */}
+          <TabsContent value="upcoming">
+            {upcomingTournaments.length === 0 ? (
+              <Card className="bg-gray-50">
+                <CardContent className="pt-6 text-center text-gray-600">
+                  No tournaments available to join right now.
                 </CardContent>
               </Card>
+            ) : (
+              <motion.div
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {upcomingTournaments.map((tournament) => (
+                  <motion.div key={tournament.id} variants={item}>
+                    <TournamentCard
+                      tournament={tournament}
+                      onJoin={() => enterTournament.mutate(tournament.id)}
+                      isRegistered={userParticipations.some(p => p.tournament_id === tournament.id)}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
             )}
           </TabsContent>
 
-          <TabsContent value="upcoming" className="space-y-4">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcomingTournaments.map(tournament => (
-                <TournamentCard key={tournament.id} tournament={tournament} user={user} />
-              ))}
-            </div>
-            {upcomingTournaments.length === 0 && (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No upcoming tournaments</p>
+          {/* Past Tournaments */}
+          <TabsContent value="past">
+            {pastTournaments.length === 0 ? (
+              <Card className="bg-gray-50">
+                <CardContent className="pt-6 text-center text-gray-600">
+                  No past tournaments yet.
                 </CardContent>
               </Card>
+            ) : (
+              <motion.div
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {pastTournaments.map((tournament) => (
+                  <motion.div key={tournament.id} variants={item}>
+                    <TournamentCard
+                      tournament={tournament}
+                      onJoin={() => {}}
+                      isRegistered={userParticipations.some(p => p.tournament_id === tournament.id)}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
             )}
           </TabsContent>
         </Tabs>
       </div>
-
-      <CreateTournamentModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        user={user}
-      />
     </div>
   );
 }

@@ -1,0 +1,73 @@
+{
+  "name": "TournamentParticipant",
+  "type": "object",
+  "properties": {
+    "tournament_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "registered",
+        "active",
+        "eliminated",
+        "won",
+        "withdrew"
+      ],
+      "default": "registered"
+    },
+    "entry_fee_paid": {
+      "type": "boolean",
+      "default": false
+    },
+    "seed_number": {
+      "type": "number",
+      "description": "Initial bracket position"
+    },
+    "current_round": {
+      "type": "number",
+      "default": 1
+    },
+    "wins": {
+      "type": "number",
+      "default": 0
+    },
+    "losses": {
+      "type": "number",
+      "default": 0
+    },
+    "final_placement": {
+      "type": "number",
+      "description": "Final ranking (1st, 2nd, 3rd, etc)"
+    },
+    "prize_awarded": {
+      "type": "number",
+      "default": 0
+    },
+    "prize_claimed": {
+      "type": "boolean",
+      "default": false
+    },
+    "registered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "withdrew_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "tournament_id",
+    "user_id"
+  ]
+}

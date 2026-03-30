@@ -187,6 +187,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Game Voting Hub', icon: Gamepad2, path: 'GameVotingHub' },
     { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
     { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
+    { name: 'Tournaments', icon: Trophy, path: 'Tournaments', requireAuth: true },
   ];
 
   if (user?.role === 'admin') {
@@ -311,17 +312,22 @@ export default function Layout({ children, currentPageName }) {
                     🚀 Dev Onboarding
                   </Button>
                 </Link>
+                <Link to={createPageUrl('Tournaments')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'Tournaments' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'Tournaments' ? "bg-gradient-to-r from-yellow-500 to-orange-600 shadow-md" : "hover:bg-yellow-50 text-yellow-700 font-semibold border border-yellow-200"}>
+                    🏆 Tournaments
+                  </Button>
+                </Link>
               </nav>
 
               {/* Desktop Right: user controls */}
-              <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+              <div className="hidden md:flex items-center gap-1 flex-shrink-0 ml-auto">
                 {isAuthenticated && user ? (
                   <>
                     <div className="text-right hidden lg:block">
                       <p className="text-xs font-medium text-gray-900">{user.full_name}</p>
                       <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
                     </div>
-                    <CurrencySelector />
                     <PushNotificationManager />
                     <SurveyDemandAlerts user={user} />
                     <NotificationCenter user={user} />
@@ -342,12 +348,9 @@ export default function Layout({ children, currentPageName }) {
                     </Button>
                   </>
                 ) : (
-                  <>
-                    <CurrencySelector />
-                    <Button onClick={() => base44.auth.redirectToLogin()} className="bg-gradient-to-r from-red-600 to-red-700 shadow-lg" size="sm">
-                      Sign In
-                    </Button>
-                  </>
+                  <Button onClick={() => base44.auth.redirectToLogin()} className="bg-gradient-to-r from-red-600 to-red-700 shadow-lg" size="sm">
+                    Sign In
+                  </Button>
                 )}
               </div>
 

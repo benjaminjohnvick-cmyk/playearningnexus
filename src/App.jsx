@@ -57,6 +57,8 @@ const RewardsMarketplace = lazy(() => import('./pages/RewardsMarketplace'));
 const ReferralSquads = lazy(() => import('./pages/ReferralSquads'));
 const AdminRiskMonitoring = lazy(() => import('./pages/AdminRiskMonitoring'));
 const AdminGrowthHeatmap = lazy(() => import('./pages/AdminGrowthHeatmap'));
+const Tournaments = lazy(() => import('./pages/Tournaments'));
+const TournamentDetails = lazy(() => import('./pages/TournamentDetails'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -162,6 +164,8 @@ const AuthenticatedApp = () => {
       <Route path="/ReferralSquads" element={<LayoutWrapper currentPageName="ReferralSquads"><ReferralSquads /></LayoutWrapper>} />
       <Route path="/AdminRiskMonitoring" element={<LayoutWrapper currentPageName="AdminRiskMonitoring"><AdminRiskMonitoring /></LayoutWrapper>} />
       <Route path="/AdminGrowthHeatmap" element={<LayoutWrapper currentPageName="AdminGrowthHeatmap"><AdminGrowthHeatmap /></LayoutWrapper>} />
+      <Route path="/Tournaments" element={<LayoutWrapper currentPageName="Tournaments"><Tournaments /></LayoutWrapper>} />
+      <Route path="/TournamentDetails" element={<LayoutWrapper currentPageName="TournamentDetails"><TournamentDetails /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

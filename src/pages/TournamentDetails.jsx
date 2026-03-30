@@ -1,291 +1,176 @@
-import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Trophy, Users, Calendar, Info, Award, Eye, Brain, Target } from 'lucide-react';
-import TournamentBracket from '../components/tournaments/TournamentBracket';
-import TournamentMatchSpectator from '../components/tournaments/TournamentMatchSpectator';
-import AITournamentInsights from '../components/tournaments/AITournamentInsights';
-import AITournamentChallenges from '../components/tournaments/AITournamentChallenges';
+import { Trophy, Users, DollarSign, Calendar, Zap } from 'lucide-react';
+import BracketDisplay from '@/components/tournaments/BracketDisplay';
+import LiveLeaderboard from '@/components/tournaments/LiveLeaderboard';
 
 export default function TournamentDetails() {
+  const [searchParams] = useSearchParams();
+  const tournamentId = searchParams.get('id');
   const [user, setUser] = useState(null);
-  const urlParams = new URLSearchParams(window.location.search);
-  const tournamentId = urlParams.get('id');
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const currentUser = await base44.auth.me();
-      setUser(currentUser);
-    };
-    fetchUser();
+  React.useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  const { data: tournament, isLoading: tournamentLoading } = useQuery({
+  const { data: tournament, isLoading } = useQuery({
     queryKey: ['tournament', tournamentId],
-    queryFn: () => base44.entities.Tournament.filter({ id: tournamentId }).then(t => t[0]),
-    enabled: !!tournamentId
-  });
-
-  const { data: game } = useQuery({
-    queryKey: ['game', tournament?.game_id],
-    queryFn: () => base44.entities.Game.filter({ id: tournament.game_id }).then(g => g[0]),
-    enabled: !!tournament
+    queryFn: async () => {
+      const res = await base44.entities.Tournament.filter({ id: tournamentId }).then(r => r[0]);
+      return res;
+    },
+    enabled: !!tournamentId,
   });
 
   const { data: participants = [] } = useQuery({
     queryKey: ['tournamentParticipants', tournamentId],
     queryFn: async () => {
-      const parts = await base44.entities.TournamentParticipant.filter({ tournament_id: tournamentId }, 'seed');
-      const userIds = parts.map(p => p.user_id);
-      if (userIds.length === 0) return [];
-      const users = await base44.entities.User.filter({ id: { $in: userIds } });
-      return parts.map(p => ({ ...p, user: users.find(u => u.id === p.user_id) }));
+      const res = await base44.entities.TournamentParticipant.filter({ tournament_id: tournamentId });
+      return res;
     },
     enabled: !!tournamentId,
-    refetchInterval: 10000
   });
 
   const { data: matches = [] } = useQuery({
     queryKey: ['tournamentMatches', tournamentId],
-    queryFn: () => base44.entities.TournamentMatch.filter({ tournament_id: tournamentId }, 'round'),
+    queryFn: async () => {
+      const res = await base44.entities.TournamentMatch.filter({ tournament_id: tournamentId });
+      return res;
+    },
     enabled: !!tournamentId,
-    refetchInterval: 5000
   });
 
-  const myParticipant = participants.find(p => p.user_id === user?.id);
+  if (isLoading) return <div className="text-center py-20">Loading tournament...</div>;
+  if (!tournament) return <div className="text-center py-20">Tournament not found</div>;
 
-  if (tournamentLoading || !tournament || !user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-      </div>
-    );
-  }
-
-  const statusColors = {
-    registration: 'bg-green-600',
-    in_progress: 'bg-blue-600',
-    completed: 'bg-gray-600',
-    cancelled: 'bg-red-600'
-  };
+  const topPlayers = participants.filter(p => p.final_placement && p.final_placement <= 3).sort((a, b) => a.final_placement - b.final_placement);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <Card className="mb-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-          <CardContent className="p-8">
-            <div className="flex items-center gap-6">
-              {game?.icon_url && (
-                <img src={game.icon_url} alt={game.title} className="w-24 h-24 rounded-lg" />
-              )}
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold">{tournament.title}</h1>
-                  <Badge className={statusColors[tournament.status]}>
-                    {tournament.status.replace('_', ' ')}
-                  </Badge>
-                </div>
-                <p className="text-purple-100 mb-4">{tournament.description}</p>
-                <div className="flex gap-6">
-                  <div>
-                    <p className="text-sm text-purple-200">Participants</p>
-                    <p className="text-2xl font-bold">{participants.length}/{tournament.max_participants}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-purple-200">Prize Pool</p>
-                    <p className="text-2xl font-bold">
-                      {tournament.prize_pool_type === 'real_money' ? '$' : ''}{tournament.prize_pool_amount}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-purple-200">Format</p>
-                    <p className="text-xl font-bold">{tournament.bracket_type.replace('_', ' ')}</p>
-                  </div>
-                </div>
-              </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">{tournament.tournament_name}</h1>
+              <p className="text-gray-600">{tournament.description}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-yellow-600">${tournament.total_prize_pool.toFixed(0)}</div>
+              <p className="text-sm text-gray-600">Prize Pool</p>
+            </div>
+          </div>
+        </motion.div>
 
+        {/* Quick Stats */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="grid md:grid-cols-4 gap-4 mb-8"
+        >
+          {[
+            { icon: Users, label: 'Participants', value: tournament.current_participants },
+            { icon: Trophy, label: 'Format', value: tournament.tournament_format.replace(/_/g, ' ') },
+            { icon: Calendar, label: 'Status', value: tournament.status.replace(/_/g, ' ') },
+            { icon: DollarSign, label: 'Entry Fee', value: `$${tournament.entry_fee}` },
+          ].map((stat, idx) => (
+            <Card key={idx} className="bg-white border-2">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-2 mb-1">
+                  <stat.icon className="w-4 h-4 text-purple-600" />
+                  <p className="text-xs text-gray-600">{stat.label}</p>
+                </div>
+                <p className="text-lg font-bold">{stat.value}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </motion.div>
+
+        {/* Winners Section */}
+        {tournament.prizes_distributed && topPlayers.length > 0 && (
+          <Card className="mb-8 bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-yellow-600" />
+                Tournament Winners
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-4">
+                {topPlayers.map((player, idx) => (
+                  <div key={player.id} className={`p-4 rounded-lg text-center ${
+                    idx === 0 ? 'bg-yellow-200 border-2 border-yellow-400' :
+                    idx === 1 ? 'bg-gray-200 border-2 border-gray-400' :
+                    'bg-orange-100 border-2 border-orange-300'
+                  }`}>
+                    <p className="text-2xl font-bold mb-1">{['🥇', '🥈', '🥉'][idx]}</p>
+                    <p className="font-bold text-lg">{player.user_name}</p>
+                    <p className="text-sm text-gray-700 mt-2 font-bold">${player.prize_awarded.toFixed(2)} won</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Main Content Tabs */}
         <Tabs defaultValue="bracket" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="bracket">
-              <Trophy className="w-4 h-4 mr-2" />
-              Bracket
+          <TabsList className="bg-white border-2 border-gray-200">
+            <TabsTrigger value="bracket" className="flex items-center gap-1">
+              <Zap className="w-4 h-4" /> Bracket
             </TabsTrigger>
-            <TabsTrigger value="spectate">
-              <Eye className="w-4 h-4 mr-2" />
-              Watch Live
+            <TabsTrigger value="leaderboard" className="flex items-center gap-1">
+              <Trophy className="w-4 h-4" /> Leaderboard
             </TabsTrigger>
-            <TabsTrigger value="insights">
-              <Brain className="w-4 h-4 mr-2" />
-              AI Insights
-            </TabsTrigger>
-            {myParticipant && (
-              <TabsTrigger value="challenges">
-                <Target className="w-4 h-4 mr-2" />
-                My Challenges
-              </TabsTrigger>
-            )}
-            <TabsTrigger value="participants">
-              <Users className="w-4 h-4 mr-2" />
-              Participants
-            </TabsTrigger>
-            <TabsTrigger value="info">
-              <Info className="w-4 h-4 mr-2" />
-              Info
+            <TabsTrigger value="participants" className="flex items-center gap-1">
+              <Users className="w-4 h-4" /> Participants
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="bracket">
-            <TournamentBracket tournament={tournament} matches={matches} participants={participants} />
-          </TabsContent>
-
-          <TabsContent value="spectate">
             <Card>
-              <CardHeader>
-                <CardTitle>Live Tournament Matches</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {matches.filter(m => m.status === 'in_progress').length > 0 ? (
-                  <div className="space-y-4">
-                    {matches.filter(m => m.status === 'in_progress').map(match => (
-                      <TournamentMatchSpectator key={match.id} match={match} tournament={tournament} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-gray-500">
-                    <Eye className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p>No live matches at the moment</p>
-                    <p className="text-sm mt-2">Check back when tournament is in progress</p>
-                  </div>
-                )}
+              <CardContent className="pt-6">
+                <BracketDisplay tournamentId={tournamentId} />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="insights">
-            <AITournamentInsights tournamentId={tournamentId} />
+          <TabsContent value="leaderboard">
+            <LiveLeaderboard tournamentId={tournamentId} />
           </TabsContent>
-
-          {myParticipant && (
-            <TabsContent value="challenges">
-              <AITournamentChallenges tournamentId={tournamentId} participantId={myParticipant.id} />
-            </TabsContent>
-          )}
 
           <TabsContent value="participants">
             <Card>
-              <CardHeader>
-                <CardTitle>Registered Participants</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {participants.map((participant, index) => (
-                    <div key={participant.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <CardContent className="pt-6">
+                <div className="space-y-2">
+                  {participants.map((p, idx) => (
+                    <div key={p.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <Avatar>
-                          <AvatarImage src={participant.user?.avatar_url} />
-                          <AvatarFallback>{participant.user?.full_name?.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                        <span className="font-bold text-gray-600">#{p.seed_number}</span>
                         <div>
-                          <p className="font-semibold">{participant.user?.full_name}</p>
-                          <p className="text-xs text-gray-600">Seed #{participant.seed}</p>
+                          <p className="font-semibold">{p.user_name}</p>
+                          <p className="text-xs text-gray-600">{p.wins}W - {p.losses}L</p>
                         </div>
                       </div>
-                      <Badge variant={participant.status === 'winner' ? 'default' : 'outline'}>
-                        {participant.status}
-                      </Badge>
+                      <div className="text-right">
+                        {p.status === 'won' && <div className="text-yellow-600 font-bold">🏆 Champion</div>}
+                        {p.final_placement && <span className="text-sm text-gray-600">#{p.final_placement}</span>}
+                      </div>
                     </div>
                   ))}
-                  {participants.length === 0 && (
-                    <p className="text-center text-gray-500 py-8">No participants yet</p>
-                  )}
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="info">
-            <div className="grid gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Tournament Details</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Game</p>
-                    <p className="font-semibold">{game?.title}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Registration Period</p>
-                    <p className="font-semibold">
-                      {new Date(tournament.registration_start).toLocaleString()} - {new Date(tournament.registration_end).toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Tournament Start</p>
-                    <p className="font-semibold">{new Date(tournament.start_time).toLocaleString()}</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Prize Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Award className="w-5 h-5 text-yellow-600" />
-                        <span className="font-semibold">1st Place</span>
-                      </div>
-                      <span className="font-bold text-yellow-600">
-                        {tournament.prize_pool_type === 'real_money' ? '$' : ''}{tournament.prize_distribution?.first || 0}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-100 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Award className="w-5 h-5 text-gray-600" />
-                        <span className="font-semibold">2nd Place</span>
-                      </div>
-                      <span className="font-bold text-gray-600">
-                        {tournament.prize_pool_type === 'real_money' ? '$' : ''}{tournament.prize_distribution?.second || 0}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Award className="w-5 h-5 text-orange-600" />
-                        <span className="font-semibold">3rd Place</span>
-                      </div>
-                      <span className="font-bold text-orange-600">
-                        {tournament.prize_pool_type === 'real_money' ? '$' : ''}{tournament.prize_distribution?.third || 0}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {tournament.rules && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Rules</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-700 whitespace-pre-wrap">{tournament.rules}</p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
           </TabsContent>
         </Tabs>
       </div>
