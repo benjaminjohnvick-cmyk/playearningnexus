@@ -1,0 +1,64 @@
+{
+  "name": "AgentLearningMemory",
+  "type": "object",
+  "properties": {
+    "agent_name": {
+      "type": "string"
+    },
+    "memory_type": {
+      "type": "string",
+      "enum": [
+        "refined_instruction",
+        "learned_pattern",
+        "failure_pattern",
+        "success_pattern",
+        "prompt_optimization"
+      ],
+      "description": "Category of memory"
+    },
+    "content": {
+      "type": "string",
+      "description": "The actual learned knowledge or refined instruction text"
+    },
+    "source_log_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "AgentPerformanceLog IDs that led to this learning"
+    },
+    "approval_rate_at_creation": {
+      "type": "number",
+      "description": "Approval rate % when this memory was created"
+    },
+    "accuracy_rate_at_creation": {
+      "type": "number"
+    },
+    "times_applied": {
+      "type": "number",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "admin_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Human-in-the-loop: admin must approve before it's injected into agent instructions"
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "agent_name",
+    "memory_type",
+    "content"
+  ]
+}

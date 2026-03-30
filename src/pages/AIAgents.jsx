@@ -33,24 +33,28 @@ export default function AIAgents() {
       color: 'indigo',
       features: ['Auto-improve surveys', 'Sentiment analysis', 'Admin recommendations', 'Direct modifications'],
       dashboardPath: 'SurveyIntelligenceDashboard',
+      selfLearning: true,
     },
     {
       name: 'fraud_detection',
       title: 'Fraud Detection AI',
       icon: Bot,
-      description: 'Proactively monitors user activity for fraudulent patterns, bot behavior, and suspicious earning velocities',
+      description: 'Proactively monitors user activity for fraudulent patterns, bot behavior, and suspicious earning velocities. Self-improves based on admin review outcomes.',
       replaces: 'Fraud Prevention Tools',
       color: 'red',
-      features: ['Pattern analysis', 'Bot detection', 'Risk scoring', 'Auto-flagging']
+      features: ['Pattern analysis', 'Bot detection', 'Risk scoring', 'Self-improving'],
+      selfLearning: true,
     },
     {
       name: 'churn_predictor',
-      title: 'Churn Prediction AI',
+      title: 'Churn Prediction & Retention AI',
       icon: TrendingUp,
-      description: 'Predicts user churn risk and triggers personalized retention strategies to keep users engaged',
+      description: 'Predicts user churn, auto-sends personalized SMS + email win-back campaigns, and self-improves by verifying whether users actually returned.',
       replaces: 'Retention Platform',
       color: 'amber',
-      features: ['Churn scoring', 'Retention triggers', 'Re-engagement', 'Offer creation']
+      features: ['Churn scoring', 'SMS + Email campaigns', 'Win-back offers', 'Self-improving'],
+      dashboardPath: 'AgentIntelligenceDashboard',
+      selfLearning: true,
     },
     {
       name: 'content_recommender',
@@ -203,6 +207,20 @@ export default function AIAgents() {
           </p>
         </div>
 
+        {/* Agent Intelligence Dashboard Banner */}
+        <Link to={createPageUrl('AgentIntelligenceDashboard')} className="block mb-4">
+          <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Brain className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-lg">Agent Intelligence Center</p>
+              <p className="text-indigo-100 text-sm">View agent performance, approve AI learnings, manage retention campaigns & outcomes</p>
+            </div>
+            <Zap className="w-8 h-8 text-white/70 flex-shrink-0" />
+          </div>
+        </Link>
+
         {/* Game Store Banner */}
         <Link to={createPageUrl('InAppGameStore')} className="block mb-6">
           <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
@@ -254,7 +272,12 @@ export default function AIAgents() {
                 </div>
 
                 <div className="space-y-2 mb-4">
-                  <p className="text-xs font-semibold text-gray-700">Key Features:</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-xs font-semibold text-gray-700">Key Features:</p>
+                    {agent.selfLearning && (
+                      <Badge className="bg-emerald-100 text-emerald-700 text-xs">🧠 Self-Learning</Badge>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {agent.features.map((feature, idx) => (
                       <Badge key={idx} className="bg-gray-100 text-gray-700 text-xs">

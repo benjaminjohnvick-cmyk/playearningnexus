@@ -39,6 +39,7 @@ const AchievementsPage = lazy(() => import('./pages/AchievementsPage'));
 const DailyEarningStreak = lazy(() => import('./pages/DailyEarningStreak'));
 const GlobalLeaderboard = lazy(() => import('./pages/GlobalLeaderboard'));
 const SurveyIntelligenceDashboard = lazy(() => import('./pages/SurveyIntelligenceDashboard'));
+const AgentIntelligenceDashboard = lazy(() => import('./pages/AgentIntelligenceDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -126,6 +127,7 @@ const AuthenticatedApp = () => {
       <Route path="/DailyEarningStreak" element={<LayoutWrapper currentPageName="DailyEarningStreak"><DailyEarningStreak /></LayoutWrapper>} />
       <Route path="/GlobalLeaderboard" element={<LayoutWrapper currentPageName="GlobalLeaderboard"><GlobalLeaderboard /></LayoutWrapper>} />
       <Route path="/SurveyIntelligenceDashboard" element={<LayoutWrapper currentPageName="SurveyIntelligenceDashboard"><SurveyIntelligenceDashboard /></LayoutWrapper>} />
+      <Route path="/AgentIntelligenceDashboard" element={<LayoutWrapper currentPageName="AgentIntelligenceDashboard"><AgentIntelligenceDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
