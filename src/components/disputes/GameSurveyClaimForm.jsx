@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Upload, CheckCircle, Gamepad2, FileText, DollarSign, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import AIEvidenceAnalyzer from './AIEvidenceAnalyzer';
 
 const CLAIM_TYPES = [
   { value: 'game_not_credited', label: 'Game Not Credited', icon: Gamepad2, color: 'text-purple-600', bg: 'bg-purple-50 border-purple-200' },
@@ -25,6 +26,7 @@ export default function GameSurveyClaimForm({ user, onSuccess }) {
   });
   const [uploading, setUploading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
 
   const submitMutation = useMutation({
     mutationFn: (data) => base44.entities.DisputeClaim.create({
@@ -131,16 +133,27 @@ export default function GameSurveyClaimForm({ user, onSuccess }) {
         <p className="text-xs text-gray-400 mt-1">Screenshots greatly increase approval speed. Max 5 files.</p>
       </div>
 
+      {/* AI Analysis Preview (if evidence attached) */}
+      {form.proof_urls.length > 0 && !submitted && !analysisComplete && (
+        <div className="mt-4">
+          <AIEvidenceAnalyzer
+            claim={form}
+            proofUrls={form.proof_urls}
+            onAnalysisComplete={() => setAnalysisComplete(true)}
+          />
+        </div>
+      )}
+
       <div className="p-3 bg-indigo-50 rounded-xl text-xs text-indigo-700 flex items-start gap-2">
         <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-        Claims with screenshot proof are approved <strong>3× faster</strong>. You'll get an email notification within 24–48 hours.
+        <strong>AI-Powered:</strong> Screenshots are analyzed instantly. High-confidence claims are auto-approved. You'll get email notifications.
       </div>
 
       <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
         onClick={() => submitMutation.mutate(form)}
-        disabled={!form.item_name || !form.description || submitMutation.isPending}>
+        disabled={!form.item_name || !form.description || submitMutation.isPending || (form.proof_urls.length > 0 && !analysisComplete)}>
         {submitMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
-        Submit Claim
+        {form.proof_urls.length > 0 && !analysisComplete ? 'Waiting for AI Analysis...' : 'Submit Claim'}
       </Button>
     </div>
   );
