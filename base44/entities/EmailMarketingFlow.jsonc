@@ -1,0 +1,92 @@
+{
+  "name": "EmailMarketingFlow",
+  "type": "object",
+  "properties": {
+    "flow_type": {
+      "type": "string",
+      "enum": [
+        "welcome_series",
+        "inactive_winback",
+        "milestone_congratulations",
+        "custom_triggered"
+      ]
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "trigger_event": {
+      "type": "string",
+      "description": "Event that triggered this flow (signup, 30_days_inactive, first_10_dollars, etc)"
+    },
+    "step": {
+      "type": "number",
+      "description": "Current step in the flow sequence (1, 2, 3, etc)"
+    },
+    "total_steps": {
+      "type": "number",
+      "default": 1
+    },
+    "email_subject": {
+      "type": "string"
+    },
+    "email_body": {
+      "type": "string"
+    },
+    "personalization_data": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Dynamic data for personalization"
+    },
+    "scheduled_send_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "opened": {
+      "type": "boolean",
+      "default": false
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "clicked": {
+      "type": "boolean",
+      "default": false
+    },
+    "clicked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "conversion": {
+      "type": "boolean",
+      "default": false,
+      "description": "Did the user take the desired action?"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "sent",
+        "bounced",
+        "unsubscribed",
+        "completed"
+      ],
+      "default": "scheduled"
+    }
+  },
+  "required": [
+    "flow_type",
+    "user_id",
+    "user_email"
+  ]
+}

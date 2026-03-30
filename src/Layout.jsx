@@ -351,9 +351,8 @@ export default function Layout({ children, currentPageName }) {
                 )}
               </div>
 
-              {/* Mobile: Currency Selector + Menu Button */}
+              {/* Mobile: Menu Button Only */}
               <div className="md:hidden flex items-center gap-1">
-                <CurrencySelector />
                 <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                   {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </Button>
