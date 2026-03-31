@@ -2,64 +2,75 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Heart, ShoppingCart, CreditCard, Star, DollarSign, CheckCircle, Loader2, ArrowRight, Zap, ExternalLink, LayoutGrid, Receipt } from 'lucide-react';
+import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, ZoomIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
-const SAMPLE_ADS = [
-  { id: 1, title: 'Nike Air Max 2024 Running Shoes', price: 129.99, brand: 'Nike', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=200&fit=crop' },
-  { id: 2, title: 'Apple AirPods Pro (2nd Generation)', price: 249.00, brand: 'Apple', image: 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=300&h=200&fit=crop' },
-  { id: 3, title: 'Sony WH-1000XM5 Headphones', price: 349.99, brand: 'Sony', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=200&fit=crop' },
+// Sample PPC business ads — in production these would come from PPCSurvey/PPCMarketplace entities
+const BUSINESS_ADS = [
+  { id: 1, brand: 'Nike', tagline: 'Just Do It', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=120&h=120&fit=crop', site: 'https://nike.com', color: '#111' },
+  { id: 2, brand: 'Apple', tagline: 'Think Different', image: 'https://images.unsplash.com/photo-1568910748155-01ca989dbdd6?w=120&h=120&fit=crop', site: 'https://apple.com', color: '#555' },
+  { id: 3, brand: 'Sony', tagline: 'Be Moved', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=120&h=120&fit=crop', site: 'https://sony.com', color: '#000080' },
+  { id: 4, brand: 'Adidas', tagline: 'Impossible Is Nothing', image: 'https://images.unsplash.com/photo-1556906781-9a412961a28c?w=120&h=120&fit=crop', site: 'https://adidas.com', color: '#000' },
+  { id: 5, brand: 'Samsung', tagline: 'Do What You Can\'t', image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=120&h=120&fit=crop', site: 'https://samsung.com', color: '#1428A0' },
+  { id: 6, brand: 'Amazon', tagline: 'Work Hard. Have Fun', image: 'https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=120&h=120&fit=crop', site: 'https://amazon.com', color: '#FF9900' },
+  { id: 7, brand: 'Netflix', tagline: 'See What\'s Next', image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=120&h=120&fit=crop', site: 'https://netflix.com', color: '#E50914' },
+  { id: 8, brand: 'Spotify', tagline: 'Music For Everyone', image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=120&h=120&fit=crop', site: 'https://spotify.com', color: '#1DB954' },
+  { id: 9, brand: 'Tesla', tagline: 'The Future Is Electric', image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=120&h=120&fit=crop', site: 'https://tesla.com', color: '#CC0000' },
+  { id: 10, brand: 'Disney+', tagline: 'The Magic Is Endless', image: 'https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=120&h=120&fit=crop', site: 'https://disneyplus.com', color: '#113CCF' },
+  { id: 11, brand: 'GoPro', tagline: 'Be A Hero', image: 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?w=120&h=120&fit=crop', site: 'https://gopro.com', color: '#00A9E0' },
+  { id: 12, brand: 'Uber Eats', tagline: 'Food You Love, Delivered', image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=120&h=120&fit=crop', site: 'https://ubereats.com', color: '#06C167' },
+  { id: 13, brand: 'Airbnb', tagline: 'Belong Anywhere', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=120&h=120&fit=crop', site: 'https://airbnb.com', color: '#FF5A5F' },
+  { id: 14, brand: 'Shopify', tagline: 'Let\'s Make You A Business', image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=120&fit=crop', site: 'https://shopify.com', color: '#96BF48' },
+  { id: 15, brand: 'Canva', tagline: 'Design For Everyone', image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=120&h=120&fit=crop', site: 'https://canva.com', color: '#00C4CC' },
+  { id: 16, brand: 'Duolingo', tagline: 'Learn A Language Free', image: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=120&h=120&fit=crop', site: 'https://duolingo.com', color: '#58CC02' },
+];
+
+const SURVEY_QUESTIONS = [
+  { q: 'How often do you shop online?', opts: ['Daily', 'Weekly', 'Monthly', 'Rarely'] },
+  { q: 'What matters most when you buy?', opts: ['Price', 'Brand', 'Reviews', 'Speed'] },
+  { q: 'How likely to recommend this brand?', opts: ['Very likely', 'Likely', 'Unlikely', 'Never'] },
+  { q: 'What\'s your typical budget for this?', opts: ['Under $50', '$50–$150', '$150–$300', 'Over $300'] },
+];
+
+const SOCIAL_PLATFORMS = [
+  { id: 'facebook', label: 'Facebook', color: '#1877F2' },
+  { id: 'twitter', label: 'X / Twitter', color: '#000' },
+  { id: 'instagram', label: 'Instagram', color: '#E1306C' },
+  { id: 'snapchat', label: 'Snapchat', color: '#FFFC00' },
+  { id: 'tiktok', label: 'TikTok', color: '#010101' },
 ];
 
 export default function GoogleAdsOverlay() {
   const [user, setUser] = useState(null);
+  const [hoveredAd, setHoveredAd] = useState(null);
   const [activeAd, setActiveAd] = useState(null);
-  const [surveyStep, setSurveyStep] = useState(0); // 0 = none, 1-4 = question #
+  const [surveyStep, setSurveyStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [surveyDone, setSurveyDone] = useState(false);
-  const [action, setAction] = useState(''); // 'wishlist' | 'buy' | 'bnpl'
   const [loading, setLoading] = useState(false);
   const [earned, setEarned] = useState(0);
-  const [expenseLog, setExpenseLog] = useState([]);
+  const [unlockedAds, setUnlockedAds] = useState([]);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
-    // Load expense log
-    const saved = JSON.parse(localStorage.getItem('google_ad_expenses') || '[]');
-    setExpenseLog(saved);
+    const saved = JSON.parse(localStorage.getItem('unlocked_ppc_ads') || '[]');
+    setUnlockedAds(saved);
   }, []);
 
-  const SURVEY_QUESTIONS = [
-    {
-      q: 'How often do you shop online for this category?',
-      opts: ['Daily', 'Weekly', 'Monthly', 'Rarely'],
-    },
-    {
-      q: 'What is most important to you when buying this product?',
-      opts: ['Price', 'Brand', 'Reviews', 'Availability'],
-    },
-    {
-      q: 'How likely are you to recommend this brand?',
-      opts: ['Very likely', 'Likely', 'Unlikely', 'Never'],
-    },
-    {
-      q: 'What price range do you typically budget for this?',
-      opts: ['Under $50', '$50-$150', '$150-$300', 'Over $300'],
-    },
-  ];
-
-  const handleAdAction = (ad, actionType) => {
+  const handleAdClick = (ad) => {
     if (!user) {
-      toast.error('Please sign in to use this feature');
+      toast.error('Please sign in first');
+      return;
+    }
+    if (unlockedAds.includes(ad.id)) {
+      // Already unlocked — go to site
+      window.open(ad.site, '_blank');
       return;
     }
     setActiveAd(ad);
-    setAction(actionType);
     setSurveyStep(1);
     setSurveyDone(false);
     setAnswers({});
@@ -78,218 +89,164 @@ export default function GoogleAdsOverlay() {
   const completeSurvey = async (finalAnswers) => {
     setLoading(true);
     setSurveyStep(0);
-
     try {
-      // Award $0.20 to user and log $0.20 platform profit
       await base44.auth.updateMe({
         total_earnings: (user.total_earnings || 0) + 0.20,
       });
       setEarned(prev => prev + 0.20);
 
-      // Perform the selected action
-      if (action === 'wishlist') {
-        await base44.entities.ProductWishlistItem.create({
-          user_id: user.id,
-          product_name: activeAd.title,
-          product_image_url: activeAd.image,
-          price: activeAd.price,
-          product_url: `https://google.com/search?q=${encodeURIComponent(activeAd.title)}`,
-          added_by: 'google_ads_overlay',
-        });
-        toast.success(`Added to wishlist! You earned $0.20`);
-      } else if (action === 'buy') {
-        // Log as expense
-        const newExpense = {
-          id: Date.now(),
-          title: activeAd.title,
-          price: activeAd.price,
-          date: new Date().toISOString(),
-          status: 'logged',
-          earnBackDays: Math.ceil(activeAd.price / 3),
-        };
-        const updated = [newExpense, ...expenseLog];
-        setExpenseLog(updated);
-        localStorage.setItem('google_ad_expenses', JSON.stringify(updated));
+      const newUnlocked = [...unlockedAds, activeAd.id];
+      setUnlockedAds(newUnlocked);
+      localStorage.setItem('unlocked_ppc_ads', JSON.stringify(newUnlocked));
 
-        await base44.entities.Order.create({
-          user_id: user.id,
-          product_name: activeAd.title,
-          product_image_url: activeAd.image,
-          product_type: 'physical_product',
-          source: 'ppc_marketplace',
-          amount: activeAd.price,
-          payment_method: 'paypal',
-          vendor_name: activeAd.brand,
-          shipping_status: 'processing',
-          notes: `Google Ads overlay purchase. Earn back at $3/day = ${Math.ceil(activeAd.price / 3)} days`,
-        });
-        toast.success(`Purchase logged! AI is tracking this expense. You earned $0.20`);
-      } else if (action === 'bnpl') {
-        const daysToPayoff = Math.ceil(activeAd.price / 3);
-        const friendsNeeded = Math.max(0, Math.ceil((activeAd.price - 90) / 90));
-        toast.success(`BNPL set up! Payoff in ${daysToPayoff} days solo or ${friendsNeeded} friend${friendsNeeded !== 1 ? 's' : ''} to pay in 1 month`);
-        const newExpense = {
-          id: Date.now(),
-          title: activeAd.title,
-          price: activeAd.price,
-          date: new Date().toISOString(),
-          status: 'bnpl',
-          daysToPayoff,
-          friendsNeeded,
-        };
-        const updated = [newExpense, ...expenseLog];
-        setExpenseLog(updated);
-        localStorage.setItem('google_ad_expenses', JSON.stringify(updated));
-      }
+      setSurveyDone(true);
     } catch (e) {
-      toast.error('Action failed: ' + e.message);
+      toast.error('Error: ' + e.message);
     }
-
-    setSurveyDone(true);
     setLoading(false);
-    setTimeout(() => { setActiveAd(null); setSurveyDone(false); }, 2000);
+  };
+
+  const handleVisitSite = () => {
+    window.open(activeAd?.site, '_blank');
+    setActiveAd(null);
+    setSurveyDone(false);
+  };
+
+  const handleShareGrid = async () => {
+    const shareText = `🎮 Discover & earn on GamerGain! Click ads, answer 4 questions, earn $0.40! 💰\nhttps://gamergain.app`;
+    if (navigator.share) {
+      await navigator.share({ title: 'GamerGain Ad Grid', text: shareText });
+    } else {
+      navigator.clipboard.writeText(shareText);
+      toast.success('Share link copied to clipboard!');
+    }
   };
 
   const currentQuestion = surveyStep >= 1 && surveyStep <= 4 ? SURVEY_QUESTIONS[surveyStep - 1] : null;
 
+  // Compute pixel size per ad based on total ads (Million Dollar Homepage style)
+  const totalAds = BUSINESS_ADS.length;
+  const gridCols = Math.ceil(Math.sqrt(totalAds * 1.6));
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-4">
-      <div className="max-w-4xl mx-auto py-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <LayoutGrid className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Google Ads Overlay</h1>
-          <p className="text-gray-600">
-            Every Google ad gets <strong>Wishlist</strong>, <strong>Buy Now</strong>, and <strong>BNPL</strong> buttons.
-            Answer 4 quick survey questions and earn <span className="font-bold text-green-600">$0.20</span> per ad click!
-          </p>
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Top link to GamerGain */}
+      <div className="bg-red-700 text-center py-2 text-sm font-semibold tracking-wide">
+        🎮 <a href="/" className="underline hover:text-yellow-300">GamerGain.app</a> — Click an ad · Answer 4 questions · Earn $0.40 · Visit the business
+      </div>
+
+      {/* Header */}
+      <div className="max-w-5xl mx-auto px-4 pt-8 pb-4 text-center">
+        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 px-5 py-2 rounded-full mb-4 shadow-lg">
+          <DollarSign className="w-5 h-5" />
+          <span className="font-bold text-lg">GamerGain Ad Grid</span>
+        </div>
+        <h1 className="text-4xl font-black mb-2 bg-gradient-to-r from-yellow-400 to-red-400 bg-clip-text text-transparent">
+          The Million Dollar Ad Board
+        </h1>
+        <p className="text-gray-300 text-sm max-w-xl mx-auto mb-3">
+          Click any business thumbnail · Answer 4 survey questions worth <span className="text-yellow-400 font-bold">$0.40</span> · You earn <span className="text-green-400 font-bold">$0.20</span> · We earn <span className="text-blue-400 font-bold">$0.20</span> · Then visit the business site
+        </p>
+        <div className="flex items-center justify-center gap-3 flex-wrap mb-4">
           {earned > 0 && (
-            <Badge className="mt-2 bg-green-600 text-white text-sm">
-              💰 You've earned ${earned.toFixed(2)} today from ad surveys
+            <Badge className="bg-green-600 text-white text-sm px-3 py-1">
+              💰 Earned today: ${earned.toFixed(2)}
             </Badge>
           )}
-        </motion.div>
+          <Button size="sm" onClick={handleShareGrid} className="bg-purple-600 hover:bg-purple-700 text-white gap-1">
+            <Share2 className="w-4 h-4" /> Share This Grid
+          </Button>
+        </div>
 
-        {/* How it works */}
-        <Card className="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0">
-          <CardContent className="p-5">
-            <h3 className="font-bold mb-3 flex items-center gap-2"><Zap className="w-4 h-4" /> How It Works</h3>
-            <div className="grid grid-cols-3 gap-3 text-center text-sm">
-              <div>
-                <div className="text-2xl mb-1">1️⃣</div>
-                <p>Click Wishlist, Buy, or BNPL on any Google ad</p>
-              </div>
-              <div>
-                <div className="text-2xl mb-1">2️⃣</div>
-                <p>Answer 4 survey questions worth $0.40 total</p>
-              </div>
-              <div>
-                <div className="text-2xl mb-1">3️⃣</div>
-                <p>Earn $0.20 — advertiser gets listed, $0.20 goes to platform</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Sample Google Ads with overlay buttons */}
-        <h2 className="font-bold text-lg text-gray-900 mb-4">Sample Google Ads with Overlay Buttons</h2>
-        <div className="space-y-4 mb-8">
-          {SAMPLE_ADS.map((ad, i) => (
-            <motion.div key={ad.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}>
-              <Card className="border-2 border-blue-100 hover:border-blue-300 transition-all">
-                <CardContent className="p-4">
-                  <div className="flex gap-4">
-                    <img src={ad.image} alt={ad.title} className="w-24 h-20 object-cover rounded-lg flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      {/* Simulated ad header */}
-                      <div className="flex items-center gap-1 mb-1">
-                        <Badge className="bg-yellow-100 text-yellow-800 text-xs border border-yellow-300">Ad</Badge>
-                        <span className="text-xs text-green-700">google.com/shopping</span>
-                      </div>
-                      <p className="font-semibold text-gray-900 mb-1">{ad.title}</p>
-                      <p className="text-lg font-bold text-green-600">${ad.price.toFixed(2)}</p>
-                      
-                      {/* Overlay Action Buttons */}
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-pink-400 text-pink-600 hover:bg-pink-50 text-xs"
-                          onClick={() => handleAdAction(ad, 'wishlist')}
-                        >
-                          <Heart className="w-3 h-3 mr-1" /> Wishlist
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="bg-green-600 hover:bg-green-700 text-white text-xs"
-                          onClick={() => handleAdAction(ad, 'buy')}
-                        >
-                          <ShoppingCart className="w-3 h-3 mr-1" /> Buy Now
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-blue-400 text-blue-600 hover:bg-blue-50 text-xs"
-                          onClick={() => handleAdAction(ad, 'bnpl')}
-                        >
-                          <CreditCard className="w-3 h-3 mr-1" /> Buy Now Pay Later
-                        </Button>
-                        <Badge className="bg-green-100 text-green-700 text-xs flex items-center gap-1">
-                          <DollarSign className="w-3 h-3" /> +$0.20 survey
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+        {/* Social share indicators */}
+        <div className="flex items-center justify-center gap-2 flex-wrap mb-6 text-xs text-gray-400">
+          <span>Auto-posted to:</span>
+          {SOCIAL_PLATFORMS.map(p => (
+            <span key={p.id} className="px-2 py-0.5 rounded-full border border-gray-600 font-medium" style={{ color: p.color, borderColor: p.color + '55' }}>
+              {p.label}
+            </span>
           ))}
+          <span className="text-gray-500">· twice daily by AI</span>
+        </div>
+      </div>
+
+      {/* The Million Dollar Homepage Grid */}
+      <div className="max-w-5xl mx-auto px-4 pb-12">
+        {/* Caption banner */}
+        <div className="border-2 border-yellow-500 rounded-xl p-3 mb-4 text-center bg-yellow-500/10">
+          <p className="text-yellow-400 font-bold text-sm">
+            🖱️ Click an ad thumbnail → Answer 4 survey questions ($0.10 each = $0.40 total) → Unlock the business link
+          </p>
         </div>
 
-        {/* Expense Log */}
-        {expenseLog.length > 0 && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Receipt className="w-4 h-4 text-orange-500" /> AI Purchase Tracker & Expense Log
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {expenseLog.map(exp => (
-                  <div key={exp.id} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
-                    <div>
-                      <p className="font-semibold text-sm text-gray-900">{exp.title}</p>
-                      <p className="text-xs text-gray-500">{new Date(exp.date).toLocaleDateString()}</p>
-                      {exp.status === 'bnpl' && (
-                        <p className="text-xs text-blue-600">BNPL: {exp.daysToPayoff} days solo · {exp.friendsNeeded} friends for 1-month payoff</p>
-                      )}
-                      {exp.status === 'logged' && (
-                        <p className="text-xs text-green-600">Earn back in ~{exp.earnBackDays} days at $3/day</p>
-                      )}
-                    </div>
-                    <Badge className="bg-orange-100 text-orange-700">${exp.price?.toFixed(2)}</Badge>
+        {/* Grid — GamerGain logo shaped mosaic */}
+        <div
+          className="grid gap-1.5 bg-gray-900 p-3 rounded-2xl border border-gray-700 shadow-2xl"
+          style={{ gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` }}
+        >
+          {BUSINESS_ADS.map((ad) => {
+            const isUnlocked = unlockedAds.includes(ad.id);
+            const isHovered = hoveredAd === ad.id;
+
+            return (
+              <motion.div
+                key={ad.id}
+                className="relative cursor-pointer rounded-lg overflow-visible"
+                style={{ aspectRatio: '1' }}
+                onHoverStart={() => setHoveredAd(ad.id)}
+                onHoverEnd={() => setHoveredAd(null)}
+                whileHover={{ scale: 1.45, zIndex: 50 }}
+                onClick={() => handleAdClick(ad)}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                {/* Thumbnail */}
+                <img
+                  src={ad.image}
+                  alt={ad.brand}
+                  className={`w-full h-full object-cover rounded-lg border-2 transition-all ${
+                    isUnlocked ? 'border-green-400' : 'border-gray-700 hover:border-yellow-400'
+                  }`}
+                />
+
+                {/* Unlocked badge */}
+                {isUnlocked && (
+                  <div className="absolute top-0.5 right-0.5 bg-green-500 rounded-full w-4 h-4 flex items-center justify-center">
+                    <CheckCircle className="w-3 h-3 text-white" />
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                )}
 
-        <div className="flex gap-3">
-          <Link to={createPageUrl('AIOrderForm')} className="flex-1">
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-              <ShoppingCart className="w-4 h-4 mr-2" /> AI Order Form
-            </Button>
-          </Link>
-          <Link to={createPageUrl('Wishlist')} className="flex-1">
-            <Button variant="outline" className="w-full">
-              <Heart className="w-4 h-4 mr-2" /> My Wishlist
-            </Button>
-          </Link>
+                {/* Hover tooltip */}
+                <AnimatePresence>
+                  {isHovered && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-50 bg-gray-900 border border-gray-600 rounded-xl shadow-2xl p-3 w-48 pointer-events-none"
+                    >
+                      <img src={ad.image} alt={ad.brand} className="w-full h-24 object-cover rounded-lg mb-2" />
+                      <p className="font-bold text-white text-sm">{ad.brand}</p>
+                      <p className="text-gray-400 text-xs mb-2">{ad.tagline}</p>
+                      {isUnlocked ? (
+                        <div className="flex items-center gap-1 text-green-400 text-xs font-semibold">
+                          <ExternalLink className="w-3 h-3" /> Visit Site →
+                        </div>
+                      ) : (
+                        <div className="text-yellow-400 text-xs font-semibold">
+                          🔒 Answer 4 questions to unlock · Earn $0.40
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </div>
+
+        <p className="text-center text-gray-500 text-xs mt-3">
+          Grid auto-expands as new businesses join · Pixel size adjusts automatically
+        </p>
       </div>
 
       {/* Survey Modal */}
@@ -299,64 +256,103 @@ export default function GoogleAdsOverlay() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6"
+              className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl max-w-sm w-full p-6"
             >
-              <div className="flex items-center justify-between mb-4">
-                <Badge className="bg-green-600 text-white">Question {surveyStep} of 4 · +$0.10</Badge>
-                <span className="text-xs text-gray-500">Total: $0.40</span>
+              {/* Ad info */}
+              <div className="flex items-center gap-3 mb-4 bg-gray-800 rounded-xl p-3">
+                <img src={activeAd?.image} alt={activeAd?.brand} className="w-12 h-12 object-cover rounded-lg" />
+                <div>
+                  <p className="font-bold text-white text-sm">{activeAd?.brand}</p>
+                  <p className="text-gray-400 text-xs">{activeAd?.tagline}</p>
+                </div>
               </div>
-              
+
+              <div className="flex items-center justify-between mb-3">
+                <Badge className="bg-yellow-500 text-black font-bold">Question {surveyStep} of 4 · +$0.10</Badge>
+                <span className="text-xs text-gray-400">Total: $0.40</span>
+              </div>
+
               <div className="flex gap-1 mb-4">
                 {[1,2,3,4].map(n => (
-                  <div key={n} className={`h-1.5 flex-1 rounded-full ${n <= surveyStep ? 'bg-green-500' : 'bg-gray-200'}`} />
+                  <div key={n} className={`h-1.5 flex-1 rounded-full ${n <= surveyStep ? 'bg-yellow-400' : 'bg-gray-700'}`} />
                 ))}
               </div>
 
-              <p className="font-bold text-gray-900 mb-1 text-sm">About: {activeAd?.title}</p>
-              <p className="text-gray-700 mb-4">{currentQuestion.q}</p>
+              <p className="text-white font-semibold mb-4 text-sm">{currentQuestion.q}</p>
 
               <div className="grid grid-cols-2 gap-2">
                 {currentQuestion.opts.map((opt, i) => (
                   <Button
                     key={i}
                     variant="outline"
-                    className="h-12 text-sm hover:bg-green-50 hover:border-green-400"
+                    className="h-12 text-sm border-gray-600 text-white hover:bg-yellow-500 hover:text-black hover:border-yellow-400"
                     onClick={() => handleAnswer(surveyStep, opt)}
                   >
                     {opt}
                   </Button>
                 ))}
               </div>
+
+              <p className="text-center text-gray-500 text-xs mt-4">
+                You earn $0.20 · Business listed · GamerGain earns $0.20
+              </p>
             </motion.div>
           </motion.div>
         )}
 
-        {(loading || surveyDone) && (
+        {/* Survey done — show visit site */}
+        {surveyDone && activeAd && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              className="bg-gray-900 border border-green-500 rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center"
+            >
+              <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-3" />
+              <h3 className="text-2xl font-black text-white mb-1">+$0.20 Earned!</h3>
+              <p className="text-gray-400 text-sm mb-4">Survey complete · You can now visit {activeAd.brand}</p>
+
+              <div className="bg-gray-800 rounded-xl p-4 mb-5">
+                <img src={activeAd.image} alt={activeAd.brand} className="w-20 h-20 object-cover rounded-lg mx-auto mb-2" />
+                <p className="font-bold text-white">{activeAd.brand}</p>
+                <p className="text-gray-400 text-xs">{activeAd.tagline}</p>
+                <a href={activeAd.site} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-xs underline mt-1 block">{activeAd.site}</a>
+              </div>
+
+              <Button
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold h-12 gap-2"
+                onClick={handleVisitSite}
+              >
+                <ExternalLink className="w-4 h-4" /> Visit {activeAd.brand} →
+              </Button>
+              <Button variant="ghost" className="w-full text-gray-400 mt-2" onClick={() => { setActiveAd(null); setSurveyDone(false); }}>
+                Back to Grid
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {loading && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
           >
-            <div className="bg-white rounded-2xl p-8 text-center max-w-xs mx-4">
-              {loading ? (
-                <>
-                  <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-3" />
-                  <p className="font-bold text-gray-900">Processing…</p>
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-10 h-10 text-green-600 mx-auto mb-3" />
-                  <p className="font-bold text-green-700 text-lg">+$0.20 Earned!</p>
-                  <p className="text-sm text-gray-600">Action completed successfully</p>
-                </>
-              )}
+            <div className="bg-gray-900 rounded-2xl p-8 text-center">
+              <Loader2 className="w-10 h-10 animate-spin text-yellow-400 mx-auto mb-3" />
+              <p className="text-white font-bold">Processing your earnings…</p>
             </div>
           </motion.div>
         )}

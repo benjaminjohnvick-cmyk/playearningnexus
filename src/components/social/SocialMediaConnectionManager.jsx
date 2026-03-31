@@ -29,6 +29,16 @@ const PLATFORMS = {
     label: 'Snapchat',
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-50'
+  },
+  tiktok: {
+    icon: ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.24 8.24 0 004.83 1.55V6.78a4.85 4.85 0 01-1.06-.09z" />
+      </svg>
+    ),
+    label: 'TikTok',
+    color: 'text-gray-900',
+    bgColor: 'bg-gray-50'
   }
 };
 
@@ -55,11 +65,13 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
   });
 
   const handleConnect = (platform) => {
+    const cb = encodeURIComponent(`${window.location.origin}/social-auth-callback`);
     const oauthUrls = {
-      facebook: `https://www.facebook.com/v18.0/dialog/oauth?client_id=${Deno.env.get('FACEBOOK_APP_ID')}&redirect_uri=${encodeURIComponent(`${window.location.origin}/social-auth-callback`)}&scope=pages_manage_posts,pages_read_user_profile&response_type=code`,
-      twitter: `https://twitter.com/i/oauth2/authorize?client_id=${Deno.env.get('TWITTER_API_KEY')}&redirect_uri=${encodeURIComponent(`${window.location.origin}/social-auth-callback`)}&scope=tweet.write%20tweet.read%20users.read&state=twitter&response_type=code`,
-      instagram: `https://www.instagram.com/oauth/authorize?client_id=${Deno.env.get('INSTAGRAM_APP_ID')}&redirect_uri=${encodeURIComponent(`${window.location.origin}/social-auth-callback`)}&scope=instagram_business_basic,instagram_business_content_publish&response_type=code`,
-      snapchat: `https://accounts.snapchat.com/accounts/oauth2/authorize?client_id=${Deno.env.get('SNAPCHAT_CLIENT_ID')}&redirect_uri=${encodeURIComponent(`${window.location.origin}/social-auth-callback`)}&scope=snapchat-marketing-api&response_type=code`
+      facebook: `https://www.facebook.com/v18.0/dialog/oauth?client_id=FACEBOOK_APP_ID&redirect_uri=${cb}&scope=pages_manage_posts,pages_read_user_profile&response_type=code`,
+      twitter: `https://twitter.com/i/oauth2/authorize?client_id=TWITTER_API_KEY&redirect_uri=${cb}&scope=tweet.write%20tweet.read%20users.read&state=twitter&response_type=code`,
+      instagram: `https://www.instagram.com/oauth/authorize?client_id=INSTAGRAM_APP_ID&redirect_uri=${cb}&scope=instagram_business_basic,instagram_business_content_publish&response_type=code`,
+      snapchat: `https://accounts.snapchat.com/accounts/oauth2/authorize?client_id=SNAPCHAT_CLIENT_ID&redirect_uri=${cb}&scope=snapchat-marketing-api&response_type=code`,
+      tiktok: `https://www.tiktok.com/v2/auth/authorize?client_key=TIKTOK_CLIENT_KEY&redirect_uri=${cb}&scope=video.upload,video.publish&response_type=code&state=tiktok`,
     };
 
     setConnectingPlatform(platform);
@@ -135,7 +147,7 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
                 <p className="font-semibold text-green-900">Earn Jackpot Entries!</p>
                 <p className="text-green-700 text-xs mt-1">
                   • Facebook/Twitter: 50 entries each<br/>
-                  • Instagram/Snapchat: 75 entries each
+                  • Instagram/Snapchat/TikTok: 75 entries each
                 </p>
               </div>
             </div>
@@ -143,7 +155,7 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
               {availablePlatforms.map(platform => {
                 const config = PLATFORMS[platform];
                 const Icon = config.icon;
-                const entries = platform === 'instagram' || platform === 'snapchat' ? 75 : 50;
+                const entries = ['instagram', 'snapchat', 'tiktok'].includes(platform) ? 75 : 50;
                 
                 return (
                   <Button
