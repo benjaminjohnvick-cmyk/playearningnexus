@@ -20,12 +20,14 @@ const BUSINESS_ADS = [
   { brand: 'Duolingo', tagline: 'Learn A Language Free', site: 'https://duolingo.com', image: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=600&h=600&fit=crop' },
 ];
 
+const GRID_AD_BRANDS = BUSINESS_ADS.map(a => a.brand).join(', ');
+
 const PLATFORM_PROMPTS = {
-  facebook: (ads, postNum) => `Write a ${postNum === 1 ? 'morning' : 'evening'} Facebook post (100-160 chars) promoting GamerGain.app — a gaming platform where users click ads from top brands (${ads.slice(0,4).map(a=>a.brand).join(', ')} and more), answer 4 quick survey questions, and earn $0.20 per ad. Present it as an exciting opportunity. No markdown. End with: 👉 gamergain.app`,
-  twitter: (ads, postNum) => `Write a ${postNum === 1 ? 'morning' : 'evening'} tweet (max 250 chars) about GamerGain.app. Users click ads from ${ads.slice(0,3).map(a=>a.brand).join(', ')} etc., answer 4 survey questions, earn real money. Include 2-3 hashtags like #EarnMoney #GamerGain. No markdown.`,
-  instagram: (ads, postNum) => `Write an ${postNum === 1 ? 'AM' : 'PM'} Instagram caption (150-220 chars) with emojis about GamerGain.app — where you tap ads from top brands (${ads.slice(0,5).map(a=>a.brand).join(', ')}...) answer quick surveys and get PAID 💰. Include 4-5 hashtags. End with: 🔗 gamergain.app`,
-  snapchat: (ads, postNum) => `Write a short, casual Snapchat-style message (under 120 chars) about GamerGain.app. Fun tone, younger audience. Tap ads = earn money. Include a fire emoji or two. Post ${postNum}.`,
-  tiktok: (ads, postNum) => `Write a TikTok video caption (under 150 chars) with trending energy about GamerGain.app — tap ads, take quick surveys, earn cash. Brands featured: ${ads.slice(0,4).map(a=>a.brand).join(', ')}. Include trending hashtags like #TikTokMadeMeDoIt #EarnMoney #SideHustle. Post ${postNum}.`,
+  facebook: (ads, postNum) => `Write a ${postNum === 1 ? 'morning' : 'evening'} Facebook post promoting GamerGain.app's Million Dollar Ad Grid — a mosaic of brand thumbnails (like the original Million Dollar Homepage) featuring ${ads.slice(0,5).map(a=>a.brand).join(', ')} and more. Users click any ad thumbnail, answer 4 survey questions worth $0.10 each ($0.40 total), earn $0.20 cash, then visit the business. Keep it under 180 chars, exciting tone. End with: 👉 gamergain.app/GoogleAdsOverlay — No markdown.`,
+  twitter: (ads, postNum) => `Write a ${postNum === 1 ? 'morning' : 'evening'} tweet (max 260 chars) about GamerGain.app's Million Dollar Ad Grid. Brands: ${ads.slice(0,4).map(a=>a.brand).join(', ')} & more. Click a thumbnail → answer 4 survey questions ($0.40 total) → earn $0.20 → visit the business. Include hashtags #MillionDollarHomepage #EarnMoney #GamerGain. End with gamergain.app/GoogleAdsOverlay`,
+  instagram: (ads, postNum) => `Write an ${postNum === 1 ? 'AM' : 'PM'} Instagram caption (under 220 chars) with emojis for GamerGain.app's Million Dollar Ad Grid post. A mosaic image of brand ads (${ads.slice(0,5).map(a=>a.brand).join(', ')}...). Tap a thumbnail → answer 4 questions ($0.40) → earn $0.20 💰 → get the business link. Include 5 hashtags. End with: 🔗 gamergain.app/GoogleAdsOverlay`,
+  snapchat: (ads, postNum) => `Write a short punchy Snapchat caption (under 120 chars) for GamerGain.app's ad grid image. Tap brand ads like ${ads.slice(0,3).map(a=>a.brand).join(', ')}, answer quick questions, earn real cash! 🔥 gamergain.app Post ${postNum}.`,
+  tiktok: (ads, postNum) => `Write a TikTok caption (under 160 chars) for a video showing the GamerGain Million Dollar Ad Grid — ${ads.slice(0,4).map(a=>a.brand).join(', ')} & more. Click ads, take 4 quick surveys ($0.40), earn $0.20 each! Trending hashtags: #MillionDollarHomepage #EarnMoney #SideHustle #GamerGain #TikTokMadeMeDoIt. Link: gamergain.app/GoogleAdsOverlay Post ${postNum}.`,
 };
 
 async function generatePostContent(base44, platform, postNum) {
