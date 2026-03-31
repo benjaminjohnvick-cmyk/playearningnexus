@@ -7,7 +7,7 @@ import {
   Plus, BarChart2, Grid2x2, LogIn, Building2, DollarSign,
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
-  Globe, Image, Brain, ShoppingBag
+  Globe, Image, Brain, ShoppingBag, Calendar, Monitor
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -27,9 +27,12 @@ import AdAssetLibrary from '@/components/advertiser/AdAssetLibrary';
 import AdTargeting from '@/components/advertiser/AdTargeting';
 import AdBudgetOptimizer from '@/components/advertiser/AdBudgetOptimizer';
 import AdTemplateMarketplacePanel from '@/components/advertiser/AdTemplateMarketplacePanel';
+import AdNotificationBell from '@/components/advertiser/AdNotificationBell';
+import AdCampaignScheduler from '@/components/advertiser/AdCampaignScheduler';
+import AdCreativePreview from '@/components/advertiser/AdCreativePreview';
 import { base44 as b44 } from '@/api/base44Client';
 
-const TABS = ['My Ads', 'A/B Test', 'Targeting', 'Asset Library', 'Marketplace', 'Optimize', 'Bid & Placement', 'Leaderboard', 'Insights', 'Transaction History'];
+const TABS = ['My Ads', 'A/B Test', 'Targeting', 'Asset Library', 'Marketplace', 'Optimize', 'Schedule', 'Preview', 'Bid & Placement', 'Leaderboard', 'Insights', 'Transaction History'];
 
 export default function AdBusinessDashboard() {
   const [user, setUser] = useState(null);
@@ -141,6 +144,14 @@ export default function AdBusinessDashboard() {
               <Wallet className="w-3.5 h-3.5" />
               ${adBalance.toFixed(2)}
             </button>
+            {ads.length > 0 && (
+              <AdNotificationBell
+                ads={ads}
+                adBalance={adBalance}
+                onTopUp={() => setShowTopUp(true)}
+                onTabChange={setActiveTab}
+              />
+            )}
             <Button
               size="sm"
               className="bg-yellow-500 hover:bg-yellow-400 text-black font-black gap-1"
@@ -259,6 +270,8 @@ export default function AdBusinessDashboard() {
               {tab === 'Asset Library' && <Image className="w-3.5 h-3.5" />}
               {tab === 'Marketplace' && <ShoppingBag className="w-3.5 h-3.5" />}
               {tab === 'Optimize' && <Brain className="w-3.5 h-3.5" />}
+              {tab === 'Schedule' && <Calendar className="w-3.5 h-3.5" />}
+              {tab === 'Preview' && <Monitor className="w-3.5 h-3.5" />}
               {tab === 'Bid & Placement' && <Gavel className="w-3.5 h-3.5" />}
               {tab === 'Leaderboard' && <Trophy className="w-3.5 h-3.5" />}
               {tab === 'Insights' && <PieChart className="w-3.5 h-3.5" />}
@@ -361,6 +374,24 @@ export default function AdBusinessDashboard() {
             </div>
             <AdLeaderboard myUserId={user.id} />
             <AdChallenges ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Schedule' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Calendar className="w-4 h-4" /> Campaign Scheduling
+            </h2>
+            <AdCampaignScheduler ads={ads} userId={user.id} />
+          </div>
+        )}
+
+        {activeTab === 'Preview' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Monitor className="w-4 h-4" /> Creative Preview Tool
+            </h2>
+            <AdCreativePreview />
           </div>
         )}
 
