@@ -38,12 +38,13 @@ const SYNTHETIC_FEED = [
   { type: 'survey_completed', name: 'C***e', amount: 1.50,  ago: '33m ago' },
 ];
 
-function FeedItem({ item, isNew = false }) {
+const FeedItem = React.forwardRef(function FeedItem({ item, isNew = false }, ref) {
   const meta = ACTIVITY_ICONS[item.type] || ACTIVITY_ICONS.survey_completed;
   const Icon = meta.icon;
 
   return (
     <motion.div
+      ref={ref}
       layout
       initial={isNew ? { opacity: 0, x: -20, height: 0 } : { opacity: 1, x: 0 }}
       animate={{ opacity: 1, x: 0, height: 'auto' }}
@@ -69,7 +70,7 @@ function FeedItem({ item, isNew = false }) {
       )}
     </motion.div>
   );
-}
+});
 
 export default function RecentEarningsFeed() {
   const [feedItems, setFeedItems] = useState(SYNTHETIC_FEED);

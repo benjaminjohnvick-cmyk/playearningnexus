@@ -21,6 +21,7 @@ export default function ReferralInviteCard({ user }) {
           // Auto-create a referral link for the user
           const code = `${user.email.split('@')[0]}-${Math.random().toString(36).slice(2, 7)}`;
           await base44.entities.CustomReferralLink.create({
+            user_id: user.id,
             link_code: code,
             clicks: 0,
             conversions: 0,

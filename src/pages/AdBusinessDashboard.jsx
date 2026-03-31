@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Plus, BarChart2, Grid2x2, LogIn, Building2, DollarSign,
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
-  Gavel, Sparkles
+  Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -19,8 +19,12 @@ import SocialMediaCostAnalysis from '@/components/advertiser/insights/SocialMedi
 import AdAlertSystem from '@/components/advertiser/AdAlertSystem';
 import AdBidAuction from '@/components/advertiser/AdBidAuction';
 import AIAdGenerator from '@/components/advertiser/AIAdGenerator';
+import AdLeaderboard from '@/components/advertiser/AdLeaderboard';
+import AdChallenges from '@/components/advertiser/AdChallenges';
+import AdABTest from '@/components/advertiser/AdABTest';
+import { base44 as b44 } from '@/api/base44Client';
 
-const TABS = ['My Ads', 'Bid & Placement', 'Insights', 'Transaction History'];
+const TABS = ['My Ads', 'A/B Test', 'Bid & Placement', 'Leaderboard', 'Insights', 'Transaction History'];
 
 export default function AdBusinessDashboard() {
   const [user, setUser] = useState(null);
@@ -31,6 +35,14 @@ export default function AdBusinessDashboard() {
   const [activeTab, setActiveTab] = useState('My Ads');
   const [adBalance, setAdBalance] = useState(0);
   const [prefillData, setPrefillData] = useState(null);
+  const [sendingReport, setSendingReport] = useState(false);
+
+  const handleSendReport = async () => {
+    setSendingReport(true);
+    await b44.functions.invoke('sendWeeklyAdReport', {});
+    setSendingReport(false);
+    alert('Weekly report sent to your email!');
+  };
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -237,7 +249,9 @@ export default function AdBusinessDashboard() {
               }`}
             >
               {tab === 'My Ads' && <BarChart2 className="w-3.5 h-3.5" />}
+              {tab === 'A/B Test' && <FlaskConical className="w-3.5 h-3.5" />}
               {tab === 'Bid & Placement' && <Gavel className="w-3.5 h-3.5" />}
+              {tab === 'Leaderboard' && <Trophy className="w-3.5 h-3.5" />}
               {tab === 'Insights' && <PieChart className="w-3.5 h-3.5" />}
               {tab === 'Transaction History' && <History className="w-3.5 h-3.5" />}
               {tab}
@@ -280,6 +294,32 @@ export default function AdBusinessDashboard() {
               </div>
             )}
           </>
+        )}
+
+        {activeTab === 'A/B Test' && (
+          <div className="space-y-6">
+            <AdABTest ads={ads} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Leaderboard' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                <Trophy className="w-4 h-4" /> Advertiser Rankings & Challenges
+              </h2>
+              <button
+                onClick={handleSendReport}
+                disabled={sendingReport}
+                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 px-3 py-1.5 rounded-lg transition-all"
+              >
+                {sendingReport ? <Loader2 className="w-3 h-3 animate-spin" /> : <Mail className="w-3 h-3" />}
+                Email My Report
+              </button>
+            </div>
+            <AdLeaderboard myUserId={user.id} />
+            <AdChallenges ads={ads} />
+          </div>
         )}
 
         {activeTab === 'Bid & Placement' && (
