@@ -1,0 +1,56 @@
+{
+  "name": "AdTransaction",
+  "type": "object",
+  "properties": {
+    "owner_user_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "charge"
+      ],
+      "description": "deposit = top-up, charge = per-survey deduction"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Positive for deposits, negative for charges"
+    },
+    "description": {
+      "type": "string"
+    },
+    "ad_id": {
+      "type": "string",
+      "description": "AdListing ID (for charge transactions)"
+    },
+    "ad_brand": {
+      "type": "string"
+    },
+    "balance_after": {
+      "type": "number",
+      "description": "Account balance after this transaction"
+    },
+    "stripe_payment_intent": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "pending",
+        "failed"
+      ],
+      "default": "completed"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "owner_user_id",
+    "type",
+    "amount"
+  ]
+}

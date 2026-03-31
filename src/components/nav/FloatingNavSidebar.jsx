@@ -6,7 +6,7 @@ import {
   Home, ShoppingCart, FileText, LayoutDashboard, Heart, Trophy,
   DollarSign, Users, User, TrendingUp, Star, Gamepad2, Mail,
   Settings, Swords, BarChart2, Globe, ArrowRightLeft, Briefcase,
-  ChevronLeft, ChevronRight, Activity, Wallet, Bell
+  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -34,6 +34,10 @@ const NAV_SECTIONS = [
     { name: 'Guilds', icon: Users, path: 'Guilds', color: 'blue' },
     { name: 'Contest', icon: Trophy, path: 'ReferralContest', color: 'blue' },
   ]},
+  { group: 'Advertiser', items: [
+    { name: 'Ad Dashboard', icon: Building2, path: 'AdBusinessDashboard', color: 'yellow' },
+    { name: 'Ad Grid', icon: Grid2x2, path: 'GoogleAdsOverlay', color: 'yellow' },
+  ]},
   { group: 'Developers', items: [
     { name: 'Dev Portal', icon: Briefcase, path: 'BusinessDashboard', color: 'red' },
     { name: 'Game Voting', icon: Gamepad2, path: 'GameVotingHub', color: 'red' },
@@ -58,6 +62,12 @@ const NAV_SECTIONS = [
 ];
 
 const COLOR_MAP = {
+  yellow: {
+    active: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-black shadow-md shadow-yellow-200',
+    hover: 'hover:bg-yellow-50 hover:text-yellow-700',
+    dot: 'bg-yellow-500',
+    group: 'text-yellow-600',
+  },
   red: {
     active: 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-200',
     hover: 'hover:bg-red-50 hover:text-red-700',
