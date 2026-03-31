@@ -7,7 +7,7 @@ import {
   Plus, BarChart2, Grid2x2, LogIn, Building2, DollarSign,
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
-  Globe, Image, Brain
+  Globe, Image, Brain, ShoppingBag
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -26,9 +26,10 @@ import AdABTest from '@/components/advertiser/AdABTest';
 import AdAssetLibrary from '@/components/advertiser/AdAssetLibrary';
 import AdTargeting from '@/components/advertiser/AdTargeting';
 import AdBudgetOptimizer from '@/components/advertiser/AdBudgetOptimizer';
+import AdTemplateMarketplacePanel from '@/components/advertiser/AdTemplateMarketplacePanel';
 import { base44 as b44 } from '@/api/base44Client';
 
-const TABS = ['My Ads', 'A/B Test', 'Targeting', 'Asset Library', 'Optimize', 'Bid & Placement', 'Leaderboard', 'Insights', 'Transaction History'];
+const TABS = ['My Ads', 'A/B Test', 'Targeting', 'Asset Library', 'Marketplace', 'Optimize', 'Bid & Placement', 'Leaderboard', 'Insights', 'Transaction History'];
 
 export default function AdBusinessDashboard() {
   const [user, setUser] = useState(null);
@@ -256,6 +257,7 @@ export default function AdBusinessDashboard() {
               {tab === 'A/B Test' && <FlaskConical className="w-3.5 h-3.5" />}
               {tab === 'Targeting' && <Globe className="w-3.5 h-3.5" />}
               {tab === 'Asset Library' && <Image className="w-3.5 h-3.5" />}
+              {tab === 'Marketplace' && <ShoppingBag className="w-3.5 h-3.5" />}
               {tab === 'Optimize' && <Brain className="w-3.5 h-3.5" />}
               {tab === 'Bid & Placement' && <Gavel className="w-3.5 h-3.5" />}
               {tab === 'Leaderboard' && <Trophy className="w-3.5 h-3.5" />}
@@ -324,6 +326,12 @@ export default function AdBusinessDashboard() {
               <Image className="w-4 h-4" /> Creative Asset Library
             </h2>
             <AdAssetLibrary userId={user.id} ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Marketplace' && (
+          <div className="space-y-6">
+            <AdTemplateMarketplacePanel userId={user.id} userName={user.full_name} ads={ads} />
           </div>
         )}
 

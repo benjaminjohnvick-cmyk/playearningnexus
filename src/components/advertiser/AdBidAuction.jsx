@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Gavel, Zap, TrendingUp, MapPin, Brain, ToggleLeft, ToggleRight, Info, ChevronUp, ChevronDown } from 'lucide-react';
+import { Gavel, Zap, TrendingUp, MapPin, Brain, ToggleLeft, ToggleRight, Info, ChevronUp, ChevronDown, Target, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 const GRID_TIERS = [
@@ -12,35 +12,67 @@ const GRID_TIERS = [
   { tier: 'Economy', rows: '7-10', cols: '6-10', color: 'text-gray-400', bg: 'bg-gray-500/10 border-gray-500/30', avgTraffic: '0.8x', minBid: 0.30, description: 'Lower-grid — budget-friendly with lower competition' },
 ];
 
+// Auto-bidding: given a target tier, return the minimum competitive bid
+function calcAutoBid(targetTier, competitorBids) {
+  const tier = GRID_TIERS.find(t => t.tier === targetTier) || GRID_TIERS[2];
+  const competitorsInTier = competitorBids.filter(b => b >= tier.minBid);
+  if (competitorsInTier.length === 0) return tier.minBid;
+  const highestComp = Math.max(...competitorsInTier);
+  // Outbid by $0.03 but don't exceed max sensible amount
+  return Math.min(+(highestComp + 0.03).toFixed(2), 1.50);
+}
+
 export default function AdBidAuction({ ads, adBalance, onRefresh }) {
   const [bids, setBids] = useState({});
   const [smartBidding, setSmartBidding] = useState({});
+  const [autoBidding, setAutoBidding] = useState({}); // target-position auto-bidding
+  const [targetTiers, setTargetTiers] = useState({}); // desired grid tier per ad
   const [loading, setLoading] = useState({});
-  const [liveAuction, setLiveAuction] = useState(null); // simulated live bid feed
+  const [liveAuction, setLiveAuction] = useState(null);
 
   // Initialize bid state from ad data
   useEffect(() => {
     const initial = {};
     const smart = {};
+    const auto = {};
+    const targets = {};
     ads.forEach(ad => {
       initial[ad.id] = ad.bid_amount || 0.40;
       smart[ad.id] = ad.smart_bidding || false;
+      auto[ad.id] = false;
+      targets[ad.id] = ad.grid_tier || 'Standard';
     });
     setBids(initial);
     setSmartBidding(smart);
+    setAutoBidding(auto);
+    setTargetTiers(targets);
   }, [ads]);
 
-  // Simulate live auction activity
+  // Simulate live auction activity + auto-bid adjustment
   useEffect(() => {
     const competitors = ['Apex Gaming', 'TechGear Pro', 'NovaSkins', 'EpicLoot', 'StreamKit'];
     const interval = setInterval(() => {
       const comp = competitors[Math.floor(Math.random() * competitors.length)];
       const tier = GRID_TIERS[Math.floor(Math.random() * 3)];
-      const bid = (Math.random() * 0.4 + 0.35).toFixed(2);
-      setLiveAuction({ comp, tier: tier.tier, bid, time: new Date().toLocaleTimeString() });
+      const bid = parseFloat((Math.random() * 0.4 + 0.35).toFixed(2));
+      setLiveAuction({ comp, tier: tier.tier, bid: bid.toFixed(2), time: new Date().toLocaleTimeString() });
+
+      // Auto-bidding: re-compute bids for ads that have it enabled
+      setBids(prev => {
+        const updated = { ...prev };
+        Object.entries(autoBidding).forEach(([adId, isAuto]) => {
+          if (!isAuto) return;
+          const target = targetTiers[adId] || 'Standard';
+          // Simulate a pool of competitor bids around the new bid
+          const pool = [bid, bid - 0.05, bid + 0.02, bid - 0.10].filter(b => b > 0);
+          const newBid = calcAutoBid(target, pool);
+          updated[adId] = newBid;
+        });
+        return updated;
+      });
     }, 8000);
     return () => clearInterval(interval);
-  }, []);
+  }, [autoBidding, targetTiers]);
 
   const adjustBid = (adId, delta) => {
     setBids(prev => ({
@@ -64,6 +96,21 @@ export default function AdBidAuction({ ads, adBalance, onRefresh }) {
     toast.success(`Bid set to $${bidAmt}/survey — placed in ${tier.tier} zone`);
     setLoading(l => ({ ...l, [ad.id]: false }));
     onRefresh();
+  };
+
+  const toggleAutoBid = async (adId) => {
+    const next = !autoBidding[adId];
+    setAutoBidding(a => ({ ...a, [adId]: next }));
+    if (next) {
+      // Disable smart bidding when auto-bidding is on
+      setSmartBidding(s => ({ ...s, [adId]: false }));
+      const target = targetTiers[adId] || 'Standard';
+      const tier = GRID_TIERS.find(t => t.tier === target) || GRID_TIERS[2];
+      setBids(b => ({ ...b, [adId]: tier.minBid }));
+      toast.success(`Auto-Bidding ON — targeting ${target} zone, adjusts in real-time`);
+    } else {
+      toast.info('Auto-Bidding disabled');
+    }
   };
 
   const toggleSmartBid = async (adId) => {
@@ -127,6 +174,7 @@ export default function AdBidAuction({ ads, adBalance, onRefresh }) {
           const currentTier = activeBid(ad);
           const bidAmt = bids[ad.id] || 0.40;
           const isSmart = smartBidding[ad.id];
+          const isAuto = autoBidding[ad.id];
 
           return (
             <div key={ad.id} className="bg-gray-800/60 border border-gray-700/50 rounded-xl p-4">
@@ -137,20 +185,56 @@ export default function AdBidAuction({ ads, adBalance, onRefresh }) {
                     <MapPin className="w-2.5 h-2.5 mr-1" />{currentTier.tier} Zone
                   </Badge>
                 </div>
-                {/* Smart Bidding toggle */}
-                <button
-                  onClick={() => toggleSmartBid(ad.id)}
-                  className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border transition-all ${
-                    isSmart
-                      ? 'bg-purple-500/20 border-purple-500/50 text-purple-300'
-                      : 'bg-gray-700 border-gray-600 text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <Brain className={`w-3 h-3 ${isSmart ? 'text-purple-400' : 'text-gray-500'}`} />
-                  Smart Bidding {isSmart ? 'ON' : 'OFF'}
-                  {isSmart ? <ToggleRight className="w-3.5 h-3.5 text-purple-400" /> : <ToggleLeft className="w-3.5 h-3.5" />}
-                </button>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {/* Auto-Bidding toggle */}
+                  <button
+                    onClick={() => toggleAutoBid(ad.id)}
+                    className={`flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-lg border transition-all ${
+                      isAuto
+                        ? 'bg-green-500/20 border-green-500/50 text-green-300'
+                        : 'bg-gray-700 border-gray-600 text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <Target className={`w-3 h-3 ${isAuto ? 'text-green-400' : 'text-gray-500'}`} />
+                    Auto-Bid {isAuto ? 'ON' : 'OFF'}
+                  </button>
+                  {/* Smart Bidding toggle */}
+                  <button
+                    onClick={() => toggleSmartBid(ad.id)}
+                    className={`flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-lg border transition-all ${
+                      isSmart
+                        ? 'bg-purple-500/20 border-purple-500/50 text-purple-300'
+                        : 'bg-gray-700 border-gray-600 text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <Brain className={`w-3 h-3 ${isSmart ? 'text-purple-400' : 'text-gray-500'}`} />
+                    Smart {isSmart ? 'ON' : 'OFF'}
+                  </button>
+                </div>
               </div>
+
+              {/* Target tier selector for auto-bidding */}
+              {isAuto && (
+                <div className="mb-3 flex items-center gap-2 flex-wrap">
+                  <span className="text-gray-400 text-xs flex items-center gap-1"><Target className="w-3 h-3 text-green-400" /> Target Zone:</span>
+                  {GRID_TIERS.map(t => (
+                    <button
+                      key={t.tier}
+                      onClick={() => setTargetTiers(prev => ({ ...prev, [ad.id]: t.tier }))}
+                      className={`text-[10px] px-2 py-1 rounded-lg border transition-all ${
+                        targetTiers[ad.id] === t.tier
+                          ? `${t.bg} ${t.color} border-current`
+                          : 'bg-gray-700 border-gray-600 text-gray-500'
+                      }`}
+                    >
+                      {t.tier}
+                    </button>
+                  ))}
+                  <span className="text-[10px] text-green-400 flex items-center gap-1 ml-1">
+                    <RefreshCw className="w-3 h-3" /> Adjusting live
+                  </span>
+                </div>
+              )}
 
               <div className="flex items-center gap-4 flex-wrap">
                 {/* Bid controls */}

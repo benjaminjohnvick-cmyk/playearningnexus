@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
+import { InteractionTracker, buildFingerprint, hasAlreadyCompleted, markCompleted } from '@/lib/clickVerification';
 
 // ─── Business Ad Data ──────────────────────────────────────────────────────────
 // In production this would be fetched from the BusinessClient / PPCSurvey entity
@@ -257,6 +258,8 @@ export default function GoogleAdsOverlay() {
   const [earned, setEarned] = useState(0);
   const [unlockedAds, setUnlockedAds] = useState([]);
   const [referrerId, setReferrerId] = useState(null);
+  const [botBlocked, setBotBlocked] = useState(false);
+  const trackerRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(u => setUser(u)).catch(() => {});
@@ -287,12 +290,23 @@ export default function GoogleAdsOverlay() {
       window.open(ad.site, '_blank');
       return;
     }
+    // Bot / duplicate check
+    if (hasAlreadyCompleted(ad.id)) {
+      toast.error('You already completed this survey in this session.');
+      return;
+    }
+    setBotBlocked(false);
+    // Start tracking interaction patterns
+    if (trackerRef.current) trackerRef.current.destroy();
+    trackerRef.current = new InteractionTracker();
     setActiveAd(ad);
     setSurveyStep(1);
     setSurveyDone(false);
   };
 
-  const handleAnswer = (questionIdx, _answer) => {
+  const handleAnswer = (questionIdx, answer) => {
+    // Record click coords — use a placeholder since we don't have event here
+    if (trackerRef.current) trackerRef.current.recordClick(0, questionIdx * 50);
     if (questionIdx < 4) {
       setSurveyStep(questionIdx + 1);
     } else {
@@ -301,6 +315,19 @@ export default function GoogleAdsOverlay() {
   };
 
   const completeSurvey = async () => {
+    // Run bot detection analysis before rewarding
+    if (trackerRef.current) {
+      const analysis = trackerRef.current.analyze();
+      trackerRef.current.destroy();
+      trackerRef.current = null;
+      if (analysis.isBot) {
+        setBotBlocked(true);
+        setActiveAd(null);
+        setSurveyStep(0);
+        toast.error('⚠️ Suspicious activity detected. Survey voided.');
+        return;
+      }
+    }
     setLoading(true);
     setSurveyStep(0);
     try {
@@ -319,6 +346,7 @@ export default function GoogleAdsOverlay() {
         }).catch(() => null);
       }
 
+      markCompleted(activeAd.id);
       const newUnlocked = [...unlockedAds, activeAd.id];
       setUnlockedAds(newUnlocked);
       localStorage.setItem('unlocked_ppc_ads', JSON.stringify(newUnlocked));

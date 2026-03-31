@@ -1,0 +1,104 @@
+{
+  "name": "AdTemplateMarketplace",
+  "type": "object",
+  "properties": {
+    "creator_user_id": {
+      "type": "string"
+    },
+    "creator_name": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "template_type": {
+      "type": "string",
+      "enum": [
+        "thumbnail",
+        "tagline",
+        "full_campaign"
+      ],
+      "default": "tagline"
+    },
+    "content": {
+      "type": "string",
+      "description": "URL for thumbnails, text for taglines"
+    },
+    "preview_url": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number",
+      "default": 0,
+      "description": "Price in USD (0 = free)"
+    },
+    "license_type": {
+      "type": "string",
+      "enum": [
+        "free",
+        "one_time",
+        "subscription"
+      ],
+      "default": "free"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "gaming",
+        "tech",
+        "fashion",
+        "food",
+        "finance",
+        "health",
+        "general"
+      ],
+      "default": "general"
+    },
+    "total_purchases": {
+      "type": "number",
+      "default": 0
+    },
+    "total_revenue": {
+      "type": "number",
+      "default": 0
+    },
+    "avg_ctr": {
+      "type": "number",
+      "default": 0,
+      "description": "Average CTR across all buyers"
+    },
+    "avg_completion_rate": {
+      "type": "number",
+      "default": 0
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived",
+        "pending_review"
+      ],
+      "default": "active"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "creator_user_id",
+    "title",
+    "template_type",
+    "content"
+  ]
+}

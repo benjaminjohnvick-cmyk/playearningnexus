@@ -1,0 +1,33 @@
+{
+  "name": "AdTemplatePurchase",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "buyer_user_id": {
+      "type": "string"
+    },
+    "creator_user_id": {
+      "type": "string"
+    },
+    "price_paid": {
+      "type": "number",
+      "default": 0
+    },
+    "license_type": {
+      "type": "string"
+    },
+    "applied_to_ad_id": {
+      "type": "string"
+    },
+    "purchased_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "template_id",
+    "buyer_user_id"
+  ]
+}
