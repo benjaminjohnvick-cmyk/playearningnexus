@@ -145,10 +145,10 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
             <Button 
               size="sm"
               className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold ml-1 text-xs px-2"
-              title="Add Wishlist/Buy/BNPL buttons to Google Ads"
+              title="Paid PPC Ads — Advertise for free and get paid to click ads"
             >
               <LayoutGrid className="w-3 h-3 mr-1" />
-              <span className="hidden sm:inline">Google Ads</span>
+              <span className="hidden sm:inline">Paid PPC Ads</span>
             </Button>
           </Link>
         </div>
