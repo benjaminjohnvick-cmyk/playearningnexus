@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import {
   Plus, BarChart2, Grid2x2, LogIn, Building2, DollarSign,
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
-  Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2
+  Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
+  Globe, Image, Brain
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -22,9 +23,12 @@ import AIAdGenerator from '@/components/advertiser/AIAdGenerator';
 import AdLeaderboard from '@/components/advertiser/AdLeaderboard';
 import AdChallenges from '@/components/advertiser/AdChallenges';
 import AdABTest from '@/components/advertiser/AdABTest';
+import AdAssetLibrary from '@/components/advertiser/AdAssetLibrary';
+import AdTargeting from '@/components/advertiser/AdTargeting';
+import AdBudgetOptimizer from '@/components/advertiser/AdBudgetOptimizer';
 import { base44 as b44 } from '@/api/base44Client';
 
-const TABS = ['My Ads', 'A/B Test', 'Bid & Placement', 'Leaderboard', 'Insights', 'Transaction History'];
+const TABS = ['My Ads', 'A/B Test', 'Targeting', 'Asset Library', 'Optimize', 'Bid & Placement', 'Leaderboard', 'Insights', 'Transaction History'];
 
 export default function AdBusinessDashboard() {
   const [user, setUser] = useState(null);
@@ -239,7 +243,7 @@ export default function AdBusinessDashboard() {
         )}
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 bg-gray-900 rounded-xl p-1 w-fit">
+        <div className="flex gap-1 mb-6 bg-gray-900 rounded-xl p-1 overflow-x-auto no-scrollbar w-full sm:w-fit">
           {TABS.map(tab => (
             <button
               key={tab}
@@ -250,6 +254,9 @@ export default function AdBusinessDashboard() {
             >
               {tab === 'My Ads' && <BarChart2 className="w-3.5 h-3.5" />}
               {tab === 'A/B Test' && <FlaskConical className="w-3.5 h-3.5" />}
+              {tab === 'Targeting' && <Globe className="w-3.5 h-3.5" />}
+              {tab === 'Asset Library' && <Image className="w-3.5 h-3.5" />}
+              {tab === 'Optimize' && <Brain className="w-3.5 h-3.5" />}
               {tab === 'Bid & Placement' && <Gavel className="w-3.5 h-3.5" />}
               {tab === 'Leaderboard' && <Trophy className="w-3.5 h-3.5" />}
               {tab === 'Insights' && <PieChart className="w-3.5 h-3.5" />}
@@ -299,6 +306,33 @@ export default function AdBusinessDashboard() {
         {activeTab === 'A/B Test' && (
           <div className="space-y-6">
             <AdABTest ads={ads} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Targeting' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Globe className="w-4 h-4" /> Audience Targeting
+            </h2>
+            <AdTargeting ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Asset Library' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Image className="w-4 h-4" /> Creative Asset Library
+            </h2>
+            <AdAssetLibrary userId={user.id} ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Optimize' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Brain className="w-4 h-4" /> ML Budget Optimization
+            </h2>
+            <AdBudgetOptimizer ads={ads} onRefresh={refetch} />
           </div>
         )}
 

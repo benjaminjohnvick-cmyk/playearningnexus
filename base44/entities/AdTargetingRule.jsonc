@@ -1,0 +1,70 @@
+{
+  "name": "AdTargetingRule",
+  "type": "object",
+  "properties": {
+    "ad_id": {
+      "type": "string"
+    },
+    "owner_user_id": {
+      "type": "string"
+    },
+    "countries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "ISO country codes e.g. ['US','CA']"
+    },
+    "us_states": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "US state codes e.g. ['CA','TX']"
+    },
+    "age_buckets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "13-17",
+          "18-24",
+          "25-34",
+          "35-44",
+          "45-54",
+          "55+"
+        ]
+      },
+      "default": []
+    },
+    "interest_buckets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "gaming",
+          "sports",
+          "tech",
+          "fashion",
+          "finance",
+          "health",
+          "music",
+          "travel",
+          "food",
+          "education"
+        ]
+      },
+      "default": []
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "ad_id",
+    "owner_user_id"
+  ]
+}
