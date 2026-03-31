@@ -65,6 +65,7 @@ const AIOrderForm = lazy(() => import('./pages/AIOrderForm'));
 const DailyTodoList = lazy(() => import('./pages/DailyTodoList'));
 const SalesAnalyticsDashboard = lazy(() => import('./pages/SalesAnalyticsDashboard'));
 const GoogleAdsOverlay = lazy(() => import('./pages/GoogleAdsOverlay'));
+const AdBusinessDashboard = lazy(() => import('./pages/AdBusinessDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -186,6 +187,7 @@ const AuthenticatedApp = () => {
       <Route path="/DailyTodoList" element={<LayoutWrapper currentPageName="DailyTodoList"><DailyTodoList /></LayoutWrapper>} />
       <Route path="/SalesAnalyticsDashboard" element={<LayoutWrapper currentPageName="SalesAnalyticsDashboard"><SalesAnalyticsDashboard /></LayoutWrapper>} />
       <Route path="/GoogleAdsOverlay" element={<LayoutWrapper currentPageName="GoogleAdsOverlay"><GoogleAdsOverlay /></LayoutWrapper>} />
+      <Route path="/AdBusinessDashboard" element={<LayoutWrapper currentPageName="AdBusinessDashboard"><AdBusinessDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

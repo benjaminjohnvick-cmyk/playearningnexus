@@ -1,0 +1,78 @@
+{
+  "name": "AdListing",
+  "type": "object",
+  "properties": {
+    "business_id": {
+      "type": "string",
+      "description": "ID of the BusinessClient record"
+    },
+    "owner_user_id": {
+      "type": "string",
+      "description": "User ID of the advertiser"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand / business display name"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Short ad tagline shown on hover"
+    },
+    "landing_url": {
+      "type": "string",
+      "description": "URL users visit after unlocking the ad"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Uploaded ad thumbnail image URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "paused",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "total_clicks": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times the ad thumbnail was clicked"
+    },
+    "surveys_started": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of survey flows started on this ad"
+    },
+    "surveys_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of surveys fully completed"
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0,
+      "description": "Total ad spend ($0.40 per completed survey)"
+    },
+    "budget_limit": {
+      "type": "number",
+      "default": 100,
+      "description": "Max total spend before pausing"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "owner_user_id",
+    "brand_name",
+    "landing_url"
+  ]
+}
