@@ -60,6 +60,11 @@ const AdminGrowthHeatmap = lazy(() => import('./pages/AdminGrowthHeatmap'));
 const Tournaments = lazy(() => import('./pages/Tournaments'));
 const TournamentDetails = lazy(() => import('./pages/TournamentDetails'));
 const SocialAuthCallback = lazy(() => import('./pages/SocialAuthCallback'));
+const SocialMediaSetup = lazy(() => import('./pages/SocialMediaSetup'));
+const AIOrderForm = lazy(() => import('./pages/AIOrderForm'));
+const DailyTodoList = lazy(() => import('./pages/DailyTodoList'));
+const SalesAnalyticsDashboard = lazy(() => import('./pages/SalesAnalyticsDashboard'));
+const GoogleAdsOverlay = lazy(() => import('./pages/GoogleAdsOverlay'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -168,6 +173,11 @@ const AuthenticatedApp = () => {
       <Route path="/Tournaments" element={<LayoutWrapper currentPageName="Tournaments"><Tournaments /></LayoutWrapper>} />
       <Route path="/TournamentDetails" element={<LayoutWrapper currentPageName="TournamentDetails"><TournamentDetails /></LayoutWrapper>} />
       <Route path="/social-auth-callback" element={<LayoutWrapper currentPageName="SocialAuthCallback"><SocialAuthCallback /></LayoutWrapper>} />
+      <Route path="/SocialMediaSetup" element={<LayoutWrapper currentPageName="SocialMediaSetup"><SocialMediaSetup /></LayoutWrapper>} />
+      <Route path="/AIOrderForm" element={<LayoutWrapper currentPageName="AIOrderForm"><AIOrderForm /></LayoutWrapper>} />
+      <Route path="/DailyTodoList" element={<LayoutWrapper currentPageName="DailyTodoList"><DailyTodoList /></LayoutWrapper>} />
+      <Route path="/SalesAnalyticsDashboard" element={<LayoutWrapper currentPageName="SalesAnalyticsDashboard"><SalesAnalyticsDashboard /></LayoutWrapper>} />
+      <Route path="/GoogleAdsOverlay" element={<LayoutWrapper currentPageName="GoogleAdsOverlay"><GoogleAdsOverlay /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

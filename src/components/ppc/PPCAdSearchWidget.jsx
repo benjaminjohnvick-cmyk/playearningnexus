@@ -6,7 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Zap, TrendingUp, Target, X, DollarSign, Clock, Download, Share2 } from 'lucide-react';
+import { Search, Zap, TrendingUp, Target, X, DollarSign, Clock, Download, Share2, LayoutGrid } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
 import { usePushNotificationTriggers } from '@/hooks/usePushNotificationTriggers';
 import AnimatedJackpotCounter from '@/components/jackpot/AnimatedJackpotCounter';
@@ -137,6 +139,18 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
           >
             <Download className="w-4 h-4" />
           </Button>
+
+          {/* Google Ads Overlay Button */}
+          <Link to={createPageUrl('GoogleAdsOverlay')}>
+            <Button 
+              size="sm"
+              className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold ml-1 text-xs px-2"
+              title="Add Wishlist/Buy/BNPL buttons to Google Ads"
+            >
+              <LayoutGrid className="w-3 h-3 mr-1" />
+              <span className="hidden sm:inline">Google Ads</span>
+            </Button>
+          </Link>
         </div>
 
         {/* Social Media Manager Modal */}

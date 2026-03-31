@@ -255,6 +255,19 @@ export default function Home() {
       {/* Recommended Surveys + Challenges for logged-in users */}
       {user && (
         <div className="max-w-7xl mx-auto px-6 pb-16 space-y-8">
+          {/* Daily To-Do List CTA */}
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 text-white flex items-center justify-between gap-4">
+            <div>
+              <p className="font-bold text-lg">📋 Your Daily To-Do List is Ready!</p>
+              <p className="text-indigo-100 text-sm">Complete mandatory tasks: Earn $3 · Refer a friend · Use PPC widget · Download extension</p>
+            </div>
+            <Link to={createPageUrl('DailyTodoList')}>
+              <Button className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold flex-shrink-0">
+                View Tasks <ArrowRight className="ml-1 w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+
           {/* AI Personalized Daily Goal */}
           <AIPersonalizedDailyGoal user={user} />
 
