@@ -1,0 +1,62 @@
+{
+  "name": "AdLearningMemory",
+  "type": "object",
+  "properties": {
+    "owner_user_id": {
+      "type": "string"
+    },
+    "ad_id": {
+      "type": "string"
+    },
+    "brand_name": {
+      "type": "string"
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "bid_amount": {
+      "type": "number"
+    },
+    "grid_tier": {
+      "type": "string"
+    },
+    "total_clicks": {
+      "type": "number",
+      "default": 0
+    },
+    "surveys_completed": {
+      "type": "number",
+      "default": 0
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0
+    },
+    "ctr": {
+      "type": "number",
+      "default": 0,
+      "description": "completion rate %"
+    },
+    "roi_score": {
+      "type": "number",
+      "default": 0
+    },
+    "top_performing_tagline": {
+      "type": "string"
+    },
+    "ai_insights": {
+      "type": "string"
+    },
+    "snapshot_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "owner_user_id",
+    "ad_id"
+  ]
+}

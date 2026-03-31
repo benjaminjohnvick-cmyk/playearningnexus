@@ -321,6 +321,12 @@ export default function Layout({ children, currentPageName }) {
                     🏆 Tournaments
                   </Button>
                 </Link>
+                <Link to="/AdBusinessOverview" className="flex-shrink-0">
+                  <Button variant={currentPageName === 'AdBusinessOverview' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'AdBusinessOverview' ? "bg-gradient-to-r from-yellow-500 to-orange-500 shadow-md" : "hover:bg-yellow-50 text-yellow-700 font-semibold border border-yellow-200"}>
+                    📊 Ad Grid
+                  </Button>
+                </Link>
               </nav>
 
               {/* Desktop Right: user controls */}

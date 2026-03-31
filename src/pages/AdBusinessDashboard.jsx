@@ -7,7 +7,7 @@ import {
   Plus, BarChart2, Grid2x2, LogIn, Building2, DollarSign,
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
-  Globe, Image, Brain, ShoppingBag, Calendar, Monitor
+  Globe, Image, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -30,9 +30,12 @@ import AdTemplateMarketplacePanel from '@/components/advertiser/AdTemplateMarket
 import AdNotificationBell from '@/components/advertiser/AdNotificationBell';
 import AdCampaignScheduler from '@/components/advertiser/AdCampaignScheduler';
 import AdCreativePreview from '@/components/advertiser/AdCreativePreview';
+import AdReportScheduler from '@/components/advertiser/AdReportScheduler';
+import AiAdCopyEnhancer from '@/components/advertiser/AiAdCopyEnhancer';
+import AdAnalyticsExpanded from '@/components/advertiser/AdAnalyticsExpanded';
 import { base44 as b44 } from '@/api/base44Client';
 
-const TABS = ['My Ads', 'A/B Test', 'Targeting', 'Asset Library', 'Marketplace', 'Optimize', 'Schedule', 'Preview', 'Bid & Placement', 'Leaderboard', 'Insights', 'Transaction History'];
+const TABS = ['My Ads', 'A/B Test', 'AI Copy', 'Targeting', 'Asset Library', 'Marketplace', 'Optimize', 'Schedule', 'Preview', 'Bid & Placement', 'Leaderboard', 'Analytics+', 'Reports', 'Transaction History'];
 
 export default function AdBusinessDashboard() {
   const [user, setUser] = useState(null);
@@ -270,8 +273,11 @@ export default function AdBusinessDashboard() {
               {tab === 'Asset Library' && <Image className="w-3.5 h-3.5" />}
               {tab === 'Marketplace' && <ShoppingBag className="w-3.5 h-3.5" />}
               {tab === 'Optimize' && <Brain className="w-3.5 h-3.5" />}
+              {tab === 'AI Copy' && <Wand2 className="w-3.5 h-3.5" />}
               {tab === 'Schedule' && <Calendar className="w-3.5 h-3.5" />}
               {tab === 'Preview' && <Monitor className="w-3.5 h-3.5" />}
+              {tab === 'Analytics+' && <TrendingUp className="w-3.5 h-3.5" />}
+              {tab === 'Reports' && <FileText className="w-3.5 h-3.5" />}
               {tab === 'Bid & Placement' && <Gavel className="w-3.5 h-3.5" />}
               {tab === 'Leaderboard' && <Trophy className="w-3.5 h-3.5" />}
               {tab === 'Insights' && <PieChart className="w-3.5 h-3.5" />}
@@ -321,6 +327,15 @@ export default function AdBusinessDashboard() {
         {activeTab === 'A/B Test' && (
           <div className="space-y-6">
             <AdABTest ads={ads} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'AI Copy' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Wand2 className="w-4 h-4" /> AI Ad Copy Enhancer
+            </h2>
+            <AiAdCopyEnhancer ads={ads} />
           </div>
         )}
 
@@ -407,6 +422,24 @@ export default function AdBusinessDashboard() {
             ) : (
               <AdBidAuction ads={ads} adBalance={adBalance} onRefresh={refetch} />
             )}
+          </div>
+        )}
+
+        {activeTab === 'Analytics+' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" /> Advanced Analytics
+            </h2>
+            <AdAnalyticsExpanded ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Reports' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <FileText className="w-4 h-4" /> Automated Reports
+            </h2>
+            <AdReportScheduler ads={ads} adBalance={adBalance} userEmail={user.email} />
           </div>
         )}
 
