@@ -6,15 +6,15 @@ import { Badge } from '@/components/ui/badge';
 import { Building2, Globe, Image, Tag, DollarSign, Loader2, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function AdSignupForm({ user, onSuccess }) {
+export default function AdSignupForm({ user, onSuccess, prefillData }) {
   const [form, setForm] = useState({
-    brand_name: '',
-    tagline: '',
-    landing_url: '',
+    brand_name: prefillData?.brand_name || '',
+    tagline: prefillData?.tagline || '',
+    landing_url: prefillData?.landing_url || '',
     budget_limit: 100,
   });
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState(prefillData?.image_url || null);
   const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e) => {
@@ -32,7 +32,7 @@ export default function AdSignupForm({ user, onSuccess }) {
     }
     setLoading(true);
     try {
-      let image_url = null;
+      let image_url = prefillData?.image_url || null;
       if (imageFile) {
         const { file_url } = await base44.integrations.Core.UploadFile({ file: imageFile });
         image_url = file_url;

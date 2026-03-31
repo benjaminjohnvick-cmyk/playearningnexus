@@ -36,30 +36,46 @@
       ],
       "default": "pending"
     },
+    "bid_amount": {
+      "type": "number",
+      "default": 0.4,
+      "description": "Cost-per-survey bid \u2014 determines grid placement tier"
+    },
+    "smart_bidding": {
+      "type": "boolean",
+      "default": false,
+      "description": "Auto-optimize bid based on remaining budget"
+    },
+    "grid_tier": {
+      "type": "string",
+      "enum": [
+        "Premium",
+        "High",
+        "Standard",
+        "Economy"
+      ],
+      "default": "Standard",
+      "description": "Grid zone assigned based on bid"
+    },
     "total_clicks": {
       "type": "number",
-      "default": 0,
-      "description": "Number of times the ad thumbnail was clicked"
+      "default": 0
     },
     "surveys_started": {
       "type": "number",
-      "default": 0,
-      "description": "Number of survey flows started on this ad"
+      "default": 0
     },
     "surveys_completed": {
       "type": "number",
-      "default": 0,
-      "description": "Number of surveys fully completed"
+      "default": 0
     },
     "total_spent": {
       "type": "number",
-      "default": 0,
-      "description": "Total ad spend ($0.40 per completed survey)"
+      "default": 0
     },
     "budget_limit": {
       "type": "number",
-      "default": 100,
-      "description": "Max total spend before pausing"
+      "default": 100
     },
     "submitted_at": {
       "type": "string",

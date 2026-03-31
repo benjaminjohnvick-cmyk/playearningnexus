@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Plus, BarChart2, Grid2x2, LogIn, Building2, DollarSign,
-  MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart
+  MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
+  Gavel, Sparkles
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -15,16 +16,21 @@ import GridHeatmap from '@/components/advertiser/insights/GridHeatmap';
 import SurveyFunnelAnalysis from '@/components/advertiser/insights/SurveyFunnelAnalysis';
 import DemographicTrends from '@/components/advertiser/insights/DemographicTrends';
 import SocialMediaCostAnalysis from '@/components/advertiser/insights/SocialMediaCostAnalysis';
+import AdAlertSystem from '@/components/advertiser/AdAlertSystem';
+import AdBidAuction from '@/components/advertiser/AdBidAuction';
+import AIAdGenerator from '@/components/advertiser/AIAdGenerator';
 
-const TABS = ['My Ads', 'Insights', 'Transaction History'];
+const TABS = ['My Ads', 'Bid & Placement', 'Insights', 'Transaction History'];
 
 export default function AdBusinessDashboard() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [showTopUp, setShowTopUp] = useState(false);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [activeTab, setActiveTab] = useState('My Ads');
   const [adBalance, setAdBalance] = useState(0);
+  const [prefillData, setPrefillData] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -127,8 +133,15 @@ export default function AdBusinessDashboard() {
             </Button>
             <Button
               size="sm"
+              className="bg-purple-600 hover:bg-purple-500 text-white font-bold gap-1"
+              onClick={() => { setShowAIGenerator(!showAIGenerator); setShowForm(false); }}
+            >
+              <Sparkles className="w-4 h-4" /> AI Generate
+            </Button>
+            <Button
+              size="sm"
               className="bg-gray-700 hover:bg-gray-600 text-white font-bold gap-1"
-              onClick={() => setShowForm(true)}
+              onClick={() => { setShowForm(true); setShowAIGenerator(false); }}
             >
               <Plus className="w-4 h-4" /> New Ad
             </Button>
@@ -137,6 +150,11 @@ export default function AdBusinessDashboard() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 py-8">
+
+        {/* Alert system */}
+        {ads.length > 0 && (
+          <AdAlertSystem ads={ads} adBalance={adBalance} onTopUp={() => setShowTopUp(true)} />
+        )}
 
         {/* Low balance warning */}
         {adBalance <= 0 && ads.some(a => a.status === 'paused') && (
@@ -174,6 +192,19 @@ export default function AdBusinessDashboard() {
           </div>
         )}
 
+        {/* AI Generator */}
+        {showAIGenerator && (
+          <div className="mb-6">
+            <AIAdGenerator
+              onApply={(data) => {
+                setPrefillData(data);
+                setShowAIGenerator(false);
+                setShowForm(true);
+              }}
+            />
+          </div>
+        )}
+
         {/* New Ad Form */}
         {showForm && (
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 mb-8">
@@ -181,9 +212,17 @@ export default function AdBusinessDashboard() {
               <h2 className="text-lg font-black text-white flex items-center gap-2">
                 <Plus className="w-5 h-5 text-yellow-400" /> Submit a New Ad
               </h2>
-              <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-white text-xl leading-none">✕</button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setShowForm(false); setShowAIGenerator(true); }}
+                  className="text-xs text-yellow-400 hover:text-yellow-300 flex items-center gap-1 border border-yellow-500/30 px-2 py-1 rounded-lg"
+                >
+                  <Sparkles className="w-3 h-3" /> Use AI Generator
+                </button>
+                <button onClick={() => { setShowForm(false); setPrefillData(null); }} className="text-gray-500 hover:text-white text-xl leading-none">✕</button>
+              </div>
             </div>
-            <AdSignupForm user={user} onSuccess={() => { setShowForm(false); refetch(); }} />
+            <AdSignupForm user={user} prefillData={prefillData} onSuccess={() => { setShowForm(false); setPrefillData(null); refetch(); }} />
           </div>
         )}
 
@@ -198,6 +237,7 @@ export default function AdBusinessDashboard() {
               }`}
             >
               {tab === 'My Ads' && <BarChart2 className="w-3.5 h-3.5" />}
+              {tab === 'Bid & Placement' && <Gavel className="w-3.5 h-3.5" />}
               {tab === 'Insights' && <PieChart className="w-3.5 h-3.5" />}
               {tab === 'Transaction History' && <History className="w-3.5 h-3.5" />}
               {tab}
@@ -240,6 +280,21 @@ export default function AdBusinessDashboard() {
               </div>
             )}
           </>
+        )}
+
+        {activeTab === 'Bid & Placement' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                <Gavel className="w-4 h-4" /> Real-Time Bid Auction
+              </h2>
+            </div>
+            {ads.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">Submit an ad first to manage bids.</div>
+            ) : (
+              <AdBidAuction ads={ads} adBalance={adBalance} onRefresh={refetch} />
+            )}
+          </div>
         )}
 
         {activeTab === 'Insights' && (
