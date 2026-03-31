@@ -5,14 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Plus, BarChart2, Grid2x2, LogIn, Building2, DollarSign,
-  MousePointerClick, CheckSquare, Wallet, History, AlertTriangle
+  MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
 import AdBudgetTopUp from '@/components/advertiser/AdBudgetTopUp';
 import AdTransactionHistory from '@/components/advertiser/AdTransactionHistory';
+import GridHeatmap from '@/components/advertiser/insights/GridHeatmap';
+import SurveyFunnelAnalysis from '@/components/advertiser/insights/SurveyFunnelAnalysis';
+import DemographicTrends from '@/components/advertiser/insights/DemographicTrends';
+import SocialMediaCostAnalysis from '@/components/advertiser/insights/SocialMediaCostAnalysis';
 
-const TABS = ['My Ads', 'Transaction History'];
+const TABS = ['My Ads', 'Insights', 'Transaction History'];
 
 export default function AdBusinessDashboard() {
   const [user, setUser] = useState(null);
@@ -193,7 +197,9 @@ export default function AdBusinessDashboard() {
                 activeTab === tab ? 'bg-yellow-500 text-black' : 'text-gray-400 hover:text-white'
               }`}
             >
-              {tab === 'My Ads' ? <BarChart2 className="w-3.5 h-3.5" /> : <History className="w-3.5 h-3.5" />}
+              {tab === 'My Ads' && <BarChart2 className="w-3.5 h-3.5" />}
+              {tab === 'Insights' && <PieChart className="w-3.5 h-3.5" />}
+              {tab === 'Transaction History' && <History className="w-3.5 h-3.5" />}
               {tab}
             </button>
           ))}
@@ -234,6 +240,22 @@ export default function AdBusinessDashboard() {
               </div>
             )}
           </>
+        )}
+
+        {activeTab === 'Insights' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                <PieChart className="w-4 h-4" /> Ad Performance Insights
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <GridHeatmap ads={ads} />
+              <SurveyFunnelAnalysis ads={ads} />
+            </div>
+            <DemographicTrends ads={ads} />
+            <SocialMediaCostAnalysis userId={user.id} totalAdSpend={totals.spent || 100} />
+          </div>
         )}
 
         {activeTab === 'Transaction History' && (
