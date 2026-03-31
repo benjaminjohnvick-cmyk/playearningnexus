@@ -20,6 +20,7 @@ const NAV_SECTIONS = [
   ]},
   { group: 'Earn', items: [
     { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', color: 'green' },
+    { name: 'Paid PPC Ads', icon: DollarSign, path: 'GoogleAdsOverlay', color: 'green' },
     { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', color: 'green' },
     { name: 'My Payouts', icon: Wallet, path: 'MyPayouts', color: 'green' },
     { name: 'Earnings Simulator', icon: Activity, path: 'EarningsSimulatorPage', color: 'green' },
