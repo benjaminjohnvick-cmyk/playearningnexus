@@ -7,7 +7,8 @@ import {
   Plus, BarChart2, Grid2x2, LogIn, Building2, DollarSign,
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
-  Globe, Image, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp
+  Globe, Image, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
+  MapPin, Layers, Star
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -33,9 +34,31 @@ import AdCreativePreview from '@/components/advertiser/AdCreativePreview';
 import AdReportScheduler from '@/components/advertiser/AdReportScheduler';
 import AiAdCopyEnhancer from '@/components/advertiser/AiAdCopyEnhancer';
 import AdAnalyticsExpanded from '@/components/advertiser/AdAnalyticsExpanded';
+import AdLoyaltySystem from '@/components/advertiser/AdLoyaltySystem';
+import AdGridHeatmapOverlay from '@/components/advertiser/AdGridHeatmapOverlay';
+import AdCreativeCanvas from '@/components/advertiser/AdCreativeCanvas';
 import { base44 as b44 } from '@/api/base44Client';
 
-const TABS = ['My Ads', 'A/B Test', 'AI Copy', 'Targeting', 'Asset Library', 'Marketplace', 'Optimize', 'Schedule', 'Preview', 'Bid & Placement', 'Leaderboard', 'Analytics+', 'Reports', 'Transaction History'];
+const TABS = [
+  ['My Ads', <BarChart2 />],
+  ['A/B Test', <FlaskConical />],
+  ['AI Copy', <Wand2 />],
+  ['Grid Heatmap', <MapPin />],
+  ['Canvas', <Layers />],
+  ['Loyalty', <Star />],
+  ['Targeting', <Globe />],
+  ['Asset Library', <Image />],
+  ['Marketplace', <ShoppingBag />],
+  ['Optimize', <Brain />],
+  ['Schedule', <Calendar />],
+  ['Preview', <Monitor />],
+  ['Bid & Placement', <Gavel />],
+  ['Leaderboard', <Trophy />],
+  ['Analytics+', <TrendingUp />],
+  ['Reports', <FileText />],
+  ['Insights', <PieChart />],
+  ['Transaction History', <History />],
+];
 
 export default function AdBusinessDashboard() {
   const [user, setUser] = useState(null);
@@ -257,34 +280,23 @@ export default function AdBusinessDashboard() {
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex gap-1 mb-6 bg-gray-900 rounded-xl p-1 overflow-x-auto no-scrollbar w-full sm:w-fit">
-          {TABS.map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-1.5 ${
-                activeTab === tab ? 'bg-yellow-500 text-black' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              {tab === 'My Ads' && <BarChart2 className="w-3.5 h-3.5" />}
-              {tab === 'A/B Test' && <FlaskConical className="w-3.5 h-3.5" />}
-              {tab === 'Targeting' && <Globe className="w-3.5 h-3.5" />}
-              {tab === 'Asset Library' && <Image className="w-3.5 h-3.5" />}
-              {tab === 'Marketplace' && <ShoppingBag className="w-3.5 h-3.5" />}
-              {tab === 'Optimize' && <Brain className="w-3.5 h-3.5" />}
-              {tab === 'AI Copy' && <Wand2 className="w-3.5 h-3.5" />}
-              {tab === 'Schedule' && <Calendar className="w-3.5 h-3.5" />}
-              {tab === 'Preview' && <Monitor className="w-3.5 h-3.5" />}
-              {tab === 'Analytics+' && <TrendingUp className="w-3.5 h-3.5" />}
-              {tab === 'Reports' && <FileText className="w-3.5 h-3.5" />}
-              {tab === 'Bid & Placement' && <Gavel className="w-3.5 h-3.5" />}
-              {tab === 'Leaderboard' && <Trophy className="w-3.5 h-3.5" />}
-              {tab === 'Insights' && <PieChart className="w-3.5 h-3.5" />}
-              {tab === 'Transaction History' && <History className="w-3.5 h-3.5" />}
-              {tab}
-            </button>
-          ))}
+        {/* Tabs — scrollable row, icon-only on small screens */}
+        <div className="mb-6 bg-gray-900 rounded-xl p-1 overflow-x-auto no-scrollbar">
+          <div className="flex gap-1 w-max min-w-full">
+            {TABS.map(([tab, icon]) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                title={tab}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
+                  activeTab === tab ? 'bg-yellow-500 text-black' : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <span className="w-3.5 h-3.5 flex-shrink-0">{React.cloneElement(icon, { className: 'w-3.5 h-3.5' })}</span>
+                <span className="hidden sm:inline">{tab}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Tab content */}
@@ -322,6 +334,33 @@ export default function AdBusinessDashboard() {
               </div>
             )}
           </>
+        )}
+
+        {activeTab === 'Grid Heatmap' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <MapPin className="w-4 h-4" /> Ad Grid Interaction Heatmap
+            </h2>
+            <AdGridHeatmapOverlay ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Canvas' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Layers className="w-4 h-4" /> Creative Canvas Builder
+            </h2>
+            <AdCreativeCanvas />
+          </div>
+        )}
+
+        {activeTab === 'Loyalty' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Star className="w-4 h-4 text-yellow-400" /> GamerGain Points & Loyalty Rewards
+            </h2>
+            <AdLoyaltySystem ads={ads} userId={user.id} />
+          </div>
         )}
 
         {activeTab === 'A/B Test' && (
