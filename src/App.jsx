@@ -103,6 +103,14 @@ const AuthenticatedApp = () => {
     }
   }
 
+  // Redirect new users to social media setup
+  const needsSocialSetup = sessionStorage.getItem('needs_social_setup') === 'true';
+  const isOnSetupPage = window.location.pathname === '/SocialMediaSetup';
+  if (needsSocialSetup && !isOnSetupPage) {
+    window.location.replace('/SocialMediaSetup');
+    return null;
+  }
+
   // Render the main app
   return (
     <Suspense fallback={<PageLoader />}>

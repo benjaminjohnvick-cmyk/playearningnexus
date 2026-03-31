@@ -27,31 +27,29 @@ Deno.serve(async (req) => {
 
         if (ads.length === 0) continue;
 
-        // Generate AI content tailored to platform
-        const aiContent = await generateAIContent(connection.platform, ads);
-        
-        // Post to platform
-        const postResult = await postToSocialPlatform(
-          connection,
-          aiContent
-        );
+        // Generate and send TWO AI posts per connection per run
+        const postIds = [];
+        for (let postNum = 1; postNum <= 2; postNum++) {
+          const aiContent = await generateAIContent(connection.platform, ads);
+          const postResult = await postToSocialPlatform(connection, aiContent);
+          postIds.push(postResult.postId || `post_${postNum}`);
+        }
 
-        // Update connection stats
+        // Update connection stats (+2 posts)
         await base44.asServiceRole.entities.SocialMediaConnection.update(connection.id, {
           last_post_at: new Date().toISOString(),
-          total_posts: (connection.total_posts || 0) + 1,
-          auto_post_count: (connection.auto_post_count || 0) + 1
+          total_posts: (connection.total_posts || 0) + 2,
+          auto_post_count: (connection.auto_post_count || 0) + 2
         });
 
-        // Award 10 jackpot entries per automatic post
+        // Award 20 jackpot entries (10 per post × 2 posts)
         await base44.asServiceRole.auth.updateMe({
           id: connection.user_id,
-          total_jackpot_entries: (userRecord.total_jackpot_entries || 0) + 10
+          total_jackpot_entries: (userRecord.total_jackpot_entries || 0) + 20
         }).catch(() => {
-          // Fallback: create a transaction record instead
           return base44.asServiceRole.entities.ReferralJackpot.create({
             period: new Date().toISOString().split('T')[0],
-            entry_breakdown: { [connection.user_id]: 10 }
+            entry_breakdown: { [connection.user_id]: 20 }
           }).catch(() => null);
         });
 
@@ -59,7 +57,8 @@ Deno.serve(async (req) => {
           connectionId: connection.id,
           platform: connection.platform,
           success: true,
-          contentGenerated: true
+          postsCreated: 2,
+          postIds
         });
       } catch (error) {
         results.push({

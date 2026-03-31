@@ -95,14 +95,10 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
       setIsAuthenticated(true);
 
-      // Auto-enroll in social posting on first auth
-      if (currentUser && !currentUser.auto_social_posting_enrolled) {
-        try {
-          await base44.functions.invoke('autoEnrollUserInSocialPosting', {});
-        } catch (enrollError) {
-          console.error('Failed to auto-enroll in social posting:', enrollError);
-          // Continue regardless of enrollment failure
-        }
+      // On first login (no social platforms selected yet), redirect to setup page
+      if (currentUser && !currentUser.social_media_connected) {
+        // Mark that we've triggered the setup so we don't loop
+        sessionStorage.setItem('needs_social_setup', 'true');
       }
 
       setIsLoadingAuth(false);

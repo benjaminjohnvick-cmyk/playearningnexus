@@ -68,8 +68,9 @@ export default function SocialMediaSetup() {
       // Load existing connections
       base44.entities.SocialMediaConnection.filter({ user_id: u.id })
         .then(conns => {
-          setExistingConnections(conns.filter(c => c.is_active));
-          setConnected(conns.filter(c => c.is_active).map(c => c.platform));
+          const active = conns.filter(c => c.is_active);
+          setExistingConnections(active);
+          setConnected(active.map(c => c.platform));
         })
         .catch(() => {});
     }).catch(() => navigate('/'));
@@ -142,6 +143,8 @@ export default function SocialMediaSetup() {
       } catch (e) {}
     }
 
+    // Clear the signup redirect flag
+    sessionStorage.removeItem('needs_social_setup');
     setStep(3);
   };
 
@@ -164,8 +167,9 @@ export default function SocialMediaSetup() {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Connect Social Media</h1>
           <p className="text-gray-600">
-            Connect your accounts to auto-share PPC ads & earn bonus jackpot entries on every post
+            Select the platforms you have — AI will automatically post 2 ads per day on each one & you'll earn jackpot entries every time.
           </p>
+          <p className="text-xs text-red-500 font-semibold mt-2 uppercase tracking-wide">Required to continue</p>
         </motion.div>
 
         <AnimatePresence mode="wait">
