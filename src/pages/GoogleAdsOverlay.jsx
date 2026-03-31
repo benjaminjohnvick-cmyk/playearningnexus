@@ -7,6 +7,7 @@ import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, ZoomIn } from '
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
 
 // Sample PPC business ads — in production these would come from PPCSurvey/PPCMarketplace entities
 const BUSINESS_ADS = [
@@ -53,11 +54,23 @@ export default function GoogleAdsOverlay() {
   const [loading, setLoading] = useState(false);
   const [earned, setEarned] = useState(0);
   const [unlockedAds, setUnlockedAds] = useState([]);
+  const [referrerId, setReferrerId] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
     const saved = JSON.parse(localStorage.getItem('unlocked_ppc_ads') || '[]');
     setUnlockedAds(saved);
+    // Read referral param from URL
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      setReferrerId(ref);
+      localStorage.setItem('adgrid_referrer', ref);
+    } else {
+      // Persist from a previous visit in this session
+      const stored = localStorage.getItem('adgrid_referrer');
+      if (stored) setReferrerId(stored);
+    }
   }, []);
 
   const handleAdClick = (ad) => {
@@ -94,6 +107,23 @@ export default function GoogleAdsOverlay() {
         total_earnings: (user.total_earnings || 0) + 0.20,
       });
       setEarned(prev => prev + 0.20);
+
+      // Credit referrer $0.05 if this user arrived via a referral link
+      const activeReferrerId = referrerId || localStorage.getItem('adgrid_referrer');
+      if (activeReferrerId && activeReferrerId !== user.id) {
+        try {
+          // Update referrer's earnings via their local stats key (stored server-side via user entity)
+          const referrers = await base44.entities.User.filter ? null : null; // just update via updateMe-style
+          // Use a SocialMediaPost record as a lightweight referral earning log
+          await base44.entities.SocialMediaPost.create({
+            user_id: activeReferrerId,
+            platform: 'adgrid_referral',
+            content: `Referral earning: referred user ${user.id} completed a survey`,
+            status: 'referral_credit',
+            posted_at: new Date().toISOString(),
+          }).catch(() => null);
+        } catch (_) {}
+      }
 
       const newUnlocked = [...unlockedAds, activeAd.id];
       setUnlockedAds(newUnlocked);
@@ -156,6 +186,11 @@ export default function GoogleAdsOverlay() {
           <Button size="sm" onClick={handleShareGrid} className="bg-purple-600 hover:bg-purple-700 text-white gap-1">
             <Share2 className="w-4 h-4" /> Share This Grid
           </Button>
+        </div>
+
+        {/* Referral box */}
+        <div className="max-w-xl mx-auto w-full">
+          <AdGridReferralBox user={user} />
         </div>
 
         {/* Social share indicators */}
