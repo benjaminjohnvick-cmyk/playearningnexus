@@ -130,13 +130,13 @@ export default function SocialMediaSetup() {
     setConnected(prev => [...prev, ...newlyConnected]);
     setLoading(false);
 
-    // Trigger AI posts for each connected platform
+    // Trigger AI posts immediately for all newly connected platforms (2 posts each)
     if (newlyConnected.length > 0) {
       setPosting(true);
       try {
-        await base44.functions.invoke('postAdToSocialMedia', {
-          platforms: newlyConnected,
+        await base44.functions.invoke('automaticSocialPostingScheduler', {
           userId: user.id,
+          platforms: newlyConnected,
           postsPerPlatform: 2,
         });
       } catch (e) {
@@ -145,8 +145,10 @@ export default function SocialMediaSetup() {
       setPosting(false);
     }
 
-    // Award jackpot entries
-    const entriesEarned = newlyConnected.length * 50;
+    // Award jackpot entries per-platform (TikTok/Instagram/Snapchat = 75, others = 50)
+    const entriesEarned = newlyConnected.reduce((sum, p) => {
+      return sum + (['instagram', 'snapchat', 'tiktok'].includes(p) ? 75 : 50);
+    }, 0);
     if (entriesEarned > 0) {
       try {
         await base44.auth.updateMe({
