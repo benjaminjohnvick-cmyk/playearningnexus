@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import {
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
   Globe, Image, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
-  MapPin, Layers, Star
+  MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -37,28 +37,62 @@ import AdAnalyticsExpanded from '@/components/advertiser/AdAnalyticsExpanded';
 import AdLoyaltySystem from '@/components/advertiser/AdLoyaltySystem';
 import AdGridHeatmapOverlay from '@/components/advertiser/AdGridHeatmapOverlay';
 import AdCreativeCanvas from '@/components/advertiser/AdCreativeCanvas';
+import AdAutoPilotBidder from '@/components/advertiser/AdAutoPilotBidder';
+import AdSocialPushIntegration from '@/components/advertiser/AdSocialPushIntegration';
+import AdAcademy from '@/components/advertiser/AdAcademy';
+import AdSocialShareTracker from '@/components/advertiser/AdSocialShareTracker';
 import { base44 as b44 } from '@/api/base44Client';
 
-const TABS = [
-  ['My Ads', <BarChart2 />],
-  ['A/B Test', <FlaskConical />],
-  ['AI Copy', <Wand2 />],
-  ['Grid Heatmap', <MapPin />],
-  ['Canvas', <Layers />],
-  ['Loyalty', <Star />],
-  ['Targeting', <Globe />],
-  ['Asset Library', <Image />],
-  ['Marketplace', <ShoppingBag />],
-  ['Optimize', <Brain />],
-  ['Schedule', <Calendar />],
-  ['Preview', <Monitor />],
-  ['Bid & Placement', <Gavel />],
-  ['Leaderboard', <Trophy />],
-  ['Analytics+', <TrendingUp />],
-  ['Reports', <FileText />],
-  ['Insights', <PieChart />],
-  ['Transaction History', <History />],
+const TAB_GROUPS = [
+  {
+    group: '📋 Campaigns',
+    tabs: [
+      ['My Ads', <BarChart2 />],
+      ['A/B Test', <FlaskConical />],
+      ['Schedule', <Calendar />],
+      ['Bid & Placement', <Gavel />],
+      ['Auto-Pilot', <Bot />],
+    ],
+  },
+  {
+    group: '🎨 Creatives',
+    tabs: [
+      ['AI Copy', <Wand2 />],
+      ['Canvas', <Layers />],
+      ['Asset Library', <Image />],
+      ['Preview', <Monitor />],
+      ['Marketplace', <ShoppingBag />],
+    ],
+  },
+  {
+    group: '📊 Analytics',
+    tabs: [
+      ['Analytics+', <TrendingUp />],
+      ['Grid Heatmap', <MapPin />],
+      ['Insights', <PieChart />],
+      ['Reports', <FileText />],
+      ['Transaction History', <History />],
+    ],
+  },
+  {
+    group: '🚀 Growth',
+    tabs: [
+      ['Targeting', <Globe />],
+      ['Social Push', <Share2 />],
+      ['Social Shares', <Share2 />],
+      ['Optimize', <Brain />],
+      ['Leaderboard', <Trophy />],
+    ],
+  },
+  {
+    group: '🏆 Rewards',
+    tabs: [
+      ['Loyalty', <Star />],
+      ['Academy', <GraduationCap />],
+    ],
+  },
 ];
+const ALL_TABS = TAB_GROUPS.flatMap(g => g.tabs);
 
 export default function AdBusinessDashboard() {
   const [user, setUser] = useState(null);
@@ -70,6 +104,15 @@ export default function AdBusinessDashboard() {
   const [adBalance, setAdBalance] = useState(0);
   const [prefillData, setPrefillData] = useState(null);
   const [sendingReport, setSendingReport] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // Close menu on outside click
+  useEffect(() => {
+    const handler = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const handleSendReport = async () => {
     setSendingReport(true);
@@ -280,23 +323,42 @@ export default function AdBusinessDashboard() {
           </div>
         )}
 
-        {/* Tabs — scrollable row, icon-only on small screens */}
-        <div className="mb-6 bg-gray-900 rounded-xl p-1 overflow-x-auto no-scrollbar">
-          <div className="flex gap-1 w-max min-w-full">
-            {TABS.map(([tab, icon]) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                title={tab}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
-                  activeTab === tab ? 'bg-yellow-500 text-black' : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <span className="w-3.5 h-3.5 flex-shrink-0">{React.cloneElement(icon, { className: 'w-3.5 h-3.5' })}</span>
-                <span className="hidden sm:inline">{tab}</span>
-              </button>
-            ))}
-          </div>
+        {/* Dropdown menu nav */}
+        <div className="relative mb-6" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen(o => !o)}
+            className="flex items-center gap-2 bg-gray-900 border border-gray-700 hover:border-yellow-500/50 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-all"
+          >
+            <Menu className="w-4 h-4 text-yellow-400" />
+            <span className="flex-1 text-left min-w-0">
+              {ALL_TABS.find(([t]) => t === activeTab)?.[0] ?? 'My Ads'}
+            </span>
+            {menuOpen ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+          </button>
+
+          {menuOpen && (
+            <div className="absolute top-full left-0 mt-1 w-72 bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden">
+              <div className="max-h-[70vh] overflow-y-auto py-2">
+                {TAB_GROUPS.map(group => (
+                  <div key={group.group}>
+                    <p className="px-4 py-1.5 text-[10px] font-black text-gray-600 uppercase tracking-wider">{group.group}</p>
+                    {group.tabs.map(([tab, icon]) => (
+                      <button key={tab} onClick={() => { setActiveTab(tab); setMenuOpen(false); }}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold transition-all text-left hover:bg-gray-800 ${
+                          activeTab === tab ? 'bg-yellow-500/15 text-yellow-300' : 'text-gray-400'
+                        }`}>
+                        <span className="w-4 h-4 flex-shrink-0 text-gray-500">
+                          {React.cloneElement(icon, { className: `w-4 h-4 ${activeTab === tab ? 'text-yellow-400' : 'text-gray-500'}` })}
+                        </span>
+                        {tab}
+                        {activeTab === tab && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-yellow-400" />}
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Tab content */}
@@ -360,6 +422,42 @@ export default function AdBusinessDashboard() {
               <Star className="w-4 h-4 text-yellow-400" /> GamerGain Points & Loyalty Rewards
             </h2>
             <AdLoyaltySystem ads={ads} userId={user.id} />
+          </div>
+        )}
+
+        {activeTab === 'Auto-Pilot' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Bot className="w-4 h-4 text-green-400" /> Auto-Pilot ML Bidder
+            </h2>
+            <AdAutoPilotBidder ads={ads} adBalance={adBalance} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Social Push' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Share2 className="w-4 h-4 text-blue-400" /> Social Media Push Integration
+            </h2>
+            <AdSocialPushIntegration ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Social Shares' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Share2 className="w-4 h-4 text-purple-400" /> Real-Time Social Share Tracker
+            </h2>
+            <AdSocialShareTracker ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Academy' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <GraduationCap className="w-4 h-4 text-yellow-400" /> Advertiser Academy
+            </h2>
+            <AdAcademy userId={user.id} />
           </div>
         )}
 
