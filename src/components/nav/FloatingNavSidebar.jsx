@@ -16,6 +16,7 @@ const NAV_SECTIONS = [
     { name: 'Surveys', icon: FileText, path: 'Surveys', color: 'blue' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', color: 'blue' },
     { name: 'Wishlist', icon: Heart, path: 'Wishlist', color: 'red' },
+    { name: 'Daily Tasks', icon: FileText, path: 'DailyTodoList', color: 'red' },
   ]},
   { group: 'Earn', items: [
     { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', color: 'green' },
