@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Circle, DollarSign, Users, Zap, Download, Star, Trophy, MessageSquare, ShoppingCart, Loader2, RefreshCw, Lock } from 'lucide-react';
+import { CheckCircle2, Circle, DollarSign, Users, Zap, Download, Star, Trophy, MessageSquare, ShoppingCart, Loader2, RefreshCw, Lock, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
@@ -57,6 +57,18 @@ const MANDATORY_TASKS = [
     action: { label: 'Download', path: 'PPCMarketplace' },
     mandatory: true,
     points: 10,
+  },
+  {
+    id: 'social_connect',
+    icon: Share2,
+    color: 'text-pink-600',
+    bg: 'bg-pink-50 border-pink-200',
+    badgeBg: 'bg-pink-600',
+    title: 'Connect Social Media',
+    description: 'Link Facebook, Instagram, Twitter, or Snapchat to enable auto-posting and earn jackpot entries',
+    action: { label: 'Connect Now', path: 'SocialMediaSetup' },
+    mandatory: true,
+    points: 30,
   },
 ];
 
