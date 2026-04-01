@@ -31,28 +31,23 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
 
     setSearching(true);
     try {
-      let prompt = `Search for products online: "${searchQuery}". 
-      Find the top 5 results with:
-      - Product name
-      - Description
-      - Best price available
-      - Vendor/retailer name
-      - Purchase URL
-      - Image URL if available
-      
-      Return results in this exact JSON format:
-      {
-        "products": [
-          {
-            "name": "Product Name",
-            "description": "Product description",
-            "price": 99.99,
-            "vendor": "Vendor Name",
-            "url": "https://vendor.com/product",
-            "image_url": "https://image.url"
-          }
-        ]
-      }`;
+      const prompt = `You are a real-time price comparison engine. Search across the web for: "${searchQuery}".
+
+Find this exact product listed at MULTIPLE different retailers/websites. Return every distinct retailer listing you can find, sorted from LOWEST price to HIGHEST price.
+
+Include major retailers like Amazon, Walmart, Target, Best Buy, eBay, Newegg, B&H, Costco, GameStop, etc., plus any other relevant stores that carry this product.
+
+For each listing return:
+- product_name: the exact product title on that retailer
+- description: brief product description (1-2 sentences)
+- price: the current price as a number (no currency symbol). Use 0 if unavailable.
+- vendor: the retailer/store name (e.g. "Amazon", "Walmart", "Best Buy")
+- url: the direct product page URL on that retailer
+- image_url: a product image URL if available, otherwise empty string
+- in_stock: true/false whether it appears to be in stock
+- shipping_note: brief shipping info (e.g. "Free shipping", "Ships in 2-3 days", "Free 2-day with Prime")
+
+Return AT LEAST 6 listings if they exist. Sort the listings array from lowest price to highest price.`;
 
       const result = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -67,12 +62,14 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
               items: {
                 type: "object",
                 properties: {
-                  name: { type: "string" },
+                  product_name: { type: "string" },
                   description: { type: "string" },
                   price: { type: "number" },
                   vendor: { type: "string" },
                   url: { type: "string" },
-                  image_url: { type: "string" }
+                  image_url: { type: "string" },
+                  in_stock: { type: "boolean" },
+                  shipping_note: { type: "string" }
                 }
               }
             }
@@ -81,7 +78,9 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
       });
 
       if (result.products && result.products.length > 0) {
-        onSearchResults(result.products, searchQuery, searchImage);
+        // Ensure sorted lowest to highest
+        const sorted = [...result.products].sort((a, b) => (a.price || 0) - (b.price || 0));
+        onSearchResults(sorted, searchQuery, searchImage);
       } else {
         toast.error('No products found');
       }
@@ -158,7 +157,7 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
           disabled={searching}
         >
           <Search className="w-4 h-4 mr-2" />
-          {searching ? 'Searching...' : 'Search for any product you want, and pay with surveys'}
+          {searching ? 'Comparing prices across the web...' : 'Compare prices across all stores'}
         </Button>
       </div>
     </div>
