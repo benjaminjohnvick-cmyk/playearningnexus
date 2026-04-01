@@ -8,8 +8,6 @@ import { toast } from 'sonner';
 import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
 import { InteractionTracker, buildFingerprint, hasAlreadyCompleted, markCompleted } from '@/lib/clickVerification';
 
-// ─── Business Ad Data ──────────────────────────────────────────────────────────
-// In production this would be fetched from the BusinessClient / PPCSurvey entity
 const BUSINESS_ADS = [
   { id: 1,  brand: 'Nike',       tagline: 'Just Do It',                 image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop',  site: 'https://nike.com',        color: '#111111' },
   { id: 2,  brand: 'Apple',      tagline: 'Think Different',            image: 'https://images.unsplash.com/photo-1568910748155-01ca989dbdd6?w=200&h=200&fit=crop', site: 'https://apple.com',       color: '#555555' },
@@ -51,12 +49,11 @@ const SOCIAL_PLATFORMS = [
   { id: 'instagram', label: 'Instagram',  color: '#E1306C' },
   { id: 'snapchat',  label: 'Snapchat',   color: '#FFFC00' },
   { id: 'tiktok',    label: 'TikTok',     color: '#ff0050' },
+  { id: 'youtube_shorts', label: 'YouTube Shorts', color: '#FF0000' },
 ];
 
-// ─── Million Dollar Homepage Grid Cell ────────────────────────────────────────
 function AdCell({ ad, isUnlocked, onClick }) {
   const [hovered, setHovered] = useState(false);
-
   return (
     <motion.div
       className="relative cursor-pointer"
@@ -67,7 +64,6 @@ function AdCell({ ad, isUnlocked, onClick }) {
       onClick={onClick}
       transition={{ type: 'spring', stiffness: 300, damping: 22 }}
     >
-      {/* Thumbnail */}
       <img
         src={ad.image}
         alt={ad.brand}
@@ -75,22 +71,16 @@ function AdCell({ ad, isUnlocked, onClick }) {
           isUnlocked ? 'border-green-400 brightness-100' : 'border-gray-700 hover:border-yellow-400 brightness-90'
         }`}
       />
-
-      {/* Unlocked check badge */}
       {isUnlocked && (
         <div className="absolute -top-1 -right-1 bg-green-500 rounded-full w-4 h-4 flex items-center justify-center shadow">
           <CheckCircle className="w-3 h-3 text-white" />
         </div>
       )}
-
-      {/* Lock overlay for locked ads */}
       {!isUnlocked && (
         <div className="absolute inset-0 flex items-end justify-center pb-0.5 pointer-events-none">
           <span className="text-[8px] text-yellow-400 font-bold">🔒</span>
         </div>
       )}
-
-      {/* Hover tooltip card */}
       <AnimatePresence>
         {hovered && (
           <motion.div
@@ -125,11 +115,9 @@ function AdCell({ ad, isUnlocked, onClick }) {
   );
 }
 
-// ─── Survey Modal ──────────────────────────────────────────────────────────────
 function SurveyModal({ ad, step, onAnswer, onClose }) {
   const question = step >= 1 && step <= 4 ? SURVEY_QUESTIONS[step - 1] : null;
   if (!question || !ad) return null;
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -145,15 +133,12 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
         className="bg-gray-900 border border-gray-700 rounded-3xl shadow-2xl max-w-sm w-full p-6"
         onClick={e => e.stopPropagation()}
       >
-        {/* GamerGain.app link at top of modal */}
         <div className="text-center mb-3">
           <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
             className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center justify-center gap-1">
             <Globe className="w-3 h-3" /> GamerGain.app
           </a>
         </div>
-
-        {/* Ad identity */}
         <div className="flex items-center gap-3 mb-5 bg-gray-800 rounded-2xl p-3">
           <img src={ad.image} alt={ad.brand} className="w-14 h-14 object-cover rounded-xl flex-shrink-0" />
           <div>
@@ -162,21 +147,16 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
             <p className="text-gray-500 text-[10px]">{ad.site}</p>
           </div>
         </div>
-
-        {/* Progress bar */}
         <div className="flex gap-1.5 mb-4">
           {[1, 2, 3, 4].map(n => (
             <div key={n} className={`h-2 flex-1 rounded-full transition-all duration-300 ${n <= step ? 'bg-yellow-400' : 'bg-gray-700'}`} />
           ))}
         </div>
-
         <div className="flex items-center justify-between mb-4">
           <Badge className="bg-yellow-500 text-black font-bold text-xs px-3">Q{step} of 4 · +$0.10</Badge>
           <span className="text-gray-400 text-xs">Total reward: <span className="text-yellow-400 font-bold">$0.40</span></span>
         </div>
-
         <p className="text-white font-bold text-sm mb-4">{question.q}</p>
-
         <div className="grid grid-cols-2 gap-2">
           {question.opts.map((opt, i) => (
             <Button
@@ -189,7 +169,6 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
             </Button>
           ))}
         </div>
-
         <p className="text-center text-gray-500 text-[10px] mt-4">
           You earn $0.20 · GamerGain earns $0.20 · Business gets discovered
         </p>
@@ -198,7 +177,6 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
   );
 }
 
-// ─── Success Modal ─────────────────────────────────────────────────────────────
 function SuccessModal({ ad, onVisit, onBack }) {
   if (!ad) return null;
   return (
@@ -214,16 +192,13 @@ function SuccessModal({ ad, onVisit, onBack }) {
         className="bg-gray-900 border border-green-500 rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center"
         style={{ boxShadow: '0 0 40px rgba(34,197,94,0.25)' }}
       >
-        {/* GamerGain.app link */}
         <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
           className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center justify-center gap-1 mb-4">
           <Globe className="w-3 h-3" /> GamerGain.app
         </a>
-
         <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-3" />
         <h3 className="text-2xl font-black text-white mb-1">🎉 +$0.20 Earned!</h3>
         <p className="text-gray-400 text-sm mb-5">Survey complete. You've unlocked <span className="text-white font-bold">{ad.brand}</span></p>
-
         <div className="bg-gray-800 rounded-2xl p-4 mb-5 text-left">
           <img src={ad.image} alt={ad.brand} className="w-full h-32 object-cover rounded-xl mb-3" />
           <p className="font-black text-white text-lg">{ad.brand}</p>
@@ -233,7 +208,6 @@ function SuccessModal({ ad, onVisit, onBack }) {
             <ExternalLink className="w-3 h-3" /> {ad.site}
           </a>
         </div>
-
         <Button
           className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-black h-12 gap-2 text-sm rounded-xl mb-2"
           onClick={onVisit}
@@ -248,8 +222,7 @@ function SuccessModal({ ad, onVisit, onBack }) {
   );
 }
 
-// ─── Main Page ─────────────────────────────────────────────────────────────────
-export default function GoogleAdsOverlay() {
+export default function PaidPPCAdsMosaic() {
   const [user, setUser] = useState(null);
   const [activeAd, setActiveAd] = useState(null);
   const [surveyStep, setSurveyStep] = useState(0);
@@ -276,7 +249,6 @@ export default function GoogleAdsOverlay() {
     }
   }, []);
 
-  // Auto-compute grid columns for MDH-style layout
   const totalAds = BUSINESS_ADS.length;
   const gridCols = Math.ceil(Math.sqrt(totalAds * 1.5));
 
@@ -290,13 +262,11 @@ export default function GoogleAdsOverlay() {
       window.open(ad.site, '_blank');
       return;
     }
-    // Bot / duplicate check
     if (hasAlreadyCompleted(ad.id)) {
       toast.error('You already completed this survey in this session.');
       return;
     }
     setBotBlocked(false);
-    // Start tracking interaction patterns
     if (trackerRef.current) trackerRef.current.destroy();
     trackerRef.current = new InteractionTracker();
     setActiveAd(ad);
@@ -305,7 +275,6 @@ export default function GoogleAdsOverlay() {
   };
 
   const handleAnswer = (questionIdx, answer) => {
-    // Record click coords — use a placeholder since we don't have event here
     if (trackerRef.current) trackerRef.current.recordClick(0, questionIdx * 50);
     if (questionIdx < 4) {
       setSurveyStep(questionIdx + 1);
@@ -315,7 +284,6 @@ export default function GoogleAdsOverlay() {
   };
 
   const completeSurvey = async () => {
-    // Run bot detection analysis before rewarding
     if (trackerRef.current) {
       const analysis = trackerRef.current.analyze();
       trackerRef.current.destroy();
@@ -334,7 +302,6 @@ export default function GoogleAdsOverlay() {
       await base44.auth.updateMe({ total_earnings: (user?.total_earnings || 0) + 0.20 });
       setEarned(prev => prev + 0.20);
 
-      // Credit referrer if applicable
       const activeRef = referrerId || localStorage.getItem('adgrid_referrer');
       if (activeRef && user && activeRef !== user.id) {
         await base44.entities.SocialMediaPost.create({
@@ -378,7 +345,7 @@ export default function GoogleAdsOverlay() {
   };
 
   const handleShareGrid = async () => {
-    const shareText = `🎮 The GamerGain Million Dollar Ad Grid — click brand ads, answer 4 questions, earn $0.20 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/GoogleAdsOverlay`;
+    const shareText = `🎮 The GamerGain Million Dollar Ad Grid — click brand ads, answer 4 questions, earn $0.20 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/PaidPPCAdsMosaic`;
     if (navigator.share) {
       await navigator.share({ title: 'GamerGain Million Dollar Ad Grid', text: shareText });
     } else {
@@ -389,38 +356,28 @@ export default function GoogleAdsOverlay() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-
-      {/* ── Top sticky banner with GamerGain.app link ── */}
       <div className="bg-red-700 text-center py-2 text-sm font-bold tracking-wide sticky top-0 z-40">
         🎮 <a href="https://gamergain.app" className="underline hover:text-yellow-300">GamerGain.app</a>
         {' '}— Click an ad · Answer 4 questions ($0.40) · Earn $0.20 · Visit the business
       </div>
-
-      {/* ── Header ── */}
       <div className="max-w-5xl mx-auto px-4 pt-8 pb-4 text-center">
         <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 px-5 py-2 rounded-full mb-4 shadow-lg">
           <DollarSign className="w-5 h-5" />
           <span className="font-black text-lg">GamerGain Million Dollar Ad Grid</span>
         </div>
-
         <h1 className="text-4xl md:text-5xl font-black mb-3 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent leading-tight">
           The Million Dollar<br />Homepage
         </h1>
-
         <p className="text-gray-300 text-sm max-w-2xl mx-auto mb-2">
           Every thumbnail is a real business. <span className="text-yellow-400 font-bold">Click any ad</span>, answer
           4 survey questions worth <span className="text-yellow-400 font-bold">$0.10 each ($0.40 total)</span>,
           and <span className="text-green-400 font-bold">you earn $0.20</span>.
           The other $0.20 goes to GamerGain. Then visit the business!
         </p>
-
-        {/* Link to site */}
         <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-red-400 font-bold text-sm hover:text-red-300 mb-4">
           <Globe className="w-4 h-4" /> gamergain.app
         </a>
-
-        {/* Earned today badge + share button */}
         <div className="flex items-center justify-center gap-3 flex-wrap mb-4">
           {earned > 0 && (
             <Badge className="bg-green-600 text-white text-sm px-3 py-1 font-bold">
@@ -431,8 +388,6 @@ export default function GoogleAdsOverlay() {
             <Share2 className="w-4 h-4" /> Share This Grid
           </Button>
         </div>
-
-        {/* Social platforms auto-posting indicator */}
         <div className="flex items-center justify-center gap-2 flex-wrap mb-4 text-xs text-gray-400">
           <span>AI auto-posts twice daily to:</span>
           {SOCIAL_PLATFORMS.map(p => (
@@ -442,17 +397,11 @@ export default function GoogleAdsOverlay() {
             </span>
           ))}
         </div>
-
-        {/* Referral box */}
         <div className="max-w-xl mx-auto">
           <AdGridReferralBox user={user} />
         </div>
       </div>
-
-      {/* ── The Million Dollar Homepage Grid ── */}
       <div className="max-w-5xl mx-auto px-4 pb-16">
-
-        {/* Caption banner */}
         <div className="border-2 border-yellow-500/60 rounded-2xl p-4 mb-5 text-center bg-yellow-500/10">
           <p className="text-yellow-400 font-black text-sm md:text-base">
             🖱️ Click any ad thumbnail → Answer 4 survey questions ($0.10 each = $0.40 total)
@@ -465,14 +414,10 @@ export default function GoogleAdsOverlay() {
             <Globe className="w-3 h-3" /> gamergain.app
           </a>
         </div>
-
-        {/* Stats bar */}
         <div className="flex items-center justify-between mb-3 text-xs text-gray-500">
           <span>{totalAds} businesses · {gridCols}×{Math.ceil(totalAds / gridCols)} grid · auto-resizes as new businesses join</span>
           <span className="text-green-400 font-semibold">{unlockedAds.length} unlocked</span>
         </div>
-
-        {/* THE GRID — Million Dollar Homepage mosaic */}
         <div
           className="bg-gray-900 p-2 rounded-2xl border-2 border-gray-700 shadow-2xl"
           style={{
@@ -490,13 +435,10 @@ export default function GoogleAdsOverlay() {
             />
           ))}
         </div>
-
         <p className="text-center text-gray-600 text-xs mt-3">
           Grid auto-expands as new businesses join · Pixel size auto-adjusts · Powered by GamerGain.app
         </p>
       </div>
-
-      {/* ── Modals ── */}
       <AnimatePresence>
         {surveyStep >= 1 && surveyStep <= 4 && activeAd && !surveyDone && (
           <SurveyModal

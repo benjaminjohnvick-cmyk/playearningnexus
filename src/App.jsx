@@ -69,6 +69,7 @@ const AdBusinessDashboard = lazy(() => import('./pages/AdBusinessDashboard'));
 const AdBusinessOverview = lazy(() => import('./pages/AdBusinessOverview'));
 const SmartPayoutDashboard = lazy(() => import('./pages/SmartPayoutDashboard'));
 const ContestEntries = lazy(() => import('./pages/ContestEntries'));
+const PaidPPCAdsMosaic = lazy(() => import('./pages/PaidPPCAdsMosaic'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -194,6 +195,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdBusinessOverview" element={<LayoutWrapper currentPageName="AdBusinessOverview"><AdBusinessOverview /></LayoutWrapper>} />
       <Route path="/SmartPayoutDashboard" element={<LayoutWrapper currentPageName="SmartPayoutDashboard"><SmartPayoutDashboard /></LayoutWrapper>} />
       <Route path="/ContestEntries" element={<LayoutWrapper currentPageName="ContestEntries"><ContestEntries /></LayoutWrapper>} />
+      <Route path="/PaidPPCAdsMosaic" element={<LayoutWrapper currentPageName="PaidPPCAdsMosaic"><PaidPPCAdsMosaic /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

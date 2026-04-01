@@ -39,6 +39,26 @@ const PLATFORMS = {
     label: 'TikTok',
     color: 'text-gray-900',
     bgColor: 'bg-gray-50'
+  },
+  youtube_shorts: {
+    icon: ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    ),
+    label: 'YouTube Shorts',
+    color: 'text-red-600',
+    bgColor: 'bg-red-50'
+  },
+  youtube: {
+    icon: ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    ),
+    label: 'YouTube',
+    color: 'text-red-600',
+    bgColor: 'bg-red-50'
   }
 };
 
@@ -72,6 +92,8 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
       instagram: `https://www.instagram.com/oauth/authorize?client_id=INSTAGRAM_APP_ID&redirect_uri=${cb}&scope=instagram_business_basic,instagram_business_content_publish&response_type=code`,
       snapchat: `https://accounts.snapchat.com/accounts/oauth2/authorize?client_id=SNAPCHAT_CLIENT_ID&redirect_uri=${cb}&scope=snapchat-marketing-api&response_type=code`,
       tiktok: `https://www.tiktok.com/v2/auth/authorize?client_key=TIKTOK_CLIENT_KEY&redirect_uri=${cb}&scope=video.upload,video.publish&response_type=code&state=tiktok`,
+      youtube_shorts: `https://accounts.google.com/o/oauth2/v2/auth?client_id=GOOGLE_CLIENT_ID&redirect_uri=${cb}&scope=https://www.googleapis.com/auth/youtube.upload&response_type=code&state=youtube_shorts`,
+      youtube: `https://accounts.google.com/o/oauth2/v2/auth?client_id=GOOGLE_CLIENT_ID&redirect_uri=${cb}&scope=https://www.googleapis.com/auth/youtube.upload&response_type=code&state=youtube`,
     };
 
     setConnectingPlatform(platform);
@@ -142,14 +164,15 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="bg-white border border-green-200 rounded-lg p-3 flex items-start gap-2">
-              <Gift className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm">
-                <p className="font-semibold text-green-900">Earn Jackpot Entries!</p>
-                <p className="text-green-700 text-xs mt-1">
-                  • Facebook/Twitter: 50 entries each<br/>
-                  • Instagram/Snapchat/TikTok: 75 entries each
-                </p>
-              </div>
+            <Gift className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-semibold text-green-900">Earn Contest Entries!</p>
+              <p className="text-green-700 text-xs mt-1">
+                • Facebook/Twitter: 50 entries each<br/>
+                • Instagram/Snapchat/TikTok/YouTube Shorts: 75 entries each<br/>
+                • YouTube: 100 entries
+              </p>
+            </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {availablePlatforms.map(platform => {
@@ -168,7 +191,7 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
                     <Icon className={`w-4 h-4 ${config.color}`} />
                     <span className="text-xs">{config.label}</span>
                     {connectingPlatform !== platform && (
-                      <span className="text-xs font-semibold text-green-600">+{entries}</span>
+                      <span className="text-xs font-semibold text-green-600">+{platform === 'youtube' ? 100 : ['instagram', 'snapchat', 'tiktok', 'youtube_shorts'].includes(platform) ? 75 : 50}</span>
                     )}
                   </Button>
                 );
