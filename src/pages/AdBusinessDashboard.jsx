@@ -62,6 +62,9 @@ import AdAutomatedBidEngine from '@/components/advertiser/AdAutomatedBidEngine';
 import AdImageProcessor from '@/components/advertiser/AdImageProcessor';
 import AdSpendForecast from '@/components/advertiser/AdSpendForecast';
 import AdBudgetScaler from '@/components/advertiser/AdBudgetScaler';
+import AdFraudMapOverlay from '@/components/advertiser/AdFraudMapOverlay';
+import AdMultivariateTesting from '@/components/advertiser/AdMultivariateTesting';
+import AdCompetitorBidTracker from '@/components/advertiser/AdCompetitorBidTracker';
 import { base44 as b44 } from '@/api/base44Client';
 
 const TAB_GROUPS = [
@@ -139,6 +142,9 @@ const TAB_GROUPS = [
       ['Image Processor', <ImageIcon />],
       ['Spend Forecast', <TrendingUp />],
       ['Budget Scaler', <DollarSign />],
+      ['Fraud Map', <MapPin />],
+      ['MVT Engine', <FlaskConical />],
+      ['Bid Tracker', <BarChart2 />],
     ],
   },
 ];
@@ -684,6 +690,36 @@ export default function AdBusinessDashboard() {
             </h2>
             <p className="text-gray-500 text-xs">Automatically shifts budget from underperforming campaigns to high-ROI ones. Set your target ROI threshold and shift percentage, preview the plan, then execute.</p>
             <AdBudgetScaler ads={ads} adBalance={adBalance} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Fraud Map' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-red-400" /> Real-Time Fraud Map Overlay
+            </h2>
+            <p className="text-gray-500 text-xs">Visualizes click latency, session velocity, and UA anomaly scores across the Ad Grid. Click any zone for detail, or auto-block critical bot zones.</p>
+            <AdFraudMapOverlay ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'MVT Engine' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <FlaskConical className="w-4 h-4 text-purple-400" /> Multivariate Testing Engine
+            </h2>
+            <p className="text-gray-500 text-xs">AI generates 3 headline/copy variants per ad, rotates them, and auto-promotes the highest CTR winner at 500 impressions.</p>
+            <AdMultivariateTesting ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Bid Tracker' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <BarChart2 className="w-4 h-4 text-blue-400" /> Competitor Bid Tracker
+            </h2>
+            <p className="text-gray-500 text-xs">Track competitor bids on similar demographics, get email alerts on strategy changes, and optionally auto-adjust your bids to stay competitive.</p>
+            <AdCompetitorBidTracker ads={ads} />
           </div>
         )}
 
