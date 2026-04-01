@@ -49,12 +49,14 @@ import { initTracker, setPage, trackEvent } from '@/lib/uxTracker';
 import CurrencySelector from '@/components/locale/CurrencySelector';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
+import { useSurveyMatchNotifications } from '@/hooks/useSurveyMatchNotifications';
 import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
 import AIPersonalizedDailyGoal from '@/components/dashboard/AIPersonalizedDailyGoal';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   useRealtimeNotifications(user?.id);
+  useSurveyMatchNotifications(user);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLogoutPrompt, setShowLogoutPrompt] = useState(false);

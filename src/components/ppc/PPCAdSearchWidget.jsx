@@ -100,6 +100,29 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
       if (result.products?.length > 0) {
         const sorted = [...result.products].sort((a, b) => (a.price || 0) - (b.price || 0));
         setProductResults({ products: sorted, query: searchQuery });
+
+        // Auto-add cheapest item to wishlist if user is logged in
+        if (user?.id) {
+          const cheapest = sorted[0];
+          try {
+            await base44.entities.ProductWishlistItem.create({
+              user_id: user.id,
+              product_name: cheapest.product_name || searchQuery,
+              product_description: cheapest.description || '',
+              product_image_url: cheapest.image_url || '',
+              best_price: cheapest.price || 0,
+              original_search_price: cheapest.price || 0,
+              price_with_markup: (cheapest.price || 0) * 1.1,
+              vendor_url: cheapest.url || '',
+              vendor_name: cheapest.vendor || '',
+              search_query: searchQuery,
+              status: 'active',
+            });
+            toast.success(`✅ Added "${cheapest.product_name || searchQuery}" to your Wishlist at $${(cheapest.price || 0).toFixed(2)}!`, { duration: 4000 });
+          } catch {
+            // Silently fail — don't block the results
+          }
+        }
       } else {
         toast.error('No products found');
       }
