@@ -10,7 +10,7 @@ import {
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
   Globe, Image, ImageIcon, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
   MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X,
-  Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate, Gauge, RefreshCw, Zap
+  Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate, Gauge, RefreshCw, Zap, Eye
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -65,6 +65,10 @@ import AdBudgetScaler from '@/components/advertiser/AdBudgetScaler';
 import AdFraudMapOverlay from '@/components/advertiser/AdFraudMapOverlay';
 import AdMultivariateTesting from '@/components/advertiser/AdMultivariateTesting';
 import AdCompetitorBidTracker from '@/components/advertiser/AdCompetitorBidTracker';
+import AdCompetitiveIntelFeed from '@/components/advertiser/AdCompetitiveIntelFeed';
+import AdDailyBudgetPacer from '@/components/advertiser/AdDailyBudgetPacer';
+import AdLaunchForecaster from '@/components/advertiser/AdLaunchForecaster';
+import AdSocialChannelAnalytics from '@/components/advertiser/AdSocialChannelAnalytics';
 import { base44 as b44 } from '@/api/base44Client';
 
 const TAB_GROUPS = [
@@ -145,6 +149,10 @@ const TAB_GROUPS = [
       ['Fraud Map', <MapPin />],
       ['MVT Engine', <FlaskConical />],
       ['Bid Tracker', <BarChart2 />],
+      ['Intel Feed', <Eye />],
+      ['Daily Pacer', <Gauge />],
+      ['Launch Forecast', <Sparkles />],
+      ['Social Analytics', <Globe />],
     ],
   },
 ];
@@ -690,6 +698,46 @@ export default function AdBusinessDashboard() {
             </h2>
             <p className="text-gray-500 text-xs">Automatically shifts budget from underperforming campaigns to high-ROI ones. Set your target ROI threshold and shift percentage, preview the plan, then execute.</p>
             <AdBudgetScaler ads={ads} adBalance={adBalance} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Intel Feed' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Eye className="w-4 h-4 text-blue-400" /> Competitive Intelligence Feed
+            </h2>
+            <p className="text-gray-500 text-xs">Live feed of top 5 competitor creatives, bids, demographics, and estimated spend. Generate AI counter-variants instantly.</p>
+            <AdCompetitiveIntelFeed ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Daily Pacer' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Gauge className="w-4 h-4 text-orange-400" /> Automated Daily Budget Pacer
+            </h2>
+            <p className="text-gray-500 text-xs">Continuously analyzes ROI and redistributes remaining daily budget from low-converting ads to high-performing ones.</p>
+            <AdDailyBudgetPacer ads={ads} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Launch Forecast' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-purple-400" /> AI Launch Forecaster
+            </h2>
+            <p className="text-gray-500 text-xs">Predicts CTR, conversion rate, and 30-day completions for draft ads before launch using historical engagement patterns.</p>
+            <AdLaunchForecaster ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Social Analytics' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Globe className="w-4 h-4 text-green-400" /> Social Channel Analytics & Cost Comparison
+            </h2>
+            <p className="text-gray-500 text-xs">Performance tracking across Meta, Google, TikTok, X, and Snapchat — with a full market cost comparison showing what you'd pay vs. GamerGain.</p>
+            <AdSocialChannelAnalytics ads={ads} />
           </div>
         )}
 
