@@ -1,0 +1,74 @@
+{
+  "name": "DeveloperPayout",
+  "type": "object",
+  "properties": {
+    "developer_id": {
+      "type": "string",
+      "description": "Developer/business client ID"
+    },
+    "period_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date of payout period"
+    },
+    "period_end": {
+      "type": "string",
+      "format": "date",
+      "description": "End date of payout period"
+    },
+    "total_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Total revenue from all sources"
+    },
+    "advertising_credit_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Advertising credits earned (20% of IAP)"
+    },
+    "advertising_credit_used": {
+      "type": "number",
+      "default": 0,
+      "description": "Advertising credits redeemed"
+    },
+    "developer_share_50_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "50% of total revenue (before credits)"
+    },
+    "net_payout_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Final amount to pay developer after all deductions"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "calculated",
+        "approved",
+        "processed",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Payout status"
+    },
+    "calculated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "processed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes about payout"
+    }
+  },
+  "required": [
+    "developer_id",
+    "period_start",
+    "period_end"
+  ]
+}

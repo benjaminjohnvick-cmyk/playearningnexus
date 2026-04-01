@@ -1,0 +1,83 @@
+{
+  "name": "WithdrawalRequest",
+  "type": "object",
+  "properties": {
+    "developer_id": {
+      "type": "string",
+      "description": "Developer/business client ID"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount to withdraw in USD"
+    },
+    "available_balance": {
+      "type": "number",
+      "description": "Available balance at time of request"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "paypal",
+        "bank_transfer",
+        "stripe"
+      ],
+      "description": "Payment method for withdrawal"
+    },
+    "payment_details": {
+      "type": "object",
+      "description": "Encrypted payment information (email, bank account, etc.)",
+      "additionalProperties": true
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "processing",
+        "completed",
+        "failed",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Withdrawal status"
+    },
+    "verification_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether verification is required"
+    },
+    "verification_code": {
+      "type": "string",
+      "description": "One-time verification code sent to email"
+    },
+    "verification_code_expires": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "processed_txn_id": {
+      "type": "string",
+      "description": "External transaction ID from payment processor"
+    },
+    "failure_reason": {
+      "type": "string",
+      "description": "Reason for withdrawal failure"
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "developer_id",
+    "amount",
+    "payment_method"
+  ]
+}
