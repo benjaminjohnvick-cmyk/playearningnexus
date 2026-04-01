@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import {
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
   Globe, Image, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
   MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X,
-  Users, Link2, ShieldAlert
+  Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -45,6 +46,9 @@ import AdSocialShareTracker from '@/components/advertiser/AdSocialShareTracker';
 import AdTeamManager from '@/components/advertiser/AdTeamManager';
 import AdReferralProgram from '@/components/advertiser/AdReferralProgram';
 import AdFraudDetection from '@/components/advertiser/AdFraudDetection';
+import AdAttributionDashboard from '@/components/advertiser/AdAttributionDashboard';
+import AdCurrencySettings, { CurrencyProvider, useCurrency } from '@/components/advertiser/AdCurrencySettings';
+import AdTemplateHub from '@/components/advertiser/AdTemplateHub';
 import { base44 as b44 } from '@/api/base44Client';
 
 const TAB_GROUPS = [
@@ -101,6 +105,14 @@ const TAB_GROUPS = [
     tabs: [
       ['Team', <Users />],
       ['Fraud Detection', <ShieldAlert />],
+      ['Currency', <Coins />],
+    ],
+  },
+  {
+    group: '🔬 Advanced',
+    tabs: [
+      ['Attribution', <GitMerge />],
+      ['Template Hub', <LayoutTemplate />],
     ],
   },
 ];
@@ -198,6 +210,7 @@ export default function AdBusinessDashboard() {
   }
 
   return (
+    <CurrencyProvider>
     <div className="min-h-screen bg-gray-950 text-white">
 
       {/* Header */}
@@ -500,6 +513,36 @@ export default function AdBusinessDashboard() {
           </div>
         )}
 
+        {activeTab === 'Currency' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Coins className="w-4 h-4 text-blue-400" /> Multi-Currency Settings
+            </h2>
+            <AdCurrencySettings />
+          </div>
+        )}
+
+        {activeTab === 'Attribution' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <GitMerge className="w-4 h-4 text-yellow-400" /> Unified Attribution Dashboard
+            </h2>
+            <AdAttributionDashboard ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Template Hub' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <LayoutTemplate className="w-4 h-4 text-purple-400" /> Ad Template Hub
+            </h2>
+            <AdTemplateHub onApply={(template) => {
+              toast.success(`Template "${template.label}" applied!`);
+              setActiveTab('Canvas');
+            }} />
+          </div>
+        )}
+
         {activeTab === 'A/B Test' && (
           <div className="space-y-6">
             <AdABTest ads={ads} onRefresh={refetch} />
@@ -650,6 +693,7 @@ export default function AdBusinessDashboard() {
         )}
       </div>
     </div>
+    </CurrencyProvider>
   );
 }
 
