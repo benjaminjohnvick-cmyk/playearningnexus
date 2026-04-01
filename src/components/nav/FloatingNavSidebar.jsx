@@ -12,7 +12,7 @@ import {
 const NAV_SECTIONS = [
   { group: 'Main', items: [
     { name: 'Home', icon: Home, path: 'Home', color: 'red' },
-    { name: 'Game Store', icon: ShoppingCart, path: 'InAppGameStore', color: 'red' },
+    { name: 'Store', icon: ShoppingCart, path: 'Store', color: 'red' },
     { name: 'Surveys', icon: FileText, path: 'Surveys', color: 'blue' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', color: 'blue' },
     { name: 'Wishlist', icon: Heart, path: 'Wishlist', color: 'red' },
@@ -49,8 +49,9 @@ const NAV_SECTIONS = [
     { name: 'Bug Reports', icon: Globe, path: 'DevBugReports', color: 'red' },
     { name: 'AI Growth Assistant', icon: Star, path: 'AIGrowthAssistant', color: 'red' },
   ]},
-  { group: 'AI Systems', items: [
-    { name: 'AI Content Hub', icon: Brain, path: 'AIContentHub', color: 'purple' },
+  { group: 'AI Agents', items: [
+    { name: 'AI Agents Control', icon: Brain, path: 'AIAgentsSettings', color: 'purple' },
+    { name: 'AI Content Hub', icon: Zap, path: 'AIContentHub', color: 'purple' },
     { name: 'Head-to-Head Contests', icon: Zap, path: 'HeadToHeadContest', color: 'purple' },
   ]},
   { group: 'Smart Alerts', items: [

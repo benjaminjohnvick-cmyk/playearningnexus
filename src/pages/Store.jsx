@@ -1,0 +1,329 @@
+import React, { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal, MessageSquare, X, CreditCard, Info, Package2, Gamepad2, Zap } from "lucide-react";
+import BNPLModal from '@/components/store/BNPLModal';
+import BNPLBanner from '@/components/store/BNPLBanner';
+import ProductSearchBar from '@/components/store/ProductSearchBar';
+import ProductSearchResults from '@/components/store/ProductSearchResults';
+import ProductRecommendations from '@/components/products/ProductRecommendations';
+import DailyEarningsMeter from '@/components/premium/DailyEarningsMeter';
+import LockoutModeEnforcer from '@/components/premium/LockoutModeEnforcer';
+import SurveyGate, { isSurveyGoalMet } from '@/components/surveys/SurveyGate';
+import BitLabsSurveys from '@/components/surveys/BitLabsSurveys';
+import GameCheckoutModal from '@/components/store/GameCheckoutModal';
+import ReviewSection from '@/components/reviews/ReviewSection';
+import { Dialog } from '@/components/ui/dialog';
+import GameAssistantWidget from '@/components/games/GameAssistantWidget';
+import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
+
+const GAME_CATEGORIES = ['all', 'puzzle', 'action', 'strategy', 'casual', 'rpg', 'simulation', 'sports', 'racing', 'adventure'];
+
+export default function Store() {
+  const [user, setUser] = useState(undefined);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('popular');
+  const [priceRange, setPriceRange] = useState('all');
+  const [checkoutGame, setCheckoutGame] = useState(null);
+  const [reviewGame, setReviewGame] = useState(null);
+  const [showBNPL, setShowBNPL] = useState(false);
+  const [showProductSearch, setShowProductSearch] = useState(false);
+  const [productSearchResults, setProductSearchResults] = useState(null);
+  const [activeTab, setActiveTab] = useState('games');
+
+  const queryClient = useQueryClient();
+  const today = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => setUser(null));
+  }, []);
+
+  const { data: games = [], isLoading: gamesLoading } = useQuery({
+    queryKey: ['store-games', selectedCategory, searchQuery, sortBy, priceRange],
+    queryFn: async () => {
+      let filter = { marketplace_approved: true };
+      if (selectedCategory !== 'all') filter.category = selectedCategory;
+      let allGames = await base44.entities.Game.filter(filter);
+
+      if (searchQuery) {
+        allGames = allGames.filter(g =>
+          g.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          g.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      if (priceRange === 'free') allGames = allGames.filter(g => g.price === 0);
+      else if (priceRange === 'under5') allGames = allGames.filter(g => g.price > 0 && g.price < 5);
+      else if (priceRange === '5to10') allGames = allGames.filter(g => g.price >= 5 && g.price <= 10);
+      else if (priceRange === 'over10') allGames = allGames.filter(g => g.price > 10);
+
+      if (sortBy === 'price_low') allGames.sort((a, b) => a.price - b.price);
+      else if (sortBy === 'price_high') allGames.sort((a, b) => b.price - a.price);
+      else if (sortBy === 'rating') allGames.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
+      else if (sortBy === 'popular') allGames.sort((a, b) => (b.total_installs || 0) - (a.total_installs || 0));
+      else if (sortBy === 'new') allGames.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+
+      return allGames;
+    }
+  });
+
+  const { data: digitalProducts = [] } = useQuery({
+    queryKey: ['store-digital'],
+    queryFn: () => base44.entities.Product.filter({ product_type: 'digital', status: 'active' })
+  });
+
+  const { data: physicalProducts = [] } = useQuery({
+    queryKey: ['store-physical'],
+    queryFn: () => base44.entities.Product.filter({ product_type: 'physical', status: 'active' })
+  });
+
+  const { data: dailyEarnings } = useQuery({
+    queryKey: ['daily-earnings', user?.id, today],
+    queryFn: async () => {
+      const earnings = await base44.entities.DailyEarnings.filter({ user_id: user.id, date: today });
+      return earnings[0] || null;
+    },
+    enabled: !!user,
+    refetchInterval: 5000
+  });
+
+  const { data: premiumMembership } = useQuery({
+    queryKey: ['premium-membership', user?.id],
+    queryFn: async () => {
+      const m = await base44.entities.PremiumMembership.filter({ user_id: user.id });
+      return m[0] || null;
+    },
+    enabled: !!user
+  });
+
+  const toggleWishlist = async (product, type) => {
+    const wishlist = user.wishlist || [];
+    const isWishlisted = wishlist.some(item => item.id === product.id && item.type === type);
+    const updatedWishlist = isWishlisted
+      ? wishlist.filter(item => !(item.id === product.id && item.type === type))
+      : [...wishlist, { id: product.id, type, added_date: new Date().toISOString() }];
+    await base44.auth.updateMe({ wishlist: updatedWishlist });
+    const updatedUser = await base44.auth.me();
+    setUser(updatedUser);
+  };
+
+  const handlePurchaseComplete = async () => {
+    const updatedUser = await base44.auth.me();
+    setUser(updatedUser);
+    setCheckoutGame(null);
+  };
+
+  const isLoading_ = user === undefined;
+  if (isLoading_) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600" />
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-1 flex items-center gap-3">
+              <ShoppingCart className="w-9 h-9 text-red-600" /> Store
+            </h1>
+            <p className="text-gray-500">Games · Digital Products · Physical Products · PPC Marketplace</p>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Button onClick={() => setShowProductSearch(true)} className="bg-purple-600 hover:bg-purple-700">
+              <Package className="w-4 h-4 mr-2" /> Search Products
+            </Button>
+            <Card className="px-4 py-2 border-2 border-green-500 bg-green-50">
+              <p className="text-xs text-gray-500">Balance</p>
+              <p className="text-xl font-bold text-green-600">${(user.current_balance || 0).toFixed(2)}</p>
+            </Card>
+          </div>
+        </div>
+
+        {/* Info Banner */}
+        <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-3">
+          <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-amber-800">
+            <strong>All purchases are made through GamerGain.</strong> Use the search button to find any product — we'll buy it for you. Prices include a 10% platform fee.
+          </p>
+        </div>
+
+        {/* BNPL Banner */}
+        <div className="mb-4">
+          <BNPLBanner onActivate={() => setShowBNPL(true)} isActive={user?.bnpl_active} creditLimit={user?.bnpl_credit_limit} />
+        </div>
+
+        {/* 4-Section Store Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsTrigger value="games" className="text-sm">
+              <Gamepad2 className="w-4 h-4 mr-1" /> Games
+            </TabsTrigger>
+            <TabsTrigger value="digital" className="text-sm">
+              <Package2 className="w-4 h-4 mr-1" /> Digital
+            </TabsTrigger>
+            <TabsTrigger value="physical" className="text-sm">
+              <Package className="w-4 h-4 mr-1" /> Physical
+            </TabsTrigger>
+            <TabsTrigger value="ppc" className="text-sm">
+              <Zap className="w-4 h-4 mr-1" /> PPC
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Games Section */}
+          <TabsContent value="games" className="space-y-6">
+            {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' && !!user ? (
+              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={3} onGoToSurveys={() => setActiveTab('games')} />
+            ) : (
+              <>
+                <ProductRecommendations user={user} />
+                {/* Search & Filters */}
+                <div className="space-y-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                    <Input placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
+                  </div>
+                  <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                    <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    {GAME_CATEGORIES.map(cat => (
+                      <Button key={cat} size="sm" variant={selectedCategory === cat ? 'default' : 'outline'} onClick={() => setSelectedCategory(cat)} className={`capitalize flex-shrink-0 ${selectedCategory === cat ? 'bg-red-600 hover:bg-red-700' : ''}`}>
+                        {cat}
+                      </Button>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="border rounded-lg px-3 py-1.5 text-sm">
+                      <option value="popular">Most Popular</option>
+                      <option value="new">Newest</option>
+                      <option value="rating">Highest Rated</option>
+                      <option value="price_low">Price: Low → High</option>
+                      <option value="price_high">Price: High → Low</option>
+                    </select>
+                    <select value={priceRange} onChange={e => setPriceRange(e.target.value)} className="border rounded-lg px-3 py-1.5 text-sm">
+                      <option value="all">All Prices</option>
+                      <option value="free">Free</option>
+                      <option value="under5">Under $5</option>
+                      <option value="5to10">$5 – $10</option>
+                      <option value="over10">Over $10</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Games Grid */}
+                {gamesLoading ? (
+                  <div className="grid md:grid-cols-3 gap-6">{[1, 2, 3].map(i => <div key={i} className="h-96 bg-white rounded-xl animate-pulse" />)}</div>
+                ) : games.length === 0 ? (
+                  <Card className="p-12 text-center border-0 shadow-lg">
+                    <ShoppingCart className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                    <p className="text-gray-400">No games found</p>
+                  </Card>
+                ) : (
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {games.map(game => {
+                      const owned = user.game_library?.includes(game.id);
+                      const isWishlisted = user.wishlist?.some(item => item.id === game.id && item.type === 'game');
+                      return <ProductCard key={game.id} product={game} type="game" owned={owned} isWishlisted={isWishlisted} onWishlist={() => toggleWishlist(game, 'game')} onCheckout={() => setCheckoutGame(game)} onReview={() => setReviewGame(game)} />;
+                    })}
+                  </div>
+                )}
+              </>
+            )}
+          </TabsContent>
+
+          {/* Digital Products Section */}
+          <TabsContent value="digital" className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">Digital Products</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {digitalProducts.map(product => {
+                const isWishlisted = user.wishlist?.some(item => item.id === product.id && item.type === 'digital');
+                return <ProductCard key={product.id} product={product} type="digital" isWishlisted={isWishlisted} onWishlist={() => toggleWishlist(product, 'digital')} onCheckout={() => setCheckoutGame(product)} />;
+              })}
+            </div>
+          </TabsContent>
+
+          {/* Physical Products Section */}
+          <TabsContent value="physical" className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">Physical Products</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {physicalProducts.map(product => {
+                const isWishlisted = user.wishlist?.some(item => item.id === product.id && item.type === 'physical');
+                return <ProductCard key={product.id} product={product} type="physical" isWishlisted={isWishlisted} onWishlist={() => toggleWishlist(product, 'physical')} onCheckout={() => setCheckoutGame(product)} />;
+              })}
+            </div>
+          </TabsContent>
+
+          {/* PPC Marketplace Section */}
+          <TabsContent value="ppc" className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">PPC Marketplace</h2>
+            <PPCAdSearchWidget variant="full" />
+          </TabsContent>
+        </Tabs>
+
+        {/* Modals */}
+        {reviewGame && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-4 overflow-y-auto">
+            <div className="bg-white rounded-2xl w-full max-w-2xl my-8 shadow-2xl">
+              <div className="flex items-center justify-between p-5 border-b">
+                <h2 className="font-bold text-lg text-gray-900">{reviewGame.title}</h2>
+                <button onClick={() => setReviewGame(null)} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+              <div className="p-5">
+                <ReviewSection game={reviewGame} user={user} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <GameCheckoutModal game={checkoutGame} user={user} onClose={() => setCheckoutGame(null)} onPurchaseComplete={handlePurchaseComplete} />
+        <BNPLModal isOpen={showBNPL} onClose={() => setShowBNPL(false)} user={user} />
+
+        {showProductSearch && (
+          <ProductSearchBar onSearchResults={(products, sq, si) => { setProductSearchResults({ products, searchQuery: sq, searchImage: si }); setShowProductSearch(false); }} onClose={() => setShowProductSearch(false)} />
+        )}
+        {productSearchResults && (
+          <ProductSearchResults products={productSearchResults.products} searchQuery={productSearchResults.searchQuery} searchImage={productSearchResults.searchImage} user={user} onClose={() => setProductSearchResults(null)} />
+        )}
+
+        <GameAssistantWidget />
+      </div>
+    </div>
+  );
+}
+
+function ProductCard({ product, type, owned, isWishlisted, onWishlist, onCheckout, onReview }) {
+  return (
+    <Card className="border-0 shadow-lg hover:shadow-xl transition-all group">
+      <div className="relative overflow-hidden rounded-t-xl">
+        {product.icon_url || product.image_url ? (
+          <img src={product.icon_url || product.image_url} alt={product.title || product.name} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+        ) : (
+          <div className="w-full h-48 bg-gradient-to-br from-red-400 to-rose-600" />
+        )}
+        {owned && <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1"><Check className="w-3 h-3" /> Owned</div>}
+      </div>
+      <CardContent className="p-4">
+        <h3 className="font-bold text-gray-900 mb-1">{product.title || product.name}</h3>
+        <p className="text-xs text-gray-500 mb-3 line-clamp-2">{product.description}</p>
+        <p className="text-xl font-bold text-green-600 mb-2">${(product.price || 0).toFixed(2)}</p>
+        <div className="flex gap-1.5">
+          <Button size="sm" variant="outline" onClick={onWishlist} className={isWishlisted ? 'border-red-400 text-red-600 bg-red-50' : ''}>
+            <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
+          </Button>
+          <Button size="sm" className="bg-red-600 hover:bg-red-700 flex-1" onClick={onCheckout}>
+            <ShoppingCart className="w-3.5 h-3.5 mr-1" /> Buy
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
