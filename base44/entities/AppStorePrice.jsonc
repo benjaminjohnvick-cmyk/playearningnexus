@@ -33,17 +33,22 @@
     "mandatory_daily_earning": {
       "type": "number",
       "default": 3,
-      "description": "Daily earnings requirement in dollars (Apple App Store standard: $3/day)"
+      "description": "Daily earnings requirement to access store (must earn $3/day)"
+    },
+    "store_access_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether user must meet daily earnings requirement to access store"
     },
     "platform_fee_percentage": {
       "type": "number",
-      "default": 30,
-      "description": "Platform fee percentage (Apple App Store standard: 30%)"
+      "default": 50,
+      "description": "Platform fee percentage (50/50 split)"
     },
     "user_earnings_percentage": {
       "type": "number",
-      "default": 70,
-      "description": "User earnings percentage (70% after 30% platform fee)"
+      "default": 50,
+      "description": "User earnings percentage (50% after 50% platform fee)"
     },
     "is_active": {
       "type": "boolean",
