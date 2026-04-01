@@ -72,6 +72,7 @@ import AdSocialChannelAnalytics from '@/components/advertiser/AdSocialChannelAna
 import AdCampaignChat from '@/components/advertiser/AdCampaignChat';
 import AdPDFReportCenter from '@/components/advertiser/AdPDFReportCenter';
 import AdCreativeStudio from '@/components/advertiser/AdCreativeStudio';
+import AdAutomationSettings from '@/components/advertiser/AdAutomationSettings';
 
 
 const TAB_GROUPS = [
@@ -129,6 +130,7 @@ const TAB_GROUPS = [
       ['Team', <Users />],
       ['Fraud Detection', <ShieldAlert />],
       ['Currency', <Coins />],
+      ['Automation', <Bot />],
     ],
   },
   {
@@ -565,6 +567,15 @@ export default function AdBusinessDashboard() {
               <Coins className="w-4 h-4 text-blue-400" /> Multi-Currency Settings
             </h2>
             <AdCurrencySettings />
+          </div>
+        )}
+
+        {activeTab === 'Automation' && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Bot className="w-4 h-4 text-yellow-400" /> AI Automation Settings
+            </h2>
+            <AdAutomationSettings user={user} onUserUpdate={(updated) => setUser(u => ({ ...u, ...updated }))} />
           </div>
         )}
 
