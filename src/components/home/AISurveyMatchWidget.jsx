@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,24 +9,34 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 export default function AISurveyMatchWidget({ user }) {
-  const [surveys, setSurveys] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const debounceRef = useRef(null);
 
-  const fetchMatches = async (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true); else setLoading(true);
-    try {
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['aiSurveyMatches', user?.id],
+    queryFn: async () => {
       const res = await base44.functions.invoke('aiSurveyMatchEngine', { limit: 3 });
-      setSurveys(res.data?.surveys || []);
-    } catch {
-      setSurveys([]);
-    } finally {
-      setLoading(false);
+      return res.data?.surveys || [];
+    },
+    enabled: !!user,
+    staleTime: 1000 * 60 * 15,
+    gcTime: 1000 * 60 * 45,
+  });
+
+  const surveys = data || [];
+
+  const handleRefresh = () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    setRefreshing(true);
+    debounceRef.current = setTimeout(() => {
+      refetch();
       setRefreshing(false);
-    }
+    }, 300);
   };
 
-  useEffect(() => { if (user) fetchMatches(); }, [user]);
+  useEffect(() => {
+    return () => clearTimeout(debounceRef.current);
+  }, []);
 
   const scoreColor = (score) => {
     if (score >= 80) return 'bg-green-100 text-green-700';
@@ -42,7 +53,7 @@ export default function AISurveyMatchWidget({ user }) {
             <span>AI-Matched Surveys For You</span>
           </CardTitle>
           <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs text-gray-500"
-            onClick={() => fetchMatches(true)} disabled={refreshing}>
+            onClick={handleRefresh} disabled={refreshing}>
             <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
@@ -50,7 +61,7 @@ export default function AISurveyMatchWidget({ user }) {
         <p className="text-xs text-gray-400 mt-0.5">Top 3 picks based on your profile & history</p>
       </CardHeader>
       <CardContent className="px-4 pb-4 space-y-3">
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
             <span className="ml-2 text-sm text-gray-400">Finding your best matches…</span>
