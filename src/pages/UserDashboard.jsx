@@ -34,6 +34,8 @@ import MiniLeaderboardWidget from '../components/dashboard/MiniLeaderboardWidget
 import RecommendedSurveysSection from '../components/dashboard/RecommendedSurveysSection';
 import EngagementTierModule from '../components/dashboard/EngagementTierModule';
 import SurveyAlertCenter from '../components/surveys/SurveyAlertCenter';
+import SurveyHeatmap from '../components/dashboard/SurveyHeatmap';
+import TierBadge from '../components/dashboard/TierBadge';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -233,6 +235,11 @@ export default function UserDashboard() {
           <p className="text-gray-600">Your gaming dashboard</p>
         </div>
 
+        {/* Tier Badge */}
+        <div className="mb-6">
+          <TierBadge user={user} />
+        </div>
+
         {/* Stats Grid */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <div className="flex flex-col gap-2">
@@ -316,6 +323,11 @@ export default function UserDashboard() {
         {/* AI Personalized Earning Recommendations */}
         <div className="mb-8">
           <AIPersonalizedRecommendations user={user} />
+        </div>
+
+        {/* Survey Heatmap */}
+        <div className="mb-8">
+          <SurveyHeatmap />
         </div>
 
         {/* Recommended Surveys */}

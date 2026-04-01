@@ -1,0 +1,57 @@
+{
+  "name": "TieredMembership",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "bronze",
+      "description": "Membership tier level"
+    },
+    "total_earnings": {
+      "type": "number",
+      "default": 0,
+      "description": "Total lifetime earnings in dollars"
+    },
+    "current_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Current login/survey streak days"
+    },
+    "exclusive_survey_access": {
+      "type": "boolean",
+      "default": false,
+      "description": "Access to higher-paying exclusive surveys"
+    },
+    "withdrawal_speed_hours": {
+      "type": "number",
+      "default": 72,
+      "description": "Withdrawal processing time in hours"
+    },
+    "tier_benefits": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Map of tier benefits"
+    },
+    "promoted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

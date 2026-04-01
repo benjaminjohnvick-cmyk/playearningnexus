@@ -1,0 +1,42 @@
+{
+  "name": "SurveyHeatmapData",
+  "type": "object",
+  "properties": {
+    "survey_topic": {
+      "type": "string",
+      "description": "Survey topic/category"
+    },
+    "region": {
+      "type": "string",
+      "description": "Geographic region (US state or country)"
+    },
+    "trending_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 trending score"
+    },
+    "avg_reward": {
+      "type": "number",
+      "default": 0,
+      "description": "Average reward for surveys in this topic/region"
+    },
+    "completion_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Percentage of users completing this survey type"
+    },
+    "active_surveys": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of active surveys in this category"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "survey_topic",
+    "region"
+  ]
+}
