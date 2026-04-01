@@ -10,7 +10,7 @@ import {
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
   Globe, Image, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
   MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X,
-  Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate, Gauge, RefreshCw
+  Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate, Gauge, RefreshCw, Zap
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -56,6 +56,9 @@ import AdABTestingEngine from '@/components/advertiser/AdABTestingEngine';
 import AdFraudEngine from '@/components/advertiser/AdFraudEngine';
 import AdCompetitorIntel from '@/components/advertiser/AdCompetitorIntel';
 import AdAIAssistant from '@/components/advertiser/AdAIAssistant';
+import AdBillingInvoice from '@/components/advertiser/AdBillingInvoice';
+import AdExternalPlatformSync from '@/components/advertiser/AdExternalPlatformSync';
+import AdAutomatedBidEngine from '@/components/advertiser/AdAutomatedBidEngine';
 import { base44 as b44 } from '@/api/base44Client';
 
 const TAB_GROUPS = [
@@ -127,6 +130,9 @@ const TAB_GROUPS = [
       ['Fraud Engine', <ShieldAlert />],
       ['Competitor Intel', <BarChart2 />],
       ['AI Assistant', <Bot />],
+      ['Billing', <FileText />],
+      ['Ext. Platforms', <Globe />],
+      ['Auto Bidder', <Zap />],
     ],
   },
 ];
@@ -622,6 +628,36 @@ export default function AdBusinessDashboard() {
             </h2>
             <p className="text-gray-500 text-xs">Ask anything about your campaigns — CTR drops, ROI tips, bid strategies — powered by your real ad data.</p>
             <AdAIAssistant ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Billing' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <FileText className="w-4 h-4 text-green-400" /> Billing & Invoice Manager
+            </h2>
+            <p className="text-gray-500 text-xs">Schedule recurring tax-compliant invoices with VAT breakdowns emailed to your team or accountant.</p>
+            <AdBillingInvoice userId={user.id} userEmail={user.email} />
+          </div>
+        )}
+
+        {activeTab === 'Ext. Platforms' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Globe className="w-4 h-4 text-blue-400" /> External Platform Sync
+            </h2>
+            <p className="text-gray-500 text-xs">Push ad creatives to Meta, Google, TikTok, and Snapchat. View consolidated cross-platform performance vs. your Ad Grid.</p>
+            <AdExternalPlatformSync ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Auto Bidder' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Zap className="w-4 h-4 text-orange-400" /> Automated Bid Engine
+            </h2>
+            <p className="text-gray-500 text-xs">Set custom triggers (e.g. "If CTR drops below 1.5%, reduce bid 10%") and time schedules (e.g. "Weekends +20%") to optimize spend automatically.</p>
+            <AdAutomatedBidEngine ads={ads} onRefresh={refetch} />
           </div>
         )}
 
