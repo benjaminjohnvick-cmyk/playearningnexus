@@ -1,0 +1,38 @@
+{
+  "name": "ReferralEmailLog",
+  "type": "object",
+  "properties": {
+    "referred_email": {
+      "type": "string",
+      "description": "Email address of the referred user"
+    },
+    "referrer_id": {
+      "type": "string",
+      "description": "User ID of the referrer"
+    },
+    "referral_id": {
+      "type": "string",
+      "description": "ID of the referral record"
+    },
+    "email_type": {
+      "type": "string",
+      "enum": [
+        "missing_earnings",
+        "initial_invite",
+        "reminder"
+      ],
+      "default": "missing_earnings",
+      "description": "Type of email sent"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the email was sent"
+    }
+  },
+  "required": [
+    "referred_email",
+    "referrer_id",
+    "email_type"
+  ]
+}
