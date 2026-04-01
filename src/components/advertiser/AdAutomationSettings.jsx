@@ -202,14 +202,15 @@ function AutomationRow({ config, prefs, onToggle, onPrefChange, saving }) {
 
 export default function AdAutomationSettings({ user, onUserUpdate }) {
   const [saving, setSaving] = useState(false);
+  // Default ALL to true (opted-in) — user can opt out individually
   const [prefs, setPrefs] = useState({
-    ad_digest_enabled: user?.ad_digest_enabled || false,
-    ad_budget_alerts: user?.ad_budget_alerts || false,
-    ad_auto_tagline_refresh: user?.ad_auto_tagline_refresh || false,
-    smart_bidding: user?.smart_bidding || false,
-    counter_bid_margin: user?.counter_bid_margin || 0.05,
-    ad_report_schedule: user?.ad_report_schedule || false,
-    ad_report_frequency: user?.ad_report_frequency || 'weekly',
+    ad_digest_enabled: user?.ad_digest_enabled ?? true,
+    ad_budget_alerts: user?.ad_budget_alerts ?? true,
+    ad_auto_tagline_refresh: user?.ad_auto_tagline_refresh ?? true,
+    smart_bidding: user?.smart_bidding ?? true,
+    counter_bid_margin: user?.counter_bid_margin ?? 0.05,
+    ad_report_schedule: user?.ad_report_schedule ?? true,
+    ad_report_frequency: user?.ad_report_frequency ?? 'weekly',
   });
 
   const activeCount = ['ad_digest_enabled', 'ad_budget_alerts', 'ad_auto_tagline_refresh', 'smart_bidding', 'ad_report_schedule']
@@ -218,9 +219,11 @@ export default function AdAutomationSettings({ user, onUserUpdate }) {
   const handleToggle = async (key, value) => {
     const updated = { ...prefs, [key]: value };
     // Disable dependents if master is turned off
+    // If digest is turned off, also disable dependent budget alerts
     if (key === 'ad_digest_enabled' && !value) {
       updated.ad_budget_alerts = false;
     }
+    // Note: we intentionally do NOT cascade-disable on opt-in (user controls each)
     setPrefs(updated);
     setSaving(true);
     await base44.auth.updateMe(updated);
@@ -254,8 +257,8 @@ export default function AdAutomationSettings({ user, onUserUpdate }) {
             <Bot className="w-5 h-5 text-yellow-400" />
           </div>
           <div className="flex-1">
-            <p className="text-white font-black">100% AI Automation</p>
-            <p className="text-gray-400 text-xs">Set it once. AI runs everything automatically.</p>
+            <p className="text-white font-black">100% AI Automation — All On by Default</p>
+            <p className="text-gray-400 text-xs">All automations are enabled for you. Toggle off anything you don't want.</p>
           </div>
           <Badge className="bg-yellow-500/20 border-yellow-500/40 text-yellow-300 text-xs">
             <Zap className="w-3 h-3 mr-1" /> {activeCount} active
