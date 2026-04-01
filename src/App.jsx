@@ -196,7 +196,7 @@ const AuthenticatedApp = () => {
       <Route path="/AIOrderForm" element={<LayoutWrapper currentPageName="AIOrderForm"><AIOrderForm /></LayoutWrapper>} />
       <Route path="/DailyTodoList" element={<LayoutWrapper currentPageName="DailyTodoList"><DailyTodoList /></LayoutWrapper>} />
       <Route path="/SalesAnalyticsDashboard" element={<LayoutWrapper currentPageName="SalesAnalyticsDashboard"><SalesAnalyticsDashboard /></LayoutWrapper>} />
-      <Route path="/GoogleAdsOverlay" element={<GoogleAdsOverlay />} />
+      <Route path="/GoogleAdsOverlay" element={<LayoutWrapper currentPageName="GoogleAdsOverlay"><GoogleAdsOverlay /></LayoutWrapper>} />
       <Route path="/AdBusinessDashboard" element={<LayoutWrapper currentPageName="AdBusinessDashboard"><AdBusinessDashboard /></LayoutWrapper>} />
       <Route path="/AdBusinessOverview" element={<LayoutWrapper currentPageName="AdBusinessOverview"><AdBusinessOverview /></LayoutWrapper>} />
       <Route path="/SmartPayoutDashboard" element={<LayoutWrapper currentPageName="SmartPayoutDashboard"><SmartPayoutDashboard /></LayoutWrapper>} />
