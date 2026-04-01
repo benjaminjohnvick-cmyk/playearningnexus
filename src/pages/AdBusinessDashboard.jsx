@@ -10,7 +10,7 @@ import {
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
   Globe, Image, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
   MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X,
-  Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate
+  Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate, Gauge, RefreshCw
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -49,6 +49,9 @@ import AdFraudDetection from '@/components/advertiser/AdFraudDetection';
 import AdAttributionDashboard from '@/components/advertiser/AdAttributionDashboard';
 import AdCurrencySettings, { CurrencyProvider, useCurrency } from '@/components/advertiser/AdCurrencySettings';
 import AdTemplateHub from '@/components/advertiser/AdTemplateHub';
+import AdCreativeForecast from '@/components/advertiser/AdCreativeForecast';
+import AdBudgetPacing from '@/components/advertiser/AdBudgetPacing';
+import AdCrossPlatformSync from '@/components/advertiser/AdCrossPlatformSync';
 import { base44 as b44 } from '@/api/base44Client';
 
 const TAB_GROUPS = [
@@ -113,6 +116,9 @@ const TAB_GROUPS = [
     tabs: [
       ['Attribution', <GitMerge />],
       ['Template Hub', <LayoutTemplate />],
+      ['Forecast', <Sparkles />],
+      ['Budget Pacing', <Gauge />],
+      ['Platform Sync', <RefreshCw />],
     ],
   },
 ];
@@ -543,6 +549,34 @@ export default function AdBusinessDashboard() {
           </div>
         )}
 
+        {activeTab === 'Forecast' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-purple-400" /> AI Pre-Launch Forecast
+            </h2>
+            <p className="text-gray-500 text-xs">Fill in your new ad details below, then run the forecast to predict CTR and ROI before going live.</p>
+            <AdCreativeForecastForm ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Budget Pacing' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Gauge className="w-4 h-4 text-blue-400" /> Smart Budget Pacing
+            </h2>
+            <AdBudgetPacing ads={ads} adBalance={adBalance} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Platform Sync' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <RefreshCw className="w-4 h-4 text-green-400" /> Cross-Platform Sync
+            </h2>
+            <AdCrossPlatformSync ads={ads} onRefresh={refetch} />
+          </div>
+        )}
+
         {activeTab === 'A/B Test' && (
           <div className="space-y-6">
             <AdABTest ads={ads} onRefresh={refetch} />
@@ -703,6 +737,64 @@ function OverviewStat({ icon, label, value }) {
       <div className="flex justify-center mb-2">{icon}</div>
       <p className="text-white font-black text-2xl leading-none">{value}</p>
       <p className="text-gray-500 text-xs mt-1">{label}</p>
+    </div>
+  );
+}
+
+// Inline form wrapper that feeds AdCreativeForecast
+function AdCreativeForecastForm({ ads }) {
+  const [form, setForm] = useState({ brand_name: '', tagline: '', bid: 0.40, tier: 'Standard', hasImage: false });
+  const TIERS = ['Economy', 'Standard', 'High', 'Premium'];
+  return (
+    <div className="space-y-4">
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-5 space-y-3">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">New Ad Details</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-gray-400 font-bold block mb-1">Brand Name</label>
+            <input value={form.brand_name} onChange={e => setForm(f => ({...f, brand_name: e.target.value}))}
+              placeholder="e.g. Nike, My App" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="text-xs text-gray-400 font-bold block mb-1">Tagline</label>
+            <input value={form.tagline} onChange={e => setForm(f => ({...f, tagline: e.target.value}))}
+              placeholder="e.g. Get 50% off — Limited Time!" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="text-xs text-gray-400 font-bold block mb-1">Bid Amount ($)</label>
+            <input type="number" step="0.05" min="0.20" max="1.50" value={form.bid}
+              onChange={e => setForm(f => ({...f, bid: parseFloat(e.target.value) || 0.40}))}
+              className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="text-xs text-gray-400 font-bold block mb-1">Grid Tier</label>
+            <div className="flex gap-1.5">
+              {TIERS.map(t => (
+                <button key={t} onClick={() => setForm(f => ({...f, tier: t}))}
+                  className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${form.tier === t ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300' : 'border-gray-700 text-gray-500 hover:text-white'}`}>
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setForm(f => ({...f, hasImage: !f.hasImage}))}
+            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${form.hasImage ? 'bg-green-500 border-green-500' : 'border-gray-600'}`}>
+            {form.hasImage && <span className="text-white text-[10px] font-black">✓</span>}
+          </button>
+          <span className="text-gray-400 text-xs">I have an ad image ready to upload</span>
+        </div>
+      </div>
+      <AdCreativeForecast
+        ads={ads}
+        brandName={form.brand_name}
+        tagline={form.tagline}
+        hasImage={form.hasImage}
+        bid={form.bid}
+        tier={form.tier}
+        targeting={null}
+      />
     </div>
   );
 }
