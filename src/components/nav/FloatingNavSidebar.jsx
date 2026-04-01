@@ -6,7 +6,7 @@ import {
   Home, ShoppingCart, FileText, LayoutDashboard, Heart, Trophy,
   DollarSign, Users, User, TrendingUp, Star, Gamepad2, Mail,
   Settings, Swords, BarChart2, Globe, ArrowRightLeft, Briefcase,
-  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket
+  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket, Brain, Zap
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -49,6 +49,10 @@ const NAV_SECTIONS = [
     { name: 'Bug Reports', icon: Globe, path: 'DevBugReports', color: 'red' },
     { name: 'AI Growth Assistant', icon: Star, path: 'AIGrowthAssistant', color: 'red' },
   ]},
+  { group: 'AI Systems', items: [
+    { name: 'AI Content Hub', icon: Brain, path: 'AIContentHub', color: 'purple' },
+    { name: 'Head-to-Head Contests', icon: Zap, path: 'HeadToHeadContest', color: 'purple' },
+  ]},
   { group: 'Smart Alerts', items: [
     { name: 'Notification Engine', icon: Bell, path: 'SmartNotificationEngine', color: 'blue' },
   ]},
@@ -86,6 +90,12 @@ const COLOR_MAP = {
     hover: 'hover:bg-blue-50 hover:text-blue-700',
     dot: 'bg-blue-500',
     group: 'text-blue-600',
+  },
+  purple: {
+    active: 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md shadow-purple-200',
+    hover: 'hover:bg-purple-50 hover:text-purple-700',
+    dot: 'bg-purple-500',
+    group: 'text-purple-600',
   },
 };
 

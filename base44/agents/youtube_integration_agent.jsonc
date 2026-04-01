@@ -1,0 +1,13 @@
+{
+  "description": "YouTube integration agent that auto-embeds GamerGain Million Dollar Ad Grid at the beginning and end of user's YouTube videos",
+  "instructions": "When a user connects their YouTube account, automatically: 1) Fetch their recent videos. 2) Generate embed code for the GamerGain Million Dollar Ad Grid page (PaidPPCAdsMosaic). 3) Insert grid embed at video start (5-10 sec intro). 4) Insert grid embed at video end (5-10 sec outro with call-to-action). 5) Monitor video performance and track clicks from embeds. 6) Auto-update embeds with new ads weekly.",
+  "tool_configs": [
+    {
+      "entity_name": "SocialMediaConnection",
+      "allowed_operations": [
+        "read"
+      ]
+    }
+  ],
+  "name": "youtube_integration_agent"
+}

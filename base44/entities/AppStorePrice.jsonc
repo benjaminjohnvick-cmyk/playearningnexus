@@ -1,0 +1,53 @@
+{
+  "name": "AppStorePrice",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "tier_name": {
+      "type": "string",
+      "enum": [
+        "free",
+        "basic",
+        "plus",
+        "premium"
+      ],
+      "default": "free"
+    },
+    "monthly_price": {
+      "type": "number",
+      "default": 0,
+      "description": "Monthly subscription price"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Features included in tier"
+    },
+    "mandatory_daily_earning": {
+      "type": "number",
+      "default": 3,
+      "description": "Daily earnings requirement in dollars"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "subscribed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "next_billing_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

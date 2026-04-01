@@ -70,6 +70,8 @@ const AdBusinessOverview = lazy(() => import('./pages/AdBusinessOverview'));
 const SmartPayoutDashboard = lazy(() => import('./pages/SmartPayoutDashboard'));
 const ContestEntries = lazy(() => import('./pages/ContestEntries'));
 const PaidPPCAdsMosaic = lazy(() => import('./pages/PaidPPCAdsMosaic'));
+const HeadToHeadContest = lazy(() => import('./pages/HeadToHeadContest'));
+const AIContentHub = lazy(() => import('./pages/AIContentHub'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -196,6 +198,8 @@ const AuthenticatedApp = () => {
       <Route path="/SmartPayoutDashboard" element={<LayoutWrapper currentPageName="SmartPayoutDashboard"><SmartPayoutDashboard /></LayoutWrapper>} />
       <Route path="/ContestEntries" element={<LayoutWrapper currentPageName="ContestEntries"><ContestEntries /></LayoutWrapper>} />
       <Route path="/PaidPPCAdsMosaic" element={<PaidPPCAdsMosaic />} />
+      <Route path="/HeadToHeadContest" element={<LayoutWrapper currentPageName="HeadToHeadContest"><HeadToHeadContest /></LayoutWrapper>} />
+      <Route path="/AIContentHub" element={<LayoutWrapper currentPageName="AIContentHub"><AIContentHub /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

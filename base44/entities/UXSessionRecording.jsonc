@@ -1,0 +1,57 @@
+{
+  "name": "UXSessionRecording",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Unique session identifier"
+    },
+    "recording_url": {
+      "type": "string",
+      "description": "URL to session video/data"
+    },
+    "page_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "default": [],
+      "description": "Clicks, scrolls, form inputs"
+    },
+    "conversion_funnel": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Pages visited in order"
+    },
+    "drop_off_point": {
+      "type": "string",
+      "description": "Where user left the funnel"
+    },
+    "issue_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Tags like 'checkout_issue', 'slow_load'"
+    },
+    "session_duration_seconds": {
+      "type": "number"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "session_id"
+  ]
+}

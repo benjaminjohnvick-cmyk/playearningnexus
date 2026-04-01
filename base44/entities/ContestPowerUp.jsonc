@@ -1,0 +1,39 @@
+{
+  "name": "ContestPowerUp",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "contest_id": {
+      "type": "string"
+    },
+    "power_up_type": {
+      "type": "string",
+      "enum": [
+        "stun",
+        "pause",
+        "skip_turn"
+      ],
+      "description": "Type of power-up"
+    },
+    "cost": {
+      "type": "number",
+      "default": 0.5,
+      "description": "Cost per power-up"
+    },
+    "target_user_id": {
+      "type": "string",
+      "description": "Who the power-up affects"
+    },
+    "used_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "contest_id",
+    "power_up_type"
+  ]
+}

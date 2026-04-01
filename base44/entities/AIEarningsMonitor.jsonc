@@ -1,0 +1,47 @@
+{
+  "name": "AIEarningsMonitor",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "total_earned": {
+      "type": "number",
+      "default": 0
+    },
+    "total_owed": {
+      "type": "number",
+      "default": 0
+    },
+    "pending_payouts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "requested_at": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "daily_breakdown": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "date -> earnings"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

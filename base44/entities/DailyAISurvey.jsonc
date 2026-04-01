@@ -1,0 +1,69 @@
+{
+  "name": "DailyAISurvey",
+  "type": "object",
+  "properties": {
+    "survey_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "number"
+          },
+          "votes": {
+            "type": "number",
+            "default": 0
+          }
+        }
+      },
+      "default": [],
+      "description": "Products to vote on"
+    },
+    "winning_product": {
+      "type": "string",
+      "description": "Product with highest interest (lowest avg rank)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "voting",
+        "closed",
+        "published"
+      ],
+      "default": "voting"
+    },
+    "responses": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "User responses with votes"
+    },
+    "created_product_id": {
+      "type": "string",
+      "description": "ID of auto-created product"
+    },
+    "created_product_price": {
+      "type": "number",
+      "description": "AI-set price"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "survey_date"
+  ]
+}
