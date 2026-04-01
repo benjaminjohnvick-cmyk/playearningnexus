@@ -382,7 +382,7 @@ export default function AdBusinessDashboard() {
           </button>
 
           {menuOpen && (
-            <div className="absolute top-full left-0 mt-1 w-72 bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden">
+            <div className="absolute top-full left-0 mt-1 w-72 max-w-[calc(100vw-2rem)] bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl z-50 overflow-hidden">
               <div className="max-h-[70vh] overflow-y-auto py-2">
                 {TAB_GROUPS.map(group => (
                   <div key={group.group}>
