@@ -28,6 +28,7 @@ const NAV_SECTIONS = [
   ]},
   { group: 'Social', items: [
     { name: 'Referral Competition', icon: Trophy, path: 'ReferralCompetition', color: 'blue' },
+    { name: 'Levels & Badges', icon: Star, path: 'LevelAndBadgesPage', color: 'blue' },
     { name: 'Referrals', icon: Users, path: 'ReferralDashboard', color: 'blue' },
     { name: 'Leaderboard & Seasons', icon: Trophy, path: 'GlobalLeaderboard', color: 'blue' },
     { name: 'Achievements', icon: Star, path: 'AchievementsPage', color: 'blue' },

@@ -76,6 +76,7 @@ const Store = lazy(() => import('./pages/Store'));
 const AIAgentsSettings = lazy(() => import('./pages/AIAgentsSettings'));
 const ReferralCompetition = lazy(() => import('./pages/ReferralCompetition'));
 const PPCSurveyBuilder = lazy(() => import('./pages/PPCSurveyBuilder'));
+const LevelAndBadgesPage = lazy(() => import('./pages/LevelAndBadgesPage'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -208,6 +209,7 @@ const AuthenticatedApp = () => {
       <Route path="/AIAgentsSettings" element={<LayoutWrapper currentPageName="AIAgentsSettings"><AIAgentsSettings /></LayoutWrapper>} />
       <Route path="/ReferralCompetition" element={<LayoutWrapper currentPageName="ReferralCompetition"><ReferralCompetition /></LayoutWrapper>} />
       <Route path="/PPCSurveyBuilder" element={<LayoutWrapper currentPageName="PPCSurveyBuilder"><PPCSurveyBuilder /></LayoutWrapper>} />
+      <Route path="/LevelAndBadgesPage" element={<LayoutWrapper currentPageName="LevelAndBadgesPage"><LevelAndBadgesPage /></LayoutWrapper>} />
       <Route path="/InAppGameStore" element={<LayoutWrapper currentPageName="InAppGameStore"><Store /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

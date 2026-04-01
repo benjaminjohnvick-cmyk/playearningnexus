@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -37,23 +37,24 @@ import SupportChatButton from '@/components/support/SupportChatButton';
 import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 import MegaContestButton from '@/components/referral/MegaContestButton';
-import SurveyAlertWatcher from '@/components/surveys/SurveyAlertWatcher';
-import PushNotificationManager from '@/components/notifications/PushNotificationManager';
-import SurveyNotificationBanner from '@/components/notifications/SurveyNotificationBanner';
-import SurveyDemandAlerts from '@/components/ppc/SurveyDemandAlerts';
-import DailyFeedbackModal from '@/components/feedback/DailyFeedbackModal';
-import SurveyRewardNotifier from '@/components/surveys/SurveyRewardNotifier';
-import PPCPushNotificationManager from '@/components/notifications/PPCPushNotificationManager';
 import { LocaleProvider } from '@/components/locale/LocaleContext';
 import { initTracker, setPage, trackEvent } from '@/lib/uxTracker';
-import CurrencySelector from '@/components/locale/CurrencySelector';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { useSurveyMatchNotifications } from '@/hooks/useSurveyMatchNotifications';
 import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
-import AIPersonalizedDailyGoal from '@/components/dashboard/AIPersonalizedDailyGoal';
-import WishlistDailyNotifier from '@/components/wishlist/WishlistDailyNotifier';
-import PriceDropAlertBadge from '@/components/wishlist/PriceDropAlertBadge';
+
+// Lazy load non-critical components
+const SurveyAlertWatcher = lazy(() => import('@/components/surveys/SurveyAlertWatcher'));
+const PushNotificationManager = lazy(() => import('@/components/notifications/PushNotificationManager'));
+const SurveyNotificationBanner = lazy(() => import('@/components/notifications/SurveyNotificationBanner'));
+const SurveyDemandAlerts = lazy(() => import('@/components/ppc/SurveyDemandAlerts'));
+const DailyFeedbackModal = lazy(() => import('@/components/feedback/DailyFeedbackModal'));
+const SurveyRewardNotifier = lazy(() => import('@/components/surveys/SurveyRewardNotifier'));
+const PPCPushNotificationManager = lazy(() => import('@/components/notifications/PPCPushNotificationManager'));
+const AIPersonalizedDailyGoal = lazy(() => import('@/components/dashboard/AIPersonalizedDailyGoal'));
+const WishlistDailyNotifier = lazy(() => import('@/components/wishlist/WishlistDailyNotifier'));
+const PriceDropAlertBadge = lazy(() => import('@/components/wishlist/PriceDropAlertBadge'));
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -97,7 +98,9 @@ export default function Layout({ children, currentPageName }) {
       const events = await base44.entities.LiveEvent.filter({ is_active: true });
       return events.filter(e => new Date(e.start_time) <= new Date(now) && new Date(e.end_time) >= new Date(now));
     },
-    enabled: isAuthenticated
+    enabled: isAuthenticated,
+    staleTime: 60000, // Cache for 1 minute
+    gcTime: 300000 // Keep in memory for 5 minutes
   });
 
   useEffect(() => {
@@ -336,14 +339,16 @@ export default function Layout({ children, currentPageName }) {
               {/* Desktop Right: user controls */}
               <div className="hidden md:flex items-center gap-1 flex-shrink-0 ml-auto">
                 {isAuthenticated && user ? (
-                  <>
-                    <div className="text-right hidden lg:block">
-                      <p className="text-xs font-medium text-gray-900">{user.full_name}</p>
-                      <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
-                    </div>
-                    <PushNotificationManager />
-                    <SurveyDemandAlerts user={user} />
-                    <NotificationCenter user={user} />
+                    <>
+                      <div className="text-right hidden lg:block">
+                        <p className="text-xs font-medium text-gray-900">{user.full_name}</p>
+                        <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
+                      </div>
+                      <Suspense fallback={null}>
+                        <PushNotificationManager />
+                        <SurveyDemandAlerts user={user} />
+                      </Suspense>
+                      <NotificationCenter user={user} />
                     {user?.role === 'admin' && (
                       <Link to={createPageUrl('AdminDashboard')}>
                         <Button variant="ghost" size="icon" title="Admin Dashboard">
@@ -425,35 +430,40 @@ export default function Layout({ children, currentPageName }) {
         </header>}
 
         {/* PPC Widget Top Bar */}
-        {isAuthenticated && user && (
-          <div className="sticky top-0 z-40 bg-white border-b border-red-200 shadow-sm">
-            <div className="max-w-7xl mx-auto px-4 py-2">
-              <PPCAdSearchWidget variant="compact" />
-            </div>
-          </div>
-        )}
+         {isAuthenticated && user && (
+           <div className="sticky top-0 z-40 bg-white border-b border-red-200 shadow-sm">
+             <div className="max-w-7xl mx-auto px-4 py-2">
+               <Suspense fallback={null}>
+                 <PPCAdSearchWidget variant="compact" />
+               </Suspense>
+             </div>
+           </div>
+         )}
 
-        {/* Main Content */}
-        <main>{children}</main>
-        
-        {/* Global AI Daily Goal Sidebar */}
-        {isAuthenticated && user && (
-          <div className="fixed right-4 top-32 z-30 w-80 max-h-[calc(100vh-150px)] overflow-y-auto hidden lg:block">
-            <AIPersonalizedDailyGoal user={user} />
-          </div>
-        )}
+         {/* Main Content */}
+         <main>{children}</main>
 
-        <FloatingNavSidebar currentPageName={currentPageName} />
+         {/* Global AI Daily Goal Sidebar */}
+         {isAuthenticated && user && (
+           <div className="fixed right-4 top-32 z-30 w-80 max-h-[calc(100vh-150px)] overflow-y-auto hidden lg:block">
+             <Suspense fallback={null}>
+               <AIPersonalizedDailyGoal user={user} />
+             </Suspense>
+           </div>
+         )}
 
-        {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
-        {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
+         <FloatingNavSidebar currentPageName={currentPageName} />
 
-        {isAuthenticated && user && <DailyFeedbackModal user={user} />}
-        {isAuthenticated && user && <SurveyRewardNotifier user={user} />}
-        {isAuthenticated && user && <PPCPushNotificationManager />}
-        {isAuthenticated && user && <WishlistDailyNotifier user={user} />}
-        {isAuthenticated && user && <PriceDropAlertBadge user={user} />}
-        <SupportChatButton />
+         <Suspense fallback={null}>
+           {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
+           {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
+           {isAuthenticated && user && <DailyFeedbackModal user={user} />}
+           {isAuthenticated && user && <SurveyRewardNotifier user={user} />}
+           {isAuthenticated && user && <PPCPushNotificationManager />}
+           {isAuthenticated && user && <WishlistDailyNotifier user={user} />}
+           {isAuthenticated && user && <PriceDropAlertBadge user={user} />}
+         </Suspense>
+         <SupportChatButton />
 
         <LogoutPromptModal
           isOpen={showLogoutPrompt}
