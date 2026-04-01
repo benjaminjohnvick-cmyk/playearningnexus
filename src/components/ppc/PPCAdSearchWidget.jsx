@@ -155,22 +155,6 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
             <span className="font-bold text-sm">GainerGain Search</span>
           </div>
 
-          {/* Search Mode Toggle */}
-          <div className="flex bg-blue-800/50 rounded-full p-0.5 gap-0.5 flex-shrink-0">
-            <button
-              onClick={() => { setSearchMode('surveys'); setProductResults(null); }}
-              className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${searchMode === 'surveys' ? 'bg-white text-blue-700' : 'text-blue-200 hover:text-white'}`}
-            >
-              Surveys
-            </button>
-            <button
-              onClick={() => { setSearchMode('products'); setIsExpanded(true); }}
-              className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${searchMode === 'products' ? 'bg-white text-blue-700' : 'text-blue-200 hover:text-white'}`}
-            >
-              <ShoppingCart className="w-3 h-3" /> Products
-            </button>
-          </div>
-
           {/* Search Bar */}
           <div className="flex-1 relative flex gap-1">
             <div className="flex-1 relative">
@@ -209,6 +193,22 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
           >
             <Share2 className="w-4 h-4" />
           </Button>
+
+          {/* Search Mode Toggle */}
+          <div className="flex bg-blue-800/50 rounded-full p-0.5 gap-0.5 flex-shrink-0">
+            <button
+              onClick={() => { setSearchMode('surveys'); setProductResults(null); }}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${searchMode === 'surveys' ? 'bg-white text-blue-700' : 'text-blue-200 hover:text-white'}`}
+            >
+              Surveys
+            </button>
+            <button
+              onClick={() => { setSearchMode('products'); setIsExpanded(true); }}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${searchMode === 'products' ? 'bg-white text-blue-700' : 'text-blue-200 hover:text-white'}`}
+            >
+              <ShoppingCart className="w-3 h-3" /> Products
+            </button>
+          </div>
 
           {/* Download Button */}
           <Button 
