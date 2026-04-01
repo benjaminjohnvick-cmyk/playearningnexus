@@ -1,60 +1,55 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    const { prompt, min_questions = 10 } = await req.json();
 
-    const { prompt, surveyType, productName } = await req.json();
+    if (!prompt || prompt.trim().length === 0) {
+      return Response.json({ error: 'Prompt is required' }, { status: 400 });
+    }
 
-    if (!prompt) return Response.json({ error: 'Prompt is required' }, { status: 400 });
+    // Generate survey questions using AI
+    const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
+      prompt: `Generate a professional survey with exactly ${min_questions} questions based on this topic: "${prompt}"
 
-    const typeContext = surveyType === 'product_listing'
-      ? `This is a product listing survey for: "${productName || 'a product'}". Generate questions that help gauge consumer interest, buying intent, product perception, price sensitivity, and feature preferences.`
-      : `This is a data collection survey about: "${prompt}". Generate questions that collect meaningful market research data.`;
-
-    const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are a professional survey designer. ${typeContext}
-
-User's topic/description: "${prompt}"
-
-Generate exactly 10 multiple-choice survey questions. Each question must have exactly 4 answer options (A, B, C, D).
-
-Rules:
-- Questions must be clear, concise, and professional
-- Answer options must be mutually exclusive and comprehensive
-- Mix question types: opinion, behavior, demographics, preferences
-- Keep each question under 100 characters
-- Keep each answer option under 60 characters
-
-Return ONLY valid JSON in this exact format:
+Return ONLY a JSON object (no markdown, no extra text) with this structure:
 {
-  "title": "A professional survey title based on the topic",
+  "title": "Survey Title",
+  "description": "Brief description",
   "questions": [
     {
-      "question": "Question text here?",
-      "option_a": "First option",
-      "option_b": "Second option",
-      "option_c": "Third option",
-      "option_d": "Fourth option"
+      "question": "Question text?",
+      "type": "multiple_choice",
+      "answers": ["Option 1", "Option 2", "Option 3", "Option 4"]
+    },
+    {
+      "question": "Rating question?",
+      "type": "rating",
+      "answers": ["1", "2", "3", "4", "5"]
     }
   ]
-}`,
+}
+
+Guidelines:
+- Mix question types (multiple choice, rating, short text)
+- Make questions professional and unbiased
+- Ensure variety in answer options
+- Create at least ${min_questions} questions
+- Keep questions concise and clear`,
       response_json_schema: {
-        type: "object",
+        type: 'object',
         properties: {
-          title: { type: "string" },
+          title: { type: 'string' },
+          description: { type: 'string' },
           questions: {
-            type: "array",
+            type: 'array',
             items: {
-              type: "object",
+              type: 'object',
               properties: {
-                question: { type: "string" },
-                option_a: { type: "string" },
-                option_b: { type: "string" },
-                option_c: { type: "string" },
-                option_d: { type: "string" }
+                question: { type: 'string' },
+                type: { type: 'string' },
+                answers: { type: 'array', items: { type: 'string' } }
               }
             }
           }
@@ -62,8 +57,22 @@ Return ONLY valid JSON in this exact format:
       }
     });
 
-    return Response.json({ success: true, title: result.title, questions: result.questions });
+    // Validate response has minimum questions
+    if (!response.questions || response.questions.length < min_questions) {
+      return Response.json({
+        error: `Failed to generate ${min_questions} questions. Please try a more specific prompt.`,
+        generated: response.questions?.length || 0
+      }, { status: 400 });
+    }
+
+    return Response.json({
+      title: response.title || 'Untitled Survey',
+      description: response.description || '',
+      questions: response.questions.slice(0, 20) // Limit to 20 questions max
+    });
+
   } catch (error) {
+    console.error('Error in aiSurveyGenerator:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });

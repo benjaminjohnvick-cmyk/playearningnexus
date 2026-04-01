@@ -1,0 +1,92 @@
+{
+  "name": "PPCSurvey",
+  "type": "object",
+  "properties": {
+    "creator_id": {
+      "type": "string",
+      "description": "User ID of survey creator"
+    },
+    "creator_name": {
+      "type": "string",
+      "description": "Display name of creator"
+    },
+    "title": {
+      "type": "string",
+      "description": "Survey title"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "multiple_choice",
+              "text",
+              "rating"
+            ]
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Array of survey questions"
+    },
+    "questions_count": {
+      "type": "number",
+      "description": "Total number of questions"
+    },
+    "sample_size": {
+      "type": "number",
+      "description": "Target number of responses"
+    },
+    "cost_per_question": {
+      "type": "number",
+      "default": 0.1,
+      "description": "Cost per question to respondent"
+    },
+    "total_cost": {
+      "type": "number",
+      "description": "Total cost for all questions"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_review",
+        "active",
+        "completed",
+        "paused"
+      ],
+      "default": "pending_review",
+      "description": "Survey status"
+    },
+    "responses_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of completed responses"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "creator_id",
+    "title",
+    "questions",
+    "sample_size",
+    "total_cost"
+  ]
+}
