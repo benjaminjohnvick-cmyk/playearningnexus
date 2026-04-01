@@ -13,13 +13,13 @@ const NAV_SECTIONS = [
   { group: 'Main', items: [
     { name: 'Home', icon: Home, path: 'Home', color: 'red' },
     { name: 'Store', icon: ShoppingCart, path: 'Store', color: 'red' },
-    { name: 'Surveys', icon: FileText, path: 'Surveys', color: 'blue' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', color: 'blue' },
     { name: 'Wishlist', icon: Heart, path: 'Wishlist', color: 'red' },
     { name: 'Daily Tasks', icon: FileText, path: 'DailyTodoList', color: 'red' },
   ]},
   { group: 'Earn', items: [
     { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', color: 'green' },
+    { name: 'Surveys', icon: FileText, path: 'Surveys', color: 'green' },
     { name: 'Create Survey', icon: FileText, path: 'PPCSurveyBuilder', color: 'green' },
     { name: 'Paid PPC Ads', icon: DollarSign, path: 'GoogleAdsOverlay', color: 'green' },
     { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', color: 'green' },
