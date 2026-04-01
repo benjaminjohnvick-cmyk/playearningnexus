@@ -18,9 +18,7 @@ const NAV_SECTIONS = [
     { name: 'Daily Tasks', icon: FileText, path: 'DailyTodoList', color: 'red' },
   ]},
   { group: 'Earn', items: [
-    { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', color: 'green' },
-    { name: 'Surveys', icon: FileText, path: 'Surveys', color: 'green' },
-    { name: 'Create Survey', icon: FileText, path: 'PPCSurveyBuilder', color: 'green' },
+    { name: 'Surveys', icon: TrendingUp, path: 'PPCMarketplace', color: 'green' },
     { name: 'Paid PPC Ads', icon: DollarSign, path: 'GoogleAdsOverlay', color: 'green' },
     { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', color: 'green' },
     { name: 'My Payouts', icon: Wallet, path: 'MyPayouts', color: 'green' },
