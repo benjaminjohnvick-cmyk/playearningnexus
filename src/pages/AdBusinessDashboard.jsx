@@ -60,6 +60,8 @@ import AdBillingInvoice from '@/components/advertiser/AdBillingInvoice';
 import AdExternalPlatformSync from '@/components/advertiser/AdExternalPlatformSync';
 import AdAutomatedBidEngine from '@/components/advertiser/AdAutomatedBidEngine';
 import AdImageProcessor from '@/components/advertiser/AdImageProcessor';
+import AdSpendForecast from '@/components/advertiser/AdSpendForecast';
+import AdBudgetScaler from '@/components/advertiser/AdBudgetScaler';
 import { base44 as b44 } from '@/api/base44Client';
 
 const TAB_GROUPS = [
@@ -135,6 +137,8 @@ const TAB_GROUPS = [
       ['Ext. Platforms', <Globe />],
       ['Auto Bidder', <Zap />],
       ['Image Processor', <ImageIcon />],
+      ['Spend Forecast', <TrendingUp />],
+      ['Budget Scaler', <DollarSign />],
     ],
   },
 ];
@@ -660,6 +664,26 @@ export default function AdBusinessDashboard() {
             </h2>
             <p className="text-gray-500 text-xs">Set custom triggers (e.g. "If CTR drops below 1.5%, reduce bid 10%") and time schedules (e.g. "Weekends +20%") to optimize spend automatically.</p>
             <AdAutomatedBidEngine ads={ads} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Spend Forecast' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-yellow-400" /> ML Spend Forecast & Inventory Predictor
+            </h2>
+            <p className="text-gray-500 text-xs">Predicts future ad spend requirements and grid inventory availability using seasonal trend multipliers and your current growth velocity.</p>
+            <AdSpendForecast ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Budget Scaler' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-orange-400" /> AI Budget Scaler
+            </h2>
+            <p className="text-gray-500 text-xs">Automatically shifts budget from underperforming campaigns to high-ROI ones. Set your target ROI threshold and shift percentage, preview the plan, then execute.</p>
+            <AdBudgetScaler ads={ads} adBalance={adBalance} onRefresh={refetch} />
           </div>
         )}
 
