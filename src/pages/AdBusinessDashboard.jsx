@@ -69,6 +69,9 @@ import AdCompetitiveIntelFeed from '@/components/advertiser/AdCompetitiveIntelFe
 import AdDailyBudgetPacer from '@/components/advertiser/AdDailyBudgetPacer';
 import AdLaunchForecaster from '@/components/advertiser/AdLaunchForecaster';
 import AdSocialChannelAnalytics from '@/components/advertiser/AdSocialChannelAnalytics';
+import AdCampaignChat from '@/components/advertiser/AdCampaignChat';
+import AdPDFReportCenter from '@/components/advertiser/AdPDFReportCenter';
+import AdCreativeStudio from '@/components/advertiser/AdCreativeStudio';
 
 
 const TAB_GROUPS = [
@@ -153,6 +156,9 @@ const TAB_GROUPS = [
       ['Daily Pacer', <Gauge />],
       ['Launch Forecast', <Sparkles />],
       ['Social Analytics', <Globe />],
+      ['Campaign Chat', <Bot />],
+      ['PDF Reports', <FileText />],
+      ['Creative Studio', <ImageIcon />],
     ],
   },
 ];
@@ -698,6 +704,36 @@ export default function AdBusinessDashboard() {
             </h2>
             <p className="text-gray-500 text-xs">Automatically shifts budget from underperforming campaigns to high-ROI ones. Set your target ROI threshold and shift percentage, preview the plan, then execute.</p>
             <AdBudgetScaler ads={ads} adBalance={adBalance} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Campaign Chat' && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Bot className="w-4 h-4 text-purple-400" /> Campaign Intelligence Chat
+            </h2>
+            <p className="text-gray-500 text-xs">Ask complex questions about your campaigns with voice or text — powered by Claude Sonnet with your real data in context.</p>
+            <AdCampaignChat ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'PDF Reports' && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <FileText className="w-4 h-4 text-green-400" /> PDF Report & Invoice Center
+            </h2>
+            <p className="text-gray-500 text-xs">Generate branded performance reports and tax invoices, preview them as printable PDFs, and schedule recurring delivery to clients or your team.</p>
+            <AdPDFReportCenter userId={user.id} userEmail={user.email} ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Creative Studio' && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-yellow-400" /> Creative Asset Studio
+            </h2>
+            <p className="text-gray-500 text-xs">Upload, organize, and version-control your ad creatives. Use AI text prompts or voice dictation to generate thumbnails and taglines, apply text overlays, tag assets, and push them directly to campaigns.</p>
+            <AdCreativeStudio userId={user.id} ads={ads} />
           </div>
         )}
 
