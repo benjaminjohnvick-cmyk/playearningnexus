@@ -8,7 +8,8 @@ import {
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
   Globe, Image, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
-  MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X
+  MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X,
+  Users, Link2, ShieldAlert
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -41,6 +42,9 @@ import AdAutoPilotBidder from '@/components/advertiser/AdAutoPilotBidder';
 import AdSocialPushIntegration from '@/components/advertiser/AdSocialPushIntegration';
 import AdAcademy from '@/components/advertiser/AdAcademy';
 import AdSocialShareTracker from '@/components/advertiser/AdSocialShareTracker';
+import AdTeamManager from '@/components/advertiser/AdTeamManager';
+import AdReferralProgram from '@/components/advertiser/AdReferralProgram';
+import AdFraudDetection from '@/components/advertiser/AdFraudDetection';
 import { base44 as b44 } from '@/api/base44Client';
 
 const TAB_GROUPS = [
@@ -89,6 +93,14 @@ const TAB_GROUPS = [
     tabs: [
       ['Loyalty', <Star />],
       ['Academy', <GraduationCap />],
+      ['Referral Program', <Link2 />],
+    ],
+  },
+  {
+    group: '⚙️ Account',
+    tabs: [
+      ['Team', <Users />],
+      ['Fraud Detection', <ShieldAlert />],
     ],
   },
 ];
@@ -458,6 +470,33 @@ export default function AdBusinessDashboard() {
               <GraduationCap className="w-4 h-4 text-yellow-400" /> Advertiser Academy
             </h2>
             <AdAcademy userId={user.id} />
+          </div>
+        )}
+
+        {activeTab === 'Team' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Users className="w-4 h-4 text-blue-400" /> Team Management
+            </h2>
+            <AdTeamManager userId={user.id} userName={user.full_name} />
+          </div>
+        )}
+
+        {activeTab === 'Referral Program' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Link2 className="w-4 h-4 text-green-400" /> Advertiser Referral Program
+            </h2>
+            <AdReferralProgram userId={user.id} ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Fraud Detection' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-red-400" /> AI Fraud Detection
+            </h2>
+            <AdFraudDetection ads={ads} />
           </div>
         )}
 
