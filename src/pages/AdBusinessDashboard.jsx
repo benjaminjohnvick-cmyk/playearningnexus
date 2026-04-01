@@ -8,7 +8,7 @@ import {
   Plus, BarChart2, Grid2x2, LogIn, Building2, DollarSign,
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
-  Globe, Image, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
+  Globe, Image, ImageIcon, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
   MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X,
   Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate, Gauge, RefreshCw, Zap
 } from 'lucide-react';
@@ -59,6 +59,7 @@ import AdAIAssistant from '@/components/advertiser/AdAIAssistant';
 import AdBillingInvoice from '@/components/advertiser/AdBillingInvoice';
 import AdExternalPlatformSync from '@/components/advertiser/AdExternalPlatformSync';
 import AdAutomatedBidEngine from '@/components/advertiser/AdAutomatedBidEngine';
+import AdImageProcessor from '@/components/advertiser/AdImageProcessor';
 import { base44 as b44 } from '@/api/base44Client';
 
 const TAB_GROUPS = [
@@ -133,6 +134,7 @@ const TAB_GROUPS = [
       ['Billing', <FileText />],
       ['Ext. Platforms', <Globe />],
       ['Auto Bidder', <Zap />],
+      ['Image Processor', <ImageIcon />],
     ],
   },
 ];
@@ -658,6 +660,16 @@ export default function AdBusinessDashboard() {
             </h2>
             <p className="text-gray-500 text-xs">Set custom triggers (e.g. "If CTR drops below 1.5%, reduce bid 10%") and time schedules (e.g. "Weekends +20%") to optimize spend automatically.</p>
             <AdAutomatedBidEngine ads={ads} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Image Processor' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-yellow-400" /> AI Image Processor
+            </h2>
+            <p className="text-gray-500 text-xs">Upload your primary ad creative and instantly generate optimally resized, cropped versions for all 5 external platforms — 13 formats total.</p>
+            <AdImageProcessor />
           </div>
         )}
 
