@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Play, Pause, RefreshCw, TrendingUp, TrendingDown, DollarSign, Target, Loader2, CheckCircle2 } from 'lucide-react';
+import { Zap, Play, Pause, RefreshCw, TrendingUp, TrendingDown, DollarSign, Target, Loader2, CheckCircle2, Brain } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 function calcMetrics(ad) {
@@ -54,6 +54,8 @@ export default function AdDailyBudgetPacer({ ads, onRefresh }) {
   const [shiftPct, setShiftPct] = useState(25);
   const [autoRun, setAutoRun] = useState(false);
   const [running, setRunning] = useState(false);
+  const [aiRunning, setAiRunning] = useState(false);
+  const [aiResult, setAiResult] = useState(null);
   const [log, setLog] = useState([]);
   const [plan, setPlan] = useState(null);
   const [cycleCount, setCycleCount] = useState(0);
@@ -192,6 +194,47 @@ export default function AdDailyBudgetPacer({ ads, onRefresh }) {
       ) : (
         <p className="text-center text-gray-600 text-sm py-8">No active ads. Launch a campaign to enable pacing.</p>
       )}
+
+      {/* AI Reallocation */}
+      <div className="bg-purple-500/5 border border-purple-500/20 rounded-2xl p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Brain className="w-4 h-4 text-purple-400" />
+          <p className="text-white font-bold text-sm">AI Budget Reallocation</p>
+          <Badge className="text-[10px] bg-purple-500/10 border-purple-500/20 text-purple-300">Powered by LLM</Badge>
+        </div>
+        <p className="text-gray-500 text-xs">AI analyzes all your campaigns holistically, determines the optimal budget shifts, applies them instantly, saves learning snapshots, and emails you a full report.</p>
+        <div className="flex gap-2 flex-wrap">
+          <Button
+            onClick={async () => {
+              setAiRunning(true);
+              setAiResult(null);
+              const res = await base44.functions.invoke('aiBudgetReallocation', {});
+              setAiResult(res.data);
+              setAiRunning(false);
+              onRefresh?.();
+            }}
+            disabled={aiRunning || activeAds.length < 2}
+            className="bg-purple-700 hover:bg-purple-600 text-white font-black gap-2"
+          >
+            {aiRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
+            {aiRunning ? 'AI Reallocating...' : 'Run AI Reallocation Now'}
+          </Button>
+          {activeAds.length < 2 && <span className="text-gray-600 text-xs self-center">Requires 2+ active ads</span>}
+        </div>
+        {aiResult && (
+          <div className={`rounded-xl px-3 py-2.5 text-xs space-y-1 ${aiResult.success ? 'bg-green-500/10 border border-green-500/20' : 'bg-gray-800 border border-gray-700'}`}>
+            {aiResult.success ? (
+              <>
+                <p className="text-green-400 font-bold flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> ${aiResult.total_shifted?.toFixed(2)} shifted across {aiResult.applied} campaigns</p>
+                {aiResult.summary && <p className="text-gray-400 leading-relaxed">{aiResult.summary}</p>}
+                <p className="text-gray-600">Email report sent · Learning snapshots saved</p>
+              </>
+            ) : (
+              <p className="text-gray-400">{aiResult.reason || 'No reallocation needed'}</p>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Actions */}
       <div className="flex flex-wrap gap-2 items-center">

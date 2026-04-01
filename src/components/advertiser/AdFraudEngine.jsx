@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShieldCheck, ShieldAlert, AlertTriangle, Zap, Eye, Monitor, Clock, TrendingDown, Loader2, RefreshCw, Pause } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, AlertTriangle, Zap, Eye, Monitor, Clock, TrendingDown, Loader2, RefreshCw, Pause, MapPin } from 'lucide-react';
+import FraudClusterMap from '@/components/advertiser/FraudClusterMap';
 
 const RISK_LEVELS = {
   low: { color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', label: 'Low Risk' },
@@ -89,6 +90,8 @@ Provide:
     onRefresh?.();
   };
 
+  const [showClusterMap, setShowClusterMap] = useState(false);
+
   return (
     <div className="space-y-5">
       {/* Header stats */}
@@ -106,6 +109,26 @@ Provide:
           <p className="text-red-400 text-xs font-bold mt-1">High Risk</p>
         </div>
       </div>
+
+      {/* Cluster Map Toggle */}
+      <div
+        className="flex items-center justify-between bg-gray-900 border border-blue-500/20 rounded-xl px-4 py-3 cursor-pointer hover:border-blue-500/40 transition-all"
+        onClick={() => setShowClusterMap(v => !v)}
+      >
+        <div className="flex items-center gap-2">
+          <MapPin className="w-4 h-4 text-blue-400" />
+          <p className="text-white font-bold text-sm">Click Origin Cluster Map</p>
+          <Badge className="text-[10px] bg-blue-500/10 border border-blue-500/20 text-blue-300">
+            Geo Visualization
+          </Badge>
+        </div>
+        <span className="text-gray-500 text-xs">{showClusterMap ? 'Hide ▲' : 'Show ▼'}</span>
+      </div>
+      {showClusterMap && (
+        <div className="border border-blue-500/10 rounded-2xl p-4 bg-blue-500/3">
+          <FraudClusterMap ads={ads} onRefresh={onRefresh} />
+        </div>
+      )}
 
       {/* AI Analysis button */}
       <div className="flex gap-2">

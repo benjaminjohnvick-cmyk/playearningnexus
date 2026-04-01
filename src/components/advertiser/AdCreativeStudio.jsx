@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import VoiceCommandBar from '@/components/advertiser/VoiceCommandBar';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -330,6 +331,13 @@ export default function AdCreativeStudio({ userId, ads }) {
 
   return (
     <div className="space-y-4">
+      {/* Voice Command Bar */}
+      <VoiceCommandBar
+        onTagline={(text) => { setNewContent(text); setShowAdd(true); setActiveTab('taglines'); if (!newName) setNewName('Voice: ' + text.slice(0, 30)); }}
+        onImagePrompt={(prompt) => { setAiPrompt(prompt); setShowAdd(true); setActiveTab('thumbnails'); }}
+        onStrategy={() => {}}
+      />
+
       {/* Tab bar */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex gap-1 bg-gray-900 rounded-xl p-1">
