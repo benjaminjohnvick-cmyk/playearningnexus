@@ -8,6 +8,7 @@ import { Heart, Trash2, Bell, BellOff, ShoppingBag, ShoppingCart, Tag, CreditCar
 import BNPLModal from '@/components/store/BNPLModal';
 import BNPLBanner from '@/components/store/BNPLBanner';
 import OrderViasite from '@/components/store/OrderViaSite';
+import WishlistBNPLSummary from '@/components/wishlist/WishlistBNPLSummary';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -55,6 +56,10 @@ export default function Wishlist() {
             <p className="text-gray-500 mt-1">Save items and order through GamerGain — prices include 10% platform fee</p>
           </div>
           <div className="w-full mt-4">
+            <WishlistBNPLSummary
+              wishlistItems={wishlistItems}
+              onActivateBNPL={() => setShowBNPL(true)}
+            />
             <BNPLBanner
               onActivate={() => setShowBNPL(true)}
               isActive={user?.bnpl_active}
