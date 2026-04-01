@@ -53,6 +53,7 @@ import { useSurveyMatchNotifications } from '@/hooks/useSurveyMatchNotifications
 import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
 import AIPersonalizedDailyGoal from '@/components/dashboard/AIPersonalizedDailyGoal';
 import WishlistDailyNotifier from '@/components/wishlist/WishlistDailyNotifier';
+import PriceDropAlertBadge from '@/components/wishlist/PriceDropAlertBadge';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -451,6 +452,7 @@ export default function Layout({ children, currentPageName }) {
         {isAuthenticated && user && <SurveyRewardNotifier user={user} />}
         {isAuthenticated && user && <PPCPushNotificationManager />}
         {isAuthenticated && user && <WishlistDailyNotifier user={user} />}
+        {isAuthenticated && user && <PriceDropAlertBadge user={user} />}
         <SupportChatButton />
 
         <LogoutPromptModal

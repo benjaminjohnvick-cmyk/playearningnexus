@@ -67,6 +67,7 @@ const SalesAnalyticsDashboard = lazy(() => import('./pages/SalesAnalyticsDashboa
 const GoogleAdsOverlay = lazy(() => import('./pages/GoogleAdsOverlay'));
 const AdBusinessDashboard = lazy(() => import('./pages/AdBusinessDashboard'));
 const AdBusinessOverview = lazy(() => import('./pages/AdBusinessOverview'));
+const SmartPayoutDashboard = lazy(() => import('./pages/SmartPayoutDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -190,6 +191,7 @@ const AuthenticatedApp = () => {
       <Route path="/GoogleAdsOverlay" element={<LayoutWrapper currentPageName="GoogleAdsOverlay"><GoogleAdsOverlay /></LayoutWrapper>} />
       <Route path="/AdBusinessDashboard" element={<LayoutWrapper currentPageName="AdBusinessDashboard"><AdBusinessDashboard /></LayoutWrapper>} />
       <Route path="/AdBusinessOverview" element={<LayoutWrapper currentPageName="AdBusinessOverview"><AdBusinessOverview /></LayoutWrapper>} />
+      <Route path="/SmartPayoutDashboard" element={<LayoutWrapper currentPageName="SmartPayoutDashboard"><SmartPayoutDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
