@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Eye, MousePointerClick, DollarSign, BarChart2, Info } from 'lucide-react';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { TrendingUp, TrendingDown, Info } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 // Platform CPM/CPC industry benchmarks (USD)
 const PLATFORMS = [

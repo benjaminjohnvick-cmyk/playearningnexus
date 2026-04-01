@@ -69,7 +69,7 @@ import AdCompetitiveIntelFeed from '@/components/advertiser/AdCompetitiveIntelFe
 import AdDailyBudgetPacer from '@/components/advertiser/AdDailyBudgetPacer';
 import AdLaunchForecaster from '@/components/advertiser/AdLaunchForecaster';
 import AdSocialChannelAnalytics from '@/components/advertiser/AdSocialChannelAnalytics';
-import { base44 as b44 } from '@/api/base44Client';
+
 
 const TAB_GROUPS = [
   {
@@ -180,7 +180,7 @@ export default function AdBusinessDashboard() {
 
   const handleSendReport = async () => {
     setSendingReport(true);
-    await b44.functions.invoke('sendWeeklyAdReport', {});
+    await base44.functions.invoke('sendWeeklyAdReport', {});
     setSendingReport(false);
     alert('Weekly report sent to your email!');
   };
