@@ -206,7 +206,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
               onClick={() => { setSearchMode('products'); setIsExpanded(true); }}
               className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${searchMode === 'products' ? 'bg-white text-blue-700' : 'text-blue-200 hover:text-white'}`}
             >
-              <ShoppingCart className="w-3 h-3" /> Products
+              <ShoppingCart className="w-3 h-3" /> Shop
             </button>
           </div>
 
