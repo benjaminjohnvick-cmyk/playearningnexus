@@ -35,7 +35,7 @@ export default function JackpotWidget() {
         <div className="relative">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-xs font-semibold uppercase tracking-widest opacity-75">Live Jackpot · {jackpot.period}</span>
+            <span className="text-xs font-semibold uppercase tracking-widest opacity-75">Live Contest Pool · {jackpot.period}</span>
           </div>
 
           <div className="flex items-end gap-3 mb-4">
@@ -53,7 +53,7 @@ export default function JackpotWidget() {
 
           <div className="grid grid-cols-3 gap-3 mb-4">
             {[
-              { icon: Ticket, label: 'Total Entries', value: jackpot.total_entries || 0 },
+              { icon: Ticket, label: 'Contest Entries', value: jackpot.total_entries || 0 },
               { icon: Users, label: 'Participants', value: Math.ceil((jackpot.total_entries || 0) / 5) },
               { icon: TrendingUp, label: 'Your Chances', value: 'Earn entries →' },
             ].map(s => (
@@ -68,7 +68,7 @@ export default function JackpotWidget() {
           <div className="bg-white/15 rounded-xl p-3 text-xs flex items-start gap-2">
             <Zap className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-yellow-300" />
             <span className="opacity-90">
-              Hit <strong>5, 25, 50 or 100 referral milestones</strong> to earn jackpot entries.
+              Hit <strong>5, 25, 50 or 100 referral milestones</strong> to earn contest entries.
               Most entries wins quarterly. Prize must be spent on GamerGain.
             </span>
           </div>

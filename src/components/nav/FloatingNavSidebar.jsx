@@ -6,7 +6,7 @@ import {
   Home, ShoppingCart, FileText, LayoutDashboard, Heart, Trophy,
   DollarSign, Users, User, TrendingUp, Star, Gamepad2, Mail,
   Settings, Swords, BarChart2, Globe, ArrowRightLeft, Briefcase,
-  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2
+  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -25,6 +25,7 @@ const NAV_SECTIONS = [
     { name: 'My Payouts', icon: Wallet, path: 'MyPayouts', color: 'green' },
     { name: 'Earnings Simulator', icon: Activity, path: 'EarningsSimulatorPage', color: 'green' },
     { name: 'Daily Streak', icon: Star, path: 'DailyEarningStreak', color: 'green' },
+    { name: 'Contest Entries', icon: Ticket, path: 'ContestEntries', color: 'green' },
   ]},
   { group: 'Social', items: [
     { name: 'Referrals', icon: Users, path: 'ReferralDashboard', color: 'blue' },

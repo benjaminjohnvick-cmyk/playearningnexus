@@ -15,6 +15,7 @@ import ChallengeProgress from '../components/challenges/ChallengeProgress';
 import DailyStreakWidget from '../components/challenges/DailyStreakWidget';
 import EarningsSimulator from '../components/dashboard/EarningsSimulator';
 import RecentEarningsFeed from '../components/feed/RecentEarningsFeed';
+import CommunityActivityFeed from '../components/feed/CommunityActivityFeed';
 import TopEarnersLeaderboard from '../components/home/TopEarnersLeaderboard';
 import MilestoneBadges from '../components/home/MilestoneBadges';
 import ReferralInviteCard from '../components/home/ReferralInviteCard';
@@ -240,7 +241,8 @@ export default function Home() {
       {/* Live feed — visible to everyone for social proof */}
       <div className="max-w-7xl mx-auto px-6 pb-8">
         <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-4">
+            <CommunityActivityFeed />
             <RecentEarningsFeed />
           </div>
           <div className="space-y-4 text-center flex flex-col justify-center">
