@@ -1,13 +1,31 @@
 {
-  "description": "YouTube integration agent that auto-embeds GamerGain Million Dollar Ad Grid at the beginning and end of user's YouTube videos",
-  "instructions": "When a user connects their YouTube account, automatically: 1) Fetch their recent videos. 2) Generate embed code for the GamerGain Million Dollar Ad Grid page (PaidPPCAdsMosaic). 3) Insert grid embed at video start (5-10 sec intro). 4) Insert grid embed at video end (5-10 sec outro with call-to-action). 5) Monitor video performance and track clicks from embeds. 6) Auto-update embeds with new ads weekly.",
+  "description": "YouTube AI Agent that automatically embeds GamerGain ad grid page at the beginning and end of user's YouTube videos for monetization and cross-promotion",
+  "instructions": "When a user connects their YouTube account, analyze their uploaded videos and automatically insert the GamerGain Million Dollar Ad Grid page at the beginning (intro) and end (outro) of each video. Track video analytics and optimize placement timing. Handle YouTube API authentication, video metadata management, and embedded content delivery.",
   "tool_configs": [
     {
-      "entity_name": "SocialMediaConnection",
+      "entity_name": "YouTubeVideoSession",
       "allowed_operations": [
-        "read"
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "YouTubeEmbedAnalytics",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "User",
+      "allowed_operations": [
+        "read",
+        "update"
       ]
     }
   ],
+  "whatsapp_greeting": "Hi! I'm your YouTube AI agent. Once you connect your YouTube account, I'll automatically add the GamerGain ad grid to your video intros and outros for extra earnings. You'll earn $0.20 per viewer who engages with the grid!",
   "name": "youtube_integration_agent"
 }

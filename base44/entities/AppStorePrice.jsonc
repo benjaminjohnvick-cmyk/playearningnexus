@@ -14,12 +14,13 @@
         "plus",
         "premium"
       ],
-      "default": "free"
+      "default": "free",
+      "description": "Subscription tier"
     },
     "monthly_price": {
       "type": "number",
       "default": 0,
-      "description": "Monthly subscription price"
+      "description": "Monthly subscription price in USD"
     },
     "features": {
       "type": "array",
@@ -32,11 +33,22 @@
     "mandatory_daily_earning": {
       "type": "number",
       "default": 3,
-      "description": "Daily earnings requirement in dollars"
+      "description": "Daily earnings requirement in dollars (Apple App Store standard: $3/day)"
+    },
+    "platform_fee_percentage": {
+      "type": "number",
+      "default": 30,
+      "description": "Platform fee percentage (Apple App Store standard: 30%)"
+    },
+    "user_earnings_percentage": {
+      "type": "number",
+      "default": 70,
+      "description": "User earnings percentage (70% after 30% platform fee)"
     },
     "is_active": {
       "type": "boolean",
-      "default": true
+      "default": true,
+      "description": "Whether subscription is active"
     },
     "subscribed_at": {
       "type": "string",
@@ -45,6 +57,11 @@
     "next_billing_date": {
       "type": "string",
       "format": "date-time"
+    },
+    "auto_renew": {
+      "type": "boolean",
+      "default": true,
+      "description": "Auto-renewal enabled"
     }
   },
   "required": [
