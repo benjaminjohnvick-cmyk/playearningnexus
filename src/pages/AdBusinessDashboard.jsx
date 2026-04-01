@@ -52,6 +52,10 @@ import AdTemplateHub from '@/components/advertiser/AdTemplateHub';
 import AdCreativeForecast from '@/components/advertiser/AdCreativeForecast';
 import AdBudgetPacing from '@/components/advertiser/AdBudgetPacing';
 import AdCrossPlatformSync from '@/components/advertiser/AdCrossPlatformSync';
+import AdABTestingEngine from '@/components/advertiser/AdABTestingEngine';
+import AdFraudEngine from '@/components/advertiser/AdFraudEngine';
+import AdCompetitorIntel from '@/components/advertiser/AdCompetitorIntel';
+import AdAIAssistant from '@/components/advertiser/AdAIAssistant';
 import { base44 as b44 } from '@/api/base44Client';
 
 const TAB_GROUPS = [
@@ -119,6 +123,10 @@ const TAB_GROUPS = [
       ['Forecast', <Sparkles />],
       ['Budget Pacing', <Gauge />],
       ['Platform Sync', <RefreshCw />],
+      ['AB Engine', <FlaskConical />],
+      ['Fraud Engine', <ShieldAlert />],
+      ['Competitor Intel', <BarChart2 />],
+      ['AI Assistant', <Bot />],
     ],
   },
 ];
@@ -574,6 +582,46 @@ export default function AdBusinessDashboard() {
               <RefreshCw className="w-4 h-4 text-green-400" /> Cross-Platform Sync
             </h2>
             <AdCrossPlatformSync ads={ads} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'AB Engine' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <FlaskConical className="w-4 h-4 text-purple-400" /> AI A/B Testing Engine
+            </h2>
+            <p className="text-gray-500 text-xs">Generate AI copy variations, rotate them across the Grid, and let the engine mathematically pick the winner.</p>
+            <AdABTestingEngine ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'Fraud Engine' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-red-400" /> AI Fraud Detection Engine
+            </h2>
+            <p className="text-gray-500 text-xs">Real-time click pattern analysis, session velocity monitoring, and automatic campaign pausing before fraud drains your budget.</p>
+            <AdFraudEngine ads={ads} onRefresh={refetch} />
+          </div>
+        )}
+
+        {activeTab === 'Competitor Intel' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <BarChart2 className="w-4 h-4 text-blue-400" /> Competitor Intelligence
+            </h2>
+            <p className="text-gray-500 text-xs">Weekly AI-powered competitor analysis — bids, creatives, audience segments, and strategies to outmaneuver rivals.</p>
+            <AdCompetitorIntel ads={ads} />
+          </div>
+        )}
+
+        {activeTab === 'AI Assistant' && (
+          <div className="space-y-6">
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Bot className="w-4 h-4 text-purple-400" /> AI Campaign Assistant
+            </h2>
+            <p className="text-gray-500 text-xs">Ask anything about your campaigns — CTR drops, ROI tips, bid strategies — powered by your real ad data.</p>
+            <AdAIAssistant ads={ads} />
           </div>
         )}
 
