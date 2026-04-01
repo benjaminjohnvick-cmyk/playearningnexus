@@ -15,6 +15,21 @@
       "default": 6,
       "description": "Cost per install (CPI) in USD - developer pays $6 per install"
     },
+    "survey_requirement_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, users must complete surveys instead of paying $6 CPI to access app"
+    },
+    "survey_threshold": {
+      "type": "number",
+      "default": 6,
+      "description": "Dollar amount of survey earnings required to access app (equivalent to $6 CPI)"
+    },
+    "survey_days_to_earn": {
+      "type": "number",
+      "default": 2,
+      "description": "Days needed to earn threshold at $3/day (2 days \u00d7 $3 = $6)"
+    },
     "total_installs": {
       "type": "number",
       "default": 0,

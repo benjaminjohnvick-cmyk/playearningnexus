@@ -1,0 +1,85 @@
+{
+  "name": "IAPAdvertisingCredit",
+  "type": "object",
+  "properties": {
+    "developer_id": {
+      "type": "string",
+      "description": "Developer/business client ID"
+    },
+    "app_id": {
+      "type": "string",
+      "description": "App ID"
+    },
+    "iap_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Total in-app purchase revenue"
+    },
+    "advertising_credit_percentage": {
+      "type": "number",
+      "default": 20,
+      "description": "Percentage of IAP spent allocated as social media ad credit (20%)"
+    },
+    "total_advertising_credit": {
+      "type": "number",
+      "default": 0,
+      "description": "Total social media advertising credit earned (20% of IAP)"
+    },
+    "credit_used": {
+      "type": "number",
+      "default": 0,
+      "description": "Credit used for social media ads"
+    },
+    "credit_available": {
+      "type": "number",
+      "default": 0,
+      "description": "Credit remaining"
+    },
+    "effective_split_percentage": {
+      "type": "number",
+      "default": 70,
+      "description": "Effective revenue split (70% developer, 30% platform - with 20% ad credit subsidy)"
+    },
+    "platform_explanation": {
+      "type": "string",
+      "default": "You receive 50% of IAP revenue + 20% social media advertising credit, equivalent to 70/30 iOS App Store split",
+      "description": "Explanation of the effective split"
+    },
+    "campaigns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "campaign_id": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "credit_spent": {
+            "type": "number"
+          },
+          "impressions": {
+            "type": "number"
+          },
+          "clicks": {
+            "type": "number"
+          },
+          "conversions": {
+            "type": "number"
+          }
+        }
+      },
+      "default": [],
+      "description": "Social media advertising campaigns funded by credit"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "developer_id",
+    "app_id"
+  ]
+}

@@ -20,6 +20,7 @@ const NAV_SECTIONS = [
   { group: 'Earn', items: [
     { name: 'Surveys', icon: TrendingUp, path: 'PPCMarketplace', color: 'green' },
     { name: 'Paid PPC Ads', icon: DollarSign, path: 'GoogleAdsOverlay', color: 'green' },
+    { name: 'Head-to-Head Contest', icon: Swords, path: 'HeadToHeadContest', color: 'green' },
     { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', color: 'green' },
     { name: 'My Payouts', icon: Wallet, path: 'MyPayouts', color: 'green' },
     { name: 'Earnings Simulator', icon: Activity, path: 'EarningsSimulatorPage', color: 'green' },
@@ -27,14 +28,13 @@ const NAV_SECTIONS = [
     { name: 'Contest Entries', icon: Ticket, path: 'ContestEntries', color: 'green' },
   ]},
   { group: 'Social', items: [
-    { name: 'Referral Competition', icon: Trophy, path: 'ReferralCompetition', color: 'blue' },
+    { name: 'Referral Contest', icon: Trophy, path: 'ReferralContest', color: 'blue' },
     { name: 'Levels & Badges', icon: Star, path: 'LevelAndBadgesPage', color: 'blue' },
     { name: 'Referrals', icon: Users, path: 'ReferralDashboard', color: 'blue' },
     { name: 'Leaderboard & Seasons', icon: Trophy, path: 'GlobalLeaderboard', color: 'blue' },
     { name: 'Achievements', icon: Star, path: 'AchievementsPage', color: 'blue' },
     { name: 'Tournaments', icon: Swords, path: 'Tournaments', color: 'blue' },
     { name: 'Guilds', icon: Users, path: 'Guilds', color: 'blue' },
-    { name: 'Contest', icon: Trophy, path: 'ReferralContest', color: 'blue' },
   ]},
   { group: 'Advertiser', items: [
     { name: 'Ad Dashboard', icon: Building2, path: 'AdBusinessDashboard', color: 'yellow' },
@@ -48,12 +48,11 @@ const NAV_SECTIONS = [
     { name: 'Financial Dashboard', icon: DollarSign, path: 'DevFinancialDashboard', color: 'red' },
     { name: 'A/B Testing', icon: Activity, path: 'DevABTesting', color: 'red' },
     { name: 'Bug Reports', icon: Globe, path: 'DevBugReports', color: 'red' },
-    { name: 'AI Growth Assistant', icon: Star, path: 'AIGrowthAssistant', color: 'red' },
   ]},
   { group: 'AI Agents', items: [
     { name: 'AI Agents Control', icon: Brain, path: 'AIAgentsSettings', color: 'purple' },
+    { name: 'AI Contest Hub', icon: Trophy, path: 'AIGrowthAssistant', color: 'purple' },
     { name: 'AI Content Hub', icon: Zap, path: 'AIContentHub', color: 'purple' },
-    { name: 'Head-to-Head Contests', icon: Zap, path: 'HeadToHeadContest', color: 'purple' },
   ]},
   { group: 'Smart Alerts', items: [
     { name: 'Notification Engine', icon: Bell, path: 'SmartNotificationEngine', color: 'blue' },
