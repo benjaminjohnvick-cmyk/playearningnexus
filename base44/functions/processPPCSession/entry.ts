@@ -44,19 +44,20 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Record PPC earning transaction with 10% fee deducted
-    const feeAmount = earnings * 0.10;
-    const netAmount = earnings - feeAmount;
+    // 50/50 revenue split: user gets half, then 10% platform fee on their share
+    const userShare = earnings * 0.50;
+    const feeAmount = userShare * 0.10;
+    const netAmount = userShare - feeAmount;
 
     await base44.asServiceRole.entities.PPCTransaction.create({
       user_id: user.id,
       transaction_type: 'ppc_earning',
       tier,
-      amount: earnings,
+      amount: userShare,
       fee_amount: feeAmount,
       net_amount: netAmount,
       related_session_id: session.id,
-      description: `Tier ${tier} PPC session — ${minutesCompleted} min, ${questionsAnswered} questions`,
+      description: `Tier ${tier} PPC session — ${minutesCompleted} min, ${questionsAnswered} questions (50% share after split)`,
       status: 'completed'
     });
 
@@ -129,7 +130,8 @@ Deno.serve(async (req) => {
 
     return Response.json({
       success: true,
-      earnings,
+      gross_earnings: earnings,
+      user_share: userShare,
       net_amount: netAmount,
       fee_amount: feeAmount,
       goal_met: goalMet,

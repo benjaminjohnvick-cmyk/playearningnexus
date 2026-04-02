@@ -12,12 +12,12 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 const BOOST_TIPS = [
-  { category: 'Tech & Gaming', emoji: '🎮', avgReward: 3.50, reason: 'High demand this week — 2x completions' },
-  { category: 'Finance & Banking', emoji: '💳', avgReward: 4.20, reason: 'Premium surveys paying $4–$6 each' },
-  { category: 'Health & Wellness', emoji: '💊', avgReward: 3.00, reason: 'Fast 3-min surveys available now' },
-  { category: 'E-Commerce', emoji: '🛒', avgReward: 2.80, reason: 'High completion rate — easy earnings' },
-  { category: 'Install a Free Game', emoji: '📲', avgReward: 5.00, reason: 'Install bonus: earn up to $5 instantly' },
-  { category: 'Refer a Friend', emoji: '🤝', avgReward: 10.00, reason: 'Active referral = $10 commission boost' },
+  { category: 'Tech & Gaming', emoji: '🎮', avgReward: 1.75, reason: 'High demand this week — 2x completions' },
+  { category: 'Finance & Banking', emoji: '💳', avgReward: 2.10, reason: 'Premium surveys paying $4–$6 each' },
+  { category: 'Health & Wellness', emoji: '💊', avgReward: 1.50, reason: 'Fast 3-min surveys available now' },
+  { category: 'E-Commerce', emoji: '🛒', avgReward: 1.40, reason: 'High completion rate — easy earnings' },
+  { category: 'Install a Free Game', emoji: '📲', avgReward: 2.50, reason: 'Install bonus: earn up to $2.50 instantly' },
+  { category: 'Refer a Friend', emoji: '🤝', avgReward: 5.00, reason: 'Active referral = $5 commission boost' },
 ];
 
 export default function EarningsForecastWidget({ user }) {

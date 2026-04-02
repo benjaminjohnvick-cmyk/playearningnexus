@@ -61,10 +61,13 @@ Deno.serve(async (req) => {
     }
 
     // Check survey type payout amount
-    const payoutAmount = survey.survey_type === 'data_collection' ? 2.00 : 0;
-    if (payoutAmount <= 0) {
+    const grossPayout = survey.survey_type === 'data_collection' ? 2.00 : 0;
+    if (grossPayout <= 0) {
       return Response.json({ success: false, reason: 'No payout for this survey type', payout: 0 });
     }
+
+    // 50/50 revenue split — user receives their half
+    const payoutAmount = grossPayout * 0.50;
 
     // Load respondent user
     const users = await base44.asServiceRole.entities.User.filter({ id: respondent_user_id });
@@ -150,7 +153,7 @@ Deno.serve(async (req) => {
       user_id: respondent_user_id,
       type: 'survey_payout',
       title: '💰 Survey Payout Received!',
-      message: `+$${payoutAmount.toFixed(2)} added to your balance for completing "${survey.title}"${paypalResult?.sent ? ' — also sent via PayPal!' : ''}`,
+      message: `+$${payoutAmount.toFixed(2)} added to your balance for completing "${survey.title}" (your 50% share)${paypalResult?.sent ? ' — also sent via PayPal!' : ''}`,
       status: 'unread',
       delivery_method: ['in_app'],
     });

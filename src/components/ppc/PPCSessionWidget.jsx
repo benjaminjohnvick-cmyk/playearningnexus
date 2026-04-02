@@ -79,7 +79,8 @@ export default function PPCSessionWidget({ user, tier }) {
 
     const newQCount = sessionData.questionsAnswered + 1;
     const newMinutes = newQCount / config.questionsPerMin;
-    const newEarnings = newQCount * config.ratePerQ;
+    const grossEarnings = newQCount * config.ratePerQ;
+    const newEarnings = grossEarnings * 0.50 * 0.90; // 50% user share, minus 10% fee
 
     setSessionData({ questionsAnswered: newQCount, minutesCompleted: newMinutes, earnings: newEarnings });
 
@@ -111,7 +112,7 @@ export default function PPCSessionWidget({ user, tier }) {
         tier, minutesCompleted: Math.min(minutes, config.requiredMinutes), questionsAnswered: qCount
       });
       if (res.data?.success) {
-        toast.success(`🎉 Session complete! You earned $${res.data.net_amount?.toFixed(2) || earnings.toFixed(2)}`);
+        toast.success(`🎉 Session complete! You earned $${res.data.net_amount?.toFixed(2) || earnings.toFixed(2)} (your 50% share)`);
         queryClient.invalidateQueries(['ppc-session']);
       }
     } catch {
@@ -133,7 +134,7 @@ export default function PPCSessionWidget({ user, tier }) {
           <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-3" />
           <h3 className="font-bold text-green-800 text-lg">Today's Session Complete! ✓</h3>
           <p className="text-green-700 text-sm mt-1">You've earned your daily PPC income. Come back tomorrow to continue your streak.</p>
-          <p className="text-2xl font-bold text-green-600 mt-3">${todaySession[0].earnings?.toFixed(2) || '8.00'} earned</p>
+          <p className="text-2xl font-bold text-green-600 mt-3">${((todaySession[0].earnings || 8) * 0.50 * 0.90).toFixed(2)} earned (your share)</p>
         </CardContent>
       </Card>
     );
@@ -184,7 +185,7 @@ export default function PPCSessionWidget({ user, tier }) {
         <AnimatePresence mode="wait">
           {phase === 'idle' && (
             <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-6">
-              <p className="text-gray-500 mb-4">Answer 10 questions per minute at $0.10/question = <strong>$1.00/minute</strong></p>
+              <p className="text-gray-500 mb-4">Answer 10 questions per minute at $0.10/question = <strong>$0.45/minute to you</strong> (50% share after fee)</p>
               <Button onClick={startSession} size="lg" className={`bg-gradient-to-r ${config.color} text-white px-10`}>
                 <Play className="w-5 h-5 mr-2" /> Start {config.requiredMinutes}-Minute Session
               </Button>
