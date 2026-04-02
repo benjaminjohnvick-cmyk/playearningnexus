@@ -6,8 +6,9 @@ import {
   Home, ShoppingCart, FileText, LayoutDashboard, Heart, Trophy,
   DollarSign, Users, User, TrendingUp, Star, Gamepad2, Mail,
   Settings, Swords, BarChart2, Globe, ArrowRightLeft, Briefcase,
-  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket, Brain, Zap
+  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket, Brain, Zap, ShieldCheck
 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 const NAV_SECTIONS = [
   { group: 'Main', items: [
@@ -102,11 +103,28 @@ const COLOR_MAP = {
   },
 };
 
+const ADMIN_NAV_SECTION = { group: 'Administrator', items: [
+  { name: 'Admin', icon: ShieldCheck, path: 'AdminDashboard', color: 'purple' },
+  { name: 'Admin Users', icon: Users, path: 'AdminUsers', color: 'purple' },
+  { name: 'PayPal Management', icon: DollarSign, path: 'PayPalManagement', color: 'purple' },
+  { name: 'Feedback Intelligence', icon: Brain, path: 'FeedbackAdminDashboard', color: 'purple' },
+  { name: 'UX Heatmap', icon: BarChart2, path: 'UXHeatmapDashboard', color: 'purple' },
+  { name: 'Risk Monitoring', icon: Globe, path: 'AdminRiskMonitoring', color: 'purple' },
+  { name: 'Growth Heatmap', icon: TrendingUp, path: 'AdminGrowthHeatmap', color: 'purple' },
+]};
+
 export default function FloatingNavSidebar({ currentPageName }) {
   const [collapsed, setCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const scrollRef = useRef(null);
   const location = useLocation();
+
+  useEffect(() => {
+    base44.auth.me().then(u => {
+      if (u?.role === 'admin') setIsAdmin(true);
+    }).catch(() => {});
+  }, []);
 
   // Detect current page from URL
   const currentPath = currentPageName || location.pathname.replace('/', '');
@@ -161,7 +179,7 @@ export default function FloatingNavSidebar({ currentPageName }) {
 
         {/* Scrollable List */}
         <div ref={scrollRef} className="overflow-y-auto flex-1 px-2 py-2 space-y-3">
-          {NAV_SECTIONS.map((section) => {
+          {[...NAV_SECTIONS, ...(isAdmin ? [ADMIN_NAV_SECTION] : [])].map((section) => {
             const colors = COLOR_MAP[section.items[0]?.color] || COLOR_MAP.blue;
             const isActiveGroup = activeSection === section.group;
             return (
