@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp, Trophy, Star, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -24,6 +23,77 @@ import ActiveReferralContestSection from '../components/referral/ActiveReferralC
 import PPCAdSearchWidget from '../components/ppc/PPCAdSearchWidget';
 import AIPersonalizedDailyGoal from '../components/dashboard/AIPersonalizedDailyGoal';
 import PricingSection from '../components/home/PricingSection';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+
+function ExtraInfoDropdown({ user }) {
+  const [open, setOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('surveys');
+
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-white shadow-md overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-5 py-3 bg-gradient-to-r from-gray-50 to-white hover:bg-gray-50 transition-colors"
+      >
+        <span className="font-bold text-gray-800 text-sm">📂 Extra Pages &amp; Info</span>
+        {open ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
+      </button>
+
+      {open && (
+        <div className="p-4 border-t border-gray-100">
+          <div className="flex flex-wrap gap-1 mb-4">
+            {[
+              { key: 'surveys', label: '📝 Surveys' },
+              { key: 'ppc', label: '💰 PPC Ads' },
+              { key: 'progress', label: '📊 Progress' },
+              { key: 'community', label: '👥 Community' },
+              { key: 'referrals', label: '🏆 Referrals' },
+              { key: 'pricing', label: '💵 Pricing' },
+            ].map(t => (
+              <button
+                key={t.key}
+                onClick={() => setActiveTab(t.key)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${activeTab === t.key ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {activeTab === 'surveys' && (
+            <div className="space-y-4">
+              <AISurveyMatchWidget user={user} />
+              <RecommendedSurveys user={user} />
+            </div>
+          )}
+          {activeTab === 'ppc' && <PPCAdSearchWidget variant="full" />}
+          {activeTab === 'progress' && (
+            <div className="grid lg:grid-cols-3 gap-4">
+              <EarningsSimulator user={user} />
+              <ChallengeProgress user={user} />
+              <DailyStreakWidget user={user} />
+            </div>
+          )}
+          {activeTab === 'community' && (
+            <div className="grid lg:grid-cols-3 gap-4">
+              <MilestoneBadges user={user} />
+              <TopEarnersLeaderboard />
+              <ReferralInviteCard user={user} />
+            </div>
+          )}
+          {activeTab === 'community' && (
+            <div className="grid lg:grid-cols-2 gap-4 mt-4">
+              <CommunityActivityFeed />
+              <RecentEarningsFeed />
+            </div>
+          )}
+          {activeTab === 'referrals' && <ActiveReferralContestSection user={user} />}
+          {activeTab === 'pricing' && <PricingSection />}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -147,73 +217,26 @@ export default function Home() {
       {/* ── MAIN CONTENT: tabbed for logged-in users, social proof for guests ── */}
       <div className="max-w-7xl mx-auto px-6 pb-6">
         {user ? (
-          <Tabs defaultValue="tasks">
-            <TabsList className="w-full flex flex-wrap h-auto gap-1 mb-4 bg-white shadow-md rounded-xl p-1">
-              <TabsTrigger value="tasks" className="flex-1 min-w-fit text-xs">📋 Daily Tasks</TabsTrigger>
-              <TabsTrigger value="surveys" className="flex-1 min-w-fit text-xs">📝 Surveys</TabsTrigger>
-              <TabsTrigger value="ppc" className="flex-1 min-w-fit text-xs">💰 PPC Ads</TabsTrigger>
-              <TabsTrigger value="progress" className="flex-1 min-w-fit text-xs">📊 Progress</TabsTrigger>
-              <TabsTrigger value="community" className="flex-1 min-w-fit text-xs">👥 Community</TabsTrigger>
-              <TabsTrigger value="referrals" className="flex-1 min-w-fit text-xs">🏆 Referrals</TabsTrigger>
-              <TabsTrigger value="pricing" className="flex-1 min-w-fit text-xs">💵 Pricing</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="tasks">
-              <div className="grid lg:grid-cols-2 gap-4">
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 text-white flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-bold text-base">📋 Your Daily To-Do List</p>
-                    <p className="text-indigo-100 text-xs mt-1">Earn $3 · Refer a friend · Use PPC widget · Download extension</p>
-                  </div>
-                  <Link to={createPageUrl('DailyTodoList')}>
-                    <Button size="sm" className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold flex-shrink-0">
-                      View <ArrowRight className="ml-1 w-3 h-3" />
-                    </Button>
-                  </Link>
+          <>
+            {/* Daily Tasks — always visible */}
+            <div className="grid lg:grid-cols-2 gap-4 mb-4">
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 text-white flex items-center justify-between gap-4">
+                <div>
+                  <p className="font-bold text-base">📋 Your Daily To-Do List</p>
+                  <p className="text-indigo-100 text-xs mt-1">Earn $3 · Refer a friend · Use PPC widget · Download extension</p>
                 </div>
-                <AIPersonalizedDailyGoal user={user} />
+                <Link to={createPageUrl('DailyTodoList')}>
+                  <Button size="sm" className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold flex-shrink-0">
+                    View <ArrowRight className="ml-1 w-3 h-3" />
+                  </Button>
+                </Link>
               </div>
-              <div className="grid lg:grid-cols-3 gap-4 mt-4">
-                <EarningsSimulator user={user} />
-                <ChallengeProgress user={user} />
-                <DailyStreakWidget user={user} />
-              </div>
-            </TabsContent>
+              <AIPersonalizedDailyGoal user={user} />
+            </div>
 
-            <TabsContent value="surveys">
-              <div className="space-y-4">
-                <AISurveyMatchWidget user={user} />
-                <RecommendedSurveys user={user} />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="ppc">
-              <PPCAdSearchWidget variant="full" />
-            </TabsContent>
-
-            <TabsContent value="progress">
-              <div className="grid lg:grid-cols-3 gap-4">
-                <MilestoneBadges user={user} />
-                <TopEarnersLeaderboard />
-                <ReferralInviteCard user={user} />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="community">
-              <div className="grid lg:grid-cols-2 gap-4">
-                <CommunityActivityFeed />
-                <RecentEarningsFeed />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="referrals">
-              <ActiveReferralContestSection user={user} />
-            </TabsContent>
-
-            <TabsContent value="pricing">
-              <PricingSection />
-            </TabsContent>
-          </Tabs>
+            {/* Extra Pages & Info — collapsible dropdown */}
+            <ExtraInfoDropdown user={user} />
+          </>
         ) : (
           /* Guest view: social proof + pricing */
           <div className="space-y-6">
