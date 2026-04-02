@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Download, X, Trophy, DollarSign, Gift } from 'lucide-react';
 import { toast } from 'sonner';
 
 const OPT_OUT_KEY = 'gamergain_widget_download_opted_out';
-const SHOWN_KEY = 'gamergain_widget_download_shown';
 
 export default function WidgetDownloadPrompt() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const optedOut = localStorage.getItem(OPT_OUT_KEY);
-    const alreadyShown = localStorage.getItem(SHOWN_KEY);
-    if (!optedOut && !alreadyShown) {
-      setTimeout(() => setVisible(true), 3000);
-    }
+    if (!optedOut) setVisible(true);
   }, []);
 
   const handleDownload = () => {
-    // Build a downloadable widget manifest / bookmarklet
     const widgetData = {
       name: 'GamerGain Search Widget',
       version: '1.0.0',
@@ -40,77 +34,60 @@ export default function WidgetDownloadPrompt() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    localStorage.setItem(SHOWN_KEY, '1');
-    setVisible(false);
     toast.success('GamerGain Widget downloaded! Check your downloads folder.');
   };
 
   const handleOptOut = () => {
     localStorage.setItem(OPT_OUT_KEY, '1');
-    localStorage.setItem(SHOWN_KEY, '1');
     setVisible(false);
-    toast('You can re-enable the widget from your Profile settings.');
+    toast('Widget prompt hidden. Re-enable from your Profile settings.');
   };
 
-  const handleDismiss = () => {
-    localStorage.setItem(SHOWN_KEY, '1');
-    setVisible(false);
-  };
+  if (!visible) return null;
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          initial={{ opacity: 0, y: 80 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 80 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-md px-4"
-        >
-          <div className="bg-gradient-to-br from-indigo-900 to-purple-900 border border-purple-500/50 rounded-2xl shadow-2xl p-5 text-white relative">
-            <button onClick={handleDismiss} className="absolute top-3 right-3 text-white/50 hover:text-white">
-              <X className="w-4 h-4" />
-            </button>
+    <div className="fixed bottom-0 left-0 right-0 z-[9998] bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t border-purple-500/50 shadow-2xl">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
+        {/* Left: icon + title */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Download className="w-5 h-5 text-yellow-400" />
+          <span className="font-black text-white text-sm whitespace-nowrap">Get the GamerGain Search Widget</span>
+        </div>
 
-            <div className="flex items-center gap-2 mb-3">
-              <Download className="w-5 h-5 text-yellow-400" />
-              <h3 className="font-black text-base">Get the GamerGain Search Widget</h3>
-            </div>
+        {/* Middle: benefits */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 flex-1 justify-center sm:justify-start">
+          <span className="flex items-center gap-1 text-xs text-white/90">
+            <DollarSign className="w-3.5 h-3.5 text-green-400" />
+            Earn <strong className="text-green-300">$0.40/day</strong> from PPC Ads
+          </span>
+          <span className="flex items-center gap-1 text-xs text-white/90">
+            <Trophy className="w-3.5 h-3.5 text-yellow-400" />
+            Auto contest entries every search
+          </span>
+          <span className="flex items-center gap-1 text-xs text-white/90">
+            <Gift className="w-3.5 h-3.5 text-pink-400" />
+            Potential payout: <strong className="text-yellow-300">$1,000,000+</strong>
+          </span>
+        </div>
 
-            <div className="space-y-2 mb-4 text-sm">
-              <div className="flex items-start gap-2">
-                <DollarSign className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                <p className="text-white/90">Earn <strong>$0.40/day</strong> from Paid PPC Ads just by using the search widget on your device.</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Trophy className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-                <p className="text-white/90">Every search automatically earns you <strong>contest entries</strong> for the GamerGain jackpot.</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Gift className="w-4 h-4 text-pink-400 mt-0.5 flex-shrink-0" />
-                <p className="text-white/90">Potential payout: <strong className="text-yellow-300">$1,000,000+</strong> — refer 7M users and earn 10% of all their profits forever.</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <Button
-                className="flex-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-black hover:from-yellow-500 hover:to-orange-600 gap-1"
-                onClick={handleDownload}
-              >
-                <Download className="w-4 h-4" /> Download Widget
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white/50 hover:text-white hover:bg-white/10 text-xs"
-                onClick={handleOptOut}
-              >
-                Opt Out
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        {/* Right: actions */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Button
+            size="sm"
+            className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-black hover:from-yellow-500 hover:to-orange-600 gap-1 h-8 px-4"
+            onClick={handleDownload}
+          >
+            <Download className="w-3.5 h-3.5" /> Download
+          </Button>
+          <button
+            onClick={handleOptOut}
+            className="text-white/40 hover:text-white/80 transition-colors p-1"
+            title="Opt out"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
