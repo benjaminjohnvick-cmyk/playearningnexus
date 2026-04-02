@@ -8,13 +8,28 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Edit, Search, DollarSign, Calendar } from "lucide-react";
+import { Users, Edit, Search, DollarSign, Calendar, UserCheck, X, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+
+function logAudit(actor, actionType, target, details) {
+  base44.entities.AdminAuditLog.create({
+    actor_email: actor.email,
+    actor_id: actor.id,
+    action_type: actionType,
+    target,
+    details,
+    timestamp: new Date().toISOString()
+  });
+}
 
 export default function AdminUsers() {
   const [currentUser, setCurrentUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingUser, setEditingUser] = useState(null);
+  const [impersonating, setImpersonating] = useState(() => {
+    const s = sessionStorage.getItem('impersonating_user');
+    return s ? JSON.parse(s) : null;
+  });
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -55,6 +70,21 @@ export default function AdminUsers() {
     user.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleImpersonate = (user) => {
+    const data = { id: user.id, email: user.email, full_name: user.full_name, role: user.role };
+    sessionStorage.setItem('impersonating_user', JSON.stringify(data));
+    setImpersonating(data);
+    logAudit(currentUser, 'impersonate_user', user.email, `Admin started impersonating user: ${user.full_name || user.email}`);
+    toast.success(`Now impersonating ${user.full_name || user.email}`);
+  };
+
+  const exitImpersonation = () => {
+    logAudit(currentUser, 'exit_impersonation', impersonating?.email, `Admin exited impersonation of ${impersonating?.full_name || impersonating?.email}`);
+    sessionStorage.removeItem('impersonating_user');
+    setImpersonating(null);
+    toast.success('Exited impersonation mode');
+  };
+
   if (!currentUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -76,7 +106,21 @@ export default function AdminUsers() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
-      <div className="max-w-7xl mx-auto">
+      {impersonating && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-orange-500 text-white px-4 py-3 flex items-center justify-between shadow-lg">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+            <div>
+              <p className="font-bold text-sm">⚠️ IMPERSONATION MODE ACTIVE</p>
+              <p className="text-xs opacity-90">You are viewing as: <strong>{impersonating.full_name || impersonating.email}</strong> ({impersonating.email}) — Role: {impersonating.role}</p>
+            </div>
+          </div>
+          <Button size="sm" variant="secondary" onClick={exitImpersonation} className="bg-white text-orange-700 hover:bg-orange-100 flex-shrink-0">
+            <X className="w-4 h-4 mr-1" /> Exit Impersonation
+          </Button>
+        </div>
+      )}
+      <div className={`max-w-7xl mx-auto ${impersonating ? 'mt-20' : ''}`}>
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Users className="w-10 h-10 text-red-600" />
@@ -147,6 +191,16 @@ export default function AdminUsers() {
                       </div>
                     </TableCell>
                     <TableCell>
+                      <div className="flex items-center gap-2">
+                      <Button size="sm" variant="outline"
+                        className="text-orange-600 border-orange-300 hover:bg-orange-50"
+                        onClick={() => handleImpersonate(user)}
+                        disabled={user.id === currentUser?.id}
+                        title={user.id === currentUser?.id ? "Can't impersonate yourself" : `Impersonate ${user.full_name || user.email}`}
+                      >
+                        <UserCheck className="w-4 h-4 mr-1" />
+                        Impersonate
+                      </Button>
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button size="sm" variant="outline" onClick={() => setEditingUser(user)}>
@@ -208,6 +262,7 @@ export default function AdminUsers() {
                           )}
                         </DialogContent>
                       </Dialog>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

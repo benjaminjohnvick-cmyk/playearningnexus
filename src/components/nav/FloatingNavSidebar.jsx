@@ -6,7 +6,7 @@ import {
   Home, ShoppingCart, FileText, LayoutDashboard, Heart, Trophy,
   DollarSign, Users, User, TrendingUp, Star, Gamepad2, Mail,
   Settings, Swords, BarChart2, Globe, ArrowRightLeft, Briefcase,
-  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket, Brain, Zap, ShieldCheck, KeyRound
+  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket, Brain, Zap, ShieldCheck, KeyRound, ClipboardList
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -106,6 +106,8 @@ const COLOR_MAP = {
 const ADMIN_NAV_SECTION = { group: 'Administrator', items: [
   { name: 'Admin', icon: ShieldCheck, path: 'AdminDashboard', color: 'purple' },
   { name: 'Admin Credentials', icon: KeyRound, path: 'AdminCredentials', color: 'purple' },
+  { name: 'Global Settings', icon: Settings, path: 'AdminGlobalSettings', color: 'purple' },
+  { name: 'Audit Logs', icon: ClipboardList, path: 'AdminAuditLogs', color: 'purple' },
   { name: 'Admin Users', icon: Users, path: 'AdminUsers', color: 'purple' },
   { name: 'PayPal Management', icon: DollarSign, path: 'PayPalManagement', color: 'purple' },
   { name: 'Feedback Intelligence', icon: Brain, path: 'FeedbackAdminDashboard', color: 'purple' },
