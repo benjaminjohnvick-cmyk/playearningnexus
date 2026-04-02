@@ -10,6 +10,7 @@ import GamePerformanceAnalytics from '@/components/creators/GamePerformanceAnaly
 import CreatorTippingPanel from '@/components/creators/CreatorTippingPanel';
 import ExclusiveSubscriptions from '@/components/creators/ExclusiveSubscriptions';
 import DigitalAssetMarketplace from '@/components/creators/DigitalAssetMarketplace';
+import AutoCreatorFeature from '@/components/creators/AutoCreatorFeature';
 
 export default function CreatorDashboard() {
   const [user, setUser] = useState(null);
@@ -47,7 +48,7 @@ export default function CreatorDashboard() {
         </div>
 
         <Tabs defaultValue="performance" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
             <TabsTrigger value="performance" className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
               <span className="hidden sm:inline">Performance</span>
@@ -75,6 +76,10 @@ export default function CreatorDashboard() {
             <TabsTrigger value="payouts" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               <span className="hidden sm:inline">Payouts</span>
+            </TabsTrigger>
+            <TabsTrigger value="auto_creator" className="flex items-center gap-2">
+              <span>✨</span>
+              <span className="hidden sm:inline">Auto-Creator</span>
             </TabsTrigger>
           </TabsList>
 
@@ -108,6 +113,9 @@ export default function CreatorDashboard() {
 
           <TabsContent value="payouts">
             <CreatorPayouts user={user} />
+          </TabsContent>
+          <TabsContent value="auto_creator">
+            <AutoCreatorFeature user={user} />
           </TabsContent>
         </Tabs>
       </div>

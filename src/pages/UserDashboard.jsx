@@ -4,7 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DollarSign, Gamepad2, TrendingUp, Library, Star, Clock, Eye, Users, Send } from "lucide-react";
+import { DollarSign, Gamepad2, TrendingUp, Library, Star, Clock, Eye, Users, Send, BarChart3 } from "lucide-react";
+import ProfitInsightsTab from '../components/dashboard/ProfitInsightsTab';
 import { Card, CardContent } from "@/components/ui/card";
 import StatsCard from '../components/dashboard/StatsCard';
 import GameCard from '../components/games/GameCard';
@@ -351,12 +352,18 @@ export default function UserDashboard() {
           <PersonalizedGameBundles user={user} />
         </div>
 
-        {/* Social Feed & Gamification */}
+        {/* Profit Insights Tab */}
         <Tabs defaultValue="feed" className="mb-8">
           <TabsList>
             <TabsTrigger value="feed">Social Feed</TabsTrigger>
+            <TabsTrigger value="profit" className="flex items-center gap-1">
+              <BarChart3 className="w-4 h-4" /> Profit Insights
+            </TabsTrigger>
             <TabsTrigger value="groups">Groups</TabsTrigger>
           </TabsList>
+          <TabsContent value="profit">
+            <ProfitInsightsTab user={user} />
+          </TabsContent>
           <TabsContent value="feed">
             <div className="grid md:grid-cols-3 gap-6">
               <div className="md:col-span-2">
@@ -371,6 +378,8 @@ export default function UserDashboard() {
             <GameGroups user={user} />
           </TabsContent>
         </Tabs>
+
+
 
 
 
