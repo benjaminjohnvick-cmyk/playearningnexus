@@ -22,6 +22,7 @@ import ReferralInviteCard from '../components/home/ReferralInviteCard';
 import ActiveReferralContestSection from '../components/referral/ActiveReferralContestSection';
 import PPCAdSearchWidget from '../components/ppc/PPCAdSearchWidget';
 import AIPersonalizedDailyGoal from '../components/dashboard/AIPersonalizedDailyGoal';
+import PricingSection from '../components/home/PricingSection';
 export default function Home() {
   const [user, setUser] = useState(null);
 
@@ -294,6 +295,11 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Pricing & Services Section */}
+      <div className="bg-white border-y border-gray-100">
+        <PricingSection />
+      </div>
 
       {/* Active Referral Contest — visible to all */}
       <div className="bg-gradient-to-br from-yellow-50 via-white to-orange-50 border-y border-yellow-100">
