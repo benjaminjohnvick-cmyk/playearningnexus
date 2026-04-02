@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, X, Trophy, DollarSign, Gift } from 'lucide-react';
+import { Download, Trophy, DollarSign, Gift } from 'lucide-react';
 import { toast } from 'sonner';
 
-const DISMISS_KEY = 'gamergain_widget_banner_dismissed_at';
+const DOWNLOADED_KEY = 'gamergain_widget_downloaded';
 
 export default function WidgetDownloadPrompt() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Show again if dismissed more than 24h ago (or never dismissed)
-    const dismissedAt = localStorage.getItem(DISMISS_KEY);
-    if (!dismissedAt) { setVisible(true); return; }
-    const hoursSince = (Date.now() - parseInt(dismissedAt, 10)) / (1000 * 60 * 60);
-    if (hoursSince >= 24) setVisible(true);
+    const downloaded = localStorage.getItem(DOWNLOADED_KEY);
+    if (!downloaded) setVisible(true);
   }, []);
 
   const handleDownload = () => {
@@ -37,12 +34,9 @@ export default function WidgetDownloadPrompt() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success('GamerGain Widget downloaded! Check your downloads folder.');
-  };
-
-  const handleOptOut = () => {
-    localStorage.setItem(DISMISS_KEY, Date.now().toString());
+    localStorage.setItem(DOWNLOADED_KEY, '1');
     setVisible(false);
+    toast.success('GamerGain Widget downloaded! Check your downloads folder.');
   };
 
   if (!visible) return null;
@@ -81,13 +75,7 @@ export default function WidgetDownloadPrompt() {
           >
             <Download className="w-3.5 h-3.5" /> Download
           </Button>
-          <button
-            onClick={handleOptOut}
-            className="text-white/40 hover:text-white/80 transition-colors p-1"
-            title="Opt out"
-          >
-            <X className="w-4 h-4" />
-          </button>
+
         </div>
       </div>
     </div>
