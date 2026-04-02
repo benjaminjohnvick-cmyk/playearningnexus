@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp, Trophy, Star, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -23,6 +24,7 @@ import ActiveReferralContestSection from '../components/referral/ActiveReferralC
 import PPCAdSearchWidget from '../components/ppc/PPCAdSearchWidget';
 import AIPersonalizedDailyGoal from '../components/dashboard/AIPersonalizedDailyGoal';
 import PricingSection from '../components/home/PricingSection';
+
 export default function Home() {
   const [user, setUser] = useState(null);
 
@@ -34,22 +36,13 @@ export default function Home() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get('ref');
-    
     if (refCode) {
-      // Track the click
       const trackClick = async () => {
         try {
-          // Find the referral link
           const links = await base44.entities.CustomReferralLink.filter({ link_code: refCode });
-          
           if (links.length > 0) {
             const link = links[0];
-            // Increment clicks
-            await base44.entities.CustomReferralLink.update(link.id, {
-              clicks: (link.clicks || 0) + 1
-            });
-            
-            // Store referral code in localStorage for future conversion tracking
+            await base44.entities.CustomReferralLink.update(link.id, { clicks: (link.clicks || 0) + 1 });
             localStorage.setItem('referralCode', refCode);
             localStorage.setItem('referralTimestamp', new Date().toISOString());
           }
@@ -57,267 +50,203 @@ export default function Home() {
           console.error('Error tracking referral click:', error);
         }
       };
-      
       trackClick();
     }
   }, []);
-  const features = [
-    {
-      icon: Gamepad2,
-      title: "60 Games Per Year",
-      description: "New featured game every 6 days added to your library",
-      color: "from-blue-500 to-blue-600"
-    },
-    {
-      icon: DollarSign,
-      title: "Earn While Playing",
-      description: "Complete surveys to unlock games and earn rewards",
-      color: "from-emerald-500 to-emerald-600"
-    },
-    {
-      icon: Users,
-      title: "Curated Community",
-      description: "Join groups of 100,000 engaged players",
-      color: "from-purple-500 to-purple-600"
-    },
-    {
-      icon: TrendingUp,
-      title: "For Developers",
-      description: "Monetize your games with guaranteed user engagement",
-      color: "from-amber-500 to-amber-600"
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      {/* Mega Referral Banner */}
-      <div className="bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 py-20">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-              <span className="text-white font-bold text-sm">💎 MEGA OPPORTUNITY</span>
-            </div>
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
-              $1 Million+ Payout Possible
-            </h2>
-            <p className="text-xl text-white/90 mb-6">
-              For every 7 million users you add, earn 10% of all profits they generate. 
-              This is the biggest referral opportunity in gaming history.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to={createPageUrl('ReferralContest')}>
-                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 h-14">
-                  Start Referring Now
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-              <div className="text-white text-sm">
-                <p className="font-bold">Currently Active Referrers:</p>
-                <p className="text-white/80">Building their million-dollar network</p>
+
+      {/* ── HERO + MEGA REFERRAL (combined, compact) ── */}
+      <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 py-10 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            {/* Left: hero copy + login */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+              <div className="inline-block px-3 py-1 bg-white/20 rounded-full mb-3">
+                <span className="text-white font-bold text-xs">🎮 GamerGain Platform</span>
               </div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-purple-600/5" />
-        <div className="max-w-7xl mx-auto px-6 py-24 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Play Premium Games.
-              <br />Earn Real Rewards.
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              A revolutionary platform connecting gamers with top mobile games through 
-              survey-based monetization. Play featured games, complete surveys, and build your library.
-            </p>
-            
-            {/* Social Login Buttons */}
-            <div className="max-w-md mx-auto mb-8">
-              <SocialLoginButtons />
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to={createPageUrl('UserDashboard')}>
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-lg px-8 h-14">
-                  Start Playing
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-              <Link to={createPageUrl('BusinessDashboard')}>
-                <Button size="lg" variant="outline" className="text-lg px-8 h-14 border-2">
-                  For Developers
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Features Grid */}
-      <div className="max-w-7xl mx-auto px-6 py-20">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
-          <p className="text-lg text-gray-600">Simple, transparent, and rewarding for everyone</p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-all h-full">
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4`}>
-                  <feature.icon className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </Card>
+              <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-tight">
+                Play Games.<br />Earn Real Money.
+              </h1>
+              <p className="text-white/80 text-sm mb-4">
+                Complete surveys, earn $3+/day, build your game library. 60+ new games per year. 50/50 revenue share.
+              </p>
+              <div className="max-w-xs mb-4">
+                <SocialLoginButtons />
+              </div>
+              <div className="flex gap-3 flex-wrap">
+                <Link to={createPageUrl('UserDashboard')}>
+                  <Button size="sm" className="bg-white text-purple-700 hover:bg-gray-100 font-bold gap-1">
+                    Start Playing <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('BusinessDashboard')}>
+                  <Button size="sm" variant="outline" className="border-white/40 text-white hover:bg-white/10">
+                    For Developers
+                  </Button>
+                </Link>
+              </div>
             </motion.div>
+
+            {/* Right: mega referral + stats */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-3">
+              {/* Mega referral */}
+              <div className="bg-white/10 border border-white/20 rounded-2xl p-5 text-white text-center">
+                <div className="text-xs font-bold text-yellow-300 mb-1">💎 MEGA REFERRAL OPPORTUNITY</div>
+                <div className="text-3xl font-black text-yellow-300">$1,000,000+</div>
+                <p className="text-white/80 text-xs mt-1 mb-3">Refer 7M users → earn 10% of all their profits forever</p>
+                <Link to={createPageUrl('ReferralContest')}>
+                  <Button size="sm" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-black w-full">
+                    Start Referring Now <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+              {/* Stats row */}
+              <div className="grid grid-cols-4 gap-2 text-center">
+                {[
+                  { val: '60+', label: 'Games/yr', icon: '🎮' },
+                  { val: '$3/day', label: 'Earn', icon: '💰' },
+                  { val: '100K', label: 'Users', icon: '👥' },
+                  { val: '50/50', label: 'Split', icon: '📊' },
+                ].map(s => (
+                  <div key={s.label} className="bg-white/10 rounded-xl p-2">
+                    <div className="text-lg">{s.icon}</div>
+                    <div className="text-white font-black text-sm">{s.val}</div>
+                    <div className="text-white/60 text-xs">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── HOW IT WORKS (compact row) ── */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { icon: Gamepad2, title: "60 Games/Year", desc: "New featured game every 6 days", color: "from-blue-500 to-blue-600" },
+            { icon: DollarSign, title: "Earn While Playing", desc: "Complete surveys, get paid", color: "from-emerald-500 to-emerald-600" },
+            { icon: Users, title: "100K Community", desc: "Curated groups of engaged players", color: "from-purple-500 to-purple-600" },
+            { icon: TrendingUp, title: "For Developers", desc: "Monetize with guaranteed engagement", color: "from-amber-500 to-amber-600" },
+          ].map((f, i) => (
+            <Card key={i} className="p-4 border-0 shadow-md flex items-start gap-3">
+              <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${f.color} flex items-center justify-center flex-shrink-0`}>
+                <f.icon className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 text-sm">{f.title}</p>
+                <p className="text-gray-500 text-xs">{f.desc}</p>
+              </div>
+            </Card>
           ))}
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8 text-center text-white">
-            <div>
-              <div className="text-5xl font-bold mb-2">60+</div>
-              <div className="text-blue-100">Games Per Year</div>
+      {/* ── MAIN CONTENT: tabbed for logged-in users, social proof for guests ── */}
+      <div className="max-w-7xl mx-auto px-6 pb-6">
+        {user ? (
+          <Tabs defaultValue="tasks">
+            <TabsList className="w-full flex flex-wrap h-auto gap-1 mb-4 bg-white shadow-md rounded-xl p-1">
+              <TabsTrigger value="tasks" className="flex-1 min-w-fit text-xs">📋 Daily Tasks</TabsTrigger>
+              <TabsTrigger value="surveys" className="flex-1 min-w-fit text-xs">📝 Surveys</TabsTrigger>
+              <TabsTrigger value="ppc" className="flex-1 min-w-fit text-xs">💰 PPC Ads</TabsTrigger>
+              <TabsTrigger value="progress" className="flex-1 min-w-fit text-xs">📊 Progress</TabsTrigger>
+              <TabsTrigger value="community" className="flex-1 min-w-fit text-xs">👥 Community</TabsTrigger>
+              <TabsTrigger value="referrals" className="flex-1 min-w-fit text-xs">🏆 Referrals</TabsTrigger>
+              <TabsTrigger value="pricing" className="flex-1 min-w-fit text-xs">💵 Pricing</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="tasks">
+              <div className="grid lg:grid-cols-2 gap-4">
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 text-white flex items-center justify-between gap-4">
+                  <div>
+                    <p className="font-bold text-base">📋 Your Daily To-Do List</p>
+                    <p className="text-indigo-100 text-xs mt-1">Earn $3 · Refer a friend · Use PPC widget · Download extension</p>
+                  </div>
+                  <Link to={createPageUrl('DailyTodoList')}>
+                    <Button size="sm" className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold flex-shrink-0">
+                      View <ArrowRight className="ml-1 w-3 h-3" />
+                    </Button>
+                  </Link>
+                </div>
+                <AIPersonalizedDailyGoal user={user} />
+              </div>
+              <div className="grid lg:grid-cols-3 gap-4 mt-4">
+                <EarningsSimulator user={user} />
+                <ChallengeProgress user={user} />
+                <DailyStreakWidget user={user} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="surveys">
+              <div className="space-y-4">
+                <AISurveyMatchWidget user={user} />
+                <RecommendedSurveys user={user} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="ppc">
+              <PPCAdSearchWidget variant="full" />
+            </TabsContent>
+
+            <TabsContent value="progress">
+              <div className="grid lg:grid-cols-3 gap-4">
+                <MilestoneBadges user={user} />
+                <TopEarnersLeaderboard />
+                <ReferralInviteCard user={user} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="community">
+              <div className="grid lg:grid-cols-2 gap-4">
+                <CommunityActivityFeed />
+                <RecentEarningsFeed />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="referrals">
+              <ActiveReferralContestSection user={user} />
+            </TabsContent>
+
+            <TabsContent value="pricing">
+              <PricingSection />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          /* Guest view: social proof + pricing */
+          <div className="space-y-6">
+            {/* Social proof row */}
+            <div className="grid lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2 grid md:grid-cols-2 gap-4">
+                <CommunityActivityFeed />
+                <RecentEarningsFeed />
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="bg-green-50 border border-green-200 rounded-2xl p-5 text-center">
+                  <div className="text-3xl font-black text-green-600">$12,847</div>
+                  <p className="text-gray-500 text-sm">Paid out this month</p>
+                  <div className="text-xl font-bold text-purple-600 mt-3">4,231</div>
+                  <p className="text-gray-500 text-sm">Surveys completed today</p>
+                </div>
+                <TopEarnersLeaderboard />
+              </div>
             </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">100K</div>
-              <div className="text-blue-100">User Groups</div>
+
+            {/* Referral contest */}
+            <div className="bg-gradient-to-br from-yellow-50 via-white to-orange-50 border border-yellow-100 rounded-2xl">
+              <ActiveReferralContestSection user={user} />
             </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">50/50</div>
-              <div className="text-blue-100">Revenue Share</div>
-            </div>
+
+            {/* Pricing */}
+            <PricingSection />
           </div>
-        </div>
+        )}
       </div>
 
-      {/* CTA Section */}
-      <div className="max-w-4xl mx-auto px-6 py-24 text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            Ready to Start Your Gaming Journey?
-          </h2>
-          <p className="text-lg text-gray-600 mb-8">
-            Join thousands of players earning rewards while enjoying premium mobile games
-          </p>
-          <Link to={createPageUrl('UserDashboard')}>
-            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 h-14">
-              Get Started Free
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
-        </motion.div>
-      </div>
-
-      {/* Live feed — visible to everyone for social proof */}
-      <div className="max-w-7xl mx-auto px-6 pb-8">
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            <CommunityActivityFeed />
-            <RecentEarningsFeed />
-          </div>
-          <div className="space-y-4 text-center flex flex-col justify-center">
-            <div className="text-4xl font-black text-green-600">$12,847</div>
-            <p className="text-gray-500 text-sm">Paid out to users this month</p>
-            <div className="text-2xl font-bold text-purple-600">4,231</div>
-            <p className="text-gray-500 text-sm">Surveys completed today</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Recommended Surveys + Challenges for logged-in users */}
-      {user && (
-        <div className="max-w-7xl mx-auto px-6 pb-16 space-y-8">
-          {/* Daily To-Do List CTA */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 text-white flex items-center justify-between gap-4">
-            <div>
-              <p className="font-bold text-lg">📋 Your Daily To-Do List is Ready!</p>
-              <p className="text-indigo-100 text-sm">Complete mandatory tasks: Earn $3 · Refer a friend · Use PPC widget · Download extension</p>
-            </div>
-            <Link to={createPageUrl('DailyTodoList')}>
-              <Button className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold flex-shrink-0">
-                View Tasks <ArrowRight className="ml-1 w-4 h-4" />
-              </Button>
-            </Link>
-          </div>
-
-          {/* AI Personalized Daily Goal */}
-          <AIPersonalizedDailyGoal user={user} />
-
-          {/* PPC Ad Search Widget */}
-          <PPCAdSearchWidget variant="full" />
-
-          <AISurveyMatchWidget user={user} />
-          <RecommendedSurveys user={user} />
-          <div className="grid lg:grid-cols-3 gap-6">
-            <EarningsSimulator user={user} />
-            <ChallengeProgress user={user} />
-            <DailyStreakWidget user={user} />
-          </div>
-          {/* Gamified Progress Dashboard */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">📊 Your Progress</h2>
-            <div className="grid lg:grid-cols-3 gap-6">
-              <MilestoneBadges user={user} />
-              <TopEarnersLeaderboard />
-              <ReferralInviteCard user={user} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Pricing & Services Section */}
-      <div className="bg-white border-y border-gray-100">
-        <PricingSection />
-      </div>
-
-      {/* Active Referral Contest — visible to all */}
-      <div className="bg-gradient-to-br from-yellow-50 via-white to-orange-50 border-y border-yellow-100">
-        <ActiveReferralContestSection user={user} />
-      </div>
-
-      {/* Top Earners visible to guests too */}
-      {!user && (
-        <div className="max-w-4xl mx-auto px-6 pb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">🏆 Top Earners</h2>
-          <TopEarnersLeaderboard />
-        </div>
-      )}
-
-      {/* AI Chatbot */}
+      {/* AI Chatbot + Support */}
       <AIChatbot />
-
-      {/* Support Chat Button */}
       <SupportChatButton />
     </div>
   );
