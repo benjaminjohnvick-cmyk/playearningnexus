@@ -82,6 +82,7 @@ const DeveloperPayoutDashboard = lazy(() => import('./pages/DeveloperPayoutDashb
 const SellerUpload = lazy(() => import('./pages/SellerUpload'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const CompleteProfile = lazy(() => import('./pages/CompleteProfile'));
+const AdminCredentials = lazy(() => import('./pages/AdminCredentials'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -233,6 +234,7 @@ const AuthenticatedApp = () => {
       <Route path="/SellerUpload" element={<LayoutWrapper currentPageName="SellerUpload"><SellerUpload /></LayoutWrapper>} />
       <Route path="/Pricing" element={<LayoutWrapper currentPageName="Pricing"><Pricing /></LayoutWrapper>} />
       <Route path="/CompleteProfile" element={<CompleteProfile />} />
+      <Route path="/AdminCredentials" element={<LayoutWrapper currentPageName="AdminCredentials"><AdminCredentials /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
