@@ -101,6 +101,13 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.setItem('needs_social_setup', 'true');
       }
 
+      // If user has no full_name, flag for profile completion
+      if (currentUser && (!currentUser.full_name || currentUser.full_name.trim() === '')) {
+        sessionStorage.setItem('needs_profile_completion', 'true');
+      } else {
+        sessionStorage.removeItem('needs_profile_completion');
+      }
+
       setIsLoadingAuth(false);
     } catch (error) {
       console.error('User auth check failed:', error);

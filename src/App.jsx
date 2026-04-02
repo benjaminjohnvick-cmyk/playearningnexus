@@ -81,6 +81,7 @@ const ReferralContest = lazy(() => import('./pages/ReferralContest'));
 const DeveloperPayoutDashboard = lazy(() => import('./pages/DeveloperPayoutDashboard'));
 const SellerUpload = lazy(() => import('./pages/SellerUpload'));
 const Pricing = lazy(() => import('./pages/Pricing'));
+const CompleteProfile = lazy(() => import('./pages/CompleteProfile'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -125,6 +126,18 @@ const AuthenticatedApp = () => {
   if (needsSocialSetup && !isOnSetupPage) {
     window.location.replace('/SocialMediaSetup');
     return null;
+  }
+
+  // Redirect users with no name to profile completion
+  const isOnCompleteProfile = window.location.pathname === '/CompleteProfile';
+  if (!isOnCompleteProfile && !authError) {
+    // Check after auth resolves and user is authenticated but has no name
+    const currentUser = authError ? null : window.__gg_user_cache;
+    // We do this check via a side-effect read from sessionStorage flag set on login
+    if (sessionStorage.getItem('needs_profile_completion') === 'true') {
+      window.location.replace('/CompleteProfile');
+      return null;
+    }
   }
 
   // Render the main app
@@ -219,6 +232,7 @@ const AuthenticatedApp = () => {
       <Route path="/DeveloperPayoutDashboard" element={<LayoutWrapper currentPageName="DeveloperPayoutDashboard"><DeveloperPayoutDashboard /></LayoutWrapper>} />
       <Route path="/SellerUpload" element={<LayoutWrapper currentPageName="SellerUpload"><SellerUpload /></LayoutWrapper>} />
       <Route path="/Pricing" element={<LayoutWrapper currentPageName="Pricing"><Pricing /></LayoutWrapper>} />
+      <Route path="/CompleteProfile" element={<CompleteProfile />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
