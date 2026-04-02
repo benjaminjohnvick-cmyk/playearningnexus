@@ -226,7 +226,7 @@ export default function AIPersonalizedDailyGoal({ user }) {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {dailyGoal.recommended_tasks.map((task, idx) => (
+              {dailyGoalData.recommended_tasks.map((task, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, x: -10 }}
