@@ -79,6 +79,7 @@ const PPCSurveyBuilder = lazy(() => import('./pages/PPCSurveyBuilder'));
 const LevelAndBadgesPage = lazy(() => import('./pages/LevelAndBadgesPage'));
 const ReferralContest = lazy(() => import('./pages/ReferralContest'));
 const DeveloperPayoutDashboard = lazy(() => import('./pages/DeveloperPayoutDashboard'));
+const SellerUpload = lazy(() => import('./pages/SellerUpload'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -215,6 +216,7 @@ const AuthenticatedApp = () => {
       <Route path="/ReferralContest" element={<LayoutWrapper currentPageName="ReferralContest"><ReferralContest /></LayoutWrapper>} />
       <Route path="/InAppGameStore" element={<LayoutWrapper currentPageName="InAppGameStore"><Store /></LayoutWrapper>} />
       <Route path="/DeveloperPayoutDashboard" element={<LayoutWrapper currentPageName="DeveloperPayoutDashboard"><DeveloperPayoutDashboard /></LayoutWrapper>} />
+      <Route path="/SellerUpload" element={<LayoutWrapper currentPageName="SellerUpload"><SellerUpload /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

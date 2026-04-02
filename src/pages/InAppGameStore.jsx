@@ -31,6 +31,8 @@ export default function InAppGameStore() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
   const [priceRange, setPriceRange] = useState('all');
+  const [platformFilter, setPlatformFilter] = useState('');
+  const [minRating, setMinRating] = useState('');
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [reviewGame, setReviewGame] = useState(null);
   const [showBNPL, setShowBNPL] = useState(false);
@@ -55,19 +57,27 @@ export default function InAppGameStore() {
   }, []);
 
   const { data: games = [], isLoading: gamesLoading } = useQuery({
-    queryKey: ['store-games', selectedCategory, searchQuery, sortBy, priceRange],
+    queryKey: ['store-games', selectedCategory, searchQuery, sortBy, priceRange, platformFilter, minRating],
     queryFn: async () => {
       let filter = { marketplace_approved: true };
       if (selectedCategory !== 'all') filter.category = selectedCategory;
       let allGames = await base44.entities.Game.filter(filter);
 
       if (searchQuery) {
+        const q = searchQuery.toLowerCase();
         allGames = allGames.filter(g =>
-          g.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          g.description?.toLowerCase().includes(searchQuery.toLowerCase())
+          g.title?.toLowerCase().includes(q) ||
+          g.description?.toLowerCase().includes(q) ||
+          g.category?.toLowerCase().includes(q) ||
+          (g.platform || []).some(p => p.toLowerCase().includes(q))
         );
       }
-
+      if (platformFilter) {
+        allGames = allGames.filter(g => (g.platform || []).includes(platformFilter));
+      }
+      if (minRating) {
+        allGames = allGames.filter(g => (g.average_rating || 0) >= parseFloat(minRating));
+      }
       if (priceRange === 'free') allGames = allGames.filter(g => g.price === 0);
       else if (priceRange === 'under5') allGames = allGames.filter(g => g.price > 0 && g.price < 5);
       else if (priceRange === '5to10') allGames = allGames.filter(g => g.price >= 5 && g.price <= 10);
@@ -211,21 +221,46 @@ export default function InAppGameStore() {
                     />
                   </div>
 
-                  <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                  {/* Genre Filter */}
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
                     <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <span className="text-xs font-semibold text-gray-400 uppercase flex-shrink-0">Genre</span>
                     {CATEGORIES.map(cat => (
                       <Button key={cat} size="sm" variant={selectedCategory === cat ? 'default' : 'outline'}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`capitalize flex-shrink-0 ${selectedCategory === cat ? 'bg-red-600 hover:bg-red-700' : ''}`}>
+                        className={`capitalize flex-shrink-0 text-xs ${selectedCategory === cat ? 'bg-red-600 hover:bg-red-700' : ''}`}>
                         {cat}
                       </Button>
                     ))}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-2">
+                  {/* Platform + Rating + Sort Row */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    {/* Platform */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-semibold text-gray-400 uppercase">Platform</span>
+                      {['', 'ios', 'android', 'web', 'pc'].map(p => (
+                        <button key={p} onClick={() => setPlatformFilter(p)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium border transition ${platformFilter === p ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 hover:border-blue-400'}`}>
+                          {p === '' ? 'All' : p.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Min Rating */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-semibold text-gray-400 uppercase">Rating</span>
+                      {[['', 'All'], ['4', '⭐ 4+'], ['3', '⭐ 3+'], ['2', '⭐ 2+']].map(([val, label]) => (
+                        <button key={val} onClick={() => setMinRating(val)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium border transition ${minRating === val ? 'bg-yellow-500 text-white border-yellow-500' : 'bg-white text-slate-600 hover:border-yellow-400'}`}>
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Sort */}
+                    <div className="flex items-center gap-2 ml-auto">
                       <SlidersHorizontal className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">Sort:</span>
                       <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="border rounded-lg px-3 py-1.5 text-sm">
                         <option value="popular">Most Popular</option>
                         <option value="new">Newest</option>
@@ -233,9 +268,6 @@ export default function InAppGameStore() {
                         <option value="price_low">Price: Low → High</option>
                         <option value="price_high">Price: High → Low</option>
                       </select>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">Price:</span>
                       <select value={priceRange} onChange={e => setPriceRange(e.target.value)} className="border rounded-lg px-3 py-1.5 text-sm">
                         <option value="all">All Prices</option>
                         <option value="free">Free</option>
