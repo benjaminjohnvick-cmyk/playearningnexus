@@ -80,6 +80,7 @@ const LevelAndBadgesPage = lazy(() => import('./pages/LevelAndBadgesPage'));
 const ReferralContest = lazy(() => import('./pages/ReferralContest'));
 const DeveloperPayoutDashboard = lazy(() => import('./pages/DeveloperPayoutDashboard'));
 const SellerUpload = lazy(() => import('./pages/SellerUpload'));
+const Pricing = lazy(() => import('./pages/Pricing'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -217,6 +218,7 @@ const AuthenticatedApp = () => {
       <Route path="/InAppGameStore" element={<LayoutWrapper currentPageName="InAppGameStore"><Store /></LayoutWrapper>} />
       <Route path="/DeveloperPayoutDashboard" element={<LayoutWrapper currentPageName="DeveloperPayoutDashboard"><DeveloperPayoutDashboard /></LayoutWrapper>} />
       <Route path="/SellerUpload" element={<LayoutWrapper currentPageName="SellerUpload"><SellerUpload /></LayoutWrapper>} />
+      <Route path="/Pricing" element={<LayoutWrapper currentPageName="Pricing"><Pricing /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

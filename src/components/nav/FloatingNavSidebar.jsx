@@ -17,6 +17,7 @@ const NAV_SECTIONS = [
     { name: 'Wishlist', icon: Heart, path: 'Wishlist', color: 'red' },
     { name: 'Daily Tasks', icon: FileText, path: 'DailyTodoList', color: 'red' },
     { name: 'Seller Upload', icon: Briefcase, path: 'SellerUpload', color: 'red' },
+    { name: 'Pricing', icon: DollarSign, path: 'Pricing', color: 'red' },
   ]},
   { group: 'Earn', items: [
     { name: 'Surveys', icon: TrendingUp, path: 'PPCMarketplace', color: 'green' },
