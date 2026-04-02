@@ -60,7 +60,7 @@ export default function AIPersonalizedDailyGoal({ user }) {
     retryDelay: 2000,
   });
 
-  const goal = dailyGoal || ((!isLoading || isError) ? fallbackGoal : null);
+  const goal = (dailyGoal && dailyGoal.daily_goal_amount) ? dailyGoal : (isLoading ? null : fallbackGoal);
 
   if (!goal) {
     return (
