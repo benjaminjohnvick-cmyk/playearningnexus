@@ -444,8 +444,8 @@ export default function Layout({ children, currentPageName }) {
          {/* Main Content */}
          <main>{children}</main>
 
-         {/* Global AI Daily Goal Sidebar */}
-         {isAuthenticated && user && (
+         {/* Global AI Daily Goal Sidebar — only on Dashboard */}
+         {isAuthenticated && user && currentPageName === 'UserDashboard' && (
            <div className="fixed right-4 top-32 z-30 w-80 max-h-[calc(100vh-150px)] overflow-y-auto hidden lg:block">
              <Suspense fallback={null}>
                <AIPersonalizedDailyGoal user={user} />
