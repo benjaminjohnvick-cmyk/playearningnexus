@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, CheckCircle, Clock, XCircle, Package, Image, Tag, DollarSign } from 'lucide-react';
+import { Upload, CheckCircle, Clock, XCircle, Package, Image, Tag, DollarSign, Megaphone, ShoppingBag, Gamepad2, FileDigit } from 'lucide-react';
 
 const CATEGORIES = [
   { value: 'puzzle', label: '🧩 Puzzle', fields: ['difficulty', 'levels_count'] },
@@ -17,6 +17,10 @@ const CATEGORIES = [
   { value: 'adventure', label: '🗺️ Adventure', fields: ['world_size', 'open_world'] },
   { value: 'digital_goods', label: '💾 Digital Goods', fields: ['file_format', 'license_type'] },
   { value: 'software', label: '🛠️ Software', fields: ['os_requirements', 'subscription_model'] },
+  { value: 'physical_goods', label: '📦 Physical Goods', fields: [] },
+  { value: 'apparel', label: '👕 Apparel', fields: [] },
+  { value: 'electronics', label: '💻 Electronics', fields: [] },
+  { value: 'collectibles', label: '🏆 Collectibles', fields: [] },
 ];
 
 const PLATFORMS = ['ios', 'android', 'web', 'pc', 'console'];
@@ -52,13 +56,37 @@ const statusConfig = {
   rejected: { label: 'Rejected ❌', color: 'bg-red-100 text-red-700', icon: XCircle }
 };
 
+const AD_TYPES = [
+  { value: 'banner', label: '🖼️ Banner Ad' },
+  { value: 'video', label: '🎬 Video Ad' },
+  { value: 'sponsored_listing', label: '📌 Sponsored Listing' },
+  { value: 'interstitial', label: '📱 Interstitial' },
+];
+
+const PRODUCT_TYPE_TABS = [
+  { key: 'game', label: '🎮 Game', icon: Gamepad2 },
+  { key: 'physical', label: '📦 Physical', icon: ShoppingBag },
+  { key: 'digital', label: '💾 Digital', icon: FileDigit },
+  { key: 'ad', label: '📢 Ad', icon: Megaphone },
+];
+
 export default function SellerUpload() {
   const [user, setUser] = useState(null);
   const [tab, setTab] = useState('submit');
+  const [productType, setProductType] = useState('game');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [mySubmissions, setMySubmissions] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+
+  // Ad-specific form
+  const [adForm, setAdForm] = useState({
+    title: '', ad_type: '', target_url: '', budget_usd: '',
+    description: '', image_url: '', video_url: '', cta_text: 'Learn More'
+  });
+  const [adSubmitting, setAdSubmitting] = useState(false);
+  const [adSubmitted, setAdSubmitted] = useState(false);
+  const [uploadingAdImage, setUploadingAdImage] = useState(false);
 
   const [form, setForm] = useState({
     title: '', description: '', category: '', price: '',
@@ -78,7 +106,44 @@ export default function SellerUpload() {
     setMySubmissions(results.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at)));
   };
 
+  // Sync category to product type
+  const gameCategories = ['puzzle','action','strategy','casual','rpg','simulation','sports','racing','adventure'];
+  const physicalCategories = ['physical_goods','apparel','electronics','collectibles'];
+  const digitalCategories = ['digital_goods','software'];
+
+  const filteredCategories = productType === 'game'
+    ? CATEGORIES.filter(c => gameCategories.includes(c.value))
+    : productType === 'digital'
+    ? CATEGORIES.filter(c => digitalCategories.includes(c.value))
+    : productType === 'physical'
+    ? CATEGORIES.filter(c => physicalCategories.includes(c.value))
+    : CATEGORIES;
+
   const selectedCategory = CATEGORIES.find(c => c.value === form.category);
+
+  const handleAdImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingAdImage(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setAdForm(prev => ({ ...prev, image_url: file_url }));
+    setUploadingAdImage(false);
+  };
+
+  const handleAdSubmit = async () => {
+    if (!adForm.title || !adForm.ad_type || !adForm.target_url) return;
+    setAdSubmitting(true);
+    await base44.entities.AdListing.create({
+      ...adForm,
+      budget_usd: parseFloat(adForm.budget_usd) || 0,
+      advertiser_id: user?.id,
+      advertiser_email: user?.email,
+      status: 'pending_review',
+      created_at: new Date().toISOString()
+    });
+    setAdSubmitting(false);
+    setAdSubmitted(true);
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -123,25 +188,129 @@ export default function SellerUpload() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-slate-900 mb-2 flex items-center gap-3">
-            <Package className="w-9 h-9 text-indigo-600" /> Seller Upload Portal
+            <Package className="w-9 h-9 text-indigo-600" /> Business Upload Portal
           </h1>
-          <p className="text-slate-500">Submit your product for AI-powered review and automatic publishing</p>
+          <p className="text-slate-500">Upload products (physical, digital, games) and ads in one place for AI-powered review</p>
         </div>
 
-        {/* Tabs */}
+        {/* Main Tabs */}
         <div className="flex gap-2 mb-6">
           {['submit', 'submissions'].map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-5 py-2 rounded-full font-semibold text-sm transition ${tab === t ? 'bg-indigo-600 text-white shadow' : 'bg-white text-slate-600 border hover:bg-indigo-50'}`}>
-              {t === 'submit' ? '+ New Submission' : 'My Submissions'}
+              {t === 'submit' ? '+ New Upload' : 'My Submissions'}
             </button>
           ))}
         </div>
 
         {tab === 'submit' && (
+          <>
+          {/* Product Type Selector */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {PRODUCT_TYPE_TABS.map(pt => {
+              const Icon = pt.icon;
+              return (
+                <button key={pt.key} onClick={() => { setProductType(pt.key); setForm(p => ({ ...p, category: '', category_fields: {} })); setAdSubmitted(false); }}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 font-semibold text-sm transition ${productType === pt.key ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg' : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'}`}>
+                  <Icon className="w-6 h-6" />
+                  {pt.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* AD UPLOAD FORM */}
+          {productType === 'ad' ? (
+            <Card className="border-0 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Megaphone className="w-5 h-5 text-orange-500" /> Upload an Ad</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                {adSubmitted && (
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <p className="text-green-700 font-medium">Ad submitted for review! Our team will activate it shortly.</p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Ad Title *</label>
+                    <input value={adForm.title} onChange={e => setAdForm(p => ({ ...p, title: e.target.value }))}
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="e.g. Summer Sale Banner" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Daily Budget (USD)</label>
+                    <input type="number" value={adForm.budget_usd} onChange={e => setAdForm(p => ({ ...p, budget_usd: e.target.value }))}
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="50.00" min="0" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Ad Type *</label>
+                  <div className="flex flex-wrap gap-2">
+                    {AD_TYPES.map(at => (
+                      <button key={at.value} onClick={() => setAdForm(p => ({ ...p, ad_type: at.value }))}
+                        className={`px-3 py-1.5 rounded-full border text-sm font-medium transition ${adForm.ad_type === at.value ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-slate-600 hover:border-orange-400'}`}>
+                        {at.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Target URL *</label>
+                    <input value={adForm.target_url} onChange={e => setAdForm(p => ({ ...p, target_url: e.target.value }))}
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="https://yoursite.com/landing" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">CTA Button Text</label>
+                    <input value={adForm.cta_text} onChange={e => setAdForm(p => ({ ...p, cta_text: e.target.value }))}
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="Learn More" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Ad Description / Copy</label>
+                  <textarea value={adForm.description} onChange={e => setAdForm(p => ({ ...p, description: e.target.value }))}
+                    rows={3} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none"
+                    placeholder="Write your ad copy here..." />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2"><Image className="inline w-4 h-4" /> Ad Image / Creative</label>
+                  <div className="flex items-center gap-4">
+                    {adForm.image_url && (
+                      <img src={adForm.image_url} alt="" className="w-24 h-16 object-cover rounded-lg border" />
+                    )}
+                    <label className={`px-4 py-2 rounded-lg border-2 border-dashed border-orange-300 flex items-center gap-2 cursor-pointer hover:bg-orange-50 text-sm text-orange-600 font-medium ${uploadingAdImage ? 'opacity-50' : ''}`}>
+                      <input type="file" accept="image/*" onChange={handleAdImageUpload} className="hidden" disabled={uploadingAdImage} />
+                      <Upload className="w-4 h-4" /> {uploadingAdImage ? 'Uploading...' : 'Upload Image'}
+                    </label>
+                  </div>
+                </div>
+
+                {adForm.ad_type === 'video' && (
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Video URL</label>
+                    <input value={adForm.video_url} onChange={e => setAdForm(p => ({ ...p, video_url: e.target.value }))}
+                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="https://..." />
+                  </div>
+                )}
+
+                <Button onClick={handleAdSubmit} disabled={adSubmitting || !adForm.title || !adForm.ad_type || !adForm.target_url}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 text-base">
+                  {adSubmitting ? 'Submitting Ad...' : '📢 Submit Ad for Review'}
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
           <Card className="border-0 shadow-xl">
             <CardHeader>
-              <CardTitle>Product Details</CardTitle>
+              <CardTitle>
+                {productType === 'game' ? '🎮 Game Details' : productType === 'physical' ? '📦 Physical Product Details' : '💾 Digital Product Details'}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               {submitted && (
@@ -169,7 +338,7 @@ export default function SellerUpload() {
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2"><Tag className="inline w-4 h-4" /> Category *</label>
                 <div className="flex flex-wrap gap-2">
-                  {CATEGORIES.map(cat => (
+                  {filteredCategories.map(cat => (
                     <button key={cat.value} onClick={() => setForm(p => ({ ...p, category: cat.value, category_fields: {} }))}
                       className={`px-3 py-1.5 rounded-full border text-sm font-medium transition ${form.category === cat.value ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 hover:border-indigo-400'}`}>
                       {cat.label}
@@ -255,6 +424,8 @@ export default function SellerUpload() {
               </Button>
             </CardContent>
           </Card>
+          )}
+          </>
         )}
 
         {tab === 'submissions' && (
