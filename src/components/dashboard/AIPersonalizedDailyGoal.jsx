@@ -32,17 +32,37 @@ export default function AIPersonalizedDailyGoal({ user }) {
     return () => clearInterval(interval);
   }, [user?.id, today]);
 
-  const { data: dailyGoal, isLoading } = useQuery({
+  const fallbackGoal = {
+    daily_goal_amount: 3.00,
+    rationale: "Earn $3 today through surveys and tasks",
+    motivational_message: "Complete a few surveys to hit your daily goal!",
+    milestone_incentives: [
+      { amount: 1.00, incentive: "Great start! Keep going." },
+      { amount: 2.00, incentive: "Halfway there!" },
+      { amount: 3.00, incentive: "Daily goal reached! 🎉" },
+    ],
+    recommended_tasks: [
+      { task_name: "Complete a Survey", time_estimate: 10, priority: "High", reward: 1.50 },
+      { task_name: "PPC Ad Search", time_estimate: 5, priority: "Medium", reward: 0.50 },
+      { task_name: "Refer a Friend", time_estimate: 2, priority: "Low", reward: 1.00 },
+    ],
+  };
+
+  const { data: dailyGoal, isLoading, isError } = useQuery({
     queryKey: ['daily-goal', user?.id, today],
     queryFn: async () => {
       const res = await base44.functions.invoke('generateAIDailyGoal', {});
       return res.data.goal;
     },
     enabled: !!user,
-    staleTime: 24 * 60 * 60 * 1000, // Cache for full day
+    staleTime: 24 * 60 * 60 * 1000,
+    retry: 1,
+    retryDelay: 2000,
   });
 
-  if (!dailyGoal || isLoading) {
+  const goal = dailyGoal || ((!isLoading || isError) ? fallbackGoal : null);
+
+  if (!goal) {
     return (
       <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
         <CardContent className="pt-6 flex justify-center">
@@ -52,12 +72,15 @@ export default function AIPersonalizedDailyGoal({ user }) {
     );
   }
 
-  const goalAmount = dailyGoal.daily_goal_amount;
+  // Use resolved goal
+  const dailyGoalData = goal;
+
+  const goalAmount = dailyGoalData.daily_goal_amount;
   const progressPercent = Math.min((earnedToday / goalAmount) * 100, 100);
   const remainingAmount = Math.max(goalAmount - earnedToday, 0);
 
   // Determine unlocked milestones
-  const activeMilestones = dailyGoal.milestone_incentives.map((m, idx) => ({
+  const activeMilestones = dailyGoalData.milestone_incentives.map((m, idx) => ({
     ...m,
     unlocked: earnedToday >= m.amount,
     id: idx,
@@ -101,7 +124,7 @@ export default function AIPersonalizedDailyGoal({ user }) {
             >
               ${goalAmount.toFixed(2)}
             </motion.p>
-            <p className="text-xs opacity-75 mt-1">{dailyGoal.rationale}</p>
+            <p className="text-xs opacity-75 mt-1">{dailyGoalData.rationale}</p>
           </div>
 
           {/* Progress Bar */}
@@ -141,7 +164,7 @@ export default function AIPersonalizedDailyGoal({ user }) {
                 ? '🎉 Goal Reached!'
                 : isCloseToGoal
                 ? `Almost there! ${remainingAmount.toFixed(2)} more to go`
-                : dailyGoal.motivational_message}
+                : dailyGoalData.motivational_message}
             </p>
           </motion.div>
 
@@ -193,7 +216,7 @@ export default function AIPersonalizedDailyGoal({ user }) {
       </div>
 
       {/* Recommended Tasks */}
-      {dailyGoal.recommended_tasks && dailyGoal.recommended_tasks.length > 0 && (
+      {dailyGoalData.recommended_tasks && dailyGoalData.recommended_tasks.length > 0 && (
         <Card className="border-2 border-purple-200">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
