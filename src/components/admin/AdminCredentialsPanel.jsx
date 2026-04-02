@@ -17,6 +17,7 @@ export default function AdminCredentialsPanel() {
   const [form, setForm] = useState({ username: '', password: '', confirmPassword: '', label: '' });
   const [showPass, setShowPass] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
   const qc = useQueryClient();
 
   const { data: creds = [] } = useQuery({
@@ -25,10 +26,11 @@ export default function AdminCredentialsPanel() {
   });
 
   const handleCreate = async () => {
-    if (!form.username || !form.password) return toast.error('Username and password required');
-    if (form.password !== form.confirmPassword) return toast.error('Passwords do not match');
-    if (form.password.length < 8) return toast.error('Password must be at least 8 characters');
-    if (creds.find(c => c.username === form.username)) return toast.error('Username already exists');
+    setError('');
+    if (!form.username || !form.password) return setError('Username and password are required.');
+    if (form.password.length < 8) return setError('Password must be at least 8 characters.');
+    if (form.password !== form.confirmPassword) return setError('Passwords do not match.');
+    if (creds.find(c => c.username === form.username)) return setError('Username already exists.');
 
     setSaving(true);
     const hash = await sha256(form.password);
@@ -77,24 +79,35 @@ export default function AdminCredentialsPanel() {
       {/* Create Form */}
       <Card className="border-2 border-blue-200 bg-blue-50/30">
         <CardHeader><CardTitle className="text-base flex items-center gap-2"><Plus className="w-4 h-4" /> Add New Credential</CardTitle></CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-2 gap-3 mb-3">
-            <Input placeholder="Label (e.g. 'Main Admin')" value={form.label}
-              onChange={e => setForm(f => ({ ...f, label: e.target.value }))} />
-            <Input placeholder="Username" value={form.username}
+        <CardContent className="space-y-3">
+          <div>
+            <label className="text-xs font-semibold text-gray-600 block mb-1">Username <span className="text-red-500">*</span></label>
+            <Input placeholder="e.g. admin" value={form.username}
               onChange={e => setForm(f => ({ ...f, username: e.target.value }))} />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-600 block mb-1">Label (optional)</label>
+            <Input placeholder="e.g. Main Admin" value={form.label}
+              onChange={e => setForm(f => ({ ...f, label: e.target.value }))} />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-600 block mb-1">Password <span className="text-red-500">*</span></label>
             <div className="relative">
-              <Input type={showPass ? 'text' : 'password'} placeholder="Password (min 8 chars)"
+              <Input type={showPass ? 'text' : 'password'} placeholder="Min 8 characters"
                 value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
-              <button onClick={() => setShowPass(!showPass)}
+              <button type="button" onClick={() => setShowPass(!showPass)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                 {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <Input type="password" placeholder="Confirm password"
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-600 block mb-1">Confirm Password <span className="text-red-500">*</span></label>
+            <Input type="password" placeholder="Re-enter password"
               value={form.confirmPassword} onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))} />
           </div>
-          <Button onClick={handleCreate} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+          {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{error}</p>}
+          <Button onClick={handleCreate} disabled={saving} className="w-full bg-blue-600 hover:bg-blue-700">
             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <KeyRound className="w-4 h-4 mr-2" />}
             Create Credential
           </Button>
