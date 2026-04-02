@@ -218,19 +218,21 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-6 pb-6">
         {user ? (
           <>
-            {/* Daily Tasks — always visible */}
-            <div className="grid lg:grid-cols-2 gap-4 mb-4">
-              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 text-white flex items-center justify-between gap-4">
-                <div>
-                  <p className="font-bold text-base">📋 Your Daily To-Do List</p>
-                  <p className="text-indigo-100 text-xs mt-1">Earn $3 · Refer a friend · Use PPC widget · Download extension</p>
-                </div>
-                <Link to={createPageUrl('DailyTodoList')}>
-                  <Button size="sm" className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold flex-shrink-0">
-                    View <ArrowRight className="ml-1 w-3 h-3" />
-                  </Button>
-                </Link>
+            {/* Daily Tasks banner */}
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 text-white flex items-center justify-between gap-4 mb-4">
+              <div>
+                <p className="font-bold text-base">📋 Your Daily To-Do List</p>
+                <p className="text-indigo-100 text-xs mt-1">Earn $3 · Refer a friend · Use PPC widget · Download extension</p>
               </div>
+              <Link to={createPageUrl('DailyTodoList')}>
+                <Button size="sm" className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold flex-shrink-0">
+                  View <ArrowRight className="ml-1 w-3 h-3" />
+                </Button>
+              </Link>
+            </div>
+
+            {/* AI Daily Goal — full width, no overlap */}
+            <div className="mb-4">
               <AIPersonalizedDailyGoal user={user} />
             </div>
 
