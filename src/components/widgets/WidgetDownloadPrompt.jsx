@@ -3,14 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Download, X, Trophy, DollarSign, Gift } from 'lucide-react';
 import { toast } from 'sonner';
 
-const OPT_OUT_KEY = 'gamergain_widget_download_opted_out';
+const DISMISS_KEY = 'gamergain_widget_banner_dismissed_at';
 
 export default function WidgetDownloadPrompt() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const optedOut = localStorage.getItem(OPT_OUT_KEY);
-    if (!optedOut) setVisible(true);
+    // Show again if dismissed more than 24h ago (or never dismissed)
+    const dismissedAt = localStorage.getItem(DISMISS_KEY);
+    if (!dismissedAt) { setVisible(true); return; }
+    const hoursSince = (Date.now() - parseInt(dismissedAt, 10)) / (1000 * 60 * 60);
+    if (hoursSince >= 24) setVisible(true);
   }, []);
 
   const handleDownload = () => {
@@ -38,9 +41,8 @@ export default function WidgetDownloadPrompt() {
   };
 
   const handleOptOut = () => {
-    localStorage.setItem(OPT_OUT_KEY, '1');
+    localStorage.setItem(DISMISS_KEY, Date.now().toString());
     setVisible(false);
-    toast('Widget prompt hidden. Re-enable from your Profile settings.');
   };
 
   if (!visible) return null;
