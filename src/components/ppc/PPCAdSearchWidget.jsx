@@ -66,6 +66,18 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
     if (!searchQuery.trim()) return;
     setProductSearching(true);
     setIsExpanded(true);
+
+    // Deduct $0.05 search fee from user's balance
+    if (user?.id) {
+      const todayFeeKey = `shop_search_fee_${user.id}_${new Date().toDateString()}`;
+      if (!localStorage.getItem(todayFeeKey)) {
+        localStorage.setItem(todayFeeKey, '1');
+        const newBal = Math.max(0, (user.current_balance || 0) - 0.05);
+        base44.auth.updateMe({ current_balance: newBal }).catch(() => {});
+        toast.info('$0.05 search fee deducted from your earnings.');
+      }
+    }
+
     try {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `You are a real-time price comparison engine. Search across the web for: "${searchQuery}".
@@ -135,8 +147,18 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
 
   const handleAdClick = (ad) => {
     toast.success(`Clicked: ${ad.actual_title}`);
-    // Log the ad interaction
     base44.functions.invoke('trackAdClick', { adId: ad.ad_id, searchQuery }).catch(() => {});
+    // Auto-add to wishlist
+    if (user?.id) {
+      base44.entities.ProductWishlistItem.create({
+        user_id: user.id,
+        product_name: ad.actual_title,
+        product_description: ad.reasoning || '',
+        best_price: ad.actual_reward || 0,
+        search_query: searchQuery,
+        status: 'active',
+      }).catch(() => {});
+    }
   };
 
   const handleDownload = () => {

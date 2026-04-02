@@ -43,6 +43,7 @@ import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { useSurveyMatchNotifications } from '@/hooks/useSurveyMatchNotifications';
 import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
+import WidgetDownloadPrompt from '@/components/widgets/WidgetDownloadPrompt';
 
 // Lazy load non-critical components
 const SurveyAlertWatcher = lazy(() => import('@/components/surveys/SurveyAlertWatcher'));
@@ -464,6 +465,7 @@ export default function Layout({ children, currentPageName }) {
            {isAuthenticated && user && <PriceDropAlertBadge user={user} />}
          </Suspense>
          <SupportChatButton />
+        {isAuthenticated && <WidgetDownloadPrompt />}
 
         <LogoutPromptModal
           isOpen={showLogoutPrompt}

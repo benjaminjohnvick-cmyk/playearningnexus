@@ -15,11 +15,11 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import BNPLModal from '@/components/store/BNPLModal';
 import BNPLBanner from '@/components/store/BNPLBanner';
 
-const PLATFORM_FEE_RATE = 0.03; // 3% platform fee
 const TAX_RATE = 0.08; // 8% estimated tax
-// MARKUP_RATE defined per-instance below
+const MARKUP_RATE = 0.10; // 10% platform markup on all sales
 
-const MARKUP_RATE = 0.10; // 10% platform markup on all items
+// Credit card fee: whichever is greater — $1 flat or 3%
+const calcCreditCardFee = (price) => Math.max(1.00, price * 0.03);
 
 export default function GameCheckoutModal({ game, user, onClose, onPurchaseComplete }) {
   const [activeTab, setActiveTab] = useState('checkout');
@@ -37,9 +37,9 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
 
   const subtotal = game.price;
   const markup = parseFloat((subtotal * MARKUP_RATE).toFixed(2));
-  const platformFee = parseFloat((subtotal * PLATFORM_FEE_RATE).toFixed(2));
+  const creditCardFee = parseFloat(calcCreditCardFee(subtotal).toFixed(2));
   const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
-  const totalWithFees = parseFloat((subtotal + markup + platformFee + tax).toFixed(2));
+  const totalWithFees = parseFloat((subtotal + markup + creditCardFee + tax).toFixed(2));
   const priceWithMarkup = parseFloat((subtotal + markup).toFixed(2));
   const userBalance = user?.current_balance || 0;
   const canAffordWithBalance = userBalance >= priceWithMarkup;
@@ -153,9 +153,9 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
               </div>
               <div className="flex justify-between text-sm text-gray-500">
                 <span className="flex items-center gap-1">
-                  <Info className="w-3 h-3" /> Platform fee (3%)
+                  <Info className="w-3 h-3" /> Credit card fee ($1 or 3%, whichever is higher)
                 </span>
-                <span>${platformFee.toFixed(2)}</span>
+                <span>+${creditCardFee.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-500">
                 <span className="flex items-center gap-1">

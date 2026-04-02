@@ -46,11 +46,13 @@ const SURVEY_QUESTIONS = [
 ];
 
 const SOCIAL_PLATFORMS = [
-  { id: 'facebook',  label: 'Facebook',   color: '#1877F2' },
-  { id: 'twitter',   label: 'X / Twitter', color: '#ffffff' },
-  { id: 'instagram', label: 'Instagram',  color: '#E1306C' },
-  { id: 'snapchat',  label: 'Snapchat',   color: '#FFFC00' },
-  { id: 'tiktok',    label: 'TikTok',     color: '#ff0050' },
+  { id: 'facebook',         label: 'Facebook',         color: '#1877F2' },
+  { id: 'twitter',          label: 'X / Twitter',      color: '#ffffff' },
+  { id: 'instagram',        label: 'Instagram',        color: '#E1306C' },
+  { id: 'snapchat',         label: 'Snapchat',         color: '#FFFC00' },
+  { id: 'tiktok',           label: 'TikTok',           color: '#ff0050' },
+  { id: 'youtube',          label: 'YouTube',          color: '#FF0000' },
+  { id: 'youtube_shorts',   label: 'YouTube Shorts',   color: '#FF0000' },
 ];
 
 // ─── Million Dollar Homepage Grid Cell ────────────────────────────────────────
