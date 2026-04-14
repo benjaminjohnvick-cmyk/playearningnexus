@@ -3,13 +3,15 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe, ArrowRight } from 'lucide-react';
+import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe, ArrowRight, RefreshCw, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
 import { InteractionTracker, buildFingerprint, hasAlreadyCompleted, markCompleted } from '@/lib/clickVerification';
+import SocialAdCreator from '@/components/ppc/SocialAdCreator';
 
 const REQUIRED_DAILY_CLICKS = 16;
+const ADS_PER_PAGE = 16; // Part G: exactly 16 ads shown at a time
 const EARNINGS_PER_CLICK = 0.25; // user's share (50% of $0.50 CPC)
 
 function getDailyKey(userId) {
@@ -289,6 +291,10 @@ export default function PaidPPCAdsMosaic() {
   const [botBlocked, setBotBlocked] = useState(false);
   const [adsClickedToday, setAdsClickedToday] = useState(0);
   const [showSocialGate, setShowSocialGate] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0); // Part G: pagination
+  const [loadingNextSet, setLoadingNextSet] = useState(false);
+  const [showSocialCreator, setShowSocialCreator] = useState(false); // Part H
+  const [sessionClickedAds, setSessionClickedAds] = useState([]); // ads clicked this session
   const trackerRef = useRef(null);
 
   useEffect(() => {
@@ -323,8 +329,46 @@ export default function PaidPPCAdsMosaic() {
     }
   }, []);
 
-  const totalAds = BUSINESS_ADS.length;
-  const gridCols = Math.ceil(Math.sqrt(totalAds * 1.5));
+  // Part G: 16 ads per page, cycling through all ads
+  const currentPageAds = (() => {
+    const start = (currentPage * ADS_PER_PAGE) % BUSINESS_ADS.length;
+    const result = [];
+    for (let i = 0; i < ADS_PER_PAGE; i++) {
+      result.push(BUSINESS_ADS[(start + i) % BUSINESS_ADS.length]);
+    }
+    return result;
+  })();
+
+  const currentPageUnlocked = currentPageAds.filter(ad => unlockedAds.includes(ad.id));
+  const allCurrentPageDone = currentPageUnlocked.length === ADS_PER_PAGE;
+
+  // Auto-load next set when all 16 current ads are clicked
+  const prevAllDoneRef = useRef(false);
+  useEffect(() => {
+    if (allCurrentPageDone && !prevAllDoneRef.current && unlockedAds.length > 0) {
+      prevAllDoneRef.current = true;
+      setLoadingNextSet(true);
+      setTimeout(() => {
+        setCurrentPage(p => p + 1);
+        prevAllDoneRef.current = false;
+        setLoadingNextSet(false);
+        toast.success('🎉 All ads clicked! New set of 16 ads loaded.');
+      }, 1200);
+    }
+    if (!allCurrentPageDone) prevAllDoneRef.current = false;
+  }, [allCurrentPageDone, unlockedAds.length]);
+
+  const handleLoadMore = () => {
+    setCurrentPage(p => p + 1);
+    toast.info('New set of ads loaded!');
+  };
+
+  const handleRefreshAds = () => {
+    setCurrentPage(p => p + 1);
+    toast.info('Ads refreshed!');
+  };
+
+  const gridCols = 4; // 4×4 = 16 ads always
 
   const handleAdClick = (ad) => {
     if (!user) {
@@ -433,6 +477,7 @@ export default function PaidPPCAdsMosaic() {
       }).catch(() => {});
 
       setSurveyDone(true);
+      setSessionClickedAds(prev => prev.some(a => a.id === activeAd.id) ? prev : [...prev, activeAd]);
 
       if (dailyData.count === REQUIRED_DAILY_CLICKS) {
         toast.success(`🎉 Daily minimum of ${REQUIRED_DAILY_CLICKS} ads reached! You've earned $${(dailyData.count * EARNINGS_PER_CLICK).toFixed(2)} today.`);
@@ -592,30 +637,101 @@ export default function PaidPPCAdsMosaic() {
           </a>
         </div>
         <div className="flex items-center justify-between mb-3 text-xs text-gray-500">
-          <span>{totalAds} businesses · {gridCols}×{Math.ceil(totalAds / gridCols)} grid · auto-resizes as new businesses join</span>
-          <span className="text-green-400 font-semibold">{unlockedAds.length} unlocked</span>
+          <span>Showing 16 ads · Page {currentPage + 1} · 4×4 grid</span>
+          <span className="text-green-400 font-semibold">{currentPageUnlocked.length} / 16 clicked</span>
         </div>
-        <div
-          className="bg-gray-900 p-2 rounded-2xl border-2 border-gray-700 shadow-2xl"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
-            gap: '3px',
-          }}
-        >
-          {BUSINESS_ADS.map((ad) => (
-            <AdCell
-              key={ad.id}
-              ad={ad}
-              isUnlocked={unlockedAds.includes(ad.id)}
-              onClick={() => handleAdClick(ad)}
-            />
-          ))}
+
+        {/* Part G: 4×4 grid — always exactly 16 ads */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.97 }}
+            transition={{ duration: 0.25 }}
+            className="bg-gray-900 p-2 rounded-2xl border-2 border-gray-700 shadow-2xl"
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '3px' }}
+          >
+            {currentPageAds.map((ad) => (
+              <AdCell
+                key={`${currentPage}-${ad.id}`}
+                ad={ad}
+                isUnlocked={unlockedAds.includes(ad.id)}
+                onClick={() => handleAdClick(ad)}
+              />
+            ))}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Auto-load indicator */}
+        {loadingNextSet && (
+          <div className="flex items-center justify-center gap-2 mt-4 text-yellow-400 text-sm font-bold">
+            <Loader2 className="w-4 h-4 animate-spin" /> Loading next set of ads…
+          </div>
+        )}
+
+        {/* Part G: Load More + Refresh buttons */}
+        <div className="flex items-center justify-center gap-3 mt-5">
+          <Button
+            variant="outline"
+            className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white gap-2"
+            onClick={handleRefreshAds}
+          >
+            <RefreshCw className="w-4 h-4" /> Refresh Ads
+          </Button>
+          <Button
+            className="bg-yellow-500 hover:bg-yellow-400 text-black font-black gap-2"
+            onClick={handleLoadMore}
+          >
+            <ChevronDown className="w-4 h-4" /> Load More Ads
+          </Button>
         </div>
-        <p className="text-center text-gray-600 text-xs mt-3">
-          Grid auto-expands as new businesses join · Pixel size auto-adjusts · Powered by GamerGain.app
+
+        {/* Part H: Create Social Media Ads button */}
+        {sessionClickedAds.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 bg-gradient-to-r from-purple-900/60 to-pink-900/60 border-2 border-purple-500/50 rounded-2xl p-5 text-center"
+          >
+            <p className="text-white font-black text-lg mb-1">
+              🎉 You clicked {sessionClickedAds.length} ad{sessionClickedAds.length !== 1 ? 's' : ''} this session!
+            </p>
+            <p className="text-gray-300 text-sm mb-4">
+              Now create social media ads for the brands you engaged with. AI will write the posts — you review and publish.
+            </p>
+            <div className="flex flex-wrap gap-2 justify-center mb-4">
+              {sessionClickedAds.map(ad => (
+                <div key={ad.id} className="flex items-center gap-1.5 bg-gray-800/80 rounded-lg px-2 py-1">
+                  <img src={ad.image} alt={ad.brand} className="w-4 h-4 rounded object-cover" />
+                  <span className="text-xs text-white font-semibold">{ad.brand}</span>
+                </div>
+              ))}
+            </div>
+            <Button
+              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black h-12 px-8 text-base gap-2"
+              onClick={() => setShowSocialCreator(true)}
+            >
+              <Share2 className="w-5 h-5" /> Create Social Media Ads →
+            </Button>
+          </motion.div>
+        )}
+
+        <p className="text-center text-gray-600 text-xs mt-4">
+          16 ads per set · Auto-loads when all clicked · Powered by GamerGain.app
         </p>
       </div>
+      {/* Part H: Social Ad Creator modal */}
+      <AnimatePresence>
+        {showSocialCreator && (
+          <SocialAdCreator
+            clickedAds={sessionClickedAds}
+            user={user}
+            onClose={() => setShowSocialCreator(false)}
+          />
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {surveyStep >= 1 && surveyStep <= 4 && activeAd && !surveyDone && (
           <SurveyModal
