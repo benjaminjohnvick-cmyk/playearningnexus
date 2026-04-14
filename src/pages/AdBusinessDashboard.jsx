@@ -10,7 +10,7 @@ import {
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
   Globe, Image, ImageIcon, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
   MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X,
-  Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate, Gauge, RefreshCw, Zap, Eye
+  Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate, Gauge, RefreshCw, Zap, Eye, Upload
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
 import AdAnalyticsCard from '@/components/advertiser/AdAnalyticsCard';
@@ -73,9 +73,20 @@ import AdCampaignChat from '@/components/advertiser/AdCampaignChat';
 import AdPDFReportCenter from '@/components/advertiser/AdPDFReportCenter';
 import AdCreativeStudio from '@/components/advertiser/AdCreativeStudio';
 import AdAutomationSettings from '@/components/advertiser/AdAutomationSettings';
+import PartDProductUpload from '@/components/advertiser/PartDProductUpload';
+import PartELinkTracking from '@/components/advertiser/PartELinkTracking';
+import PartFAdBranding from '@/components/advertiser/PartFAdBranding';
 
 
 const TAB_GROUPS = [
+  {
+    group: '🚀 Advertiser Setup',
+    tabs: [
+      ['Part D — Product Upload', <Upload />],
+      ['Part E — Link Tracking', <Eye />],
+      ['Part F — Ad Branding', <Globe />],
+    ],
+  },
   {
     group: '📋 Campaigns',
     tabs: [
@@ -172,7 +183,7 @@ export default function AdBusinessDashboard() {
   const [showForm, setShowForm] = useState(false);
   const [showTopUp, setShowTopUp] = useState(false);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
-  const [activeTab, setActiveTab] = useState('My Ads');
+  const [activeTab, setActiveTab] = useState('Part D — Product Upload');
   const [adBalance, setAdBalance] = useState(0);
   const [prefillData, setPrefillData] = useState(null);
   const [sendingReport, setSendingReport] = useState(false);
@@ -435,6 +446,18 @@ export default function AdBusinessDashboard() {
         </div>
 
         {/* Tab content */}
+        {activeTab === 'Part D — Product Upload' && (
+          <PartDProductUpload ads={ads} userId={user.id} />
+        )}
+
+        {activeTab === 'Part E — Link Tracking' && (
+          <PartELinkTracking ads={ads} userId={user.id} />
+        )}
+
+        {activeTab === 'Part F — Ad Branding' && (
+          <PartFAdBranding />
+        )}
+
         {activeTab === 'My Ads' && (
           <>
             {ads.length === 0 && !showForm ? (
