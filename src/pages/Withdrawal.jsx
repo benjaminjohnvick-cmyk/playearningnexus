@@ -320,12 +320,29 @@ export default function Withdrawal() {
   const [method, setMethod] = useState('paypal');
   const [recipient, setRecipient] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [withdrawalEligibility, setWithdrawalEligibility] = useState({ eligible: true, adsClicked: 0, postsCreated: 0, required: 0 });
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(u => {
+    base44.auth.me().then(async u => {
       setUser(u);
       setRecipient(u.email || '');
+      // Part C: check social post requirement (20 posts per ad clicked)
+      try {
+        const [adClicks, socialPosts] = await Promise.all([
+          base44.entities.PPCTransaction.filter({ user_id: u.id, transaction_type: 'ad_click' }),
+          base44.entities.SocialMediaPost.filter({ user_id: u.id, status: 'posted' }),
+        ]);
+        const adsClicked = adClicks.length;
+        const postsCreated = socialPosts.length;
+        const required = adsClicked * 20;
+        setWithdrawalEligibility({
+          eligible: postsCreated >= required || adsClicked === 0,
+          adsClicked,
+          postsCreated,
+          required,
+        });
+      } catch {}
     }).catch(() => base44.auth.redirectToLogin());
   }, []);
 
@@ -484,6 +501,35 @@ export default function Withdrawal() {
           </TabsList>
 
           <TabsContent value="withdraw" className="space-y-4 mt-4">
+            {/* Part C: Social post requirement gate */}
+            {!withdrawalEligibility.eligible && (
+              <Card className="border-2 border-orange-300 bg-orange-50">
+                <CardContent className="p-5">
+                  <div className="flex items-start gap-3">
+                    <Info className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-orange-900 mb-1">Social Post Requirement Not Met</p>
+                      <p className="text-sm text-orange-700 mb-2">
+                        To withdraw, you must create <strong>20 social media posts per ad clicked</strong>.
+                        You've clicked <strong>{withdrawalEligibility.adsClicked} ads</strong>, requiring <strong>{withdrawalEligibility.required} posts</strong>.
+                        You've created <strong>{withdrawalEligibility.postsCreated}</strong> so far.
+                        <span className="block mt-1 font-semibold">
+                          {withdrawalEligibility.required - withdrawalEligibility.postsCreated} more post{withdrawalEligibility.required - withdrawalEligibility.postsCreated !== 1 ? 's' : ''} needed.
+                        </span>
+                      </p>
+                      <p className="text-xs text-orange-600 mb-3">
+                        Use the AI Content Hub to auto-generate social ads for the products you clicked — AI copies product images, creates captions with your earnings, and posts for you.
+                      </p>
+                      <a href="/AIContentHub">
+                        <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
+                          <Zap className="w-3.5 h-3.5 mr-1" /> Create Social Posts with AI →
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -566,7 +612,7 @@ export default function Withdrawal() {
                     </div>
 
                     <Button onClick={handleWithdraw}
-                      disabled={submitting || !amount || parseFloat(amount) < MIN_WITHDRAWAL || parseFloat(amount) > balance}
+                      disabled={submitting || !amount || parseFloat(amount) < MIN_WITHDRAWAL || parseFloat(amount) > balance || !withdrawalEligibility.eligible}
                       className="w-full bg-green-600 hover:bg-green-700 h-12 text-base">
                       {submitting
                         ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Submitting…</>

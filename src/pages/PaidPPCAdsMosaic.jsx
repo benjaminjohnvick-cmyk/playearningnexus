@@ -3,10 +3,46 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe } from 'lucide-react';
+import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
 import { InteractionTracker, buildFingerprint, hasAlreadyCompleted, markCompleted } from '@/lib/clickVerification';
+
+const REQUIRED_DAILY_CLICKS = 16;
+const EARNINGS_PER_CLICK = 0.25; // user's share (50% of $0.50 CPC)
+
+function getDailyKey(userId) {
+  return `ppc_daily_clicks_${userId}_${new Date().toDateString()}`;
+}
+
+function getTodayClickCount(userId) {
+  const data = JSON.parse(localStorage.getItem(getDailyKey(userId)) || '{"count":0,"ids":[]}');
+  return data;
+}
+
+function recordDailyClick(userId, adId) {
+  const key = getDailyKey(userId);
+  const data = getTodayClickCount(userId);
+  if (!data.ids.includes(adId)) {
+    data.count = (data.count || 0) + 1;
+    data.ids = [...(data.ids || []), adId];
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+  return data;
+}
+
+function hasClickedTodayFor24h(userId, adId) {
+  // Each ad can only be clicked once per 24h
+  const key = `ppc_ad_click_${userId}_${adId}`;
+  const ts = localStorage.getItem(key);
+  if (!ts) return false;
+  return Date.now() - parseInt(ts) < 24 * 60 * 60 * 1000;
+}
+
+function markAdClicked24h(userId, adId) {
+  localStorage.setItem(`ppc_ad_click_${userId}_${adId}`, Date.now().toString());
+}
 
 const BUSINESS_ADS = [
   { id: 1,  brand: 'Nike',       tagline: 'Just Do It',                 image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop',  site: 'https://nike.com',        color: '#111111' },
@@ -105,7 +141,7 @@ function AdCell({ ad, isUnlocked, onClick }) {
             ) : (
               <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg p-2 text-center">
                 <p className="text-yellow-400 text-[11px] font-bold">🔒 Answer 4 questions</p>
-                <p className="text-yellow-300 text-[10px]">Earn $0.40 · Unlock this ad</p>
+                <p className="text-yellow-300 text-[10px]">Earn ${EARNINGS_PER_CLICK.toFixed(2)} · Unlock this ad</p>
               </div>
             )}
           </motion.div>
@@ -115,7 +151,7 @@ function AdCell({ ad, isUnlocked, onClick }) {
   );
 }
 
-function SurveyModal({ ad, step, onAnswer, onClose }) {
+function SurveyModal({ ad, step, onAnswer, onClose, adsClickedToday }) {
   const question = step >= 1 && step <= 4 ? SURVEY_QUESTIONS[step - 1] : null;
   if (!question || !ad) return null;
   return (
@@ -133,11 +169,15 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
         className="bg-gray-900 border border-gray-700 rounded-3xl shadow-2xl max-w-sm w-full p-6"
         onClick={e => e.stopPropagation()}
       >
-        <div className="text-center mb-3">
+        {/* Task counter top-right */}
+        <div className="flex items-center justify-between mb-3">
           <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
-            className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center justify-center gap-1">
+            className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center gap-1">
             <Globe className="w-3 h-3" /> GamerGain.app
           </a>
+          <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg px-2 py-1 text-xs font-bold text-yellow-300">
+            Tasks completed: {adsClickedToday} of {REQUIRED_DAILY_CLICKS}
+          </div>
         </div>
         <div className="flex items-center gap-3 mb-5 bg-gray-800 rounded-2xl p-3">
           <img src={ad.image} alt={ad.brand} className="w-14 h-14 object-cover rounded-xl flex-shrink-0" />
@@ -170,15 +210,16 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
           ))}
         </div>
         <p className="text-center text-gray-500 text-[10px] mt-4">
-          You earn $0.20 · GamerGain earns $0.20 · Business gets discovered
+          You earn ${EARNINGS_PER_CLICK.toFixed(2)} · GamerGain earns ${EARNINGS_PER_CLICK.toFixed(2)} · Business gets discovered
         </p>
       </motion.div>
     </motion.div>
   );
 }
 
-function SuccessModal({ ad, onVisit, onBack }) {
+function SuccessModal({ ad, onVisit, onBack, adsClickedToday }) {
   if (!ad) return null;
+  const remaining = Math.max(0, REQUIRED_DAILY_CLICKS - adsClickedToday);
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -192,13 +233,26 @@ function SuccessModal({ ad, onVisit, onBack }) {
         className="bg-gray-900 border border-green-500 rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center"
         style={{ boxShadow: '0 0 40px rgba(34,197,94,0.25)' }}
       >
-        <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
-          className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center justify-center gap-1 mb-4">
-          <Globe className="w-3 h-3" /> GamerGain.app
-        </a>
+        <div className="flex items-center justify-between mb-4">
+          <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
+            className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center gap-1">
+            <Globe className="w-3 h-3" /> GamerGain.app
+          </a>
+          <div className={`rounded-lg px-2 py-1 text-xs font-bold border ${adsClickedToday >= REQUIRED_DAILY_CLICKS ? 'bg-green-500/20 border-green-500/40 text-green-300' : 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300'}`}>
+            Tasks completed: {adsClickedToday} of {REQUIRED_DAILY_CLICKS}
+          </div>
+        </div>
         <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-3" />
-        <h3 className="text-2xl font-black text-white mb-1">🎉 +$0.20 Earned!</h3>
-        <p className="text-gray-400 text-sm mb-5">Survey complete. You've unlocked <span className="text-white font-bold">{ad.brand}</span></p>
+        <h3 className="text-2xl font-black text-white mb-1">🎉 +${EARNINGS_PER_CLICK.toFixed(2)} Earned!</h3>
+        {remaining > 0 && (
+          <p className="text-yellow-400 text-xs font-semibold mb-1">
+            {remaining} more ad{remaining !== 1 ? 's' : ''} needed to reach today's minimum
+          </p>
+        )}
+        {remaining === 0 && (
+          <p className="text-green-400 text-xs font-semibold mb-1">✅ Daily minimum reached! You can keep clicking for more earnings.</p>
+        )}
+        <p className="text-gray-400 text-sm mb-4">Ad clicked! You've unlocked <span className="text-white font-bold">{ad.brand}</span></p>
         <div className="bg-gray-800 rounded-2xl p-4 mb-5 text-left">
           <img src={ad.image} alt={ad.brand} className="w-full h-32 object-cover rounded-xl mb-3" />
           <p className="font-black text-white text-lg">{ad.brand}</p>
@@ -223,6 +277,7 @@ function SuccessModal({ ad, onVisit, onBack }) {
 }
 
 export default function PaidPPCAdsMosaic() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [activeAd, setActiveAd] = useState(null);
   const [surveyStep, setSurveyStep] = useState(0);
@@ -232,10 +287,29 @@ export default function PaidPPCAdsMosaic() {
   const [unlockedAds, setUnlockedAds] = useState([]);
   const [referrerId, setReferrerId] = useState(null);
   const [botBlocked, setBotBlocked] = useState(false);
+  const [adsClickedToday, setAdsClickedToday] = useState(0);
+  const [showSocialGate, setShowSocialGate] = useState(false);
   const trackerRef = useRef(null);
 
   useEffect(() => {
-    base44.auth.me().then(u => setUser(u)).catch(() => {});
+    base44.auth.me().then(async u => {
+      setUser(u);
+      const daily = getTodayClickCount(u.id);
+      setAdsClickedToday(daily.count || 0);
+
+      // Part B: Check if user has connected social media — if not, show gate
+      const socialKey = `social_checked_${u.id}`;
+      if (!localStorage.getItem(socialKey)) {
+        try {
+          const conns = await base44.entities.SocialMediaConnection.filter({ user_id: u.id, is_active: true });
+          if (conns.length === 0) {
+            setShowSocialGate(true);
+          } else {
+            localStorage.setItem(socialKey, '1');
+          }
+        } catch {}
+      }
+    }).catch(() => {});
     const saved = JSON.parse(localStorage.getItem('unlocked_ppc_ads') || '[]');
     setUnlockedAds(saved);
     const params = new URLSearchParams(window.location.search);
@@ -258,12 +332,17 @@ export default function PaidPPCAdsMosaic() {
       base44.auth.redirectToLogin();
       return;
     }
-    if (unlockedAds.includes(ad.id)) {
+    // If already unlocked and 24h cooldown is expired, allow revisit
+    if (unlockedAds.includes(ad.id) && hasClickedTodayFor24h(user.id, ad.id)) {
+      toast.info(`⏰ You can click ${ad.brand} again in 24 hours.`);
+      return;
+    }
+    if (unlockedAds.includes(ad.id) && !hasClickedTodayFor24h(user.id, ad.id)) {
       window.open(ad.site, '_blank');
       return;
     }
-    if (hasAlreadyCompleted(ad.id)) {
-      toast.error('You already completed this survey in this session.');
+    if (hasClickedTodayFor24h(user.id, ad.id)) {
+      toast.info(`⏰ You already clicked ${ad.brand} today. Come back in 24 hours.`);
       return;
     }
     setBotBlocked(false);
@@ -299,19 +378,44 @@ export default function PaidPPCAdsMosaic() {
     setLoading(true);
     setSurveyStep(0);
     try {
-      await base44.auth.updateMe({ total_earnings: (user?.total_earnings || 0) + 0.20 });
-      setEarned(prev => prev + 0.20);
+      // $0.25 user share of $0.50 CPC
+      const earning = EARNINGS_PER_CLICK;
+      await base44.auth.updateMe({
+        total_earnings: (user?.total_earnings || 0) + earning,
+        current_balance: (user?.current_balance || 0) + earning,
+      });
+      setEarned(prev => prev + earning);
+
+      // Track daily click count
+      const dailyData = recordDailyClick(user.id, activeAd.id);
+      setAdsClickedToday(dailyData.count);
+
+      // Mark 24h cooldown for this ad
+      markAdClicked24h(user.id, activeAd.id);
 
       const activeRef = referrerId || localStorage.getItem('adgrid_referrer');
       if (activeRef && user && activeRef !== user.id) {
         await base44.entities.SocialMediaPost.create({
           user_id: activeRef,
           platform: 'adgrid_referral',
-          content: `Referral credit: user ${user.id} completed a survey on the ad grid`,
+          content: `Referral credit: user ${user.id} completed a PPC ad click on the ad grid`,
           status: 'referral_credit',
           posted_at: new Date().toISOString(),
         }).catch(() => null);
       }
+
+      // Track as PPCTransaction for social post requirement (Part C)
+      await base44.entities.PPCTransaction.create({
+        user_id: user.id,
+        transaction_type: 'ad_click',
+        amount: earning,
+        net_amount: earning,
+        description: `PPC ad click — ${activeAd.brand}`,
+        status: 'completed',
+        ad_brand: activeAd.brand,
+        ad_image: activeAd.image,
+        ad_site: activeAd.site,
+      }).catch(() => null);
 
       markCompleted(activeAd.id);
       const newUnlocked = [...unlockedAds, activeAd.id];
@@ -319,19 +423,20 @@ export default function PaidPPCAdsMosaic() {
       localStorage.setItem('unlocked_ppc_ads', JSON.stringify(newUnlocked));
       
       // Auto-add to wishlist
-      try {
-        await base44.entities.ProductWishlistItem.create({
-          user_id: user.id,
-          product_id: `ad_${activeAd.id}`,
-          product_name: activeAd.brand,
-          product_image: activeAd.image,
-          product_url: activeAd.site,
-          source: 'mosaic_ad',
-        });
-        toast.success(`✨ Added ${activeAd.brand} to your wishlist!`);
-      } catch {}
+      base44.entities.ProductWishlistItem.create({
+        user_id: user.id,
+        product_id: `ad_${activeAd.id}`,
+        product_name: activeAd.brand,
+        product_image: activeAd.image,
+        product_url: activeAd.site,
+        source: 'mosaic_ad',
+      }).catch(() => {});
 
       setSurveyDone(true);
+
+      if (dailyData.count === REQUIRED_DAILY_CLICKS) {
+        toast.success(`🎉 Daily minimum of ${REQUIRED_DAILY_CLICKS} ads reached! You've earned $${(dailyData.count * EARNINGS_PER_CLICK).toFixed(2)} today.`);
+      }
     } catch (e) {
       toast.error('Error: ' + e.message);
     }
@@ -354,8 +459,56 @@ export default function PaidPPCAdsMosaic() {
     }
   };
 
+  const handleSocialConnected = () => {
+    localStorage.setItem(`social_checked_${user?.id}`, '1');
+    setShowSocialGate(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-950 text-white">
+      {/* Part B: Social media gate modal */}
+      <AnimatePresence>
+        {showSocialGate && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 z-[999] flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
+              className="bg-gray-900 border border-purple-500 rounded-3xl shadow-2xl max-w-md w-full p-8 text-center"
+              style={{ boxShadow: '0 0 60px rgba(168,85,247,0.3)' }}
+            >
+              <div className="text-5xl mb-4">📱</div>
+              <h2 className="text-2xl font-black text-white mb-2">Step B — Connect Social Media</h2>
+              <p className="text-gray-300 text-sm mb-4">
+                Before accessing the PPC Ad Grid, you must connect your social media accounts.
+                This is required to create promotional posts for ads you click (Part C).
+              </p>
+              <div className="grid grid-cols-2 gap-2 mb-5 text-left">
+                {['Facebook', 'YouTube / Shorts', 'Instagram', 'Snapchat', 'TikTok', 'X / Twitter'].map(p => (
+                  <div key={p} className="flex items-center gap-2 text-xs text-gray-300">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                    {p}
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mb-5">AI will automatically create posts for each ad you click.</p>
+              <Button
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white h-12 font-bold mb-3"
+                onClick={() => navigate('/SocialMediaSetup')}
+              >
+                Connect Social Media Now <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+              <button
+                onClick={handleSocialConnected}
+                className="text-gray-500 text-xs hover:text-gray-400 underline"
+              >
+                I already connected my accounts — skip
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="bg-red-700 text-center py-2 text-sm font-bold tracking-wide sticky top-0 z-40">
         🎮 <a href="https://gamergain.app" className="underline hover:text-yellow-300">GamerGain.app</a>
         {' '}— Click an ad · Answer 4 questions ($0.40) · Earn $0.20 · Visit the business
@@ -370,20 +523,44 @@ export default function PaidPPCAdsMosaic() {
         </h1>
         <p className="text-gray-300 text-sm max-w-2xl mx-auto mb-2">
           Every thumbnail is a real business. <span className="text-yellow-400 font-bold">Click any ad</span>, answer
-          4 survey questions worth <span className="text-yellow-400 font-bold">$0.10 each ($0.40 total)</span>,
-          and <span className="text-green-400 font-bold">you earn $0.20</span>.
-          The other $0.20 goes to GamerGain. Then visit the business!
+          4 survey questions, and <span className="text-green-400 font-bold">earn ${EARNINGS_PER_CLICK.toFixed(2)} per ad</span> (your 50% of $0.50 CPC).
+          Click <span className="text-yellow-400 font-bold">{REQUIRED_DAILY_CLICKS} ads/day</span> to meet the mandatory minimum of $4/day. Each ad limited to once per 24 hours.
         </p>
         <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-red-400 font-bold text-sm hover:text-red-300 mb-4">
           <Globe className="w-4 h-4" /> gamergain.app
         </a>
+        {/* Daily progress bar */}
+        <div className="max-w-sm mx-auto mb-4">
+          <div className="flex items-center justify-between text-xs mb-1">
+            <span className="text-gray-400">Daily mandatory clicks</span>
+            <span className={`font-bold ${adsClickedToday >= REQUIRED_DAILY_CLICKS ? 'text-green-400' : 'text-yellow-400'}`}>
+              {adsClickedToday} / {REQUIRED_DAILY_CLICKS}
+            </span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-3">
+            <div
+              className={`h-3 rounded-full transition-all duration-500 ${adsClickedToday >= REQUIRED_DAILY_CLICKS ? 'bg-green-500' : 'bg-yellow-400'}`}
+              style={{ width: `${Math.min(100, (adsClickedToday / REQUIRED_DAILY_CLICKS) * 100)}%` }}
+            />
+          </div>
+          {adsClickedToday < REQUIRED_DAILY_CLICKS ? (
+            <p className="text-yellow-400 text-xs text-center mt-1 font-semibold">
+              ⚠️ Click {REQUIRED_DAILY_CLICKS - adsClickedToday} more ad{REQUIRED_DAILY_CLICKS - adsClickedToday !== 1 ? 's' : ''} to meet today's mandatory minimum
+            </p>
+          ) : (
+            <p className="text-green-400 text-xs text-center mt-1 font-semibold">✅ Daily minimum met! Keep clicking for bonus earnings.</p>
+          )}
+        </div>
         <div className="flex items-center justify-center gap-3 flex-wrap mb-4">
           {earned > 0 && (
             <Badge className="bg-green-600 text-white text-sm px-3 py-1 font-bold">
               💰 Earned today: ${earned.toFixed(2)}
             </Badge>
           )}
+          <Badge className="bg-yellow-600 text-white text-sm px-3 py-1 font-bold">
+            ${EARNINGS_PER_CLICK.toFixed(2)} per click · {REQUIRED_DAILY_CLICKS} clicks required/day
+          </Badge>
           <Button size="sm" onClick={handleShareGrid} className="bg-purple-600 hover:bg-purple-700 gap-1">
             <Share2 className="w-4 h-4" /> Share This Grid
           </Button>
@@ -404,10 +581,10 @@ export default function PaidPPCAdsMosaic() {
       <div className="max-w-5xl mx-auto px-4 pb-16">
         <div className="border-2 border-yellow-500/60 rounded-2xl p-4 mb-5 text-center bg-yellow-500/10">
           <p className="text-yellow-400 font-black text-sm md:text-base">
-            🖱️ Click any ad thumbnail → Answer 4 survey questions ($0.10 each = $0.40 total)
+            🖱️ Click any ad → Answer 4 survey questions → Earn <strong>${EARNINGS_PER_CLICK.toFixed(2)}</strong> per ad
           </p>
           <p className="text-yellow-300/80 text-xs mt-1">
-            Unlock the business info & site link · You earn <strong>$0.20</strong> · GamerGain earns <strong>$0.20</strong>
+            Required: Click <strong>{REQUIRED_DAILY_CLICKS} ads/day</strong> (minimum $8 total · your share = $4) · Each ad clickable once per 24 hours
           </p>
           <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-red-400 text-xs font-bold mt-2 hover:text-red-300">
@@ -446,6 +623,7 @@ export default function PaidPPCAdsMosaic() {
             step={surveyStep}
             onAnswer={handleAnswer}
             onClose={() => { setActiveAd(null); setSurveyStep(0); }}
+            adsClickedToday={adsClickedToday}
           />
         )}
         {surveyDone && activeAd && (
@@ -453,6 +631,7 @@ export default function PaidPPCAdsMosaic() {
             ad={activeAd}
             onVisit={handleVisitSite}
             onBack={() => { setActiveAd(null); setSurveyDone(false); }}
+            adsClickedToday={adsClickedToday}
           />
         )}
         {loading && (

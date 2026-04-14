@@ -76,6 +76,16 @@ export default function Layout({ children, currentPageName }) {
           const currentUser = await base44.auth.me();
           setUser(currentUser);
           initTracker(currentUser.id);
+
+          // Part A: Redirect to PPC ads page on first visit of the day
+          const ppcRedirectKey = `ppc_daily_redirect_${currentUser.id}_${new Date().toDateString()}`;
+          const currentPath = window.location.pathname;
+          const skipPaths = ['/PaidPPCAdsMosaic', '/SocialMediaSetup', '/CompleteProfile', '/social-auth-callback'];
+          if (!localStorage.getItem(ppcRedirectKey) && !skipPaths.some(p => currentPath.startsWith(p))) {
+            localStorage.setItem(ppcRedirectKey, '1');
+            window.location.replace('/PaidPPCAdsMosaic');
+            return;
+          }
         } catch (error) {
           console.error('Error fetching user:', error);
         }
