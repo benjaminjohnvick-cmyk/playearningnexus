@@ -28,6 +28,7 @@ import RealtimeFraudMonitor from '../components/admin/RealtimeFraudMonitor';
 import PartnerTiersPanel from '../components/admin/PartnerTiersPanel';
 import PPCAbTestManager from '../components/admin/PPCAbTestManager';
 import AdminCredentialsPanel from '../components/admin/AdminCredentialsPanel';
+import ProductPriceManager from '../components/admin/ProductPriceManager';
 import FeedbackAdminDashboard from './FeedbackAdminDashboard';
 import RetentionRiskPanel from '../components/admin/RetentionRiskPanel';
 import SurveyABTestDashboard from '../components/admin/SurveyABTestDashboard';
@@ -198,6 +199,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="partner_tiers">🏅 Partner Tiers</TabsTrigger>
             <TabsTrigger value="ab_tests">🧪 A/B Tests</TabsTrigger>
             <TabsTrigger value="feedback">📋 Feedback</TabsTrigger>
+            <TabsTrigger value="product_prices">💲 Product Prices</TabsTrigger>
             <TabsTrigger value="credentials">🔐 Credentials</TabsTrigger>
           </TabsList>
 
@@ -310,6 +312,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="feedback">
             <FeedbackAdminDashboard embedded />
+          </TabsContent>
+
+          <TabsContent value="product_prices">
+            <ProductPriceManager />
           </TabsContent>
 
           <TabsContent value="credentials">

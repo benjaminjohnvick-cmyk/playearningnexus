@@ -3,7 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, CheckCircle, Clock, XCircle, Package, Image, Tag, DollarSign, Megaphone, ShoppingBag, Gamepad2, FileDigit } from 'lucide-react';
+import { Upload, CheckCircle, Clock, XCircle, Package, Image, Tag, DollarSign, Megaphone, ShoppingBag, Gamepad2, FileDigit, Edit2, Check, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 const CATEGORIES = [
   { value: 'puzzle', label: '🧩 Puzzle', fields: ['difficulty', 'levels_count'] },
@@ -78,6 +79,9 @@ export default function SellerUpload() {
   const [submitted, setSubmitted] = useState(false);
   const [mySubmissions, setMySubmissions] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [editingPriceId, setEditingPriceId] = useState(null);
+  const [editPriceValue, setEditPriceValue] = useState('');
+  const [savingPrice, setSavingPrice] = useState(false);
 
   // Ad-specific form
   const [adForm, setAdForm] = useState({
@@ -104,6 +108,17 @@ export default function SellerUpload() {
   const loadSubmissions = async (userId) => {
     const results = await base44.entities.PendingProduct.filter({ seller_id: userId });
     setMySubmissions(results.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at)));
+  };
+
+  const saveSellerPrice = async (sub) => {
+    const newPrice = parseFloat(editPriceValue);
+    if (isNaN(newPrice) || newPrice < 0) { toast.error('Enter a valid price'); return; }
+    setSavingPrice(true);
+    await base44.entities.PendingProduct.update(sub.id, { price: newPrice });
+    toast.success(`Price updated to $${newPrice.toFixed(2)}`);
+    setEditingPriceId(null);
+    setSavingPrice(false);
+    if (user) loadSubmissions(user.id);
   };
 
   // Sync category to product type
@@ -451,8 +466,35 @@ export default function SellerUpload() {
                             <Badge className={sc.color}><StatusIcon className="w-3 h-3 mr-1" />{sc.label}</Badge>
                           </div>
                           <p className="text-slate-500 text-sm mb-3 line-clamp-2">{sub.description}</p>
-                          <div className="flex flex-wrap gap-3 text-sm">
-                            <span className="text-indigo-600 font-semibold">${sub.price}</span>
+                          <div className="flex flex-wrap items-center gap-3 text-sm">
+                            {editingPriceId === sub.id ? (
+                              <div className="flex items-center gap-1">
+                                <span className="text-indigo-600 font-semibold">$</span>
+                                <input
+                                  type="number"
+                                  value={editPriceValue}
+                                  onChange={e => setEditPriceValue(e.target.value)}
+                                  className="w-24 border-2 border-indigo-400 rounded px-2 py-0.5 text-sm font-bold focus:outline-none"
+                                  min="0" step="0.01" autoFocus
+                                />
+                                <button onClick={() => saveSellerPrice(sub)} disabled={savingPrice}
+                                  className="p-1 rounded bg-green-600 text-white hover:bg-green-700">
+                                  <Check className="w-3 h-3" />
+                                </button>
+                                <button onClick={() => setEditingPriceId(null)}
+                                  className="p-1 rounded bg-gray-200 text-gray-600 hover:bg-gray-300">
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1">
+                                <span className="text-indigo-600 font-semibold">${sub.price}</span>
+                                <button onClick={() => { setEditingPriceId(sub.id); setEditPriceValue(String(sub.price)); }}
+                                  className="p-1 rounded hover:bg-indigo-50 text-indigo-400 hover:text-indigo-600" title="Edit price">
+                                  <Edit2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
                             <span className="text-slate-400">{sub.category}</span>
                             {sub.ai_compliance_score && <span className="text-green-600 font-medium">Score: {sub.ai_compliance_score}/100</span>}
                           </div>
