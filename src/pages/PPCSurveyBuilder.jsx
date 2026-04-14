@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { FileText, Wand2, Users, DollarSign, AlertCircle, Check, Trash2, Plus } from 'lucide-react';
+import SurveyPricingTiers from '@/components/ppc/SurveyPricingTiers';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -120,7 +121,9 @@ export default function PPCSurveyBuilder() {
           <p className="text-gray-600">Create surveys with AI and earn money from respondents</p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <SurveyPricingTiers />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-8">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="builder">
               <Wand2 className="w-4 h-4 mr-2" /> Create Survey
