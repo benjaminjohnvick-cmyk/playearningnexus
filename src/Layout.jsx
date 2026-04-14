@@ -80,8 +80,8 @@ export default function Layout({ children, currentPageName }) {
         initTracker(currentUser.id);
 
         // Show PPC welcome popup once per session
-        if (!sessionStorage.getItem('ppc_popup_shown')) {
-          sessionStorage.setItem('ppc_popup_shown', '1');
+        if (!sessionStorage.getItem('ppc_popup_shown_v2')) {
+          sessionStorage.setItem('ppc_popup_shown_v2', '1');
           setShowPPCPopup(true);
         }
 
