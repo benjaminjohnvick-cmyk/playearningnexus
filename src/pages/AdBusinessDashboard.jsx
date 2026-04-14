@@ -76,12 +76,14 @@ import AdAutomationSettings from '@/components/advertiser/AdAutomationSettings';
 import PartDProductUpload from '@/components/advertiser/PartDProductUpload';
 import PartELinkTracking from '@/components/advertiser/PartELinkTracking';
 import PartFAdBranding from '@/components/advertiser/PartFAdBranding';
+import PPCGridPricing from '@/components/advertiser/PPCGridPricing';
 
 
 const TAB_GROUPS = [
   {
     group: '🚀 Advertiser Setup',
     tabs: [
+      ['💳 Ad Grid Pricing', <DollarSign />],
       ['Part D — Product Upload', <Upload />],
       ['Part E — Link Tracking', <Eye />],
       ['Part F — Ad Branding', <Globe />],
@@ -183,7 +185,7 @@ export default function AdBusinessDashboard() {
   const [showForm, setShowForm] = useState(false);
   const [showTopUp, setShowTopUp] = useState(false);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
-  const [activeTab, setActiveTab] = useState('Part D — Product Upload');
+  const [activeTab, setActiveTab] = useState('💳 Ad Grid Pricing');
   const [adBalance, setAdBalance] = useState(0);
   const [prefillData, setPrefillData] = useState(null);
   const [sendingReport, setSendingReport] = useState(false);
@@ -446,6 +448,13 @@ export default function AdBusinessDashboard() {
         </div>
 
         {/* Tab content */}
+        {activeTab === '💳 Ad Grid Pricing' && (
+          <PPCGridPricing
+            user={user}
+            onActivated={() => { setActiveTab('Part D — Product Upload'); }}
+          />
+        )}
+
         {activeTab === 'Part D — Product Upload' && (
           <PartDProductUpload ads={ads} userId={user.id} />
         )}
