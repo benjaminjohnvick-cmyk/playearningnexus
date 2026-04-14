@@ -44,6 +44,7 @@ import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { useSurveyMatchNotifications } from '@/hooks/useSurveyMatchNotifications';
 import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
 import WidgetDownloadPrompt from '@/components/widgets/WidgetDownloadPrompt';
+import PPCWelcomePopup from '@/components/user/PPCWelcomePopup';
 
 // Lazy load non-critical components
 const SurveyAlertWatcher = lazy(() => import('@/components/surveys/SurveyAlertWatcher'));
@@ -64,6 +65,7 @@ export default function Layout({ children, currentPageName }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLogoutPrompt, setShowLogoutPrompt] = useState(false);
+  const [showPPCPopup, setShowPPCPopup] = useState(false);
   const [promptShownThisSession, setPromptShownThisSession] = useState(false);
   const [logoutContext, setLogoutContext] = useState({});
 
@@ -73,9 +75,15 @@ export default function Layout({ children, currentPageName }) {
       setIsAuthenticated(authed);
       if (authed) {
         try {
-          const currentUser = await base44.auth.me();
-          setUser(currentUser);
-          initTracker(currentUser.id);
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+        initTracker(currentUser.id);
+
+        // Show PPC welcome popup once per session
+        if (!sessionStorage.getItem('ppc_popup_shown')) {
+          sessionStorage.setItem('ppc_popup_shown', '1');
+          setShowPPCPopup(true);
+        }
 
 
         } catch (error) {
@@ -468,6 +476,8 @@ export default function Layout({ children, currentPageName }) {
          </Suspense>
          <SupportChatButton />
         {isAuthenticated && <WidgetDownloadPrompt />}
+
+        {showPPCPopup && <PPCWelcomePopup onClose={() => setShowPPCPopup(false)} />}
 
         <LogoutPromptModal
           isOpen={showLogoutPrompt}
