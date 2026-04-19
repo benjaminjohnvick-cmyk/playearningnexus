@@ -85,6 +85,7 @@ const CompleteProfile = lazy(() => import('./pages/CompleteProfile'));
 const AdminCredentials = lazy(() => import('./pages/AdminCredentials'));
 const AdminGlobalSettings = lazy(() => import('./pages/AdminGlobalSettings'));
 const AdminAuditLogs = lazy(() => import('./pages/AdminAuditLogs'));
+const Quests = lazy(() => import('./pages/Quests'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -239,6 +240,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdminCredentials" element={<LayoutWrapper currentPageName="AdminCredentials"><AdminCredentials /></LayoutWrapper>} />
       <Route path="/AdminGlobalSettings" element={<LayoutWrapper currentPageName="AdminGlobalSettings"><AdminGlobalSettings /></LayoutWrapper>} />
       <Route path="/AdminAuditLogs" element={<LayoutWrapper currentPageName="AdminAuditLogs"><AdminAuditLogs /></LayoutWrapper>} />
+      <Route path="/Quests" element={<LayoutWrapper currentPageName="Quests"><Quests /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

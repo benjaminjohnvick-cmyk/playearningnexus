@@ -37,6 +37,8 @@ import EngagementTierModule from '../components/dashboard/EngagementTierModule';
 import SurveyAlertCenter from '../components/surveys/SurveyAlertCenter';
 import SurveyHeatmap from '../components/dashboard/SurveyHeatmap';
 import TierBadge from '../components/dashboard/TierBadge';
+import SocialActivityFeed from '../components/dashboard/SocialActivityFeed';
+import DeveloperInsightsTab from '../components/developer/DeveloperInsightsTab';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -354,10 +356,14 @@ export default function UserDashboard() {
 
         {/* Profit Insights Tab */}
         <Tabs defaultValue="feed" className="mb-8">
-          <TabsList>
+          <TabsList className="flex-wrap h-auto gap-1">
             <TabsTrigger value="feed">Social Feed</TabsTrigger>
+            <TabsTrigger value="community">Community</TabsTrigger>
             <TabsTrigger value="profit" className="flex items-center gap-1">
               <BarChart3 className="w-4 h-4" /> Profit Insights
+            </TabsTrigger>
+            <TabsTrigger value="devinsights" className="flex items-center gap-1">
+              <TrendingUp className="w-4 h-4" /> Dev Insights
             </TabsTrigger>
             <TabsTrigger value="groups">Groups</TabsTrigger>
           </TabsList>
@@ -372,6 +378,16 @@ export default function UserDashboard() {
               <div>
                 <EnhancedPointsSystem user={user} recentActivities={recentActivities} />
               </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="community">
+            <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+              <SocialActivityFeed />
+            </div>
+          </TabsContent>
+          <TabsContent value="devinsights">
+            <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+              <DeveloperInsightsTab user={user} />
             </div>
           </TabsContent>
           <TabsContent value="groups">
