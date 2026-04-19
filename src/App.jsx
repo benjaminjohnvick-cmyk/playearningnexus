@@ -86,6 +86,8 @@ const AdminCredentials = lazy(() => import('./pages/AdminCredentials'));
 const AdminGlobalSettings = lazy(() => import('./pages/AdminGlobalSettings'));
 const AdminAuditLogs = lazy(() => import('./pages/AdminAuditLogs'));
 const Quests = lazy(() => import('./pages/Quests'));
+const ChatRooms = lazy(() => import('./pages/ChatRooms'));
+const AdMarketplace = lazy(() => import('./pages/AdMarketplace'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -241,6 +243,8 @@ const AuthenticatedApp = () => {
       <Route path="/AdminGlobalSettings" element={<LayoutWrapper currentPageName="AdminGlobalSettings"><AdminGlobalSettings /></LayoutWrapper>} />
       <Route path="/AdminAuditLogs" element={<LayoutWrapper currentPageName="AdminAuditLogs"><AdminAuditLogs /></LayoutWrapper>} />
       <Route path="/Quests" element={<LayoutWrapper currentPageName="Quests"><Quests /></LayoutWrapper>} />
+      <Route path="/ChatRooms" element={<LayoutWrapper currentPageName="ChatRooms"><ChatRooms /></LayoutWrapper>} />
+      <Route path="/AdMarketplace" element={<LayoutWrapper currentPageName="AdMarketplace"><AdMarketplace /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
