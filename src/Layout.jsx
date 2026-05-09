@@ -443,11 +443,7 @@ export default function Layout({ children, currentPageName }) {
         {/* PPC Widget Top Bar */}
          {isAuthenticated && user && (
            <div className="sticky top-0 z-40 bg-white border-b border-red-200 shadow-sm">
-             <div className="max-w-7xl mx-auto px-4 py-2">
-               <Suspense fallback={null}>
-                 <PPCAdSearchWidget variant="compact" />
-               </Suspense>
-             </div>
+             <PPCAdSearchWidget variant="compact" />
            </div>
          )}
 

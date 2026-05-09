@@ -204,9 +204,10 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
               <Input
                 placeholder="Search any product — compare prices across Amazon, Walmart & more..."
                 value={searchQuery}
-                onChange={handleSearch}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleProductSearch(); }}
-                className="pl-9 pr-4 text-sm h-9 rounded-full bg-white"
+                className="pl-9 pr-4 text-sm h-9 rounded-full bg-white text-gray-900"
+                autoComplete="off"
               />
             </div>
             <button
