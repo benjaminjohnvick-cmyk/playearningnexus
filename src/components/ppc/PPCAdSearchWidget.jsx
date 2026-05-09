@@ -20,7 +20,7 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSocialManager, setShowSocialManager] = useState(false);
-  const [searchMode, setSearchMode] = useState('surveys'); // 'surveys' | 'products'
+  const [searchMode, setSearchMode] = useState('products'); // 'surveys' | 'products'
   const [productResults, setProductResults] = useState(null);
   const [productSearching, setProductSearching] = useState(false);
 
@@ -205,11 +205,11 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
               <Input
-                placeholder={searchMode === 'products' ? 'Search any product — compare prices...' : 'Search surveys, ads & more...'}
+                placeholder={searchMode === 'products' ? 'Search any product to compare prices across stores...' : 'Search surveys, ads & more...'}
                 value={searchQuery}
                 onChange={handleSearch}
                 onClick={() => setIsExpanded(true)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && searchMode === 'products') handleProductSearch(); }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { if (searchMode === 'products') handleProductSearch(); else setIsExpanded(true); } }}
                 className="pl-9 pr-4 text-sm h-9 rounded-full bg-white"
               />
             </div>
