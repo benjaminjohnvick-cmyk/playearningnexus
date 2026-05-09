@@ -11,8 +11,9 @@ import {
   DollarSign, Clock, CheckCircle2, XCircle,
   Loader2, Send, ArrowDownCircle, RefreshCw, Info,
   CreditCard, Wallet, Copy, ChevronDown, ChevronUp, Shield,
-  TrendingUp, Zap, BarChart2
+  TrendingUp, Zap, BarChart2, ShoppingBag, Search, ArrowRight, Lock
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import TransactionHistory from '@/components/earnings/TransactionHistory';
 import PayoutTimeline from '@/components/payout/PayoutTimeline';
 import SmartPayoutTips from '@/components/payout/SmartPayoutTips';
@@ -501,6 +502,73 @@ export default function Withdrawal() {
           </TabsList>
 
           <TabsContent value="withdraw" className="space-y-4 mt-4">
+            {/* Non-business user notice */}
+            {user && !['admin', 'developer', 'survey_creator', 'ppc_advertiser'].includes(user.role) && (
+              <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 via-white to-indigo-50 shadow-md">
+                <CardContent className="p-5">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                      <Lock className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-purple-900 text-base mb-1">Cash Withdrawals Are for Business Users</p>
+                      <p className="text-sm text-purple-700">
+                        Direct cash payouts are reserved for verified business accounts — developers, survey creators, and PPC advertisers.
+                        <strong className="block mt-1">But your earnings don't go to waste!</strong>
+                        You can use your balance to search for and buy any product online, delivered right through the site.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Product search graphic / CTA */}
+                  <div className="rounded-xl border-2 border-purple-200 bg-white p-4">
+                    <p className="text-xs font-semibold text-purple-500 uppercase tracking-wide mb-3">How to spend your earnings</p>
+                    <div className="flex flex-col sm:flex-row items-center gap-3 text-sm text-gray-600">
+                      {/* Step 1 */}
+                      <div className="flex flex-col items-center gap-1.5 text-center flex-1">
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                          <Search className="w-5 h-5 text-indigo-600" />
+                        </div>
+                        <span className="font-semibold text-gray-800">Search Any Product</span>
+                        <span className="text-xs text-gray-400">Find millions of items from top retailers</span>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-purple-300 hidden sm:block flex-shrink-0" />
+                      {/* Step 2 */}
+                      <div className="flex flex-col items-center gap-1.5 text-center flex-1">
+                        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                          <ShoppingBag className="w-5 h-5 text-green-600" />
+                        </div>
+                        <span className="font-semibold text-gray-800">Buy With Your Balance</span>
+                        <span className="text-xs text-gray-400">Use your GamerGain earnings at checkout</span>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-purple-300 hidden sm:block flex-shrink-0" />
+                      {/* Step 3 */}
+                      <div className="flex flex-col items-center gap-1.5 text-center flex-1">
+                        <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                          <CheckCircle2 className="w-5 h-5 text-amber-600" />
+                        </div>
+                        <span className="font-semibold text-gray-800">Get It Delivered</span>
+                        <span className="text-xs text-gray-400">We order it on your behalf — straight to your door</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                      <Link to="/Wishlist" className="flex-1">
+                        <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white gap-2">
+                          <Search className="w-4 h-4" /> Search & Buy Products →
+                        </Button>
+                      </Link>
+                      <Link to="/Store" className="flex-1">
+                        <Button variant="outline" className="w-full border-purple-300 text-purple-700 hover:bg-purple-50 gap-2">
+                          <ShoppingBag className="w-4 h-4" /> Browse the Store
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Part C: Social post requirement gate */}
             {!withdrawalEligibility.eligible && (
               <Card className="border-2 border-orange-300 bg-orange-50">
