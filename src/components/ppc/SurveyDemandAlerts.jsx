@@ -135,7 +135,7 @@ export default function SurveyDemandAlerts({ user }) {
       <div className="relative">
         <button
           onClick={() => { setPanelOpen(p => !p); setAlertCount(0); }}
-          className="relative w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center shadow-md hover:shadow-lg transition-all"
+          className="relative w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center hover:opacity-90 transition-all"
         >
           {alertCount > 0
             ? <BellRing className="w-5 h-5 text-white animate-bounce" />
