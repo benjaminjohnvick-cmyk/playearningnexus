@@ -502,21 +502,34 @@ export default function Withdrawal() {
           </TabsList>
 
           <TabsContent value="withdraw" className="space-y-4 mt-4">
-            {/* Non-business user notice */}
-            {user && !['admin', 'developer', 'survey_creator', 'ppc_advertiser'].includes(user.role) && (
+            {/* Non-business user notice — always visible, messaging adapts by role */}
+            {user && (
               <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 via-white to-indigo-50 shadow-md">
                 <CardContent className="p-5">
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                      <Lock className="w-5 h-5 text-purple-600" />
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${['admin', 'developer', 'survey_creator', 'ppc_advertiser'].includes(user.role) ? 'bg-green-100' : 'bg-purple-100'}`}>
+                      {['admin', 'developer', 'survey_creator', 'ppc_advertiser'].includes(user.role)
+                        ? <CheckCircle2 className="w-5 h-5 text-green-600" />
+                        : <Lock className="w-5 h-5 text-purple-600" />}
                     </div>
                     <div>
-                      <p className="font-bold text-purple-900 text-base mb-1">Cash Withdrawals Are for Business Users</p>
-                      <p className="text-sm text-purple-700">
-                        Direct cash payouts are reserved for verified business accounts — developers, survey creators, and PPC advertisers.
-                        <strong className="block mt-1">But your earnings don't go to waste!</strong>
-                        You can use your balance to search for and buy any product online, delivered right through the site.
-                      </p>
+                      {['admin', 'developer', 'survey_creator', 'ppc_advertiser'].includes(user.role) ? (
+                        <>
+                          <p className="font-bold text-green-900 text-base mb-1">✅ You're a Business User — Cash Withdrawals Available</p>
+                          <p className="text-sm text-green-700">
+                            As a verified business account, you can withdraw your earnings directly to PayPal, Venmo, Cash App, or bank transfer below.
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="font-bold text-purple-900 text-base mb-1">Cash Withdrawals Are for Business Users</p>
+                          <p className="text-sm text-purple-700">
+                            Direct cash payouts are reserved for verified business accounts — developers, survey creators, and PPC advertisers.
+                            <strong className="block mt-1">But your earnings don't go to waste!</strong>
+                            You can use your balance to search for and buy any product online, delivered right through the site.
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
 
