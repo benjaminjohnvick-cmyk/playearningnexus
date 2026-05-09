@@ -91,6 +91,14 @@ Deno.serve(async (req) => {
       created_at: new Date().toISOString(),
     }).catch(() => null);
 
+    // Auto-register as business client
+    base44.asServiceRole.functions.invoke('autoRegisterBusinessClient', {
+      user_id: user.id,
+      service_type: `PPC Grid Subscription (${plan})`,
+      amount_paid: planConfig.amount / 100,
+      description: planConfig.label,
+    }).catch(() => null);
+
     return Response.json({ success: true, plan, ...result });
   } catch (error) {
     return Response.json({ success: false, error: error.message }, { status: 500 });

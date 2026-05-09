@@ -45,6 +45,14 @@ Deno.serve(async (req) => {
         status: 'completed',
       });
 
+      // Auto-register as business client
+      base44.asServiceRole.functions.invoke('autoRegisterBusinessClient', {
+        user_id: user.id,
+        service_type: 'Survey Creation',
+        amount_paid: totalAmount,
+        description: `Survey: "${surveyTitle}" — ${minSampleSize} responses`,
+      }).catch(() => null);
+
       return Response.json({
         success: true,
         payment_intent_id: paymentIntent.id,

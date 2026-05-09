@@ -71,6 +71,14 @@ Deno.serve(async (req) => {
       status: newBudgetRemaining <= 0 && !cpiRecord.auto_recharge_enabled ? 'out_of_budget' : 'active'
     });
 
+    // Auto-register as business client on first CPI charge
+    base44.asServiceRole.functions.invoke('autoRegisterBusinessClient', {
+      user_id: user.id,
+      service_type: 'Install CPI Campaign',
+      amount_paid: CPI_COST,
+      description: `CPI charge for app ${appId} — $${CPI_COST} per install`,
+    }).catch(() => null);
+
     return Response.json({
       success: true,
       install_charged: true,
