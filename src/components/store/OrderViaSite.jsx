@@ -21,7 +21,9 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
 
   const basePrice = product.price_with_markup || (product.price * 1.1);
   const markupLabel = '(includes 10% platform fee)';
-  const canAfford = (user?.current_balance || 0) >= basePrice;
+  const withdrawalFeeReserve = basePrice * 0.10;
+  const totalRequired = basePrice + withdrawalFeeReserve;
+  const canAfford = (user?.current_balance || 0) >= totalRequired;
   const bnplBalance = user?.bnpl_active ? (user?.bnpl_credit_limit || 0) : 0;
   const canAffordBnpl = bnplBalance >= basePrice;
 
@@ -163,7 +165,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
             {/* Pay with balance */}
             <div className={`rounded-xl border-2 p-4 ${canAfford ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
               <p className="font-semibold text-sm text-gray-800 mb-1">Survey Balance</p>
-              <p className="text-xs text-gray-500 mb-2">Available: <strong className="text-green-700">${(user?.current_balance || 0).toFixed(2)}</strong></p>
+              <p className="text-xs text-gray-500 mb-2">Available: <strong className="text-green-700">${(user?.current_balance || 0).toFixed(2)}</strong> · Required: <strong className="text-gray-800">${totalRequired.toFixed(2)}</strong> <span className="text-gray-400">(item + 10% fee reserve)</span></p>
               <Button
                 className="w-full bg-green-600 hover:bg-green-700"
                 disabled={!canAfford}
@@ -171,7 +173,11 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
               >
                 Pay ${basePrice.toFixed(2)} with Survey Balance
               </Button>
-              {!canAfford && <p className="text-xs text-red-500 mt-1">Need ${(basePrice - (user?.current_balance || 0)).toFixed(2)} more in earnings</p>}
+              {!canAfford && (
+                <p className="text-xs text-red-500 mt-1">
+                  Need ${(totalRequired - (user?.current_balance || 0)).toFixed(2)} more — requires ${basePrice.toFixed(2)} for item + ${withdrawalFeeReserve.toFixed(2)} withdrawal fee reserve
+                </p>
+              )}
             </div>
 
             {user?.bnpl_active && (
