@@ -89,6 +89,10 @@ const Quests = lazy(() => import('./pages/Quests'));
 const ChatRooms = lazy(() => import('./pages/ChatRooms'));
 const AdMarketplace = lazy(() => import('./pages/AdMarketplace'));
 const AIOrderFulfillmentDashboard = lazy(() => import('./pages/AIOrderFulfillmentDashboard'));
+const MarketTrendReport = lazy(() => import('./pages/MarketTrendReport'));
+const DeveloperDisputeCenter = lazy(() => import('./pages/DeveloperDisputeCenter'));
+const AIPayoutSchedulerPage = lazy(() => import('./pages/AIPayoutSchedulerPage'));
+const AIFeedbackABDashboard = lazy(() => import('./pages/AIFeedbackABDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -247,6 +251,10 @@ const AuthenticatedApp = () => {
       <Route path="/ChatRooms" element={<LayoutWrapper currentPageName="ChatRooms"><ChatRooms /></LayoutWrapper>} />
       <Route path="/AdMarketplace" element={<LayoutWrapper currentPageName="AdMarketplace"><AdMarketplace /></LayoutWrapper>} />
       <Route path="/AIOrderFulfillmentDashboard" element={<LayoutWrapper currentPageName="AIOrderFulfillmentDashboard"><AIOrderFulfillmentDashboard /></LayoutWrapper>} />
+      <Route path="/MarketTrendReport" element={<LayoutWrapper currentPageName="MarketTrendReport"><MarketTrendReport /></LayoutWrapper>} />
+      <Route path="/DeveloperDisputeCenter" element={<LayoutWrapper currentPageName="DeveloperDisputeCenter"><DeveloperDisputeCenter /></LayoutWrapper>} />
+      <Route path="/AIPayoutSchedulerPage" element={<LayoutWrapper currentPageName="AIPayoutSchedulerPage"><AIPayoutSchedulerPage /></LayoutWrapper>} />
+      <Route path="/AIFeedbackABDashboard" element={<LayoutWrapper currentPageName="AIFeedbackABDashboard"><AIFeedbackABDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

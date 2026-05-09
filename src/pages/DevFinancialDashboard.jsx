@@ -9,10 +9,12 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, Legend
 } from 'recharts';
+import { Link } from 'react-router-dom';
 import {
   Loader2, DollarSign, TrendingUp, Clock, CreditCard,
   ArrowUpRight, ArrowDownRight, Wallet, CheckCircle, AlertCircle,
-  Building2, Smartphone, ChevronRight, Download, Zap, BarChart2
+  Building2, Smartphone, ChevronRight, Download, Zap, BarChart2,
+  Scale, FlaskConical
 } from 'lucide-react';
 
 
@@ -158,6 +160,26 @@ export default function DevFinancialDashboard() {
           <Button variant="outline" size="sm" className="gap-2 border-green-200 text-green-700 hover:bg-green-50">
             <Download className="w-4 h-4" /> Export Report
           </Button>
+        </div>
+
+        {/* Quick Access Tools */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { to: '/AIPayoutSchedulerPage', icon: Zap, label: 'AI Payout Scheduler', desc: 'Optimal timing', color: 'text-green-600', bg: 'bg-green-50 hover:bg-green-100' },
+            { to: '/MarketTrendReport', icon: BarChart2, label: 'Market Trend Report', desc: 'Weekly ROI insights', color: 'text-indigo-600', bg: 'bg-indigo-50 hover:bg-indigo-100' },
+            { to: '/DeveloperDisputeCenter', icon: Scale, label: 'Dispute Center', desc: 'AI resolution', color: 'text-red-600', bg: 'bg-red-50 hover:bg-red-100' },
+            { to: '/AIFeedbackABDashboard', icon: FlaskConical, label: 'A/B Intelligence', desc: 'Survey-driven tests', color: 'text-purple-600', bg: 'bg-purple-50 hover:bg-purple-100' },
+          ].map(item => (
+            <Link key={item.to} to={item.to}>
+              <div className={`p-3 rounded-xl border border-transparent transition-colors cursor-pointer ${item.bg} flex items-center gap-2`}>
+                <item.icon className={`w-5 h-5 flex-shrink-0 ${item.color}`} />
+                <div className="min-w-0">
+                  <p className={`text-xs font-bold ${item.color} truncate`}>{item.label}</p>
+                  <p className="text-xs text-gray-400 truncate">{item.desc}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
 
         {/* KPI Row */}
