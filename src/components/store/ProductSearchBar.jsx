@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Upload, X } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Search, Upload, X, Zap } from "lucide-react";
 import { base44 } from '@/api/base44Client';
 import { toast } from "sonner";
+import BestPriceBadge from '@/components/store/BestPriceBadge';
 
 export default function ProductSearchBar({ onSearchResults, onClose }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchImage, setSearchImage] = useState(null);
   const [searching, setSearching] = useState(false);
+  const [aiPricingEnabled, setAiPricingEnabled] = useState(true);
+  const [engineLoading, setEngineLoading] = useState(false);
+  const [bestPrice, setBestPrice] = useState(null);
+  const [bestVendor, setBestVendor] = useState(null);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -30,6 +37,19 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
     }
 
     setSearching(true);
+    setBestPrice(null);
+    setBestVendor(null);
+
+    // Run AI pricing engine in parallel if enabled
+    let enginePromise = null;
+    if (aiPricingEnabled) {
+      setEngineLoading(true);
+      enginePromise = base44.functions.invoke('aiPriceEngine', {
+        product_name: searchQuery,
+        image_url: searchImage || undefined
+      }).catch(() => null);
+    }
+
     try {
       const prompt = `You are a real-time price comparison engine. Search across the web for: "${searchQuery}".
 
@@ -78,14 +98,27 @@ Return AT LEAST 6 listings if they exist. Sort the listings array from lowest pr
       });
 
       if (result.products && result.products.length > 0) {
-        // Ensure sorted lowest to highest
         const sorted = [...result.products].sort((a, b) => (a.price || 0) - (b.price || 0));
-        onSearchResults(sorted, searchQuery, searchImage);
+
+        // Wait for AI engine result and surface Best Price badge
+        let engineData = null;
+        if (enginePromise) {
+          const engineRes = await enginePromise;
+          engineData = engineRes?.data || null;
+          if (engineData?.best_price_amount && engineData?.best_price_vendor) {
+            setBestPrice(engineData.best_price_amount);
+            setBestVendor(engineData.best_price_vendor);
+          }
+          setEngineLoading(false);
+        }
+
+        onSearchResults(sorted, searchQuery, searchImage, engineData);
       } else {
         toast.error('No products found');
       }
     } catch (error) {
       toast.error('Search failed. Please try again.');
+      setEngineLoading(false);
     } finally {
       setSearching(false);
     }
@@ -99,7 +132,33 @@ Return AT LEAST 6 listings if they exist. Sort the listings array from lowest pr
           <X className="w-4 h-4" />
         </Button>
       </div>
-      
+
+      {/* AI Pricing Engine toggle */}
+      <div className="flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg px-3 py-2 mb-3">
+        <div className="flex items-center gap-2">
+          <Zap className={`w-4 h-4 ${aiPricingEnabled ? 'text-green-600' : 'text-gray-400'}`} />
+          <div>
+            <Label htmlFor="ai-pricing-toggle" className="text-xs font-semibold text-gray-800 cursor-pointer">
+              AI Pricing Engine
+            </Label>
+            <p className="text-[10px] text-gray-500">Find lowest price across all retailers</p>
+          </div>
+        </div>
+        <Switch
+          id="ai-pricing-toggle"
+          checked={aiPricingEnabled}
+          onCheckedChange={setAiPricingEnabled}
+          className="data-[state=checked]:bg-green-600"
+        />
+      </div>
+
+      {/* Best Price badge — shows after results load */}
+      {(engineLoading || bestPrice) && (
+        <div className="mb-3">
+          <BestPriceBadge loading={engineLoading} bestPrice={bestPrice} bestVendor={bestVendor} />
+        </div>
+      )}
+
       <p className="text-xs text-gray-600 mb-3">
         Don't have the product you want? Search for it here.
       </p>

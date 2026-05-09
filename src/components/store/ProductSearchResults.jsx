@@ -5,6 +5,7 @@ import { X, Heart, ShoppingBag, Loader2, ExternalLink, CheckCircle, XCircle, Tre
 import { base44 } from '@/api/base44Client';
 import { toast } from "sonner";
 import OrderViasite from '@/components/store/OrderViaSite';
+import AIPricingEnginePanel from '@/components/store/AIPricingEnginePanel';
 
 const VENDOR_COLORS = {
   amazon: 'bg-orange-100 text-orange-700 border-orange-200',
@@ -25,7 +26,7 @@ function vendorBadgeClass(vendor) {
   return 'bg-gray-100 text-gray-700 border-gray-200';
 }
 
-export default function ProductSearchResults({ products, searchQuery, searchImage, onClose, user }) {
+export default function ProductSearchResults({ products, searchQuery, searchImage, onClose, user, engineData, engineLoading }) {
   const [addingToWishlist, setAddingToWishlist] = useState(null);
   const [orderProduct, setOrderProduct] = useState(null);
 
@@ -80,6 +81,25 @@ export default function ProductSearchResults({ products, searchQuery, searchImag
           <X className="w-5 h-5" />
         </Button>
       </div>
+
+      {/* AI Pricing Engine Panel */}
+      {(engineLoading || engineData) && (
+        <AIPricingEnginePanel
+          engineData={engineData}
+          loading={engineLoading}
+          onOrderBestDeal={(listing) => setOrderProduct({
+            product_name: searchQuery,
+            name: searchQuery,
+            vendor: listing.vendor,
+            vendor_name: listing.vendor,
+            vendor_url: listing.url,
+            price: listing.price,
+            price_with_markup: (listing.total_landed_cost || listing.price) * 1.1,
+            description: `Best deal from AI Pricing Engine`,
+            image_url: ''
+          })}
+        />
+      )}
 
       {/* Best deal callout */}
       {listings.length > 0 && (

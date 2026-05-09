@@ -288,10 +288,23 @@ export default function Store() {
         <BNPLModal isOpen={showBNPL} onClose={() => setShowBNPL(false)} user={user} />
 
         {showProductSearch && (
-          <ProductSearchBar onSearchResults={(products, sq, si) => { setProductSearchResults({ products, searchQuery: sq, searchImage: si }); setShowProductSearch(false); }} onClose={() => setShowProductSearch(false)} />
+          <ProductSearchBar
+            onSearchResults={(products, sq, si, engineData) => {
+              setProductSearchResults({ products, searchQuery: sq, searchImage: si, engineData });
+              setShowProductSearch(false);
+            }}
+            onClose={() => setShowProductSearch(false)}
+          />
         )}
         {productSearchResults && (
-          <ProductSearchResults products={productSearchResults.products} searchQuery={productSearchResults.searchQuery} searchImage={productSearchResults.searchImage} user={user} onClose={() => setProductSearchResults(null)} />
+          <ProductSearchResults
+            products={productSearchResults.products}
+            searchQuery={productSearchResults.searchQuery}
+            searchImage={productSearchResults.searchImage}
+            engineData={productSearchResults.engineData}
+            user={user}
+            onClose={() => setProductSearchResults(null)}
+          />
         )}
 
         <GameAssistantWidget />
