@@ -18,9 +18,7 @@ import ProductSearchResults from '@/components/store/ProductSearchResults';
 export default function PPCAdSearchWidget({ variant = 'compact' }) {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isExpanded, setIsExpanded] = useState(false);
   const [showSocialManager, setShowSocialManager] = useState(false);
-  const [searchMode, setSearchMode] = useState('products'); // 'surveys' | 'products'
   const [productResults, setProductResults] = useState(null);
   const [productSearching, setProductSearching] = useState(false);
 
@@ -46,6 +44,8 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
     staleTime: 3000,
   });
 
+
+
   const { data: searchResults, isLoading: searchLoading } = useQuery({
     queryKey: ['ppc-search', searchQuery],
     queryFn: async () => {
@@ -53,19 +53,16 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
       const res = await base44.functions.invoke('matchAdsToSearch', { searchQuery });
       return res.data;
     },
-    enabled: !!searchQuery && !!user && isExpanded,
+    enabled: !!searchQuery && !!user && variant !== 'compact',
   });
 
   const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    if (!isExpanded) setIsExpanded(true);
+    setSearchQuery(e.target.value);
   };
 
   const handleProductSearch = async () => {
     if (!searchQuery.trim()) return;
     setProductSearching(true);
-    setIsExpanded(true);
 
     // Deduct $0.05 search fee from user's balance
     if (user?.id) {
@@ -189,92 +186,73 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
     setShowSocialManager(false);
   };
 
-  // Swagbucks-style search bar for top
+  // Unified GamerGain Search bar (always product compare mode)
   if (variant === 'compact') {
     return (
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 w-full">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+      <div className="relative bg-gradient-to-r from-blue-700 to-indigo-700 w-full">
+        <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center gap-3">
           {/* Logo/Branding */}
           <div className="flex items-center gap-2 text-white min-w-fit">
-            <Zap className="w-5 h-5" />
-            <span className="font-bold text-sm">GainerGain Search</span>
+            <Zap className="w-4 h-4" />
+            <span className="font-bold text-sm hidden sm:inline">GamerGain</span>
           </div>
 
-          {/* Search Bar */}
-          <div className="flex-1 relative flex gap-1">
+          {/* Unified Search + Compare Bar */}
+          <div className="flex-1 flex gap-1.5">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
               <Input
-                placeholder={searchMode === 'products' ? 'Search any product to compare prices across stores...' : 'Search surveys, ads & more...'}
+                placeholder="Search any product — compare prices across Amazon, Walmart & more..."
                 value={searchQuery}
                 onChange={handleSearch}
-                onClick={() => setIsExpanded(true)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { if (searchMode === 'products') handleProductSearch(); else setIsExpanded(true); } }}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleProductSearch(); }}
                 className="pl-9 pr-4 text-sm h-9 rounded-full bg-white"
               />
             </div>
-            {searchMode === 'products' && (
-              <button
-                onClick={handleProductSearch}
-                disabled={productSearching || !searchQuery.trim()}
-                className="bg-white text-blue-700 rounded-full px-3 h-9 text-xs font-bold hover:bg-blue-50 transition-all flex items-center gap-1 disabled:opacity-50 flex-shrink-0"
-              >
-                {productSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
-                {productSearching ? 'Searching...' : 'Compare'}
-              </button>
-            )}
+            <button
+              onClick={handleProductSearch}
+              disabled={productSearching || !searchQuery.trim()}
+              className="bg-green-400 text-green-900 hover:bg-green-300 rounded-full px-4 h-9 text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50 flex-shrink-0"
+            >
+              {productSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShoppingCart className="w-3.5 h-3.5" />}
+              <span className="hidden sm:inline">{productSearching ? 'Searching...' : 'Compare Prices'}</span>
+              <span className="sm:hidden">{productSearching ? '...' : 'Go'}</span>
+            </button>
           </div>
 
           {/* Animated Jackpot Counter */}
           <AnimatedJackpotCounter showAnimation={true} />
 
           {/* Social Media Button */}
-          <Button 
+          <Button
             size="sm"
             variant="ghost"
-            className="text-white hover:bg-blue-500"
+            className="text-white hover:bg-blue-500 hidden sm:flex"
             onClick={() => setShowSocialManager(true)}
-            title="Connect social media accounts and earn bonus entries"
+            title="Connect social media"
           >
             <Share2 className="w-4 h-4" />
           </Button>
 
-          {/* Search Mode Toggle */}
-          <div className="flex bg-blue-800/50 rounded-full p-0.5 gap-0.5 flex-shrink-0">
-            <button
-              onClick={() => { setSearchMode('surveys'); setProductResults(null); }}
-              className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${searchMode === 'surveys' ? 'bg-white text-blue-700' : 'text-blue-200 hover:text-white'}`}
-            >
-              Surveys
-            </button>
-            <button
-              onClick={() => { setSearchMode('products'); setIsExpanded(true); }}
-              className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${searchMode === 'products' ? 'bg-white text-blue-700' : 'text-blue-200 hover:text-white'}`}
-            >
-              <ShoppingCart className="w-3 h-3" /> Shop
-            </button>
-          </div>
-
           {/* Download Button */}
-          <Button 
+          <Button
             size="sm"
             variant="ghost"
-            className="text-white hover:bg-blue-500 ml-2"
+            className="text-white hover:bg-blue-500 hidden sm:flex"
             onClick={handleDownload}
             title="Download GainerGain Search Extension"
           >
             <Download className="w-4 h-4" />
           </Button>
 
-          {/* Google Ads Overlay Button */}
+          {/* PPC Ads Button */}
           <Link to={createPageUrl('GoogleAdsOverlay')}>
-            <Button 
+            <Button
               size="sm"
-              className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold ml-1 text-xs px-2"
-              title="Paid PPC Ads — Advertise for free and get paid to click ads"
+              className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-xs px-2"
             >
               <LayoutGrid className="w-3 h-3 mr-1" />
-              <span className="hidden sm:inline">Paid PPC Ads</span>
+              <span className="hidden sm:inline">PPC Ads</span>
             </Button>
           </Link>
         </div>
@@ -310,50 +288,9 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
           )}
         </AnimatePresence>
 
-        {/* Search Results Dropdown — Surveys mode */}
+        {/* Product Results Panel */}
         <AnimatePresence>
-          {isExpanded && searchMode === 'surveys' && (
-            <>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-72 overflow-y-auto"
-              >
-                {searchLoading && (
-                  <div className="p-4 text-center">
-                    <div className="w-6 h-6 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto" />
-                  </div>
-                )}
-                {searchResults?.matches && searchResults.matches.length > 0 ? (
-                  <div className="space-y-1 p-2">
-                    {searchResults.matches.map((ad, idx) => (
-                      <motion.button
-                        key={idx}
-                        onClick={() => handleAdClick(ad)}
-                        className="w-full text-left p-2 rounded-lg bg-white border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all"
-                        whileHover={{ x: 4 }}
-                      >
-                        <p className="text-sm font-semibold text-gray-900 truncate">{ad.actual_title}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge className="bg-green-600 text-white text-xs">${ad.actual_reward.toFixed(2)}</Badge>
-                          <Badge variant="outline" className="text-xs">{ad.relevance_score}% match</Badge>
-                        </div>
-                      </motion.button>
-                    ))}
-                  </div>
-                ) : searchQuery && !searchLoading ? (
-                  <div className="p-4 text-center text-sm text-gray-500">No ads found for "{searchQuery}"</div>
-                ) : null}
-              </motion.div>
-              <div className="fixed inset-0 z-40" onClick={() => setIsExpanded(false)} />
-            </>
-          )}
-        </AnimatePresence>
-
-        {/* Product Results Panel — Products mode */}
-        <AnimatePresence>
-          {searchMode === 'products' && productResults && (
+          {productResults && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -369,7 +306,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
                   </p>
                   <p className="text-xs text-gray-500">{productResults.products.length} stores · sorted lowest to highest</p>
                 </div>
-                <button onClick={() => { setProductResults(null); setIsExpanded(false); }} className="text-gray-400 hover:text-gray-600 p-1">
+                <button onClick={() => { setProductResults(null); }} className="text-gray-400 hover:text-gray-600 p-1">
                   <X className="w-4 h-4" />
                 </button>
               </div>

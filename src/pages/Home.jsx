@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp, Trophy, Star, Zap, Search, Package, ShoppingBag } from "lucide-react";
+import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 import AIChatbot from "../components/home/AIChatbot";
-import ProductSearchBar from '../components/store/ProductSearchBar';
-import ProductSearchResults from '../components/store/ProductSearchResults';
-import BestPriceBadge from '../components/store/BestPriceBadge';
 import { base44 } from '@/api/base44Client';
 import SupportChatButton from '../components/support/SupportChatButton';
 import RecommendedSurveys from '../components/surveys/RecommendedSurveys';
@@ -26,8 +23,7 @@ import ActiveReferralContestSection from '../components/referral/ActiveReferralC
 import PPCAdSearchWidget from '../components/ppc/PPCAdSearchWidget';
 import AIPersonalizedDailyGoal from '../components/dashboard/AIPersonalizedDailyGoal';
 import PricingSection from '../components/home/PricingSection';
-import { ChevronDown, ChevronUp, BarChart2 } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 function ExtraInfoDropdown({ user }) {
   const [open, setOpen] = useState(false);
@@ -101,11 +97,7 @@ function ExtraInfoDropdown({ user }) {
 
 export default function Home() {
   const [user, setUser] = useState(null);
-  const [showProductSearch, setShowProductSearch] = useState(false);
-  const [productSearchResults, setProductSearchResults] = useState(null);
-  const [engineLoading, setEngineLoading] = useState(false);
-  const [bestPrice, setBestPrice] = useState(null);
-  const [bestVendor, setBestVendor] = useState(null);
+
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -227,38 +219,6 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-6 pb-6">
         {user ? (
           <>
-            {/* AI Product Search + Order Fulfillment Banner */}
-            <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-5 text-white flex items-center justify-between gap-4 mb-4">
-              <div>
-                <p className="font-bold text-base flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-yellow-300" /> AI Product Search & Auto-Fulfillment
-                </p>
-                <p className="text-green-100 text-xs mt-1">
-                  Search any product — AI finds the best price across Amazon, Walmart, Best Buy &amp; more. We buy it for you automatically.
-                </p>
-                {(engineLoading || bestPrice) && (
-                  <div className="mt-2">
-                    <BestPriceBadge loading={engineLoading} bestPrice={bestPrice} bestVendor={bestVendor} />
-                  </div>
-                )}
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" className="bg-white text-green-700 hover:bg-green-50 font-bold flex-shrink-0 gap-1">
-                    <Search className="w-4 h-4" /> Search Products <ChevronDown className="w-3 h-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-52">
-                  <DropdownMenuItem onClick={() => setShowProductSearch(true)}>
-                    <Search className="w-4 h-4 mr-2 text-blue-600" /> Find a Product
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowProductSearch(true)}>
-                    <BarChart2 className="w-4 h-4 mr-2 text-green-600" /> Compare Prices
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
             {/* Daily Tasks banner */}
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 text-white flex items-center justify-between gap-4 mb-4">
               <div>
@@ -315,30 +275,7 @@ export default function Home() {
       <AIChatbot />
       <SupportChatButton />
 
-      {/* AI Product Search modals */}
-      {showProductSearch && (
-        <ProductSearchBar
-          onSearchResults={(products, sq, si, engineData) => {
-            setProductSearchResults({ products, searchQuery: sq, searchImage: si, engineData });
-            setShowProductSearch(false);
-            if (engineData?.best_price_amount) {
-              setBestPrice(engineData.best_price_amount);
-              setBestVendor(engineData.best_price_vendor);
-            }
-          }}
-          onClose={() => setShowProductSearch(false)}
-        />
-      )}
-      {productSearchResults && (
-        <ProductSearchResults
-          products={productSearchResults.products}
-          searchQuery={productSearchResults.searchQuery}
-          searchImage={productSearchResults.searchImage}
-          engineData={productSearchResults.engineData}
-          user={user}
-          onClose={() => setProductSearchResults(null)}
-        />
-      )}
+
     </div>
   );
 }
