@@ -200,11 +200,11 @@ export default function DeveloperOnboarding() {
   const finalize = async () => {
     setSaving(true);
     try {
-      // Mark business client active
+      // Keep account_status as 'pending' — AI will verify and activate/reject
       if (businessClient) {
         await base44.entities.BusinessClient.update(businessClient.id, {
-          onboarding_completed: true,
-          account_status: 'active',
+          onboarding_completed: false, // will be set true by AI if approved
+          account_status: 'pending',
         });
       }
 
@@ -229,27 +229,13 @@ export default function DeveloperOnboarding() {
         appId = created.id;
       }
 
-      // Trigger AI review + threshold check
-      const res = await base44.functions.invoke('gameVotingPipeline', {
-        action: 'on_onboarding_complete',
-        application_id: appId,
-      });
-
-      const result = res.data;
-      setCompletionResult(result);
-
-      // Send welcome email
-      await base44.integrations.Core.SendEmail({
-        to: user.email,
-        subject: '🎮 Welcome to GamerGain Developer Network!',
-        body: `<h2>Welcome, ${profile.company_name}!</h2>
-<p>Your game <strong>${assets.game_title}</strong> has been submitted and reviewed by our AI (score: ${result?.ai_score || 'N/A'}/100).</p>
-${result?.survey_launched
-  ? `<p>🎉 The community vote is now LIVE! Users are voting on which games to add.</p>`
-  : `<p>We currently have <strong>${result?.total_candidates || 0}</strong> of the ${result?.threshold || 60} candidates needed to launch community voting. We'll email you when the vote goes live!</p>`}
-<p>— GamerGain Team</p>`,
-        from_name: 'GamerGain',
+      // Trigger AI business verification (runs async — will email result)
+      base44.functions.invoke('verifyBusinessClient', {
+        business_client_id: businessClient?.id,
       }).catch(() => {});
+
+      const result = null;
+      setCompletionResult(result);
 
       setStep(5); // completion screen
     } catch (e) { toast.error(e.message); }
@@ -645,57 +631,23 @@ ${result?.survey_launched
                     <CheckCircle2 className="w-10 h-10 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-gray-900">You're In! 🎉</h2>
-                    <p className="text-gray-500 text-sm mt-1"><strong>{assets.game_title}</strong> has been submitted and AI-reviewed.</p>
+                    <h2 className="text-2xl font-black text-gray-900">Application Submitted! 🎉</h2>
+                    <p className="text-gray-500 text-sm mt-1"><strong>{assets.game_title}</strong> is now under AI review.</p>
                   </div>
 
-                  {completionResult && (
-                    <div className="space-y-3">
-                      {/* AI Score */}
-                      <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
-                        <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">AI Review Score</p>
-                        <p className={`text-4xl font-black ${completionResult.ai_score >= 70 ? 'text-green-600' : completionResult.ai_score >= 45 ? 'text-yellow-600' : 'text-red-500'}`}>
-                          {completionResult.ai_score}<span className="text-base text-gray-400">/100</span>
-                        </p>
-                        {completionResult.ai_notes && <p className="text-xs text-gray-600 mt-1">{completionResult.ai_notes}</p>}
-                      </div>
-
-                      {/* Voting status */}
-                      {completionResult.survey_launched ? (
-                        <div className="bg-green-50 border-2 border-green-400 rounded-xl p-4">
-                          <p className="text-lg font-black text-green-700">🗳️ Community Vote is LIVE!</p>
-                          <p className="text-sm text-green-600 mt-1">
-                            The 60-candidate threshold has been reached. Users are now voting on which games to add — including yours!
-                          </p>
-                          <Button className="mt-3 bg-green-600 hover:bg-green-700 w-full" onClick={() => window.location.href = '/GameVotingHub'}>
-                            See the Vote →
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-4">
-                          <p className="text-base font-bold text-amber-800">⏳ Waiting for More Candidates</p>
-                          <p className="text-sm text-amber-700 mt-1">
-                            Community voting opens once we reach <strong>60 game submissions</strong>.
-                          </p>
-                          <div className="mt-3">
-                            <div className="flex items-center justify-between text-xs text-amber-700 mb-1">
-                              <span>{completionResult.total_candidates} candidates so far</span>
-                              <span>60 needed</span>
-                            </div>
-                            <div className="w-full bg-amber-200 rounded-full h-3">
-                              <div
-                                className="bg-amber-500 h-3 rounded-full transition-all"
-                                style={{ width: `${Math.min(100, (completionResult.total_candidates / 60) * 100)}%` }}
-                              />
-                            </div>
-                            <p className="text-xs text-amber-600 mt-1.5">
-                              {completionResult.candidates_needed} more submission{completionResult.candidates_needed !== 1 ? 's' : ''} needed to launch voting
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 text-left">
+                    <p className="text-base font-bold text-amber-800 flex items-center gap-2">
+                      <Bot className="w-5 h-5" /> AI Verification In Progress
+                    </p>
+                    <p className="text-sm text-amber-700 mt-1">
+                      Our AI is reviewing your developer profile and game submission. You'll receive an email within a few minutes with the result.
+                    </p>
+                    <ul className="text-xs text-amber-600 mt-2 space-y-1 list-disc list-inside">
+                      <li>Legitimate applications are typically approved instantly</li>
+                      <li>You'll be notified at <strong>{user?.email}</strong></li>
+                      <li>Once approved, you'll have full access to the Developer Dashboard</li>
+                    </ul>
+                  </div>
 
                   <div className="flex gap-3 pt-2">
                     <Button variant="outline" className="flex-1" onClick={() => window.location.href = '/BusinessDashboard'}>
