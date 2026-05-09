@@ -26,7 +26,8 @@ import ActiveReferralContestSection from '../components/referral/ActiveReferralC
 import PPCAdSearchWidget from '../components/ppc/PPCAdSearchWidget';
 import AIPersonalizedDailyGoal from '../components/dashboard/AIPersonalizedDailyGoal';
 import PricingSection from '../components/home/PricingSection';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, BarChart2 } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 function ExtraInfoDropdown({ user }) {
   const [open, setOpen] = useState(false);
@@ -241,13 +242,21 @@ export default function Home() {
                   </div>
                 )}
               </div>
-              <Button
-                size="sm"
-                className="bg-white text-green-700 hover:bg-green-50 font-bold flex-shrink-0 gap-1"
-                onClick={() => setShowProductSearch(true)}
-              >
-                <Search className="w-4 h-4" /> Search Products
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" className="bg-white text-green-700 hover:bg-green-50 font-bold flex-shrink-0 gap-1">
+                    <Search className="w-4 h-4" /> Search Products <ChevronDown className="w-3 h-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuItem onClick={() => setShowProductSearch(true)}>
+                    <Search className="w-4 h-4 mr-2 text-blue-600" /> Find a Product
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowProductSearch(true)}>
+                    <BarChart2 className="w-4 h-4 mr-2 text-green-600" /> Compare Prices
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* Daily Tasks banner */}

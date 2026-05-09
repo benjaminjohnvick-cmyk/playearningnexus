@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal, MessageSquare, X, CreditCard, Info, Package2, Gamepad2, Zap } from "lucide-react";
+import { Search, ShoppingCart, Star, DollarSign, Filter, Check, Heart, Package, SlidersHorizontal, MessageSquare, X, CreditCard, Info, Package2, Gamepad2, Zap, ChevronDown, BarChart2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import BNPLModal from '@/components/store/BNPLModal';
 import BNPLBanner from '@/components/store/BNPLBanner';
 import ProductSearchBar from '@/components/store/ProductSearchBar';
@@ -138,9 +139,21 @@ export default function Store() {
             <p className="text-gray-500">Games · Digital Products · Physical Products · PPC Marketplace</p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <Button onClick={() => setShowProductSearch(true)} className="bg-purple-600 hover:bg-purple-700">
-              <Package className="w-4 h-4 mr-2" /> Search Products
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="bg-purple-600 hover:bg-purple-700">
+                  <Package className="w-4 h-4 mr-2" /> Search Products <ChevronDown className="w-3 h-3 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuItem onClick={() => setShowProductSearch(true)}>
+                  <Search className="w-4 h-4 mr-2 text-purple-600" /> Find a Product
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setShowProductSearch(true); }}>
+                  <BarChart2 className="w-4 h-4 mr-2 text-green-600" /> Compare Prices
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Card className="px-4 py-2 border-2 border-green-500 bg-green-50">
               <p className="text-xs text-gray-500">Balance</p>
               <p className="text-xl font-bold text-green-600">${(user.current_balance || 0).toFixed(2)}</p>
