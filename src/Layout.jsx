@@ -254,7 +254,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
 
               {/* Desktop Navigation — scrollable single row, visible md+ */}
-              <nav className="hidden md:flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar min-w-0 px-1">
+              <nav className="hidden md:flex items-center gap-0.5 flex-1 overflow-x-auto no-scrollbar min-w-0 px-1 max-w-[55%]">
                 <Link to={createPageUrl('Home')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Home' ? "default" : "ghost"} size="sm"
                     className={currentPageName === 'Home' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>

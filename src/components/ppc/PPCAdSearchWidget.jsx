@@ -190,45 +190,46 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
   if (variant === 'compact') {
     return (
       <div className="relative bg-gradient-to-r from-blue-700 to-indigo-700 w-full">
-        <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center gap-3">
+        <div className="px-3 py-2 flex items-center gap-2">
           {/* Logo/Branding */}
-          <div className="flex items-center gap-2 text-white min-w-fit">
+          <div className="flex items-center gap-1 text-white min-w-fit flex-shrink-0">
             <Zap className="w-4 h-4" />
-            <span className="font-bold text-sm hidden sm:inline">GamerGain</span>
+            <span className="font-bold text-sm hidden lg:inline">GamerGain</span>
           </div>
 
           {/* Unified Search + Compare Bar */}
-          <div className="flex-1 flex gap-1.5">
-            <div className="flex-1 relative">
+          <div className="flex-1 flex gap-1.5 min-w-0">
+            <div className="flex-1 relative min-w-0">
               <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
               <Input
-                placeholder="Search any product — compare prices across Amazon, Walmart & more..."
+                placeholder="Search any product — compare prices..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleProductSearch(); }}
-                className="pl-9 pr-4 text-sm h-9 rounded-full bg-white text-gray-900"
+                className="pl-9 pr-4 text-sm h-9 rounded-full bg-white text-gray-900 w-full"
                 autoComplete="off"
               />
             </div>
             <button
               onClick={handleProductSearch}
               disabled={productSearching || !searchQuery.trim()}
-              className="bg-green-400 text-green-900 hover:bg-green-300 rounded-full px-4 h-9 text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50 flex-shrink-0"
+              className="bg-green-400 text-green-900 hover:bg-green-300 rounded-full px-3 h-9 text-xs font-bold transition-all flex items-center gap-1 disabled:opacity-50 flex-shrink-0"
             >
               {productSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShoppingCart className="w-3.5 h-3.5" />}
-              <span className="hidden sm:inline">{productSearching ? 'Searching...' : 'Compare Prices'}</span>
-              <span className="sm:hidden">{productSearching ? '...' : 'Go'}</span>
+              <span className="hidden md:inline">{productSearching ? 'Searching...' : 'Compare'}</span>
             </button>
           </div>
 
           {/* Animated Jackpot Counter */}
-          <AnimatedJackpotCounter showAnimation={true} />
+          <div className="flex-shrink-0 hidden sm:block">
+            <AnimatedJackpotCounter showAnimation={true} />
+          </div>
 
           {/* Social Media Button */}
           <Button
             size="sm"
             variant="ghost"
-            className="text-white hover:bg-blue-500 hidden sm:flex"
+            className="text-white hover:bg-blue-500 hidden lg:flex flex-shrink-0"
             onClick={() => setShowSocialManager(true)}
             title="Connect social media"
           >
@@ -239,7 +240,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
           <Button
             size="sm"
             variant="ghost"
-            className="text-white hover:bg-blue-500 hidden sm:flex"
+            className="text-white hover:bg-blue-500 hidden lg:flex flex-shrink-0"
             onClick={handleDownload}
             title="Download GainerGain Search Extension"
           >
@@ -247,13 +248,13 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
           </Button>
 
           {/* PPC Ads Button */}
-          <Link to={createPageUrl('GoogleAdsOverlay')}>
+          <Link to={createPageUrl('GoogleAdsOverlay')} className="flex-shrink-0">
             <Button
               size="sm"
               className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-xs px-2"
             >
-              <LayoutGrid className="w-3 h-3 mr-1" />
-              <span className="hidden sm:inline">PPC Ads</span>
+              <LayoutGrid className="w-3 h-3" />
+              <span className="hidden md:inline ml-1">PPC Ads</span>
             </Button>
           </Link>
         </div>
