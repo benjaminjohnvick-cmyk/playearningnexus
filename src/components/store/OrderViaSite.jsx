@@ -45,7 +45,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
       const newBalance = (user?.current_balance || 0) - chargeAmount;
       await base44.auth.updateMe({ current_balance: Math.max(0, newBalance) });
 
-      // Create order record
+      // Create order record — funds held in escrow until AI vetting confirms delivery
       const order = await base44.entities.Order.create({
         user_id: user.id,
         product_name: product.product_name || product.name,
@@ -56,36 +56,14 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
         payment_method: method,
         vendor_name: product.vendor_name || product.vendor,
         vendor_url: product.vendor_url || product.url,
-        shipping_status: 'processing',
-        notes: `Order placed via GamerGain. PayPal Auth ID: ${ppOrderId || 'N/A'}. We will purchase this item on your behalf.`
+        shipping_status: 'pending_ai_fulfillment',
+        ai_vetting_status: 'not_started',
+        funds_released: false,
+        notes: `Order placed via GamerGain. PayPal Auth ID: ${ppOrderId || 'N/A'}. AI fulfillment initiated — funds held until delivery confirmed.`
       });
 
-      // Create admin fulfillment ticket
-      const vendorUrl = product.vendor_url || product.url || '';
-      const productName = product.product_name || product.name;
-      const fulfillLink = vendorUrl
-        ? `${vendorUrl}${vendorUrl.includes('?') ? '&' : '?'}qty=1`
-        : '(no direct link — search manually)';
-
-      await base44.entities.SupportTicket.create({
-        user_id: user.id,
-        user_email: user.email,
-        user_name: user.full_name,
-        category: 'billing',
-        priority: 'high',
-        subject: `[ORDER FULFILLMENT] ${productName}`,
-        description: `A user has placed a product search order that needs to be fulfilled.\n\n` +
-          `Order ID: ${order.id}\n` +
-          `User: ${user.full_name} (${user.email})\n` +
-          `Product: ${productName}\n` +
-          `Amount Paid: $${chargeAmount.toFixed(2)}\n` +
-          `Payment Method: ${method}\n` +
-          `PayPal Auth: ${ppOrderId || 'N/A'}\n` +
-          `Vendor: ${product.vendor_name || product.vendor || 'Unknown'}\n\n` +
-          `AUTO-FILL LINK (click to open product page):\n${fulfillLink}\n\n` +
-          `Please purchase this item and update the order shipping status.`,
-        status: 'open',
-      });
+      // Trigger AI fulfillment immediately
+      base44.functions.invoke('aiOrderFulfillment', { order_id: order.id }).catch(() => {});
 
       setStep('done');
       toast.success("Order placed! We'll purchase this for you.");

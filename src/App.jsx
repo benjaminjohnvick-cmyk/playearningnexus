@@ -88,6 +88,7 @@ const AdminAuditLogs = lazy(() => import('./pages/AdminAuditLogs'));
 const Quests = lazy(() => import('./pages/Quests'));
 const ChatRooms = lazy(() => import('./pages/ChatRooms'));
 const AdMarketplace = lazy(() => import('./pages/AdMarketplace'));
+const AIOrderFulfillmentDashboard = lazy(() => import('./pages/AIOrderFulfillmentDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -245,6 +246,7 @@ const AuthenticatedApp = () => {
       <Route path="/Quests" element={<LayoutWrapper currentPageName="Quests"><Quests /></LayoutWrapper>} />
       <Route path="/ChatRooms" element={<LayoutWrapper currentPageName="ChatRooms"><ChatRooms /></LayoutWrapper>} />
       <Route path="/AdMarketplace" element={<LayoutWrapper currentPageName="AdMarketplace"><AdMarketplace /></LayoutWrapper>} />
+      <Route path="/AIOrderFulfillmentDashboard" element={<LayoutWrapper currentPageName="AIOrderFulfillmentDashboard"><AIOrderFulfillmentDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
