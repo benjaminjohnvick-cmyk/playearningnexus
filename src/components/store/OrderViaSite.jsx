@@ -20,6 +20,8 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
   if (!product) return null;
 
   const basePrice = product.price_with_markup || (product.price * 1.1);
+  const cardSurcharge = basePrice * 0.10;
+  const cardPrice = basePrice + cardSurcharge; // +10% for credit card payments
   const markupLabel = '(includes 10% platform fee)';
   const withdrawalFeeReserve = basePrice * 0.10;
   const totalRequired = basePrice + withdrawalFeeReserve;
@@ -35,9 +37,11 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
 
   const handleOrder = async (method, ppOrderId) => {
     setSubmitting(true);
+    // Credit card payments have a 10% surcharge
+    const chargeAmount = method === 'credit_card' ? cardPrice : basePrice;
     try {
       // Deduct from balance
-      const newBalance = (user?.current_balance || 0) - basePrice;
+      const newBalance = (user?.current_balance || 0) - chargeAmount;
       await base44.auth.updateMe({ current_balance: Math.max(0, newBalance) });
 
       // Create order record
@@ -47,7 +51,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
         product_image_url: product.product_image_url || product.image_url,
         product_type: 'physical_product',
         source: 'ppc_marketplace',
-        amount: basePrice,
+        amount: chargeAmount,
         payment_method: method,
         vendor_name: product.vendor_name || product.vendor,
         vendor_url: product.vendor_url || product.url,
@@ -73,7 +77,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
           `Order ID: ${order.id}\n` +
           `User: ${user.full_name} (${user.email})\n` +
           `Product: ${productName}\n` +
-          `Amount Paid: $${basePrice.toFixed(2)}\n` +
+          `Amount Paid: $${chargeAmount.toFixed(2)}\n` +
           `Payment Method: ${method}\n` +
           `PayPal Auth: ${ppOrderId || 'N/A'}\n` +
           `Vendor: ${product.vendor_name || product.vendor || 'Unknown'}\n\n` +
@@ -121,14 +125,24 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
 
         ) : step === 'card' ? (
           <div className="space-y-4">
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2 text-sm">
-              <CreditCard className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-              <p className="text-amber-800">A card is required to verify your identity and serve as backup for this order. <strong>A $1 hold will be placed and refunded.</strong></p>
-            </div>
+            {payMethod === 'credit_card' ? (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2 text-sm">
+                <CreditCard className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-blue-800 font-semibold">Paying by credit card: <strong>${cardPrice.toFixed(2)}</strong></p>
+                  <p className="text-blue-600 text-xs mt-0.5">Includes 10% credit card processing fee (${cardSurcharge.toFixed(2)})</p>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2 text-sm">
+                <CreditCard className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <p className="text-amber-800">A card is required to verify your identity and serve as backup for this order. <strong>A $1 hold will be placed and refunded.</strong></p>
+              </div>
+            )}
             <PayPalCardCapture
               onSuccess={handleCardCaptured}
               onCancel={() => setStep('review')}
-              amount="1.00"
+              amount={payMethod === 'credit_card' ? cardPrice.toFixed(2) : '1.00'}
             />
             {submitting && (
               <div className="flex items-center justify-center gap-2 text-sm text-gray-500 py-2">
@@ -178,6 +192,20 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
                   Need ${(totalRequired - (user?.current_balance || 0)).toFixed(2)} more — requires ${basePrice.toFixed(2)} for item + ${withdrawalFeeReserve.toFixed(2)} withdrawal fee reserve
                 </p>
               )}
+            </div>
+
+            {/* Pay by Credit Card */}
+            <div className="rounded-xl border-2 border-blue-300 bg-blue-50 p-4">
+              <p className="font-semibold text-sm text-gray-800 mb-1">Credit Card</p>
+              <p className="text-xs text-gray-500 mb-2">
+                Total: <strong className="text-blue-700">${cardPrice.toFixed(2)}</strong> <span className="text-gray-400">(+10% card fee: ${cardSurcharge.toFixed(2)})</span>
+              </p>
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                onClick={() => { setPayMethod('credit_card'); setStep('card'); }}
+              >
+                <CreditCard className="w-4 h-4 mr-1" /> Pay ${cardPrice.toFixed(2)} by Credit Card
+              </Button>
             </div>
 
             {user?.bnpl_active && (
