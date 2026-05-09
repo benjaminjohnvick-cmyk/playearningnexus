@@ -25,7 +25,17 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { payoutId, recipientEmail, amount, currency = 'USD' } = await req.json();
+    // Business eligibility check
+    const BUSINESS_ROLES = ['admin', 'developer', 'survey_creator', 'ppc_advertiser'];
+    const body = await req.json();
+    const { payoutId, recipientEmail, amount, currency = 'USD', payout_type } = body;
+
+    const isBusinessRole = BUSINESS_ROLES.includes(user.role);
+    const isEligiblePayoutType = ['referral_commission', 'contest_win'].includes(payout_type);
+    if (!isBusinessRole && !isEligiblePayoutType) {
+      return Response.json({ error: 'Forbidden: You are not eligible for PayPal payouts.' }, { status: 403 });
+    }
+
     if (!payoutId || !recipientEmail || !amount) {
       return Response.json({ error: 'Missing required fields: payoutId, recipientEmail, amount' }, { status: 400 });
     }

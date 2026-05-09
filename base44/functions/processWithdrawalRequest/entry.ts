@@ -9,7 +9,15 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { amount, payment_method, payment_details } = await req.json();
+    // Business eligibility check
+    const BUSINESS_ROLES = ['admin', 'developer', 'survey_creator', 'ppc_advertiser'];
+    const { amount, payment_method, payment_details, payout_type } = await req.json();
+
+    const isBusinessRole = BUSINESS_ROLES.includes(user.role);
+    const isEligiblePayoutType = ['referral_commission', 'contest_win'].includes(payout_type);
+    if (!isBusinessRole && !isEligiblePayoutType) {
+      return Response.json({ error: 'Forbidden: You are not eligible for cash withdrawals.' }, { status: 403 });
+    }
 
     if (!amount || !payment_method) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });

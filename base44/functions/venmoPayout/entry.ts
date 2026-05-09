@@ -28,7 +28,17 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { payoutId, venmoContact, amount, currency = 'USD' } = await req.json();
+    // Business eligibility check
+    const BUSINESS_ROLES = ['admin', 'developer', 'survey_creator', 'ppc_advertiser'];
+    const body = await req.json();
+    const { payoutId, venmoContact, amount, currency = 'USD', payout_type } = body;
+
+    const isBusinessRole = BUSINESS_ROLES.includes(user.role);
+    const isEligiblePayoutType = ['referral_commission', 'contest_win'].includes(payout_type);
+    if (!isBusinessRole && !isEligiblePayoutType) {
+      return Response.json({ error: 'Forbidden: You are not eligible for Venmo payouts.' }, { status: 403 });
+    }
+
     if (!payoutId || !venmoContact || !amount) {
       return Response.json({ error: 'Missing required fields: payoutId, venmoContact, amount' }, { status: 400 });
     }

@@ -6,7 +6,16 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { amount, payment_method, payment_details } = await req.json();
+    // Business eligibility check
+    const BUSINESS_ROLES = ['admin', 'developer', 'survey_creator', 'ppc_advertiser'];
+    const { amount, payment_method, payment_details, payout_type } = await req.json();
+
+    const isBusinessRole = BUSINESS_ROLES.includes(user.role);
+    const isEligiblePayoutType = ['referral_commission', 'contest_win'].includes(payout_type);
+    if (!isBusinessRole && !isEligiblePayoutType) {
+      return Response.json({ error: 'Forbidden: You are not eligible for cash payouts.' }, { status: 403 });
+    }
+
     if (!amount || amount < 5) return Response.json({ error: 'Minimum payout is $5' }, { status: 400 });
     if (!payment_method) return Response.json({ error: 'Missing payment method' }, { status: 400 });
 
