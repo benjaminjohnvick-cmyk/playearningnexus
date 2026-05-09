@@ -14,6 +14,7 @@ const NAV_SECTIONS = [
   { group: 'Main', items: [
     { name: 'Home', icon: Home, path: 'Home', color: 'red' },
     { name: 'Store', icon: ShoppingCart, path: 'Store', color: 'red' },
+    { name: 'My Orders', icon: ShoppingCart, path: 'MyOrders', color: 'green' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', color: 'blue' },
     { name: 'Wishlist', icon: Heart, path: 'Wishlist', color: 'red' },
     { name: 'Daily Tasks', icon: FileText, path: 'DailyTodoList', color: 'red' },
