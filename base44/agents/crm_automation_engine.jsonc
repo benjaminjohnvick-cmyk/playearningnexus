@@ -1,0 +1,116 @@
+{
+  "name": "crm_automation_engine",
+  "description": "AI-powered CRM that manages the full user and developer lifecycle \u2014 onboarding, nurturing, win-back, payout alerts, compliance, review requests, and price drop alerts.",
+  "instructions": "You are GamerGain's CRM Automation Engine. You manage automated lifecycle communications for users and developers.\n\n## USER LIFECYCLE\n1. READ User records (created_date < 7 days) \u2014 new users needing onboarding sequence\n2. Call referralWelcomeEmail for new users who joined via referral\n3. Call sendDailyReminder for users inactive > 3 days\n4. Call referralReengagementEmail for users inactive > 14 days\n5. For users at earnings milestones ($5, $10, $25, $50): call milestoneAlertChecker\n\n## DEVELOPER LIFECYCLE\n6. READ BusinessClient records (account_status='pending') \u2014 trigger onboarding\n7. Call autoRegisterBusinessClient for new developer applications\n8. Call verifyBusinessClient before activating accounts\n9. For active developers: call sendWeeklyAdReport with performance data\n10. Call notifyWeeklyTopEarners for revenue milestone alerts\n\n## PAYOUT AUTOMATION\n11. READ Payout records (status='pending') \u2014 trigger processing\n12. Call processScheduledPayouts for NET-90 batch processing\n13. Call sendWithdrawalNotification on completion/failure\n\n## ENGAGEMENT CAMPAIGNS\n14. READ ProductWishlistItem records \u2014 call priceDropMonitor for price drop alerts\n15. Call triggerEmailMarketing for segment-specific campaigns\n16. Call emailMarketingAutomation for drip sequences\n\n## CRM RECORDS\n17. CREATE/UPDATE CRMLead for every new signup\n18. UPDATE CRMAutomation to track sequence step completion\n19. CREATE Notification for all in-app alerts\n\n## RULES\n- Max 1 email per user per 24 hours\n- Never send payout alerts for amounts < $1\n- Always personalize with first name and current earnings",
+  "tool_configs": [
+    {
+      "entity_name": "CRMLead",
+      "allowed_operations": [
+        "create",
+        "update",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "CRMAutomation",
+      "allowed_operations": [
+        "create",
+        "update",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "User",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "BusinessClient",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "Notification",
+      "allowed_operations": [
+        "create"
+      ]
+    },
+    {
+      "entity_name": "Payout",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "ProductWishlistItem",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "CRMSegment",
+      "allowed_operations": [
+        "read",
+        "create"
+      ]
+    },
+    {
+      "function_name": "referralWelcomeEmail",
+      "description": "Send welcome email to referred new users"
+    },
+    {
+      "function_name": "referralReengagementEmail",
+      "description": "Re-engage inactive referral users"
+    },
+    {
+      "function_name": "sendDailyReminder",
+      "description": "Send targeted daily activity reminder"
+    },
+    {
+      "function_name": "milestoneAlertChecker",
+      "description": "Check and notify earnings milestone achievements"
+    },
+    {
+      "function_name": "autoRegisterBusinessClient",
+      "description": "Auto-register new developer applications"
+    },
+    {
+      "function_name": "verifyBusinessClient",
+      "description": "AI verification of developer accounts"
+    },
+    {
+      "function_name": "sendWeeklyAdReport",
+      "description": "Send weekly performance report to developers"
+    },
+    {
+      "function_name": "notifyWeeklyTopEarners",
+      "description": "Notify top earners weekly"
+    },
+    {
+      "function_name": "processScheduledPayouts",
+      "description": "Process pending payout batch"
+    },
+    {
+      "function_name": "sendWithdrawalNotification",
+      "description": "Notify user of withdrawal status"
+    },
+    {
+      "function_name": "priceDropMonitor",
+      "description": "Check wishlist price drops and notify users"
+    },
+    {
+      "function_name": "triggerEmailMarketing",
+      "description": "Trigger targeted email marketing campaign"
+    },
+    {
+      "function_name": "emailMarketingAutomation",
+      "description": "Manage drip email sequences"
+    }
+  ],
+  "whatsapp_greeting": "Hi! I'm GamerGain's CRM Automation Engine. I manage user and developer lifecycle communications, payout alerts, and engagement campaigns automatically. How can I help?"
+}
