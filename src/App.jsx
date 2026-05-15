@@ -93,6 +93,7 @@ const MarketTrendReport = lazy(() => import('./pages/MarketTrendReport'));
 const DeveloperDisputeCenter = lazy(() => import('./pages/DeveloperDisputeCenter'));
 const AIPayoutSchedulerPage = lazy(() => import('./pages/AIPayoutSchedulerPage'));
 const AIFeedbackABDashboard = lazy(() => import('./pages/AIFeedbackABDashboard'));
+const AdFraudDashboard = lazy(() => import('./pages/AdFraudDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -255,6 +256,7 @@ const AuthenticatedApp = () => {
       <Route path="/DeveloperDisputeCenter" element={<LayoutWrapper currentPageName="DeveloperDisputeCenter"><DeveloperDisputeCenter /></LayoutWrapper>} />
       <Route path="/AIPayoutSchedulerPage" element={<LayoutWrapper currentPageName="AIPayoutSchedulerPage"><AIPayoutSchedulerPage /></LayoutWrapper>} />
       <Route path="/AIFeedbackABDashboard" element={<LayoutWrapper currentPageName="AIFeedbackABDashboard"><AIFeedbackABDashboard /></LayoutWrapper>} />
+      <Route path="/AdFraudDashboard" element={<LayoutWrapper currentPageName="AdFraudDashboard"><AdFraudDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

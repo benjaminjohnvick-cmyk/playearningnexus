@@ -163,12 +163,13 @@ export default function DevFinancialDashboard() {
         </div>
 
         {/* Quick Access Tools */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
             { to: '/AIPayoutSchedulerPage', icon: Zap, label: 'AI Payout Scheduler', desc: 'Optimal timing', color: 'text-green-600', bg: 'bg-green-50 hover:bg-green-100' },
             { to: '/MarketTrendReport', icon: BarChart2, label: 'Market Trend Report', desc: 'Weekly ROI insights', color: 'text-indigo-600', bg: 'bg-indigo-50 hover:bg-indigo-100' },
             { to: '/DeveloperDisputeCenter', icon: Scale, label: 'Dispute Center', desc: 'AI resolution', color: 'text-red-600', bg: 'bg-red-50 hover:bg-red-100' },
             { to: '/AIFeedbackABDashboard', icon: FlaskConical, label: 'A/B Intelligence', desc: 'Survey-driven tests', color: 'text-purple-600', bg: 'bg-purple-50 hover:bg-purple-100' },
+            { to: '/AdFraudDashboard', icon: Scale, label: 'Fraud Detection', desc: 'Monitor ad traffic', color: 'text-orange-600', bg: 'bg-orange-50 hover:bg-orange-100' },
           ].map(item => (
             <Link key={item.to} to={item.to}>
               <div className={`p-3 rounded-xl border border-transparent transition-colors cursor-pointer ${item.bg} flex items-center gap-2`}>
