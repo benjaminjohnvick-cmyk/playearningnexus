@@ -8,6 +8,7 @@ import { createPageUrl } from "@/utils";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 import AIChatbot from "../components/home/AIChatbot";
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/lib/AuthContext';
 import SupportChatButton from '../components/support/SupportChatButton';
 import RecommendedSurveys from '../components/surveys/RecommendedSurveys';
 import AISurveyMatchWidget from '../components/home/AISurveyMatchWidget';
@@ -96,33 +97,29 @@ function ExtraInfoDropdown({ user }) {
 }
 
 export default function Home() {
-  const [user, setUser] = useState(null);
+  // Use the shared cached user from AuthContext — no extra API call
+  const { user } = useAuth();
 
-
+  // Track referral link clicks — only fires if ?ref= param is present
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
-  }, []);
-
-  // Track referral link clicks
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const refCode = urlParams.get('ref');
-    if (refCode) {
-      const trackClick = async () => {
-        try {
-          const links = await base44.entities.CustomReferralLink.filter({ link_code: refCode });
-          if (links.length > 0) {
-            const link = links[0];
-            await base44.entities.CustomReferralLink.update(link.id, { clicks: (link.clicks || 0) + 1 });
-            localStorage.setItem('referralCode', refCode);
-            localStorage.setItem('referralTimestamp', new Date().toISOString());
-          }
-        } catch (error) {
-          console.error('Error tracking referral click:', error);
+    const refCode = new URLSearchParams(window.location.search).get('ref');
+    if (!refCode) return;
+    // Debounce: only track once per session per code
+    const key = `ref_tracked_${refCode}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+    const t = setTimeout(async () => {
+      try {
+        const links = await base44.entities.CustomReferralLink.filter({ link_code: refCode });
+        if (links.length > 0) {
+          const link = links[0];
+          await base44.entities.CustomReferralLink.update(link.id, { clicks: (link.clicks || 0) + 1 });
+          localStorage.setItem('referralCode', refCode);
+          localStorage.setItem('referralTimestamp', new Date().toISOString());
         }
-      };
-      trackClick();
-    }
+      } catch (_) {}
+    }, 2000); // defer 2s so it doesn't compete with critical calls
+    return () => clearTimeout(t);
   }, []);
 
   return (

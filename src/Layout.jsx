@@ -1,4 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
+import { useAuth } from '@/lib/AuthContext';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -59,40 +60,34 @@ const WishlistDailyNotifier = lazy(() => import('@/components/wishlist/WishlistD
 const PriceDropAlertBadge = lazy(() => import('@/components/wishlist/PriceDropAlertBadge'));
 
 export default function Layout({ children, currentPageName }) {
-  const [user, setUser] = useState(null);
+  // Use AuthContext — avoids a duplicate base44.auth.me() call on every page mount
+  const { user, isAuthenticated } = useAuth();
+  const [mountSideEffects, setMountSideEffects] = useState(false);
+
   useRealtimeNotifications(user?.id);
   useSurveyMatchNotifications(user);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLogoutPrompt, setShowLogoutPrompt] = useState(false);
   const [showPPCPopup, setShowPPCPopup] = useState(false);
   const [promptShownThisSession, setPromptShownThisSession] = useState(false);
   const [logoutContext, setLogoutContext] = useState({});
 
+  // Defer mounting of background side-effect components by 3 seconds
+  // to avoid thundering-herd of API calls on initial page load
   useEffect(() => {
-    const checkAuth = async () => {
-      const authed = await base44.auth.isAuthenticated();
-      setIsAuthenticated(authed);
-      if (authed) {
-        try {
-        const currentUser = await base44.auth.me();
-        setUser(currentUser);
-        initTracker(currentUser.id);
-
-        // Show PPC welcome popup once per session
-        if (!sessionStorage.getItem('ppc_popup_shown_v2')) {
-          sessionStorage.setItem('ppc_popup_shown_v2', '1');
-          setShowPPCPopup(true);
-        }
-
-
-        } catch (error) {
-          console.error('Error fetching user:', error);
-        }
-      }
-    };
-    checkAuth();
+    const t = setTimeout(() => setMountSideEffects(true), 3000);
+    return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      initTracker(user.id);
+      if (!sessionStorage.getItem('ppc_popup_shown_v2')) {
+        sessionStorage.setItem('ppc_popup_shown_v2', '1');
+        setShowPPCPopup(true);
+      }
+    }
+  }, [user?.id]);
 
   // Track page changes
   useEffect(() => {
@@ -109,9 +104,9 @@ export default function Layout({ children, currentPageName }) {
       const events = await base44.entities.LiveEvent.filter({ is_active: true });
       return events.filter(e => new Date(e.start_time) <= new Date(now) && new Date(e.end_time) >= new Date(now));
     },
-    enabled: isAuthenticated,
-    staleTime: 60000, // Cache for 1 minute
-    gcTime: 300000 // Keep in memory for 5 minutes
+    enabled: isAuthenticated && mountSideEffects,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 30,
   });
 
   useEffect(() => {
@@ -355,10 +350,12 @@ export default function Layout({ children, currentPageName }) {
                         <p className="text-xs font-medium text-gray-900">{user.full_name}</p>
                         <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
                       </div>
-                      <Suspense fallback={null}>
-                        <PushNotificationManager />
-                        <SurveyDemandAlerts user={user} />
-                      </Suspense>
+                      {mountSideEffects && (
+                        <Suspense fallback={null}>
+                          <PushNotificationManager />
+                          <SurveyDemandAlerts user={user} />
+                        </Suspense>
+                      )}
                       <NotificationCenter user={user} />
                     {user?.role === 'admin' && (
                       <Link to={createPageUrl('AdminDashboard')}>
@@ -440,8 +437,8 @@ export default function Layout({ children, currentPageName }) {
           )}
         </header>}
 
-        {/* PPC Widget Top Bar */}
-         {isAuthenticated && user && (
+        {/* PPC Widget Top Bar — deferred to avoid initial load spike */}
+         {isAuthenticated && user && mountSideEffects && (
            <div className="sticky top-0 z-40 bg-white border-b border-red-200 shadow-sm">
              <PPCAdSearchWidget variant="compact" />
            </div>
@@ -450,8 +447,8 @@ export default function Layout({ children, currentPageName }) {
          {/* Main Content */}
          <main>{children}</main>
 
-         {/* Global AI Daily Goal Sidebar — only on Dashboard */}
-         {isAuthenticated && user && currentPageName === 'UserDashboard' && (
+         {/* Global AI Daily Goal Sidebar — only on Dashboard, deferred */}
+         {isAuthenticated && user && currentPageName === 'UserDashboard' && mountSideEffects && (
            <div className="fixed right-4 top-32 z-30 w-80 max-h-[calc(100vh-150px)] overflow-y-auto hidden lg:block">
              <Suspense fallback={null}>
                <AIPersonalizedDailyGoal user={user} />
@@ -461,17 +458,19 @@ export default function Layout({ children, currentPageName }) {
 
          <FloatingNavSidebar currentPageName={currentPageName} />
 
-         <Suspense fallback={null}>
-           {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
-           {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
-           {isAuthenticated && user && <DailyFeedbackModal user={user} />}
-           {isAuthenticated && user && <SurveyRewardNotifier user={user} />}
-           {isAuthenticated && user && <PPCPushNotificationManager />}
-           {isAuthenticated && user && <WishlistDailyNotifier user={user} />}
-           {isAuthenticated && user && <PriceDropAlertBadge user={user} />}
-         </Suspense>
+         {mountSideEffects && (
+           <Suspense fallback={null}>
+             {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
+             {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
+             {isAuthenticated && user && <DailyFeedbackModal user={user} />}
+             {isAuthenticated && user && <SurveyRewardNotifier user={user} />}
+             {isAuthenticated && user && <PPCPushNotificationManager />}
+             {isAuthenticated && user && <WishlistDailyNotifier user={user} />}
+             {isAuthenticated && user && <PriceDropAlertBadge user={user} />}
+           </Suspense>
+         )}
          <SupportChatButton />
-        {isAuthenticated && <WidgetDownloadPrompt />}
+        {isAuthenticated && mountSideEffects && <WidgetDownloadPrompt />}
 
         {showPPCPopup && <PPCWelcomePopup onClose={() => setShowPPCPopup(false)} />}
 
