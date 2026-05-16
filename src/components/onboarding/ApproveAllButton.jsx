@@ -43,7 +43,7 @@ const MORE_INFO_ITEMS = [
   },
 ];
 
-export default function ApproveAllButton({ user, onComplete, heroMode = false }) {
+export default function ApproveAllButton({ user, onComplete, heroMode = false, heroLarge = false }) {
   const [approveOpen, setApproveOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [step, setStep] = useState('confirm'); // confirm | processing | done
@@ -243,7 +243,28 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false })
   return (
     <>
       {/* Button row */}
-      {heroMode ? (
+      {heroLarge ? (
+        // Large grid version — mirrors old SocialLoginButtons size
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-3">
+            <Button
+              onClick={() => { setApproveOpen(true); setStep('confirm'); setProgress([]); }}
+              className="bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-black h-12 text-base shadow-lg border-0 gap-2"
+            >
+              <Zap className="w-5 h-5" />
+              Sign Up in 1 Click
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setInfoOpen(true)}
+              className="border-white/50 text-white bg-white/10 hover:bg-white/20 h-12 gap-2 font-semibold"
+            >
+              <Info className="w-4 h-4" />
+              More Info — What gets connected?
+            </Button>
+          </div>
+        </div>
+      ) : heroMode ? (
         // Compact inline version for hero section
         <div className="flex gap-2 items-center">
           <Button

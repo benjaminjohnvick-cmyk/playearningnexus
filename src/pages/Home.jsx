@@ -144,10 +144,13 @@ export default function Home() {
               <p className="text-white/80 text-sm mb-4">
                 Complete surveys, earn $3+/day, build your game library. 60+ new games per year. 50/50 revenue share.
               </p>
+              {/* Sign Up in 1 Click — full size, replaces old social button grid */}
               <div className="max-w-xs mb-4">
-                <SocialLoginButtons />
+                <ApproveAllButton user={user} heroLarge />
               </div>
-              <div className="flex gap-3 flex-wrap items-center">
+              {/* Social login + nav buttons — compact row */}
+              <div className="flex gap-2 flex-wrap items-center">
+                <SocialLoginButtons compact />
                 <Link to={createPageUrl('UserDashboard')}>
                   <Button size="sm" className="bg-white text-purple-700 hover:bg-gray-100 font-bold gap-1">
                     Start Playing <ArrowRight className="w-4 h-4" />
@@ -158,7 +161,6 @@ export default function Home() {
                     For Developers
                   </Button>
                 </Link>
-                <ApproveAllButton user={user} heroMode />
               </div>
             </motion.div>
 

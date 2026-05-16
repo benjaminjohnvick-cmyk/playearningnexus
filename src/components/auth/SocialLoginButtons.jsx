@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 
-export default function SocialLoginButtons() {
+export default function SocialLoginButtons({ compact = false }) {
   const socialPlatforms = [
     { 
       id: 'google', 
@@ -43,6 +43,24 @@ export default function SocialLoginButtons() {
     sessionStorage.setItem('auto_onboard_after_login', '1');
     base44.auth.redirectToLogin(window.location.href);
   };
+
+  if (compact) {
+    return (
+      <div className="flex gap-1 flex-wrap">
+        {socialPlatforms.map(platform => (
+          <Button
+            key={platform.id}
+            size="sm"
+            onClick={() => handleSocialLogin(platform.id)}
+            className={`${platform.bgColor} ${platform.textColor} ${platform.border} px-2`}
+            variant="outline"
+          >
+            <span className="text-base">{platform.icon}</span>
+          </Button>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
