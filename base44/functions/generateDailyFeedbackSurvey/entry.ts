@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const SITE_FEATURES = [
   "PPC Marketplace & Survey Earnings",
@@ -40,6 +40,28 @@ Deno.serve(async (req) => {
       focus_areas: []
     });
 
+    // Pull top user suggestions from last 24 hours (status=pending)
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const allSuggestions = await base44.asServiceRole.entities.UserSuggestion.filter(
+      { status: 'pending' }, '-created_date', 20
+    );
+    const recentSuggestions = allSuggestions.filter(s => s.created_date >= yesterday);
+    // Also grab highest upvoted regardless of date
+    const topSuggestions = [...allSuggestions].sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0)).slice(0, 5);
+    const suggestionsToInclude = [...new Map([...recentSuggestions, ...topSuggestions].map(s => [s.id, s])).values()].slice(0, 8);
+    const suggestionText = suggestionsToInclude.length
+      ? `\n\nUSER SUGGESTIONS FROM THE COMMUNITY (last 24h + top voted):\n${suggestionsToInclude.map((s, i) => `${i + 1}. [${s.category}] "${s.suggestion}" (${s.upvotes || 0} upvotes)`).join('\n')}\nIncorporate these suggestions directly as survey questions where relevant.`
+      : '';
+
+    // Mark suggestions as added
+    for (const s of suggestionsToInclude) {
+      await base44.asServiceRole.entities.UserSuggestion.update(s.id, {
+        status: 'added_to_survey',
+        added_to_survey_id: survey.id,
+        added_to_survey_date: today
+      }).catch(() => {});
+    }
+
     // Pick 6 random focus areas for today
     const shuffled = SITE_FEATURES.sort(() => 0.5 - Math.random());
     const todayFocusAreas = shuffled.slice(0, 6);
@@ -56,7 +78,7 @@ Deno.serve(async (req) => {
 - Partner onboarding for businesses
 - Dispute & support center
 
-Today's focus areas: ${todayFocusAreas.join(', ')}
+Today's focus areas: ${todayFocusAreas.join(', ')}${suggestionText}
 
 Generate exactly 15 survey questions that cover these focus areas comprehensively. Include a mix of:
 - 5 rating questions (scale 1-5)

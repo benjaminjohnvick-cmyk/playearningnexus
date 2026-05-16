@@ -53,6 +53,7 @@ const PushNotificationManager = lazy(() => import('@/components/notifications/Pu
 const SurveyNotificationBanner = lazy(() => import('@/components/notifications/SurveyNotificationBanner'));
 const SurveyDemandAlerts = lazy(() => import('@/components/ppc/SurveyDemandAlerts'));
 const DailyFeedbackModal = lazy(() => import('@/components/feedback/DailyFeedbackModal'));
+const DailyMockupVoteSurvey = lazy(() => import('@/components/feedback/DailyMockupVoteSurvey'));
 const SurveyRewardNotifier = lazy(() => import('@/components/surveys/SurveyRewardNotifier'));
 const PPCPushNotificationManager = lazy(() => import('@/components/notifications/PPCPushNotificationManager'));
 const AIPersonalizedDailyGoal = lazy(() => import('@/components/dashboard/AIPersonalizedDailyGoal'));
@@ -463,6 +464,7 @@ export default function Layout({ children, currentPageName }) {
              {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
              {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
              {isAuthenticated && user && <DailyFeedbackModal user={user} />}
+             {isAuthenticated && user && <DailyMockupVoteSurvey user={user} />}
              {isAuthenticated && user && <SurveyRewardNotifier user={user} />}
              {isAuthenticated && user && <PPCPushNotificationManager />}
              {isAuthenticated && user && <WishlistDailyNotifier user={user} />}

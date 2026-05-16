@@ -24,6 +24,7 @@ import ActiveReferralContestSection from '../components/referral/ActiveReferralC
 import PPCAdSearchWidget from '../components/ppc/PPCAdSearchWidget';
 import AIPersonalizedDailyGoal from '../components/dashboard/AIPersonalizedDailyGoal';
 import PricingSection from '../components/home/PricingSection';
+import SuggestionBoard from '../components/feedback/SuggestionBoard';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 function ExtraInfoDropdown({ user }) {
@@ -49,6 +50,7 @@ function ExtraInfoDropdown({ user }) {
               { key: 'progress', label: '📊 Progress' },
               { key: 'community', label: '👥 Community' },
               { key: 'referrals', label: '🏆 Referrals' },
+              { key: 'suggestions', label: '💡 Suggestions' },
               { key: 'pricing', label: '💵 Pricing' },
             ].map(t => (
               <button
@@ -89,6 +91,7 @@ function ExtraInfoDropdown({ user }) {
             </div>
           )}
           {activeTab === 'referrals' && <ActiveReferralContestSection user={user} />}
+          {activeTab === 'suggestions' && <SuggestionBoard user={user} />}
           {activeTab === 'pricing' && <PricingSection />}
         </div>
       )}

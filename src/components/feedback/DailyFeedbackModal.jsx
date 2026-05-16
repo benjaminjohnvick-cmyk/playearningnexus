@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Star, ChevronRight, ChevronLeft, X, ClipboardList, Loader2 } from 'lucide-react';
+import { Star, ChevronRight, ChevronLeft, X, ClipboardList, Loader2, Lightbulb, Trophy } from 'lucide-react';
 
 const STORAGE_KEY = 'gg_feedback_dismissed_date';
+const SUGGESTION_KEY = 'gg_suggestion_submitted_date';
 
 export default function DailyFeedbackModal({ user }) {
   const [survey, setSurvey] = useState(null);
@@ -16,6 +17,10 @@ export default function DailyFeedbackModal({ user }) {
   const [answers, setAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [suggestion, setSuggestion] = useState('');
+  const [suggestionCategory, setSuggestionCategory] = useState('features');
+  const [suggestionSubmitted, setSuggestionSubmitted] = useState(false);
+  const [submittingSuggestion, setSubmittingSuggestion] = useState(false);
   const startTime = useRef(Date.now());
 
   useEffect(() => {
@@ -78,10 +83,36 @@ export default function DailyFeedbackModal({ user }) {
       dismissed_without_completing: false
     });
 
+    // Award +1 contest entry for completing Survey 1
+    await base44.functions.invoke('submitMockupVote', { action: 'vote', survey_id: 'feedback_entry', votes: [], award_entry: true }).catch(() => {});
+    // Simple direct approach — update user contest entries
+    try {
+      const me = await base44.auth.me();
+      await base44.auth.updateMe({ contest_entries: (me?.contest_entries || 0) + 1 });
+    } catch (_) {}
+
     const today = new Date().toISOString().split('T')[0];
     localStorage.setItem(STORAGE_KEY, today);
     setDone(true);
     setTimeout(() => setVisible(false), 2500);
+  };
+
+  const handleSubmitSuggestion = async () => {
+    if (!suggestion.trim()) return;
+    setSubmittingSuggestion(true);
+    try {
+      await base44.entities.UserSuggestion.create({
+        user_id: user?.id,
+        user_name: user?.full_name || 'Anonymous',
+        category: suggestionCategory,
+        suggestion: suggestion.trim(),
+        upvotes: 0
+      });
+      setSuggestionSubmitted(true);
+      const today = new Date().toISOString().split('T')[0];
+      localStorage.setItem(SUGGESTION_KEY, today);
+    } catch (_) {}
+    setSubmittingSuggestion(false);
   };
 
   const handleDismiss = async () => {
@@ -133,12 +164,60 @@ export default function DailyFeedbackModal({ user }) {
         {/* Question Area */}
         <div className="px-6 py-6 min-h-[240px]">
           {done ? (
-            <div className="flex flex-col items-center justify-center h-40 gap-3">
+            <div className="flex flex-col items-center gap-4">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                 <span className="text-3xl">🎉</span>
               </div>
-              <p className="text-green-700 font-semibold text-lg">Thank you for your feedback!</p>
-              <p className="text-gray-500 text-sm">Your responses help us make GamerGain better for you.</p>
+              <div className="text-center">
+                <p className="text-green-700 font-semibold text-lg">Thank you! +1 Contest Entry Earned!</p>
+                <div className="flex items-center justify-center gap-1.5 mt-1">
+                  <Trophy className="w-4 h-4 text-yellow-500" />
+                  <p className="text-yellow-600 text-sm font-medium">Survey 1 of 2 complete — check your contest entries!</p>
+                </div>
+              </div>
+              {/* Suggestion box */}
+              {!suggestionSubmitted ? (
+                <div className="w-full bg-purple-50 border border-purple-200 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Lightbulb className="w-4 h-4 text-purple-600" />
+                    <p className="text-sm font-semibold text-purple-800">Got a suggestion? We read every one.</p>
+                  </div>
+                  <p className="text-xs text-purple-600 mb-2">Top suggestions get turned into tomorrow's survey questions!</p>
+                  <select
+                    value={suggestionCategory}
+                    onChange={e => setSuggestionCategory(e.target.value)}
+                    className="w-full text-xs border border-purple-200 rounded-lg px-2 py-1.5 mb-2 bg-white"
+                  >
+                    <option value="games">🎮 Games</option>
+                    <option value="surveys">📋 Surveys</option>
+                    <option value="products">🛍️ Products</option>
+                    <option value="features">✨ Features</option>
+                    <option value="ui_ux">🎨 UI/UX</option>
+                    <option value="payouts">💰 Payouts</option>
+                    <option value="referrals">👥 Referrals</option>
+                    <option value="other">💬 Other</option>
+                  </select>
+                  <Textarea
+                    placeholder="What would make GamerGain better for you?"
+                    value={suggestion}
+                    onChange={e => setSuggestion(e.target.value)}
+                    className="min-h-[70px] resize-none text-sm mb-2"
+                  />
+                  <Button
+                    size="sm"
+                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    disabled={!suggestion.trim() || submittingSuggestion}
+                    onClick={handleSubmitSuggestion}
+                  >
+                    {submittingSuggestion ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <Lightbulb className="w-3.5 h-3.5 mr-1" />}
+                    Submit Suggestion
+                  </Button>
+                </div>
+              ) : (
+                <div className="w-full bg-green-50 border border-green-200 rounded-xl p-3 text-center text-sm text-green-700">
+                  ✅ Suggestion submitted! It may appear in tomorrow's survey.
+                </div>
+              )}
             </div>
           ) : q ? (
             <div>
