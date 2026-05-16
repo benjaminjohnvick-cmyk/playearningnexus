@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SurveyInsightsDashboard from '../components/business/SurveyInsightsDashboard';
 import SurveyAuditLog from '../components/business/SurveyAuditLog';
+import UXFraudStatsPanel from '../components/business/UXFraudStatsPanel';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -175,7 +176,10 @@ export default function BusinessDashboard() {
 
           {/* Audit Log Tab */}
           <TabsContent value="audit-log">
-            <SurveyAuditLog />
+            <div className="space-y-4">
+              <UXFraudStatsPanel />
+              <SurveyAuditLog />
+            </div>
           </TabsContent>
 
           {/* Survey Insights Tab */}

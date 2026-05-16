@@ -48,6 +48,116 @@
     "recorded_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "survey_id": {
+      "type": "string",
+      "description": "Linked PPCSurvey ID if this is a survey session"
+    },
+    "response_id": {
+      "type": "string",
+      "description": "Linked PPCSurveyResponse ID"
+    },
+    "is_survey_session": {
+      "type": "boolean",
+      "default": false
+    },
+    "question_timings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_index": {
+            "type": "number"
+          },
+          "time_to_answer_ms": {
+            "type": "number"
+          },
+          "changed_answer": {
+            "type": "boolean"
+          },
+          "focus_events": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Per-question timing data"
+    },
+    "mouse_patterns": {
+      "type": "object",
+      "description": "Mouse movement summary: avg_speed, idle_time_ms, erratic_movements",
+      "additionalProperties": true
+    },
+    "tab_switches": {
+      "type": "number",
+      "default": 0,
+      "description": "Times user switched away from survey tab"
+    },
+    "copy_paste_detected": {
+      "type": "boolean",
+      "default": false
+    },
+    "auto_fill_detected": {
+      "type": "boolean",
+      "default": false
+    },
+    "keyboard_shortcut_abuse": {
+      "type": "boolean",
+      "default": false
+    },
+    "device_info": {
+      "type": "object",
+      "description": "Browser, OS, screen size, timezone",
+      "additionalProperties": true
+    },
+    "ip_hash": {
+      "type": "string",
+      "description": "Hashed IP for dedup detection"
+    },
+    "fraud_analysis_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "analyzing",
+        "clean",
+        "flagged",
+        "escalated"
+      ],
+      "default": "pending"
+    },
+    "fraud_score": {
+      "type": "number",
+      "description": "0-100 AI fraud score for this UX session"
+    },
+    "fraud_signals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Detected fraud signals from AI analysis"
+    },
+    "ai_verdict": {
+      "type": "string",
+      "description": "AI resolution decision"
+    },
+    "ai_confidence": {
+      "type": "number",
+      "description": "0-1 AI confidence in verdict"
+    },
+    "escalated_to_admin": {
+      "type": "boolean",
+      "default": false
+    },
+    "admin_ticket_id": {
+      "type": "string",
+      "description": "SupportTicket ID if escalated"
+    },
+    "dispute_id": {
+      "type": "string",
+      "description": "SurveyDispute ID if created"
+    },
+    "resolved": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
