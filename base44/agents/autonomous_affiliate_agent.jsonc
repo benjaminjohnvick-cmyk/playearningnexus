@@ -43,7 +43,36 @@
       "allowed_operations": [
         "read"
       ]
+    },
+    {
+      "function_name": "autonomousAffiliateOrchestrator",
+      "description": "Main 24-hour cycle function \u2014 scans trends, posts ads, distributes bonuses"
+    },
+    {
+      "function_name": "distributeMLMBonus",
+      "description": "Distributes $0.25 MLM bonuses up the 3-level chain when a referred user hits an $8 milestone"
+    },
+    {
+      "function_name": "generateAndPostAffiliateAds",
+      "description": "Generates trending AI ad content and posts to social media"
+    },
+    {
+      "function_name": "enrollSocialAffiliate",
+      "description": "Enrolls new users into the affiliate program and builds their MLM upline chain"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "autonomous_affiliate_agent"
 }

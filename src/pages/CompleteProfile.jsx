@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { User, CheckCircle } from 'lucide-react';
+import ApproveAllButton from '@/components/onboarding/ApproveAllButton';
 
 export default function CompleteProfile() {
   const [fullName, setFullName] = useState('');
@@ -84,6 +85,20 @@ export default function CompleteProfile() {
             {saving ? 'Saving...' : 'Continue to GamerGain →'}
           </button>
         </form>
+
+        <div className="mt-4">
+          <div className="relative flex items-center justify-center my-2">
+            <div className="border-t border-gray-200 w-full" />
+            <span className="absolute bg-white px-3 text-xs text-gray-400">or</span>
+          </div>
+          <ApproveAllButton user={user} onComplete={() => {
+            sessionStorage.removeItem('needs_profile_completion');
+            window.location.replace('/');
+          }} />
+          <p className="text-xs text-gray-400 text-center mt-2">
+            One click links all social accounts, enrolls you in the affiliate program &amp; saves your payment method.
+          </p>
+        </div>
       </div>
     </div>
   );
