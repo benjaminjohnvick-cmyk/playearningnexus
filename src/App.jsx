@@ -108,6 +108,7 @@ const RealtimeFraudMonitorDashboard = lazy(() => import('./pages/RealtimeFraudMo
 const GrowthEngineHub = lazy(() => import('./pages/GrowthEngineHub'));
 const AILTVDashboard = lazy(() => import('./pages/AILTVDashboard'));
 const CompetitiveMonitoringDashboard = lazy(() => import('./pages/CompetitiveMonitoringDashboard'));
+const QuickSurveyBuilder = lazy(() => import('./pages/QuickSurveyBuilder'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -285,6 +286,7 @@ const AuthenticatedApp = () => {
       <Route path="/GrowthEngineHub" element={<LayoutWrapper currentPageName="GrowthEngineHub"><GrowthEngineHub /></LayoutWrapper>} />
       <Route path="/AILTVDashboard" element={<LayoutWrapper currentPageName="AILTVDashboard"><AILTVDashboard /></LayoutWrapper>} />
       <Route path="/CompetitiveMonitoringDashboard" element={<LayoutWrapper currentPageName="CompetitiveMonitoringDashboard"><CompetitiveMonitoringDashboard /></LayoutWrapper>} />
+      <Route path="/QuickSurveyBuilder" element={<LayoutWrapper currentPageName="QuickSurveyBuilder"><QuickSurveyBuilder /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

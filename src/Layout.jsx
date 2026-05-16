@@ -338,6 +338,12 @@ export default function Layout({ children, currentPageName }) {
                     🏆 Tournaments
                   </Button>
                 </Link>
+                <Link to={createPageUrl('QuickSurveyBuilder')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'QuickSurveyBuilder' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'QuickSurveyBuilder' ? "bg-gradient-to-r from-purple-600 to-pink-600 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}>
+                    📋 Build Survey
+                  </Button>
+                </Link>
                 <Link to="/AdBusinessOverview" className="flex-shrink-0">
                   <Button variant={currentPageName === 'AdBusinessOverview' ? "default" : "ghost"} size="sm"
                     className={currentPageName === 'AdBusinessOverview' ? "bg-gradient-to-r from-yellow-500 to-orange-500 shadow-md" : "hover:bg-yellow-50 text-yellow-700 font-semibold border border-yellow-200"}>
