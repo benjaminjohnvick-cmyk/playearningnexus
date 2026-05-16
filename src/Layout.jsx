@@ -206,6 +206,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
     { name: 'Game Voting Hub', icon: Gamepad2, path: 'GameVotingHub' },
     { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
+    { name: 'AI Game Creator', icon: Gamepad2, path: 'DeveloperToolsHub', requireAuth: true },
     { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
     { name: 'Tournaments', icon: Trophy, path: 'Tournaments', requireAuth: true },
   ];
@@ -342,6 +343,12 @@ export default function Layout({ children, currentPageName }) {
                   <Button variant={currentPageName === 'AdCampaignOptimizer' ? "default" : "ghost"} size="sm"
                     className={currentPageName === 'AdCampaignOptimizer' ? "bg-gradient-to-r from-orange-600 to-red-600 shadow-md" : "hover:bg-orange-50 text-orange-700 font-semibold border border-orange-200"}>
                     📊 Ad Optimizer
+                  </Button>
+                </Link>
+                <Link to="/DeveloperToolsHub" className="flex-shrink-0">
+                  <Button variant={currentPageName === 'DeveloperToolsHub' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md" : "hover:bg-violet-50 text-violet-700 font-semibold border border-violet-200"}>
+                    🎮 AI Game Creator
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Tournaments')} className="flex-shrink-0">
