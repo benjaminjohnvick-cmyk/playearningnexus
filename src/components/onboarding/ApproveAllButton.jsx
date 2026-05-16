@@ -60,6 +60,12 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false })
     setStep('processing');
     setProgress([]);
 
+    // If not logged in, redirect to login first
+    if (!user) {
+      base44.auth.redirectToLogin(window.location.href);
+      return;
+    }
+
     // 0. Auto sign-up: collect device location + account info in one click
     try {
       // Gather all available browser/device signals automatically
@@ -238,12 +244,12 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false })
           </Button>
           <Button
             size="sm"
-            variant="ghost"
+            variant="outline"
             onClick={() => setInfoOpen(true)}
-            className="text-white/80 hover:text-white hover:bg-white/10 gap-1 px-2"
+            className="border-white/50 text-white bg-white/10 hover:bg-white/20 gap-1"
           >
             <Info className="w-3.5 h-3.5" />
-            Info
+            More Info
           </Button>
         </div>
       ) : (
