@@ -103,6 +103,8 @@ const AIAdDiscovery = lazy(() => import('./pages/AIAdDiscovery'));
 const WishlistIntelligence = lazy(() => import('./pages/WishlistIntelligence'));
 const WishlistSharerLeaderboardPage = lazy(() => import('./pages/WishlistSharerLeaderboardPage'));
 const DisputeResolverCenter = lazy(() => import('./pages/DisputeResolverCenter'));
+const AIFinancialAdvisor = lazy(() => import('./pages/AIFinancialAdvisor'));
+const RealtimeFraudMonitorDashboard = lazy(() => import('./pages/RealtimeFraudMonitorDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -275,6 +277,8 @@ const AuthenticatedApp = () => {
       <Route path="/WishlistIntelligence" element={<LayoutWrapper currentPageName="WishlistIntelligence"><WishlistIntelligence /></LayoutWrapper>} />
       <Route path="/WishlistSharerLeaderboard" element={<LayoutWrapper currentPageName="WishlistSharerLeaderboard"><WishlistSharerLeaderboardPage /></LayoutWrapper>} />
       <Route path="/DisputeResolverCenter" element={<LayoutWrapper currentPageName="DisputeResolverCenter"><DisputeResolverCenter /></LayoutWrapper>} />
+      <Route path="/AIFinancialAdvisor" element={<LayoutWrapper currentPageName="AIFinancialAdvisor"><AIFinancialAdvisor /></LayoutWrapper>} />
+      <Route path="/RealtimeFraudMonitor" element={<LayoutWrapper currentPageName="RealtimeFraudMonitor"><RealtimeFraudMonitorDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
