@@ -333,12 +333,6 @@ export default function Layout({ children, currentPageName }) {
                     🚀 Dev Onboarding
                   </Button>
                 </Link>
-                <Link to="/DeveloperToolsHub" className="flex-shrink-0">
-                  <Button variant={currentPageName === 'DeveloperToolsHub' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md" : "hover:bg-violet-50 text-violet-700 font-semibold border border-violet-200"}>
-                    🛠 Dev Tools
-                  </Button>
-                </Link>
                 <Link to="/AdCampaignOptimizer" className="flex-shrink-0">
                   <Button variant={currentPageName === 'AdCampaignOptimizer' ? "default" : "ghost"} size="sm"
                     className={currentPageName === 'AdCampaignOptimizer' ? "bg-gradient-to-r from-orange-600 to-red-600 shadow-md" : "hover:bg-orange-50 text-orange-700 font-semibold border border-orange-200"}>
