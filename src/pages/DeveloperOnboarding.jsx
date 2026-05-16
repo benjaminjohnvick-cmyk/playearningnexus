@@ -14,13 +14,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import StepIndicator from '@/components/onboarding/StepIndicator';
 import AIReadinessReview from '@/components/onboarding/AIReadinessReview';
+import PreLaunchSurveyPanel from '@/components/developer/PreLaunchSurveyPanel';
 
 const STEPS = [
-  { id: 1, label: 'Profile',    icon: User },
-  { id: 2, label: 'Game Assets', icon: ImageIcon },
-  { id: 3, label: 'Revenue',    icon: CreditCard },
-  { id: 4, label: 'AI Review',  icon: Bot },
-  { id: 5, label: 'Complete',   icon: CheckCircle2 },
+  { id: 1, label: 'Profile',       icon: User },
+  { id: 2, label: 'Game Assets',   icon: ImageIcon },
+  { id: 3, label: 'Pre-Launch',    icon: Bot },
+  { id: 4, label: 'Revenue',       icon: CreditCard },
+  { id: 5, label: 'AI Review',     icon: Bot },
+  { id: 6, label: 'Complete',      icon: CheckCircle2 },
 ];
 
 const CATEGORIES = ['action', 'puzzle', 'strategy', 'casual', 'rpg', 'simulation', 'sports', 'racing', 'adventure'];
@@ -164,13 +166,20 @@ export default function DeveloperOnboarding() {
       } else {
         await base44.entities.DeveloperApplication.create(appData);
       }
-      setStep(3);
+      setStep(3); // go to pre-launch survey step
       toast.success('Game assets validated & saved!');
     } catch (e) { toast.error(e.message); }
     setSaving(false);
   };
 
-  // ── Step 3 save ──
+  // ── Step 3: Pre-Launch Survey completion ──
+  const handlePreLaunchComplete = ({ skipped, survey_id, analysis }) => {
+    if (survey_id) toast.success('Pre-launch survey live! Proceed to revenue setup.');
+    else toast.info('Skipped pre-launch survey.');
+    setStep(4);
+  };
+
+  // ── Step 4 save (Revenue) ──
   const saveRevenue = async () => {
     if (!revenue.payout_method) return toast.error('Select a payout method.');
     if (revenue.payout_method === 'paypal' && !revenue.paypal_email) return toast.error('Enter your PayPal email.');
@@ -189,7 +198,7 @@ export default function DeveloperOnboarding() {
       };
       if (existing[0]) await base44.entities.PayoutPreference.update(existing[0].id, prefData);
       else await base44.entities.PayoutPreference.create(prefData);
-      setStep(4);
+      setStep(5);
       toast.success('Revenue settings saved!');
     } catch (e) { toast.error(e.message); }
     setSaving(false);
@@ -237,7 +246,7 @@ export default function DeveloperOnboarding() {
       const result = null;
       setCompletionResult(result);
 
-      setStep(5); // completion screen
+      setStep(6); // completion screen
     } catch (e) { toast.error(e.message); }
     setSaving(false);
   };
@@ -476,8 +485,21 @@ export default function DeveloperOnboarding() {
             </motion.div>
           )}
 
-          {/* ── STEP 3: Revenue ── */}
+          {/* ── STEP 3: Pre-Launch Survey ── */}
           {step === 3 && (
+            <motion.div key="s3pre" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}>
+              <PreLaunchSurveyPanel
+                gameData={assets}
+                onComplete={handlePreLaunchComplete}
+              />
+              <div className="text-center mt-3">
+                <button className="text-xs text-gray-400 underline" onClick={() => setStep(2)}>← Back to Game Assets</button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── STEP 4: Revenue ── */}
+          {step === 4 && (
             <motion.div key="s3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}>
               <Card className="border-0 shadow-lg">
                 <CardHeader>
@@ -584,7 +606,7 @@ export default function DeveloperOnboarding() {
                   </div>
 
                   <div className="flex gap-3">
-                    <Button variant="outline" onClick={() => setStep(2)} className="flex-1"><ArrowLeft className="w-4 h-4 mr-1" />Back</Button>
+                    <Button variant="outline" onClick={() => setStep(3)} className="flex-1"><ArrowLeft className="w-4 h-4 mr-1" />Back</Button>
                     <Button onClick={saveRevenue} disabled={saving} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600">
                       {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                       Save & Continue <ArrowRight className="w-4 h-4 ml-2" />
@@ -595,8 +617,8 @@ export default function DeveloperOnboarding() {
             </motion.div>
           )}
 
-          {/* ── STEP 4: AI Review ── */}
-          {step === 4 && (
+          {/* ── STEP 5: AI Review ── */}
+          {step === 5 && (
             <motion.div key="s4" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}>
               <Card className="border-0 shadow-lg">
                 <CardHeader>
@@ -611,7 +633,7 @@ export default function DeveloperOnboarding() {
                     revenue={revenue}
                   />
                   <div className="flex gap-3 pt-2">
-                    <Button variant="outline" onClick={() => setStep(3)} className="flex-1"><ArrowLeft className="w-4 h-4 mr-1" />Back</Button>
+                    <Button variant="outline" onClick={() => setStep(4)} className="flex-1"><ArrowLeft className="w-4 h-4 mr-1" />Back</Button>
                     <Button onClick={finalize} disabled={saving} className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 h-11">
                       {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
                       Submit & Go Live
@@ -622,8 +644,8 @@ export default function DeveloperOnboarding() {
             </motion.div>
           )}
 
-          {/* ── STEP 5: Completion ── */}
-          {step === 5 && (
+          {/* ── STEP 6: Completion ── */}
+          {step === 6 && (
             <motion.div key="s5" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
               <Card className="border-0 shadow-xl">
                 <CardContent className="p-8 text-center space-y-5">
@@ -664,7 +686,7 @@ export default function DeveloperOnboarding() {
 
         </AnimatePresence>
 
-        {step < 4 && (
+        {step < 5 && (
           <div className="flex items-center justify-center gap-6 text-xs text-gray-400 pb-4">
             <span className="flex items-center gap-1"><Shield className="w-3.5 h-3.5" /> SSL Encrypted</span>
             <span className="flex items-center gap-1"><Lock className="w-3.5 h-3.5" /> GDPR Compliant</span>
