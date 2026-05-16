@@ -8,6 +8,8 @@ import { CreditCard, Users, DollarSign, AlertCircle, CheckCircle2, Info, X, Plus
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PayPalCardCapture from './PayPalCardCapture';
+import { useQuery } from '@tanstack/react-query';
+import BNPLFamilyMemberManager from '@/components/bnpl/BNPLFamilyMemberManager';
 
 const INDIVIDUAL_CREDIT = 1080;
 const MAX_GROUP = 10;
@@ -15,11 +17,20 @@ const DAILY_EARN_PER_PERSON = 3;
 const MONTHS = 12;
 
 export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
-  const [step, setStep] = useState('overview'); // overview | group | card | confirm
+  const [step, setStep] = useState('overview'); // overview | family | group | card | confirm
   const [groupMembers, setGroupMembers] = useState([]);
   const [newEmail, setNewEmail] = useState('');
   const [paypalOrderId, setPaypalOrderId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [monthlyPayment, setMonthlyPayment] = useState(purchaseAmount || 0);
+
+  const { data: requirement = {} } = useQuery({
+    queryKey: ['bnplRequirement', monthlyPayment],
+    queryFn: () => base44.functions.invoke('calculateBNPLFamilyRequirement', {
+      monthly_amount: monthlyPayment,
+    }).then(r => r.data),
+    enabled: !!monthlyPayment && monthlyPayment > 0,
+  });
 
   const groupSize = groupMembers.length + 1; // +1 for primary user
   const totalCredit = groupSize * INDIVIDUAL_CREDIT;
@@ -127,12 +138,20 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
 
             <div className="flex gap-2">
               <Button variant="outline" onClick={onClose} className="flex-1">Maybe Later</Button>
-              <Button onClick={() => setStep('group')} className="flex-1 bg-blue-600 hover:bg-blue-700">
-                <Users className="w-4 h-4 mr-2" /> Get Started
+              <Button onClick={() => setStep('family')} className="flex-1 bg-blue-600 hover:bg-blue-700">
+                <Users className="w-4 h-4 mr-2" /> Set Up Family Account
               </Button>
             </div>
           </div>
 
+        ) : step === 'family' ? (
+          <BNPLFamilyMemberManager
+            monthlyPayment={monthlyPayment}
+            onRequirementsMet={() => {
+              toast.success('You have enough family members to use BNPL!');
+              setStep('card');
+            }}
+          />
         ) : step === 'group' ? (
           <div className="space-y-4">
             <div>
@@ -169,14 +188,14 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
             )}
 
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setStep('overview')} className="flex-1">Back</Button>
-              <Button onClick={() => setStep('card')} className="flex-1 bg-blue-600 hover:bg-blue-700">
-                <CreditCard className="w-4 h-4 mr-2" /> Add Card & Activate
-              </Button>
+               <Button variant="outline" onClick={() => setStep('family')} className="flex-1">Back</Button>
+               <Button onClick={() => setStep('card')} className="flex-1 bg-blue-600 hover:bg-blue-700" disabled={!requirement.can_activate_bnpl}>
+                 <CreditCard className="w-4 h-4 mr-2" /> Add Card & Activate
+               </Button>
+             </div>
             </div>
-          </div>
 
-        ) : step === 'card' ? (
+            ) : step === 'card' ? (
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-gray-900 mb-1">Backup Payment Card</h3>

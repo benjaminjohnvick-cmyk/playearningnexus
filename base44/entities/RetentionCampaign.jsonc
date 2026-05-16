@@ -3,123 +3,53 @@
   "type": "object",
   "properties": {
     "user_id": {
-      "type": "string"
-    },
-    "user_email": {
-      "type": "string"
-    },
-    "user_name": {
-      "type": "string"
-    },
-    "risk_level": {
       "type": "string",
-      "enum": [
-        "medium",
-        "high",
-        "critical"
-      ]
-    },
-    "churn_probability": {
-      "type": "number"
+      "description": "User targeted for retention"
     },
     "campaign_type": {
       "type": "string",
       "enum": [
-        "winback_email",
-        "sms_offer",
-        "bonus_credit",
-        "personalized_survey",
-        "all_channels"
+        "churn_comeback",
+        "milestone_bonus",
+        "seasonal_offer"
       ],
-      "default": "all_channels"
+      "default": "churn_comeback"
     },
-    "email_subject": {
-      "type": "string"
-    },
-    "email_body": {
-      "type": "string"
-    },
-    "sms_message": {
-      "type": "string"
-    },
-    "offer_type": {
+    "incentive_type": {
       "type": "string",
       "enum": [
-        "bonus_cash",
-        "double_earnings",
-        "exclusive_survey",
-        "vip_tier_boost",
-        "streak_reset"
+        "standard",
+        "enhanced",
+        "premium"
       ],
-      "description": "Type of win-back offer"
+      "default": "standard"
     },
-    "offer_value": {
+    "bonus_amount": {
       "type": "number",
-      "description": "Dollar value of offer"
+      "default": 0,
+      "description": "Dollar amount of the comeback bonus"
     },
-    "offer_expires_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "email_sent": {
-      "type": "boolean",
-      "default": false
-    },
-    "sms_sent": {
-      "type": "boolean",
-      "default": false
-    },
-    "email_sent_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "sms_sent_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "email_opened": {
-      "type": "boolean",
-      "default": false
-    },
-    "user_returned": {
-      "type": "boolean",
-      "default": false
-    },
-    "user_returned_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "surveys_completed_after": {
+    "churn_score": {
       "type": "number",
-      "default": 0
-    },
-    "revenue_recovered": {
-      "type": "number",
-      "default": 0
-    },
-    "campaign_success": {
-      "type": "boolean",
-      "default": false
-    },
-    "agent_log_id": {
-      "type": "string",
-      "description": "Linked AgentPerformanceLog ID"
+      "description": "Churn risk score (0-100)"
     },
     "status": {
       "type": "string",
       "enum": [
-        "pending",
-        "sent",
-        "opened",
-        "converted",
-        "failed",
+        "triggered",
+        "email_sent",
+        "claimed",
         "expired"
       ],
-      "default": "pending"
+      "default": "triggered"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [
     "user_id",
-    "risk_level"
+    "campaign_type"
   ]
 }
