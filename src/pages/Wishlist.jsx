@@ -57,7 +57,8 @@ export default function Wishlist() {
             <p className="text-gray-500 mt-1">Save items and order through GamerGain — prices include 10% platform fee</p>
           </div>
           <div className="w-full mt-4 space-y-4">
-            <div className="flex gap-3 justify-end">
+            <div className="flex gap-3 justify-between items-center">
+              <div className="text-sm text-gray-600 font-medium">💡 Share your wishlist with friends to earn entries & credit</div>
               <ShareWishlistButton userId={user?.id} />
             </div>
             <WishlistBNPLSummary
