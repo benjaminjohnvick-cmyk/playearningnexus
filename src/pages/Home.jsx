@@ -153,12 +153,12 @@ export default function Home() {
                     Start Playing <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <ApproveAllButton user={user} heroMode />
                 <Link to={createPageUrl('BusinessDashboard')}>
                   <Button size="sm" variant="outline" className="border-white/40 text-white hover:bg-white/10 bg-white/10">
                     For Developers
                   </Button>
                 </Link>
+                <ApproveAllButton user={user} heroMode />
               </div>
             </motion.div>
 
