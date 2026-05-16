@@ -106,6 +106,7 @@ const DisputeResolverCenter = lazy(() => import('./pages/DisputeResolverCenter')
 const AIFinancialAdvisor = lazy(() => import('./pages/AIFinancialAdvisor'));
 const RealtimeFraudMonitorDashboard = lazy(() => import('./pages/RealtimeFraudMonitorDashboard'));
 const GrowthEngineHub = lazy(() => import('./pages/GrowthEngineHub'));
+const AILTVDashboard = lazy(() => import('./pages/AILTVDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -281,6 +282,7 @@ const AuthenticatedApp = () => {
       <Route path="/AIFinancialAdvisor" element={<LayoutWrapper currentPageName="AIFinancialAdvisor"><AIFinancialAdvisor /></LayoutWrapper>} />
       <Route path="/RealtimeFraudMonitor" element={<LayoutWrapper currentPageName="RealtimeFraudMonitor"><RealtimeFraudMonitorDashboard /></LayoutWrapper>} />
       <Route path="/GrowthEngineHub" element={<LayoutWrapper currentPageName="GrowthEngineHub"><GrowthEngineHub /></LayoutWrapper>} />
+      <Route path="/AILTVDashboard" element={<LayoutWrapper currentPageName="AILTVDashboard"><AILTVDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
