@@ -204,9 +204,10 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Guilds', icon: Users, path: 'Guilds', requireAuth: true },
     { name: 'Rewards', icon: Trophy, path: 'Gamification', requireAuth: true },
     { name: 'Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
+    { name: 'Pricing', icon: DollarSign, path: 'Pricing' },
+    { name: 'AI Game Creator', icon: Gamepad2, path: 'DeveloperToolsHub', requireAuth: true },
     { name: 'Game Voting Hub', icon: Gamepad2, path: 'GameVotingHub' },
     { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
-    { name: 'AI Game Creator', icon: Gamepad2, path: 'DeveloperToolsHub', requireAuth: true },
     { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
     { name: 'Tournaments', icon: Trophy, path: 'Tournaments', requireAuth: true },
   ];
