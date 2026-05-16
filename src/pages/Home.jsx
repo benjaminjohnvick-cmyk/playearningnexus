@@ -93,7 +93,21 @@ function ExtraInfoDropdown({ user }) {
           )}
           {activeTab === 'referrals' && <ActiveReferralContestSection user={user} />}
           {activeTab === 'suggestions' && <SuggestionBoard user={user} />}
-          {activeTab === 'pricing' && <PricingSection />}
+          {activeTab === 'pricing' && (
+            <div className="space-y-4">
+              <PricingSection />
+              <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl p-5 text-white text-center">
+                <div className="text-xl mb-1">🎮</div>
+                <h3 className="text-lg font-black mb-1">AI Game Creator</h3>
+                <p className="text-violet-200 text-xs mb-3">Build a full game concept from real player feedback — free for developers.</p>
+                <Link to="/DeveloperToolsHub">
+                  <Button className="bg-white text-violet-700 hover:bg-violet-50 font-bold text-sm">
+                    Launch AI Game Creator <ArrowRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -276,6 +290,18 @@ export default function Home() {
 
             {/* Pricing */}
             <PricingSection />
+
+            {/* AI Game Creator CTA */}
+            <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl p-6 text-white text-center">
+              <div className="text-2xl mb-2">🎮</div>
+              <h3 className="text-xl font-black mb-1">AI Game Creator</h3>
+              <p className="text-violet-200 text-sm mb-4">Build a full game concept from real player feedback — free for developers on GamerGain.</p>
+              <Link to="/DeveloperToolsHub">
+                <Button className="bg-white text-violet-700 hover:bg-violet-50 font-bold">
+                  Launch AI Game Creator <ArrowRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </div>
