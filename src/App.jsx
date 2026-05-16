@@ -99,6 +99,7 @@ const GamerTournamentDashboard = lazy(() => import('./pages/GamerTournamentDashb
 const ReferralGrowthEngine = lazy(() => import('./pages/ReferralGrowthEngine'));
 const AIAgentsCommandCenter = lazy(() => import('./pages/AIAgentsCommandCenter'));
 const AffiliateMLMDashboard = lazy(() => import('./pages/AffiliateMLMDashboard'));
+const AIAdDiscovery = lazy(() => import('./pages/AIAdDiscovery'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -267,6 +268,7 @@ const AuthenticatedApp = () => {
       <Route path="/ReferralGrowthEngine" element={<LayoutWrapper currentPageName="ReferralGrowthEngine"><ReferralGrowthEngine /></LayoutWrapper>} />
       <Route path="/AIAgentsCommandCenter" element={<LayoutWrapper currentPageName="AIAgentsCommandCenter"><AIAgentsCommandCenter /></LayoutWrapper>} />
       <Route path="/AffiliateMLMDashboard" element={<LayoutWrapper currentPageName="AffiliateMLMDashboard"><AffiliateMLMDashboard /></LayoutWrapper>} />
+      <Route path="/AIAdDiscovery" element={<LayoutWrapper currentPageName="AIAdDiscovery"><AIAdDiscovery /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
