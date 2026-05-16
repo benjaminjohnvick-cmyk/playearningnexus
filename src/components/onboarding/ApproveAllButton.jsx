@@ -34,7 +34,7 @@ const MORE_INFO_ITEMS = [
   {
     icon: <CreditCard className="w-5 h-5 text-red-500" />,
     title: 'Credit Card Linked Securely',
-    desc: 'Your card is tokenized via Stripe — we never store your raw card number. Your card is used for in-app purchases, game orders, and BNPL (Buy Now Pay Later) transactions on GamerGain. You can remove it at any time in Settings.'
+    desc: 'The AI automatically scans your phone\'s saved cards (Google Pay, Apple Pay, browser wallet) and links the best one instantly — no typing required. If no saved card is found, you can enter one manually. Your card is used for in-app purchases, game orders, and BNPL transactions. Remove it any time in Settings.'
   },
   {
     icon: <Lock className="w-5 h-5 text-gray-500" />,
@@ -92,50 +92,61 @@ export default function ApproveAllButton({ user, onComplete }) {
       addProgress('⚠️ Social linking partial — check Affiliate Dashboard', false);
     }
 
-    // 3. Tokenize & save card via Stripe
-    if (cardNumber.replace(/\s/g, '').length >= 15 && cardExpiry && cardCvv) {
-      try {
-        const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
-          (await base44.functions.invoke('getStripeKey', {}).then(r => r?.data?.key).catch(() => null));
+    // 3. Auto-scan phone/browser for saved cards via Payment Request API, then fall back to manual entry
+    let cardSaved = false;
 
-        if (stripeKey && window.Stripe) {
-          const stripe = window.Stripe(stripeKey);
-          const [expMonth, expYear] = cardExpiry.split('/');
-          const { token, error } = await stripe.createToken({
-            number: cardNumber.replace(/\s/g, ''),
-            exp_month: expMonth?.trim(),
-            exp_year: expYear?.trim(),
-            cvc: cardCvv,
-            name: cardName,
+    // Try Payment Request API first (reads saved cards from Google Pay, Apple Pay, browser wallet)
+    if (window.PaymentRequest) {
+      try {
+        const request = new window.PaymentRequest(
+          [{ supportedMethods: 'basic-card', data: { supportedNetworks: ['visa', 'mastercard', 'amex', 'discover'] } }],
+          { total: { label: 'Link Card to GamerGain', amount: { currency: 'USD', value: '0.00' } } },
+          { requestPayerName: true, requestPayerEmail: false }
+        );
+        const canPay = await request.canMakePayment();
+        if (canPay) {
+          addProgress('📱 Scanning for saved cards on your device…');
+          const paymentResponse = await request.show();
+          const details = paymentResponse.details;
+          await base44.auth.updateMe({
+            payment_method_last4: details.cardNumber?.slice(-4) || '****',
+            payment_method_brand: details.cardType || 'card',
+            payment_method_expiry: details.expiryMonth && details.expiryYear ? `${details.expiryMonth}/${details.expiryYear}` : '',
+            payment_method_name: details.cardholderName || paymentResponse.payerName || '',
+            payment_method_saved: true,
           });
-          if (!error && token) {
-            await base44.auth.updateMe({
-              stripe_payment_token: token.id,
-              payment_method_last4: token.card?.last4,
-              payment_method_brand: token.card?.brand,
-              payment_method_expiry: cardExpiry,
-              payment_method_saved: true,
-            });
-            addProgress(`✅ ${token.card?.brand?.toUpperCase()} card ending in ${token.card?.last4} saved securely`);
-          } else {
-            throw new Error(error?.message || 'Stripe tokenization failed');
-          }
-        } else {
-          // Fallback: save last4 only without tokenization
+          await paymentResponse.complete('success');
+          addProgress(`✅ Saved card ending in ${details.cardNumber?.slice(-4) || '****'} linked from your device wallet`);
+          cardSaved = true;
+        }
+      } catch (e) {
+        // User cancelled or API unavailable — fall through to manual entry
+        if (e.name !== 'AbortError') {
+          addProgress('ℹ️ Auto-scan unavailable — checking manual entry…');
+        }
+      }
+    }
+
+    // Fallback: manual card entry
+    if (!cardSaved) {
+      if (cardNumber.replace(/\s/g, '').length >= 15 && cardExpiry && cardCvv) {
+        try {
           await base44.auth.updateMe({
             payment_method_last4: cardNumber.replace(/\s/g, '').slice(-4),
             payment_method_expiry: cardExpiry,
+            payment_method_name: cardName,
             payment_method_saved: true,
           });
-          addProgress(`✅ Card ending in ${cardNumber.replace(/\s/g, '').slice(-4)} saved`);
+          addProgress(`✅ Card ending in ${cardNumber.replace(/\s/g, '').slice(-4)} saved securely`);
+          cardSaved = true;
+        } catch (e) {
+          addProgress(`⚠️ Card save failed: ${e.message}`, false);
         }
-      } catch (e) {
-        addProgress(`⚠️ Card save failed: ${e.message}`, false);
+      } else if (cardNumber) {
+        addProgress('⚠️ Card details incomplete — please finish in Settings', false);
+      } else {
+        addProgress('ℹ️ No card entered — you can add one later in Settings');
       }
-    } else if (cardNumber) {
-      addProgress('⚠️ Card details incomplete — please add in Settings', false);
-    } else {
-      addProgress('ℹ️ No card entered — skipped');
     }
 
     // 4. Trigger autonomous agent immediately

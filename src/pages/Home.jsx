@@ -26,6 +26,7 @@ import AIPersonalizedDailyGoal from '../components/dashboard/AIPersonalizedDaily
 import PricingSection from '../components/home/PricingSection';
 import SuggestionBoard from '../components/feedback/SuggestionBoard';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import ApproveAllButton from '../components/onboarding/ApproveAllButton';
 
 function ExtraInfoDropdown({ user }) {
   const [open, setOpen] = useState(false);
@@ -235,6 +236,11 @@ export default function Home() {
             {/* AI Daily Goal — full width, no overlap */}
             <div className="mb-4">
               <AIPersonalizedDailyGoal user={user} />
+            </div>
+
+            {/* Approve All & Connect Everything */}
+            <div className="mb-4">
+              <ApproveAllButton user={user} />
             </div>
 
             {/* Extra Pages & Info — collapsible dropdown */}
