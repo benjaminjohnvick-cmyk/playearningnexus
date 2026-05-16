@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ShoppingCart, CheckCircle2, Loader2, Shield, Info, CreditCard, MapPin, ArrowRight } from 'lucide-react';
+import { ShoppingCart, CheckCircle2, Loader2, Shield, Info, CreditCard, MapPin, ArrowRight, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PayPalCardCapture from './PayPalCardCapture';
@@ -12,19 +12,24 @@ import BNPLModal from './BNPLModal';
 
 // Used for wishlist items & product search results to place an in-site order
 export default function OrderViasite({ isOpen, onClose, user, product }) {
+  // Check if user has a saved address for one-click
+  const savedAddress = user?.saved_shipping_address;
+  const hasSavedAddress = !!(savedAddress?.street && savedAddress?.city && savedAddress?.zip);
+
   const [step, setStep] = useState('address'); // address | review | card | done
   const [submitting, setSubmitting] = useState(false);
+  const [oneClickSubmitting, setOneClickSubmitting] = useState(false);
   const [paypalOrderId, setPaypalOrderId] = useState(null);
   const [payMethod, setPayMethod] = useState('survey_balance');
   const [showBNPL, setShowBNPL] = useState(false);
   const [address, setAddress] = useState({
     full_name: user?.full_name || '',
-    street: '',
-    apt: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: 'US',
+    street: savedAddress?.street || '',
+    apt: savedAddress?.apt || '',
+    city: savedAddress?.city || '',
+    state: savedAddress?.state || '',
+    zip: savedAddress?.zip || '',
+    country: savedAddress?.country || 'US',
   });
 
   if (!product) return null;
@@ -50,6 +55,41 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
   const handleCardCaptured = (cardData) => {
     setPaypalOrderId(cardData.paypalOrderId);
     handleOrder(payMethod, cardData.paypalOrderId);
+  };
+
+  // One-click: uses saved address + survey balance, no extra steps
+  const handleOneClick = async () => {
+    setOneClickSubmitting(true);
+    const addr = savedAddress;
+    const addrString = `${user.full_name}, ${addr.street}${addr.apt ? ' ' + addr.apt : ''}, ${addr.city}, ${addr.state} ${addr.zip}, ${addr.country || 'US'}`;
+    try {
+      const newBalance = (user?.current_balance || 0) - basePrice;
+      await base44.auth.updateMe({ current_balance: Math.max(0, newBalance) });
+      const order = await base44.entities.Order.create({
+        user_id: user.id,
+        product_name: product.product_name || product.name,
+        product_image_url: product.product_image_url || product.image_url,
+        product_type: 'physical_product',
+        source: 'ppc_marketplace',
+        amount: basePrice,
+        payment_method: 'survey_balance',
+        vendor_name: product.vendor_name || product.vendor,
+        vendor_url: product.vendor_url || product.url,
+        shipping_address: addrString,
+        shipping_status: 'pending_ai_fulfillment',
+        ai_vetting_status: 'not_started',
+        funds_released: false,
+        notes: `One-click order. Ship to: ${addrString}. ${isBusinessUser ? 'Business account — no markup.' : '10% platform fee applied.'}`
+      });
+      base44.functions.invoke('aiOrderFulfillment', { order_id: order.id }).catch(() => {});
+      setStep('done');
+      // Pre-fill address for done screen display
+      setAddress({ full_name: user.full_name, street: addr.street, apt: addr.apt || '', city: addr.city, state: addr.state, zip: addr.zip, country: addr.country || 'US' });
+      toast.success('Order placed instantly! AI is purchasing now.');
+    } catch {
+      toast.error('One-click order failed. Please try again.');
+    }
+    setOneClickSubmitting(false);
   };
 
   const handleOrder = async (method, ppOrderId) => {
@@ -106,6 +146,29 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
             Order via GamerGain
           </DialogTitle>
         </DialogHeader>
+
+        {/* ── ONE-CLICK BANNER (all steps except done/card) ── */}
+        {hasSavedAddress && step !== 'done' && step !== 'card' && canAfford && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-400 rounded-xl p-3 space-y-2">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-green-600" />
+              <p className="font-semibold text-green-800 text-sm">One-Click Purchase</p>
+            </div>
+            <p className="text-xs text-green-700">
+              Ship to: <span className="font-medium">{savedAddress.street}, {savedAddress.city}, {savedAddress.state} {savedAddress.zip}</span>
+            </p>
+            <p className="text-xs text-green-600">Pay <strong>${basePrice.toFixed(2)}</strong> from survey balance instantly</p>
+            <Button
+              className="w-full bg-green-600 hover:bg-green-700 font-bold"
+              onClick={handleOneClick}
+              disabled={oneClickSubmitting}
+            >
+              {oneClickSubmitting
+                ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> Placing order…</>
+                : <><Zap className="w-4 h-4 mr-1" /> Buy Now — ${basePrice.toFixed(2)}</>}
+            </Button>
+          </div>
+        )}
 
         {/* ── DONE ── */}
         {step === 'done' ? (
@@ -242,10 +305,32 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
               </div>
             </div>
 
+            <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600 bg-gray-50 rounded-lg p-2.5 border border-gray-200">
+              <input
+                type="checkbox"
+                defaultChecked={true}
+                id="save-address-cb"
+                className="rounded"
+                onChange={async (e) => {
+                  if (e.target.checked && isAddressComplete) {
+                    await base44.auth.updateMe({ saved_shipping_address: address }).catch(() => {});
+                  }
+                }}
+              />
+              Save this address for one-click future purchases
+            </label>
+
             <Button
               className="w-full bg-red-600 hover:bg-red-700"
               disabled={!isAddressComplete}
-              onClick={() => setStep('review')}
+              onClick={async () => {
+                // Auto-save address when continuing
+                const cb = document.getElementById('save-address-cb');
+                if (cb?.checked) {
+                  await base44.auth.updateMe({ saved_shipping_address: address }).catch(() => {});
+                }
+                setStep('review');
+              }}
             >
               Continue to Payment <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
