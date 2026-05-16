@@ -1,0 +1,70 @@
+{
+  "name": "PayoutRecommendation",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who received this recommendation"
+    },
+    "recommended_amount": {
+      "type": "number",
+      "description": "Recommended payout amount in USD"
+    },
+    "recommended_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Recommended date to request payout"
+    },
+    "reasoning": {
+      "type": "string",
+      "description": "AI explanation for the recommendation"
+    },
+    "upcoming_bills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "due_date": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "wishlist_items_count": {
+      "type": "number",
+      "default": 0
+    },
+    "projected_earnings": {
+      "type": "number",
+      "description": "Projected earnings by recommended date"
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "AI confidence in this recommendation"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected",
+        "fulfilled"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "user_id",
+    "recommended_amount",
+    "recommended_date"
+  ]
+}
