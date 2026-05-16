@@ -212,7 +212,7 @@ Based on vendor intelligence:
 - Requires Account: ${vendorIntel?.requires_account}
 - Requires CAPTCHA: ${vendorIntel?.requires_captcha}
 
-Customer shipping details would be provided at runtime (name, address, zip).
+Customer shipping address: ${order.shipping_address || 'Not provided'}
 GamerGain's corporate card would be used for payment.
 
 Generate a structured checkout automation plan:

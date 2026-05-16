@@ -216,7 +216,7 @@ export default function ProductSearchResults({ products, searchQuery, searchImag
                     <Button
                       size="sm"
                       className="text-xs h-8 px-2.5 bg-red-600 hover:bg-red-700 text-white"
-                      onClick={() => setOrderProduct({ ...product, product_name: product.name, price_with_markup: priceWithMarkup })}
+                      onClick={() => setOrderProduct({ ...product, product_name: product.name })}
                     >
                       <ShoppingBag className="w-3.5 h-3.5 mr-1" /> Order via GamerGain
                     </Button>
