@@ -39,9 +39,9 @@ export default function SocialLoginButtons() {
   ];
 
   const handleSocialLogin = (platformId) => {
-    // Redirect to Base44 OAuth login with social provider
-    // In production, Base44 would handle the OAuth flow
-    base44.auth.redirectToLogin();
+    // Mark that we should auto-run onboarding after login
+    sessionStorage.setItem('auto_onboard_after_login', '1');
+    base44.auth.redirectToLogin(window.location.href);
   };
 
   return (

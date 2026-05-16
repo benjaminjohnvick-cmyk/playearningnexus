@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { base44 } from '@/api/base44Client';
@@ -52,6 +52,18 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false })
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvv, setCardCvv] = useState('');
   const [cardName, setCardName] = useState('');
+
+  // Auto-trigger onboarding if user just signed in via social login
+  useEffect(() => {
+    if (user && sessionStorage.getItem('auto_onboard_after_login') === '1') {
+      sessionStorage.removeItem('auto_onboard_after_login');
+      setStep('processing');
+      setProgress([]);
+      setApproveOpen(true);
+      // Small delay to let UI settle
+      setTimeout(() => handleApproveAll(), 500);
+    }
+  }, [user]);
 
   const addProgress = (msg, success = true) =>
     setProgress(p => [...p, { msg, success }]);
