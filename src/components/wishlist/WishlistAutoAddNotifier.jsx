@@ -57,7 +57,7 @@ export default function WishlistAutoAddNotifier({ user }) {
         localStorage.setItem(LAST_SYNC_KEY, Date.now().toString());
         clearTrackedProducts();
 
-        // Show notification
+        // Show in-app notification
         toast(
           `💖 ${toAdd.length} item${toAdd.length > 1 ? 's' : ''} you browsed ${toAdd.length > 1 ? 'were' : 'was'} auto-added to your Wishlist!`,
           {
@@ -69,6 +69,21 @@ export default function WishlistAutoAddNotifier({ user }) {
             duration: 8000,
           }
         );
+
+        // Send a web push notification for each newly added product
+        for (const p of toAdd) {
+          try {
+            await base44.functions.invoke('sendPushNotification', {
+              user_id: user.id,
+              title: `🛒 Buy "${p.name}" Now!`,
+              body: `Use Buy Now, Pay Later and cover payments with your survey earnings. It's already in your wishlist!`,
+              tag: `wishlist-auto-add-${p.id || p.name}`,
+              url: '/Wishlist',
+            });
+          } catch (e) {
+            // Fail silently per product
+          }
+        }
       } catch (e) {
         // Fail silently — this is a background convenience feature
       }
