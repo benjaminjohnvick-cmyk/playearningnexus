@@ -56,7 +56,7 @@ export default function AIGameCreator() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Wand2 className="w-5 h-5 text-violet-600" />
-          AI Game Creator
+          AI Game Creator & Feedback
           <Badge className="bg-violet-100 text-violet-700 ml-auto">Powered by User Data</Badge>
         </CardTitle>
         <p className="text-xs text-gray-500">AI reads ALL survey responses, reviews, and suggestions to design games users actually want.</p>

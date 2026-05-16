@@ -5,10 +5,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Activity, MessageSquare, Wand2, Gamepad2, Lock } from 'lucide-react';
+import { Activity, MessageSquare, Wand2, Gamepad2, Lock, FlaskConical, Bot } from 'lucide-react';
 import SurveyHeatmapDashboard from '@/components/developer/SurveyHeatmapDashboard';
 import AIFeedbackSurveyBuilder from '@/components/developer/AIFeedbackSurveyBuilder';
 import AIGameCreator from '@/components/developer/AIGameCreator';
+import GameABTestSuite from '@/components/developer/GameABTestSuite';
+import AutoGameFeedbackEngine from '@/components/developer/AutoGameFeedbackEngine';
 
 export default function DeveloperToolsHub() {
   const [user, setUser] = useState(null);
@@ -89,11 +91,13 @@ export default function DeveloperToolsHub() {
         </div>
 
         {/* Feature cards row */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
           {[
-            { icon: Activity, title: 'UX Heatmaps', desc: 'Session drop-off analysis', color: 'from-blue-500 to-indigo-600' },
-            { icon: MessageSquare, title: 'Feedback Surveys', desc: 'AI-generated from user data', color: 'from-emerald-500 to-teal-600' },
-            { icon: Wand2, title: 'AI Game Creator', desc: 'Build games from feedback', color: 'from-violet-500 to-purple-600' },
+            { icon: Activity, title: 'UX Heatmaps', desc: 'Session drop-off', color: 'from-blue-500 to-indigo-600' },
+            { icon: MessageSquare, title: 'Feedback Surveys', desc: 'AI-generated', color: 'from-emerald-500 to-teal-600' },
+            { icon: Wand2, title: 'AI Game Creator', desc: 'Build from feedback', color: 'from-violet-500 to-purple-600' },
+            { icon: FlaskConical, title: 'A/B Testing', desc: 'Auto variant testing', color: 'from-orange-500 to-red-500' },
+            { icon: Bot, title: 'Auto Feedback', desc: 'Runs automatically', color: 'from-teal-500 to-green-600' },
           ].map(f => (
             <Card key={f.title} className="border-0 shadow-sm">
               <CardContent className="p-3 flex items-center gap-3">
@@ -110,8 +114,8 @@ export default function DeveloperToolsHub() {
         </div>
 
         {/* Main tabs */}
-        <Tabs defaultValue="heatmap">
-          <TabsList className="w-full mb-4">
+        <Tabs defaultValue="creator">
+          <TabsList className="w-full mb-4 flex flex-wrap h-auto gap-1">
             <TabsTrigger value="heatmap" className="flex-1 text-xs gap-1">
               <Activity className="w-3.5 h-3.5" /> UX Heatmap
             </TabsTrigger>
@@ -120,6 +124,12 @@ export default function DeveloperToolsHub() {
             </TabsTrigger>
             <TabsTrigger value="creator" className="flex-1 text-xs gap-1">
               <Wand2 className="w-3.5 h-3.5" /> AI Game Creator
+            </TabsTrigger>
+            <TabsTrigger value="abtest" className="flex-1 text-xs gap-1">
+              <FlaskConical className="w-3.5 h-3.5" /> A/B Testing
+            </TabsTrigger>
+            <TabsTrigger value="autofeedback" className="flex-1 text-xs gap-1">
+              <Bot className="w-3.5 h-3.5" /> Auto Feedback
             </TabsTrigger>
           </TabsList>
 
@@ -140,6 +150,17 @@ export default function DeveloperToolsHub() {
 
           <TabsContent value="creator">
             <AIGameCreator />
+          </TabsContent>
+
+          <TabsContent value="abtest">
+            <GameABTestSuite
+              gameId={selectedGameId}
+              gameTitle={selectedGame?.title || 'Selected Game'}
+            />
+          </TabsContent>
+
+          <TabsContent value="autofeedback">
+            <AutoGameFeedbackEngine games={games} />
           </TabsContent>
         </Tabs>
       </div>
