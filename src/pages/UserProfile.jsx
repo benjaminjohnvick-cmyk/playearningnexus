@@ -15,6 +15,7 @@ import {
   Crown, Shield, Medal, ClipboardList, TrendingUp, AlertCircle
 } from 'lucide-react';
 import AboutMeEditor from '../components/profile/AboutMeEditor';
+import PayoutInsightWidget from '../components/profile/PayoutInsightWidget';
 import AchievementBadgeSystem, { useAchievements } from '@/components/achievements/AchievementBadgeSystem';
 import { BadgeDisplay, useBadgeAwarder } from '@/components/achievements/BadgeSystem';
 import MilestoneAchievements, { useMilestoneAwarder } from '@/components/achievements/MilestoneAchievements';
@@ -473,8 +474,11 @@ export default function UserProfile() {
                     </CardContent>
                   </Card>
 
+                  {/* AI Payout Insight */}
+                  <PayoutInsightWidget user={user} />
+
                   {/* Payout History */}
-                  <Card className="border-0 shadow-lg">
+                   <Card className="border-0 shadow-lg">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-base flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-green-600" /> Payout History

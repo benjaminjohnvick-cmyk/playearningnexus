@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SurveyInsightsDashboard from '../components/business/SurveyInsightsDashboard';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -72,10 +73,11 @@ export default function BusinessDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="analytics" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-6">
+          <TabsList className="grid w-full grid-cols-6 mb-6">
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="game-metrics">🎮 Game Metrics</TabsTrigger>
             <TabsTrigger value="ai-optimization">AI Optimization</TabsTrigger>
+            <TabsTrigger value="survey-insights">🧠 Survey Insights</TabsTrigger>
             <TabsTrigger value="insights">AI Insights</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
           </TabsList>
@@ -167,6 +169,11 @@ export default function BusinessDashboard() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Survey Insights Tab */}
+          <TabsContent value="survey-insights">
+            <SurveyInsightsDashboard />
           </TabsContent>
 
           {/* AI Insights Tab */}
