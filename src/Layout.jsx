@@ -39,6 +39,7 @@ import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 import MegaContestButton from '@/components/referral/MegaContestButton';
 import { LocaleProvider } from '@/components/locale/LocaleContext';
+import CustomerFeedbackSurvey from '@/components/feedback/CustomerFeedbackSurvey';
 import { initTracker, setPage, trackEvent } from '@/lib/uxTracker';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
@@ -486,6 +487,15 @@ export default function Layout({ children, currentPageName }) {
           user={user}
           contextData={logoutContext}
         />
+
+        {/* Customer Feedback Survey - Always Visible */}
+        {isAuthenticated && user && mountSideEffects && (
+          <div className="fixed bottom-4 right-4 w-96 max-h-[500px] z-20 shadow-xl">
+            <Suspense fallback={null}>
+              <CustomerFeedbackSurvey />
+            </Suspense>
+          </div>
+        )}
 
         {/* Footer */}
         <footer className="border-t bg-white mt-20">
