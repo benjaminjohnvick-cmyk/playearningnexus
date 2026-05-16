@@ -341,7 +341,7 @@ export default function Layout({ children, currentPageName }) {
                 <Link to={createPageUrl('QuickSurveyBuilder')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'QuickSurveyBuilder' ? "default" : "ghost"} size="sm"
                     className={currentPageName === 'QuickSurveyBuilder' ? "bg-gradient-to-r from-purple-600 to-pink-600 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}>
-                    📋 Build Survey
+                    📋 Publish Survey
                   </Button>
                 </Link>
                 <Link to="/AdBusinessOverview" className="flex-shrink-0">
