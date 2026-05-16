@@ -9,6 +9,7 @@ import BNPLModal from '@/components/store/BNPLModal';
 import BNPLBanner from '@/components/store/BNPLBanner';
 import OrderViasite from '@/components/store/OrderViaSite';
 import WishlistBNPLSummary from '@/components/wishlist/WishlistBNPLSummary';
+import ShareWishlistButton from '@/components/wishlist/ShareWishlistButton';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -55,7 +56,10 @@ export default function Wishlist() {
             </h1>
             <p className="text-gray-500 mt-1">Save items and order through GamerGain — prices include 10% platform fee</p>
           </div>
-          <div className="w-full mt-4">
+          <div className="w-full mt-4 space-y-4">
+            <div className="flex gap-3 justify-end">
+              <ShareWishlistButton userId={user?.id} />
+            </div>
             <WishlistBNPLSummary
               wishlistItems={wishlistItems}
               onActivateBNPL={() => setShowBNPL(true)}

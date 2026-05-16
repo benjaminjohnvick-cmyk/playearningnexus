@@ -101,6 +101,7 @@ const AIAgentsCommandCenter = lazy(() => import('./pages/AIAgentsCommandCenter')
 const AffiliateMLMDashboard = lazy(() => import('./pages/AffiliateMLMDashboard'));
 const AIAdDiscovery = lazy(() => import('./pages/AIAdDiscovery'));
 const WishlistIntelligence = lazy(() => import('./pages/WishlistIntelligence'));
+const WishlistSharerLeaderboardPage = lazy(() => import('./pages/WishlistSharerLeaderboardPage'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -271,6 +272,7 @@ const AuthenticatedApp = () => {
       <Route path="/AffiliateMLMDashboard" element={<LayoutWrapper currentPageName="AffiliateMLMDashboard"><AffiliateMLMDashboard /></LayoutWrapper>} />
       <Route path="/AIAdDiscovery" element={<LayoutWrapper currentPageName="AIAdDiscovery"><AIAdDiscovery /></LayoutWrapper>} />
       <Route path="/WishlistIntelligence" element={<LayoutWrapper currentPageName="WishlistIntelligence"><WishlistIntelligence /></LayoutWrapper>} />
+      <Route path="/WishlistSharerLeaderboard" element={<LayoutWrapper currentPageName="WishlistSharerLeaderboard"><WishlistSharerLeaderboardPage /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
