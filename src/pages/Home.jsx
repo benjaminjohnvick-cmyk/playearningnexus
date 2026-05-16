@@ -147,12 +147,13 @@ export default function Home() {
               <div className="max-w-xs mb-4">
                 <SocialLoginButtons />
               </div>
-              <div className="flex gap-3 flex-wrap">
+              <div className="flex gap-3 flex-wrap items-center">
                 <Link to={createPageUrl('UserDashboard')}>
                   <Button size="sm" className="bg-white text-purple-700 hover:bg-gray-100 font-bold gap-1">
                     Start Playing <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
+                <ApproveAllButton user={user} heroMode />
                 <Link to={createPageUrl('BusinessDashboard')}>
                   <Button size="sm" variant="outline" className="border-white/40 text-white hover:bg-white/10 bg-white/10">
                     For Developers

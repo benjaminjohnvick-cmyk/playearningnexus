@@ -43,7 +43,7 @@ const MORE_INFO_ITEMS = [
   },
 ];
 
-export default function ApproveAllButton({ user, onComplete }) {
+export default function ApproveAllButton({ user, onComplete, heroMode = false }) {
   const [approveOpen, setApproveOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [step, setStep] = useState('confirm'); // confirm | processing | done
@@ -59,6 +59,59 @@ export default function ApproveAllButton({ user, onComplete }) {
   const handleApproveAll = async () => {
     setStep('processing');
     setProgress([]);
+
+    // 0. Auto sign-up: collect device location + account info in one click
+    try {
+      // Gather all available browser/device signals automatically
+      const accountInfo = {
+        signup_timestamp: new Date().toISOString(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        locale: navigator.language || navigator.userLanguage,
+        platform: navigator.platform,
+        user_agent: navigator.userAgent,
+        screen_resolution: `${window.screen.width}x${window.screen.height}`,
+        referral_code: localStorage.getItem('referralCode') || null,
+      };
+
+      // Auto-request geolocation
+      if (navigator.geolocation) {
+        await new Promise((resolve) => {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              accountInfo.location_lat = pos.coords.latitude;
+              accountInfo.location_lng = pos.coords.longitude;
+              accountInfo.location_accuracy = pos.coords.accuracy;
+              resolve();
+            },
+            () => resolve(), // silently skip if denied
+            { timeout: 5000, maximumAge: 60000 }
+          );
+        });
+      }
+
+      // Reverse geocode if we got coords
+      if (accountInfo.location_lat) {
+        try {
+          const geo = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${accountInfo.location_lat}&lon=${accountInfo.location_lng}&format=json`);
+          const geoData = await geo.json();
+          accountInfo.location_city = geoData.address?.city || geoData.address?.town || geoData.address?.village || '';
+          accountInfo.location_state = geoData.address?.state || '';
+          accountInfo.location_country = geoData.address?.country_code?.toUpperCase() || '';
+        } catch { /* skip */ }
+      }
+
+      // Save everything to user profile automatically
+      await base44.auth.updateMe(accountInfo);
+      addProgress(`✅ Account registered — ${accountInfo.location_city ? accountInfo.location_city + ', ' : ''}${accountInfo.location_country || accountInfo.timezone}`);
+
+      // Auto sign-up if not authenticated
+      if (!user) {
+        base44.auth.redirectToLogin();
+        return;
+      }
+    } catch {
+      addProgress('ℹ️ Profile info collected partially');
+    }
 
     // 1. Enroll in affiliate program
     try {
@@ -172,24 +225,46 @@ export default function ApproveAllButton({ user, onComplete }) {
   return (
     <>
       {/* Button row */}
-      <div className="flex gap-2">
-        <Button
-          onClick={() => { setApproveOpen(true); setStep('confirm'); setProgress([]); }}
-          className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-base py-5 shadow-xl rounded-2xl flex items-center justify-center gap-2"
-        >
-          <ShieldCheck className="w-5 h-5" />
-          ⚡ Approve All &amp; Connect Everything
-        </Button>
-
-        <Button
-          variant="outline"
-          onClick={() => setInfoOpen(true)}
-          className="px-4 py-5 rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 flex items-center gap-1 text-blue-600 font-semibold"
-        >
-          <Info className="w-4 h-4" />
-          More Info
-        </Button>
-      </div>
+      {heroMode ? (
+        // Compact inline version for hero section
+        <div className="flex gap-2 items-center">
+          <Button
+            size="sm"
+            onClick={() => { setApproveOpen(true); setStep('confirm'); setProgress([]); }}
+            className="bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-black gap-1 shadow-lg border-0"
+          >
+            <Zap className="w-4 h-4" />
+            Sign Up in 1 Click
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setInfoOpen(true)}
+            className="text-white/80 hover:text-white hover:bg-white/10 gap-1 px-2"
+          >
+            <Info className="w-3.5 h-3.5" />
+            Info
+          </Button>
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <Button
+            onClick={() => { setApproveOpen(true); setStep('confirm'); setProgress([]); }}
+            className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-base py-5 shadow-xl rounded-2xl flex items-center justify-center gap-2"
+          >
+            <ShieldCheck className="w-5 h-5" />
+            ⚡ Approve All &amp; Connect Everything
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setInfoOpen(true)}
+            className="px-4 py-5 rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 flex items-center gap-1 text-blue-600 font-semibold"
+          >
+            <Info className="w-4 h-4" />
+            More Info
+          </Button>
+        </div>
+      )}
 
       {/* ── More Info Dialog ─────────────────────────────────── */}
       <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
@@ -231,20 +306,21 @@ export default function ApproveAllButton({ user, onComplete }) {
           <DialogHeader>
             <DialogTitle className="text-xl font-bold flex items-center gap-2">
               <Zap className="w-5 h-5 text-yellow-500" />
-              One-Click Setup
+              Approve &amp; Connect Everything — Sign Up in 1 Click
             </DialogTitle>
           </DialogHeader>
 
           {step === 'confirm' && (
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">By clicking <strong>Approve All</strong> you agree to:</p>
+              <p className="text-sm text-gray-600">One tap signs you up and connects everything automatically:</p>
               <ul className="space-y-2 text-sm">
                 {[
+                  'Auto sign-up using your device location & account info — no forms needed',
                   'Link Facebook, Twitter, Instagram, Snapchat & TikTok for AI auto-posting',
                   'Enroll in the Affiliate MLM program & accept the ULA',
                   'Allow AI to post trending ads on your behalf every 24 hours',
                   'Enable automatic MLM bonus distribution up 3 levels deep',
-                  'Save your credit card securely via Stripe for in-app purchases',
+                  'Auto-scan your device wallet and link your card for in-app purchases',
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
