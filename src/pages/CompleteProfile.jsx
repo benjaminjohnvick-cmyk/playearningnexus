@@ -96,7 +96,7 @@ export default function CompleteProfile() {
             window.location.replace('/');
           }} />
           <p className="text-xs text-gray-400 text-center mt-2">
-            One click links all social accounts, enrolls you in the affiliate program &amp; saves your payment method.
+            Links all social accounts, saves your card securely, and activates the AI affiliate agent. Tap <strong>More Info</strong> to learn exactly what's included.
           </p>
         </div>
       </div>
