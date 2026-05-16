@@ -59,6 +59,7 @@ const PPCPushNotificationManager = lazy(() => import('@/components/notifications
 const AIPersonalizedDailyGoal = lazy(() => import('@/components/dashboard/AIPersonalizedDailyGoal'));
 const WishlistDailyNotifier = lazy(() => import('@/components/wishlist/WishlistDailyNotifier'));
 const PriceDropAlertBadge = lazy(() => import('@/components/wishlist/PriceDropAlertBadge'));
+const WishlistAutoAddNotifier = lazy(() => import('@/components/wishlist/WishlistAutoAddNotifier'));
 
 export default function Layout({ children, currentPageName }) {
   // Use AuthContext — avoids a duplicate base44.auth.me() call on every page mount
@@ -470,6 +471,7 @@ export default function Layout({ children, currentPageName }) {
              {isAuthenticated && user && <PPCPushNotificationManager />}
              {isAuthenticated && user && <WishlistDailyNotifier user={user} />}
              {isAuthenticated && user && <PriceDropAlertBadge user={user} />}
+             {isAuthenticated && user && <WishlistAutoAddNotifier user={user} />}
            </Suspense>
          )}
          <SupportChatButton />

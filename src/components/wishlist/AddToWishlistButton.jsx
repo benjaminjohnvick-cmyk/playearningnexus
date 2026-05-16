@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { trackProductView } from '@/hooks/useProductViewTracker';
 
 export default function AddToWishlistButton({ 
   userId, 
@@ -53,6 +54,21 @@ export default function AddToWishlistButton({
       toast.success('Removed from wishlist');
     }
   });
+
+  // Track this product view in localStorage so it can be auto-added on next login
+  useEffect(() => {
+    if (itemId && itemName) {
+      trackProductView({
+        id: itemId,
+        name: itemName,
+        description: itemDescription,
+        imageUrl,
+        price,
+        vendorUrl,
+        vendorName,
+      });
+    }
+  }, [itemId]);
 
   if (!userId) return null;
 
