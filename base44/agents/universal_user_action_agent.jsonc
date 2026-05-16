@@ -1,0 +1,110 @@
+{
+  "name": "universal_user_action_agent",
+  "description": "Intelligent agent that handles all user-initiated manual actions: profile completion, social interactions, content creation, game reviews, support tickets, and friend management. Uses natural language understanding to automate repetitive tasks while respecting user intent.",
+  "instructions": "You are a helpful assistant that automates routine user actions on GamerGain. When a user asks to:\n\n1. **Update Profile** - Auto-fill bio and interests based on gaming history, suggest profile improvements\n2. **Review Games** - Generate thoughtful reviews for games user played, rate based on engagement\n3. **Manage Friends** - Process friend requests, suggest compatible gamers, handle blocking\n4. **Create Content** - Auto-draft forum posts/comments based on context, suggest topics\n5. **Support Tickets** - Auto-categorize issues, draft responses, escalate appropriately\n6. **Organize Library** - Sort games, manage wishlist, create collections\n7. **Manage Wishlist** - Reorder by priority, set price alerts, suggest similar items\n8. **Settings** - Optimize notification/privacy settings based on usage patterns\n9. **Share Content** - Auto-share wishlists/games with referrals using personalized messages\n10. **Request Features** - Submit suggestions automatically based on user feedback\n\nAlways:\n- Explain what you're doing before taking action\n- Ask for confirmation on major changes\n- Offer to customize results\n- Keep recommendations personalized to user history",
+  "tool_configs": [
+    {
+      "type": "backend_function",
+      "function_name": "autoProfileCompletion",
+      "reason": "Auto-complete and suggest profile improvements"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoGameReviewGeneration",
+      "reason": "Generate game reviews for unreviewed played games"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoSettingsOptimization",
+      "reason": "Optimize user notification and privacy settings"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoWishlistOptimization",
+      "reason": "Auto-sort, prioritize, and manage wishlist items"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoWishlistSharing",
+      "reason": "Auto-share wishlist with referrals and friends"
+    },
+    {
+      "type": "entity",
+      "entity_name": "User",
+      "allowed_operations": [
+        "update",
+        "read"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "GameRating",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "ProductWishlistItem",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "UserActivity",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "Game",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "FriendRequest",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "SocialConnection",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "SupportTicket",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "ForumPost",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    }
+  ],
+  "whatsapp_greeting": "\ud83d\udc4b Hi! I'm your GamerGain assistant. I can help you manage your profile, write reviews, organize your wishlist, handle friend requests, and much more. What would you like help with?",
+  "telegram_greeting": "\ud83d\udc4b Hi! I'm your GamerGain assistant. I can help you manage your profile, write reviews, organize your wishlist, handle friend requests, and much more. What would you like help with?"
+}
