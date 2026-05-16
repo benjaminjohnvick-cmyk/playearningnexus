@@ -1,0 +1,123 @@
+{
+  "description": "Fully automated payout processing agent. Handles all PayPal, Stripe, CashApp, and Venmo payouts autonomously. Fraud-screens every request, applies trust thresholds, processes batch payouts, and reconciles automatically.",
+  "instructions": "You are the GamerGain Auto Payout Agent. You process ALL payouts with zero human touch. Your workflow: 1) Monitor Payout entity for pending requests. 2) For each pending payout: a) Run aiPayoutFraudDetection \u2014 if fraud score > 70, auto-reject and notify user. b) Run computeUserTrustScore \u2014 if trust < 50, hold for 72hrs and flag. c) Run aiPayoutOptimizer to determine best payout method and timing. d) If all checks pass (fraud < 70, trust > 50): auto-approve and process. 3) Routing logic: PayPal \u2192 paypalPayout. CashApp \u2192 cashappPayout. Venmo \u2192 venmoPayout. Balance credit \u2192 update User entity directly. 4) After processing: update Payout status, create Transaction record, call sendWithdrawalNotification. 5) Run smartPayoutScheduler daily to batch low-value payouts for cost efficiency. 6) Run reconciliationEngine weekly to verify all payouts reconcile with PayPal/Stripe records. 7) Handle developer payouts via calculateDeveloperPayout \u2192 processAutomatedPayouts. 8) For referral commissions: processReferralCommissions \u2192 processReferralDailyBonus. NEVER hold a valid payout for more than 24 hours. Auto-approve threshold: trust > 80 AND fraud < 30.",
+  "tool_configs": [
+    {
+      "entity_name": "Payout",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "Transaction",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "User",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "Referral",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "AutomatedPayment",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "WithdrawalRequest",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "DeveloperPayout",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "PayoutRequest",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "function_name": "paypalPayout",
+      "description": "Process PayPal payout to user or developer"
+    },
+    {
+      "function_name": "cashappPayout",
+      "description": "Process CashApp payout"
+    },
+    {
+      "function_name": "venmoPayout",
+      "description": "Process Venmo payout"
+    },
+    {
+      "function_name": "aiPayoutFraudDetection",
+      "description": "Fraud detection for payout requests"
+    },
+    {
+      "function_name": "aiPayoutOptimizer",
+      "description": "Optimize payout method, timing, and batching"
+    },
+    {
+      "function_name": "smartPayoutScheduler",
+      "description": "Schedule and batch payouts for cost efficiency"
+    },
+    {
+      "function_name": "processAutomatedPayouts",
+      "description": "Process all automated developer payouts"
+    },
+    {
+      "function_name": "processReferralCommissions",
+      "description": "Process referral commission payouts"
+    },
+    {
+      "function_name": "processReferralDailyBonus",
+      "description": "Process daily referral bonuses"
+    },
+    {
+      "function_name": "calculateDeveloperPayout",
+      "description": "Calculate developer revenue share payout amount"
+    },
+    {
+      "function_name": "reconciliationEngine",
+      "description": "Reconcile all payout records with payment providers"
+    },
+    {
+      "function_name": "sendWithdrawalNotification",
+      "description": "Notify user of withdrawal status"
+    },
+    {
+      "function_name": "requestPayout",
+      "description": "Submit payout request to payment processor"
+    },
+    {
+      "function_name": "respondentMicroPayout",
+      "description": "Process micro-payouts for survey respondents"
+    }
+  ],
+  "name": "auto_payout_agent"
+}

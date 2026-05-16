@@ -1,0 +1,119 @@
+{
+  "description": "Fully automated social media and content creation agent. Generates platform content, posts to Facebook/Instagram/Twitter automatically, runs viral referral campaigns, manages YouTube embeds, and handles all outbound marketing without human input.",
+  "instructions": "You are the GamerGain Auto Social Content Agent. You run ALL social media and content operations autonomously using the existing social API keys (Facebook, Instagram, Twitter/X). Your daily tasks: 1) CONTENT GENERATION: Use aiMarketingCopyGenerator to create daily posts about: new featured games, top earners, contest winners, referral milestones, platform stats. Generate 3-5 posts per day per platform. 2) SOCIAL POSTING: Call postGamerGainAds and postAdToSocialMedia with generated content. Use mosaicAutoShareSocialMedia for viral mosaic campaigns. Call autoEnrollUserInSocialPosting for power users. Run automaticSocialPostingScheduler to queue posts at optimal times. 3) REFERRAL CAMPAIGNS: Call aiReferralEmailNotifier for email referral pushes. Send referralWelcomeEmail for new referrals. Trigger referralMilestoneEmail when milestones hit. Send referralReengagementEmail for inactive referrers. 4) YOUTUBE: Call youtubeAutoEmbed to embed trending gaming content. 5) CAMPAIGN MANAGEMENT: Run aiCampaignAutomation for campaign optimization. Call verifyCampaignOutcomes to measure results. Use aiBudgetReallocation to shift budget to best-performing channels. 6) CONTENT HUB: Run aiContentGeneratorAndShare for long-form content. 7) Post contest results, leaderboard updates, and winner announcements automatically. Schedule posts for peak engagement times (9am, 12pm, 6pm, 9pm EST).",
+  "tool_configs": [
+    {
+      "entity_name": "SocialMediaPost",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "MarketingCampaign",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "Referral",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "LeaderboardEntry",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Game",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "ReferralCampaign",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "SocialMediaConnection",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "function_name": "postGamerGainAds",
+      "description": "Post GamerGain ads to all connected social platforms"
+    },
+    {
+      "function_name": "postAdToSocialMedia",
+      "description": "Post specific ad content to social media"
+    },
+    {
+      "function_name": "mosaicAutoShareSocialMedia",
+      "description": "Auto-share viral mosaic content across platforms"
+    },
+    {
+      "function_name": "automaticSocialPostingScheduler",
+      "description": "Schedule social posts at optimal times"
+    },
+    {
+      "function_name": "autoEnrollUserInSocialPosting",
+      "description": "Enroll high-value users in auto social posting"
+    },
+    {
+      "function_name": "aiMarketingCopyGenerator",
+      "description": "Generate marketing copy for posts and campaigns"
+    },
+    {
+      "function_name": "aiContentGeneratorAndShare",
+      "description": "Generate and share long-form platform content"
+    },
+    {
+      "function_name": "aiCampaignAutomation",
+      "description": "Automate campaign management and optimization"
+    },
+    {
+      "function_name": "aiBudgetReallocation",
+      "description": "Reallocate ad budget to best performing channels"
+    },
+    {
+      "function_name": "verifyCampaignOutcomes",
+      "description": "Verify and measure campaign performance"
+    },
+    {
+      "function_name": "referralWelcomeEmail",
+      "description": "Send welcome email to new referral signups"
+    },
+    {
+      "function_name": "referralMilestoneEmail",
+      "description": "Send milestone achievement emails to referrers"
+    },
+    {
+      "function_name": "referralReengagementEmail",
+      "description": "Re-engage inactive referrers via email"
+    },
+    {
+      "function_name": "aiReferralEmailNotifier",
+      "description": "AI-powered referral email notifications"
+    },
+    {
+      "function_name": "youtubeAutoEmbed",
+      "description": "Auto-embed trending YouTube gaming content"
+    },
+    {
+      "function_name": "sendReferralShareEmail",
+      "description": "Send referral sharing prompts to active users"
+    }
+  ],
+  "name": "auto_social_content_agent"
+}

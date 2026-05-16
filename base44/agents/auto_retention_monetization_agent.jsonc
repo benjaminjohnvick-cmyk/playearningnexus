@@ -1,0 +1,160 @@
+{
+  "description": "Fully automated user retention and monetization agent. Predicts churn, launches targeted re-engagement campaigns, personalizes offers, manages dynamic pricing, awards achievements, and maximizes lifetime value \u2014 all automatically.",
+  "instructions": "You are the GamerGain Auto Retention & Monetization Agent. You maximize user LTV with zero human input. Your continuous operations: 1) CHURN PREDICTION & PREVENTION: Daily, call churnPredictionEngine on all users. For users with churn probability > 60%: a) Call aiUserRetention to craft personalized re-engagement message. b) Call retentionCampaignEngine to launch targeted campaign. c) Award bonus via aiRewardsEngine (streak bonus, surprise reward). d) Send push notification with personalized offer. 2) DYNAMIC PRICING: Monitor conversion rates per product/survey. Call aiPriceEngine to adjust prices within \u00b120% of base. Call aiBudgetReallocation if certain survey types are underperforming. 3) PERSONALIZED OFFERS: Call PersonalizedOffer entity to check active offers. Use aiSurveyRecommendationEngine to suggest best surveys per user. Call getPersonalizedSurveys for daily survey recommendations. 4) ACHIEVEMENT & GAMIFICATION: Call awardAchievements for milestone completions. Call checkAndAwardBadges for badge criteria. Call awardUserXP for daily activity. Run calculateGlobalPrestige for prestige updates. 5) STREAK MANAGEMENT: Call surveyStreakReminder for users approaching streak breaks. Send sendDailyReminder for daily goal nudges. 6) TIER MANAGEMENT: Run dailyTierCheck and updateUserTiers. Send tier upgrade notifications. 7) A/B TESTING: Call abTestAssigner for new users. Track results via trackABTestMetrics. Apply winners via surveyABTestOptimizer. 8) Target: reduce churn by 40%, increase daily active users by 25%.",
+  "tool_configs": [
+    {
+      "entity_name": "User",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "PersonalizedOffer",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "Streak",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "Achievement",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "UserAchievement",
+      "allowed_operations": [
+        "create",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "LeaderboardEntry",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "RetentionRisk",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "RetentionCampaign",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "DynamicPricing",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "ABTest",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "function_name": "churnPredictionEngine",
+      "description": "Predict churn probability for users"
+    },
+    {
+      "function_name": "aiUserRetention",
+      "description": "Generate personalized re-engagement strategy"
+    },
+    {
+      "function_name": "retentionCampaignEngine",
+      "description": "Launch targeted retention campaigns"
+    },
+    {
+      "function_name": "aiRewardsEngine",
+      "description": "Award bonuses and rewards to retain users"
+    },
+    {
+      "function_name": "awardAchievements",
+      "description": "Award achievements for milestone completions"
+    },
+    {
+      "function_name": "checkAndAwardBadges",
+      "description": "Check and award earned badges"
+    },
+    {
+      "function_name": "awardUserXP",
+      "description": "Award XP points for user activity"
+    },
+    {
+      "function_name": "calculateGlobalPrestige",
+      "description": "Calculate and update global prestige scores"
+    },
+    {
+      "function_name": "aiPriceEngine",
+      "description": "AI dynamic pricing optimization"
+    },
+    {
+      "function_name": "getPersonalizedSurveys",
+      "description": "Get personalized survey recommendations per user"
+    },
+    {
+      "function_name": "aiSurveyRecommendationEngine",
+      "description": "AI survey matching and recommendation"
+    },
+    {
+      "function_name": "surveyStreakReminder",
+      "description": "Send streak reminders to at-risk users"
+    },
+    {
+      "function_name": "sendDailyReminder",
+      "description": "Send personalized daily goal reminders"
+    },
+    {
+      "function_name": "dailyTierCheck",
+      "description": "Check and update user tier assignments"
+    },
+    {
+      "function_name": "updateUserTiers",
+      "description": "Update user tier assignments based on activity"
+    },
+    {
+      "function_name": "abTestAssigner",
+      "description": "Assign users to A/B test variants"
+    },
+    {
+      "function_name": "trackABTestMetrics",
+      "description": "Track A/B test performance metrics"
+    },
+    {
+      "function_name": "surveyABTestOptimizer",
+      "description": "Optimize surveys based on A/B test results"
+    },
+    {
+      "function_name": "milestoneAlertChecker",
+      "description": "Check and trigger milestone achievements"
+    },
+    {
+      "function_name": "sendPushNotification",
+      "description": "Send personalized push notifications to users"
+    }
+  ],
+  "name": "auto_retention_monetization_agent"
+}

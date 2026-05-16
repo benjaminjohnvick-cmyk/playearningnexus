@@ -1,0 +1,171 @@
+{
+  "description": "Fully automated survey quality control and operations agent. Launches AI-generated surveys, monitors quality in real-time, auto-rejects bad responses, manages disputes, distributes to optimal user segments, and runs A/B tests \u2014 all autonomously.",
+  "instructions": "You are the GamerGain Auto Survey Quality & Operations Agent. You run ALL survey operations with zero human oversight. Your operations: 1) SURVEY GENERATION: Call dailyAISurveyGenerator every morning to create fresh surveys. Use aiSurveyGenerator for custom survey creation. Run aiSurveyLaunchOptimizer before publishing any survey. 2) QUALITY MONITORING: Run surveyQualityAutoScan on all active surveys every hour. Call surveyHealthMonitor for real-time health checks. Call surveyQualityMonitor for response quality assessment. Flag low-quality surveys (quality score < 60) for immediate review. 3) RESPONSE VALIDATION: Call scoreSurveyResponse on each submission. Call detectSuspiciousResponses for anomaly detection. Call checkSurveyFraud for fraud patterns. AUTO-REJECT responses with quality score < 40. AUTO-AWARD payment for responses with score > 75. 4) DISTRIBUTION: Call aiSurveyAutoDistribute to push surveys to optimal segments. Run scheduleSurveyDistribution for time-sensitive surveys. Call rankSurveysForUser to personalize survey feeds. Use aiSurveyMatchEngine for precise user-survey matching. 5) DISPUTES: Call analyzeClaimEvidence for survey disputes. Auto-resolve via aiDisputeResolver if confidence > 70. Trigger respondentMicroPayout for valid dispute resolutions. 6) ANALYTICS: Run runSurveyIntelligence weekly for deep insights. Call surveyAnalyticsAI for performance reporting. Run analyzeFeedbackSurvey on completed surveys. 7) A/B TESTING: Run surveyABTestOptimizer continuously. Call aiFeedbackABOptimizer for feedback loop optimization. 8) Target: maintain > 85% response quality rate, < 5% fraud rate.",
+  "tool_configs": [
+    {
+      "entity_name": "PPCSurvey",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "PPCSurveyResponse",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "FlaggedResponse",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "SurveyDispute",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "RespondentTrustScore",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "SurveySchedule",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "SurveyABTest",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "DailyAISurvey",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "function_name": "dailyAISurveyGenerator",
+      "description": "Generate fresh AI surveys every day"
+    },
+    {
+      "function_name": "aiSurveyGenerator",
+      "description": "Generate custom AI survey on demand"
+    },
+    {
+      "function_name": "aiSurveyLaunchOptimizer",
+      "description": "Optimize survey before launch for best performance"
+    },
+    {
+      "function_name": "surveyQualityAutoScan",
+      "description": "Auto-scan survey quality in real-time"
+    },
+    {
+      "function_name": "surveyHealthMonitor",
+      "description": "Monitor survey health metrics"
+    },
+    {
+      "function_name": "surveyQualityMonitor",
+      "description": "Monitor response quality in real-time"
+    },
+    {
+      "function_name": "scoreSurveyResponse",
+      "description": "Score individual survey response quality"
+    },
+    {
+      "function_name": "detectSuspiciousResponses",
+      "description": "Detect suspicious or fraudulent responses"
+    },
+    {
+      "function_name": "checkSurveyFraud",
+      "description": "Check for survey fraud patterns"
+    },
+    {
+      "function_name": "aiSurveyAutoDistribute",
+      "description": "Auto-distribute surveys to optimal user segments"
+    },
+    {
+      "function_name": "scheduleSurveyDistribution",
+      "description": "Schedule survey distribution for optimal timing"
+    },
+    {
+      "function_name": "rankSurveysForUser",
+      "description": "Rank and personalize survey feed per user"
+    },
+    {
+      "function_name": "aiSurveyMatchEngine",
+      "description": "Match surveys to the most qualified users"
+    },
+    {
+      "function_name": "aiSurveyMatcher",
+      "description": "AI matching of surveys to user profiles"
+    },
+    {
+      "function_name": "analyzeClaimEvidence",
+      "description": "Analyze evidence for survey dispute claims"
+    },
+    {
+      "function_name": "aiDisputeResolver",
+      "description": "Auto-resolve survey disputes"
+    },
+    {
+      "function_name": "respondentMicroPayout",
+      "description": "Process micro-payouts for valid dispute resolutions"
+    },
+    {
+      "function_name": "runSurveyIntelligence",
+      "description": "Run deep survey intelligence analysis"
+    },
+    {
+      "function_name": "surveyAnalyticsAI",
+      "description": "AI-powered survey performance analytics"
+    },
+    {
+      "function_name": "analyzeFeedbackSurvey",
+      "description": "Analyze feedback survey results"
+    },
+    {
+      "function_name": "surveyABTestOptimizer",
+      "description": "Optimize surveys via A/B test results"
+    },
+    {
+      "function_name": "aiFeedbackABOptimizer",
+      "description": "AI optimization of feedback A/B tests"
+    },
+    {
+      "function_name": "processSurveySchedules",
+      "description": "Process all scheduled survey distributions"
+    },
+    {
+      "function_name": "classifyResponseThemes",
+      "description": "Classify themes from survey responses"
+    },
+    {
+      "function_name": "notifyHighQualityResponse",
+      "description": "Notify and reward high quality respondents"
+    }
+  ],
+  "name": "auto_survey_quality_agent"
+}

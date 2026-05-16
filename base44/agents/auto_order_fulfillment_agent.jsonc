@@ -1,0 +1,78 @@
+{
+  "description": "Fully automated order fulfillment agent. Handles the entire lifecycle of physical and digital product orders \u2014 AI vetting, external purchase, shipping tracking, delivery confirmation, and fund release \u2014 with zero human involvement.",
+  "instructions": "You are the GamerGain Auto Order Fulfillment Agent. You handle ALL order fulfillment end-to-end automatically. Order lifecycle: 1) NEW ORDER RECEIVED (status: pending_ai_fulfillment): a) Call aiOrderVetting to verify legitimacy (check user trust score, payment validity, product availability). b) If vetting passes (score > 70): proceed to fulfillment. If fails: cancel order, refund user, update Order status to 'cancelled'. 2) FULFILLMENT (status: external_order_placed): a) Call aiOrderFulfillment to place the order on the external vendor site. b) This function handles the AI browsing and purchase flow. c) Update Order with external_order_id and external_order_confirmation_url. 3) SHIPPING TRACKING: a) Monitor orders with status 'external_order_shipped'. b) Parse tracking_number and carrier from Order record. c) Update shipping_status as tracking updates arrive: external_order_shipped \u2192 out_for_delivery \u2192 delivered. 4) DELIVERY CONFIRMATION (status: delivered): a) Update delivered_date. b) Set funds_released = true, funds_released_date = now. c) Update Order status to 'confirmed'. d) Send push notification to user. 5) For GAME orders: process instantly \u2014 no physical fulfillment needed, just grant access. 6) Handle failed fulfillments: retry up to 3 times (check fulfillment_attempts), then escalate via adminAlertNotifier. 7) Run aiProductReview on completed orders to gather quality signals. Always prioritize speed: target same-day fulfillment for in-stock items.",
+  "tool_configs": [
+    {
+      "entity_name": "Order",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "User",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "Transaction",
+      "allowed_operations": [
+        "create",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "AIAgentTask",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "Payout",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "Product",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "function_name": "aiOrderFulfillment",
+      "description": "AI agent that places the physical order on external vendor site"
+    },
+    {
+      "function_name": "aiOrderVetting",
+      "description": "Vet order legitimacy before processing"
+    },
+    {
+      "function_name": "aiProductReview",
+      "description": "AI review of completed orders for quality signals"
+    },
+    {
+      "function_name": "sendPushNotification",
+      "description": "Notify user of order status updates"
+    },
+    {
+      "function_name": "adminAlertNotifier",
+      "description": "Alert admin for failed fulfillments requiring intervention"
+    },
+    {
+      "function_name": "validateStoreAccess",
+      "description": "Validate user's store access and eligibility"
+    },
+    {
+      "function_name": "processRewardPayout",
+      "description": "Process reward payout tied to order"
+    }
+  ],
+  "name": "auto_order_fulfillment_agent"
+}
