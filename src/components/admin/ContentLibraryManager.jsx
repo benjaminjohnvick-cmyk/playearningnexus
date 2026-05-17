@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Trash2, Edit3, Image, FileText, Mail, Hash, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Edit3, Image, FileText, Mail, Hash, CheckCircle2, Bot, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useState as useAIState } from 'react';
 
 const ASSET_TYPES = [
   { value: 'social_post', label: 'Social Post', icon: Hash },
@@ -28,7 +29,8 @@ const BLANK = {
 
 export default function ContentLibraryManager() {
   const qc = useQueryClient();
-  const [editing, setEditing] = useState(null); // null = closed, {} = new, {id,...} = edit
+  const [editing, setEditing] = useState(null);
+  const [aiGenerating, setAiGenerating] = useState(false);
   const [form, setForm] = useState(BLANK);
   const [tagInput, setTagInput] = useState('');
 
@@ -86,9 +88,28 @@ export default function ContentLibraryManager() {
           <h2 className="text-lg font-bold text-gray-900">Referral Content Library</h2>
           <p className="text-sm text-gray-500">Upload templates users can copy or share with their referral link embedded</p>
         </div>
-        <Button onClick={openNew} className="bg-blue-600 hover:bg-blue-700 gap-2">
-          <Plus className="w-4 h-4" /> New Asset
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={async () => {
+              setAiGenerating(true);
+              try {
+                const res = await import('@/api/base44Client').then(m => m.base44.functions.invoke('aiGenerateContentLibrary', {}));
+                toast.success(`AI generated ${res.data?.created || 0} new content templates!`);
+                qc.invalidateQueries(['content-assets-admin']);
+              } catch (e) { toast.error(e.message); }
+              setAiGenerating(false);
+            }}
+            disabled={aiGenerating}
+            variant="outline"
+            className="gap-2 border-purple-300 text-purple-700 hover:bg-purple-50"
+          >
+            {aiGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bot className="w-4 h-4" />}
+            AI Generate
+          </Button>
+          <Button onClick={openNew} className="bg-blue-600 hover:bg-blue-700 gap-2">
+            <Plus className="w-4 h-4" /> New Asset
+          </Button>
+        </div>
       </div>
 
       {/* Editor */}

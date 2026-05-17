@@ -4,11 +4,30 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Calendar, Trophy, Users, ArrowRight, DollarSign } from "lucide-react";
+import { Calendar, Trophy, Users, ArrowRight, DollarSign, Bot, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function FeaturedGameRotation() {
   const queryClient = useQueryClient();
+  const [autoRotating, setAutoRotating] = useState(false);
+
+  const runAutoRotation = async () => {
+    setAutoRotating(true);
+    try {
+      const res = await base44.functions.invoke('autoFeaturedGameRotation', {});
+      const d = res.data;
+      if (d?.rotations?.length > 0) {
+        toast.success(`AI rotated ${d.rotations.length} group(s): ${d.rotations.map(r => r.game).join(', ')}`);
+      } else {
+        toast.info('All groups checked — no rotation needed yet.');
+      }
+      queryClient.invalidateQueries(['user-groups']);
+      queryClient.invalidateQueries(['queued-games']);
+    } catch (e) {
+      toast.error(e.message);
+    }
+    setAutoRotating(false);
+  };
 
   const { data: userGroups = [] } = useQuery({
     queryKey: ['user-groups'],
@@ -74,7 +93,13 @@ export default function FeaturedGameRotation() {
   return (
     <div className="space-y-6">
       <Card className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">Featured Game Rotation System</h3>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xl font-bold text-gray-900">Featured Game Rotation System</h3>
+          <Button onClick={runAutoRotation} disabled={autoRotating} className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600">
+            {autoRotating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bot className="w-4 h-4" />}
+            Run AI Auto-Rotation
+          </Button>
+        </div>
         <div className="grid md:grid-cols-3 gap-4 text-sm">
           <div>
             <span className="text-gray-600">Rotation Cycle:</span>
