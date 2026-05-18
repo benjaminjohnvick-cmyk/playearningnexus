@@ -116,8 +116,8 @@ function AdCell({ ad, isUnlocked, onClick }) {
               </div>
             ) : (
               <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg p-2 text-center">
-                <p className="text-yellow-400 text-[11px] font-bold">🔒 Answer 4 questions</p>
-                <p className="text-yellow-300 text-[10px]">Earn $0.40 · Unlock this ad</p>
+                <p className="text-yellow-400 text-[11px] font-bold">🔒 Answer 5 questions</p>
+                <p className="text-yellow-300 text-[10px]">Earn $0.50 · Unlock this ad</p>
               </div>
             )}
           </motion.div>
@@ -129,7 +129,7 @@ function AdCell({ ad, isUnlocked, onClick }) {
 
 // ─── Survey Modal ──────────────────────────────────────────────────────────────
 function SurveyModal({ ad, step, onAnswer, onClose }) {
-  const question = step >= 1 && step <= 4 ? SURVEY_QUESTIONS[step - 1] : null;
+  const question = step >= 1 && step <= 5 ? SURVEY_QUESTIONS[step - 1] : null;
   if (!question || !ad) return null;
 
   return (
@@ -167,14 +167,14 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
 
         {/* Progress bar */}
         <div className="flex gap-1.5 mb-4">
-          {[1, 2, 3, 4].map(n => (
+          {[1, 2, 3, 4, 5].map(n => (
             <div key={n} className={`h-2 flex-1 rounded-full transition-all duration-300 ${n <= step ? 'bg-yellow-400' : 'bg-gray-700'}`} />
           ))}
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <Badge className="bg-yellow-500 text-black font-bold text-xs px-3">Q{step} of 4 · +$0.10</Badge>
-          <span className="text-gray-400 text-xs">Total reward: <span className="text-yellow-400 font-bold">$0.40</span></span>
+          <Badge className="bg-yellow-500 text-black font-bold text-xs px-3">Q{step} of 5 · +$0.10</Badge>
+          <span className="text-gray-400 text-xs">Total reward: <span className="text-yellow-400 font-bold">$0.50</span></span>
         </div>
 
         <p className="text-white font-bold text-sm mb-4">{question.q}</p>
@@ -223,8 +223,8 @@ function SuccessModal({ ad, onVisit, onBack }) {
         </a>
 
         <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-3" />
-        <h3 className="text-2xl font-black text-white mb-1">🎉 +$0.20 Earned!</h3>
-        <p className="text-gray-400 text-sm mb-5">Survey complete. You've unlocked <span className="text-white font-bold">{ad.brand}</span></p>
+         <h3 className="text-2xl font-black text-white mb-1">🎉 +$0.25 Earned!</h3>
+         <p className="text-gray-400 text-sm mb-5">Survey complete. You've unlocked <span className="text-white font-bold">{ad.brand}</span></p>
 
         <div className="bg-gray-800 rounded-2xl p-4 mb-5 text-left">
           <img src={ad.image} alt={ad.brand} className="w-full h-32 object-cover rounded-xl mb-3" />
@@ -309,7 +309,7 @@ export default function GoogleAdsOverlay() {
   const handleAnswer = (questionIdx, answer) => {
     // Record click coords — use a placeholder since we don't have event here
     if (trackerRef.current) trackerRef.current.recordClick(0, questionIdx * 50);
-    if (questionIdx < 4) {
+    if (questionIdx < 5) {
       setSurveyStep(questionIdx + 1);
     } else {
       completeSurvey();
@@ -333,8 +333,8 @@ export default function GoogleAdsOverlay() {
     setLoading(true);
     setSurveyStep(0);
     try {
-      await base44.auth.updateMe({ total_earnings: (user?.total_earnings || 0) + 0.20 });
-      setEarned(prev => prev + 0.20);
+      await base44.auth.updateMe({ total_earnings: (user?.total_earnings || 0) + 0.25 });
+      setEarned(prev => prev + 0.25);
 
       // Credit referrer if applicable
       const activeRef = referrerId || localStorage.getItem('adgrid_referrer');
@@ -380,7 +380,7 @@ export default function GoogleAdsOverlay() {
   };
 
   const handleShareGrid = async () => {
-    const shareText = `🎮 The GamerGain Million Dollar Ad Grid — click brand ads, answer 4 questions, earn $0.20 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/GoogleAdsOverlay`;
+    const shareText = `🎮 The GamerGain Million Dollar Ad Grid — click brand ads, answer 5 questions, earn $0.25 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/GoogleAdsOverlay`;
     if (navigator.share) {
       await navigator.share({ title: 'GamerGain Million Dollar Ad Grid', text: shareText });
     } else {
@@ -395,7 +395,7 @@ export default function GoogleAdsOverlay() {
       {/* ── Top sticky banner with GamerGain.app link ── */}
       <div className="bg-red-700 text-center py-2 text-sm font-bold tracking-wide sticky top-0 z-40">
         🎮 <a href="https://gamergain.app" className="underline hover:text-yellow-300">GamerGain.app</a>
-        {' '}— Click an ad · Answer 4 questions ($0.40) · Earn $0.20 · Visit the business
+        {' '}— Click an ad · Answer 5 questions ($0.50) · Earn $0.25 · Visit the business
       </div>
 
       {/* ── Header ── */}
@@ -411,9 +411,9 @@ export default function GoogleAdsOverlay() {
 
         <p className="text-gray-300 text-sm max-w-2xl mx-auto mb-2">
           Every thumbnail is a real business. <span className="text-yellow-400 font-bold">Click any ad</span>, answer
-          4 survey questions worth <span className="text-yellow-400 font-bold">$0.10 each ($0.40 total)</span>,
-          and <span className="text-green-400 font-bold">you earn $0.20</span>.
-          The other $0.20 goes to GamerGain. Then visit the business!
+          5 survey questions worth <span className="text-yellow-400 font-bold">$0.10 each ($0.50 total)</span>,
+          and <span className="text-green-400 font-bold">you earn $0.25</span>.
+          The other $0.25 goes to GamerGain. Then visit the business!
         </p>
 
         {/* Link to site */}
@@ -457,10 +457,10 @@ export default function GoogleAdsOverlay() {
         {/* Caption banner */}
         <div className="border-2 border-yellow-500/60 rounded-2xl p-4 mb-5 text-center bg-yellow-500/10">
           <p className="text-yellow-400 font-black text-sm md:text-base">
-            🖱️ Click any ad thumbnail → Answer 4 survey questions ($0.10 each = $0.40 total)
+            🖱️ Click any ad thumbnail → Answer 5 survey questions ($0.10 each = $0.50 total)
           </p>
           <p className="text-yellow-300/80 text-xs mt-1">
-            Unlock the business info & site link · You earn <strong>$0.20</strong> · GamerGain earns <strong>$0.20</strong>
+            Unlock the business info & site link · You earn <strong>$0.25</strong> · GamerGain earns <strong>$0.25</strong>
           </p>
           <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-red-400 text-xs font-bold mt-2 hover:text-red-300">
