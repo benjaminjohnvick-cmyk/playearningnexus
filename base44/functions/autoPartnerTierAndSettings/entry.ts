@@ -30,11 +30,9 @@ Deno.serve(async (req) => {
       if (existingPref.length === 0 && user.email) {
         await base44.asServiceRole.entities.PayoutPreference.create({
           user_id: user.id,
-          preferred_method: 'paypal',
+          payout_method: 'paypal',
           paypal_email: user.email,
-          minimum_payout: 5,
           auto_payout_enabled: true,
-          auto_payout_threshold: 25,
         });
         settingsApplied++;
       }
