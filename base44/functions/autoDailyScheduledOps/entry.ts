@@ -25,7 +25,9 @@ Deno.serve(async (req) => {
           description: c.desc,
           xp_reward: c.xp,
           challenge_type: c.type,
-          status: 'active'
+          status: 'active',
+          user_id: 'system',
+          target_value: c.type === 'surveys' ? 3 : c.type === 'referral' ? 2 : 1
         });
       }
       results.push('daily_challenges_created');

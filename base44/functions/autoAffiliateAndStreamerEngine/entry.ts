@@ -6,9 +6,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (user?.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
-
     const results = {};
     const now = new Date().toISOString();
 
@@ -68,7 +65,7 @@ Deno.serve(async (req) => {
           title: '💰 You received a tip!',
           message: `You earned $${streamerCut.toFixed(2)} from a tip.`,
           is_read: false,
-          created_at: now
+          country_code: 'US'
         });
         tipsPaid++;
       }
