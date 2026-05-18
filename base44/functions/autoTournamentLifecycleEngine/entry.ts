@@ -1,0 +1,110 @@
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+
+// Automates: tournament start/end lifecycle, bracket generation, prize distribution,
+// head-to-head contest matching, referral contest lifecycle
+Deno.serve(async (req) => {
+  try {
+    const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    if (user?.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
+
+    const results = {};
+    const now = new Date().toISOString();
+
+    // 1. Start tournaments that have reached their start time
+    const scheduledTournaments = await base44.asServiceRole.entities.Tournament.filter({ status: 'scheduled' });
+    let tournamentsStarted = 0;
+    for (const tournament of scheduledTournaments) {
+      if (tournament.start_date && new Date(tournament.start_date) <= new Date()) {
+        await base44.asServiceRole.entities.Tournament.update(tournament.id, {
+          status: 'active',
+          started_at: now
+        });
+        // Notify all registered participants
+        const participants = await base44.asServiceRole.entities.TournamentParticipant.filter({ tournament_id: tournament.id });
+        for (const p of participants.slice(0, 50)) {
+          await base44.asServiceRole.entities.Notification.create({
+            user_id: p.user_id,
+            type: 'tournament_started',
+            title: '🏆 Tournament Started!',
+            message: `"${tournament.name}" has begun! Check your bracket.`,
+            is_read: false,
+            created_at: now
+          });
+        }
+        // Trigger matchmaking
+        await base44.asServiceRole.functions.invoke('tournamentMatchmaker', { tournament_id: tournament.id });
+        tournamentsStarted++;
+      }
+    }
+    results.tournaments_started = tournamentsStarted;
+
+    // 2. End tournaments that have passed their end time
+    const activeTournaments = await base44.asServiceRole.entities.Tournament.filter({ status: 'active' });
+    let tournamentsEnded = 0;
+    for (const tournament of activeTournaments) {
+      if (tournament.end_date && new Date(tournament.end_date) <= new Date()) {
+        await base44.asServiceRole.entities.Tournament.update(tournament.id, {
+          status: 'completed',
+          ended_at: now
+        });
+        // Distribute prizes
+        await base44.asServiceRole.functions.invoke('distributeTournamentPrizes', { tournament_id: tournament.id });
+        tournamentsEnded++;
+      }
+    }
+    results.tournaments_ended = tournamentsEnded;
+
+    // 3. AI tournament insights generation
+    const recentTournaments = await base44.asServiceRole.entities.Tournament.filter({ status: 'active' }, '-created_date', 5);
+    for (const tournament of recentTournaments) {
+      const hasInsight = await base44.asServiceRole.entities.TournamentAIInsight.filter({ tournament_id: tournament.id });
+      if (!hasInsight || hasInsight.length === 0) {
+        await base44.asServiceRole.entities.TournamentAIInsight.create({
+          tournament_id: tournament.id,
+          generated_at: now,
+          insight_type: 'live_analysis'
+        });
+      }
+    }
+    results.tournament_insights_generated = recentTournaments.length;
+
+    // 4. Head-to-head contest matching
+    await base44.asServiceRole.functions.invoke('headToHeadContestMatchmaker', {});
+    results.h2h_contests_matched = true;
+
+    // 5. Referral contest lifecycle management
+    const activeContests = await base44.asServiceRole.entities.ReferralContest.filter({ status: 'active' });
+    let contestsProcessed = 0;
+    for (const contest of activeContests) {
+      if (contest.end_date && new Date(contest.end_date) <= new Date()) {
+        await base44.asServiceRole.functions.invoke('weeklyContestWinner', { contest_id: contest.id });
+        await base44.asServiceRole.entities.ReferralContest.update(contest.id, {
+          status: 'completed',
+          completed_at: now
+        });
+        contestsProcessed++;
+      }
+    }
+    results.referral_contests_concluded = contestsProcessed;
+
+    // 6. Tournament challenges for guilds
+    const pendingTournamentChallenges = await base44.asServiceRole.entities.TournamentChallenge.filter({ status: 'pending' });
+    let challengesActivated = 0;
+    for (const challenge of pendingTournamentChallenges) {
+      if (challenge.start_date && new Date(challenge.start_date) <= new Date()) {
+        await base44.asServiceRole.entities.TournamentChallenge.update(challenge.id, { status: 'active' });
+        challengesActivated++;
+      }
+    }
+    results.tournament_challenges_activated = challengesActivated;
+
+    // 7. Process weekly jackpot
+    await base44.asServiceRole.functions.invoke('processWeeklyJackpot', {});
+    results.weekly_jackpot_processed = true;
+
+    return Response.json({ success: true, results });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+});
