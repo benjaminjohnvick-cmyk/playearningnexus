@@ -41,16 +41,17 @@ Return 3 recommendations as array of {title, description, category, cta_url}`,
         }
       });
 
-      // Upsert UserRecommendation
-      const existing = await base44.asServiceRole.entities.UserRecommendation.filter({ user_id: user.id });
-      const recData = {
-        user_id: user.id,
-        recommendations: rec.recommendations || [],
-        generated_at: new Date().toISOString()
-      };
-      if (existing.length > 0) {
-        await base44.asServiceRole.entities.UserRecommendation.update(existing[0].id, recData);
-      } else {
+      // Upsert UserRecommendation records (one per recommendation)
+      const recs = rec.recommendations || [];
+      for (let i = 0; i < recs.length; i++) {
+        const recommendation = recs[i];
+        const recData = {
+          user_id: user.id,
+          recommendation_type: recommendation.category || 'game',
+          entity_id: recommendation.cta_url || `rec_${user.id}_${i}`,
+          relevance_score: 85 - (i * 5), // Higher score for first recommendation
+          reason: recommendation.description
+        };
         await base44.asServiceRole.entities.UserRecommendation.create(recData);
       }
       updated++;
