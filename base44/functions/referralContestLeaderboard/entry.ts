@@ -9,7 +9,33 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action, contestId } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { action, contestId } = body;
+
+    // Scheduled automation path — update all active contest leaderboards
+    if (!action) {
+      const activeContests = await base44.asServiceRole.entities.ReferralContest.filter({ status: 'active' });
+      let updated = 0;
+      for (const contest of activeContests) {
+        // Recalculate leaderboard from referral data
+        const referrals = await base44.asServiceRole.entities.Referral.filter({ contest_id: contest.id });
+        const totals = {};
+        for (const r of referrals) {
+          totals[r.referrer_user_id] = (totals[r.referrer_user_id] || 0) + 1;
+        }
+        const sorted = Object.entries(totals)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10)
+          .map(([user_id, count], i) => ({ rank: i + 1, user_id, referral_count: count }));
+
+        await base44.asServiceRole.entities.ReferralContest.update(contest.id, {
+          weekly_top_10: sorted,
+          last_leaderboard_update: new Date().toISOString()
+        });
+        updated++;
+      }
+      return Response.json({ success: true, contests_updated: updated });
+    }
 
     if (action === 'getWeeklyLeaderboard') {
       // Get referral contest
