@@ -10,13 +10,67 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { action } = body;
 
+    // ── SCHEDULED TALLY — no action/body (called by automation) ──────────
     const today = new Date().toISOString().split('T')[0];
+    if (!action) {
+      const surveys = await base44.asServiceRole.entities.MockupVoteSurvey.filter({ date: today, status: 'active' });
+      if (!surveys.length) return Response.json({ success: true, message: 'No active survey to tally today' });
+
+      const survey = surveys[0];
+      const updatedComparisons = await Promise.all(survey.comparisons.map(async (cmp) => {
+        const aVotes = cmp.option_a?.votes || 0;
+        const bVotes = cmp.option_b?.votes || 0;
+        const winner = aVotes > bVotes ? 'a' : bVotes > aVotes ? 'b' : 'tie';
+        const winningOption = winner === 'a' ? cmp.option_a : cmp.option_b;
+
+        const implSpec = await base44.asServiceRole.integrations.Core.InvokeLLM({
+          prompt: `You are a senior React/Tailwind developer for GamerGain (gaming + survey platform, red/white theme).
+The community voted for this design to be implemented:
+
+Feature: "${cmp.feature_name}"
+Winning Design: "${winningOption?.title}"
+Description: ${winningOption?.description}
+Total votes: ${Math.max(aVotes, bVotes)} (out of ${aVotes + bVotes})
+
+Write a detailed, actionable implementation plan:
+1. Which file(s) to create or modify (use actual GamerGain page/component paths)
+2. Key UI changes with Tailwind class examples
+3. Any new entity fields or backend function needed
+4. Step-by-step implementation order
+
+Be specific and concise. Format as markdown.`
+        }).catch(() => 'Implementation spec pending admin review.');
+
+        return { ...cmp, winner, implementation_spec: typeof implSpec === 'string' ? implSpec : JSON.stringify(implSpec) };
+      }));
+
+      await base44.asServiceRole.entities.MockupVoteSurvey.update(survey.id, {
+        comparisons: updatedComparisons,
+        status: 'implementing'
+      });
+
+      const admins = await base44.asServiceRole.entities.User.filter({ role: 'admin' });
+      for (const admin of admins.slice(0, 3)) {
+        await base44.asServiceRole.entities.Notification.create({
+          user_id: admin.id,
+          type: 'achievement_unlocked',
+          title: '🗳️ Mockup Vote Results Ready',
+          message: `Community voted on ${updatedComparisons.length} designs. Implementation specs generated. Ready to deploy!`,
+          status: 'unread',
+          delivery_method: ['in_app'],
+          action_url: '/FeedbackAdminDashboard'
+        }).catch(() => {});
+      }
+
+      return Response.json({ success: true, survey_id: survey.id, comparisons_tallied: updatedComparisons.length });
+    }
+
+    const user = await base44.auth.me();
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     // ── GET TODAY ──────────────────────────────────────────────────────────
     if (action === 'get_today') {
