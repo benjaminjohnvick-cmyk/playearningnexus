@@ -46,8 +46,8 @@ Identify: data_issues (array), financial_health (healthy/warning/critical), insi
     });
 
     const report = await base44.asServiceRole.entities.ReconciliationReport.create({
-      period_start: weekAgo.toISOString(),
-      period_end: now.toISOString(),
+      report_period_start: weekAgo.toISOString(),
+      report_period_end: now.toISOString(),
       total_revenue: totalRevenue,
       total_payouts: totalPayoutsCompleted,
       pending_payouts: totalPendingPayouts,
