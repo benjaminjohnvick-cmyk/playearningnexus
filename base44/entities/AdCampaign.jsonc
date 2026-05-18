@@ -1,0 +1,267 @@
+{
+  "name": "AdCampaign",
+  "type": "object",
+  "properties": {
+    "advertiser_id": {
+      "type": "string",
+      "description": "User ID of the advertiser"
+    },
+    "name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "objective": {
+      "type": "string",
+      "enum": [
+        "brand_awareness",
+        "lead_generation",
+        "conversions",
+        "app_installs",
+        "survey_completions"
+      ],
+      "description": "Campaign objective"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused",
+        "completed",
+        "rejected"
+      ],
+      "default": "draft"
+    },
+    "budget_total": {
+      "type": "number",
+      "description": "Total campaign budget in USD"
+    },
+    "budget_daily": {
+      "type": "number",
+      "description": "Daily spend cap in USD"
+    },
+    "budget_spent": {
+      "type": "number",
+      "default": 0
+    },
+    "bid_strategy": {
+      "type": "string",
+      "enum": [
+        "manual_cpc",
+        "auto_maximize_clicks",
+        "target_cpa",
+        "target_roas"
+      ],
+      "default": "auto_maximize_clicks"
+    },
+    "bid_amount": {
+      "type": "number",
+      "description": "Manual bid amount (CPC)"
+    },
+    "target_cpa": {
+      "type": "number",
+      "description": "Target cost per acquisition"
+    },
+    "target_roas": {
+      "type": "number",
+      "description": "Target return on ad spend"
+    },
+    "ai_bid_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "demographics": {
+      "type": "object",
+      "properties": {
+        "age_min": {
+          "type": "number"
+        },
+        "age_max": {
+          "type": "number"
+        },
+        "genders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "interests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "locations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "platforms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "income_levels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "gamer_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ad_creative": {
+      "type": "object",
+      "properties": {
+        "headline": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "cta": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "landing_url": {
+          "type": "string"
+        }
+      }
+    },
+    "ai_suggestions": {
+      "type": "object",
+      "properties": {
+        "recommended_bid": {
+          "type": "number"
+        },
+        "audience_score": {
+          "type": "number"
+        },
+        "predicted_ctr": {
+          "type": "number"
+        },
+        "predicted_conversions": {
+          "type": "number"
+        },
+        "optimization_tips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "impressions": {
+          "type": "number",
+          "default": 0
+        },
+        "clicks": {
+          "type": "number",
+          "default": 0
+        },
+        "conversions": {
+          "type": "number",
+          "default": 0
+        },
+        "ctr": {
+          "type": "number",
+          "default": 0
+        },
+        "cpc": {
+          "type": "number",
+          "default": 0
+        },
+        "cpa": {
+          "type": "number",
+          "default": 0
+        },
+        "roas": {
+          "type": "number",
+          "default": 0
+        },
+        "revenue_generated": {
+          "type": "number",
+          "default": 0
+        },
+        "avg_ltv": {
+          "type": "number",
+          "default": 0
+        },
+        "churn_rate": {
+          "type": "number",
+          "default": 0
+        }
+      }
+    },
+    "daily_stats": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "impressions": {
+            "type": "number"
+          },
+          "clicks": {
+            "type": "number"
+          },
+          "conversions": {
+            "type": "number"
+          },
+          "spend": {
+            "type": "number"
+          },
+          "revenue": {
+            "type": "number"
+          },
+          "ctr": {
+            "type": "number"
+          },
+          "roas": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "ai_generated": {
+      "type": "boolean",
+      "default": false
+    },
+    "last_optimized_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "advertiser_id",
+    "name",
+    "objective"
+  ]
+}

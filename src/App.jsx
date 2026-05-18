@@ -111,6 +111,7 @@ const CompetitiveMonitoringDashboard = lazy(() => import('./pages/CompetitiveMon
 const QuickSurveyBuilder = lazy(() => import('./pages/QuickSurveyBuilder'));
 const DeveloperToolsHub = lazy(() => import('./pages/DeveloperToolsHub'));
 const AdCampaignOptimizerPage = lazy(() => import('./pages/AdCampaignOptimizerPage'));
+const AdCampaignManager = lazy(() => import('./pages/AdCampaignManager'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -291,6 +292,7 @@ const AuthenticatedApp = () => {
       <Route path="/QuickSurveyBuilder" element={<LayoutWrapper currentPageName="QuickSurveyBuilder"><QuickSurveyBuilder /></LayoutWrapper>} />
       <Route path="/DeveloperToolsHub" element={<LayoutWrapper currentPageName="DeveloperToolsHub"><DeveloperToolsHub /></LayoutWrapper>} />
       <Route path="/AdCampaignOptimizer" element={<LayoutWrapper currentPageName="AdCampaignOptimizer"><AdCampaignOptimizerPage /></LayoutWrapper>} />
+      <Route path="/AdCampaignManager" element={<LayoutWrapper currentPageName="AdCampaignManager"><AdCampaignManager /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
