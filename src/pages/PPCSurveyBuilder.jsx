@@ -11,7 +11,7 @@ import SurveyPricingTiers from '@/components/ppc/SurveyPricingTiers';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
-const MIN_QUESTIONS = 10;
+const MIN_QUESTIONS = 5;
 const MIN_SAMPLE_SIZE = 400;
 const COST_PER_QUESTION = 0.10;
 
@@ -21,6 +21,8 @@ export default function PPCSurveyBuilder() {
   const [survey, setSurvey] = useState(null);
   const [loading, setLoading] = useState(false);
   const [sampleSize, setSampleSize] = useState(400);
+  const [productName, setProductName] = useState('');
+  const [productUrl, setProductUrl] = useState('');
   const [customBudget, setCustomBudget] = useState('');
   const [activeTab, setActiveTab] = useState('builder');
 
@@ -94,12 +96,16 @@ export default function PPCSurveyBuilder() {
         questions: survey.questions,
         sample_size: sampleSize,
         total_cost: totalCost,
-        title: survey.title
+        title: survey.title,
+        product_name: productName || undefined,
+        product_url: productUrl || undefined
       });
       toast.success('Survey published to PPC Marketplace!');
       setSurvey(null);
       setPrompt('');
       setSampleSize(400);
+      setProductName('');
+      setProductUrl('');
     } catch (err) {
       toast.error('Failed to publish survey');
       console.error(err);
@@ -146,6 +152,25 @@ export default function PPCSurveyBuilder() {
                 onChange={(e) => setPrompt(e.target.value)}
                 className="h-32 mb-4"
               />
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-2 block">Product Name (Optional)</label>
+                  <Input
+                    placeholder="e.g., iPhone 15"
+                    value={productName}
+                    onChange={(e) => setProductName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-gray-700 mb-2 block">Product Website URL (Optional)</label>
+                  <Input
+                    placeholder="https://example.com"
+                    value={productUrl}
+                    onChange={(e) => setProductUrl(e.target.value)}
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mb-4">📊 Add a product link to automatically track website visits and get AI insights!</p>
               <Button
                 onClick={generateSurvey}
                 disabled={loading}
