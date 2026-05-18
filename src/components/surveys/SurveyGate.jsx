@@ -3,15 +3,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lock, DollarSign } from "lucide-react";
 
-export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 4, onGoToSurveys }) {
+export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 8, onGoToSurveys }) {
   const earned = Math.min(todaysEarnings, dailyGoal);
   const percentage = (earned / dailyGoal) * 100;
 
   const getBarColor = () => {
-    if (earned >= 4) return 'bg-green-500';
-    if (earned >= 3) return 'bg-green-400';
-    if (earned >= 2) return 'bg-yellow-500';
-    if (earned >= 1) return 'bg-orange-400';
+    if (earned >= 8) return 'bg-green-500';
+    if (earned >= 6) return 'bg-green-400';
+    if (earned >= 4) return 'bg-yellow-500';
+    if (earned >= 2) return 'bg-orange-400';
     return 'bg-red-500';
   };
 
@@ -25,16 +25,16 @@ export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 4, onGoToSu
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Store Locked</h2>
             <p className="text-gray-600 mb-6">
-              Earn <strong>$4 with PPC ads</strong> today to unlock games & purchases.
+              Earn <strong>$8 total with PPC ads</strong> to unlock games & purchases.
               <br />
-              <span className="text-sm text-gray-500">Resets each day when you open the app.</span>
+              <span className="text-sm text-gray-500">You keep $4 · GamerGain keeps $4 (50/50 split)</span>
             </p>
 
             {/* Progress meter */}
             <div className="mb-6">
               <div className="flex justify-between text-sm text-gray-600 mb-2">
                 <span>Today's PPC Earnings</span>
-                <span className="font-bold">${earned.toFixed(2)} / $4.00</span>
+                <span className="font-bold">${earned.toFixed(2)} / $8.00</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
                 <div
@@ -48,19 +48,19 @@ export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 4, onGoToSu
               </div>
               <div className="flex justify-between text-xs mt-1 text-gray-500">
                 <span className="text-red-500">$0</span>
-                <span className="text-orange-500">$1</span>
-                <span className="text-yellow-600">$2</span>
-                <span className="text-green-500">$3</span>
-                <span className="text-green-700 font-bold">$4 🔓</span>
+                <span className="text-orange-500">$2</span>
+                <span className="text-yellow-600">$4</span>
+                <span className="text-green-500">$6</span>
+                <span className="text-green-700 font-bold">$8 🔓</span>
               </div>
             </div>
 
             <div className="grid grid-cols-4 gap-2 mb-6 text-center">
               {[
-                { label: '$0–$1', emoji: '🔴', min: 0, max: 1 },
-                { label: '$1–$2', emoji: '🟠', min: 1, max: 2 },
-                { label: '$2–$3', emoji: '🟡', min: 2, max: 3 },
-                { label: '$3–$4', emoji: '🟢', min: 3, max: 4 },
+                { label: '$0–$2', emoji: '🔴', min: 0, max: 2 },
+                { label: '$2–$4', emoji: '🟠', min: 2, max: 4 },
+                { label: '$4–$6', emoji: '🟡', min: 4, max: 6 },
+                { label: '$6–$8', emoji: '🟢', min: 6, max: 8 },
               ].map(({ label, emoji, min, max }) => (
                 <div
                   key={label}
@@ -96,6 +96,6 @@ export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 4, onGoToSu
   );
 }
 
-export function isSurveyGoalMet(todaysEarnings = 0, dailyGoal = 4) {
+export function isSurveyGoalMet(todaysEarnings = 0, dailyGoal = 8) {
   return todaysEarnings >= dailyGoal;
 }

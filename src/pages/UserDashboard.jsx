@@ -424,7 +424,7 @@ export default function UserDashboard() {
             <div className="space-y-4">
               <h2 className="text-2xl font-bold text-gray-900">This Week's Featured Games</h2>
               {!(todayEarnings?.total_earned >= 4) && user?.role !== 'admin' ? (
-                <SurveyGate todaysEarnings={todayEarnings?.total_earned || 0} dailyGoal={4} onGoToSurveys={() => window.location.href = '/PPCMarketplace'} />
+                <SurveyGate todaysEarnings={todayEarnings?.total_earned || 0} dailyGoal={8} onGoToSurveys={() => window.location.href = '/PPCMarketplace'} />
               ) : loadingGames ? (
                 <div className="grid md:grid-cols-3 gap-6">
                   {[1, 2, 3].map(i => (

@@ -3,25 +3,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Target, TrendingUp } from "lucide-react";
 
-export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 3 }) {
+export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 8 }) {
   const percentage = Math.min((todaysEarnings / dailyGoal) * 100, 100);
   
-  // Color progression: red (0-1), yellow (1-2), green (2-3)
+  // Color progression: red (0-2), orange (2-4), yellow (4-6), green (6-8)
   const getColor = () => {
-    if (todaysEarnings >= 2) return 'from-green-500 to-green-600';
-    if (todaysEarnings >= 1) return 'from-yellow-500 to-yellow-600';
+    if (todaysEarnings >= 6) return 'from-green-500 to-green-600';
+    if (todaysEarnings >= 4) return 'from-yellow-500 to-yellow-600';
+    if (todaysEarnings >= 2) return 'from-orange-500 to-orange-600';
     return 'from-red-500 to-red-600';
   };
 
   const getTextColor = () => {
-    if (todaysEarnings >= 2) return 'text-green-600';
-    if (todaysEarnings >= 1) return 'text-yellow-600';
+    if (todaysEarnings >= 6) return 'text-green-600';
+    if (todaysEarnings >= 4) return 'text-yellow-600';
+    if (todaysEarnings >= 2) return 'text-orange-600';
     return 'text-red-600';
   };
 
   const getMeterColor = () => {
-    if (todaysEarnings >= 2) return 'bg-green-600';
-    if (todaysEarnings >= 1) return 'bg-yellow-600';
+    if (todaysEarnings >= 6) return 'bg-green-600';
+    if (todaysEarnings >= 4) return 'bg-yellow-600';
+    if (todaysEarnings >= 2) return 'bg-orange-500';
     return 'bg-red-600';
   };
 
@@ -65,17 +68,21 @@ export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 3 }
         </div>
 
         {/* Color indicators */}
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className={`p-2 rounded-lg ${todaysEarnings >= 1 ? 'bg-red-100 border-2 border-red-500' : 'bg-gray-100'}`}>
-            <p className="text-xs text-center font-medium">$0 - $1</p>
+        <div className="grid grid-cols-4 gap-2 mb-4">
+          <div className={`p-2 rounded-lg ${todaysEarnings >= 2 ? 'bg-red-100 border-2 border-red-500' : 'bg-gray-100'}`}>
+            <p className="text-xs text-center font-medium">$0–$2</p>
             <p className="text-center text-lg">🔴</p>
           </div>
-          <div className={`p-2 rounded-lg ${todaysEarnings >= 2 ? 'bg-yellow-100 border-2 border-yellow-500' : 'bg-gray-100'}`}>
-            <p className="text-xs text-center font-medium">$1 - $2</p>
+          <div className={`p-2 rounded-lg ${todaysEarnings >= 4 ? 'bg-orange-100 border-2 border-orange-500' : 'bg-gray-100'}`}>
+            <p className="text-xs text-center font-medium">$2–$4</p>
+            <p className="text-center text-lg">🟠</p>
+          </div>
+          <div className={`p-2 rounded-lg ${todaysEarnings >= 6 ? 'bg-yellow-100 border-2 border-yellow-500' : 'bg-gray-100'}`}>
+            <p className="text-xs text-center font-medium">$4–$6</p>
             <p className="text-center text-lg">🟡</p>
           </div>
-          <div className={`p-2 rounded-lg ${todaysEarnings >= 3 ? 'bg-green-100 border-2 border-green-500' : 'bg-gray-100'}`}>
-            <p className="text-xs text-center font-medium">$2 - $3</p>
+          <div className={`p-2 rounded-lg ${todaysEarnings >= 8 ? 'bg-green-100 border-2 border-green-500' : 'bg-gray-100'}`}>
+            <p className="text-xs text-center font-medium">$6–$8 🔓</p>
             <p className="text-center text-lg">🟢</p>
           </div>
         </div>
@@ -105,8 +112,8 @@ export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 3 }
           <p className="text-xs font-medium text-purple-800 mb-1">📱 Premium Benefits</p>
           <p className="text-xs text-gray-600">
             • Daily SMS reminders to stay on track<br />
-            • Reach $3/day for 365 days to maintain premium status<br />
-            • Note: Based on 50/50 split (Complete $6 in surveys = $3 earned)
+            • Earn $8 total in PPC ads to unlock games & purchases<br />
+            • You keep $4 · GamerGain keeps $4 (50/50 split)
           </p>
         </div>
       </CardContent>

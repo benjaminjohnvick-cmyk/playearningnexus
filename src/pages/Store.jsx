@@ -194,7 +194,7 @@ export default function Store() {
           {/* Games Section */}
           <TabsContent value="games" className="space-y-6">
             {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' && !!user ? (
-              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={4} onGoToSurveys={() => setActiveTab('ppc')} />
+              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={8} onGoToSurveys={() => setActiveTab('ppc')} />
             ) : (
               <>
                 <ProductRecommendations user={user} />
@@ -254,7 +254,7 @@ export default function Store() {
           {/* Digital Products Section */}
           <TabsContent value="digital" className="space-y-6">
             {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' && !!user ? (
-              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={4} onGoToSurveys={() => setActiveTab('ppc')} />
+              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={8} onGoToSurveys={() => setActiveTab('ppc')} />
             ) : (
               <>
                 <h2 className="text-2xl font-bold text-gray-900">Digital Products</h2>
@@ -271,7 +271,7 @@ export default function Store() {
           {/* Physical Products Section */}
           <TabsContent value="physical" className="space-y-6">
             {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' && !!user ? (
-              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={4} onGoToSurveys={() => setActiveTab('ppc')} />
+              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={8} onGoToSurveys={() => setActiveTab('ppc')} />
             ) : (
               <>
                 <h2 className="text-2xl font-bold text-gray-900">Physical Products</h2>
