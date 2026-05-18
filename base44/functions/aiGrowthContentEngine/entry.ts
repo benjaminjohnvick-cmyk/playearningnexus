@@ -3,9 +3,24 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { survey_id, winning_product_id } = await req.json();
 
-    if (!survey_id) return Response.json({ error: 'Missing survey_id' }, { status: 400 });
+    let survey_id, winning_product_id;
+    try {
+      const body = await req.json();
+      survey_id = body.survey_id;
+      winning_product_id = body.winning_product_id;
+    } catch (_) {
+      // No body — scheduled/headless invocation, will batch below
+    }
+
+    // Scheduled/headless mode: process the most recent completed survey
+    if (!survey_id) {
+      const recentSurveys = await base44.asServiceRole.entities.PPCSurvey.filter({ status: 'completed' }, '-updated_date', 1);
+      if (!recentSurveys || recentSurveys.length === 0) {
+        return Response.json({ success: true, message: 'No completed surveys to process' });
+      }
+      survey_id = recentSurveys[0].id;
+    }
 
     // Get survey results & winning product
     const survey = await base44.asServiceRole.entities.PPCSurvey.get(survey_id);
