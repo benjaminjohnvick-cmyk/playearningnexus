@@ -4,9 +4,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (user?.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
-
     const results = {};
     const now = new Date().toISOString();
 
@@ -19,10 +16,9 @@ Deno.serve(async (req) => {
         // Notify all users about new live event
         await base44.asServiceRole.entities.Notification.create({
           user_id: 'broadcast',
-          type: 'live_event_started',
+          type: 'status_changed',
           title: `🎉 Live Event: ${event.name || event.title || 'Event'} Started!`,
           message: `A new live event is now active. Join now to earn bonus rewards!`,
-          is_broadcast: true,
           status: 'unread',
           delivery_method: ['in_app']
         });
@@ -54,10 +50,8 @@ Deno.serve(async (req) => {
         is_active: true,
         start_time: now,
         end_time: nextWeek,
-        event_type: 'earnings_boost',
-        bonus_multiplier: 1.2,
-        requirement_type: 'surveys',
-        requirement_value: 5
+        event_type: 'bonus_rewards',
+        reward_multiplier: 1.2
       });
       results.weekly_event_created = true;
     }
