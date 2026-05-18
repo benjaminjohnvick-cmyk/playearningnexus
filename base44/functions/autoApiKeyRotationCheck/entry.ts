@@ -32,24 +32,6 @@ Deno.serve(async (req) => {
       checks.push({ service: 'bitlabs', status: 'error', error: e.message });
     }
 
-    // Log results to IntegrationConfig
-    for (const check of checks) {
-      const existing = await base44.asServiceRole.entities.IntegrationConfig.filter({ integration_name: check.service });
-      if (existing.length > 0) {
-        await base44.asServiceRole.entities.IntegrationConfig.update(existing[0].id, {
-          last_health_check: new Date().toISOString(),
-          health_status: check.status,
-        });
-      } else {
-        await base44.asServiceRole.entities.IntegrationConfig.create({
-          integration_name: check.service,
-          health_status: check.status,
-          last_health_check: new Date().toISOString(),
-          is_active: check.status === 'healthy',
-        });
-      }
-    }
-
     // Alert admin on failures
     const failures = checks.filter(c => c.status === 'error' || c.status === 'degraded');
     if (failures.length > 0) {
