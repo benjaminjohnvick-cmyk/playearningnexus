@@ -7,20 +7,17 @@ Deno.serve(async (req) => {
     
     // Get all scheduled surveys that should be active
     const now = new Date();
+    // Use a 30-minute lookback window to catch any missed launches (covers missed runs)
+    const windowStart = new Date(now.getTime() - 30 * 60000);
+
     const schedules = await base44.asServiceRole.entities.SurveySchedule.filter({
       status: 'scheduled'
     });
 
-    const toActivate = [];
-
-    for (const schedule of schedules) {
+    const toActivate = schedules.filter(schedule => {
       const launchTime = new Date(schedule.launch_datetime);
-      
-      // Check if it's time to launch (within 5 minute window)
-      if (launchTime <= now && launchTime > new Date(now.getTime() - 5 * 60000)) {
-        toActivate.push(schedule);
-      }
-    }
+      return launchTime <= now && launchTime > windowStart;
+    });
 
     const results = [];
 
