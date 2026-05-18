@@ -50,6 +50,7 @@ Provide:
 4. Content gaps: What users are looking for
 5. Growth trends: Categories gaining traction`,
       add_context_from_internet: true,
+      model: 'gemini_3_flash',
       response_json_schema: {
         type: 'object',
         properties: {
