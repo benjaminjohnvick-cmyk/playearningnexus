@@ -18,11 +18,13 @@ Deno.serve(async (req) => {
         await base44.asServiceRole.entities.LiveEvent.update(event.id, { is_active: true });
         // Notify all users about new live event
         await base44.asServiceRole.entities.Notification.create({
+          user_id: 'broadcast',
           type: 'live_event_started',
-          title: `🎉 Live Event: ${event.name || 'Event'} Started!`,
+          title: `🎉 Live Event: ${event.name || event.title || 'Event'} Started!`,
           message: `A new live event is now active. Join now to earn bonus rewards!`,
           is_broadcast: true,
-          created_at: now
+          status: 'unread',
+          delivery_method: ['in_app']
         });
         activated++;
       }
@@ -44,8 +46,10 @@ Deno.serve(async (req) => {
     if (activeEvents.filter(e => new Date(e.end_time) >= new Date(now)).length === 0) {
       const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString();
       const tomorrow = new Date(Date.now() + 86400000).toISOString();
+      const eventTitle = `Weekly Earnings Boost - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
       await base44.asServiceRole.entities.LiveEvent.create({
-        name: `Weekly Earnings Boost - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+        title: eventTitle,
+        name: eventTitle,
         description: 'Complete 5 surveys this week for a 20% earnings bonus!',
         is_active: true,
         start_time: now,
