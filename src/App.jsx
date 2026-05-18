@@ -112,6 +112,7 @@ const QuickSurveyBuilder = lazy(() => import('./pages/QuickSurveyBuilder'));
 const DeveloperToolsHub = lazy(() => import('./pages/DeveloperToolsHub'));
 const AdCampaignOptimizerPage = lazy(() => import('./pages/AdCampaignOptimizerPage'));
 const AdCampaignManager = lazy(() => import('./pages/AdCampaignManager'));
+const MarketAdvisor = lazy(() => import('./pages/MarketAdvisor'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -293,6 +294,7 @@ const AuthenticatedApp = () => {
       <Route path="/DeveloperToolsHub" element={<LayoutWrapper currentPageName="DeveloperToolsHub"><DeveloperToolsHub /></LayoutWrapper>} />
       <Route path="/AdCampaignOptimizer" element={<LayoutWrapper currentPageName="AdCampaignOptimizer"><AdCampaignOptimizerPage /></LayoutWrapper>} />
       <Route path="/AdCampaignManager" element={<LayoutWrapper currentPageName="AdCampaignManager"><AdCampaignManager /></LayoutWrapper>} />
+      <Route path="/MarketAdvisor" element={<LayoutWrapper currentPageName="MarketAdvisor"><MarketAdvisor /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
