@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
 
     // Log results to IntegrationConfig
     for (const check of checks) {
-      const existing = await base44.asServiceRole.entities.IntegrationConfig.filter({ service_name: check.service });
+      const existing = await base44.asServiceRole.entities.IntegrationConfig.filter({ integration_name: check.service });
       if (existing.length > 0) {
         await base44.asServiceRole.entities.IntegrationConfig.update(existing[0].id, {
           last_health_check: new Date().toISOString(),
@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
         });
       } else {
         await base44.asServiceRole.entities.IntegrationConfig.create({
-          service_name: check.service,
+          integration_name: check.service,
           health_status: check.status,
           last_health_check: new Date().toISOString(),
           is_active: check.status === 'healthy',
