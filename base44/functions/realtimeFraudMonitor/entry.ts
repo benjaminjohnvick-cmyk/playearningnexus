@@ -7,7 +7,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { response_id, user_id, action = 'check' } = body;
 
     // Allow scheduled/admin calls
@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
 
     // Scheduled batch mode — scan recent unscored responses
     if (!response_id && action === 'check') {
-      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+      const fifteenMinutesAgo = new Date(Date.now() - 35 * 60 * 1000).toISOString();
       const recentResponses = await base44.asServiceRole.entities.PPCSurveyResponse.list('-created_date', 100);
       const unscored = recentResponses.filter(r =>
         r.created_date > fifteenMinutesAgo && r.fraud_risk_score == null && !r.is_blocked
