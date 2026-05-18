@@ -42,6 +42,7 @@ import DeveloperInsightsTab from '../components/developer/DeveloperInsightsTab';
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import SurveyGate from '../components/surveys/SurveyGate';
 
 export default function UserDashboard() {
   const [user, setUser] = useState(null);
@@ -422,7 +423,9 @@ export default function UserDashboard() {
           <TabsContent value="featured">
             <div className="space-y-4">
               <h2 className="text-2xl font-bold text-gray-900">This Week's Featured Games</h2>
-              {loadingGames ? (
+              {!(todayEarnings?.total_earned >= 4) && user?.role !== 'admin' ? (
+                <SurveyGate todaysEarnings={todayEarnings?.total_earned || 0} dailyGoal={4} onGoToSurveys={() => window.location.href = '/PPCMarketplace'} />
+              ) : loadingGames ? (
                 <div className="grid md:grid-cols-3 gap-6">
                   {[1, 2, 3].map(i => (
                     <div key={i} className="h-96 bg-white rounded-xl animate-pulse" />

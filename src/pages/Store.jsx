@@ -194,7 +194,7 @@ export default function Store() {
           {/* Games Section */}
           <TabsContent value="games" className="space-y-6">
             {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' && !!user ? (
-              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={3} onGoToSurveys={() => setActiveTab('games')} />
+              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={4} onGoToSurveys={() => setActiveTab('ppc')} />
             ) : (
               <>
                 <ProductRecommendations user={user} />
@@ -253,24 +253,36 @@ export default function Store() {
 
           {/* Digital Products Section */}
           <TabsContent value="digital" className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Digital Products</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {digitalProducts.map(product => {
-                const isWishlisted = user.wishlist?.some(item => item.id === product.id && item.type === 'digital');
-                return <ProductCard key={product.id} product={product} type="digital" isWishlisted={isWishlisted} onWishlist={() => toggleWishlist(product, 'digital')} onCheckout={() => setCheckoutGame(product)} />;
-              })}
-            </div>
+            {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' && !!user ? (
+              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={4} onGoToSurveys={() => setActiveTab('ppc')} />
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-gray-900">Digital Products</h2>
+                <div className="grid md:grid-cols-3 gap-6">
+                  {digitalProducts.map(product => {
+                    const isWishlisted = user.wishlist?.some(item => item.id === product.id && item.type === 'digital');
+                    return <ProductCard key={product.id} product={product} type="digital" isWishlisted={isWishlisted} onWishlist={() => toggleWishlist(product, 'digital')} onCheckout={() => setCheckoutGame(product)} />;
+                  })}
+                </div>
+              </>
+            )}
           </TabsContent>
 
           {/* Physical Products Section */}
           <TabsContent value="physical" className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Physical Products</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {physicalProducts.map(product => {
-                const isWishlisted = user.wishlist?.some(item => item.id === product.id && item.type === 'physical');
-                return <ProductCard key={product.id} product={product} type="physical" isWishlisted={isWishlisted} onWishlist={() => toggleWishlist(product, 'physical')} onCheckout={() => setCheckoutGame(product)} />;
-              })}
-            </div>
+            {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' && !!user ? (
+              <SurveyGate todaysEarnings={dailyEarnings?.total_earned || 0} dailyGoal={4} onGoToSurveys={() => setActiveTab('ppc')} />
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-gray-900">Physical Products</h2>
+                <div className="grid md:grid-cols-3 gap-6">
+                  {physicalProducts.map(product => {
+                    const isWishlisted = user.wishlist?.some(item => item.id === product.id && item.type === 'physical');
+                    return <ProductCard key={product.id} product={product} type="physical" isWishlisted={isWishlisted} onWishlist={() => toggleWishlist(product, 'physical')} onCheckout={() => setCheckoutGame(product)} />;
+                  })}
+                </div>
+              </>
+            )}
           </TabsContent>
 
           {/* PPC Marketplace Section */}
