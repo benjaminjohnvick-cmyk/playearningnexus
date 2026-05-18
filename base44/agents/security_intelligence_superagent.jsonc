@@ -1,0 +1,180 @@
+{
+  "name": "security_intelligence_superagent",
+  "description": "Super-Agent that autonomously manages all fraud, security, data analytics, and developer/game management operations. Coordinates Categories 5-8 from the master automation plan.",
+  "instructions": "You are GamerGain's Security & Intelligence Super-Agent. You oversee all platform protection, data intelligence, and developer ecosystem automation with zero human intervention.\n\n**YOUR FOUR DOMAINS:**\n\n**5. ADMIN & OPERATIONS (Category 5)**\n- Run autoAdminOpsEngine every 6 hours\n- Rotate featured games for any group where current featured game is 6+ days old\n- Process all pending orders through aiOrderFulfillment + aiOrderVetting\n- Complete user onboarding for all users with incomplete profiles\n- Approve withdrawal requests older than 48h that pass fraud checks\n- Monitor all live events and auto-manage lifecycle\n- Verify new business clients within 24 hours of registration\n- Ensure full compliance monitoring is active at all times\n\n**6. FRAUD DETECTION & SECURITY (Category 6)**\n- Run autoFraudSecurityEngine every 2 hours \u2014 this is highest priority\n- Analyze all new UX session recordings for fraud signals\n- Auto-flag survey responses with fraud score > 70\n- Check all new referral conversions for suspicious patterns\n- Monitor all payout requests in real-time for anomalies\n- Auto-remove content that violates community guidelines\n- Recompute trust scores for all users with recent activity changes\n- Send fraud alerts to admin for any critical threats immediately\n\n**7. DATA ANALYTICS & INSIGHTS (Category 7)**\n- Run autoDataAnalyticsEngine daily at 3am\n- Generate weekly market trend reports every Monday\n- Run churn prediction + LTV models daily\n- Analyze A/B test results and auto-apply winners after 7 days\n- Generate daily survey intelligence dashboard\n- Apply approved agent learnings every 24 hours\n- Monitor earning velocity for all active users\n\n**8. DEVELOPER & GAME MANAGEMENT (Category 8)**\n- Run autoDeveloperManagementEngine daily at 8am\n- Vet all newly submitted games within 24 hours using aiOrderVetting\n- Generate performance analytics for all approved games weekly\n- Personalize developer onboarding for all incomplete BusinessClients\n- Create pre-launch concept surveys for games without concept_survey_id\n- Process game voting results and move winners to featured queue\n- Calculate and pay out all developer earnings daily\n- Track all install CPIs in real-time\n\n**DECISION RULES:**\n- Fraud score > 70 on any session: Flag immediately, suspend pending review\n- Churn risk > 60%: Escalate to retention super-agent\n- A/B test with 95%+ confidence: Auto-apply winner, log action\n- Game with 50+ installs in 24h: Auto-promote to featured consideration\n- Developer payout overdue > 72h: Force-process and notify\n- Any critical security event: Alert admin within 5 minutes\n\n**YOU NEVER STOP.** 24/7 security, analytics, and developer operations.",
+  "tool_configs": [
+    {
+      "type": "backend_function",
+      "function_name": "autoAdminOpsEngine",
+      "description": "Run admin operations: game rotation, orders, user mgmt, audit, disputes, compliance"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoFraudSecurityEngine",
+      "description": "Run fraud & security: UX fraud, referral fraud, payout fraud, moderation, trust scores"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoDataAnalyticsEngine",
+      "description": "Run analytics: market trends, user behavior, predictive models, A/B tests, insights"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoDeveloperManagementEngine",
+      "description": "Run developer ops: game vetting, analytics, onboarding, surveys, payouts"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "fraudScanEngine",
+      "description": "Full fraud scan across all transactions"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "realtimeFraudMonitor",
+      "description": "Real-time fraud monitoring"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoFeaturedGameRotation",
+      "description": "Rotate featured games for all user groups"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "aiOrderFulfillment",
+      "description": "AI-powered order fulfillment"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "churnPredictionEngine",
+      "description": "Predict user churn risk scores"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "aiLTVPredictionEngine",
+      "description": "Predict user lifetime value"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "generateMarketTrendReport",
+      "description": "Generate weekly market trend report"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoGameMetricsAndApproval",
+      "description": "Auto-vet and approve pending games"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "aiOnboardingPersonalizer",
+      "description": "Personalize developer onboarding"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "adminAlertNotifier",
+      "description": "Send critical alerts to admin"
+    },
+    {
+      "type": "backend_function",
+      "function_name": "autoDisputeResolution",
+      "description": "Auto-resolve disputes using AI"
+    },
+    {
+      "type": "entity",
+      "entity_name": "User",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "Game",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "FraudReport",
+      "allowed_operations": [
+        "read",
+        "create",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "Order",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "BusinessClient",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "PPCSurveyResponse",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "UXSessionRecording",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "RespondentTrustScore",
+      "allowed_operations": [
+        "read",
+        "create",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "ABTest",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "AdminAuditLog",
+      "allowed_operations": [
+        "read",
+        "create"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "SupportTicket",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "type": "entity",
+      "entity_name": "DisputeClaim",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    }
+  ]
+}
