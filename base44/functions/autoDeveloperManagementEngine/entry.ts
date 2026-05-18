@@ -5,9 +5,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (user?.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
-
     const results = {};
 
     // 1. Game Approval & Vetting
@@ -70,8 +67,9 @@ Deno.serve(async (req) => {
     results.install_cpi_charged = true;
 
     await base44.asServiceRole.entities.AdminAuditLog.create({
-      action: 'auto_developer_management_engine_run',
-      details: JSON.stringify(results),
+      action_type: 'other',
+      actor_email: 'system@gamergain.com',
+      details: `auto_developer_management_engine_run: ${JSON.stringify(results)}`,
       timestamp: new Date().toISOString()
     });
 
