@@ -14,6 +14,26 @@ Deno.serve(async (req) => {
     let actingUser = null;
     try { actingUser = await base44.auth.me(); } catch (_) {}
 
+    // Scheduled batch mode — scan recent unscored responses
+    if (!response_id && action === 'check') {
+      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+      const recentResponses = await base44.asServiceRole.entities.PPCSurveyResponse.list('-created_date', 100);
+      const unscored = recentResponses.filter(r =>
+        r.created_date > fifteenMinutesAgo && r.fraud_risk_score == null && !r.is_blocked
+      );
+      let processed = 0, flagged = 0, blocked = 0;
+      for (const r of unscored) {
+        try {
+          const res = await base44.asServiceRole.functions.invoke('realtimeFraudMonitor', { response_id: r.id, action: 'check' });
+          const data = res?.data ?? res;
+          if (data?.fraud_action === 'flag') flagged++;
+          if (data?.fraud_action === 'block') blocked++;
+          processed++;
+        } catch (_) {}
+      }
+      return Response.json({ success: true, mode: 'scheduled_batch', processed, flagged, blocked });
+    }
+
     if (action === 'block_user') {
       if (actingUser?.role !== 'admin') return Response.json({ error: 'Admin only' }, { status: 403 });
       // Block all pending responses from this user
