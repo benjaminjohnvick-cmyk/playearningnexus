@@ -3,8 +3,9 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user || user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
+    // Allow scheduled/headless calls; only block non-admin authenticated users
+    const user = await base44.auth.me().catch(() => null);
+    if (user && user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     // Get current platform data
     const games = await base44.asServiceRole.entities.Game.filter({
@@ -63,14 +64,15 @@ Provide:
       }
     });
 
+    const analysisData = marketAnalysis?.data || {};
     return Response.json({
       success: true,
       analysis_date: new Date().toISOString(),
       market_metrics: marketMetrics,
-      market_intelligence: marketAnalysis.data,
-      top_opportunities: marketAnalysis.data.market_opportunities,
-      recommended_actions: marketAnalysis.data.action_items,
-      competitive_outlook: marketAnalysis.data.market_sentiment
+      market_intelligence: analysisData,
+      top_opportunities: analysisData.market_opportunities || [],
+      recommended_actions: analysisData.action_items || [],
+      competitive_outlook: analysisData.market_sentiment || null
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
