@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
       try {
         console.log(`[Orchestrator] Running ${name}...`);
         const res = await base44.asServiceRole.functions.invoke(fnName, payload);
-        results[name] = res;
+        results[name] = res?.data ?? res;
         console.log(`[Orchestrator] ✓ ${name} complete`);
       } catch (err) {
         errors[name] = err.message;
