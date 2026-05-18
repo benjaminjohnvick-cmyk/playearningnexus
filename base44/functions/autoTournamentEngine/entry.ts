@@ -4,22 +4,25 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (user?.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
-
     const results = {};
 
     // 1. Auto-create new tournaments when none are active
     const activeTournaments = await base44.asServiceRole.entities.Tournament.filter({ status: 'active' });
     if (activeTournaments.length < 2) {
+      const approvedGames = await base44.asServiceRole.entities.Game.filter({ status: 'approved' });
+      const featuredGame = approvedGames[0];
       await base44.asServiceRole.entities.Tournament.create({
-        name: `Weekly Tournament - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
-        status: 'registration',
-        start_date: new Date(Date.now() + 86400000).toISOString(),
-        end_date: new Date(Date.now() + 7 * 86400000).toISOString(),
-        prize_pool: 500,
+        tournament_name: `Weekly Tournament - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+        game_id: featuredGame?.id || 'general',
+        game_title: featuredGame?.title || 'GamerGain',
+        status: 'upcoming',
+        registration_starts: new Date().toISOString(),
+        registration_ends: new Date(Date.now() + 86400000).toISOString(),
+        tournament_starts: new Date(Date.now() + 86400000).toISOString(),
+        tournament_ends: new Date(Date.now() + 7 * 86400000).toISOString(),
+        total_prize_pool: 500,
         max_participants: 64,
-        tournament_type: 'single_elimination',
+        tournament_format: 'single_elimination',
         entry_fee: 0
       });
       results.new_tournament_created = true;
@@ -44,12 +47,12 @@ Deno.serve(async (req) => {
     results.prizes_distributed = prizesDistributed;
 
     // 5. Close registration for tournaments starting within 1 hour
-    const startingSoon = await base44.asServiceRole.entities.Tournament.filter({ status: 'registration' });
+    const startingSoon = await base44.asServiceRole.entities.Tournament.filter({ status: 'registration_open' });
     let tournamentsClosed = 0;
     for (const t of startingSoon) {
       const startTime = new Date(t.start_date).getTime();
       if (startTime - Date.now() < 3600000) {
-        await base44.asServiceRole.entities.Tournament.update(t.id, { status: 'active' });
+        await base44.asServiceRole.entities.Tournament.update(t.id, { status: 'in_progress' });
         tournamentsClosed++;
       }
     }
