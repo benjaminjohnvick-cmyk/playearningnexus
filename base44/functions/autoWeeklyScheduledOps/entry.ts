@@ -56,10 +56,13 @@ Deno.serve(async (req) => {
     ];
     const theme = weeklyThemes[Math.floor(Math.random() * weeklyThemes.length)];
     await base44.asServiceRole.entities.WeeklyEvent.create({
+      event_name: theme.title,
+      event_type: 'weekly_challenge',
       title: theme.title,
       description: theme.description,
       prize: theme.prize,
       xp_multiplier: theme.xp_multiplier,
+      start_date: now.toISOString(),
       starts_at: now.toISOString(),
       ends_at: nextWeekEnd,
       end_date: nextWeekEnd,
