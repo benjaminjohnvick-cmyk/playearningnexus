@@ -1,0 +1,75 @@
+{
+  "name": "ProductWebsiteAnalytics",
+  "type": "object",
+  "properties": {
+    "survey_id": {
+      "type": "string",
+      "description": "Associated PPCSurvey ID"
+    },
+    "product_url": {
+      "type": "string",
+      "description": "Product website URL being tracked"
+    },
+    "product_name": {
+      "type": "string",
+      "description": "Product name for reference"
+    },
+    "total_visits": {
+      "type": "number",
+      "default": 0,
+      "description": "Total website visits from survey clicks"
+    },
+    "daily_visits": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Daily visit counts"
+    },
+    "referrer_breakdown": {
+      "type": "object",
+      "default": {},
+      "description": "Visitor counts by referrer source",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "visit_history": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "referrer": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Recent visit events (last 1000)"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  },
+  "required": [
+    "survey_id",
+    "product_url"
+  ]
+}

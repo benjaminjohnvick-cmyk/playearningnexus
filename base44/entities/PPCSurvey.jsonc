@@ -57,6 +57,19 @@
       "type": "number",
       "description": "Total cost for all questions"
     },
+    "product_name": {
+      "type": "string",
+      "description": "Name of product being surveyed (optional)"
+    },
+    "product_url": {
+      "type": "string",
+      "description": "Website URL for product tracking"
+    },
+    "tracking_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether website visit tracking is enabled"
+    },
     "status": {
       "type": "string",
       "enum": [
