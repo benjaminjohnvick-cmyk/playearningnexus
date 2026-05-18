@@ -11,8 +11,10 @@ Deno.serve(async (req) => {
     const { user_id, amount, method, send_email } = body;
 
     // ── MANUAL / USER-TRIGGERED MODE ──────────────────────────────────────────
-    // If a user_id is provided in the body, process that single user's payout
-    if (user_id && amount) {
+    // Only enter manual mode if BOTH user_id and amount are explicitly provided
+    // AND there is an authenticated user (not a scheduled automation call)
+    const isManualCall = !!(user_id && amount && typeof amount === 'number');
+    if (isManualCall) {
       const user = await base44.auth.me();
       if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
       if (user_id !== user.id && user.role !== 'admin') {
@@ -61,7 +63,7 @@ Deno.serve(async (req) => {
         method: method || pref.payout_method,
         message: 'Payout request created successfully.',
       });
-    }
+    } // end isManualCall
 
     // ── SCHEDULED AUTOMATION MODE ─────────────────────────────────────────────
     // No user_id/amount in body → bulk-process all eligible users
