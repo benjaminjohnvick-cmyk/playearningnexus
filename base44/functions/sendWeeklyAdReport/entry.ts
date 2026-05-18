@@ -8,9 +8,13 @@ Deno.serve(async (req) => {
 
   try {
     const user = await base44.auth.me();
-    userId = user.id;
-    userEmail = user.email;
-    userName = user.full_name || 'Advertiser';
+    if (user?.id) {
+      userId = user.id;
+      userEmail = user.email;
+      userName = user.full_name || 'Advertiser';
+    } else {
+      throw new Error('no user');
+    }
   } catch {
     // Called from scheduler — no user context, process all advertisers
     const allAds = await base44.asServiceRole.entities.AdListing.list('-updated_date', 200);
