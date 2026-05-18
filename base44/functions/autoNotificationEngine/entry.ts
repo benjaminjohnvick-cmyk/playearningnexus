@@ -8,7 +8,7 @@ Deno.serve(async (req) => {
 
     // 1. Daily reminders for users who haven't completed any survey today
     const today = new Date().toISOString().split('T')[0];
-    const allUsers = await base44.asServiceRole.entities.User.list('-created_date', 200);
+    const allUsers = await base44.asServiceRole.entities.User.list('-created_date');
     let reminders = 0;
     for (const u of allUsers.slice(0, 50)) {
       const earnings = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id: u.id, date: today });
