@@ -44,15 +44,16 @@ Generate: key_learnings (array of 3 insights), improvement_suggestions (array of
       });
 
       // Save to AgentLearningMemory
-      await base44.asServiceRole.entities.AgentLearningMemory.create({
-        agent_name: agentName,
-        analysis_period: '7_days',
-        success_rate: avgSuccessRate,
-        key_learnings: analysis.key_learnings,
-        improvement_suggestions: analysis.improvement_suggestions,
-        performance_grade: analysis.performance_grade,
-        generated_at: new Date().toISOString()
-      });
+      for (const learning of analysis.key_learnings || []) {
+        await base44.asServiceRole.entities.AgentLearningMemory.create({
+          agent_name: agentName,
+          memory_type: 'learned_pattern',
+          content: learning,
+          recommended_action: analysis.improvement_suggestions?.[0] || 'Review and optimize',
+          approval_rate_at_creation: avgSuccessRate,
+          accuracy_rate_at_creation: avgSuccessRate
+        });
+      }
 
       results.push({ agent: agentName, grade: analysis.performance_grade, success_rate: avgSuccessRate });
     }

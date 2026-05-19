@@ -67,13 +67,14 @@ Provide:
     // 5. Log orchestration results
     const optimizations = optimizationResult.data?.optimizations || [];
     const criticalCount = optimizationResult.data?.critical_count || 0;
+    const systemInsightsData = systemInsights?.data || {};
     const orchestrationLog = {
       timestamp,
       performance_logs_analyzed: allPerformanceLogs.length,
       features_analyzed: optimizationResult.data?.total_features_analyzed || 0,
       optimizations_identified: optimizations.length,
       critical_issues: criticalCount,
-      system_insights: systemInsights.data,
+      system_insights: systemInsightsData,
       action_items: [
         ...optimizations.slice(0, 5).map(o => ({
           feature: o.feature_name,
@@ -110,9 +111,9 @@ Provide:
         features_stable: allPerformanceLogs.filter(l => l.trend === 'stable').length,
         features_degrading: allPerformanceLogs.filter(l => l.trend === 'degrading').length
       },
-      system_insights: systemInsights.data,
+      system_insights: systemInsightsData,
       critical_actions: orchestrationLog.action_items.filter(a => a.priority === 'critical' || a.action === 'escalate_to_admin'),
-      projected_system_performance_90d: `${systemInsights.data.projected_performance_90_days}%`,
+      projected_system_performance_90d: `${systemInsightsData?.projected_performance_90_days || 0}%`,
       next_orchestration: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     });
   } catch (error) {

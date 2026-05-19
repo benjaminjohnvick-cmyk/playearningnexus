@@ -58,17 +58,24 @@ Generate a prioritized implementation plan with:
     });
 
     // Create implementation tasks in system
+    const implData = implementations?.data || {};
+    const highPriority = implData.high_priority || [];
+    const mediumPriority = implData.medium_priority || [];
+    const quickWins = implData.quick_wins || [];
+    const autoDeployItems = implData.auto_deploy_items || [];
+    const manualReviewItems = implData.manual_review_items || [];
+    
     const implementationLog = {
       timestamp: new Date().toISOString(),
       source: 'ai_competitive_ux_analysis',
       tasks: {
-        high_priority: implementations.data.high_priority.map(t => ({ task: t, status: 'queued', priority: 'high' })),
-        medium_priority: implementations.data.medium_priority.map(t => ({ task: t, status: 'queued', priority: 'medium' })),
-        quick_wins: implementations.data.quick_wins.map(t => ({ task: t, status: 'ready_for_deploy', priority: 'critical' }))
+        high_priority: highPriority.map(t => ({ task: t, status: 'queued', priority: 'high' })),
+        medium_priority: mediumPriority.map(t => ({ task: t, status: 'queued', priority: 'medium' })),
+        quick_wins: quickWins.map(t => ({ task: t, status: 'ready_for_deploy', priority: 'critical' }))
       },
-      auto_deploy_ready: implementations.data.auto_deploy_items.length,
-      manual_review_needed: implementations.data.manual_review_items.length,
-      total_tasks: implementations.data.high_priority.length + implementations.data.medium_priority.length + implementations.data.quick_wins.length
+      auto_deploy_ready: autoDeployItems.length,
+      manual_review_needed: manualReviewItems.length,
+      total_tasks: highPriority.length + mediumPriority.length + quickWins.length
     };
 
     // Store implementation plan
@@ -79,11 +86,11 @@ Generate a prioritized implementation plan with:
     }).catch(() => null);
 
     // Alert admin about auto-deployable items
-    if (implementations.data.quick_wins.length > 0) {
+    if (quickWins.length > 0) {
       await base44.integrations.Core.SendEmail({
         to: 'admin@gamergain.com',
-        subject: `🚀 AI: ${implementations.data.quick_wins.length} Quick Win Feature Improvements Ready for Deploy`,
-        body: `Quick wins ready for immediate implementation:\n${implementations.data.quick_wins.map((q, i) => `${i+1}. ${q}`).join('\n')}\n\nHigh-priority competitive counters:\n${implementations.data.high_priority.slice(0, 3).map((h, i) => `${i+1}. ${h}`).join('\n')}`
+        subject: `🚀 AI: ${quickWins.length} Quick Win Feature Improvements Ready for Deploy`,
+        body: `Quick wins ready for immediate implementation:\n${quickWins.map((q, i) => `${i+1}. ${q}`).join('\n')}\n\nHigh-priority competitive counters:\n${highPriority.slice(0, 3).map((h, i) => `${i+1}. ${h}`).join('\n')}`
       }).catch(() => null);
     }
 
@@ -92,12 +99,12 @@ Generate a prioritized implementation plan with:
       implementation_plan_generated: true,
       timestamp: new Date().toISOString(),
       total_tasks: implementationLog.total_tasks,
-      high_priority_count: implementations.data.high_priority.length,
-      medium_priority_count: implementations.data.medium_priority.length,
-      quick_wins_ready: implementations.data.quick_wins.length,
-      auto_deploy_ready: implementations.data.auto_deploy_items.length,
-      manual_review_needed: implementations.data.manual_review_items.length,
-      implementation_plan: implementations.data,
+      high_priority_count: highPriority.length,
+      medium_priority_count: mediumPriority.length,
+      quick_wins_ready: quickWins.length,
+      auto_deploy_ready: autoDeployItems.length,
+      manual_review_needed: manualReviewItems.length,
+      implementation_plan: implData,
       next_review: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     });
   } catch (error) {
