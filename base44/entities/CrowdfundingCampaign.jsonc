@@ -1,0 +1,80 @@
+{
+  "name": "CrowdfundingCampaign",
+  "type": "object",
+  "description": "Community-funded feature/development campaigns",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "goal_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "raised_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "backers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "feature",
+        "game",
+        "infrastructure",
+        "community",
+        "other"
+      ],
+      "default": "feature"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "funded",
+        "failed",
+        "completed"
+      ],
+      "default": "draft"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "reward_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "default": []
+    },
+    "updates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "ai_generated_pitch": {
+      "type": "string"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "goal_amount"
+  ]
+}

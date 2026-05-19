@@ -1,0 +1,73 @@
+{
+  "name": "RevenueProduct",
+  "type": "object",
+  "description": "In-app purchasable items: virtual goods, digital content, feature unlocks, consumables",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "virtual_currency",
+        "cosmetic",
+        "digital_content",
+        "feature_unlock",
+        "consumable",
+        "tip",
+        "ai_credits",
+        "api_access"
+      ],
+      "default": "consumable"
+    },
+    "price_usd": {
+      "type": "number",
+      "default": 0
+    },
+    "price_credits": {
+      "type": "number",
+      "default": 0
+    },
+    "icon": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "quantity_granted": {
+      "type": "number",
+      "default": 1
+    },
+    "feature_key": {
+      "type": "string",
+      "description": "Feature unlocked upon purchase"
+    },
+    "is_consumable": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    },
+    "stripe_price_id": {
+      "type": "string"
+    },
+    "total_sold": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "price_usd"
+  ]
+}

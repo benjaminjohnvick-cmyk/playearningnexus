@@ -1,0 +1,70 @@
+{
+  "name": "APIAccessKey",
+  "type": "object",
+  "description": "API keys for pay-per-use / integration fee access",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "key_hash": {
+      "type": "string"
+    },
+    "key_prefix": {
+      "type": "string",
+      "description": "First 8 chars shown to user"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "free",
+        "basic",
+        "pro",
+        "enterprise"
+      ],
+      "default": "free"
+    },
+    "calls_per_day_limit": {
+      "type": "number",
+      "default": 100
+    },
+    "calls_today": {
+      "type": "number",
+      "default": 0
+    },
+    "calls_total": {
+      "type": "number",
+      "default": 0
+    },
+    "monthly_fee": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "revoked"
+      ],
+      "default": "active"
+    },
+    "last_used": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "allowed_endpoints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "revenue_generated": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

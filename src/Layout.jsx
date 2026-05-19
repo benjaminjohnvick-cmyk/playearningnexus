@@ -370,6 +370,12 @@ export default function Layout({ children, currentPageName }) {
                     📊 Ad Grid
                   </Button>
                 </Link>
+                <Link to="/RevenueHub" className="flex-shrink-0">
+                  <Button variant={currentPageName === 'RevenueHub' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'RevenueHub' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md" : "hover:bg-green-50 text-green-700 font-bold border-2 border-green-400 animate-pulse"}>
+                    💰 Revenue Hub
+                  </Button>
+                </Link>
               </nav>
 
               {/* Desktop Right: user controls */}

@@ -1,0 +1,33 @@
+{
+  "name": "PlatformCredit",
+  "type": "object",
+  "description": "Tracks user credit balances for pay-per-use features",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "balance": {
+      "type": "number",
+      "default": 0
+    },
+    "lifetime_purchased": {
+      "type": "number",
+      "default": 0
+    },
+    "lifetime_spent": {
+      "type": "number",
+      "default": 0
+    },
+    "last_purchase_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_spend_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}
