@@ -48,8 +48,9 @@ Deno.serve(async (req) => {
     // Store weekly report as an AdminAuditLog instead of AgentPerformanceLog
     await base44.asServiceRole.entities.AdminAuditLog.create({
       actor_email: 'system@gamergain.io',
-      action_type: 'weekly_insights_report_generated',
-      details: {
+      action_type: 'other',
+      target: 'weekly_insights_report',
+      details: JSON.stringify({
         new_users: newUsersThisWeek,
         orders: ordersThisWeek.length,
         order_revenue: totalOrderRevenue,
@@ -59,7 +60,7 @@ Deno.serve(async (req) => {
         campaign_roas: totalCampaignSpend > 0 ? parseFloat((totalCampaignRevenue / totalCampaignSpend).toFixed(2)) : 0,
         platform_health_score: insights.health_score,
         insights: insights
-      },
+      }),
       timestamp: now.toISOString()
     });
 
