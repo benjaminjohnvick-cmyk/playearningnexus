@@ -82,15 +82,14 @@ Deno.serve(async (req) => {
     results.game_votes_tallied = votesTallied;
 
     // 4. Execute due survey schedules
-    const dueSchedules = await base44.asServiceRole.entities.SurveySchedule.filter({ status: 'scheduled' }, '-scheduled_at', 20);
+    const dueSchedules = await base44.asServiceRole.entities.SurveySchedule.filter({ status: 'scheduled' }, '-launch_datetime', 20);
     let schedulesExecuted = 0;
     for (const schedule of dueSchedules) {
-      if (schedule.scheduled_at && new Date(schedule.scheduled_at) <= new Date()) {
+      if (schedule.launch_datetime && new Date(schedule.launch_datetime) <= new Date()) {
         await base44.asServiceRole.functions.invoke('processSurveySchedules', { schedule_id: schedule.id });
         await base44.asServiceRole.functions.invoke('scheduleSurveyDistribution', { schedule_id: schedule.id });
         await base44.asServiceRole.entities.SurveySchedule.update(schedule.id, {
-          status: 'executed',
-          executed_at: now
+          status: 'completed'
         });
         schedulesExecuted++;
       }
