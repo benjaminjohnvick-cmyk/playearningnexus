@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Star, Send, MessageSquare } from 'lucide-react';
+import { Star, Send, MessageSquare, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function CustomerFeedbackSurvey() {
@@ -12,6 +12,7 @@ export default function CustomerFeedbackSurvey() {
   const [feedback, setFeedback] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [closed, setClosed] = useState(false);
 
   const handleSubmit = async () => {
     if (!feedback.trim() || rating === 0) {
@@ -54,6 +55,10 @@ export default function CustomerFeedbackSurvey() {
     }
   };
 
+  if (closed) {
+    return null;
+  }
+
   if (submitted) {
     return (
       <Card className="border-green-200 bg-green-50">
@@ -66,11 +71,18 @@ export default function CustomerFeedbackSurvey() {
 
   return (
     <Card className="w-full">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <MessageSquare className="w-5 h-5" />
           How's Your Experience?
         </CardTitle>
+        <button
+          onClick={() => setClosed(true)}
+          className="text-gray-400 hover:text-gray-600 transition-colors"
+          title="Close survey"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
