@@ -188,6 +188,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Leaderboard', icon: Trophy, path: 'GlobalLeaderboard' },
     { name: 'Daily Streak', icon: Star, path: 'DailyEarningStreak', requireAuth: true },
     { name: 'Contact Us', icon: Mail, path: 'ContactUs' },
+    { name: 'Revenue Hub', icon: DollarSign, path: 'RevenueHub' },
     { name: 'Referral Leaderboard', icon: Trophy, path: 'ReferralLeaderboardPage', requireAuth: true },
     { name: 'Survey Analytics', icon: BarChart2, path: 'SurveyAdminDashboard', requireAuth: true },
     { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
