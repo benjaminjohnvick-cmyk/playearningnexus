@@ -11,25 +11,30 @@ Deno.serve(async (req) => {
     const now = new Date().toISOString();
     const today = now.split('T')[0];
 
-    // 1. Create weekly guild challenges if none exist for this week
+    // 1. Create weekly guild challenges — need at least one guild to attach them to
+    const allGuildsForChallenges = await base44.asServiceRole.entities.Guild.filter({ status: 'active' });
     const activeChallenges = await base44.asServiceRole.entities.GuildChallenge.filter({ status: 'active' });
-    if (activeChallenges.length < 3) {
+    if (activeChallenges.length < 3 && allGuildsForChallenges.length > 0) {
       const challengeTemplates = [
-        { title: 'Survey Sprint', description: 'Guild members complete 50 surveys combined', target: 50, type: 'surveys' },
-        { title: 'Referral Rush', description: 'Get 10 new referrals as a guild', target: 10, type: 'referrals' },
-        { title: 'Earnings Blitz', description: 'Earn $100 combined as a guild', target: 100, type: 'earnings' }
+        { challenge_name: 'Survey Sprint', description: 'Guild members complete 50 surveys combined', target_amount: 50, challenge_type: 'survey_sprint', target_metric: 'surveys_completed' },
+        { challenge_name: 'Referral Rush', description: 'Get 10 new referrals as a guild', target_amount: 10, challenge_type: 'referral_push', target_metric: 'referrals_made' },
+        { challenge_name: 'Earnings Blitz', description: 'Earn $100 combined as a guild', target_amount: 100, challenge_type: 'earning_battle', target_metric: 'total_earnings' }
       ];
       for (const template of challengeTemplates.slice(0, 3 - activeChallenges.length)) {
+        // Assign challenge to the first active guild (global challenges apply to all guilds)
+        const guild = allGuildsForChallenges[0];
         await base44.asServiceRole.entities.GuildChallenge.create({
-          title: template.title,
+          guild_id: guild.id,
+          challenge_name: template.challenge_name,
           description: template.description,
-          target_value: template.target,
-          challenge_type: template.type,
+          target_amount: template.target_amount,
+          target_metric: template.target_metric,
+          challenge_type: template.challenge_type,
           status: 'active',
-          start_date: today,
-          end_date: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
-          reward_type: 'points',
-          reward_value: 500
+          duration_days: 7,
+          reward_pool: 500,
+          starts_at: now,
+          ends_at: new Date(Date.now() + 7 * 86400000).toISOString()
         });
       }
       results.guild_challenges_created = 3 - activeChallenges.length;
@@ -39,17 +44,24 @@ Deno.serve(async (req) => {
     const expiredChallenges = await base44.asServiceRole.entities.GuildChallenge.filter({ status: 'active' });
     let challengesCompleted = 0;
     for (const challenge of expiredChallenges) {
-      if (challenge.end_date && challenge.end_date < today) {
-        await base44.asServiceRole.entities.GuildChallenge.update(challenge.id, { status: 'completed' });
-        // Award guild reward
+      if (challenge.ends_at && challenge.ends_at < now) {
+        await base44.asServiceRole.entities.GuildChallenge.update(challenge.id, { status: 'completed', completed_at: now });
+        // Award top member of the guild a reward
         if (challenge.guild_id) {
-          await base44.asServiceRole.entities.GuildReward.create({
-            guild_id: challenge.guild_id,
-            challenge_id: challenge.id,
-            reward_type: challenge.reward_type || 'points',
-            reward_value: challenge.reward_value || 500,
-            awarded_at: now
-          });
+          const guildMembers = await base44.asServiceRole.entities.GuildMember.filter({ guild_id: challenge.guild_id });
+          const topMember = guildMembers.sort((a, b) => (b.contribution_points || 0) - (a.contribution_points || 0))[0];
+          if (topMember?.user_id) {
+            await base44.asServiceRole.entities.GuildReward.create({
+              guild_id: challenge.guild_id,
+              challenge_id: challenge.id,
+              user_id: topMember.user_id,
+              user_name: topMember.user_name || 'Member',
+              reward_type: 'cash',
+              reward_amount: challenge.reward_pool || 500,
+              status: 'pending',
+              awarded_at: now
+            });
+          }
         }
         challengesCompleted++;
       }
