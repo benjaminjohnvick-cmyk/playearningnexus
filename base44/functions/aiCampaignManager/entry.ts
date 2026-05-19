@@ -2,6 +2,44 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
+
+  // Scheduled automation path: no body, no user session — bulk optimize all active campaigns
+  const contentType = req.headers.get('content-type') || '';
+  const hasBody = contentType.includes('application/json');
+  if (!hasBody) {
+    const activeCampaigns = await base44.asServiceRole.entities.AdCampaign.filter({ status: 'active' });
+    let optimized = 0;
+    for (const campaign of activeCampaigns) {
+      if (!campaign.ai_bid_enabled) continue;
+      const perf = campaign.performance || {};
+      const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt: `AI bidding optimizer for GamerGain ad campaign "${campaign.name}".
+        Current bid: $${campaign.bid_amount || 0}, Impressions: ${perf.impressions || 0}, Clicks: ${perf.clicks || 0}, Conversions: ${perf.conversions || 0}, CTR: ${(perf.ctr || 0).toFixed(3)}%, ROAS: ${perf.roas || 0}x.
+        Return a recommended_bid (number) and optimization_tips (array of 3 strings).`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            recommended_bid: { type: "number" },
+            optimization_tips: { type: "array", items: { type: "string" } }
+          }
+        }
+      });
+      if (result.recommended_bid) {
+        await base44.asServiceRole.entities.AdCampaign.update(campaign.id, {
+          bid_amount: result.recommended_bid,
+          last_optimized_at: new Date().toISOString(),
+          ai_suggestions: {
+            recommended_bid: result.recommended_bid,
+            optimization_tips: result.optimization_tips || [],
+            generated_at: new Date().toISOString()
+          }
+        });
+        optimized++;
+      }
+    }
+    return Response.json({ ok: true, optimized_campaigns: optimized });
+  }
+
   const user = await base44.auth.me();
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
