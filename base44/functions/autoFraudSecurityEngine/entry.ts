@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
   };
 
   // 1. UX Fraud Analysis
-  await invoke('autoUXFraudAnalysis');
+  await invoke('autoUXFraudEscalation');
   await invoke('surveyUXFraudAnalyzer');
   await invoke('uxAnalysisEngine');
   results.ux_fraud_analyzed = true;
