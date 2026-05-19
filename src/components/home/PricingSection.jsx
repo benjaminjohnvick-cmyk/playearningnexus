@@ -121,12 +121,9 @@ export default function PricingSection() {
   const [expanded, setExpanded] = useState(null);
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-24">
+    <section className="max-w-7xl mx-auto px-6 py-16 bg-white">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <div
         className="text-center mb-16"
       >
         <Badge className="mb-4 bg-green-100 text-green-800 border-green-200 text-sm px-4 py-1">
@@ -138,17 +135,13 @@ export default function PricingSection() {
         <p className="text-lg text-gray-500 max-w-2xl mx-auto">
           No hidden fees. No subscriptions. Break down every service and see exactly what you earn vs. what you pay.
         </p>
-      </motion.div>
+      </div>
 
       {/* Individual Service Cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
         {services.map((svc, i) => (
-          <motion.div
+          <div
             key={svc.name}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.05 }}
           >
             <Card
               className={`h-full border-2 cursor-pointer transition-all hover:shadow-xl ${expanded === i ? 'border-blue-400 shadow-xl' : 'border-gray-100 hover:border-blue-200'}`}
@@ -189,15 +182,12 @@ export default function PricingSection() {
                 <p className="text-xs text-blue-500 mt-2">{expanded === i ? '▲ Less' : '▼ Details'}</p>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       {/* All-In Plan + ROI */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <div
       >
         <Card className="border-2 border-green-400 shadow-2xl overflow-hidden">
           <div className="h-2 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500" />
@@ -280,7 +270,7 @@ export default function PricingSection() {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
       {/* Fine print */}
       <p className="text-center text-xs text-gray-400 mt-6">

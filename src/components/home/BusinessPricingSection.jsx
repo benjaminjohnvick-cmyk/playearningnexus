@@ -136,12 +136,9 @@ export default function BusinessPricingSection() {
   const [expanded, setExpanded] = useState(null);
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-24 border-t border-gray-100">
+    <section className="max-w-7xl mx-auto px-6 py-16 bg-white border-t border-gray-100">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <div
         className="text-center mb-16"
       >
         <Badge className="mb-4 bg-blue-100 text-blue-800 border-blue-200 text-sm px-4 py-1">
@@ -153,7 +150,7 @@ export default function BusinessPricingSection() {
         <p className="text-lg text-gray-500 max-w-3xl mx-auto">
           GamerGain is more than a consumer platform — it's a full B2B ecosystem. Whether you build games, run surveys, advertise brands, or sell products, there's a dedicated portal built for you.
         </p>
-      </motion.div>
+      </div>
 
       {/* Portal Cards */}
       <div className="space-y-6 mb-20">
@@ -169,12 +166,8 @@ export default function BusinessPricingSection() {
           const c = colorMap[portal.color];
 
           return (
-            <motion.div
+            <div
               key={portal.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.07 }}
             >
               <Card className={`border-2 transition-all cursor-pointer ${c.border} ${isOpen ? 'shadow-xl' : 'hover:shadow-lg'}`}>
                 {/* Summary Row */}
@@ -252,16 +245,13 @@ export default function BusinessPricingSection() {
                   </motion.div>
                 )}
               </Card>
-            </motion.div>
+            </div>
           );
         })}
       </div>
 
       {/* Social Advertising Comparison */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <div
         className="mb-16"
       >
         <div className="text-center mb-10">
@@ -328,14 +318,11 @@ export default function BusinessPricingSection() {
         <p className="text-center text-xs text-gray-400 mt-4">
           * CPC/CPM estimates sourced from industry averages (2024–2025). Actual results vary by campaign, targeting, and industry.
         </p>
-      </motion.div>
+      </div>
 
       {/* Bottom CTA */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-12 text-white"
+      <div
+        className="text-center bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-12 text-white"
       >
         <h3 className="text-3xl font-black mb-3">Ready to grow your business on GamerGain?</h3>
         <p className="text-gray-300 mb-8 max-w-xl mx-auto">
@@ -355,7 +342,7 @@ export default function BusinessPricingSection() {
             <Button className="bg-green-600 hover:bg-green-700 text-white h-11 px-6 font-bold">📦 Seller Portal</Button>
           </Link>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
