@@ -4,118 +4,87 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 // realtime fraud monitoring, milestone alerts, referral commissions, PayPal reconciliation,
 // MLM earnings aggregation, content creation, data analytics, developer management
 Deno.serve(async (req) => {
-  try {
-    const base44 = createClientFromRequest(req);
+  const base44 = createClientFromRequest(req);
+  const results = {};
+  const errors = [];
 
-    const results = {};
+  const invoke = async (name, payload = {}) => {
+    try {
+      await base44.asServiceRole.functions.invoke(name, payload);
+      results[name] = 'ok';
+    } catch (e) {
+      errors.push({ fn: name, error: e.message });
+      results[name] = 'error';
+    }
+  };
 
-    // 1. Daily AI survey generation
-    await base44.asServiceRole.functions.invoke('dailyAISurveyGenerator', {});
-    results.daily_surveys_generated = true;
+  // 1. Daily AI survey generation
+  await invoke('dailyAISurveyGenerator');
+  await invoke('generateAISurvey');
 
-    // 2. Generate AI surveys
-    await base44.asServiceRole.functions.invoke('generateAISurvey', {});
-    results.ai_surveys_generated = true;
+  // 2. Daily tier check for all users
+  await invoke('dailyTierCheck');
+  await invoke('updateUserTiers');
 
-    // 3. Daily tier check for all users
-    await base44.asServiceRole.functions.invoke('dailyTierCheck', {});
-    results.daily_tier_checks_run = true;
+  // 3. Survey streak reminder & daily reminders
+  await invoke('surveyStreakReminder');
+  await invoke('sendDailyReminder');
 
-    // 4. Update user tiers
-    await base44.asServiceRole.functions.invoke('updateUserTiers', {});
-    results.user_tiers_updated = true;
+  // 4. Fraud monitoring
+  await invoke('realtimeFraudMonitor');
+  await invoke('fraudScanEngine');
 
-    // 5. Survey streak reminder
-    await base44.asServiceRole.functions.invoke('surveyStreakReminder', {});
-    results.streak_reminders_sent = true;
+  // 5. Milestone alert checker
+  await invoke('milestoneAlertChecker');
 
-    // 6. Send daily reminder notifications
-    await base44.asServiceRole.functions.invoke('sendDailyReminder', {});
-    results.daily_reminders_sent = true;
+  // 6. Referral commissions
+  await invoke('processReferralCommissions');
+  await invoke('processReferralDailyBonus');
 
-    // 7. Realtime fraud monitor sweep
-    await base44.asServiceRole.functions.invoke('realtimeFraudMonitor', {});
-    results.fraud_monitor_swept = true;
+  // 7. PayPal reconciliation
+  await invoke('autoPayPalReconciliation');
 
-    // 8. Fraud scan engine
-    await base44.asServiceRole.functions.invoke('fraudScanEngine', {});
-    results.fraud_scan_complete = true;
+  // 8. MLM earnings aggregation
+  await invoke('autoMLMEarningsAggregation');
+  await invoke('distributeMLMBonus');
 
-    // 9. Milestone alert checker
-    await base44.asServiceRole.functions.invoke('milestoneAlertChecker', {});
-    results.milestones_checked = true;
+  // 9. Content creation engine
+  await invoke('autoContentCreationEngine');
 
-    // 10. Process daily referral commissions
-    await base44.asServiceRole.functions.invoke('processReferralCommissions', {});
-    await base44.asServiceRole.functions.invoke('processReferralDailyBonus', {});
-    results.referral_commissions_processed = true;
+  // 10. Data analytics engine
+  await invoke('autoDataAnalyticsEngine');
 
-    // 11. PayPal reconciliation
-    await base44.asServiceRole.functions.invoke('autoPayPalReconciliation', {});
-    results.paypal_reconciled = true;
+  // 11. Developer management engine
+  await invoke('autoDeveloperManagementEngine');
 
-    // 12. MLM earnings aggregation
-    await base44.asServiceRole.functions.invoke('autoMLMEarningsAggregation', {});
-    await base44.asServiceRole.functions.invoke('distributeMLMBonus', {});
-    results.mlm_earnings_aggregated = true;
+  // 12. Survey health & quality
+  await invoke('surveyHealthMonitor');
+  await invoke('surveyQualityAutoScan');
 
-    // 13. Content creation engine
-    await base44.asServiceRole.functions.invoke('autoContentCreationEngine', {});
-    results.content_created = true;
+  // 13. App store earnings validator
+  await invoke('appStoreEarningsValidator');
 
-    // 14. Data analytics engine
-    await base44.asServiceRole.functions.invoke('autoDataAnalyticsEngine', {});
-    results.data_analytics_run = true;
+  // 14. Process automated payouts
+  await invoke('processAutomatedPayouts');
+  await invoke('processScheduledPayouts');
 
-    // 15. Developer management engine
-    await base44.asServiceRole.functions.invoke('autoDeveloperManagementEngine', {});
-    results.developer_management_run = true;
+  // 15. Badges and achievements
+  await invoke('checkAndAwardBadges');
+  await invoke('batchAwardAchievements');
 
-    // 16. Survey health monitor
-    await base44.asServiceRole.functions.invoke('surveyHealthMonitor', {});
-    results.survey_health_checked = true;
+  // 16. Global prestige scores
+  await invoke('calculateGlobalPrestige');
 
-    // 17. Survey quality auto-scan
-    await base44.asServiceRole.functions.invoke('surveyQualityAutoScan', {});
-    results.survey_quality_scanned = true;
+  // 17. Ad scheduled reports
+  await invoke('adScheduledReports');
 
-    // 18. App store earnings validator
-    await base44.asServiceRole.functions.invoke('appStoreEarningsValidator', {});
-    results.app_store_earnings_validated = true;
+  // 18. Audit log monitoring
+  await invoke('autoAuditLogMonitoring');
+  await invoke('adminAuditLogAnalyzer');
 
-    // 19. Process automated payouts
-    await base44.asServiceRole.functions.invoke('processAutomatedPayouts', {});
-    await base44.asServiceRole.functions.invoke('processScheduledPayouts', {});
-    results.automated_payouts_processed = true;
+  // 19. Growth, onboarding & engagement
+  await invoke('autoGrowthAndOnboardingEngine');
+  await invoke('autoEngagementEngine');
 
-    // 20. Check and award badges
-    await base44.asServiceRole.functions.invoke('checkAndAwardBadges', {});
-    await base44.asServiceRole.functions.invoke('batchAwardAchievements', {});
-    results.badges_and_achievements_awarded = true;
-
-    // 21. Calculate global prestige scores
-    await base44.asServiceRole.functions.invoke('calculateGlobalPrestige', {});
-    results.prestige_scores_calculated = true;
-
-    // 22. Ad scheduled reports
-    await base44.asServiceRole.functions.invoke('adScheduledReports', {});
-    results.ad_reports_scheduled = true;
-
-    // 23. Audit log monitoring
-    await base44.asServiceRole.functions.invoke('autoAuditLogMonitoring', {});
-    await base44.asServiceRole.functions.invoke('adminAuditLogAnalyzer', {});
-    results.audit_logs_analyzed = true;
-
-    // 24. Growth and onboarding engine
-    await base44.asServiceRole.functions.invoke('autoGrowthAndOnboardingEngine', {});
-    results.growth_onboarding_run = true;
-
-    // 25. Engagement engine
-    await base44.asServiceRole.functions.invoke('autoEngagementEngine', {});
-    results.engagement_engine_run = true;
-
-    return Response.json({ success: true, results });
-  } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
-  }
+  return Response.json({ success: true, results, errors });
 });

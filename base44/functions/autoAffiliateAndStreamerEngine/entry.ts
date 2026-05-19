@@ -61,11 +61,10 @@ Deno.serve(async (req) => {
         // Notify streamer
         await base44.asServiceRole.entities.Notification.create({
           user_id: tip.streamer_id,
-          type: 'tip_received',
+          type: 'points_earned',
           title: '💰 You received a tip!',
           message: `You earned $${streamerCut.toFixed(2)} from a tip.`,
-          is_read: false,
-          country_code: 'US'
+          status: 'unread'
         });
         tipsPaid++;
       }
