@@ -17,25 +17,25 @@ export default function Pricing() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pointer-events-auto">
       {/* Header */}
-      <div className="bg-gradient-to-br from-purple-600 to-indigo-700 py-12 px-6">
-        <div className="max-w-7xl mx-auto text-center">
+      <div className="bg-gradient-to-br from-purple-600 to-indigo-700 py-12 px-6 pointer-events-auto">
+        <div className="max-w-7xl mx-auto text-center pointer-events-auto">
           <h1 className="text-4xl md:text-5xl font-black text-white mb-3">Pricing & Revenue Hub</h1>
           <p className="text-purple-100 text-lg max-w-2xl mx-auto">Choose your earning strategy or combine multiple revenue streams for maximum profits</p>
         </div>
       </div>
 
       {/* Navigation Categories */}
-      <div className="max-w-7xl mx-auto px-6 py-8 bg-white relative z-10">
-        <div className="flex gap-3 justify-center flex-wrap mb-8">
+      <div className="max-w-7xl mx-auto px-6 py-8 bg-white relative z-10 pointer-events-auto">
+        <div className="flex gap-3 justify-center flex-wrap mb-8 pointer-events-auto">
           {categories.map(cat => {
             const Icon = cat.icon;
             return (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+                className={`px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all cursor-pointer pointer-events-auto ${
                   activeCategory === cat.id
                     ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg'
                     : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-400 hover:shadow-md'
@@ -49,7 +49,7 @@ export default function Pricing() {
         </div>
 
         {/* Content Based on Category */}
-        <div className="space-y-8 bg-white relative z-10">
+        <div className="space-y-8 bg-white relative z-10 pointer-events-auto">
           {(activeCategory === 'all' || activeCategory === 'plans') && (
             <>
               <PricingSection />
@@ -67,8 +67,8 @@ export default function Pricing() {
               <p className="text-purple-100 mb-6 max-w-xl mx-auto">
                 Join thousands of users earning $3+ per day through surveys, games, and referrals
               </p>
-              <Link to={createPageUrl('UserDashboard')}>
-                <Button className="bg-white text-purple-700 hover:bg-purple-50 font-bold text-lg px-8 py-6 cursor-pointer">
+              <Link to={createPageUrl('UserDashboard')} className="pointer-events-auto inline-block">
+                <Button className="bg-white text-purple-700 hover:bg-purple-50 font-bold text-lg px-8 py-6 cursor-pointer pointer-events-auto">
                   Start Earning Now <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>

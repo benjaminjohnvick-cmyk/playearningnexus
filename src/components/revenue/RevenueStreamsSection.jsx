@@ -98,22 +98,22 @@ export default function RevenueStreamsSection() {
           </div>
         </div>
 
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-3 flex-wrap pointer-events-auto">
           <Button 
             onClick={() => setSelectedStreams(new Set(streams.map(s => s.id)))}
-            className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold px-6"
+            className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold px-6 cursor-pointer pointer-events-auto"
           >
             Select All Streams
           </Button>
           <Button 
             onClick={() => setSelectedStreams(new Set())}
             variant="outline"
-            className="border-amber-300 text-gray-700 font-bold px-6"
+            className="border-amber-300 text-gray-700 font-bold px-6 cursor-pointer pointer-events-auto"
           >
             Clear Selection
           </Button>
-          <Link to={createPageUrl('RevenueHub')}>
-            <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-6">
+          <Link to={createPageUrl('RevenueHub')} className="pointer-events-auto inline-block">
+            <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-6 cursor-pointer pointer-events-auto">
               Go to Revenue Hub <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </Link>
@@ -128,7 +128,7 @@ export default function RevenueStreamsSection() {
             <Card 
               key={stream.id}
               onClick={() => toggleStream(stream.id)}
-              className={`p-6 cursor-pointer transition-all hover:shadow-lg border-2 relative z-10 ${
+              className={`p-6 cursor-pointer transition-all hover:shadow-lg border-2 relative z-10 pointer-events-auto ${
                 selectedStreams.has(stream.id)
                   ? 'border-purple-500 bg-purple-50'
                   : 'border-gray-200 bg-white hover:border-purple-300'
