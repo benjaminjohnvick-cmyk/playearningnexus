@@ -7,11 +7,13 @@ Deno.serve(async (req) => {
   const results = {};
   const errors = [];
 
-  const invoke = async (name, payload = {}) => {
+  const invoke = async (fn, payload = {}) => {
     try {
-      await base44.asServiceRole.functions.invoke(name, payload);
+      await base44.asServiceRole.functions.invoke(fn, payload);
+      return true;
     } catch (e) {
-      errors.push({ fn: name, error: e.message });
+      errors.push(`${fn}: ${e.message}`);
+      return false;
     }
   };
 
@@ -19,7 +21,7 @@ Deno.serve(async (req) => {
   await invoke('autoFeaturedGameRotation');
   results.game_rotation_run = true;
 
-  // 2. Order Fulfillment
+  // 2. Order Fulfillment — place external orders and track shipping
   await invoke('autoOrderFulfillmentAndFundsRelease');
   await invoke('aiOrderFulfillment');
   await invoke('aiOrderVetting');
@@ -68,7 +70,7 @@ Deno.serve(async (req) => {
       details: `auto_admin_ops_engine_run: ${JSON.stringify(results)}`
     });
   } catch (e) {
-    errors.push({ fn: 'audit_log', error: e.message });
+    errors.push(`audit_log: ${e.message}`);
   }
 
   return Response.json({ success: true, results, errors });

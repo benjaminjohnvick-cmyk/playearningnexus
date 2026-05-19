@@ -61,6 +61,7 @@ Deno.serve(async (req) => {
   await invoke('applyApprovedLearnings');
   results.agent_learnings_applied = true;
 
+  // 9. Audit log (no timestamp field — use built-in created_date)
   try {
     await base44.asServiceRole.entities.AdminAuditLog.create({
       action_type: 'other',
