@@ -226,11 +226,7 @@ export default function Layout({ children, currentPageName }) {
   return (
     <LocaleProvider>
       <div
-        className="min-h-screen"
-        style={{
-          background: 'linear-gradient(135deg, rgba(254, 242, 242, 0.95) 0%, rgba(255, 255, 255, 0.98) 50%, rgba(254, 242, 242, 0.95) 100%)',
-          backdropFilter: 'blur(10px)'
-        }}
+        className="min-h-screen bg-white"
       >
         {/* Header - Only show on Home page */}
         {currentPageName === 'Home' && <header
