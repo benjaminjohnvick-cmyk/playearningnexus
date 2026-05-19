@@ -17,7 +17,7 @@ export default function Pricing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <div className="bg-gradient-to-br from-purple-600 to-indigo-700 py-12 px-6">
         <div className="max-w-7xl mx-auto text-center">
@@ -27,7 +27,7 @@ export default function Pricing() {
       </div>
 
       {/* Navigation Categories */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8 bg-white relative z-10">
         <div className="flex gap-3 justify-center flex-wrap mb-8">
           {categories.map(cat => {
             const Icon = cat.icon;
@@ -35,10 +35,10 @@ export default function Pricing() {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all ${
+                className={`px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                   activeCategory === cat.id
                     ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg'
-                    : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-400'
+                    : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-purple-400 hover:shadow-md'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -49,7 +49,7 @@ export default function Pricing() {
         </div>
 
         {/* Content Based on Category */}
-        <div className="space-y-8">
+        <div className="space-y-8 bg-white relative z-10">
           {(activeCategory === 'all' || activeCategory === 'plans') && (
             <>
               <PricingSection />
@@ -62,13 +62,13 @@ export default function Pricing() {
           )}
 
           {activeCategory === 'all' && (
-            <div className="mt-12 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-8 text-white text-center">
+            <div className="mt-12 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-8 text-white text-center cursor-pointer hover:shadow-xl transition-shadow">
               <h2 className="text-3xl font-black mb-3">Ready to Start Earning?</h2>
               <p className="text-purple-100 mb-6 max-w-xl mx-auto">
                 Join thousands of users earning $3+ per day through surveys, games, and referrals
               </p>
               <Link to={createPageUrl('UserDashboard')}>
-                <Button className="bg-white text-purple-700 hover:bg-purple-50 font-bold text-lg px-8 py-6">
+                <Button className="bg-white text-purple-700 hover:bg-purple-50 font-bold text-lg px-8 py-6 cursor-pointer">
                   Start Earning Now <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>

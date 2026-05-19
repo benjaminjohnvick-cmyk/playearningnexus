@@ -81,9 +81,9 @@ export default function RevenueStreamsSection() {
     : 'Select streams to see estimate';
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 bg-white relative z-10">
       {/* Purchase All Section */}
-      <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-8">
+      <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-8 cursor-pointer hover:shadow-lg transition-shadow relative z-10">
         <h2 className="text-3xl font-black text-gray-900 mb-2">🚀 Purchase All Revenue Streams</h2>
         <p className="text-gray-600 mb-6">Maximize your earnings by combining all available revenue streams</p>
         
@@ -121,17 +121,17 @@ export default function RevenueStreamsSection() {
       </div>
 
       {/* Revenue Streams Grid */}
-      <div>
+      <div className="relative z-10">
         <h2 className="text-2xl font-black text-gray-900 mb-6">Available Revenue Streams</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {streams.map(stream => (
             <Card 
               key={stream.id}
               onClick={() => toggleStream(stream.id)}
-              className={`p-6 cursor-pointer transition-all hover:shadow-lg border-2 ${
+              className={`p-6 cursor-pointer transition-all hover:shadow-lg border-2 relative z-10 ${
                 selectedStreams.has(stream.id)
                   ? 'border-purple-500 bg-purple-50'
-                  : 'border-gray-200 hover:border-purple-300'
+                  : 'border-gray-200 bg-white hover:border-purple-300'
               }`}
             >
               <div className="flex items-start justify-between mb-3">
@@ -168,7 +168,7 @@ export default function RevenueStreamsSection() {
       </div>
 
       {/* Combination Benefits */}
-      <div className="bg-white border-2 border-purple-200 rounded-2xl p-8">
+      <div className="bg-white border-2 border-purple-200 rounded-2xl p-8 relative z-10">
         <h2 className="text-2xl font-black text-gray-900 mb-6">💎 Benefits of Combining Streams</h2>
         <div className="grid md:grid-cols-2 gap-4">
           {[
