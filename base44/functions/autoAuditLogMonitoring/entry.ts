@@ -44,6 +44,8 @@ Respond with JSON: { "anomalies_found": boolean, "severity": "low" | "medium" | 
     await base44.asServiceRole.entities.ReconciliationReport.create({
       report_type: 'audit_log_analysis',
       period: 'daily',
+      report_period_start: yesterday,
+      report_period_end: new Date().toISOString(),
       anomalies_found: summary.anomalies_found,
       severity: summary.severity,
       summary: summary.summary,
