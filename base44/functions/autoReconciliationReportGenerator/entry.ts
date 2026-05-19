@@ -46,18 +46,15 @@ Identify: data_issues (array), financial_health (healthy/warning/critical), insi
     });
 
     const report = await base44.asServiceRole.entities.ReconciliationReport.create({
-      report_period_start: weekAgo.toISOString(),
-      report_period_end: now.toISOString(),
-      total_revenue: totalRevenue,
-      total_payouts: totalPayoutsCompleted,
-      pending_payouts: totalPendingPayouts,
-      transaction_volume: totalTransactionVolume,
-      financial_health: aiAnalysis.financial_health,
-      data_issues: aiAnalysis.data_issues,
-      insights: aiAnalysis.insights,
-      action_items: aiAnalysis.action_items,
-      status: 'generated',
-      generated_at: now.toISOString()
+      report_period_start: weekAgo.toISOString().split('T')[0],
+      report_period_end: now.toISOString().split('T')[0],
+      total_internal_payouts: totalPayoutsCompleted,
+      total_ppc_earnings: totalTransactionVolume,
+      discrepancy_count: (aiAnalysis.data_issues || []).length,
+      discrepancies: (aiAnalysis.data_issues || []).map(issue => ({ description: issue, resolved: false })),
+      summary_html: `<p><strong>Health:</strong> ${aiAnalysis.financial_health}</p><p><strong>Insights:</strong> ${(aiAnalysis.insights || []).join(' | ')}</p><p><strong>Actions:</strong> ${(aiAnalysis.action_items || []).join(' | ')}</p>`,
+      run_by: 'system',
+      status: 'completed'
     });
 
     if (aiAnalysis.financial_health !== 'healthy') {
