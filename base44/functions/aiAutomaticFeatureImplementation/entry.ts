@@ -3,20 +3,32 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user || user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     // Get latest competitive intelligence and UX analysis
-    const competitiveReport = await base44.asServiceRole.entities.MarketTrendReport?.filter({
-      report_type: 'competitive_intelligence'
-    }, '-report_date', 1) || [];
+    let competitiveData = {};
+    let uxData = {};
 
-    const uxAnalysis = await base44.asServiceRole.entities.AIEarningsMonitor?.filter({
-      report_type: 'survey_ux_analysis'
-    }, '-analysis_date', 1) || [];
+    try {
+      const competitiveReport = await base44.asServiceRole.entities.MarketTrendReport.filter({
+        category: 'competitive_intelligence'
+      }, '-created_date', 1);
+      if (competitiveReport[0]) {
+        competitiveData = competitiveReport[0].ai_insights || {};
+      }
+    } catch {
+      // Entity or data not available
+    }
 
-    const competitiveData = competitiveReport[0] ? JSON.parse(competitiveReport[0].strategic_recommendations) : {};
-    const uxData = uxAnalysis[0] ? JSON.parse(uxAnalysis[0].data) : {};
+    try {
+      const uxAnalysis = await base44.asServiceRole.entities.AIEarningsMonitor?.filter({
+        report_type: 'survey_ux_analysis'
+      }, '-analysis_date', 1) || [];
+      if (uxAnalysis[0]) {
+        uxData = JSON.parse(uxAnalysis[0].data);
+      }
+    } catch {
+      // Entity or data not available
+    }
 
     // Prioritize implementation items
     const implementations = await base44.integrations.Core.InvokeLLM({

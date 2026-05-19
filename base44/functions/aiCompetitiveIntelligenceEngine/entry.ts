@@ -54,8 +54,8 @@ Provide:
 
 ${allIntelligence.map(i => `\n${i.search_query}:
 - Threats: ${i.threat_level}
-- Gaps: ${i.market_gaps.join(', ')}
-- Trends: ${i.emerging_trends.join(', ')}`).join('')}
+- Gaps: ${((i && i.market_gaps) || []).join(', ')}
+- Trends: ${((i && i.emerging_trends) || []).join(', ')}`).join('')}
 
 Provide strategic recommendations:
 1. Top 3 features we must implement to stay competitive

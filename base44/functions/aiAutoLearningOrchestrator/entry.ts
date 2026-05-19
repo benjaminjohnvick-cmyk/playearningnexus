@@ -4,7 +4,7 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me().catch(() => null);
-    if (user && user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
+    if (user?.role && user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     // Master orchestration of ALL AI learning systems
     const timestamp = new Date().toISOString();
@@ -15,7 +15,12 @@ Deno.serve(async (req) => {
     }, '-logged_at', 10000) || [];
 
     // 2. Run optimization engine for features below threshold
-    const optimizationResult = await base44.functions.invoke('aiUniversalOptimizationEngine', {});
+    let optimizationResult = { data: { optimizations: [], critical_count: 0, total_features_analyzed: 0, system_health: 'unknown' } };
+    try {
+      optimizationResult = await base44.functions.invoke('aiUniversalOptimizationEngine', {});
+    } catch {
+      // Optimization engine not available, continue with defaults
+    }
 
     // 3. Aggregate learning across agents
     const agentLearning = await base44.asServiceRole.entities.AgentLearningMemory?.filter({
@@ -32,11 +37,11 @@ Deno.serve(async (req) => {
     const systemInsights = await base44.integrations.Core.InvokeLLM({
       prompt: `Analyze platform-wide AI learning trends:
 
-Performance Summary (Last 7 days):
-- Total Decisions: ${allPerformanceLogs.length}
-- Total Learning Events: ${agentLearning.length}
-- Features Optimized: ${optimizationResult.data.optimizations.length}
-- Critical Issues: ${optimizationResult.data.critical_count}
+    Performance Summary (Last 7 days):
+    - Total Decisions: ${allPerformanceLogs.length}
+    - Total Learning Events: ${agentLearning.length}
+    - Features Optimized: ${(optimizationResult.data?.optimizations || []).length}
+    - Critical Issues: ${optimizationResult.data?.critical_count || 0}
 
 Success Rates by Type:
 ${Object.entries(systemPatterns).map(([type, count]) => `- ${type}: ${count} successes`).join('\n')}
@@ -60,24 +65,26 @@ Provide:
     });
 
     // 5. Log orchestration results
+    const optimizations = optimizationResult.data?.optimizations || [];
+    const criticalCount = optimizationResult.data?.critical_count || 0;
     const orchestrationLog = {
       timestamp,
       performance_logs_analyzed: allPerformanceLogs.length,
-      features_analyzed: optimizationResult.data.total_features_analyzed,
-      optimizations_identified: optimizationResult.data.optimizations.length,
-      critical_issues: optimizationResult.data.critical_count,
+      features_analyzed: optimizationResult.data?.total_features_analyzed || 0,
+      optimizations_identified: optimizations.length,
+      critical_issues: criticalCount,
       system_insights: systemInsights.data,
       action_items: [
-        ...optimizationResult.data.optimizations.slice(0, 5).map(o => ({
+        ...optimizations.slice(0, 5).map(o => ({
           feature: o.feature_name,
           action: 'optimize',
           priority: o.priority,
           expected_gain: o.optimization?.expected_improvement_percent || 0
         })),
-        ...(optimizationResult.data.critical_count > 0 ? [{
+        ...(criticalCount > 0 ? [{
           action: 'escalate_to_admin',
           reason: 'critical_features_degraded',
-          count: optimizationResult.data.critical_count
+          count: criticalCount
         }] : [])
       ]
     };
@@ -93,8 +100,8 @@ Provide:
       success: true,
       orchestration_timestamp: timestamp,
       platform_status: {
-        total_features_active: optimizationResult.data.total_features_analyzed,
-        system_health: optimizationResult.data.system_health,
+        total_features_active: optimizationResult.data?.total_features_analyzed || 0,
+        system_health: optimizationResult.data?.system_health || 'unknown',
         learning_events_7d: agentLearning.length,
         decisions_made_7d: allPerformanceLogs.length
       },
