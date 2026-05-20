@@ -102,14 +102,16 @@ export default function WhiteLabelSection() {
 
           {/* CTA */}
           <div className="mt-8 pt-8 border-t border-slate-200 flex gap-4 justify-center flex-wrap">
-            <Link to={createPageUrl('PartnerPortal')}>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-6 text-lg">
-                View Partner Dashboard <ArrowRight className="w-5 h-5 ml-2" />
+            <Link to="/WhiteLabelSetup">
+              <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-6 text-lg">
+                Start AI Setup — Free <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
-            <Button variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-bold px-8 py-6 text-lg">
-              Download Partnership Agreement
-            </Button>
+            <Link to={createPageUrl('PartnerPortal')}>
+              <Button variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-bold px-8 py-6 text-lg">
+                View Partner Dashboard
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
