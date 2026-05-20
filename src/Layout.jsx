@@ -368,11 +368,17 @@ export default function Layout({ children, currentPageName }) {
                     📊 Ad Grid
                   </Button>
                 </Link>
+                <Link to={createPageUrl('SellerUpload')} className="flex-shrink-0">
+                   <Button variant={currentPageName === 'SellerUpload' ? "default" : "ghost"} size="sm"
+                     className={currentPageName === 'SellerUpload' ? "bg-gradient-to-r from-orange-600 to-amber-600 shadow-md" : "hover:bg-orange-50 text-orange-700 font-semibold border border-orange-200"}>
+                     📦 Seller Upload
+                   </Button>
+                </Link>
                 <Link to="/RevenueHub" className="flex-shrink-0">
-                  <Button variant={currentPageName === 'RevenueHub' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'RevenueHub' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md" : "hover:bg-green-50 text-green-700 font-bold border-2 border-green-400 animate-pulse"}>
-                    💰 Revenue Hub
-                  </Button>
+                   <Button variant={currentPageName === 'RevenueHub' ? "default" : "ghost"} size="sm"
+                     className={currentPageName === 'RevenueHub' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md" : "hover:bg-green-50 text-green-700 font-bold border-2 border-green-400"}>
+                     💰 Revenue Hub
+                   </Button>
                 </Link>
               </nav>
 
