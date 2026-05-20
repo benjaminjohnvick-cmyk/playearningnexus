@@ -15,15 +15,17 @@ Deno.serve(async (req) => {
   };
 
   // 1. AI onboarding personalization for new users
+  // Use OnboardingProgress entity (has user_id + completion status) instead of
+  // filtering User by a non-existent onboarding_completed field
   try {
-    const newUsers = await base44.asServiceRole.entities.User.filter({ onboarding_completed: false });
+    const pendingOnboarding = await base44.asServiceRole.entities.OnboardingProgress.filter({ completed: false }, '-created_date', 20);
     let onboardingRun = 0;
-    for (const u of newUsers.slice(0, 20)) {
+    for (const record of pendingOnboarding) {
       try {
-        await base44.asServiceRole.functions.invoke('aiOnboardingPersonalizer', { user_id: u.id });
+        await base44.asServiceRole.functions.invoke('aiOnboardingPersonalizer', { user_id: record.user_id });
         onboardingRun++;
       } catch (e) {
-        errors.push({ fn: 'aiOnboardingPersonalizer', id: u.id, error: e.message });
+        errors.push({ fn: 'aiOnboardingPersonalizer', id: record.user_id, error: e.message });
       }
     }
     results.onboarding_personalized = onboardingRun;
