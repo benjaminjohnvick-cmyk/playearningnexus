@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import PricingSection from '@/components/home/PricingSection';
 import BusinessPricingSection from '@/components/home/BusinessPricingSection';
+import BusinessRevenueSubscription from '@/components/home/BusinessRevenueSubscription';
 import RevenueStreamsSection from '@/components/revenue/RevenueStreamsSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, DollarSign, TrendingUp, Zap } from 'lucide-react';
@@ -11,9 +12,10 @@ export default function Pricing() {
   const [activeCategory, setActiveCategory] = useState('all');
 
   const categories = [
-    { id: 'all', label: '💰 All Plans', icon: DollarSign },
-    { id: 'plans', label: '🎯 Subscription Plans', icon: TrendingUp },
-    { id: 'revenue', label: '📈 Revenue Streams', icon: Zap },
+   { id: 'all', label: '💰 All Plans', icon: DollarSign },
+   { id: 'plans', label: '🎯 Subscription Plans', icon: TrendingUp },
+   { id: 'revenue', label: '📊 Revenue Subscriptions', icon: Zap },
+   { id: 'streams', label: '📈 Revenue Streams', icon: Zap },
   ];
 
   return (
@@ -58,6 +60,10 @@ export default function Pricing() {
           )}
 
           {(activeCategory === 'all' || activeCategory === 'revenue') && (
+            <BusinessRevenueSubscription />
+          )}
+
+          {(activeCategory === 'all' || activeCategory === 'streams') && (
             <RevenueStreamsSection />
           )}
 
