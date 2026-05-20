@@ -1,0 +1,119 @@
+{
+  "name": "EmailSequence",
+  "type": "object",
+  "description": "Automated email drip sequences for CRM prospects with multi-step follow-ups",
+  "properties": {
+    "prospect_id": {
+      "type": "string",
+      "description": "Reference to CRMProspect"
+    },
+    "sequence_name": {
+      "type": "string",
+      "description": "Name of the drip sequence (e.g., 'Initial Outreach', 'Product Demo Follow-up')"
+    },
+    "current_step": {
+      "type": "number",
+      "default": 1,
+      "description": "Current step number in the sequence"
+    },
+    "total_steps": {
+      "type": "number",
+      "description": "Total number of steps in this sequence"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_number": {
+            "type": "number"
+          },
+          "subject_line": {
+            "type": "string"
+          },
+          "email_body": {
+            "type": "string"
+          },
+          "delay_days": {
+            "type": "number",
+            "description": "Days to wait after previous email before sending this one"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "sent",
+              "skipped"
+            ],
+            "default": "pending"
+          },
+          "sent_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "step_number",
+          "subject_line",
+          "email_body",
+          "delay_days"
+        ]
+      },
+      "description": "Array of email steps in the sequence"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "completed",
+        "failed"
+      ],
+      "default": "active",
+      "description": "Current status of the entire sequence"
+    },
+    "pause_reason": {
+      "type": "string",
+      "description": "Reason for pausing sequence (e.g., 'positive_response_detected')"
+    },
+    "started_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the sequence was started"
+    },
+    "last_email_sent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of last email sent in this sequence"
+    },
+    "prospect_last_reply": {
+      "type": "string",
+      "description": "Last response text from the prospect (for sentiment analysis)"
+    },
+    "prospect_reply_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date of last prospect reply"
+    },
+    "response_sentiment": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative"
+      ],
+      "description": "AI-analyzed sentiment of prospect responses"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "User ID who manages this sequence"
+    }
+  },
+  "required": [
+    "prospect_id",
+    "sequence_name",
+    "total_steps",
+    "steps",
+    "owner_id"
+  ]
+}

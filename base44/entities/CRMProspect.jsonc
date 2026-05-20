@@ -68,6 +68,38 @@
     },
     "linkedin_url": {
       "type": "string"
+    },
+    "employee_count": {
+      "type": "number",
+      "description": "Real-time estimated employee count"
+    },
+    "funding_status": {
+      "type": "string",
+      "description": "Real-time funding status (e.g., Seed, Series A, Public)"
+    },
+    "recent_news": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Recent news headlines about the company"
+    },
+    "ai_prioritization_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0,
+      "description": "AI-computed score for prospect prioritization (0-100)"
+    },
+    "enrichment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Status of data enrichment process"
     }
   },
   "required": [
