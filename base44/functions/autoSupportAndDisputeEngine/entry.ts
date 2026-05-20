@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
       try {
         const ageHours = (Date.now() - new Date(ticket.created_date).getTime()) / 3600000;
         if (ageHours > 24 && ticket.priority !== 'high') {
-          await base44.asServiceRole.entities.SupportTicket.update(ticket.id, { priority: 'high', escalated: true });
+          await base44.asServiceRole.entities.SupportTicket.update(ticket.id, { priority: 'high' });
           ticketsTriaged++;
         }
       } catch (e) {
