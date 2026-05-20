@@ -1,0 +1,71 @@
+{
+  "name": "CRMOutreach",
+  "type": "object",
+  "description": "Outreach attempts and email campaigns to prospects",
+  "properties": {
+    "prospect_id": {
+      "type": "string",
+      "description": "Reference to CRMProspect"
+    },
+    "outreach_type": {
+      "type": "string",
+      "enum": [
+        "email",
+        "proposal",
+        "follow_up",
+        "call",
+        "meeting"
+      ]
+    },
+    "subject_line": {
+      "type": "string"
+    },
+    "email_body": {
+      "type": "string"
+    },
+    "ai_generated": {
+      "type": "boolean",
+      "default": true
+    },
+    "sent_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "opened": {
+      "type": "boolean",
+      "default": false
+    },
+    "clicked": {
+      "type": "boolean",
+      "default": false
+    },
+    "response_received": {
+      "type": "boolean",
+      "default": false
+    },
+    "response_sentiment": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative"
+      ],
+      "description": "AI-analyzed sentiment of prospect response"
+    },
+    "response_text": {
+      "type": "string"
+    },
+    "next_action": {
+      "type": "string"
+    },
+    "sent_by": {
+      "type": "string",
+      "description": "User ID who sent the outreach"
+    }
+  },
+  "required": [
+    "prospect_id",
+    "outreach_type",
+    "sent_by"
+  ]
+}

@@ -114,6 +114,7 @@ const AdCampaignOptimizerPage = lazy(() => import('./pages/AdCampaignOptimizerPa
 const AdCampaignManager = lazy(() => import('./pages/AdCampaignManager'));
 const MarketAdvisor = lazy(() => import('./pages/MarketAdvisor'));
 const RevenueHub = lazy(() => import('./pages/RevenueHub'));
+const CRMDashboard = lazy(() => import('./pages/CRMDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -297,6 +298,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdCampaignManager" element={<LayoutWrapper currentPageName="AdCampaignManager"><AdCampaignManager /></LayoutWrapper>} />
       <Route path="/MarketAdvisor" element={<LayoutWrapper currentPageName="MarketAdvisor"><MarketAdvisor /></LayoutWrapper>} />
       <Route path="/RevenueHub" element={<LayoutWrapper currentPageName="RevenueHub"><RevenueHub /></LayoutWrapper>} />
+      <Route path="/CRMDashboard" element={<LayoutWrapper currentPageName="CRMDashboard"><CRMDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

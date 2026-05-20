@@ -1,0 +1,57 @@
+{
+  "name": "CRMLeadConversion",
+  "type": "object",
+  "description": "Track conversion progress and deals from prospects",
+  "properties": {
+    "prospect_id": {
+      "type": "string",
+      "description": "Reference to CRMProspect"
+    },
+    "deal_stage": {
+      "type": "string",
+      "enum": [
+        "initial_contact",
+        "awareness",
+        "consideration",
+        "proposal",
+        "negotiation",
+        "closed_won",
+        "closed_lost"
+      ]
+    },
+    "estimated_deal_value": {
+      "type": "number",
+      "description": "Estimated revenue from this deal"
+    },
+    "probability_percent": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "AI-estimated conversion probability"
+    },
+    "expected_close_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "last_interaction_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "outreach_count": {
+      "type": "number",
+      "default": 0
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Sales rep or user managing this deal"
+    }
+  },
+  "required": [
+    "prospect_id",
+    "deal_stage",
+    "owner_id"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "name": "WhiteLabelPartner",
+  "type": "object",
+  "description": "White label partners using CRM module with revenue sharing",
+  "properties": {
+    "partner_name": {
+      "type": "string"
+    },
+    "partner_user_id": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "suspended"
+      ],
+      "default": "active"
+    },
+    "total_revenue_generated": {
+      "type": "number",
+      "default": 0,
+      "description": "Total revenue from deals closed by this partner"
+    },
+    "partner_share_percent": {
+      "type": "number",
+      "default": 50,
+      "description": "Partner's profit share percentage (default 50%)"
+    },
+    "partner_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount earned by partner (50% of split, then $25.25 to partner)"
+    },
+    "platform_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount earned by platform ($25.25 to platform)"
+    },
+    "total_prospects": {
+      "type": "number",
+      "default": 0
+    },
+    "total_conversions": {
+      "type": "number",
+      "default": 0
+    },
+    "conversion_rate_percent": {
+      "type": "number",
+      "default": 0
+    },
+    "signup_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_activity_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "partner_name",
+    "partner_user_id",
+    "contact_email"
+  ]
+}
