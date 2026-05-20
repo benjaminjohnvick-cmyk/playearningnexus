@@ -111,6 +111,7 @@ export default function CRMDashboard() {
   // White label revenue stats
   const totalPartnerRevenue = partners.reduce((sum, p) => sum + (p.total_revenue_generated || 0), 0);
   const totalPartnerEarnings = partners.reduce((sum, p) => sum + (p.partner_earned || 0), 0);
+  const totalUserEarnings = partners.reduce((sum, p) => sum + (p.user_earned || 0), 0);
   const totalPlatformEarnings = partners.reduce((sum, p) => sum + (p.platform_earned || 0), 0);
 
   const statusColors = {
@@ -336,10 +337,19 @@ export default function CRMDashboard() {
               </Card>
               <Card className="border-0 shadow-sm">
                 <CardContent className="pt-6">
+                  <div className="bg-orange-50 p-3 rounded-lg w-fit mb-4">
+                    <Users className="text-orange-600 w-6 h-6" />
+                  </div>
+                  <p className="text-sm text-slate-600 mb-1">User Earnings (25%)</p>
+                  <p className="text-2xl font-bold text-slate-900">${totalUserEarnings.toFixed(2)}</p>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-sm">
+                <CardContent className="pt-6">
                   <div className="bg-blue-50 p-3 rounded-lg w-fit mb-4">
                     <Users className="text-blue-600 w-6 h-6" />
                   </div>
-                  <p className="text-sm text-slate-600 mb-1">Partner Earnings</p>
+                  <p className="text-sm text-slate-600 mb-1">Partner Earnings (25%)</p>
                   <p className="text-2xl font-bold text-slate-900">${totalPartnerEarnings.toFixed(2)}</p>
                 </CardContent>
               </Card>
@@ -348,7 +358,7 @@ export default function CRMDashboard() {
                   <div className="bg-purple-50 p-3 rounded-lg w-fit mb-4">
                     <TrendingUp className="text-purple-600 w-6 h-6" />
                   </div>
-                  <p className="text-sm text-slate-600 mb-1">Platform Earnings</p>
+                  <p className="text-sm text-slate-600 mb-1">Platform Earnings (50%)</p>
                   <p className="text-2xl font-bold text-slate-900">${totalPlatformEarnings.toFixed(2)}</p>
                 </CardContent>
               </Card>
@@ -357,7 +367,7 @@ export default function CRMDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>White Label Partner Performance</CardTitle>
-                <CardDescription>50/50 revenue split with $25.25 per party per deal</CardDescription>
+                <CardDescription>Revenue split: 50% platform, 25% user, 25% partner</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -386,11 +396,15 @@ export default function CRMDashboard() {
                           <p className="font-semibold">{partner.conversion_rate_percent?.toFixed(1)}%</p>
                         </div>
                         <div>
-                          <p className="text-slate-600">Partner Share</p>
+                          <p className="text-slate-600">User Share (25%)</p>
+                          <p className="font-semibold text-orange-600">${partner.user_earned?.toFixed(2)}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-600">Partner Share (25%)</p>
                           <p className="font-semibold text-green-600">${partner.partner_earned?.toFixed(2)}</p>
                         </div>
                         <div>
-                          <p className="text-slate-600">Platform Share</p>
+                          <p className="text-slate-600">Platform Share (50%)</p>
                           <p className="font-semibold text-blue-600">${partner.platform_earned?.toFixed(2)}</p>
                         </div>
                       </div>

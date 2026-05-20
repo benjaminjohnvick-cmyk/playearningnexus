@@ -26,20 +26,35 @@
       "default": 0,
       "description": "Total revenue from deals closed by this partner"
     },
-    "partner_share_percent": {
+    "platform_share_percent": {
       "type": "number",
       "default": 50,
-      "description": "Partner's profit share percentage (default 50%)"
+      "description": "Platform owner's profit share (50%)"
     },
-    "partner_earned": {
+    "user_share_percent": {
       "type": "number",
-      "default": 0,
-      "description": "Amount earned by partner (50% of split, then $25.25 to partner)"
+      "default": 25,
+      "description": "White label user's profit share (25%)"
+    },
+    "partner_share_percent": {
+      "type": "number",
+      "default": 25,
+      "description": "White label partner's profit share (25%)"
     },
     "platform_earned": {
       "type": "number",
       "default": 0,
-      "description": "Amount earned by platform ($25.25 to platform)"
+      "description": "Amount earned by platform owner (50% of deal value)"
+    },
+    "user_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount earned by white label user (25% of deal value)"
+    },
+    "partner_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount earned by partner (25% of deal value)"
     },
     "total_prospects": {
       "type": "number",

@@ -19,22 +19,21 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Partner not found' }, { status: 404 });
     }
 
-    // Revenue split calculation
-    // 50% split between platform and partner
-    const halfRevenue = deal_value / 2;
-    
-    // Then: $25.25 to each party from their half
-    const partnerShare = halfRevenue >= 25.25 ? 25.25 : halfRevenue;
-    const platformShare = halfRevenue >= 25.25 ? 25.25 : halfRevenue;
+    // Revenue split calculation: 50% platform, 25% user, 25% partner
+    const platformShare = deal_value * 0.50;
+    const userShare = deal_value * 0.25;
+    const partnerShare = deal_value * 0.25;
 
-    // Update partner revenue
+    // Update revenue tracking
     const newPartnerEarned = (partner.partner_earned || 0) + partnerShare;
+    const newUserEarned = (partner.user_earned || 0) + userShare;
     const newPlatformEarned = (partner.platform_earned || 0) + platformShare;
     const newTotalRevenue = (partner.total_revenue_generated || 0) + deal_value;
 
     const updated = await base44.entities.WhiteLabelPartner.update(partner_id, {
       total_revenue_generated: newTotalRevenue,
       partner_earned: newPartnerEarned,
+      user_earned: newUserEarned,
       platform_earned: newPlatformEarned,
       total_conversions: (partner.total_conversions || 0) + 1,
       last_activity_date: new Date().toISOString()
@@ -52,9 +51,11 @@ Deno.serve(async (req) => {
     return Response.json({
       success: true,
       deal_value: deal_value,
-      partner_earned: partnerShare,
-      platform_earned: platformShare,
+      platform_share: platformShare,
+      user_share: userShare,
+      partner_share: partnerShare,
       partner_lifetime: newPartnerEarned,
+      user_lifetime: newUserEarned,
       platform_lifetime: newPlatformEarned,
       total_conversions: updated.total_conversions,
       conversion_rate: conversionRate
