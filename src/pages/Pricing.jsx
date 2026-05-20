@@ -5,8 +5,9 @@ import PricingSection from '@/components/home/PricingSection';
 import BusinessPricingSection from '@/components/home/BusinessPricingSection';
 import BusinessRevenueSubscription from '@/components/home/BusinessRevenueSubscription';
 import RevenueStreamsSection from '@/components/revenue/RevenueStreamsSection';
+import WhiteLabelSection from '@/components/pricing/WhiteLabelSection';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, DollarSign, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, DollarSign, TrendingUp, Zap, Handshake } from 'lucide-react';
 
 export default function Pricing() {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -16,6 +17,7 @@ export default function Pricing() {
    { id: 'plans', label: '🎯 Subscription Plans', icon: TrendingUp },
    { id: 'revenue', label: '📊 Revenue Subscriptions', icon: Zap },
    { id: 'streams', label: '📈 Revenue Streams', icon: Zap },
+   { id: 'partner', label: '🤝 White-Label', icon: Handshake },
   ];
 
   return (
@@ -65,6 +67,10 @@ export default function Pricing() {
 
           {(activeCategory === 'all' || activeCategory === 'streams') && (
             <RevenueStreamsSection />
+          )}
+
+          {(activeCategory === 'all' || activeCategory === 'partner') && (
+            <WhiteLabelSection />
           )}
 
           {activeCategory === 'all' && (
