@@ -243,7 +243,7 @@ export default function BusinessRevenueSubscription() {
               View All Features <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </Link>
-          <Button variant="outline" className="border-white text-white hover:bg-white/20 font-bold px-8 py-3 cursor-pointer">
+          <Button className="bg-white/20 border-2 border-white text-white hover:bg-white/30 font-bold px-8 py-3 cursor-pointer">
             Compare Plans
           </Button>
         </div>
