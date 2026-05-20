@@ -46,33 +46,58 @@ export default function BusinessRevenueSubscription() {
     },
     {
       name: 'Enterprise',
-      price: billingCycle === 'monthly' ? 199 : 1990,
-      description: 'Maximum earning potential with premium features',
+      price: billingCycle === 'monthly' ? 299 : 2990,
+      description: 'All 20 revenue streams unlocked for maximum earning potential',
       color: 'from-emerald-500 to-emerald-600',
       features: [
-        { icon: '📋', name: 'Surveys', detail: 'Priority access, $2-$25 per survey' },
-        { icon: '📺', name: 'PPC Ads', detail: 'Unlimited + premium ads, $1.00 CPC' },
-        { icon: '👥', name: 'Referral Commissions', detail: '15% lifetime + unlimited MLM levels' },
-        { icon: '❤️', name: 'Wishlist Sharing', detail: 'Full analytics, $2 per conversion' },
-        { icon: '🎮', name: 'Game Access', detail: 'All games, 60% revenue share' },
-        { icon: '⭐', name: 'Creator Hub', detail: 'Premium content tools, 60% revenue' },
-        { icon: '🔧', name: 'API Access', detail: 'Custom integrations available' },
-        { icon: '💎', name: 'Priority Support', detail: '24/7 dedicated account manager' },
-        { icon: '💳', name: 'Payment Methods', detail: 'All options + crypto withdrawals' },
+        { icon: '💰', name: 'Premium Subscriptions', detail: 'All subscription tiers, 50% platform share' },
+        { icon: '🛒', name: 'In-App Store', detail: 'Virtual currency, cosmetics, $0.99-$99.99 items' },
+        { icon: '🔓', name: 'Freemium Gating', detail: 'Advanced feature locks, AI upgrade nudges' },
+        { icon: '🪙', name: 'Credit System', detail: 'Pay-per-use credits, $0.01-$0.50 per credit' },
+        { icon: '🔗', name: 'Affiliate Programs', detail: '15-30% commission on partner sales' },
+        { icon: '📺', name: 'Rewarded & In-App Ads', detail: 'Video ($0.50-$2), Native ($0.25-$1), Banners ($0.10-$0.50)' },
+        { icon: '📢', name: 'Sponsored Listings', detail: '$500-$5000 CPM for branded placements' },
+        { icon: '🎯', name: 'Behavioral Targeting', detail: 'Premium ad rates, anonymous segments' },
+        { icon: '📊', name: 'Market Research Reports', detail: 'Sell data reports at $100-$5000 each' },
+        { icon: '🤝', name: 'Creator/Influencer Deals', detail: '15% commission on brand partnerships' },
+        { icon: '💸', name: 'Transaction Fees', detail: '5% on all marketplace transactions' },
+        { icon: '📋', name: 'Listing Fees', detail: '$5-$50 per survey/product published' },
+        { icon: '🧑‍💼', name: 'Consulting Services', detail: 'Expert services at $150-$500/hour' },
+        { icon: '🏢', name: 'White-Label Licensing', detail: 'License tech at $5,000-$50,000/month' },
+        { icon: '❤️', name: 'Crowdfunding', detail: 'Community-funded features, 10% commission' },
+        { icon: '🔑', name: 'API Access', detail: '$0.001-$0.01 per API call, $99-$999 tier' },
+        { icon: '🤖', name: 'AI Models as Service', detail: 'Proprietary APIs at $0.01-$1 per request' },
+        { icon: '💳', name: 'Pay-per-Use Credits', detail: 'Premium pricing, instant delivery' },
+        { icon: '📈', name: 'Data Intelligence', detail: 'Behavioral insights, $500-$5000/month' },
+        { icon: '🌐', name: 'White-Label API Partners', detail: 'Enterprise integrations, custom rates' },
       ],
-      monthlyProjection: '$800-3000+',
+      monthlyProjection: '$2000-10000+',
       cta: 'Contact Sales',
       badge: 'Premium'
     }
   ];
 
   const revenueBreakdown = [
-    { stream: 'Surveys', starter: '$10-30', professional: '$50-150', enterprise: '$200-500' },
-    { stream: 'PPC Ads', starter: '$5-15', professional: '$30-100', enterprise: '$150-500' },
-    { stream: 'Referrals', starter: '$5-20', professional: '$40-150', enterprise: '$200-1000' },
-    { stream: 'Wishlist Sharing', starter: '$2-5', professional: '$20-50', enterprise: '$100-300' },
-    { stream: 'Game Revenue Share', starter: '$5-15', professional: '$30-100', enterprise: '$150-600' },
-    { stream: 'Creator Hub', starter: '-', professional: '$20-50', enterprise: '$200-600' },
+    { stream: 'Premium Subscriptions', starter: '-', professional: '$50-150', enterprise: '$500-2000' },
+    { stream: 'In-App Store', starter: '$5-15', professional: '$30-100', enterprise: '$200-800' },
+    { stream: 'Freemium Gating', starter: '$10-20', professional: '$50-150', enterprise: '$300-1000' },
+    { stream: 'Credit System', starter: '$3-10', professional: '$20-60', enterprise: '$150-500' },
+    { stream: 'Affiliate Programs', starter: '$5-15', professional: '$40-100', enterprise: '$300-1000' },
+    { stream: 'Rewarded Ads', starter: '$10-25', professional: '$50-150', enterprise: '$400-1500' },
+    { stream: 'In-App Ads', starter: '$5-15', professional: '$30-100', enterprise: '$200-600' },
+    { stream: 'Sponsored Listings', starter: '-', professional: '$50-200', enterprise: '$500-2000' },
+    { stream: 'Behavioral Targeting', starter: '-', professional: '$30-100', enterprise: '$300-1000' },
+    { stream: 'Market Research', starter: '-', professional: '$20-100', enterprise: '$500-3000' },
+    { stream: 'Creator Deals', starter: '-', professional: '$25-75', enterprise: '$300-1500' },
+    { stream: 'Transaction Fees', starter: '$2-5', professional: '$15-50', enterprise: '$100-500' },
+    { stream: 'Listing Fees', starter: '$5-10', professional: '$20-60', enterprise: '$100-300' },
+    { stream: 'Consulting', starter: '-', professional: '-', enterprise: '$200-1000' },
+    { stream: 'White-Label', starter: '-', professional: '-', enterprise: '$500-5000' },
+    { stream: 'Crowdfunding', starter: '-', professional: '$10-30', enterprise: '$150-800' },
+    { stream: 'API Access', starter: '-', professional: '$10-50', enterprise: '$200-1000' },
+    { stream: 'AI Models API', starter: '-', professional: '-', enterprise: '$300-2000' },
+    { stream: 'Data Intelligence', starter: '-', professional: '-', enterprise: '$500-2500' },
+    { stream: 'Custom Integrations', starter: '-', professional: '-', enterprise: '$1000-5000' },
   ];
 
   return (
@@ -199,9 +224,9 @@ export default function BusinessRevenueSubscription() {
               ))}
               <tr className="border-t-2 border-gray-300 bg-gradient-to-r from-blue-50 to-emerald-50">
                 <td className="py-4 px-4 font-black text-gray-900">Total Monthly Potential</td>
-                <td className="py-4 px-4 text-right font-black text-blue-600">$27-85</td>
-                <td className="py-4 px-4 text-right font-black text-purple-600">$170-600</td>
-                <td className="py-4 px-4 text-right font-black text-emerald-600">$800-3,500+</td>
+                <td className="py-4 px-4 text-right font-black text-blue-600">$65-170</td>
+                <td className="py-4 px-4 text-right font-black text-purple-600">$600-1,800</td>
+                <td className="py-4 px-4 text-right font-black text-emerald-600">$5,000-25,000+</td>
               </tr>
             </tbody>
           </table>
