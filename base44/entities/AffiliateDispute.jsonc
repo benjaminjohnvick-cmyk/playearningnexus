@@ -1,0 +1,140 @@
+{
+  "name": "AffiliateDispute",
+  "type": "object",
+  "description": "Affiliate dispute claims with proof uploads, AI analysis, and settlement tracking",
+  "properties": {
+    "affiliate_user_id": {
+      "type": "string"
+    },
+    "affiliate_email": {
+      "type": "string"
+    },
+    "transaction_id": {
+      "type": "string",
+      "description": "Disputed transaction/payout ID"
+    },
+    "dispute_type": {
+      "type": "string",
+      "enum": [
+        "missing_payout",
+        "incorrect_amount",
+        "referral_not_credited",
+        "fraud_accusation",
+        "other"
+      ]
+    },
+    "amount_disputed": {
+      "type": "number"
+    },
+    "description": {
+      "type": "string"
+    },
+    "proof_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Uploaded proof file URLs"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "under_review",
+        "ai_analyzed",
+        "settlement_offered",
+        "accepted",
+        "rejected",
+        "escalated",
+        "resolved"
+      ],
+      "default": "submitted"
+    },
+    "ai_analysis": {
+      "type": "object",
+      "properties": {
+        "validity_score": {
+          "type": "number"
+        },
+        "pattern_match": {
+          "type": "string"
+        },
+        "evidence_strength": {
+          "type": "string",
+          "enum": [
+            "strong",
+            "moderate",
+            "weak"
+          ]
+        },
+        "recommended_action": {
+          "type": "string"
+        },
+        "similar_cases": {
+          "type": "number"
+        },
+        "analysis_notes": {
+          "type": "string"
+        }
+      }
+    },
+    "settlement_offer": {
+      "type": "object",
+      "properties": {
+        "offered_amount": {
+          "type": "number"
+        },
+        "offer_basis": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ai_confidence": {
+          "type": "number"
+        }
+      }
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actor": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "resolution_notes": {
+      "type": "string"
+    },
+    "resolved_amount": {
+      "type": "number"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "admin_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "affiliate_user_id",
+    "affiliate_email",
+    "dispute_type",
+    "description"
+  ]
+}

@@ -137,6 +137,8 @@ const AIMarketPulse = lazy(() => import('./pages/AIMarketPulse'));
 const AffiliateOnboarding = lazy(() => import('./pages/AffiliateOnboarding'));
 const DeveloperAnalyticsDashboard = lazy(() => import('./pages/DeveloperAnalyticsDashboard'));
 const AdminLocalizationPanel = lazy(() => import('./pages/AdminLocalizationPanel'));
+const AffiliateDisputeCenter = lazy(() => import('./pages/AffiliateDisputeCenter'));
+const AdCreativeABTestingDashboard = lazy(() => import('./pages/AdCreativeABTestingDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -342,6 +344,8 @@ const AuthenticatedApp = () => {
       <Route path="/AffiliateOnboarding" element={<LayoutWrapper currentPageName="AffiliateOnboarding"><AffiliateOnboarding /></LayoutWrapper>} />
       <Route path="/DeveloperAnalyticsDashboard" element={<LayoutWrapper currentPageName="DeveloperAnalyticsDashboard"><DeveloperAnalyticsDashboard /></LayoutWrapper>} />
       <Route path="/AdminLocalizationPanel" element={<LayoutWrapper currentPageName="AdminLocalizationPanel"><AdminLocalizationPanel /></LayoutWrapper>} />
+      <Route path="/AffiliateDisputeCenter" element={<LayoutWrapper currentPageName="AffiliateDisputeCenter"><AffiliateDisputeCenter /></LayoutWrapper>} />
+      <Route path="/AdCreativeABTestingDashboard" element={<LayoutWrapper currentPageName="AdCreativeABTestingDashboard"><AdCreativeABTestingDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

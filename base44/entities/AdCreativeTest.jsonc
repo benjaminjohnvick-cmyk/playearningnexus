@@ -1,0 +1,107 @@
+{
+  "name": "AdCreativeTest",
+  "type": "object",
+  "description": "AI-powered A/B tests for ad creatives with auto budget reallocation",
+  "properties": {
+    "campaign_id": {
+      "type": "string"
+    },
+    "owner_user_id": {
+      "type": "string"
+    },
+    "test_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "running",
+        "paused",
+        "concluded"
+      ],
+      "default": "draft"
+    },
+    "variants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "variant_id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "headline": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "ai_rewritten_headline": {
+            "type": "string"
+          },
+          "ai_resized_image_url": {
+            "type": "string"
+          },
+          "budget_allocation_pct": {
+            "type": "number"
+          },
+          "impressions": {
+            "type": "number",
+            "default": 0
+          },
+          "clicks": {
+            "type": "number",
+            "default": 0
+          },
+          "ctr": {
+            "type": "number",
+            "default": 0
+          },
+          "conversions": {
+            "type": "number",
+            "default": 0
+          },
+          "spend": {
+            "type": "number",
+            "default": 0
+          }
+        }
+      }
+    },
+    "total_budget": {
+      "type": "number"
+    },
+    "ai_winner": {
+      "type": "string",
+      "description": "variant_id of winning creative"
+    },
+    "ai_insights": {
+      "type": "string"
+    },
+    "auto_reallocate": {
+      "type": "boolean",
+      "default": true
+    },
+    "confidence_threshold": {
+      "type": "number",
+      "default": 85,
+      "description": "% confidence to trigger auto-reallocation"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "concluded_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "test_name",
+    "owner_user_id",
+    "variants"
+  ]
+}
