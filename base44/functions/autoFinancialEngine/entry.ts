@@ -3,6 +3,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 // Category 4: Financial & Payouts Automation
 // Handles: Smart payout recommendations, automated processing, BNPL, reconciliation
 Deno.serve(async (req) => {
+  try {
   const base44 = createClientFromRequest(req);
   const results = {};
   const errors = [];
