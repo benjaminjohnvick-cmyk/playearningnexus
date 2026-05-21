@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
       systemPatterns[key] = (systemPatterns[key] || 0) + (log.is_successful ? 1 : 0);
     });
 
-    const systemInsights = await base44.integrations.Core.InvokeLLM({
+    const systemInsights = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: `Analyze platform-wide AI learning trends:
 
     Performance Summary (Last 7 days):

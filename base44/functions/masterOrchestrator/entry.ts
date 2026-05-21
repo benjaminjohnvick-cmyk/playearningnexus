@@ -65,29 +65,14 @@ Deno.serve(async (req) => {
     const isDailyRun = hour === 6; // 6am UTC daily full run
     const isMonthlyRun = dayOfMonth === 1;
 
-    // Survey Ops — runs every 6h
-    const surveyResult = await runAgent('survey_ops', 'superAgentSurveyOps', {
-      mode: isDailyRun ? 'full' : 'health_only'
-    });
-
-    // Referral & Contest — daily + weekly
-    const referralResult = await runAgent('referral_contest', 'superAgentReferralContest', {
-      mode: isWeeklyRun ? 'weekly' : 'daily'
-    });
-
-    // Tournament & Gamification — daily
-    const tournamentResult = await runAgent('tournament_gamification', 'superAgentTournamentGamification', {});
-
-    // Platform Ops — daily full, otherwise skip heavy jobs
-    const platformResult = await runAgent('platform_ops', 'superAgentPlatformOps', {
-      mode: isWeeklyRun ? 'weekly' : isDailyRun ? 'full' : 'daily'
-    });
-
-    // Finance — daily payout processing
-    const financeResult = await runAgent('finance_payouts', 'superAgentFinancePayouts', {
-      dry_run: false,
-      force_dev_payouts: isMonthlyRun
-    });
+    // Run all 5 domain agents in parallel to avoid timeout
+    await Promise.all([
+      runAgent('survey_ops', 'superAgentSurveyOps', { mode: isDailyRun ? 'full' : 'health_only' }),
+      runAgent('referral_contest', 'superAgentReferralContest', { mode: isWeeklyRun ? 'weekly' : 'daily' }),
+      runAgent('tournament_gamification', 'superAgentTournamentGamification', {}),
+      runAgent('platform_ops', 'superAgentPlatformOps', { mode: isWeeklyRun ? 'weekly' : isDailyRun ? 'full' : 'daily' }),
+      runAgent('finance_payouts', 'superAgentFinancePayouts', { dry_run: false, force_dev_payouts: isMonthlyRun }),
+    ]);
 
     // ═══════════════════════════════════════════════════════════
     // PHASE 3: RETENTION & CHURN (always runs)

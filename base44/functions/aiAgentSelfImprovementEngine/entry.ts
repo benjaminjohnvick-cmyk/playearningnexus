@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
       });
 
       // Get improvement suggestions from LLM
-      const improvement = await base44.integrations.Core.InvokeLLM({
+      const improvement = await base44.asServiceRole.integrations.Core.InvokeLLM({
         prompt: `Agent Performance Analysis: "${agentName}"
 
 Success Rate: ${successRate.toFixed(1)}%
@@ -84,11 +84,16 @@ Provide:
 
     // Send notifications if critical issues found
     if (criticalAgents.length > 0) {
-      await base44.integrations.Core.SendEmail({
-        to: 'admin@gamergain.com',
-        subject: `⚠️ CRITICAL: ${criticalAgents.length} AI Agent(s) Need Immediate Improvement`,
-        body: `Critical agents requiring intervention:\n${criticalAgents.map(a => `- ${a.agent_name}: ${a.current_success_rate}% success rate`).join('\n')}`
-      }).catch(() => null);
+      const admins = await base44.asServiceRole.entities.User.filter({ role: 'admin' });
+      for (const admin of admins.slice(0, 3)) {
+        if (admin.email) {
+          await base44.asServiceRole.integrations.Core.SendEmail({
+            to: admin.email,
+            subject: `⚠️ CRITICAL: ${criticalAgents.length} AI Agent(s) Need Immediate Improvement`,
+            body: `Critical agents requiring intervention:\n${criticalAgents.map(a => `- ${a.agent_name}: ${a.current_success_rate}% success rate`).join('\n')}`
+          }).catch(() => null);
+        }
+      }
     }
 
     return Response.json({
