@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
 
   // 12. Top referrers summary
   try {
-    const topReferrers = await base44.asServiceRole.entities.User.list('-referral_count', 10);
+    const topReferrers = await base44.asServiceRole.entities.User.list('-created_date', 10);
     results.top_referrers_count = topReferrers.length;
   } catch (e) {
     errors.push({ fn: 'top_referrers_fetch', error: e.message });

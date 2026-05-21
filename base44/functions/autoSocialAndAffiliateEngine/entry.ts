@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
 
   // 8. Track affiliate ad clicks and conversions
   try {
-    const recentPosts = await base44.asServiceRole.entities.AffiliateAdPost.filter({ status: 'posted' }, '-posted_at', 50);
+    const recentPosts = await base44.asServiceRole.entities.AffiliateAdPost.filter({ status: 'posted' }, '-created_date', 50);
     results.recent_affiliate_posts = recentPosts.length;
   } catch (e) {
     errors.push({ fn: 'affiliate_posts_fetch', error: e.message });
