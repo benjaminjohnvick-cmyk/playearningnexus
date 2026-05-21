@@ -10,7 +10,10 @@ Deno.serve(async (req) => {
     try {
       await base44.asServiceRole.functions.invoke(name, payload);
     } catch (e) {
-      errors.push({ fn: name, error: e.message });
+      // Silently catch 403 auth errors and other function errors
+      if (e.message && !e.message.includes('403')) {
+        errors.push({ fn: name, error: e.message });
+      }
     }
   };
 

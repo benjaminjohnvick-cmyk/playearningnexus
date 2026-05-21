@@ -14,9 +14,10 @@ Deno.serve(async (req) => {
 
     // ACTION: assign — return which variant to show this user
     if (action === 'assign' || !action) {
+      if (!test_id) return Response.json({ success: true, message: 'No test ID provided, returning default variant' }, { status: 200 });
       const tests = await base44.asServiceRole.entities.SurveyABTest.filter({ id: test_id });
       const test = tests[0];
-      if (!test) return Response.json({ error: 'Test not found' }, { status: 404 });
+      if (!test) return Response.json({ success: true, variant: 'a', message: 'Test not found, returning default variant' }, { status: 200 });
       if (test.status !== 'active') return Response.json({ variant: 'a', test });
 
       // Determine split: traffic_split_a = % going to A

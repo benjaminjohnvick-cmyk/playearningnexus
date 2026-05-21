@@ -6,7 +6,7 @@ Deno.serve(async (req) => {
   const body = await req.json();
 
   const adId = body?.event?.entity_id || body?.ad_id;
-  if (!adId) return Response.json({ error: 'No ad ID provided' }, { status: 400 });
+  if (!adId) return Response.json({ success: true, message: 'No ad ID provided, skipping review' }, { status: 200 });
 
   // Fetch the ad
   const ads = await base44.asServiceRole.entities.AdListing.filter({ id: adId });

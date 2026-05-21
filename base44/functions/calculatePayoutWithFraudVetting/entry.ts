@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
     const { recipient_user_id, earnings_source, gross_earnings, performance_metrics, payout_method, payout_address } = await req.json();
 
     if (!recipient_user_id || !earnings_source || !gross_earnings) {
-      return Response.json({ error: 'Missing required fields' }, { status: 400 });
+      return Response.json({ success: false, message: 'Missing required fields: recipient_user_id, earnings_source, gross_earnings' }, { status: 200 });
     }
 
     // Calculate commission (default 15%)

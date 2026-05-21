@@ -9,6 +9,8 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { ticket_id, action } = body;
 
+    if (!action) return Response.json({ error: 'Missing action parameter (submit|get_analysis|list)' }, { status: 400 });
+
     if (action === 'submit') {
       // Create a new dispute ticket
       const { subject, description, category, evidence_urls, affected_amount } = body;

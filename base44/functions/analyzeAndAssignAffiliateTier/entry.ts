@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
     const { affiliate_user_id, social_media_reach, performance_metrics } = await req.json();
 
     if (!affiliate_user_id) {
-      return Response.json({ error: 'Missing affiliate_user_id' }, { status: 400 });
+      return Response.json({ success: false, message: 'Missing affiliate_user_id. Provide affiliate_user_id, social_media_reach, and performance_metrics.' }, { status: 200 });
     }
 
     // Get affiliate tiers

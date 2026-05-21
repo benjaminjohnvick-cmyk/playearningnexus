@@ -60,33 +60,61 @@ Deno.serve(async (req) => {
     results.sponsored_content_expired = sponsoredExpired;
 
     // 4. AI marketing copy generation for active campaigns
-    await base44.asServiceRole.functions.invoke('aiMarketingCopyGenerator', {});
-    results.marketing_copy_generated = true;
+    try {
+      await base44.asServiceRole.functions.invoke('aiMarketingCopyGenerator', {});
+      results.marketing_copy_generated = true;
+    } catch (e) {
+      results.marketing_copy_generated = false;
+    }
 
     // 5. Campaign outcome verification
-    await base44.asServiceRole.functions.invoke('verifyCampaignOutcomes', {});
-    results.campaign_outcomes_verified = true;
+    try {
+      await base44.asServiceRole.functions.invoke('verifyCampaignOutcomes', {});
+      results.campaign_outcomes_verified = true;
+    } catch (e) {
+      results.campaign_outcomes_verified = false;
+    }
 
     // 6. Email marketing flows — trigger sequences
-    const activeFlows = await base44.asServiceRole.entities.EmailMarketingFlow.filter({ status: 'active' });
-    let flowsTriggered = 0;
-    for (const flow of activeFlows) {
-      await base44.asServiceRole.functions.invoke('triggerEmailMarketing', { flow_id: flow.id });
-      flowsTriggered++;
+    try {
+      const activeFlows = await base44.asServiceRole.entities.EmailMarketingFlow.filter({ status: 'active' });
+      let flowsTriggered = 0;
+      for (const flow of activeFlows) {
+        try {
+          await base44.asServiceRole.functions.invoke('triggerEmailMarketing', { flow_id: flow.id });
+          flowsTriggered++;
+        } catch (e) {
+          // Skip individual flow errors
+        }
+      }
+      results.email_marketing_flows_triggered = flowsTriggered;
+    } catch (e) {
+      results.email_marketing_flows_triggered = 0;
     }
-    results.email_marketing_flows_triggered = flowsTriggered;
 
     // 7. Referral campaign manager
-    await base44.asServiceRole.functions.invoke('autoReferralCampaignManager', {});
-    results.referral_campaigns_managed = true;
+    try {
+      await base44.asServiceRole.functions.invoke('autoReferralCampaignManager', {});
+      results.referral_campaigns_managed = true;
+    } catch (e) {
+      results.referral_campaigns_managed = false;
+    }
 
     // 8. Ad campaign creation for high-performing games
-    await base44.asServiceRole.functions.invoke('autoAdCampaignCreation', {});
-    results.ad_campaigns_created = true;
+    try {
+      await base44.asServiceRole.functions.invoke('autoAdCampaignCreation', {});
+      results.ad_campaigns_created = true;
+    } catch (e) {
+      results.ad_campaigns_created = false;
+    }
 
     // 9. PPC session processing
-    await base44.asServiceRole.functions.invoke('processPPCSession', {});
-    results.ppc_sessions_processed = true;
+    try {
+      await base44.asServiceRole.functions.invoke('processPPCSession', {});
+      results.ppc_sessions_processed = true;
+    } catch (e) {
+      results.ppc_sessions_processed = false;
+    }
 
     // 10. Smart notification rules
     const notifRules = await base44.asServiceRole.entities.SmartNotificationRule.filter({ is_active: true });
