@@ -120,6 +120,7 @@ const WhiteLabelSetup = lazy(() => import('./pages/WhiteLabelSetup'));
 const AutomationGuardianDashboard = lazy(() => import('./pages/AutomationGuardianDashboard'));
 const DisputeClaimsUser = lazy(() => import('./pages/DisputeClaimsUser'));
 const AdminDisputeResolution = lazy(() => import('./pages/AdminDisputeResolution'));
+const SubmitDisputeWizard = lazy(() => import('./pages/SubmitDisputeWizard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -309,6 +310,7 @@ const AuthenticatedApp = () => {
       <Route path="/AutomationGuardianDashboard" element={<LayoutWrapper currentPageName="AutomationGuardianDashboard"><AutomationGuardianDashboard /></LayoutWrapper>} />
       <Route path="/DisputeClaimsUser" element={<LayoutWrapper currentPageName="DisputeClaimsUser"><DisputeClaimsUser /></LayoutWrapper>} />
       <Route path="/AdminDisputeResolution" element={<LayoutWrapper currentPageName="AdminDisputeResolution"><AdminDisputeResolution /></LayoutWrapper>} />
+      <Route path="/SubmitDisputeWizard" element={<LayoutWrapper currentPageName="SubmitDisputeWizard"><SubmitDisputeWizard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
