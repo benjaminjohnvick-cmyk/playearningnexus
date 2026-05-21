@@ -1,0 +1,132 @@
+{
+  "name": "AffiliateChurnPrediction",
+  "type": "object",
+  "description": "AI churn predictions for affiliates with automated win-back triggers",
+  "properties": {
+    "affiliate_user_id": {
+      "type": "string"
+    },
+    "affiliate_email": {
+      "type": "string"
+    },
+    "churn_risk_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "low"
+    },
+    "prediction_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "next_check_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "engagement_metrics": {
+      "type": "object",
+      "properties": {
+        "days_since_last_login": {
+          "type": "number"
+        },
+        "days_since_last_referral": {
+          "type": "number"
+        },
+        "days_since_last_social_post": {
+          "type": "number"
+        },
+        "referral_velocity_30d": {
+          "type": "number"
+        },
+        "posting_frequency_30d": {
+          "type": "number"
+        },
+        "last_payout_amount": {
+          "type": "number"
+        },
+        "avg_payout_previous_3m": {
+          "type": "number"
+        }
+      }
+    },
+    "churn_indicators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "e.g. 'No activity for 21 days', 'Referral velocity down 50%'"
+    },
+    "ai_insights": {
+      "type": "string"
+    },
+    "win_back_trigger_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "win_back_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "bonus_offer",
+              "feature_unlock",
+              "personal_outreach",
+              "tier_reset"
+            ]
+          },
+          "incentive_amount": {
+            "type": "number"
+          },
+          "sent_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "sent",
+              "accepted",
+              "ignored",
+              "completed"
+            ]
+          }
+        }
+      }
+    },
+    "alert_sent_to": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Account manager emails"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "monitoring",
+        "alerted",
+        "win_back_active",
+        "recovered",
+        "churned"
+      ],
+      "default": "monitoring"
+    }
+  },
+  "required": [
+    "affiliate_user_id",
+    "affiliate_email",
+    "churn_risk_score"
+  ]
+}

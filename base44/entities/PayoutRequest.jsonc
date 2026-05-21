@@ -1,100 +1,146 @@
 {
   "name": "PayoutRequest",
   "type": "object",
+  "description": "Monthly affiliate payout requests with Stripe/PayPal processing",
   "properties": {
-    "user_id": {
+    "affiliate_user_id": {
       "type": "string"
     },
-    "user_email": {
+    "affiliate_email": {
       "type": "string"
     },
-    "user_name": {
-      "type": "string"
+    "payout_month": {
+      "type": "string",
+      "description": "YYYY-MM format"
     },
-    "amount": {
+    "gross_earnings": {
+      "type": "number"
+    },
+    "referral_count": {
+      "type": "number"
+    },
+    "conversion_count": {
+      "type": "number"
+    },
+    "conversion_rate": {
+      "type": "number"
+    },
+    "fees_deducted": {
+      "type": "number",
+      "default": 0
+    },
+    "net_payout_amount": {
       "type": "number"
     },
     "payment_method": {
       "type": "string",
       "enum": [
-        "paypal",
         "stripe",
-        "bank_transfer",
-        "digital_wallet"
-      ]
+        "paypal",
+        "bank_transfer"
+      ],
+      "default": "stripe"
     },
     "payment_details": {
       "type": "object",
-      "additionalProperties": true,
-      "description": "Email/account info for payment processor"
+      "properties": {
+        "account_email": {
+          "type": "string"
+        },
+        "stripe_connect_id": {
+          "type": "string"
+        },
+        "paypal_email": {
+          "type": "string"
+        }
+      }
     },
-    "trust_score": {
-      "type": "number",
-      "description": "User's trust score at time of request"
+    "tax_form_status": {
+      "type": "string",
+      "enum": [
+        "not_requested",
+        "requested",
+        "submitted",
+        "verified",
+        "exempted"
+      ],
+      "default": "not_requested"
     },
-    "total_earnings": {
-      "type": "number",
-      "description": "User's lifetime earnings"
+    "tax_form_type": {
+      "type": "string",
+      "enum": [
+        "W9",
+        "W8BEN",
+        "1042S",
+        "none"
+      ],
+      "description": "US or international tax form"
     },
-    "earnings_history": {
-      "type": "object",
-      "additionalProperties": true,
-      "description": "Last 90 days earnings breakdown"
+    "tax_form_submitted_date": {
+      "type": "string",
+      "format": "date-time"
     },
     "status": {
       "type": "string",
       "enum": [
-        "pending",
-        "approved",
+        "pending_validation",
+        "pending_tax_form",
+        "pending_payment",
         "processing",
         "completed",
         "failed",
-        "rejected"
+        "cancelled"
       ],
-      "default": "pending"
+      "default": "pending_validation"
     },
-    "risk_score": {
-      "type": "number",
-      "description": "0-100 fraud/risk score"
+    "processing_notes": {
+      "type": "string"
     },
-    "risk_flags": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "default": []
+    "transaction_id": {
+      "type": "string",
+      "description": "Stripe/PayPal transaction ID"
     },
-    "passes_safety_checks": {
-      "type": "boolean",
-      "default": false
+    "processed_date": {
+      "type": "string",
+      "format": "date-time"
     },
-    "auto_approved": {
-      "type": "boolean",
-      "default": false
-    },
-    "processor_response": {
+    "schedule": {
       "type": "object",
-      "additionalProperties": true,
-      "description": "Response from payment processor"
+      "properties": {
+        "scheduled_for": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "auto_process": {
+          "type": "boolean",
+          "default": true
+        }
+      }
     },
-    "processor_transaction_id": {
-      "type": "string"
-    },
-    "requested_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "processed_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "admin_notes": {
-      "type": "string"
+    "validation_data": {
+      "type": "object",
+      "properties": {
+        "referrals_verified": {
+          "type": "number"
+        },
+        "conversions_verified": {
+          "type": "number"
+        },
+        "last_validation_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validation_confidence": {
+          "type": "number",
+          "description": "0-100"
+        }
+      }
     }
   },
   "required": [
-    "user_id",
-    "amount",
-    "payment_method"
+    "affiliate_user_id",
+    "affiliate_email",
+    "payout_month",
+    "gross_earnings"
   ]
 }

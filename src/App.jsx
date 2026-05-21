@@ -139,6 +139,8 @@ const DeveloperAnalyticsDashboard = lazy(() => import('./pages/DeveloperAnalytic
 const AdminLocalizationPanel = lazy(() => import('./pages/AdminLocalizationPanel'));
 const AffiliateDisputeCenter = lazy(() => import('./pages/AffiliateDisputeCenter'));
 const AdCreativeABTestingDashboard = lazy(() => import('./pages/AdCreativeABTestingDashboard'));
+const AffiliatePayoutManager = lazy(() => import('./pages/AffiliatePayoutManager'));
+const AffiliateChurnMonitor = lazy(() => import('./pages/AffiliateChurnMonitor'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -346,6 +348,8 @@ const AuthenticatedApp = () => {
       <Route path="/AdminLocalizationPanel" element={<LayoutWrapper currentPageName="AdminLocalizationPanel"><AdminLocalizationPanel /></LayoutWrapper>} />
       <Route path="/AffiliateDisputeCenter" element={<LayoutWrapper currentPageName="AffiliateDisputeCenter"><AffiliateDisputeCenter /></LayoutWrapper>} />
       <Route path="/AdCreativeABTestingDashboard" element={<LayoutWrapper currentPageName="AdCreativeABTestingDashboard"><AdCreativeABTestingDashboard /></LayoutWrapper>} />
+      <Route path="/AffiliatePayoutManager" element={<LayoutWrapper currentPageName="AffiliatePayoutManager"><AffiliatePayoutManager /></LayoutWrapper>} />
+      <Route path="/AffiliateChurnMonitor" element={<LayoutWrapper currentPageName="AffiliateChurnMonitor"><AffiliateChurnMonitor /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
