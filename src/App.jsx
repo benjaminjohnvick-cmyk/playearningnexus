@@ -133,6 +133,7 @@ const ReferralFraudDetectionDashboard = lazy(() => import('./pages/ReferralFraud
 const AffiliateGrowthCampaignDashboard = lazy(() => import('./pages/AffiliateGrowthCampaignDashboard'));
 const ContentLibraryBrowser = lazy(() => import('./pages/ContentLibraryBrowser'));
 const AIMarketPulse = lazy(() => import('./pages/AIMarketPulse'));
+const AffiliateOnboarding = lazy(() => import('./pages/AffiliateOnboarding'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -335,6 +336,7 @@ const AuthenticatedApp = () => {
       <Route path="/AffiliateGrowthCampaignDashboard" element={<LayoutWrapper currentPageName="AffiliateGrowthCampaignDashboard"><AffiliateGrowthCampaignDashboard /></LayoutWrapper>} />
       <Route path="/ContentLibraryBrowser" element={<LayoutWrapper currentPageName="ContentLibraryBrowser"><ContentLibraryBrowser /></LayoutWrapper>} />
       <Route path="/AIMarketPulse" element={<LayoutWrapper currentPageName="AIMarketPulse"><AIMarketPulse /></LayoutWrapper>} />
+      <Route path="/AffiliateOnboarding" element={<LayoutWrapper currentPageName="AffiliateOnboarding"><AffiliateOnboarding /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
