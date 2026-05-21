@@ -117,6 +117,7 @@ const RevenueHub = lazy(() => import('./pages/RevenueHub'));
 const CRMDashboard = lazy(() => import('./pages/CRMDashboard'));
 const AutomationReviewDashboard = lazy(() => import('./pages/AutomationReviewDashboard'));
 const WhiteLabelSetup = lazy(() => import('./pages/WhiteLabelSetup'));
+const AutomationGuardianDashboard = lazy(() => import('./pages/AutomationGuardianDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -303,6 +304,7 @@ const AuthenticatedApp = () => {
       <Route path="/CRMDashboard" element={<LayoutWrapper currentPageName="CRMDashboard"><CRMDashboard /></LayoutWrapper>} />
       <Route path="/AutomationReviewDashboard" element={<LayoutWrapper currentPageName="AutomationReviewDashboard"><AutomationReviewDashboard /></LayoutWrapper>} />
       <Route path="/WhiteLabelSetup" element={<WhiteLabelSetup />} />
+      <Route path="/AutomationGuardianDashboard" element={<LayoutWrapper currentPageName="AutomationGuardianDashboard"><AutomationGuardianDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
