@@ -1,7 +1,7 @@
 {
   "name": "AffiliateTier",
   "type": "object",
-  "description": "Campaign tier definitions and requirements for affiliate assignment",
+  "description": "Affiliate tier definitions with Gold/Platinum auto-upgrade milestones",
   "properties": {
     "tier_name": {
       "type": "string",
@@ -9,42 +9,46 @@
         "starter",
         "growth",
         "pro",
-        "elite"
+        "gold",
+        "platinum"
       ]
     },
+    "display_name": {
+      "type": "string"
+    },
     "min_followers": {
-      "type": "number",
-      "description": "Minimum social media reach for this tier"
+      "type": "number"
     },
     "min_conversion_rate": {
+      "type": "number"
+    },
+    "min_conversions_90d": {
       "type": "number",
-      "description": "Minimum expected conversion rate"
+      "description": "Conversions needed over 90 days to qualify"
     },
     "commission_percent": {
-      "type": "number",
-      "description": "Commission percentage for this tier"
+      "type": "number"
     },
     "campaign_allocation": {
-      "type": "number",
-      "description": "Monthly campaign opportunities"
+      "type": "number"
     },
     "benefits": {
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "description": "Benefits included in this tier"
+      }
+    },
+    "badge_color": {
+      "type": "string"
     },
     "onboarding_email_template": {
-      "type": "string",
-      "description": "Custom email sequence template for tier"
+      "type": "string"
     },
     "goal_generation_prompts": {
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "description": "AI prompts for personalizing goals by tier"
+      }
     },
     "is_active": {
       "type": "boolean",

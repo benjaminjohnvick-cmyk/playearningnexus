@@ -1,0 +1,58 @@
+{
+  "name": "AffiliatePerformanceSnapshot",
+  "type": "object",
+  "description": "Daily snapshot of affiliate referral performance for trend charts",
+  "properties": {
+    "affiliate_user_id": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "referrals": {
+      "type": "number",
+      "default": 0
+    },
+    "conversions": {
+      "type": "number",
+      "default": 0
+    },
+    "earnings": {
+      "type": "number",
+      "default": 0
+    },
+    "source_breakdown": {
+      "type": "object",
+      "properties": {
+        "social": {
+          "type": "number",
+          "default": 0
+        },
+        "email": {
+          "type": "number",
+          "default": 0
+        },
+        "direct": {
+          "type": "number",
+          "default": 0
+        },
+        "referral_link": {
+          "type": "number",
+          "default": 0
+        }
+      }
+    },
+    "top_link_id": {
+      "type": "string"
+    },
+    "top_link_clicks": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "affiliate_user_id",
+    "date"
+  ]
+}
