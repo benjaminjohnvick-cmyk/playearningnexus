@@ -118,6 +118,8 @@ const CRMDashboard = lazy(() => import('./pages/CRMDashboard'));
 const AutomationReviewDashboard = lazy(() => import('./pages/AutomationReviewDashboard'));
 const WhiteLabelSetup = lazy(() => import('./pages/WhiteLabelSetup'));
 const AutomationGuardianDashboard = lazy(() => import('./pages/AutomationGuardianDashboard'));
+const DisputeClaimsUser = lazy(() => import('./pages/DisputeClaimsUser'));
+const AdminDisputeResolution = lazy(() => import('./pages/AdminDisputeResolution'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -305,6 +307,8 @@ const AuthenticatedApp = () => {
       <Route path="/AutomationReviewDashboard" element={<LayoutWrapper currentPageName="AutomationReviewDashboard"><AutomationReviewDashboard /></LayoutWrapper>} />
       <Route path="/WhiteLabelSetup" element={<WhiteLabelSetup />} />
       <Route path="/AutomationGuardianDashboard" element={<LayoutWrapper currentPageName="AutomationGuardianDashboard"><AutomationGuardianDashboard /></LayoutWrapper>} />
+      <Route path="/DisputeClaimsUser" element={<LayoutWrapper currentPageName="DisputeClaimsUser"><DisputeClaimsUser /></LayoutWrapper>} />
+      <Route path="/AdminDisputeResolution" element={<LayoutWrapper currentPageName="AdminDisputeResolution"><AdminDisputeResolution /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
