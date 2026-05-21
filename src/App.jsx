@@ -125,6 +125,8 @@ const ReengagementDashboard = lazy(() => import('./pages/ReengagementDashboard')
 const AIDisputeAutomationDashboard = lazy(() => import('./pages/AIDisputeAutomationDashboard'));
 const ViralContentDashboard = lazy(() => import('./pages/ViralContentDashboard'));
 const BusinessClientReengagementDashboard = lazy(() => import('./pages/BusinessClientReengagementDashboard'));
+const AffiliatePortal = lazy(() => import('./pages/AffiliatePortal'));
+const CompetitorIntelligenceDashboard = lazy(() => import('./pages/CompetitorIntelligenceDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -319,6 +321,8 @@ const AuthenticatedApp = () => {
       <Route path="/AIDisputeAutomationDashboard" element={<LayoutWrapper currentPageName="AIDisputeAutomationDashboard"><AIDisputeAutomationDashboard /></LayoutWrapper>} />
       <Route path="/ViralContentDashboard" element={<LayoutWrapper currentPageName="ViralContentDashboard"><ViralContentDashboard /></LayoutWrapper>} />
       <Route path="/BusinessClientReengagementDashboard" element={<LayoutWrapper currentPageName="BusinessClientReengagementDashboard"><BusinessClientReengagementDashboard /></LayoutWrapper>} />
+      <Route path="/AffiliatePortal" element={<LayoutWrapper currentPageName="AffiliatePortal"><AffiliatePortal /></LayoutWrapper>} />
+      <Route path="/CompetitorIntelligenceDashboard" element={<LayoutWrapper currentPageName="CompetitorIntelligenceDashboard"><CompetitorIntelligenceDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
