@@ -1,0 +1,184 @@
+{
+  "name": "AffiliateGrowthCampaign",
+  "type": "object",
+  "description": "Personalized growth campaigns for underperforming affiliates with AI-generated coaching",
+  "properties": {
+    "affiliate_user_id": {
+      "type": "string",
+      "description": "Reference to affiliate user"
+    },
+    "affiliate_email": {
+      "type": "string",
+      "description": "Affiliate's email for outreach"
+    },
+    "performance_baseline": {
+      "type": "object",
+      "description": "Their baseline metrics when enrolled",
+      "properties": {
+        "current_conversion_rate": {
+          "type": "number"
+        },
+        "platform_average_rate": {
+          "type": "number"
+        },
+        "total_referrals_30d": {
+          "type": "number"
+        },
+        "total_conversions_30d": {
+          "type": "number"
+        },
+        "earnings_30d": {
+          "type": "number"
+        }
+      }
+    },
+    "campaign_goal": {
+      "type": "string",
+      "description": "Target improvement (e.g., 'Increase conversion rate from 2% to 5%')"
+    },
+    "ai_personalized_advice": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "AI-generated personalized tips and strategies"
+    },
+    "ai_motivation_message": {
+      "type": "string",
+      "description": "Personalized motivational message from AI coach"
+    },
+    "email_sequence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "number",
+            "description": "Day number (1-30)"
+          },
+          "email_subject": {
+            "type": "string"
+          },
+          "email_body": {
+            "type": "string"
+          },
+          "cta_text": {
+            "type": "string"
+          },
+          "cta_link": {
+            "type": "string"
+          },
+          "sent": {
+            "type": "boolean",
+            "default": false
+          },
+          "sent_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "opened": {
+            "type": "boolean",
+            "default": false
+          },
+          "clicked": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "day",
+          "email_subject",
+          "email_body"
+        ]
+      },
+      "description": "30-day email sequence"
+    },
+    "social_media_sequence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "number"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "twitter",
+              "instagram",
+              "tiktok",
+              "facebook",
+              "linkedin"
+            ]
+          },
+          "post_content": {
+            "type": "string"
+          },
+          "post_type": {
+            "type": "string",
+            "description": "motivation, tip, success_story, call_to_action"
+          },
+          "posted": {
+            "type": "boolean",
+            "default": false
+          },
+          "posted_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "engagement": {
+            "type": "number",
+            "description": "Likes/comments/shares"
+          }
+        },
+        "required": [
+          "day",
+          "platform",
+          "post_content"
+        ]
+      },
+      "description": "Social media sequence to boost visibility"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "paused",
+        "graduated"
+      ],
+      "default": "active",
+      "description": "Campaign status"
+    },
+    "emails_sent": {
+      "type": "number",
+      "default": 0
+    },
+    "posts_published": {
+      "type": "number",
+      "default": 0
+    },
+    "engagement_rate": {
+      "type": "number",
+      "description": "Email open rate / social engagement"
+    },
+    "conversion_improvement": {
+      "type": "number",
+      "description": "% improvement in conversion rate since campaign start"
+    },
+    "enrolled_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "campaign_end_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "affiliate_user_id",
+    "affiliate_email",
+    "performance_baseline",
+    "ai_personalized_advice"
+  ]
+}
