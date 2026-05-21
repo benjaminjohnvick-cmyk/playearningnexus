@@ -17,6 +17,7 @@ export default function Pricing() {
   const categories = [
    { id: 'all', label: '💰 All Plans', icon: DollarSign },
    { id: 'plans', label: '🎯 Subscription Plans', icon: TrendingUp },
+   { id: 'business', label: '🏢 Business Tiers', icon: ShieldCheck },
    { id: 'revenue', label: '📊 Revenue Subscriptions', icon: Zap },
    { id: 'streams', label: '📈 Revenue Streams', icon: Zap },
    { id: 'partner', label: '🤝 White-Label', icon: Handshake },
@@ -60,7 +61,11 @@ export default function Pricing() {
             <>
               <PricingSection />
               <BusinessPricingSection />
+            </>
+          )}
 
+          {(activeCategory === 'all' || activeCategory === 'business' || activeCategory === 'plans') && (
+            <>
               {/* Paid Tier Pricing + Guarantee Section */}
               <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-3xl p-8 md:p-12 text-white">
                 <div className="text-center mb-10">
