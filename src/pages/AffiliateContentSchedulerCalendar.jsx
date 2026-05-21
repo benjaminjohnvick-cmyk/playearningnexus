@@ -4,7 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, CheckCircle, Clock, Zap, Library, Copy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Clock, Zap, Library, Copy, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function AffiliateContentSchedulerCalendar() {
   const [user, setUser] = useState(null);
@@ -181,7 +182,7 @@ export default function AffiliateContentSchedulerCalendar() {
         {currentSchedule ? (
           <>
             {/* Schedule Summary */}
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-5 gap-4 mb-6">
               <Card>
                 <CardContent className="pt-6 text-center">
                   <p className="text-sm text-slate-600 mb-1">Total Posts</p>
@@ -208,6 +209,16 @@ export default function AffiliateContentSchedulerCalendar() {
                   </p>
                 </CardContent>
               </Card>
+              <Link to="/AIMarketPulse">
+                <Card className="hover:shadow-lg transition-all cursor-pointer h-full">
+                  <CardContent className="pt-6 text-center">
+                    <p className="text-sm text-orange-600 mb-1 flex items-center justify-center gap-1">
+                      <Sparkles className="w-3 h-3" /> Market Pulse
+                    </p>
+                    <p className="text-sm font-bold text-orange-900">View Trends →</p>
+                  </CardContent>
+                </Card>
+              </Link>
             </div>
 
             {/* Content Type Breakdown */}
