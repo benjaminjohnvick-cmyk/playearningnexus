@@ -3,7 +3,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-
     const body = await req.json().catch(() => ({}));
     const { action, contestId } = body;
 
@@ -32,11 +31,6 @@ Deno.serve(async (req) => {
       return Response.json({ success: true, contests_updated: updated });
     }
 
-    const user = await base44.auth.me();
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     if (action === 'getWeeklyLeaderboard') {
       // Get referral contest
       const contests = await base44.asServiceRole.entities.ReferralContest.filter({
@@ -61,7 +55,10 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'distributePrizes') {
-      // Admin/creator only
+      // Admin/creator only — requires authenticated user
+      const user = await base44.auth.me();
+      if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
       const contests = await base44.asServiceRole.entities.ReferralContest.filter({
         id: contestId
       });

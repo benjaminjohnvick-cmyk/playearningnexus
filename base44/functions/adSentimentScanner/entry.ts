@@ -100,7 +100,7 @@ Return JSON: {
       positive_themes: aiResult.positive_themes || [],
       ads_to_pause: aiResult.ads_to_pause || [],
       responses_analyzed: recentFeedback.length,
-      created_by: user.id,
+      created_by: user?.id || 'system',
     });
 
     // Auto-flag ads in problematic categories

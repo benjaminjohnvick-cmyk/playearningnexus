@@ -152,9 +152,16 @@ Be specific and concise. Format as markdown.`
     // ── TALLY ─────────────────────────────────────────────────────────────
     if (action === 'tally') {
       const { survey_id } = body;
-      const surveys = await base44.asServiceRole.entities.MockupVoteSurvey.filter({ id: survey_id });
-      const survey = surveys[0];
-      if (!survey) return Response.json({ error: 'Not found' }, { status: 404 });
+      let survey;
+      if (survey_id) {
+        const surveys = await base44.asServiceRole.entities.MockupVoteSurvey.filter({ id: survey_id });
+        survey = surveys[0];
+      } else {
+        // No survey_id provided (e.g. from automation) — tally today's active survey
+        const surveys = await base44.asServiceRole.entities.MockupVoteSurvey.filter({ date: today, status: 'active' });
+        survey = surveys[0];
+      }
+      if (!survey) return Response.json({ success: true, message: 'No active survey to tally today' });
 
       const updatedComparisons = await Promise.all(survey.comparisons.map(async (cmp) => {
         const aVotes = cmp.option_a?.votes || 0;

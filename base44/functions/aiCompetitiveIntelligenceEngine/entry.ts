@@ -96,7 +96,7 @@ Provide strategic recommendations:
       overall_threat_level: allIntelligence.filter(i => i.threat_level === 'critical').length > 0 ? 'critical' : 
                            allIntelligence.filter(i => i.threat_level === 'high').length > 2 ? 'high' : 'medium',
       competitive_intelligence: allIntelligence,
-      strategic_analysis: strategicAnalysis.data,
+      strategic_analysis: strategicAnalysis,
       action_items: (strategicAnalysis?.critical_features || []).map(f => ({
         action: 'implement_feature',
         feature: f,

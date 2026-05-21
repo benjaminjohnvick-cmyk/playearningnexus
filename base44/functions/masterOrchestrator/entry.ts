@@ -183,17 +183,17 @@ Return JSON:
     }
 
     // Email admins if red or health < 60
-    if (masterAI.platform_status === 'red' || (masterAI.overall_health_score || 100) < 60) {
+    if (masterAIData.platform_status === 'red' || (masterAIData.overall_health_score || 100) < 60) {
       for (const admin of admins.slice(0, 2)) {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: admin.email,
-          subject: `🔴 GamerGain Master Orchestrator Alert — Health Score: ${masterAI.overall_health_score}/100`,
+          subject: `🔴 GamerGain Master Orchestrator Alert — Health Score: ${masterAIData.overall_health_score}/100`,
           body: `<h2>${statusEmoji} GamerGain Platform Alert</h2>
-<p><strong>Health Score:</strong> ${masterAI.overall_health_score}/100</p>
-<p><strong>Status:</strong> ${masterAI.platform_status?.toUpperCase()}</p>
-<p>${masterAI.executive_summary}</p>
-<h3>Top Risks:</h3><ul>${(masterAI.top_risks || []).map(r => `<li>${r}</li>`).join('')}</ul>
-<h3>Cross-Domain Actions Needed:</h3><ul>${(masterAI.cross_domain_actions || []).filter(a => a.priority === 'high').map(a => `<li>[${a.domain}] ${a.action}</li>`).join('')}</ul>
+<p><strong>Health Score:</strong> ${masterAIData.overall_health_score}/100</p>
+<p><strong>Status:</strong> ${masterAIData.platform_status?.toUpperCase()}</p>
+<p>${masterAIData.executive_summary}</p>
+<h3>Top Risks:</h3><ul>${(masterAIData.top_risks || []).map(r => `<li>${r}</li>`).join('')}</ul>
+<h3>Cross-Domain Actions Needed:</h3><ul>${(masterAIData.cross_domain_actions || []).filter(a => a.priority === 'high').map(a => `<li>[${a.domain}] ${a.action}</li>`).join('')}</ul>
 <h3>Agent Summary:</h3><ul>${Object.entries(agentResults).map(([k, v]) => `<li>✓ ${k}: ${v.summary}</li>`).join('')}${Object.entries(agentErrors).map(([k, v]) => `<li>✗ ${k}: ${v}</li>`).join('')}</ul>
 <p style="color:#6b7280;font-size:11px;">Run duration: ${totalDuration}s | ${new Date().toISOString()}</p>`,
           from_name: 'GamerGain Master AI'
