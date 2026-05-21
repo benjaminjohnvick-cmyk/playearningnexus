@@ -3,26 +3,25 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 // Category 5: Admin & Operations Automation
 // Handles: Game rotation, order fulfillment, user management, audit logging, dispute resolution
 Deno.serve(async (req) => {
-  try {
-    const base44 = createClientFromRequest(req);
-    const results = {};
-    const errors = [];
+  const base44 = createClientFromRequest(req);
+  const results = {};
+  const errors = [];
 
-    const invoke = async (fn, payload = {}) => {
-      try {
-        await base44.asServiceRole.functions.invoke(fn, payload);
-        return true;
-      } catch (e) {
-        errors.push(`${fn}: ${e.message}`);
-        return false;
-      }
-    };
+  const invoke = async (fn, payload = {}) => {
+    try {
+      await base44.asServiceRole.functions.invoke(fn, payload);
+      return true;
+    } catch (e) {
+      errors.push({ fn, error: e.message });
+      return false;
+    }
+  };
 
   // 1. Featured Game Rotation
   await invoke('autoFeaturedGameRotation');
   results.game_rotation_run = true;
 
-  // 2. Order Fulfillment — place external orders and track shipping
+  // 2. Order Fulfillment
   await invoke('autoOrderFulfillmentAndFundsRelease');
   await invoke('aiOrderFulfillment');
   await invoke('aiOrderVetting');
@@ -64,18 +63,16 @@ Deno.serve(async (req) => {
   await invoke('autoComplianceMonitoring');
   results.compliance_checked = true;
 
-    try {
-      await base44.asServiceRole.entities.AdminAuditLog.create({
-        action_type: 'other',
-        actor_email: 'system@gamergain.com',
-        details: `auto_admin_ops_engine_run: ${JSON.stringify(results)}`
-      });
-    } catch (e) {
-      errors.push(`audit_log: ${e.message}`);
-    }
-
-    return Response.json({ success: true, results, errors });
-  } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+  // 10. Audit log entry
+  try {
+    await base44.asServiceRole.entities.AdminAuditLog.create({
+      action_type: 'other',
+      actor_email: 'system@gamergain.com',
+      details: `auto_admin_ops_engine_run: ${JSON.stringify(results)}`
+    });
+  } catch (e) {
+    errors.push({ fn: 'audit_log', error: e.message });
   }
+
+  return Response.json({ success: true, results, errors });
 });
