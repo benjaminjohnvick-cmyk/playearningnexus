@@ -33,6 +33,41 @@ export default function Pricing() {
         </div>
       </div>
 
+      {/* GamerGain Double Guarantee — top of page */}
+      <div className="bg-yellow-400 py-8 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-6">
+            <ShieldCheck className="w-10 h-10 text-yellow-800 mx-auto mb-2" />
+            <h2 className="text-2xl font-black text-gray-900">The GamerGain Double Guarantee</h2>
+            <p className="text-gray-700 text-sm mt-1">We don't stop working until you've won — twice. Applies to both paid business tiers.</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              { tier: 'Full-Service ($10,920/yr)', roi: '$21,840', ads: '$21,840', total: '$43,680 in total value' },
+              { tier: 'Enterprise ($15,920/yr)', roi: '$31,840', ads: '$31,840', total: '$63,680 in total value' },
+            ].map((g, i) => (
+              <div key={i} className="bg-white rounded-xl p-5 border-2 border-yellow-300">
+                <p className="font-black text-gray-900 mb-3 text-base">{g.tier}</p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                    <span>We work until you earn <strong>{g.roi}</strong> in ROI (2× your investment)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+                    <span>PLUS <strong>{g.ads}</strong> in FREE AI platform advertising (additional 2×)</span>
+                  </div>
+                  <div className="mt-2 bg-yellow-50 rounded-lg p-2 text-center">
+                    <p className="font-black text-yellow-800">{g.total}</p>
+                    <p className="text-xs text-gray-500">guaranteed delivered value</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Navigation Categories */}
       <div className="max-w-7xl mx-auto px-6 py-8 bg-white relative z-10 pointer-events-auto">
         <div className="flex gap-3 justify-center flex-wrap mb-8 pointer-events-auto">

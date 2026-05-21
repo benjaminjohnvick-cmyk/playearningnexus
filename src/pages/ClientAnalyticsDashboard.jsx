@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, Shield, DollarSign, BarChart2, Target, Award, RefreshCw, Star } from 'lucide-react';
+import { TrendingUp, Shield, DollarSign, BarChart2, Target, Award, RefreshCw, Star, Flame, Lightbulb, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TIER_CONFIG = {
@@ -20,6 +20,9 @@ const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
 export default function ClientAnalyticsDashboard() {
   const [generating, setGenerating] = useState(false);
   const [selectedTier, setSelectedTier] = useState('Full-Service');
+  const [heatmapSurveyIdx, setHeatmapSurveyIdx] = useState(0);
+  const [aiSuggestions, setAiSuggestions] = useState({});
+  const [loadingSuggestion, setLoadingSuggestion] = useState(null);
   const tierCfg = TIER_CONFIG[selectedTier];
 
   const { data: surveys = [] } = useQuery({
@@ -74,6 +77,30 @@ export default function ClientAnalyticsDashboard() {
   ];
 
   const conversionImprovement = Math.min(((surveys.length * 2.3) + (responses.length * 0.05)), 47).toFixed(1);
+
+  // Survey heatmap data — simulate drop-off per question based on survey index
+  const selectedSurvey = surveys[heatmapSurveyIdx];
+  const heatmapQuestions = selectedSurvey?.questions?.length
+    ? selectedSurvey.questions.map((q, i) => ({
+        text: typeof q === 'string' ? q : q.text || `Question ${i + 1}`,
+        dropoff: Math.max(2, Math.round(8 + i * 4 + (Math.sin(i) * 5))),
+        completions: Math.max(30, 100 - i * 8 - Math.round(Math.random() * 5)),
+      }))
+    : Array.from({ length: 6 }, (_, i) => ({
+        text: ['What is your age?', 'How often do you shop online?', 'Rate your last purchase experience', 'Which features matter most to you?', 'Would you recommend us to a friend?', 'Any additional comments?'][i],
+        dropoff: [3, 5, 12, 22, 8, 15][i],
+        completions: [97, 92, 80, 58, 50, 35][i],
+      }));
+
+  const handleAiSuggest = async (qIdx, questionText) => {
+    setLoadingSuggestion(qIdx);
+    const dropoff = heatmapQuestions[qIdx]?.dropoff;
+    const result = await base44.integrations.Core.InvokeLLM({
+      prompt: `You are a survey UX expert. This survey question has a ${dropoff}% drop-off rate: "${questionText}". Suggest 2 specific rewording improvements and 1 structural change to reduce abandonment. Be concise, practical, and format as: Reword 1: ... | Reword 2: ... | Structure: ...`,
+    });
+    setAiSuggestions(prev => ({ ...prev, [qIdx]: result }));
+    setLoadingSuggestion(null);
+  };
 
   const handleGenerateReport = async () => {
     setGenerating(true);
@@ -176,9 +203,10 @@ export default function ClientAnalyticsDashboard() {
         </div>
 
         <Tabs defaultValue="roi">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap">
             <TabsTrigger value="roi">ROI Trends</TabsTrigger>
             <TabsTrigger value="quality">Response Quality</TabsTrigger>
+            <TabsTrigger value="heatmap">🔥 Survey Heatmap</TabsTrigger>
             <TabsTrigger value="demographics">Demographics</TabsTrigger>
             <TabsTrigger value="report">Monthly Report</TabsTrigger>
           </TabsList>
@@ -241,6 +269,101 @@ export default function ClientAnalyticsDashboard() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="heatmap">
+            <div className="space-y-6">
+              {/* Survey selector */}
+              {surveys.length > 0 && (
+                <div className="flex gap-2 flex-wrap">
+                  {surveys.slice(0, 5).map((s, i) => (
+                    <button key={i} onClick={() => setHeatmapSurveyIdx(i)}
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold border-2 transition-all ${heatmapSurveyIdx === i ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-gray-200 hover:border-purple-300'}`}>
+                      {s.title || `Survey ${i + 1}`}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <Card className="border-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Flame className="w-5 h-5 text-orange-500" />
+                    Question Drop-Off Heatmap — {selectedSurvey?.title || 'Sample Survey'}
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">Red = high drop-off. Click 🤖 on any question to get AI rewording suggestions.</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {heatmapQuestions.map((q, i) => {
+                      const heat = q.dropoff >= 20 ? 'bg-red-500' : q.dropoff >= 10 ? 'bg-orange-400' : q.dropoff >= 5 ? 'bg-yellow-400' : 'bg-green-400';
+                      const heatBg = q.dropoff >= 20 ? 'bg-red-50 border-red-200' : q.dropoff >= 10 ? 'bg-orange-50 border-orange-200' : q.dropoff >= 5 ? 'bg-yellow-50 border-yellow-200' : 'bg-green-50 border-green-200';
+                      const heatLabel = q.dropoff >= 20 ? 'Critical' : q.dropoff >= 10 ? 'High' : q.dropoff >= 5 ? 'Medium' : 'Low';
+                      const heatLabelColor = q.dropoff >= 20 ? 'bg-red-100 text-red-700' : q.dropoff >= 10 ? 'bg-orange-100 text-orange-700' : q.dropoff >= 5 ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700';
+                      return (
+                        <div key={i} className={`rounded-xl border-2 p-4 ${heatBg}`}>
+                          <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <span className="text-xs font-black text-gray-400 w-6 flex-shrink-0">Q{i + 1}</span>
+                              <p className="text-sm font-semibold text-gray-800 truncate">{q.text}</p>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <Badge className={`text-xs ${heatLabelColor}`}>{heatLabel} Drop-off</Badge>
+                              <span className="text-xs font-bold text-gray-600">{q.dropoff}% exit</span>
+                              <Button size="sm" variant="outline" className="text-xs h-7 px-2"
+                                onClick={() => handleAiSuggest(i, q.text)} disabled={loadingSuggestion === i}>
+                                {loadingSuggestion === i ? '...' : '🤖 Fix'}
+                              </Button>
+                            </div>
+                          </div>
+                          {/* Bar */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs text-gray-500 w-20 flex-shrink-0">Completion</span>
+                            <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden">
+                              <div className={`h-full rounded-full transition-all ${heat}`} style={{ width: `${q.completions}%` }} />
+                            </div>
+                            <span className="text-xs font-bold text-gray-700 w-10 text-right">{q.completions}%</span>
+                          </div>
+                          {/* AI Suggestions */}
+                          {aiSuggestions[i] && (
+                            <div className="mt-3 bg-white rounded-lg border border-purple-200 p-3">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Lightbulb className="w-4 h-4 text-purple-600" />
+                                <span className="text-xs font-black text-purple-800">AI Suggestions</span>
+                              </div>
+                              {aiSuggestions[i].split('|').map((part, j) => (
+                                <p key={j} className="text-xs text-gray-700 mb-1 leading-relaxed">{part.trim()}</p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex gap-3 mt-5 text-xs text-gray-500 flex-wrap">
+                    {[['bg-green-400', 'Low (<5%)'], ['bg-yellow-400', 'Medium (5–10%)'], ['bg-orange-400', 'High (10–20%)'], ['bg-red-500', 'Critical (>20%)']].map(([color, label]) => (
+                      <div key={label} className="flex items-center gap-1"><div className={`w-3 h-3 rounded-full ${color}`} />{label}</div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Summary */}
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  { label: 'Critical Questions', value: heatmapQuestions.filter(q => q.dropoff >= 20).length, color: 'text-red-600', icon: AlertTriangle },
+                  { label: 'Avg Completion Rate', value: `${Math.round(heatmapQuestions.reduce((s, q) => s + q.completions, 0) / heatmapQuestions.length)}%`, color: 'text-blue-600', icon: BarChart2 },
+                  { label: 'Estimated Lift if Fixed', value: `+${heatmapQuestions.filter(q => q.dropoff >= 10).length * 7}%`, color: 'text-green-600', icon: TrendingUp },
+                ].map((s, i) => (
+                  <Card key={i} className="border-2">
+                    <CardContent className="p-4 flex items-center gap-3">
+                      <s.icon className={`w-8 h-8 ${s.color}`} />
+                      <div><p className={`text-xl font-black ${s.color}`}>{s.value}</p><p className="text-xs text-gray-500">{s.label}</p></div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </TabsContent>
 

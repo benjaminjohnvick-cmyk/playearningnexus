@@ -4,7 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, Award, Star, Zap, CheckCircle, Mail } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { TrendingUp, Award, Star, Zap, CheckCircle, Mail, ArrowUp, ArrowDown, Target } from 'lucide-react';
 
 const TIER_CONFIG = {
   starter:  { label: 'Starter',  color: 'bg-gray-100 text-gray-700',    border: 'border-gray-300',  gradient: 'from-gray-400 to-gray-600',   emoji: '🌱', commission: 10 },
@@ -83,9 +84,23 @@ export default function AffiliateTierDashboard() {
     setUpgrading(false);
   };
 
-  const nextTierIndex = Object.keys(TIER_CONFIG).indexOf(currentTierName) + 1;
-  const nextTierName = Object.keys(TIER_CONFIG)[nextTierIndex];
+  const tierOrder = Object.keys(TIER_CONFIG);
+  const currentTierIndex = tierOrder.indexOf(currentTierName);
+  const nextTierIndex = currentTierIndex + 1;
+  const prevTierIndex = currentTierIndex - 1;
+  const nextTierName = tierOrder[nextTierIndex];
+  const prevTierName = tierOrder[prevTierIndex];
   const nextThreshold = TIER_THRESHOLDS.find(t => t.tier === nextTierName);
+  const prevThreshold = TIER_THRESHOLDS.find(t => t.tier === currentTierName);
+
+  // Auto-downgrade check: if below current threshold for 90d, warn
+  const belowThreshold = prevThreshold && (conversions90d < prevThreshold.min90d || totalEarnings < prevThreshold.minEarnings);
+
+  // Exact numbers needed for next tier
+  const conversionsNeeded = nextThreshold ? Math.max(0, nextThreshold.min90d - conversions90d) : 0;
+  const earningsNeeded = nextThreshold ? Math.max(0, nextThreshold.minEarnings - totalEarnings) : 0;
+  const conversionProgress = nextThreshold ? Math.min(100, (conversions90d / nextThreshold.min90d) * 100) : 100;
+  const earningsProgress = nextThreshold ? Math.min(100, (totalEarnings / nextThreshold.minEarnings) * 100) : 100;
 
   if (!user) return <div className="p-6 text-center text-slate-500">Loading...</div>;
 
@@ -139,40 +154,80 @@ export default function AffiliateTierDashboard() {
           })}
         </div>
 
-        {/* Progress to Next Tier */}
+        {/* Auto-downgrade warning */}
+        {belowThreshold && (
+          <Card className="mb-6 border-2 border-red-200 bg-red-50">
+            <CardContent className="pt-4 flex gap-3 items-center">
+              <ArrowDown className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-bold text-red-800">⚠️ Tier at Risk</p>
+                <p className="text-xs text-red-700">Your 90-day activity has dropped below the <strong>{currentTier.label}</strong> threshold. Reach {prevThreshold?.min90d} conversions and ${prevThreshold?.minEarnings} earnings to keep your current tier. You have until end of this 90-day window.</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Progress to Next Tier — enhanced */}
         {nextTierName && nextThreshold && (
-          <Card className="mb-6 border-2 border-dashed border-slate-200">
+          <Card className="mb-6 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-blue-500" />
-                Progress to {TIER_CONFIG[nextTierName]?.emoji} {TIER_CONFIG[nextTierName]?.label}
+                <Target className="w-5 h-5 text-blue-500" />
+                {conversionsNeeded === 0 && earningsNeeded === 0
+                  ? `🎉 You qualify for ${TIER_CONFIG[nextTierName]?.label}! Click Upgrade above.`
+                  : `Next Level: ${TIER_CONFIG[nextTierName]?.emoji} ${TIER_CONFIG[nextTierName]?.label} (${TIER_CONFIG[nextTierName]?.commission}% commission)`}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>90-Day Conversions</span>
-                    <span className="font-semibold">{conversions90d} / {nextThreshold.min90d}</span>
-                  </div>
-                  <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all"
-                      style={{ width: `${Math.min(100, (conversions90d / nextThreshold.min90d) * 100)}%` }} />
-                  </div>
+            <CardContent className="space-y-5">
+              {/* Conversions progress */}
+              <div>
+                <div className="flex justify-between text-sm mb-1 font-medium">
+                  <span className="text-gray-700">90-Day Conversions</span>
+                  <span className="text-blue-700 font-bold">{conversions90d} / {nextThreshold.min90d}</span>
                 </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Earnings</span>
-                    <span className="font-semibold">${totalEarnings.toFixed(0)} / ${nextThreshold.minEarnings}</span>
-                  </div>
-                  <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all"
-                      style={{ width: `${Math.min(100, (totalEarnings / nextThreshold.minEarnings) * 100)}%` }} />
-                  </div>
+                <Progress value={conversionProgress} className="h-4 mb-1" />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{conversionProgress.toFixed(0)}% complete</span>
+                  {conversionsNeeded > 0
+                    ? <span className="font-semibold text-blue-700">Need <strong>{conversionsNeeded} more conversions</strong> to unlock {TIER_CONFIG[nextTierName]?.commission}% commission</span>
+                    : <span className="text-green-600 font-bold">✅ Conversions met!</span>}
                 </div>
-                <p className="text-xs text-slate-500">
-                  Unlock {TIER_CONFIG[nextTierName]?.commission}% commission rate at {nextThreshold.min90d} conversions + ${nextThreshold.minEarnings} earnings over 90 days
-                </p>
+              </div>
+
+              {/* Earnings progress */}
+              <div>
+                <div className="flex justify-between text-sm mb-1 font-medium">
+                  <span className="text-gray-700">Earnings (90d)</span>
+                  <span className="text-green-700 font-bold">${totalEarnings.toFixed(0)} / ${nextThreshold.minEarnings}</span>
+                </div>
+                <Progress value={earningsProgress} className="h-4 mb-1" />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{earningsProgress.toFixed(0)}% complete</span>
+                  {earningsNeeded > 0
+                    ? <span className="font-semibold text-green-700">Need <strong>${earningsNeeded.toFixed(0)} more</strong> in earnings</span>
+                    : <span className="text-green-600 font-bold">✅ Earnings met!</span>}
+                </div>
+              </div>
+
+              {/* Commission rate jump callout */}
+              <div className="bg-white rounded-xl border-2 border-blue-200 p-4 flex items-center justify-between gap-4 flex-wrap">
+                <div className="text-center">
+                  <p className="text-xs text-gray-500 mb-1">Current rate</p>
+                  <p className="text-2xl font-black text-gray-700">{currentTier.commission}%</p>
+                </div>
+                <ArrowUp className="w-6 h-6 text-blue-500" />
+                <div className="text-center">
+                  <p className="text-xs text-gray-500 mb-1">Next rate</p>
+                  <p className="text-2xl font-black text-blue-700">{TIER_CONFIG[nextTierName]?.commission}%</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-gray-500 mb-1">Rate increase</p>
+                  <p className="text-2xl font-black text-green-600">+{TIER_CONFIG[nextTierName]?.commission - currentTier.commission}%</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-gray-500 mb-1">Still need</p>
+                  <p className="text-lg font-black text-blue-600">{conversionsNeeded > 0 ? `${conversionsNeeded} conv.` : earningsNeeded > 0 ? `$${earningsNeeded.toFixed(0)}` : '✅ Qualified!'}</p>
+                </div>
               </div>
             </CardContent>
           </Card>
