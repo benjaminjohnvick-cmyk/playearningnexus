@@ -147,6 +147,8 @@ const MarketingAssetRepository = lazy(() => import('./pages/MarketingAssetReposi
 const AffiliateAnalyticsDashboard = lazy(() => import('./pages/AffiliateAnalyticsDashboard'));
 const AffiliateTierDashboard = lazy(() => import('./pages/AffiliateTierDashboard'));
 const AdminProfitCalculator = lazy(() => import('./pages/AdminProfitCalculator'));
+const AdminAffiliatePayoutDashboard = lazy(() => import('./pages/AdminAffiliatePayoutDashboard'));
+const ClientAnalyticsDashboard = lazy(() => import('./pages/ClientAnalyticsDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -362,6 +364,8 @@ const AuthenticatedApp = () => {
       <Route path="/AffiliateAnalyticsDashboard" element={<LayoutWrapper currentPageName="AffiliateAnalyticsDashboard"><AffiliateAnalyticsDashboard /></LayoutWrapper>} />
       <Route path="/AffiliateTierDashboard" element={<LayoutWrapper currentPageName="AffiliateTierDashboard"><AffiliateTierDashboard /></LayoutWrapper>} />
       <Route path="/AdminProfitCalculator" element={<LayoutWrapper currentPageName="AdminProfitCalculator"><AdminProfitCalculator /></LayoutWrapper>} />
+      <Route path="/AdminAffiliatePayoutDashboard" element={<LayoutWrapper currentPageName="AdminAffiliatePayoutDashboard"><AdminAffiliatePayoutDashboard /></LayoutWrapper>} />
+      <Route path="/ClientAnalyticsDashboard" element={<LayoutWrapper currentPageName="ClientAnalyticsDashboard"><ClientAnalyticsDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
