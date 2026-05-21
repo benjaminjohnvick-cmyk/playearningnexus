@@ -3,7 +3,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me().catch(() => null);
 
     // Search for competitive intelligence across multiple dimensions
     const competitorSearches = [
@@ -40,10 +39,13 @@ Provide:
         }
       });
 
-      const resultData = results?.data || results || {};
       allIntelligence.push({
         search_query: searchQuery,
-        ...resultData,
+        key_findings: results?.key_findings || [],
+        competitor_moves: results?.competitor_moves || [],
+        market_gaps: results?.market_gaps || [],
+        emerging_trends: results?.emerging_trends || [],
+        threat_level: results?.threat_level || 'medium',
         collected_at: new Date().toISOString()
       });
     }
@@ -54,8 +56,8 @@ Provide:
 
 ${allIntelligence.map(i => `\n${i.search_query}:
 - Threats: ${i.threat_level}
-- Gaps: ${(Array.isArray(i.market_gaps) ? i.market_gaps : []).join(', ')}
-- Trends: ${(Array.isArray(i.emerging_trends) ? i.emerging_trends : []).join(', ')}`).join('')}
+- Gaps: ${((i && i.market_gaps) || []).join(', ')}
+- Trends: ${((i && i.emerging_trends) || []).join(', ')}`).join('')}
 
 Provide strategic recommendations:
 1. Top 3 features we must implement to stay competitive
@@ -83,7 +85,7 @@ Provide strategic recommendations:
       report_date: new Date().toISOString(),
       report_type: 'competitive_intelligence',
       threat_assessment: JSON.stringify(allIntelligence.map(i => ({ query: i.search_query, threat: i.threat_level }))),
-      strategic_recommendations: JSON.stringify(strategicAnalysis?.data || strategicAnalysis),
+      strategic_recommendations: JSON.stringify(strategicAnalysis.data),
       data_source: 'ai_web_search_aggregation'
     }).catch(() => null);
 
@@ -94,8 +96,8 @@ Provide strategic recommendations:
       overall_threat_level: allIntelligence.filter(i => i.threat_level === 'critical').length > 0 ? 'critical' : 
                            allIntelligence.filter(i => i.threat_level === 'high').length > 2 ? 'high' : 'medium',
       competitive_intelligence: allIntelligence,
-      strategic_analysis: strategicAnalysis?.data || strategicAnalysis,
-      action_items: ((strategicAnalysis?.data || strategicAnalysis)?.critical_features || []).map(f => ({
+      strategic_analysis: strategicAnalysis.data,
+      action_items: (strategicAnalysis?.critical_features || []).map(f => ({
         action: 'implement_feature',
         feature: f,
         priority: 'critical'

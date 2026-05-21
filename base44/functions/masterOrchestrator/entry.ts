@@ -162,14 +162,14 @@ Return JSON:
 
     // Always notify admins with executive summary
     const admins = await base44.asServiceRole.entities.User.filter({ role: 'admin' });
-    const statusEmoji = masterAI.platform_status === 'green' ? '✅' : masterAI.platform_status === 'yellow' ? '⚠️' : '🔴';
+    const statusEmoji = masterAIData.platform_status === 'green' ? '✅' : masterAIData.platform_status === 'yellow' ? '⚠️' : '🔴';
 
     for (const admin of admins.slice(0, 3)) {
       await base44.asServiceRole.entities.Notification.create({
         user_id: admin.id,
         type: 'system',
-        title: `${statusEmoji} Orchestrator Run: ${masterAI.platform_status?.toUpperCase()} (score: ${masterAI.overall_health_score}/100)`,
-        message: masterAI.executive_summary,
+        title: `${statusEmoji} Orchestrator Run: ${masterAIData.platform_status?.toUpperCase()} (score: ${masterAIData.overall_health_score}/100)`,
+        message: masterAIData.executive_summary,
         status: 'unread',
         delivery_method: ['in_app'],
         action_url: '/AdminDashboard',

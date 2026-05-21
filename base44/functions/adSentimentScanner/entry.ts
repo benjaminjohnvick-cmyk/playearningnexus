@@ -90,6 +90,8 @@ Return JSON: {
 
     // Save analysis record
     await base44.asServiceRole.entities.AIFeedbackAnalysis.create({
+      survey_id: 'ad_sentiment_scan',
+      survey_date: new Date().toISOString().slice(0, 10),
       analysis_type: 'ad_sentiment_scan',
       sentiment_score: aiResult.overall_sentiment,
       fatigue_detected: aiResult.fatigue_detected,
