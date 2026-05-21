@@ -226,12 +226,11 @@ Return JSON:
       success: true,
       orchestrator: 'master_orchestrator_v2',
       duration_seconds: totalDuration,
-      platform_status: masterAI.platform_status,
-      health_score: masterAI.overall_health_score,
-      executive_summary: masterAI.executive_summary,
-      agents_completed: totalAgents,
-      agents_failed: failedAgents,
-      top_risks: masterAI.top_risks,
+      platform_status: masterAIData.platform_status,
+      health_score: masterAIData.overall_health_score,
+      executive_summary: masterAIData.executive_summary,
+...
+      top_risks: masterAIData.top_risks,
       cross_domain_actions: crossDomainActions,
       agent_results: agentResults,
       agent_errors: Object.keys(agentErrors).length > 0 ? agentErrors : undefined
