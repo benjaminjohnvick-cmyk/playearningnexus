@@ -1,0 +1,201 @@
+{
+  "name": "SupportTicketDossier",
+  "type": "object",
+  "description": "AI-generated comprehensive dossier for support tickets with auto-scraped data",
+  "properties": {
+    "ticket_id": {
+      "type": "string",
+      "description": "Reference to SupportTicket"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "user_profile": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "account_age_days": {
+          "type": "number"
+        },
+        "total_earnings": {
+          "type": "number"
+        },
+        "account_status": {
+          "type": "string"
+        },
+        "last_login": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user_tier": {
+          "type": "string"
+        },
+        "verification_status": {
+          "type": "string"
+        }
+      }
+    },
+    "transaction_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "transaction_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Last 20 transactions"
+    },
+    "activity_timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "details": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Last 15 activities (logins, referrals, posts, payouts, etc)"
+    },
+    "referral_data": {
+      "type": "object",
+      "properties": {
+        "total_referrals": {
+          "type": "number"
+        },
+        "total_conversions": {
+          "type": "number"
+        },
+        "conversion_rate": {
+          "type": "number"
+        },
+        "avg_referral_quality": {
+          "type": "string"
+        },
+        "recent_referral_trend": {
+          "type": "string"
+        },
+        "top_referral_source": {
+          "type": "string"
+        }
+      }
+    },
+    "payout_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "payout_id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "month": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Last 6 payouts"
+    },
+    "anomalies_detected": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Potential issues flagged by AI (e.g., unusual activity, pattern changes)"
+    },
+    "ai_summary": {
+      "type": "string",
+      "description": "Executive summary of key findings"
+    },
+    "ai_insights": {
+      "type": "object",
+      "properties": {
+        "likely_issue_category": {
+          "type": "string"
+        },
+        "severity_assessment": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "recommended_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidence_score": {
+          "type": "number",
+          "description": "0-100"
+        }
+      }
+    },
+    "fraud_risk_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Potential fraud indicators"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "generated",
+        "reviewed",
+        "archived"
+      ],
+      "default": "generated"
+    }
+  },
+  "required": [
+    "ticket_id",
+    "user_id",
+    "generated_at"
+  ]
+}
