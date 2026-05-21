@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Clock, CheckCircle, XCircle, AlertTriangle, DollarSign, FileText, Zap } from 'lucide-react';
+import { Upload, Clock, CheckCircle, XCircle, AlertTriangle, DollarSign, FileText, Zap, MessageCircle } from 'lucide-react';
 
 const STATUS_CONFIG = {
   submitted: { color: 'bg-blue-100 text-blue-800', icon: Clock, label: 'Submitted' },
@@ -26,7 +26,19 @@ export default function AffiliateDisputeCenter() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [negotiationChat, setNegotiationChat] = useState([]);
+  const [negotiationInput, setNegotiationInput] = useState('');
+  const [negotiating, setNegotiating] = useState(false);
   const queryClient = useQueryClient();
+
+  // Load negotiation chat when dispute changes
+  React.useEffect(() => {
+    if (selectedDispute?.id) {
+      base44.entities.DisputeNegotiationChat.filter({ dispute_id: selectedDispute.id }, '-created_date', 1).then(chats => {
+        if (chats[0]?.messages) setNegotiationChat(chats[0].messages);
+      });
+    }
+  }, [selectedDispute?.id]);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -181,12 +193,44 @@ export default function AffiliateDisputeCenter() {
     );
   }
 
+  const handleSendNegotiationMessage = async (e) => {
+      e.preventDefault();
+      if (!negotiationInput.trim()) return;
+      setNegotiating(true);
+      try {
+        const result = await base44.functions.invoke('negotiateDisputeSettlement', {
+          dispute_id: selectedDispute.id,
+          message: negotiationInput
+        });
+        setNegotiationChat(prev => [
+          ...prev,
+          { role: 'user', content: negotiationInput, timestamp: new Date().toISOString() },
+          {
+            role: 'assistant',
+            content: result.ai_message,
+            timestamp: new Date().toISOString(),
+            metadata: { suggested_settlement: result.proposed_settlement, confidence_score: result.confidence }
+          }
+        ]);
+        setNegotiationInput('');
+        if (result.auto_approved) {
+          queryClient.invalidateQueries({ queryKey: ['affiliateDisputes'] });
+          const updated = await base44.entities.AffiliateDispute.filter({ id: selectedDispute.id });
+          if (updated[0]) setSelectedDispute(updated[0]);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      setNegotiating(false);
+  };
+
   if (view === 'detail' && selectedDispute) {
     const sc = STATUS_CONFIG[selectedDispute.status] || STATUS_CONFIG.submitted;
     const Icon = sc.icon;
+
     return (
       <div className="min-h-screen bg-slate-50 p-6">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <button onClick={() => setView('list')} className="text-blue-600 hover:underline mb-4 block">← Back to Disputes</button>
           <div className="grid gap-6">
             {/* Status Header */}
@@ -258,6 +302,55 @@ export default function AffiliateDisputeCenter() {
                     <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50" onClick={() => settlementMutation.mutate({ dispute_id: selectedDispute.id, action: 'reject' })}>
                       ✗ Reject & Escalate
                     </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* AI Negotiation Chatbot */}
+            {(selectedDispute.status === 'submitted' || selectedDispute.status === 'ai_analyzed' || selectedDispute.status === 'settlement_offered') && (
+              <Card className="border-purple-200 bg-gradient-to-b from-purple-50 to-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-purple-800">
+                    <MessageCircle className="w-5 h-5" />
+                    AI Settlement Negotiation
+                  </CardTitle>
+                  <p className="text-xs text-slate-600 mt-1">Chat with our AI to negotiate a fair settlement</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Chat History */}
+                    {negotiationChat.length > 0 && (
+                      <div className="bg-white rounded-lg p-4 space-y-3 max-h-64 overflow-y-auto border border-purple-100">
+                        {negotiationChat.map((msg, i) => (
+                          <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-xs rounded-lg p-3 text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-900'}`}>
+                              {msg.content}
+                              {msg.metadata?.suggested_settlement && (
+                                <p className="text-xs font-bold mt-1 text-green-600">💰 Offer: ${msg.metadata.suggested_settlement}</p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Input Form */}
+                    {selectedDispute.status !== 'accepted' && selectedDispute.status !== 'rejected' && (
+                      <form onSubmit={handleSendNegotiationMessage} className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Explain your situation or ask for a lower amount..."
+                          value={negotiationInput}
+                          onChange={e => setNegotiationInput(e.target.value)}
+                          className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          disabled={negotiating}
+                        />
+                        <Button className="bg-purple-600 hover:bg-purple-700" disabled={negotiating || !negotiationInput.trim()}>
+                          {negotiating ? '...' : '→'}
+                        </Button>
+                      </form>
+                    )}
                   </div>
                 </CardContent>
               </Card>

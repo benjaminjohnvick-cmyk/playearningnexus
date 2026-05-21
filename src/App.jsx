@@ -142,6 +142,7 @@ const AdCreativeABTestingDashboard = lazy(() => import('./pages/AdCreativeABTest
 const AffiliatePayoutManager = lazy(() => import('./pages/AffiliatePayoutManager'));
 const AffiliateChurnMonitor = lazy(() => import('./pages/AffiliateChurnMonitor'));
 const SupportTicketDossierViewer = lazy(() => import('./pages/SupportTicketDossierViewer'));
+const DisputeAutoApprovalSettings = lazy(() => import('./pages/DisputeAutoApprovalSettings'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -352,6 +353,7 @@ const AuthenticatedApp = () => {
       <Route path="/AffiliatePayoutManager" element={<LayoutWrapper currentPageName="AffiliatePayoutManager"><AffiliatePayoutManager /></LayoutWrapper>} />
       <Route path="/AffiliateChurnMonitor" element={<LayoutWrapper currentPageName="AffiliateChurnMonitor"><AffiliateChurnMonitor /></LayoutWrapper>} />
       <Route path="/SupportTicketDossierViewer" element={<LayoutWrapper currentPageName="SupportTicketDossierViewer"><SupportTicketDossierViewer /></LayoutWrapper>} />
+      <Route path="/DisputeAutoApprovalSettings" element={<LayoutWrapper currentPageName="DisputeAutoApprovalSettings"><DisputeAutoApprovalSettings /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
