@@ -72,7 +72,7 @@ export default function SocialMediaSetup() {
   const [connected, setConnected] = useState([]);
   const [loading, setLoading] = useState(false);
   const [posting, setPosting] = useState(false);
-  const [step, setStep] = useState(1); // 1 = select, 2 = connecting, 3 = done
+  const [step, setStep] = useState(1); // 1 = select, 2 = connecting, 3 = ai_engine, 4 = done
   const [existingConnections, setExistingConnections] = useState([]);
 
   useEffect(() => {
@@ -160,7 +160,7 @@ export default function SocialMediaSetup() {
 
     // Clear the signup redirect flag
     sessionStorage.removeItem('needs_social_setup');
-    setStep(3);
+    setStep(3); // Go to AI engine step
   };
 
   const totalEntries = selected.reduce((sum, p) => {
@@ -289,8 +289,52 @@ export default function SocialMediaSetup() {
             </motion.div>
           )}
 
-          {/* STEP 3: Done */}
+          {/* STEP 3: AI Social Engine Intro */}
           {step === 3 && (
+            <motion.div key="ai_engine" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center py-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <Zap className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">🤖 AI Social Engine Activated!</h2>
+              <p className="text-gray-600 mb-4 text-sm">
+                Your accounts are connected. Now GamerGain's AI will automatically:
+              </p>
+              <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border-2 border-purple-200 p-5 mb-5 text-left space-y-3">
+                {[
+                  { icon: '🎯', text: 'Select your highest-performing affiliate content daily' },
+                  { icon: '✍️', text: 'Adapt it into short-form viral TikTok/Reels scripts using AI' },
+                  { icon: '📅', text: 'Schedule & auto-post with trending hashtags to all your connected accounts' },
+                  { icon: '💰', text: 'Earn $0.20 + jackpot entries per published post' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <span className="text-xl">{item.icon}</span>
+                    <p className="text-sm text-gray-700 font-medium">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-purple-700 font-semibold mb-5">
+                Connected {connected.length} platform{connected.length !== 1 ? 's' : ''}. AI engine is live. +{connected.length * 50} jackpot entries added!
+              </p>
+              <div className="flex gap-3 flex-col sm:flex-row">
+                <Button
+                  className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 text-white h-12 font-bold"
+                  onClick={() => { setStep(4); navigate('/AISocialMediaEngine'); }}
+                >
+                  Open AI Social Engine <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 h-12 font-bold"
+                  onClick={() => setStep(4)}
+                >
+                  Skip to Dashboard
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 4: Done */}
+          {step === 4 && (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center py-8">
               <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Check className="w-10 h-10 text-white" />

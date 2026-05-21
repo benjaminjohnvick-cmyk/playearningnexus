@@ -149,6 +149,8 @@ const AffiliateTierDashboard = lazy(() => import('./pages/AffiliateTierDashboard
 const AdminProfitCalculator = lazy(() => import('./pages/AdminProfitCalculator'));
 const AdminAffiliatePayoutDashboard = lazy(() => import('./pages/AdminAffiliatePayoutDashboard'));
 const ClientAnalyticsDashboard = lazy(() => import('./pages/ClientAnalyticsDashboard'));
+const PayoutMarketplace = lazy(() => import('./pages/PayoutMarketplace'));
+const AISocialMediaEngine = lazy(() => import('./pages/AISocialMediaEngine'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -366,6 +368,8 @@ const AuthenticatedApp = () => {
       <Route path="/AdminProfitCalculator" element={<LayoutWrapper currentPageName="AdminProfitCalculator"><AdminProfitCalculator /></LayoutWrapper>} />
       <Route path="/AdminAffiliatePayoutDashboard" element={<LayoutWrapper currentPageName="AdminAffiliatePayoutDashboard"><AdminAffiliatePayoutDashboard /></LayoutWrapper>} />
       <Route path="/ClientAnalyticsDashboard" element={<LayoutWrapper currentPageName="ClientAnalyticsDashboard"><ClientAnalyticsDashboard /></LayoutWrapper>} />
+      <Route path="/PayoutMarketplace" element={<LayoutWrapper currentPageName="PayoutMarketplace"><PayoutMarketplace /></LayoutWrapper>} />
+      <Route path="/AISocialMediaEngine" element={<LayoutWrapper currentPageName="AISocialMediaEngine"><AISocialMediaEngine /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
