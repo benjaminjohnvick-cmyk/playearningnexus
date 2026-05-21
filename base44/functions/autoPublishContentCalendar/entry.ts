@@ -22,10 +22,28 @@ Deno.serve(async (req) => {
     for (const schedule of schedules) {
       if (schedule.status !== 'active') continue;
 
-      // Find posts scheduled for today
-      const todayPosts = schedule.scheduled_posts?.filter(
-        p => p.post_date === today && p.status === 'approved' && p.posted_date === undefined
+      // Find posts scheduled for today (auto-approve if still draft, then publish)
+      let todayPosts = schedule.scheduled_posts?.filter(
+        p => p.post_date === today && (p.status === 'approved' || p.status === 'draft') && p.posted_date === undefined
       ) || [];
+
+      // Auto-approve any draft posts for today
+      const updatedPosts = schedule.scheduled_posts.map(p => {
+        if (p.post_date === today && p.status === 'draft') {
+          return { ...p, status: 'approved', approved_by: 'system_auto', approved_date: new Date().toISOString() };
+        }
+        return p;
+      });
+
+      if (updatedPosts !== schedule.scheduled_posts) {
+        await base44.asServiceRole.entities.AffiliateContentSchedule.update(schedule.id, {
+          scheduled_posts: updatedPosts
+        });
+        schedule.scheduled_posts = updatedPosts;
+        todayPosts = schedule.scheduled_posts?.filter(
+          p => p.post_date === today && p.status === 'approved' && p.posted_date === undefined
+        ) || [];
+      }
 
       for (const post of todayPosts) {
         try {

@@ -4,11 +4,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, CheckCircle, Clock, Zap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Clock, Zap, Library, Copy } from 'lucide-react';
 
 export default function AffiliateContentSchedulerCalendar() {
   const [user, setUser] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().substring(0, 7));
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [selectedPostIndex, setSelectedPostIndex] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -41,13 +43,29 @@ export default function AffiliateContentSchedulerCalendar() {
     enabled: !!user
   });
 
-  // Approve post mutation
-  const approveMutation = useMutation({
+  // Clone template mutation
+  const cloneMutation = useMutation({
+    mutationFn: async ({ templateId, postDate }) => {
+      const response = await base44.functions.invoke('cloneTemplateToSchedule', {
+        template_id: templateId,
+        schedule_id: currentSchedule?.id,
+        post_date: postDate
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['affiliateSchedules'] });
+      setShowLibrary(false);
+    }
+  });
+
+  // Auto-approve post (skip manual approval)
+  const autoApproveMutation = useMutation({
     mutationFn: async ({ scheduleId, postIndex }) => {
       const schedule = schedules.find(s => s.id === scheduleId);
       const updatedPosts = [...schedule.scheduled_posts];
       updatedPosts[postIndex].status = 'approved';
-      updatedPosts[postIndex].approved_by = user.email;
+      updatedPosts[postIndex].approved_by = 'system_auto';
       updatedPosts[postIndex].approved_date = new Date().toISOString();
 
       return await base44.entities.AffiliateContentSchedule.update(scheduleId, {
@@ -133,18 +151,30 @@ export default function AffiliateContentSchedulerCalendar() {
               </Button>
             </div>
 
-            <Button
-              onClick={() => generateMutation.mutate()}
-              disabled={generateMutation.isPending || !!currentSchedule}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Zap className="w-4 h-4 mr-2" />
-              {generateMutation.isPending
-                ? 'Generating...'
-                : currentSchedule
-                  ? 'Schedule Exists'
-                  : 'Generate 30-Day Plan'}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => generateMutation.mutate()}
+                disabled={generateMutation.isPending || !!currentSchedule}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                {generateMutation.isPending
+                  ? 'Generating...'
+                  : currentSchedule
+                    ? 'Schedule Exists'
+                    : 'Generate 30-Day Plan'}
+              </Button>
+              {currentSchedule && (
+                <Button
+                  onClick={() => setShowLibrary(!showLibrary)}
+                  variant="outline"
+                  className="bg-purple-50 border-purple-300"
+                >
+                  <Library className="w-4 h-4 mr-2" />
+                  Browse Templates
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -217,6 +247,9 @@ export default function AffiliateContentSchedulerCalendar() {
               </CardContent>
             </Card>
 
+            {/* Template Library Modal */}
+            {showLibrary && <TemplateLibraryPanel scheduleId={currentSchedule?.id} onClone={() => setShowLibrary(false)} />}
+
             {/* Calendar Grid */}
             <Card>
               <CardHeader>
@@ -271,10 +304,10 @@ export default function AffiliateContentSchedulerCalendar() {
                             <Button
                               size="sm"
                               className="w-full text-xs mt-1 p-1 h-auto bg-green-600 hover:bg-green-700"
-                              onClick={() => approveMutation.mutate({ scheduleId: currentSchedule.id, postIndex: idx })}
-                              disabled={approveMutation.isPending}
+                              onClick={() => autoApproveMutation.mutate({ scheduleId: currentSchedule.id, postIndex: idx })}
+                              disabled={autoApproveMutation.isPending}
                             >
-                              Approve
+                              {autoApproveMutation.isPending ? 'Approving...' : 'Auto-Approve'}
                             </Button>
                           )}
 
@@ -305,5 +338,120 @@ export default function AffiliateContentSchedulerCalendar() {
         )}
       </div>
     </div>
+  );
+}
+
+function TemplateLibraryPanel({ scheduleId, onClone }) {
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [cloneDate, setCloneDate] = useState('');
+  const queryClient = useQueryClient();
+
+  const cloneMutation = useMutation({
+    mutationFn: async ({ templateId, postDate }) => {
+      const response = await base44.functions.invoke('cloneTemplateToSchedule', {
+        template_id: templateId,
+        schedule_id: scheduleId,
+        post_date: postDate
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['affiliateSchedules'] });
+      setSelectedTemplate(null);
+      onClone();
+    }
+  });
+
+  React.useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const data = await base44.entities.ContentLibraryTemplate.filter(
+          { status: 'active', featured: true },
+          '-performance_metrics.performance_score',
+          20
+        );
+        setTemplates(data || []);
+      } catch (err) {
+        console.error('Error loading templates:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTemplates();
+  }, []);
+
+  return (
+    <Card className="mb-6 bg-purple-50 border-purple-300">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Library className="w-5 h-5 text-purple-600" />
+            Clone High-Performing Templates
+          </CardTitle>
+          <Button size="sm" variant="ghost" onClick={onClone}>×</Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="text-center py-4">Loading templates...</div>
+        ) : selectedTemplate ? (
+          <div className="space-y-4">
+            <div className="bg-white p-4 rounded border border-purple-200">
+              <h4 className="font-bold text-slate-900 mb-2">{selectedTemplate.template_name}</h4>
+              <p className="text-sm text-slate-700 mb-3">{selectedTemplate.base_content}</p>
+              <div className="flex gap-2 flex-wrap mb-3">
+                {selectedTemplate.hashtags?.map((tag, idx) => (
+                  <Badge key={idx} variant="outline" className="text-xs">#{tag}</Badge>
+                ))}
+              </div>
+              <div className="grid grid-cols-3 gap-2 mb-4 bg-slate-50 p-3 rounded">
+                <div><p className="text-xs text-slate-600">Performance</p><p className="font-bold">{selectedTemplate.performance_metrics?.performance_score?.toFixed(0)}%</p></div>
+                <div><p className="text-xs text-slate-600">Used</p><p className="font-bold">{selectedTemplate.times_cloned}x</p></div>
+                <div><p className="text-xs text-slate-600">Engagement</p><p className="font-bold">{(selectedTemplate.performance_metrics?.engagement_rate * 100)?.toFixed(0)}%</p></div>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Post Date</label>
+              <input
+                type="date"
+                value={cloneDate}
+                onChange={(e) => setCloneDate(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => cloneMutation.mutate({ templateId: selectedTemplate.id, postDate: cloneDate })}
+                disabled={!cloneDate || cloneMutation.isPending}
+                className="flex-1 bg-purple-600 hover:bg-purple-700"
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                {cloneMutation.isPending ? 'Cloning...' : 'Clone to Calendar'}
+              </Button>
+              <Button onClick={() => setSelectedTemplate(null)} variant="outline" className="flex-1">Cancel</Button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {templates.map((template) => (
+              <div
+                key={template.id}
+                onClick={() => setSelectedTemplate(template)}
+                className="p-3 bg-white rounded border border-purple-200 cursor-pointer hover:border-purple-400 hover:shadow-md transition-all"
+              >
+                <p className="font-semibold text-sm text-slate-900 mb-1">{template.template_name}</p>
+                <p className="text-xs text-slate-600 line-clamp-2 mb-2">{template.base_content}</p>
+                <div className="flex items-center justify-between">
+                  <Badge className="text-xs bg-purple-100 text-purple-800">{template.platform}</Badge>
+                  <span className="text-xs font-bold text-purple-600">{template.performance_metrics?.performance_score?.toFixed(0)}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
