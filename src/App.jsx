@@ -122,6 +122,9 @@ const DisputeClaimsUser = lazy(() => import('./pages/DisputeClaimsUser'));
 const AdminDisputeResolution = lazy(() => import('./pages/AdminDisputeResolution'));
 const SubmitDisputeWizard = lazy(() => import('./pages/SubmitDisputeWizard'));
 const ReengagementDashboard = lazy(() => import('./pages/ReengagementDashboard'));
+const AIDisputeAutomationDashboard = lazy(() => import('./pages/AIDisputeAutomationDashboard'));
+const ViralContentDashboard = lazy(() => import('./pages/ViralContentDashboard'));
+const BusinessClientReengagementDashboard = lazy(() => import('./pages/BusinessClientReengagementDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -313,6 +316,9 @@ const AuthenticatedApp = () => {
       <Route path="/AdminDisputeResolution" element={<LayoutWrapper currentPageName="AdminDisputeResolution"><AdminDisputeResolution /></LayoutWrapper>} />
       <Route path="/SubmitDisputeWizard" element={<LayoutWrapper currentPageName="SubmitDisputeWizard"><SubmitDisputeWizard /></LayoutWrapper>} />
       <Route path="/ReengagementDashboard" element={<LayoutWrapper currentPageName="ReengagementDashboard"><ReengagementDashboard /></LayoutWrapper>} />
+      <Route path="/AIDisputeAutomationDashboard" element={<LayoutWrapper currentPageName="AIDisputeAutomationDashboard"><AIDisputeAutomationDashboard /></LayoutWrapper>} />
+      <Route path="/ViralContentDashboard" element={<LayoutWrapper currentPageName="ViralContentDashboard"><ViralContentDashboard /></LayoutWrapper>} />
+      <Route path="/BusinessClientReengagementDashboard" element={<LayoutWrapper currentPageName="BusinessClientReengagementDashboard"><BusinessClientReengagementDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
