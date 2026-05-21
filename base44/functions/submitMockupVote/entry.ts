@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
 
     // ── SCHEDULED TALLY — no action/body (called by automation) ──────────
     const today = new Date().toISOString().split('T')[0];
-    if (!action) {
+    if (!action || action === 'tally_today') {
       const surveys = await base44.asServiceRole.entities.MockupVoteSurvey.filter({ date: today, status: 'active' });
       if (!surveys.length) return Response.json({ success: true, message: 'No active survey to tally today' });
 

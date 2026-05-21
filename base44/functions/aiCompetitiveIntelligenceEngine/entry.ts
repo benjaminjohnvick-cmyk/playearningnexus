@@ -85,7 +85,7 @@ Provide strategic recommendations:
       report_date: new Date().toISOString(),
       report_type: 'competitive_intelligence',
       threat_assessment: JSON.stringify(allIntelligence.map(i => ({ query: i.search_query, threat: i.threat_level }))),
-      strategic_recommendations: JSON.stringify(strategicAnalysis.data),
+      strategic_recommendations: JSON.stringify(strategicAnalysis),
       data_source: 'ai_web_search_aggregation'
     }).catch(() => null);
 

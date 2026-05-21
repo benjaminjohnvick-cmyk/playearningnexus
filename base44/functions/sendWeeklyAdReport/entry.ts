@@ -18,6 +18,9 @@ Deno.serve(async (req) => {
   } catch {
     // Called from scheduler — no user context, process all advertisers
     const allAds = await base44.asServiceRole.entities.AdListing.list('-updated_date', 200);
+    if (!allAds.length) {
+      return Response.json({ success: true, sent: 0, message: 'No ads found — nothing to report' });
+    }
     const advertiserIds = [...new Set(allAds.map(a => a.owner_user_id))];
 
     let sent = 0;
