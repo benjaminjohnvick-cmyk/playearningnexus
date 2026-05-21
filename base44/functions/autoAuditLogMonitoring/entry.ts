@@ -5,6 +5,10 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
+    // Compute date range up front so they're always defined
+    const todayDate = new Date().toISOString().slice(0, 10);
+    const yesterdayDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
     // Get recent audit logs from last 24h
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const logs = await base44.asServiceRole.entities.AdminAuditLog.list('-created_date', 200);
@@ -42,16 +46,10 @@ Respond with JSON: { "anomalies_found": boolean, "severity": "low" | "medium" | 
 
     // Create a ReconciliationReport entry with the findings
     await base44.asServiceRole.entities.ReconciliationReport.create({
-      report_type: 'audit_log_analysis',
-      period: 'daily',
-      report_period_start: yesterday.slice(0, 10),
-      report_period_end: new Date().toISOString().slice(0, 10),
-      anomalies_found: summary.anomalies_found,
-      severity: summary.severity,
-      summary: summary.summary,
-      action_required: summary.action_required,
-      logs_analyzed: recentLogs.length,
-      generated_at: new Date().toISOString(),
+      report_period_start: yesterdayDate,
+      report_period_end: todayDate,
+      status: 'completed',
+      summary_html: `<b>Severity:</b> ${summary.severity}<br><b>Anomalies Found:</b> ${summary.anomalies_found}<br><b>Action Required:</b> ${summary.action_required}<br><b>Logs Analyzed:</b> ${recentLogs.length}<br><br>${summary.summary}`,
     });
 
     // Email admin if high severity

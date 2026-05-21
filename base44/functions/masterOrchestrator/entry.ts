@@ -145,8 +145,10 @@ Return JSON:
       }
     });
 
+    const masterAIData = masterAI?.data || masterAI || {};
+
     // Execute high-priority cross-domain actions
-    for (const action of (masterAI.cross_domain_actions || []).filter(a => a.priority === 'high')) {
+    for (const action of (masterAIData.cross_domain_actions || []).filter(a => a.priority === 'high')) {
       crossDomainActions.push(action);
       console.log(`[MasterOrchestrator] Cross-domain action: ${action.action}`);
     }
