@@ -26,7 +26,7 @@ export default function SupportChatButton() {
     <>
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 z-40 animate-pulse"
+        className="fixed bottom-4 right-4 rounded-full w-14 h-14 shadow-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 z-[9999] animate-pulse"
         size="icon"
       >
         <MessageCircle className="w-6 h-6" />

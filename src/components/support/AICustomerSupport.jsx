@@ -111,7 +111,7 @@ export default function AICustomerSupport({ isOpen, onClose, user }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl h-[600px] flex flex-col">
         <CardHeader className="border-b bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-xl">
           <div className="flex items-center justify-between">
