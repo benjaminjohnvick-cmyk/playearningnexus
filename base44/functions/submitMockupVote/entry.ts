@@ -191,7 +191,7 @@ Be specific and concise. Format as markdown.`
         return { ...cmp, winner, implementation_spec: typeof implSpec === 'string' ? implSpec : JSON.stringify(implSpec) };
       }));
 
-      await base44.asServiceRole.entities.MockupVoteSurvey.update(survey_id, {
+      await base44.asServiceRole.entities.MockupVoteSurvey.update(survey.id, {
         comparisons: updatedComparisons,
         status: 'implementing'
       });

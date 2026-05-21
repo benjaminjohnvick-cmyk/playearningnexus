@@ -216,10 +216,10 @@ Return JSON:
         cross_domain_actions: crossDomainActions.length,
         duration_seconds: totalDuration
       },
-      predicted_outcome: masterAI.executive_summary,
-      confidence_score: masterAI.overall_health_score || 75,
+      predicted_outcome: masterAIData.executive_summary,
+      confidence_score: masterAIData.overall_health_score || 75,
       human_review_status: 'approved',
-      tags: ['master_orchestrator', masterAI.platform_status, `health_${masterAI.overall_health_score}`, `agents_${totalAgents}`]
+      tags: ['master_orchestrator', masterAIData.platform_status, `health_${masterAIData.overall_health_score}`, `agents_${totalAgents}`]
     });
 
     return Response.json({
