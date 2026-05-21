@@ -8,6 +8,7 @@ import { lazy, Suspense } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { LocalizationProvider } from '@/context/LocalizationContext';
 
 // Lazy-load heavy pages to reduce initial bundle size
 const EarningsInsights = lazy(() => import('./pages/EarningsInsights'));
@@ -134,6 +135,8 @@ const AffiliateGrowthCampaignDashboard = lazy(() => import('./pages/AffiliateGro
 const ContentLibraryBrowser = lazy(() => import('./pages/ContentLibraryBrowser'));
 const AIMarketPulse = lazy(() => import('./pages/AIMarketPulse'));
 const AffiliateOnboarding = lazy(() => import('./pages/AffiliateOnboarding'));
+const DeveloperAnalyticsDashboard = lazy(() => import('./pages/DeveloperAnalyticsDashboard'));
+const AdminLocalizationPanel = lazy(() => import('./pages/AdminLocalizationPanel'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -337,6 +340,8 @@ const AuthenticatedApp = () => {
       <Route path="/ContentLibraryBrowser" element={<LayoutWrapper currentPageName="ContentLibraryBrowser"><ContentLibraryBrowser /></LayoutWrapper>} />
       <Route path="/AIMarketPulse" element={<LayoutWrapper currentPageName="AIMarketPulse"><AIMarketPulse /></LayoutWrapper>} />
       <Route path="/AffiliateOnboarding" element={<LayoutWrapper currentPageName="AffiliateOnboarding"><AffiliateOnboarding /></LayoutWrapper>} />
+      <Route path="/DeveloperAnalyticsDashboard" element={<LayoutWrapper currentPageName="DeveloperAnalyticsDashboard"><DeveloperAnalyticsDashboard /></LayoutWrapper>} />
+      <Route path="/AdminLocalizationPanel" element={<LayoutWrapper currentPageName="AdminLocalizationPanel"><AdminLocalizationPanel /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
@@ -348,13 +353,15 @@ function App() {
 
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <NavigationTracker />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
+      <LocalizationProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router>
+            <NavigationTracker />
+            <AuthenticatedApp />
+          </Router>
+          <Toaster />
+        </QueryClientProvider>
+      </LocalizationProvider>
     </AuthProvider>
   )
 }
