@@ -14,12 +14,14 @@ import {
   Zap,
   Heart,
   MessageCircle,
-  Share2
+  Share2,
+  Sparkles
 } from 'lucide-react';
 
 export default function ContentLibraryBrowser() {
   const [user, setUser] = useState(null);
   const [filters, setFilters] = useState({ platform: 'all', category: 'all', search: '' });
+  const [showTrendDrafter, setShowTrendDrafter] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -87,6 +89,20 @@ export default function ContentLibraryBrowser() {
             </div>
           </div>
         )}
+
+        {/* Trend Drafter Button */}
+        <div className="mb-6">
+          <Button
+            onClick={() => setShowTrendDrafter(!showTrendDrafter)}
+            className="bg-purple-600 hover:bg-purple-700 w-full"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Draft Post from Competitor Trend
+          </Button>
+        </div>
+
+        {/* Trend Drafter Panel */}
+        {showTrendDrafter && <TrendDrafterPanel onClose={() => setShowTrendDrafter(false)} />}
 
         {/* Filters */}
         <Card className="mb-6">
@@ -166,6 +182,117 @@ export default function ContentLibraryBrowser() {
         )}
       </div>
     </div>
+  );
+}
+
+function TrendDrafterPanel({ onClose }) {
+  const [trends, setTrends] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTrend, setSelectedTrend] = useState(null);
+  const queryClient = useQueryClient();
+
+  const generateMutation = useMutation({
+    mutationFn: async (trend) => {
+      const response = await base44.functions.invoke('generatePostFromTrend', {
+        trend_name: trend.trend_name,
+        competitor_name: trend.competitor,
+        platform: trend.platform
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contentLibrary'] });
+      setSelectedTrend(null);
+      alert('New template created from trend! Check your content library.');
+    }
+  });
+
+  useEffect(() => {
+    const fetchTrends = async () => {
+      try {
+        const data = await base44.entities.CompetitorTrendAnalysis.filter({}, '-analyzed_at', 5);
+        const allTrends = [];
+        data.forEach(competitor => {
+          competitor.top_trends?.forEach(trend => {
+            allTrends.push({
+              ...trend,
+              competitor: competitor.competitor_name,
+              platform: competitor.platform,
+              engagement_score: trend.engagement_score
+            });
+          });
+        });
+        setTrends(allTrends.sort((a, b) => (b.engagement_score || 0) - (a.engagement_score || 0)));
+      } catch (err) {
+        console.error('Error loading trends:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTrends();
+  }, []);
+
+  return (
+    <Card className="mb-6 bg-purple-50 border-purple-300">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-purple-600" />
+            Draft from Competitor Trends
+          </CardTitle>
+          <Button size="sm" variant="ghost" onClick={onClose}>×</Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="text-center py-4">Loading trends...</div>
+        ) : selectedTrend ? (
+          <div className="space-y-4">
+            <div className="bg-white p-4 rounded border border-purple-200">
+              <h4 className="font-bold text-slate-900 mb-2">{selectedTrend.trend_name}</h4>
+              <p className="text-sm text-slate-700 mb-2">From: {selectedTrend.competitor} ({selectedTrend.platform})</p>
+              <p className="text-xs text-slate-600 mb-3">
+                Engagement: {selectedTrend.engagement_score}% • Sentiment: {selectedTrend.sentiment}
+              </p>
+              {selectedTrend.example_posts?.length > 0 && (
+                <div className="bg-slate-50 p-2 rounded mb-3 text-xs text-slate-700">
+                  <p className="font-semibold mb-1">Example:</p>
+                  <p>"{selectedTrend.example_posts[0]}"</p>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => generateMutation.mutate(selectedTrend)}
+                disabled={generateMutation.isPending}
+                className="flex-1 bg-purple-600 hover:bg-purple-700"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                {generateMutation.isPending ? 'Generating...' : 'Generate Template'}
+              </Button>
+              <Button onClick={() => setSelectedTrend(null)} variant="outline" className="flex-1">Cancel</Button>
+            </div>
+          </div>
+        ) : trends.length > 0 ? (
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {trends.slice(0, 15).map((trend, idx) => (
+              <div
+                key={idx}
+                onClick={() => setSelectedTrend(trend)}
+                className="p-3 bg-white rounded border border-purple-200 cursor-pointer hover:border-purple-400 hover:shadow-md transition-all"
+              >
+                <p className="font-semibold text-sm text-slate-900">{trend.trend_name}</p>
+                <p className="text-xs text-slate-600 mt-1">
+                  {trend.competitor} • {trend.platform} • {trend.engagement_score}% engagement
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-slate-600 text-center py-4">No trends available. Run market analysis first.</p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

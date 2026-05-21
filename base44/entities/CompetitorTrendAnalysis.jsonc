@@ -1,0 +1,178 @@
+{
+  "name": "CompetitorTrendAnalysis",
+  "type": "object",
+  "description": "Real-time competitive trend analysis from top industry competitors",
+  "properties": {
+    "competitor_name": {
+      "type": "string",
+      "description": "Name of competitor being tracked"
+    },
+    "competitor_url": {
+      "type": "string",
+      "description": "Public-facing URL/social profile"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "twitter",
+        "instagram",
+        "linkedin",
+        "tiktok",
+        "facebook",
+        "blog"
+      ]
+    },
+    "analysis_period": {
+      "type": "string",
+      "description": "Period analyzed (e.g., 'Last 7 days')"
+    },
+    "top_trends": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "trend_name": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "number",
+            "description": "How many times mentioned"
+          },
+          "sentiment": {
+            "type": "string",
+            "enum": [
+              "positive",
+              "neutral",
+              "negative"
+            ]
+          },
+          "engagement_score": {
+            "type": "number",
+            "description": "0-100 composite engagement"
+          },
+          "example_posts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Sample posts featuring this trend"
+          }
+        }
+      },
+      "description": "Top emerging trends detected"
+    },
+    "hashtag_analysis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hashtag": {
+            "type": "string"
+          },
+          "usage_count": {
+            "type": "number"
+          },
+          "trend_direction": {
+            "type": "string",
+            "enum": [
+              "rising",
+              "stable",
+              "declining"
+            ]
+          },
+          "engagement_lift": {
+            "type": "number",
+            "description": "% engagement boost when used"
+          }
+        }
+      },
+      "description": "Top hashtags and their performance"
+    },
+    "content_themes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "theme": {
+            "type": "string",
+            "enum": [
+              "educational",
+              "promotional",
+              "behind_the_scenes",
+              "user_generated",
+              "thought_leadership",
+              "entertainment",
+              "crisis_response",
+              "seasonal",
+              "sustainability",
+              "community"
+            ]
+          },
+          "percentage": {
+            "type": "number",
+            "description": "% of posts using this theme"
+          },
+          "avg_engagement": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Content theme breakdown"
+    },
+    "posting_patterns": {
+      "type": "object",
+      "properties": {
+        "avg_posts_per_day": {
+          "type": "number"
+        },
+        "optimal_posting_times": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Times with highest engagement (HH:MM format)"
+        },
+        "preferred_platforms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Platforms they focus on most"
+        }
+      }
+    },
+    "ai_insights": {
+      "type": "string",
+      "description": "AI-generated strategic insights about competitor strategy"
+    },
+    "opportunities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Identified opportunities for our strategy"
+    },
+    "threats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Competitive threats to monitor"
+    },
+    "analyzed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "next_analysis_due": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "competitor_name",
+    "platform",
+    "top_trends",
+    "hashtag_analysis",
+    "content_themes"
+  ]
+}
