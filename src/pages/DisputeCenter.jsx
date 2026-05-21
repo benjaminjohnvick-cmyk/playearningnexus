@@ -3,7 +3,9 @@ import { base44 } from '@/api/base44Client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Shield, Plus, History, Bot, AlertCircle, Info, Settings, Upload, Gamepad2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Loader2, Shield, Plus, History, Bot, AlertCircle, Info, Settings, Upload, Gamepad2, Zap, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import AdminDisputeDashboard from '@/components/disputes/AdminDisputeDashboard';
 import AppealSubmissionForm from '@/components/disputes/AppealSubmissionForm';
 import AppealHistoryList from '@/components/disputes/AppealHistoryList';
@@ -43,6 +45,22 @@ export default function DisputeCenter() {
             </p>
           </div>
         </div>
+
+        {/* AI Resolution Center CTA */}
+        <Link to="/AIDisputeResolutionCenter">
+          <div className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-2xl p-4 flex items-center justify-between gap-4 mb-2 cursor-pointer hover:opacity-95 transition-opacity">
+            <div className="flex items-center gap-3">
+              <Zap className="w-8 h-8 text-yellow-300 flex-shrink-0" />
+              <div>
+                <p className="font-black text-white text-sm">🆕 AI Dispute Resolution Center</p>
+                <p className="text-purple-200 text-xs">Upload evidence → AI analyzes vs transaction logs → instant payout or clear denial reason</p>
+              </div>
+            </div>
+            <Button size="sm" className="bg-yellow-400 text-yellow-900 font-black hover:bg-yellow-300 flex-shrink-0">
+              Open <ArrowRight className="w-3 h-3 ml-1" />
+            </Button>
+          </div>
+        </Link>
 
         {/* Info banner */}
         <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 flex items-start gap-3">

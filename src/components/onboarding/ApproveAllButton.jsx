@@ -13,8 +13,13 @@ const PLATFORMS = ['facebook', 'twitter', 'instagram', 'snapchat', 'tiktok'];
 const MORE_INFO_ITEMS = [
   {
     icon: <Bot className="w-5 h-5 text-purple-500" />,
-    title: 'AI Auto-Posts Ads Daily',
-    desc: 'Our AI scans trending topics every 24 hours and automatically posts GamerGain affiliate ads to ALL your connected social media accounts (Facebook, Twitter, Instagram, Snapchat, TikTok) on your behalf — no manual effort required.'
+    title: '🤖 AI Social Media Engine — Auto-Connected',
+    desc: 'Upon sign-up, GamerGain\'s AI Social Media Engine automatically connects to all your social accounts and begins generating short-form viral scripts tailored for TikTok, Instagram Reels, Twitter, Facebook, and Snapchat. These AI-written posts use trending hashtags and are scheduled for peak engagement hours — completely hands-free. You can preview, edit, or one-click publish any script from the AI Social Media Engine dashboard.'
+  },
+  {
+    icon: <Bot className="w-5 h-5 text-pink-500" />,
+    title: '📲 Social Media Onboarding — Automatic at Sign-Up',
+    desc: 'When you click "Sign Up in 1 Click", our AI Onboarding Agent instantly connects Facebook, Twitter, Instagram, Snapchat, and TikTok to your account. No manual OAuth flows — the agent handles connection, permission setup, and immediately schedules your first 2 AI-generated posts per platform. You earn jackpot entries (50–75 per platform) and $0.20 per published post from day one.'
   },
   {
     icon: <Users className="w-5 h-5 text-blue-500" />,
@@ -220,12 +225,25 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false, h
       }
     }
 
-    // 4. Trigger autonomous agent immediately
+    // 4. Trigger AI Social Media Engine — generate & schedule first viral posts
+    try {
+      addProgress('🤖 AI Social Media Engine generating viral scripts…');
+      await base44.functions.invoke('automaticSocialPostingScheduler', {
+        userId: user?.id,
+        platforms: PLATFORMS,
+        postsPerPlatform: 2,
+      });
+      addProgress('✅ AI Social Engine activated — first 2 viral posts scheduled per platform');
+    } catch {
+      addProgress('ℹ️ AI Social Engine will activate on next cycle');
+    }
+
+    // 5. Trigger autonomous affiliate orchestrator
     try {
       await base44.functions.invoke('autonomousAffiliateOrchestrator', {});
-      addProgress('✅ AI affiliate agent activated — first ads posting shortly');
+      addProgress('✅ AI affiliate agent activated — trending ads posting shortly');
     } catch {
-      addProgress('ℹ️ AI agent will activate on next 24h cycle');
+      addProgress('ℹ️ AI affiliate agent will activate on next 24h cycle');
     }
 
     setStep('done');
@@ -355,7 +373,8 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false, h
               <ul className="space-y-2 text-sm">
                 {[
                   'Auto sign-up using your device location & account info — no forms needed',
-                  'Link Facebook, Twitter, Instagram, Snapchat & TikTok for AI auto-posting',
+                  'Connect Facebook, Twitter, Instagram, Snapchat & TikTok via AI Onboarding Agent',
+                  '🤖 AI Social Engine generates viral TikTok/Reels scripts + schedules 2 posts per platform immediately',
                   'Enroll in the Affiliate MLM program & accept the ULA',
                   'Allow AI to post trending ads on your behalf every 24 hours',
                   'Enable automatic MLM bonus distribution up 3 levels deep',
@@ -442,7 +461,10 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false, h
             <div className="space-y-4 py-2 text-center">
               <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
               <p className="text-lg font-bold text-green-700">All Set! 🎉</p>
-              <p className="text-sm text-gray-600">Your account is fully connected. The AI agent will start posting ads and distributing MLM bonuses automatically every 24 hours.</p>
+              <p className="text-sm text-gray-600">Your account is fully connected. The AI Social Engine has scheduled your first posts, and the affiliate agent will distribute MLM bonuses automatically every 24 hours.</p>
+              <a href="/AISocialMediaEngine" className="inline-flex items-center gap-2 text-sm font-bold text-purple-700 bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 mt-1 hover:bg-purple-100 transition-colors">
+                🤖 Preview your AI-generated viral scripts →
+              </a>
               <div className="space-y-1 max-h-40 overflow-y-auto text-left">
                 {progress.map((p, i) => (
                   <div key={i} className={`text-xs px-2 py-1 rounded ${p.success ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}>
