@@ -1,0 +1,163 @@
+{
+  "name": "AffiliateContentSchedule",
+  "type": "object",
+  "description": "AI-generated 30-day content calendar for affiliate social media posting",
+  "properties": {
+    "affiliate_user_id": {
+      "type": "string",
+      "description": "Reference to affiliate user"
+    },
+    "schedule_month": {
+      "type": "string",
+      "description": "Month in YYYY-MM format (e.g., 2026-06)"
+    },
+    "scheduled_posts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "post_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Scheduled posting date"
+          },
+          "post_day_of_week": {
+            "type": "string",
+            "description": "Day of week (Monday, Tuesday, etc.)"
+          },
+          "content_type": {
+            "type": "string",
+            "enum": [
+              "educational",
+              "promotional",
+              "testimonial",
+              "trending_topic",
+              "engagement_question",
+              "contest_announcement",
+              "product_showcase"
+            ]
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "twitter",
+              "instagram",
+              "tiktok",
+              "facebook",
+              "linkedin"
+            ]
+          },
+          "post_content": {
+            "type": "string",
+            "description": "AI-generated post copy"
+          },
+          "hashtags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Recommended hashtags"
+          },
+          "image_prompt": {
+            "type": "string",
+            "description": "Prompt for generating or sourcing an image"
+          },
+          "expected_engagement": {
+            "type": "string",
+            "description": "AI prediction of engagement level"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "approved",
+              "scheduled",
+              "posted"
+            ],
+            "default": "draft"
+          },
+          "approved_by": {
+            "type": "string",
+            "description": "Affiliate email who approved"
+          },
+          "approved_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "posted_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "post_date",
+          "content_type",
+          "platform",
+          "post_content"
+        ]
+      },
+      "description": "Array of scheduled posts for the month"
+    },
+    "generation_basis": {
+      "type": "object",
+      "description": "Data used to generate the schedule",
+      "properties": {
+        "past_top_content_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "trending_topics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "market_insights": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_review",
+        "active",
+        "completed",
+        "archived"
+      ],
+      "default": "pending_review"
+    },
+    "total_posts_planned": {
+      "type": "number",
+      "description": "Total number of posts in the schedule"
+    },
+    "posts_approved": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of approved posts"
+    },
+    "posts_posted": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of posted items"
+    },
+    "engagement_forecast": {
+      "type": "string",
+      "description": "AI forecast of overall engagement for the month"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "affiliate_user_id",
+    "schedule_month",
+    "scheduled_posts"
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "name": "ReferralAnomalyFlag",
+  "type": "object",
+  "description": "Flagged referrals detected as potential bot or fraudulent traffic for manual review",
+  "properties": {
+    "referral_id": {
+      "type": "string",
+      "description": "Reference to the Referral record"
+    },
+    "referred_user_id": {
+      "type": "string",
+      "description": "User who was referred"
+    },
+    "referrer_user_id": {
+      "type": "string",
+      "description": "User who made the referral"
+    },
+    "anomaly_type": {
+      "type": "string",
+      "enum": [
+        "velocity_spike",
+        "suspicious_pattern",
+        "geographic_mismatch",
+        "device_clustering",
+        "behavioral_anomaly",
+        "ip_pool_detected",
+        "conversion_rate_outlier"
+      ],
+      "description": "Type of anomaly detected"
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Risk score from 0-100 (higher = more suspicious)"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "Categorical risk level"
+    },
+    "anomaly_indicators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific indicators that triggered the flag"
+    },
+    "ai_evidence_summary": {
+      "type": "string",
+      "description": "AI-generated summary of why this referral is suspicious"
+    },
+    "traffic_pattern_analysis": {
+      "type": "object",
+      "description": "Analysis of traffic patterns",
+      "properties": {
+        "referrals_last_24h": {
+          "type": "number"
+        },
+        "referrals_last_7d": {
+          "type": "number"
+        },
+        "avg_conversion_time": {
+          "type": "string"
+        },
+        "geographic_countries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "device_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "comparison_metrics": {
+      "type": "object",
+      "description": "How this compares to normal patterns",
+      "properties": {
+        "platform_avg_conversion_rate": {
+          "type": "number"
+        },
+        "this_referral_conversion_rate": {
+          "type": "number"
+        },
+        "deviation_percent": {
+          "type": "number"
+        }
+      }
+    },
+    "recommended_action": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "reject",
+        "hold_for_manual_review",
+        "suspend_referrer",
+        "investigate_further"
+      ],
+      "description": "AI-recommended action"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "pending_review",
+        "approved",
+        "rejected",
+        "escalated"
+      ],
+      "default": "pending_review",
+      "description": "Admin review status"
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "Admin email who reviewed"
+    },
+    "review_notes": {
+      "type": "string",
+      "description": "Admin notes on the decision"
+    },
+    "reviewed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "flagged_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the anomaly was detected"
+    }
+  },
+  "required": [
+    "referral_id",
+    "anomaly_type",
+    "risk_score",
+    "ai_evidence_summary"
+  ]
+}

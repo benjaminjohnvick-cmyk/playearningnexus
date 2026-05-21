@@ -127,6 +127,9 @@ const ViralContentDashboard = lazy(() => import('./pages/ViralContentDashboard')
 const BusinessClientReengagementDashboard = lazy(() => import('./pages/BusinessClientReengagementDashboard'));
 const AffiliatePortal = lazy(() => import('./pages/AffiliatePortal'));
 const CompetitorIntelligenceDashboard = lazy(() => import('./pages/CompetitorIntelligenceDashboard'));
+const CompetitorAlertFeed = lazy(() => import('./pages/CompetitorAlertFeed'));
+const AffiliateContentSchedulerCalendar = lazy(() => import('./pages/AffiliateContentSchedulerCalendar'));
+const ReferralFraudDetectionDashboard = lazy(() => import('./pages/ReferralFraudDetectionDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -323,6 +326,9 @@ const AuthenticatedApp = () => {
       <Route path="/BusinessClientReengagementDashboard" element={<LayoutWrapper currentPageName="BusinessClientReengagementDashboard"><BusinessClientReengagementDashboard /></LayoutWrapper>} />
       <Route path="/AffiliatePortal" element={<LayoutWrapper currentPageName="AffiliatePortal"><AffiliatePortal /></LayoutWrapper>} />
       <Route path="/CompetitorIntelligenceDashboard" element={<LayoutWrapper currentPageName="CompetitorIntelligenceDashboard"><CompetitorIntelligenceDashboard /></LayoutWrapper>} />
+      <Route path="/CompetitorAlertFeed" element={<LayoutWrapper currentPageName="CompetitorAlertFeed"><CompetitorAlertFeed /></LayoutWrapper>} />
+      <Route path="/AffiliateContentSchedulerCalendar" element={<LayoutWrapper currentPageName="AffiliateContentSchedulerCalendar"><AffiliateContentSchedulerCalendar /></LayoutWrapper>} />
+      <Route path="/ReferralFraudDetectionDashboard" element={<LayoutWrapper currentPageName="ReferralFraudDetectionDashboard"><ReferralFraudDetectionDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
