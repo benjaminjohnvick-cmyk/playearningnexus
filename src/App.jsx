@@ -121,6 +121,7 @@ const AutomationGuardianDashboard = lazy(() => import('./pages/AutomationGuardia
 const DisputeClaimsUser = lazy(() => import('./pages/DisputeClaimsUser'));
 const AdminDisputeResolution = lazy(() => import('./pages/AdminDisputeResolution'));
 const SubmitDisputeWizard = lazy(() => import('./pages/SubmitDisputeWizard'));
+const ReengagementDashboard = lazy(() => import('./pages/ReengagementDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -311,6 +312,7 @@ const AuthenticatedApp = () => {
       <Route path="/DisputeClaimsUser" element={<LayoutWrapper currentPageName="DisputeClaimsUser"><DisputeClaimsUser /></LayoutWrapper>} />
       <Route path="/AdminDisputeResolution" element={<LayoutWrapper currentPageName="AdminDisputeResolution"><AdminDisputeResolution /></LayoutWrapper>} />
       <Route path="/SubmitDisputeWizard" element={<LayoutWrapper currentPageName="SubmitDisputeWizard"><SubmitDisputeWizard /></LayoutWrapper>} />
+      <Route path="/ReengagementDashboard" element={<LayoutWrapper currentPageName="ReengagementDashboard"><ReengagementDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
