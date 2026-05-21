@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
         if (lead.source === 'referral') score += 30;
         if (lead.source === 'organic') score += 20;
         const status = score >= 50 ? 'qualified' : score >= 30 ? 'contacted' : 'new';
-        await base44.asServiceRole.entities.CRMLead.update(lead.id, { lead_score: score, status });
+        await base44.asServiceRole.entities.CRMLead.update(lead.id, { engagement_score: score, status });
         leadsScored++;
       } catch (e) {
         errors.push({ fn: 'lead_score', id: lead.id, error: e.message });
