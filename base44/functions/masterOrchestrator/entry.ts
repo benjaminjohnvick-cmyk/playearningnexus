@@ -229,7 +229,6 @@ Return JSON:
       platform_status: masterAIData.platform_status,
       health_score: masterAIData.overall_health_score,
       executive_summary: masterAIData.executive_summary,
-...
       top_risks: masterAIData.top_risks,
       cross_domain_actions: crossDomainActions,
       agent_results: agentResults,
