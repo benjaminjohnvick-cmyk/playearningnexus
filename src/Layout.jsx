@@ -253,137 +253,71 @@ export default function Layout({ children, currentPageName }) {
               </div>
 
               {/* Desktop Navigation — scrollable single row, visible md+ */}
-              <nav className="hidden md:flex items-center gap-0.5 flex-1 overflow-x-auto no-scrollbar min-w-0 px-1 max-w-[55%]">
+              <nav className="hidden md:flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar min-w-0 px-2 max-w-[60%]">
                 <Link to="/DeveloperToolsHub" className="flex-shrink-0">
                   <Button variant={currentPageName === 'DeveloperToolsHub' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md" : "bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold border border-violet-300"}>
+                    className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md whitespace-nowrap" : "bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold border border-violet-300 whitespace-nowrap"}>
                     🎮 AI Game Creator
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Home')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Home' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Home' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    className={currentPageName === 'Home' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     🏠 Home
                   </Button>
                 </Link>
                 <Link to={createPageUrl('InAppGameStore')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'InAppGameStore' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'InAppGameStore' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    className={currentPageName === 'InAppGameStore' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     🎮 Store
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Surveys')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Surveys' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Surveys' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    className={currentPageName === 'Surveys' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     📋 Surveys
                   </Button>
                 </Link>
                 <Link to={createPageUrl('UserDashboard')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'UserDashboard' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'UserDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    className={currentPageName === 'UserDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     📊 Dashboard
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Wishlist')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Wishlist' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Wishlist' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
+                    className={currentPageName === 'Wishlist' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     ❤️ Wishlist
-                  </Button>
-                </Link>
-                <Link to={createPageUrl('ReferralContest')} className="flex-shrink-0">
-                  <Button variant={currentPageName === 'ReferralContest' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'ReferralContest' ? "bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-md" : "hover:bg-yellow-50 text-yellow-700 font-semibold"}>
-                    🏆 Contest
                   </Button>
                 </Link>
                 <Link to={createPageUrl('PPCMarketplace')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'PPCMarketplace' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'PPCMarketplace' ? "bg-gradient-to-r from-purple-600 to-blue-600 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}>
+                    className={currentPageName === 'PPCMarketplace' ? "bg-gradient-to-r from-purple-600 to-blue-600 shadow-md whitespace-nowrap" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200 whitespace-nowrap"}>
                     💰 PPC
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Withdrawal')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Withdrawal' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Withdrawal' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200"}>
+                    className={currentPageName === 'Withdrawal' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md whitespace-nowrap" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200 whitespace-nowrap"}>
                     💵 Withdraw
                   </Button>
                 </Link>
-                <Link to={createPageUrl('MyOrders')} className="flex-shrink-0">
-                  <Button variant={currentPageName === 'MyOrders' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'MyOrders' ? "bg-gradient-to-r from-purple-600 to-purple-700 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}>
-                    📦 Orders
-                  </Button>
-                </Link>
-                <Link to={createPageUrl('ReferralDashboard')} className="flex-shrink-0">
-                  <Button variant={currentPageName === 'ReferralDashboard' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'ReferralDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
-                    👥 Referrals
-                  </Button>
-                </Link>
-                <Link to={createPageUrl('UserProfile')} className="flex-shrink-0">
-                  <Button variant={currentPageName === 'UserProfile' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'UserProfile' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md" : "hover:bg-red-50"}>
-                    👤 Profile
-                  </Button>
-                </Link>
-                <Link to={createPageUrl('GameVotingHub')} className="flex-shrink-0">
-                  <Button variant={currentPageName === 'GameVotingHub' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'GameVotingHub' ? "bg-gradient-to-r from-indigo-600 to-purple-600 shadow-md" : "hover:bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200"}>
-                    🗳️ Vote
-                  </Button>
-                </Link>
-                <Link to={createPageUrl('DeveloperOnboarding')} className="flex-shrink-0">
-                  <Button variant={currentPageName === 'DeveloperOnboarding' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'DeveloperOnboarding' ? "bg-gradient-to-r from-indigo-600 to-purple-600 shadow-md" : "hover:bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200"}>
-                    🚀 Dev Onboarding
-                  </Button>
-                </Link>
-                <Link to="/AdCampaignOptimizer" className="flex-shrink-0">
-                  <Button variant={currentPageName === 'AdCampaignOptimizer' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'AdCampaignOptimizer' ? "bg-gradient-to-r from-orange-600 to-red-600 shadow-md" : "hover:bg-orange-50 text-orange-700 font-semibold border border-orange-200"}>
-                    📊 Ad Optimizer
-                  </Button>
-                </Link>
-                <Link to="/DeveloperToolsHub" className="flex-shrink-0">
-                  <Button variant={currentPageName === 'DeveloperToolsHub' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md" : "hover:bg-violet-50 text-violet-700 font-semibold border border-violet-200"}>
-                    🎮 AI Game Creator
+                <Link to={createPageUrl('ReferralContest')} className="flex-shrink-0">
+                  <Button variant={currentPageName === 'ReferralContest' ? "default" : "ghost"} size="sm"
+                    className={currentPageName === 'ReferralContest' ? "bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-md whitespace-nowrap" : "hover:bg-yellow-50 text-yellow-700 font-semibold whitespace-nowrap"}>
+                    🏆 Contest
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Tournaments')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Tournaments' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Tournaments' ? "bg-gradient-to-r from-yellow-500 to-orange-600 shadow-md" : "hover:bg-yellow-50 text-yellow-700 font-semibold border border-yellow-200"}>
+                    className={currentPageName === 'Tournaments' ? "bg-gradient-to-r from-yellow-500 to-orange-600 shadow-md whitespace-nowrap" : "hover:bg-yellow-50 text-yellow-700 font-semibold border border-yellow-200 whitespace-nowrap"}>
                     🏆 Tournaments
                   </Button>
-                </Link>
-                <Link to={createPageUrl('QuickSurveyBuilder')} className="flex-shrink-0">
-                  <Button variant={currentPageName === 'QuickSurveyBuilder' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'QuickSurveyBuilder' ? "bg-gradient-to-r from-purple-600 to-pink-600 shadow-md" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200"}>
-                    📋 Publish Survey
-                  </Button>
-                </Link>
-                <Link to="/AdBusinessOverview" className="flex-shrink-0">
-                  <Button variant={currentPageName === 'AdBusinessOverview' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'AdBusinessOverview' ? "bg-gradient-to-r from-yellow-500 to-orange-500 shadow-md" : "hover:bg-yellow-50 text-yellow-700 font-semibold border border-yellow-200"}>
-                    📊 Ad Grid
-                  </Button>
-                </Link>
-                <Link to={createPageUrl('SellerUpload')} className="flex-shrink-0">
-                   <Button variant={currentPageName === 'SellerUpload' ? "default" : "ghost"} size="sm"
-                     className={currentPageName === 'SellerUpload' ? "bg-gradient-to-r from-orange-600 to-amber-600 shadow-md" : "hover:bg-orange-50 text-orange-700 font-semibold border border-orange-200"}>
-                     📦 Seller Upload
-                   </Button>
-                </Link>
-                <Link to="/RevenueHub" className="flex-shrink-0">
-                   <Button variant={currentPageName === 'RevenueHub' ? "default" : "ghost"} size="sm"
-                     className={currentPageName === 'RevenueHub' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md" : "hover:bg-green-50 text-green-700 font-bold border-2 border-green-400"}>
-                     💰 Revenue Hub
-                   </Button>
                 </Link>
               </nav>
 
               {/* Desktop Right: user controls */}
-              <div className="hidden md:flex items-center gap-1 flex-shrink-0 ml-auto">
+              <div className="hidden md:flex items-center gap-2 flex-shrink-0 ml-auto">
                 {isAuthenticated && user ? (
                     <>
                       <div className="text-right hidden lg:block">
