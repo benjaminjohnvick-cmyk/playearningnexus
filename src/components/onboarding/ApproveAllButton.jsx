@@ -248,7 +248,20 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false, h
       addProgress('ℹ️ AI Social Engine will activate on next cycle');
     }
 
-    // 5. Trigger autonomous affiliate orchestrator
+    // 5. Trigger Growth Content Engine — auto-deploy trending scripts to all platforms
+    try {
+      addProgress('📈 AI Growth Content Engine scanning affiliate trends…');
+      const growthRes = await base44.functions.invoke('growthContentEngine', {
+        autoDeployToSocial: true,
+        platforms: PLATFORMS,
+      });
+      const deployed = growthRes?.data?.deployed_posts?.length || 0;
+      addProgress(`✅ Growth Engine deployed ${deployed} trending scripts across all platforms`);
+    } catch {
+      addProgress('ℹ️ Growth Engine will scan trends on next cycle');
+    }
+
+    // 6. Trigger autonomous affiliate orchestrator
     try {
       await base44.functions.invoke('autonomousAffiliateOrchestrator', {});
       addProgress('✅ AI affiliate agent activated — trending ads posting shortly');
@@ -385,6 +398,7 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false, h
                   'Auto sign-up using your device location & account info — no forms needed',
                   'Connect Facebook, Twitter, Instagram, Snapchat & TikTok via AI Onboarding Agent',
                   '🤖 AI Social Engine generates viral TikTok/Reels scripts + schedules 2 posts per platform immediately',
+                  '📈 AI Growth Content Engine scans affiliate trends & auto-deploys high-converting scripts to all platforms',
                   'Enroll in the Affiliate MLM program & accept the ULA',
                   'Allow AI to post trending ads on your behalf every 24 hours',
                   'Enable automatic MLM bonus distribution up 3 levels deep',

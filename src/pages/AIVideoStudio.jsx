@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Video, Mic, Play, Download, Sparkles, Loader2, Link2, CheckCircle, Film, Share2, RefreshCw, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
+import GrowthContentEngineWidget from '@/components/growth/GrowthContentEngineWidget';
 
 const PLATFORMS = [
   { id: 'tiktok', label: 'TikTok', emoji: '🎵', ratio: '9:16', duration: '30–60s' },
@@ -201,11 +202,25 @@ Respond as JSON:
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-gray-900 border border-gray-700 mb-8 w-full">
+          <TabsList className="bg-gray-900 border border-gray-700 mb-8 w-full flex-wrap h-auto">
+            <TabsTrigger value="trends" className="flex-1 data-[state=active]:bg-emerald-600">🔥 Trending Topics</TabsTrigger>
             <TabsTrigger value="create" className="flex-1 data-[state=active]:bg-purple-600">🎬 Create Video</TabsTrigger>
             <TabsTrigger value="social_scripts" className="flex-1 data-[state=active]:bg-purple-600">🤖 From Social Engine</TabsTrigger>
             <TabsTrigger value="library" className="flex-1 data-[state=active]:bg-purple-600">📚 My Videos</TabsTrigger>
           </TabsList>
+
+          {/* Trending Topics from Growth Engine */}
+          <TabsContent value="trends">
+            <div className="bg-gray-900 rounded-2xl p-6">
+              <GrowthContentEngineWidget
+                onUseTopic={(t) => {
+                  setTopic(t.topic || t);
+                  if (t.script) setScript({ script: t.script, title: t.topic, hashtags: {}, talking_points: [] });
+                  setActiveTab('create');
+                }}
+              />
+            </div>
+          </TabsContent>
 
           <TabsContent value="create" className="space-y-6">
             {/* Step 1: Script */}
