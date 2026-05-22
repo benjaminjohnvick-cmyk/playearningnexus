@@ -5,56 +5,71 @@ import { base44 } from '@/api/base44Client';
 import {
   CheckCircle2, Loader2, Zap, ShieldCheck, Info,
   Facebook, Twitter, Instagram, CreditCard, DollarSign,
-  Users, Bot, TrendingUp, Lock
+  Users, Bot, TrendingUp, Lock, Star
 } from 'lucide-react';
 
 const PLATFORMS = ['facebook', 'twitter', 'instagram', 'snapchat', 'tiktok'];
 
 const MORE_INFO_ITEMS = [
   {
+    icon: <Bot className="w-5 h-5 text-indigo-500" />,
+    title: '🔍 AI Social Media Scan — Instant Account Detection',
+    desc: 'The moment you click "Sign Up in 1 Click", our AI automatically scans your device signals, browser data, and available metadata to detect which social media platforms you have accounts on. It identifies Facebook, Twitter, Instagram, Snapchat, and TikTok — then auto-connects and configures each account without you needing to do anything. Your profile is instantly enriched with this data.'
+  },
+  {
     icon: <Bot className="w-5 h-5 text-purple-500" />,
     title: '🤖 AI Social Media Engine — Auto-Connected',
-    desc: 'Upon sign-up, GamerGain\'s AI Social Media Engine automatically connects to all your social accounts and begins generating short-form viral scripts tailored for TikTok, Instagram Reels, Twitter, Facebook, and Snapchat. These AI-written posts use trending hashtags and are scheduled for peak engagement hours — completely hands-free. You can preview, edit, or one-click publish any script from the AI Social Media Engine dashboard.'
+    desc: 'GamerGain\'s AI Social Media Engine connects to all your detected social accounts and immediately generates short-form viral scripts tailored for TikTok, Instagram Reels, Twitter, Facebook, and Snapchat. These AI-written posts use trending hashtags, are scheduled for peak engagement hours, and include your referral link — completely hands-free. Your first 2 posts per platform are scheduled instantly.'
   },
   {
     icon: <Bot className="w-5 h-5 text-pink-500" />,
     title: '📲 Social Media Onboarding — Automatic at Sign-Up',
-    desc: 'When you click "Sign Up in 1 Click", our AI Onboarding Agent instantly connects Facebook, Twitter, Instagram, Snapchat, and TikTok to your account. No manual OAuth flows — the agent handles connection, permission setup, and immediately schedules your first 2 AI-generated posts per platform. You earn jackpot entries (50–75 per platform) and $0.20 per published post from day one.'
+    desc: 'No manual OAuth flows needed. The AI Onboarding Agent handles all connection setup, permission configuration, and immediately schedules your first AI-generated content across all 5 platforms. You earn jackpot entries (50–75 per platform) and $0.20 per published post starting from day one.'
   },
   {
-    icon: <Users className="w-5 h-5 text-blue-500" />,
-    title: '3-Level MLM Referral Bonuses',
-    desc: 'Every time someone you referred earns $8 from PPC ads or BitLabs surveys, you automatically receive $0.25 in website credit. This applies 3 levels deep — you earn from your referrals, their referrals, and THEIR referrals.'
-  },
-  {
-    icon: <DollarSign className="w-5 h-5 text-green-500" />,
-    title: '$5 Direct Referral Credit',
-    desc: 'When a user you directly referred hits their first $8 earning milestone, you receive a one-time $5 website credit bonus. These credits can be used for purchases on GamerGain.'
-  },
-  {
-    icon: <TrendingUp className="w-5 h-5 text-orange-500" />,
-    title: 'Trending Content Ad Generation',
-    desc: 'The AI monitors viral trends on Twitter, TikTok, Reddit, and Google Trends in real time. It then crafts native-sounding ad copy tailored to each platform\'s style, embedding your personal referral link — maximizing click-through rates.'
-  },
-  {
-    icon: <CreditCard className="w-5 h-5 text-red-500" />,
-    title: 'Credit Card Linked Securely',
-    desc: 'The AI automatically scans your phone\'s saved cards (Google Pay, Apple Pay, browser wallet) and links the best one instantly — no typing required. If no saved card is found, you can enter one manually. Your card is used for in-app purchases, game orders, and BNPL transactions. Remove it any time in Settings.'
+    icon: <TrendingUp className="w-5 h-5 text-emerald-500" />,
+    title: '📈 AI Growth Content Engine — Trend Analysis & Auto-Deploy',
+    desc: 'Immediately after sign-up, the AI Growth Content Engine scans affiliate performance data and real-time platform trends to generate high-converting content topics, hashtag sets, and visual hooks. It then automatically deploys 3 viral scripts across all your connected platforms — optimized for the highest predicted click-through rates. New trending topics are refreshed continuously.'
   },
   {
     icon: <Bot className="w-5 h-5 text-red-500" />,
     title: '🎬 AI Video Studio — Auto-Enabled',
-    desc: 'Once your social accounts are connected, GamerGain\'s AI Video Studio is unlocked. It automatically converts your viral social scripts into short-form videos with AI voiceovers, background visuals, and your referral link overlaid — formatted for TikTok (9:16), Instagram Reels (9:16), YouTube Shorts (9:16), Twitter/X (16:9), Facebook (16:9), and Snapchat (9:16). All videos are generated in one click and ready to share.'
+    desc: 'Once your social accounts are connected, the AI Video Studio is unlocked. It converts your viral scripts into short-form videos with AI voiceovers, background visuals, and your referral link overlaid — formatted for TikTok (9:16), Reels (9:16), YouTube Shorts (9:16), Twitter/X (16:9), Facebook (16:9), and Snapchat (9:16). Browse trending topics directly from the studio to instantly fuel your next video.'
   },
   {
     icon: <TrendingUp className="w-5 h-5 text-cyan-500" />,
-    title: '📱 Social Media Platforms Connected',
-    desc: 'All 5 platforms are linked in one tap: Facebook (posts, stories, reels), Twitter/X (tweets, videos), Instagram (posts, reels, stories), Snapchat (snaps, stories), TikTok (videos, lives). The AI Social Engine posts to all 5 twice daily, each post tailored to that platform\'s native style — hashtags, captions, video format, and trending sounds all auto-adapted.'
+    title: '📱 All 5 Social Platforms Connected',
+    desc: 'Facebook (posts, stories, reels), Twitter/X (tweets, videos), Instagram (posts, reels, stories), Snapchat (snaps, stories), and TikTok (videos, lives) are all linked. The AI posts to all 5 twice daily, each post natively adapted to that platform\'s style — hashtags, captions, video format, and trending sounds all auto-selected.'
+  },
+  {
+    icon: <Users className="w-5 h-5 text-blue-500" />,
+    title: '3-Level MLM Referral Bonuses',
+    desc: 'Every time someone you referred earns $8 from PPC ads or BitLabs surveys, you automatically receive $0.25 in website credit — 3 levels deep. You earn from your referrals, their referrals, and THEIR referrals. Bonuses are distributed automatically every 24 hours.'
+  },
+  {
+    icon: <DollarSign className="w-5 h-5 text-green-500" />,
+    title: '$5 Direct Referral Credit',
+    desc: 'When a user you directly referred hits their first $8 earning milestone, you receive a one-time $5 website credit bonus automatically. These credits are spendable on GamerGain instantly.'
+  },
+  {
+    icon: <TrendingUp className="w-5 h-5 text-orange-500" />,
+    title: 'Trending Content Ad Generation',
+    desc: 'The AI monitors viral trends on Twitter, TikTok, Reddit, and Google Trends in real time. It crafts native-sounding ad copy tailored to each platform\'s style, embedding your personal referral link to maximize click-through rates. New ads are posted automatically every 24 hours on your behalf.'
+  },
+  {
+    icon: <Instagram className="w-5 h-5 text-orange-400" />,
+    title: '🏆 Prestige Streak Badges & Revenue Share Boosts',
+    desc: 'From day one, your daily activity streak is tracked across the platform. Maintain consecutive days of activity to earn tiered Prestige Badges: Bronze (3 days, +1% revenue), Silver (7 days, +2%), Gold (14 days, +3%), Platinum (30 days, +5%), Diamond (60 days, +8%), and Legendary (100 days, +12%). If your streak is at risk, the AI sends you a re-engagement reminder automatically.'
+  },
+  {
+    icon: <CreditCard className="w-5 h-5 text-red-500" />,
+    title: 'Credit Card Linked Securely',
+    desc: 'The AI scans your device wallet (Google Pay, Apple Pay, browser saved cards) and links your best card instantly — no typing required. If none found, enter one manually below. Used for in-app purchases, game orders, and BNPL transactions. Removable any time in Settings. Secured by Stripe.'
   },
   {
     icon: <Lock className="w-5 h-5 text-gray-500" />,
     title: 'User License Agreement (ULA)',
-    desc: 'By approving, you accept our ULA which authorizes GamerGain\'s AI to post content on your connected social accounts. You can revoke this at any time from your Affiliate MLM Dashboard. We will never post anything offensive, illegal, or off-brand.'
+    desc: 'By approving, you authorize GamerGain\'s AI to post content on your connected social accounts. You can revoke this at any time from your Affiliate MLM Dashboard. We will never post anything offensive, illegal, or off-brand. All AI-generated content is brand-safe and compliant.'
   },
 ];
 
