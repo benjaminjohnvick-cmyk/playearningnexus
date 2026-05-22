@@ -8,6 +8,7 @@ import { Crown, Medal, Star, Flame, Trophy, DollarSign, Award, Zap, TrendingUp, 
 import { format, subDays } from 'date-fns';
 import { motion } from 'framer-motion';
 import SeasonPanel from '@/components/leaderboard/SeasonPanel';
+import PrestigeStreakWidget from '@/components/gamification/PrestigeStreakWidget';
 
 const TOP10_BADGES = [
   { rank: 1, badge: '👑', label: 'Champion', color: 'from-yellow-400 to-amber-500', border: 'border-yellow-300' },
@@ -207,10 +208,14 @@ export default function GlobalLeaderboard() {
         {/* Podium */}
         {top3.length >= 3 && <MiniPodium top3={top3} currentUserId={user?.id} />}
 
+        {/* Prestige Streak — personal widget */}
+        {user && <PrestigeStreakWidget />}
+
         {/* Main Tabs: Rankings vs Season */}
         <Tabs value={mainTab} onValueChange={setMainTab}>
-          <TabsList className="w-full grid grid-cols-2 bg-white shadow mb-4">
+          <TabsList className="w-full grid grid-cols-3 bg-white shadow mb-4">
             <TabsTrigger value="rankings"><Trophy className="w-3.5 h-3.5 mr-1" /> Rankings</TabsTrigger>
+            <TabsTrigger value="prestige"><Flame className="w-3.5 h-3.5 mr-1" /> Prestige</TabsTrigger>
             <TabsTrigger value="season"><Calendar className="w-3.5 h-3.5 mr-1" /> Season</TabsTrigger>
           </TabsList>
 
@@ -237,6 +242,13 @@ export default function GlobalLeaderboard() {
                 </TabsContent>
               ))}
             </Tabs>
+          </TabsContent>
+
+          <TabsContent value="prestige">
+            <PrestigeStreakWidget />
+            <div className="mt-4 text-xs text-gray-500 text-center">
+              Earn tiered prestige badges by maintaining daily activity streaks. Higher badges unlock increased revenue share percentages.
+            </div>
           </TabsContent>
 
           <TabsContent value="season">

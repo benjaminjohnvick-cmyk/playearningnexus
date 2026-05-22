@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Shield, Upload, Bot, CheckCircle, XCircle, Clock, FileText, DollarSign, RefreshCw, AlertTriangle, Loader2, History } from 'lucide-react';
 import { toast } from 'sonner';
+import EvidenceReviewDashboard from '@/components/disputes/EvidenceReviewDashboard';
 
 const DISPUTE_TYPES = [
   { id: 'missing_survey_payment', label: 'Missing Survey Payment', icon: '📋', estimatedPayout: '$2–$15' },
@@ -253,6 +254,7 @@ Respond as JSON:
           <TabsList className="mb-6 w-full">
             <TabsTrigger value="submit" className="flex-1">📝 Submit Claim</TabsTrigger>
             <TabsTrigger value="history" className="flex-1">📜 My Claims ({myDisputes.length})</TabsTrigger>
+            {user?.role === 'admin' && <TabsTrigger value="pending_human" className="flex-1">👤 Human Review ({myDisputes.filter(d => d.status === 'pending_human').length})</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="submit">
@@ -461,11 +463,14 @@ Respond as JSON:
                             <p className="text-green-700 font-black text-lg">${d.settlement_offer.offered_amount.toFixed(2)} Paid ✅</p>
                           </div>
                         )}
-                        {d.status === 'submitted' && (
-                          <Button size="sm" className="mt-3 bg-purple-600 text-white"
-                            onClick={() => runAIAnalysis(d.id, d)}>
-                            <Bot className="w-3 h-3 mr-1" /> Run AI Analysis Now
-                          </Button>
+                        {(d.status === 'submitted' || d.status === 'pending_human' || d.status === 'under_review') && (
+                          <div className="mt-3">
+                            <EvidenceReviewDashboard
+                              dispute={d}
+                              isAdmin={user?.role === 'admin'}
+                              onResolved={() => queryClient.invalidateQueries({ queryKey: ['myAIDisputes'] })}
+                            />
+                          </div>
                         )}
                       </CardContent>
                     </Card>
@@ -474,6 +479,34 @@ Respond as JSON:
               </div>
             )}
           </TabsContent>
+
+          {user?.role === 'admin' && (
+            <TabsContent value="pending_human">
+              <div className="space-y-4">
+                {myDisputes.filter(d => d.status === 'pending_human').length === 0 ? (
+                  <div className="text-center py-16 text-gray-400">
+                    <CheckCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No disputes awaiting human review</p>
+                  </div>
+                ) : myDisputes.filter(d => d.status === 'pending_human').map(d => (
+                  <Card key={d.id} className="border-2 border-yellow-300">
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
+                        <div>
+                          <p className="font-black text-gray-900 capitalize">{(d.dispute_type || '').replace(/_/g, ' ')}</p>
+                          <p className="text-xs text-gray-500">{d.affiliate_email} · ${d.amount_disputed}</p>
+                        </div>
+                        <Badge className="bg-yellow-100 text-yellow-700">👤 Awaiting Human Review</Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{d.description}</p>
+                      <EvidenceReviewDashboard dispute={d} isAdmin={true}
+                        onResolved={() => queryClient.invalidateQueries({ queryKey: ['myAIDisputes'] })} />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>

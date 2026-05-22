@@ -9,6 +9,7 @@ import CampaignCreator from '@/components/adcampaign/CampaignCreator';
 import CampaignList from '@/components/adcampaign/CampaignList';
 import CampaignAnalytics from '@/components/adcampaign/CampaignAnalytics';
 import BiddingAssistant from '@/components/adcampaign/BiddingAssistant';
+import ROASBiddingPanel from '@/components/ads/ROASBiddingPanel';
 import LTVChurnPanel from '@/components/adcampaign/LTVChurnPanel';
 
 export default function AdCampaignManager() {
@@ -137,7 +138,10 @@ export default function AdCampaignManager() {
             />
           </TabsContent>
 
-          <TabsContent value="bidding">
+          <TabsContent value="bidding" className="space-y-6">
+            <div className="bg-slate-800 rounded-2xl p-5 border border-slate-700">
+              <ROASBiddingPanel campaignId={selectedCampaign?.id} />
+            </div>
             <BiddingAssistant
               campaigns={campaigns}
               selectedCampaign={selectedCampaign}

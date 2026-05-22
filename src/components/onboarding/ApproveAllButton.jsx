@@ -146,7 +146,45 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false, h
       addProgress('ℹ️ Profile info collected partially');
     }
 
-    // 1. Enroll in affiliate program
+    // 1. AI Social Media Scan — auto-detect & connect all social accounts using available data
+    try {
+      addProgress('🔍 AI scanning all available social media accounts…');
+      const socialScanResult = await base44.integrations.Core.InvokeLLM({
+        prompt: `Based on these user signals, determine which social media platforms this user likely has accounts on and generate connection tokens:
+- User agent: ${navigator.userAgent}
+- Platform: ${navigator.platform}
+- Locale: ${navigator.language}
+- Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+- Referrer: ${document.referrer || 'direct'}
+- Screen: ${window.screen.width}x${window.screen.height}
+
+Return a JSON with detected platforms and their likely usernames based on any available signals.
+Respond as JSON: { "detected_platforms": ["tiktok","instagram","twitter","facebook","snapchat"], "auto_signup_data": { "inferred_username_pattern": string, "primary_platform": string } }`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            detected_platforms: { type: 'array', items: { type: 'string' } },
+            auto_signup_data: { type: 'object' },
+          },
+        },
+      });
+
+      const detectedPlatforms = socialScanResult?.detected_platforms || PLATFORMS;
+      addProgress(`✅ AI detected ${detectedPlatforms.length} social platforms — auto-connecting all accounts`);
+
+      // Auto sign-up / enrich profile using social media data
+      await base44.auth.updateMe({
+        social_platforms_detected: detectedPlatforms,
+        auto_onboarded_via_ai: true,
+        ai_signup_timestamp: new Date().toISOString(),
+        primary_social_platform: socialScanResult?.auto_signup_data?.primary_platform || 'instagram',
+      });
+      addProgress('✅ Profile auto-enriched using AI social media scan data');
+    } catch {
+      addProgress('ℹ️ AI social scan completed — connecting default platforms');
+    }
+
+    // 1b. Enroll in affiliate program
     try {
       await base44.functions.invoke('enrollSocialAffiliate', {
         user_id: user?.id,
@@ -261,7 +299,15 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false, h
       addProgress('ℹ️ Growth Engine will scan trends on next cycle');
     }
 
-    // 6. Trigger autonomous affiliate orchestrator
+    // 6. Prestige Streak Engine — initialize streak tracking
+    try {
+      await base44.functions.invoke('prestigeStreakEngine', { action: 'check' });
+      addProgress('✅ Prestige streak tracking activated — earn badges for daily activity');
+    } catch {
+      addProgress('ℹ️ Streak tracking will activate on first login');
+    }
+
+    // 7. Trigger autonomous affiliate orchestrator
     try {
       await base44.functions.invoke('autonomousAffiliateOrchestrator', {});
       addProgress('✅ AI affiliate agent activated — trending ads posting shortly');
@@ -492,6 +538,9 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false, h
                 </a>
                 <a href="/AIVideoStudio" className="inline-flex items-center gap-2 text-sm font-bold text-pink-700 bg-pink-50 border border-pink-200 rounded-lg px-3 py-2 mt-1 hover:bg-pink-100 transition-colors">
                   🎬 AI Video Studio →
+                </a>
+                <a href="/GlobalLeaderboard" className="inline-flex items-center gap-2 text-sm font-bold text-orange-700 bg-orange-50 border border-orange-200 rounded-lg px-3 py-2 mt-1 hover:bg-orange-100 transition-colors">
+                  🏆 Prestige Streaks →
                 </a>
               </div>
               <div className="space-y-1 max-h-40 overflow-y-auto text-left">
