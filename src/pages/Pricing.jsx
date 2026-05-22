@@ -43,8 +43,8 @@ export default function Pricing() {
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              { tier: 'Full-Service ($10,920/yr)', roi: '$21,840', ads: '$21,840', total: '$43,680 in total value' },
-              { tier: 'Enterprise ($15,920/yr)', roi: '$31,840', ads: '$31,840', total: '$63,680 in total value' },
+              { tier: 'Full-Service ($14,999/yr)', roi: '$29,998', ads: '$29,998', total: '$59,996 in total value' },
+              { tier: 'Enterprise ($29,999/yr)', roi: '$59,998', ads: '$59,998', total: '$119,996 in total value' },
             ].map((g, i) => (
               <div key={i} className="bg-white rounded-xl p-5 border-2 border-yellow-300">
                 <p className="font-black text-gray-900 mb-3 text-base">{g.tier}</p>
@@ -108,7 +108,7 @@ export default function Pricing() {
                     🏆 Paid Business Tiers
                   </Badge>
                   <h2 className="text-3xl md:text-4xl font-black mb-3">What Everything Costs — Paid Tiers</h2>
-                  <p className="text-purple-200 max-w-2xl mx-auto">Both paid tiers include a $3,000/yr platform subscription + $2,920 in PPC survey ads, on top of the base platform fee. And we back it all with our ironclad 2× guarantee.</p>
+                  <p className="text-purple-200 max-w-2xl mx-auto">Both paid tiers include AppLovin-style AI ad mediation, user acquisition campaigns, a $3,000/yr platform subscription + PPC survey ads. Backed by our ironclad 2× Double Guarantee.</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-10">
@@ -119,14 +119,25 @@ export default function Pricing() {
                       color: 'from-purple-500 to-pink-500',
                       borderColor: 'border-purple-400',
                       breakdown: [
-                        { label: 'Platform Fee', value: '$5,000' },
+                        { label: 'Platform Fee', value: '$8,999' },
                         { label: 'Annual Subscription', value: '$3,000' },
-                        { label: 'PPC Survey Ads (3,000 responses)', value: '$2,920' },
+                        { label: 'PPC Survey Ads (3,000 responses)', value: '$3,000' },
+                        { label: 'AppLovin-Style In-App Ad Mediation', value: 'Included' },
+                        { label: 'AI User Acquisition (CPI/CPA/ROAS)', value: 'Included' },
                       ],
-                      total: '$10,920/yr',
-                      roiTarget: '$21,840',
-                      adBonus: '$21,840',
-                      features: ['Managed end-to-end survey campaigns', 'Dedicated account manager', 'Real-time analytics dashboard', 'Anti-fraud trust score filtering'],
+                      total: '$14,999/yr',
+                      roiTarget: '$29,998',
+                      adBonus: '$29,998',
+                      features: [
+                        'Managed end-to-end ad monetization (all 5 ad formats)',
+                        'AI-powered MAX-style ad mediation & waterfall',
+                        'Real-time bid optimization every 15 minutes',
+                        'User Acquisition campaigns (CPI $0.50–$3, CPA, ROAS)',
+                        'LTV prediction & high-value user targeting',
+                        'Ad fraud detection — IVT filtering in real-time',
+                        'Dedicated account manager + analytics dashboard',
+                        'Anti-fraud trust score filtering on all responses',
+                      ],
                     },
                     {
                       name: 'Enterprise',
@@ -134,14 +145,25 @@ export default function Pricing() {
                       color: 'from-indigo-500 to-blue-500',
                       borderColor: 'border-indigo-400',
                       breakdown: [
-                        { label: 'Platform Fee', value: '$10,000' },
+                        { label: 'Platform Fee', value: '$23,999' },
                         { label: 'Annual Subscription', value: '$3,000' },
-                        { label: 'PPC Survey Ads (3,000 responses)', value: '$2,920' },
+                        { label: 'PPC Survey Ads (unlimited responses)', value: '$3,000' },
+                        { label: 'AXON AI Campaign Optimization Engine', value: 'Included' },
+                        { label: 'Custom CTV / Connected TV Inventory', value: 'Included' },
                       ],
-                      total: '$15,920/yr',
-                      roiTarget: '$31,840',
-                      adBonus: '$31,840',
-                      features: ['Custom panels & SLAs', 'Priority support & dedicated team', 'Advanced demographic targeting', 'White-glove onboarding & setup'],
+                      total: '$29,999/yr',
+                      roiTarget: '$59,998',
+                      adBonus: '$59,998',
+                      features: [
+                        'Everything in Full-Service, plus:',
+                        'AXON-style AI engine — predicts LTV, churn, conversion prob.',
+                        'Playable ads & native offerwall (CPM up to $60)',
+                        'Connected TV (CTV) ad inventory access',
+                        'Custom panels, SLAs & white-glove onboarding',
+                        'Priority support & dedicated engineering team',
+                        'Advanced demographic + behavioral targeting',
+                        'Full attribution analytics (Adjust-comparable)',
+                      ],
                     },
                   ].map((tier, i) => (
                     <Card key={i} className={`bg-white/10 backdrop-blur border-2 ${tier.borderColor} text-white`}>
@@ -193,8 +215,8 @@ export default function Pricing() {
                   </div>
                   <div className="grid md:grid-cols-2 gap-6">
                     {[
-                      { tier: 'Full-Service ($10,920/yr)', roi: '$21,840', ads: '$21,840', total: '$43,680 in total value' },
-                      { tier: 'Enterprise ($15,920/yr)', roi: '$31,840', ads: '$31,840', total: '$63,680 in total value' },
+                      { tier: 'Full-Service ($14,999/yr)', roi: '$29,998', ads: '$29,998', total: '$59,996 in total value' },
+                      { tier: 'Enterprise ($29,999/yr)', roi: '$59,998', ads: '$59,998', total: '$119,996 in total value' },
                     ].map((g, i) => (
                       <div key={i} className="bg-white rounded-xl p-5 border-2 border-yellow-300">
                         <p className="font-black text-gray-900 mb-3">{g.tier}</p>

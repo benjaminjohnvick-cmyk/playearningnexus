@@ -208,6 +208,7 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Revenue Hub', icon: DollarSign, path: 'RevenueHub' },
   { name: 'Pricing', icon: DollarSign, path: 'Pricing' },
   { name: 'AI Game Creator', icon: Gamepad2, path: 'DeveloperToolsHub', requireAuth: true },
+  { name: 'Game Monetization', icon: DollarSign, path: 'GameMonetizationDashboard', requireAuth: true },
   { name: 'Game Voting Hub', icon: Gamepad2, path: 'GameVotingHub' },
   { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
   { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
