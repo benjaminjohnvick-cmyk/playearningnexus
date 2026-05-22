@@ -9,7 +9,7 @@ import WhiteLabelSection from '@/components/pricing/WhiteLabelSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, DollarSign, TrendingUp, Zap, Handshake, ShieldCheck, Star, CheckCircle } from 'lucide-react';
+import { ArrowRight, DollarSign, TrendingUp, Zap, Handshake, ShieldCheck, Star, CheckCircle, Bot } from 'lucide-react';
 
 export default function Pricing() {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -19,7 +19,7 @@ export default function Pricing() {
    { id: 'plans', label: '🎯 Subscription Plans', icon: TrendingUp },
    { id: 'business', label: '🏢 Business Tiers', icon: ShieldCheck },
    { id: 'revenue', label: '📊 Revenue Subscriptions', icon: Zap },
-   { id: 'streams', label: '📈 Revenue Streams', icon: Zap },
+   { id: 'streams', label: '📈 20 Revenue Streams', icon: Bot },
    { id: 'partner', label: '🤝 White-Label', icon: Handshake },
   ];
 
@@ -225,7 +225,47 @@ export default function Pricing() {
           )}
 
           {(activeCategory === 'all' || activeCategory === 'streams') && (
-            <RevenueStreamsSection />
+            <>
+              <RevenueStreamsSection />
+              {/* All 20 Revenue Streams Explicit List */}
+              <div className="bg-gradient-to-br from-slate-900 to-gray-900 rounded-3xl p-8 text-white">
+                <h2 className="text-2xl font-black mb-2 text-center">All 20 Revenue Streams — Full Breakdown</h2>
+                <p className="text-gray-400 text-sm text-center mb-6">Every stream is AI-automated and runs in parallel</p>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {[
+                    { n: 1, title: 'Premium Subscriptions', emoji: '💰', desc: '$4.99–$29.99/mo — Ad-free, AI credits, analytics, priority support' },
+                    { n: 2, title: 'In-App Store', emoji: '🛒', desc: 'Virtual currency, cosmetics, power-ups, feature unlocks' },
+                    { n: 3, title: 'Freemium Gating', emoji: '🔓', desc: 'Free core features; advanced tools behind paid tier' },
+                    { n: 4, title: 'Pay-per-Use Credits', emoji: '🪙', desc: 'Credits for AI tools, reports, API calls, extra features' },
+                    { n: 5, title: 'Affiliate Commissions', emoji: '🔗', desc: '3-level MLM — earn from referrals, their referrals, and theirs' },
+                    { n: 6, title: 'Rewarded Video Ads', emoji: '📺', desc: 'Earn while watching — AI-optimized slot timing & rewards' },
+                    { n: 7, title: 'Interstitial & Banner Ads', emoji: '📱', desc: 'AI-placed native ads with CTR optimization' },
+                    { n: 8, title: 'Sponsored Listings', emoji: '📢', desc: 'Brand placements, AI A/B tested copy, guaranteed impressions' },
+                    { n: 9, title: 'Behavioral Targeting', emoji: '🎯', desc: 'Anonymous premium audience segments for high CPM ads' },
+                    { n: 10, title: 'Market Research Reports', emoji: '📊', desc: 'Sell GDPR-safe anonymized insights to brands & researchers' },
+                    { n: 11, title: 'Creator & Influencer Deals', emoji: '🤝', desc: 'AI brand-creator matching — 15% commission on every deal' },
+                    { n: 12, title: 'Transaction Fees', emoji: '💸', desc: 'Auto 5% cut on all marketplace transactions, real-time' },
+                    { n: 13, title: 'Survey Listing Fees', emoji: '📋', desc: '$5–$50 per survey/product published on the platform' },
+                    { n: 14, title: 'Consulting Services', emoji: '🧑‍💼', desc: 'AI proposal generation + expert advisory packages' },
+                    { n: 15, title: 'White-Label Licensing', emoji: '🏢', desc: 'License the full platform to other companies — $15K+ deals' },
+                    { n: 16, title: 'Crowdfunding', emoji: '❤️', desc: 'Community-funded features with AI pitch generation' },
+                    { n: 17, title: 'API Access Fees', emoji: '🔑', desc: 'Pay-per-use API tiers + integration fees for developers' },
+                    { n: 18, title: 'AI Models as a Service', emoji: '🤖', desc: 'Proprietary AI APIs licensed to external businesses' },
+                    { n: 19, title: 'App Referral Programs', emoji: '📈', desc: 'Promote partner apps on the platform for commission' },
+                    { n: 20, title: 'Data Intelligence', emoji: '🧠', desc: 'Behavioral analytics dashboards sold as B2B SaaS product' },
+                  ].map((s) => (
+                    <div key={s.n} className="bg-white/5 border border-white/10 rounded-xl p-3 hover:bg-white/10 transition-colors">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-lg">{s.emoji}</span>
+                        <span className="text-xs font-black text-gray-400">#{s.n}</span>
+                      </div>
+                      <p className="text-sm font-bold text-white mb-1">{s.title}</p>
+                      <p className="text-xs text-gray-400 leading-snug">{s.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
           )}
 
           {(activeCategory === 'all' || activeCategory === 'partner') && (

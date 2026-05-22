@@ -20,6 +20,7 @@ import TransactionFeesPanel from '@/components/revenue/TransactionFeesPanel';
 import ConsultingServicesPanel from '@/components/revenue/ConsultingServicesPanel';
 import AIModelAsServicePanel from '@/components/revenue/AIModelAsServicePanel';
 import { DollarSign, ShoppingCart, BarChart2, Megaphone, Building2, Heart, Code, Users, Bot, Zap, Lock, Coins, Link, Tv, Target, ArrowRightLeft, Briefcase, Cpu } from 'lucide-react';
+import AIFinancialSuggestionsButton from '@/components/revenue/AIFinancialSuggestionsButton';
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: DollarSign },
@@ -87,11 +88,14 @@ export default function RevenueHub() {
               <p className="text-gray-500 text-sm">All <strong>20 revenue streams</strong> — powered by AI automation</p>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2">
-            <div className="text-center">
-              <div className="text-xs text-green-600">Total Monthly Revenue</div>
-              <div className="text-2xl font-bold text-green-700">$18,492</div>
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2">
+              <div className="text-center">
+                <div className="text-xs text-green-600">Total Monthly Revenue</div>
+                <div className="text-2xl font-bold text-green-700">$18,492</div>
+              </div>
             </div>
+            <AIFinancialSuggestionsButton />
           </div>
         </div>
 

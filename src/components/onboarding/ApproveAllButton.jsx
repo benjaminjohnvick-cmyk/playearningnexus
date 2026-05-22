@@ -42,6 +42,16 @@ const MORE_INFO_ITEMS = [
     desc: 'The AI automatically scans your phone\'s saved cards (Google Pay, Apple Pay, browser wallet) and links the best one instantly — no typing required. If no saved card is found, you can enter one manually. Your card is used for in-app purchases, game orders, and BNPL transactions. Remove it any time in Settings.'
   },
   {
+    icon: <Bot className="w-5 h-5 text-red-500" />,
+    title: '🎬 AI Video Studio — Auto-Enabled',
+    desc: 'Once your social accounts are connected, GamerGain\'s AI Video Studio is unlocked. It automatically converts your viral social scripts into short-form videos with AI voiceovers, background visuals, and your referral link overlaid — formatted for TikTok (9:16), Instagram Reels (9:16), YouTube Shorts (9:16), Twitter/X (16:9), Facebook (16:9), and Snapchat (9:16). All videos are generated in one click and ready to share.'
+  },
+  {
+    icon: <TrendingUp className="w-5 h-5 text-cyan-500" />,
+    title: '📱 Social Media Platforms Connected',
+    desc: 'All 5 platforms are linked in one tap: Facebook (posts, stories, reels), Twitter/X (tweets, videos), Instagram (posts, reels, stories), Snapchat (snaps, stories), TikTok (videos, lives). The AI Social Engine posts to all 5 twice daily, each post tailored to that platform\'s native style — hashtags, captions, video format, and trending sounds all auto-adapted.'
+  },
+  {
     icon: <Lock className="w-5 h-5 text-gray-500" />,
     title: 'User License Agreement (ULA)',
     desc: 'By approving, you accept our ULA which authorizes GamerGain\'s AI to post content on your connected social accounts. You can revoke this at any time from your Affiliate MLM Dashboard. We will never post anything offensive, illegal, or off-brand.'
@@ -462,9 +472,14 @@ export default function ApproveAllButton({ user, onComplete, heroMode = false, h
               <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
               <p className="text-lg font-bold text-green-700">All Set! 🎉</p>
               <p className="text-sm text-gray-600">Your account is fully connected. The AI Social Engine has scheduled your first posts, and the affiliate agent will distribute MLM bonuses automatically every 24 hours.</p>
-              <a href="/AISocialMediaEngine" className="inline-flex items-center gap-2 text-sm font-bold text-purple-700 bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 mt-1 hover:bg-purple-100 transition-colors">
-                🤖 Preview your AI-generated viral scripts →
-              </a>
+              <div className="flex gap-2 flex-wrap">
+                <a href="/AISocialMediaEngine" className="inline-flex items-center gap-2 text-sm font-bold text-purple-700 bg-purple-50 border border-purple-200 rounded-lg px-3 py-2 mt-1 hover:bg-purple-100 transition-colors">
+                  🤖 AI Social Engine →
+                </a>
+                <a href="/AIVideoStudio" className="inline-flex items-center gap-2 text-sm font-bold text-pink-700 bg-pink-50 border border-pink-200 rounded-lg px-3 py-2 mt-1 hover:bg-pink-100 transition-colors">
+                  🎬 AI Video Studio →
+                </a>
+              </div>
               <div className="space-y-1 max-h-40 overflow-y-auto text-left">
                 {progress.map((p, i) => (
                   <div key={i} className={`text-xs px-2 py-1 rounded ${p.success ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}>
