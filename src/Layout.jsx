@@ -238,7 +238,7 @@ export default function Layout({ children, currentPageName }) {
           }}>
           
           <div className="max-w-7xl mx-auto px-4 py-3">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
               {/* Logo + Contest Button */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Link to={createPageUrl('Home')} className="flex items-center gap-2 group">
@@ -253,7 +253,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
 
               {/* Desktop Navigation — scrollable single row, visible md+ */}
-              <nav className="hidden md:flex items-center gap-1 overflow-x-auto no-scrollbar shrink px-2" style={{maxWidth: 'calc(100% - 420px)' }}>
+              <nav className="hidden md:flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 min-w-0 px-2">
                 <Link to="/DeveloperToolsHub" className="flex-shrink-0">
                   <Button variant={currentPageName === 'DeveloperToolsHub' ? "default" : "ghost"} size="sm"
                   className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md whitespace-nowrap" : "bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold border border-violet-300 whitespace-nowrap"}>
@@ -317,7 +317,7 @@ export default function Layout({ children, currentPageName }) {
               </nav>
 
               {/* Desktop Right: user controls */}
-              <div className="hidden md:flex items-center gap-3 flex-shrink-0 ml-auto">
+              <div className="hidden md:flex items-center gap-3 flex-shrink-0">
                 {isAuthenticated && user ?
                 <>
                       <div className="text-right hidden lg:block">
