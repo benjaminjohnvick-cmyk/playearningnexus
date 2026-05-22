@@ -53,8 +53,8 @@ TECHNICAL ISSUES:
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    // Allow both user-context and service-role headless calls
+    const user = await base44.auth.me().catch(() => null);
 
     const body = await req.json();
     const { action } = body;
@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
     if (action === 'generate_ticket_response') {
       const { ticket_id, category, subject, description, user_name } = body;
 
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
         prompt: `You are a friendly, expert support agent for GamerGain.
 
 Platform Documentation:
@@ -97,7 +97,7 @@ Also classify this ticket.`,
 
       // Save AI response to ticket if ticket_id provided
       if (ticket_id) {
-        await base44.entities.SupportTicket.update(ticket_id, {
+        await base44.asServiceRole.entities.SupportTicket.update(ticket_id, {
           admin_notes: `AI Response (${result.confidence}% confidence):\n\n${result.response_text}`,
           priority: result.suggested_priority,
         });

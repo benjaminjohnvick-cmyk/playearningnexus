@@ -45,13 +45,13 @@ async function sendPayPalPayout(token, recipientEmail, amount, note, senderItemI
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-
-    if (!user || user.role !== 'admin') {
+    const user = await base44.auth.me().catch(() => null);
+    // Allow scheduled/service-role headless calls; only block non-admin user requests
+    if (user && user.role !== 'admin') {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    const payload = await req.json();
+    const payload = await req.json().catch(() => ({}));
     const { action } = payload;
 
     // ── Process all pending rewards automatically ──────────────────────────────

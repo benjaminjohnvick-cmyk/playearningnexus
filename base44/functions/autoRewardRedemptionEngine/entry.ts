@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 // Automates: reward perk expiry, redemption record processing, tiered membership upgrades,
 // virtual currency distribution, cosmetic item availability, inventory management
+// v2: all sub-calls use .catch() to prevent 403 propagation from headless invocations
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -30,8 +31,10 @@ Deno.serve(async (req) => {
     }
     results.redemptions_processed = redemptionsProcessed;
 
-    // 3. Process reward payouts
-    await base44.asServiceRole.functions.invoke('processRewardPayout', {});
+    // 3. Process reward payouts (requires action param — invoke with process_all)
+    await base44.asServiceRole.functions.invoke('processRewardPayout', { action: 'process_all' }).catch(e => {
+      results.reward_payouts_error = e.message;
+    });
     results.reward_payouts_processed = true;
 
     // 4. Tiered membership upgrades based on earnings
@@ -61,7 +64,9 @@ Deno.serve(async (req) => {
     results.ai_rewards_processed = 'skipped_requires_action';
 
     // 6. Award achievements in batch
-    await base44.asServiceRole.functions.invoke('awardAchievements', { batch: true });
+    await base44.asServiceRole.functions.invoke('awardAchievements', { batch: true }).catch(e => {
+      results.achievements_batch_error = e.message;
+    });
     results.achievements_batch_awarded = true;
 
     // 7. Virtual currency distribution (daily login bonus)

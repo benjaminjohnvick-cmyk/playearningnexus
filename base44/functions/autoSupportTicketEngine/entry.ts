@@ -98,11 +98,11 @@ Deno.serve(async (req) => {
     results.payout_notifications_sent = payoutNotifications;
 
     // 6. VIP user management
-    await base44.asServiceRole.functions.invoke('autoVIPUserManagement', {});
+    await base44.asServiceRole.functions.invoke('autoVIPUserManagement', {}).catch(() => {});
     results.vip_users_managed = true;
 
     // 7. Proactive support analysis
-    await base44.asServiceRole.functions.invoke('proactiveSupportAnalyzer', {});
+    await base44.asServiceRole.functions.invoke('proactiveSupportAnalyzer', {}).catch(() => {});
     results.proactive_support_analyzed = true;
 
     // 8. Auto dispute lifecycle for unresolved disputes

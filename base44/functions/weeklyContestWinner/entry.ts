@@ -9,8 +9,8 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    let user = null;
-    try { user = await base44.auth.me(); } catch {}
+    const user = await base44.auth.me().catch(() => null);
+    // Allow headless scheduled calls; only block non-admin authenticated users
     if (user && user.role !== 'admin') {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }

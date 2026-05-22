@@ -25,7 +25,9 @@ Deno.serve(async (req) => {
     results.stale_streams_ended = sessionsEnded;
 
     // 2. YouTube auto-embed for gaming content
-    await base44.asServiceRole.functions.invoke('youtubeAutoEmbed', {});
+    await base44.asServiceRole.functions.invoke('youtubeAutoEmbed', {}).catch(e => {
+      results.youtube_embed_error = e.message;
+    });
     results.youtube_embeds_processed = true;
 
     // 3. Process YouTube video session analytics

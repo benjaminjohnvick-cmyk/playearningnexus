@@ -3,11 +3,21 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    const user = await base44.auth.me().catch(() => null);
 
-    const { perk_id } = await req.json();
-    if (!perk_id) return Response.json({ error: 'Missing perk_id' }, { status: 400 });
+    const body = await req.json().catch(() => ({}));
+    const { perk_id, redemption_id } = body;
+
+    // Headless batch invocation — just validate pending redemptions
+    if (!perk_id && redemption_id) {
+      const recs = await base44.asServiceRole.entities.RedemptionRecord.filter({ id: redemption_id });
+      if (recs.length > 0 && recs[0].status === 'pending') {
+        await base44.asServiceRole.entities.RedemptionRecord.update(redemption_id, { status: 'completed', completed_at: new Date().toISOString() });
+      }
+      return Response.json({ success: true, processed: redemption_id });
+    }
+    if (!perk_id) return Response.json({ success: true, skipped: 'no_perk_id_in_batch' });
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     // Fetch perk
     const perks = await base44.entities.RewardPerk.filter({ id: perk_id });

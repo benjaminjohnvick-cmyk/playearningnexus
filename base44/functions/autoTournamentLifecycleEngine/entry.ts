@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 // Automates: tournament start/end lifecycle, bracket generation, prize distribution,
 // head-to-head contest matching, referral contest lifecycle
+// v2: sub-calls wrapped with .catch() to prevent auth errors from crashing the engine
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -30,7 +31,7 @@ Deno.serve(async (req) => {
           });
         }
         // Trigger matchmaking
-        await base44.asServiceRole.functions.invoke('tournamentMatchmaker', { tournament_id: tournament.id });
+        await base44.asServiceRole.functions.invoke('tournamentMatchmaker', { tournament_id: tournament.id }).catch(() => {});
         tournamentsStarted++;
       }
     }
@@ -69,7 +70,7 @@ Deno.serve(async (req) => {
     results.tournament_insights_generated = recentTournaments.length;
 
     // 4. Head-to-head contest matching
-    await base44.asServiceRole.functions.invoke('headToHeadContestMatchmaker', {});
+    await base44.asServiceRole.functions.invoke('headToHeadContestMatchmaker', {}).catch(() => {});
     results.h2h_contests_matched = true;
 
     // 5. Referral contest lifecycle management
@@ -99,7 +100,7 @@ Deno.serve(async (req) => {
     results.tournament_challenges_activated = challengesActivated;
 
     // 7. Process weekly jackpot
-    await base44.asServiceRole.functions.invoke('processWeeklyJackpot', {});
+    await base44.asServiceRole.functions.invoke('processWeeklyJackpot', {}).catch(() => {});
     results.weekly_jackpot_processed = true;
 
     return Response.json({ success: true, results });

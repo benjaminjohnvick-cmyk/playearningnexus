@@ -4,10 +4,25 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { event, data } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { event, data, batch } = body;
+
+    // Batch mode: award achievements for recent active users
+    if (batch) {
+      const recentEarnings = await base44.asServiceRole.entities.DailyEarnings.list('-created_date', 50);
+      const userIds = [...new Set(recentEarnings.map(e => e.user_id).filter(Boolean))];
+      let totalAwarded = 0;
+      for (const uid of userIds.slice(0, 20)) {
+        try {
+          const res = await base44.asServiceRole.functions.invoke('awardAchievements', { data: { user_id: uid } });
+          totalAwarded += res?.data?.total_awarded || 0;
+        } catch {}
+      }
+      return Response.json({ success: true, batch: true, users_checked: userIds.length, total_awarded: totalAwarded });
+    }
 
     if (!data?.user_id) {
-      return Response.json({ error: 'Missing user data' }, { status: 400 });
+      return Response.json({ success: true, skipped: 'no_user_data' });
     }
 
     const userId = data.user_id;

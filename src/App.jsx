@@ -153,6 +153,7 @@ const PayoutMarketplace = lazy(() => import('./pages/PayoutMarketplace'));
 const AISocialMediaEngine = lazy(() => import('./pages/AISocialMediaEngine'));
 const AIDisputeResolutionCenter = lazy(() => import('./pages/AIDisputeResolutionCenter'));
 const AIVideoStudio = lazy(() => import('./pages/AIVideoStudio'));
+const AIAutomationLearningDashboard = lazy(() => import('./pages/AIAutomationLearningDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -374,6 +375,7 @@ const AuthenticatedApp = () => {
       <Route path="/AISocialMediaEngine" element={<LayoutWrapper currentPageName="AISocialMediaEngine"><AISocialMediaEngine /></LayoutWrapper>} />
       <Route path="/AIDisputeResolutionCenter" element={<LayoutWrapper currentPageName="AIDisputeResolutionCenter"><AIDisputeResolutionCenter /></LayoutWrapper>} />
       <Route path="/AIVideoStudio" element={<LayoutWrapper currentPageName="AIVideoStudio"><AIVideoStudio /></LayoutWrapper>} />
+      <Route path="/AIAutomationLearningDashboard" element={<LayoutWrapper currentPageName="AIAutomationLearningDashboard"><AIAutomationLearningDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

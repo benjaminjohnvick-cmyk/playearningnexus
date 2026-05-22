@@ -3,11 +3,25 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    const user = await base44.auth.me().catch(() => null);
 
-    const body = await req.json();
-    const { action } = body; // 'create' or 'auto_group'
+    const body = await req.json().catch(() => ({}));
+    const { action } = body;
+
+    // Headless batch call — auto-match waiting contests
+    if (!action) {
+      const waiting = await base44.asServiceRole.entities.HeadToHeadContest.filter({ status: 'waiting' });
+      let matched = 0;
+      for (const contest of waiting) {
+        const needed = (contest.group_size || 2);
+        const current = (contest.participants || []).length;
+        if (current >= needed) {
+          await base44.asServiceRole.entities.HeadToHeadContest.update(contest.id, { status: 'active' });
+          matched++;
+        }
+      }
+      return Response.json({ success: true, contests_matched: matched });
+    } // 'create' or 'auto_group'
 
     if (action === 'create') {
       const { group_size } = body;

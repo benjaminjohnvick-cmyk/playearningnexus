@@ -3,13 +3,13 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
+    const user = await base44.auth.me().catch(() => null);
 
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const body = await req.json().catch(() => ({}));
+    const { action, videoId, channelId, videoTitle, videoUrl } = body;
 
-    const { action, videoId, channelId, videoTitle, videoUrl } = await req.json();
+    // Headless/batch invocation — return gracefully
+    if (!action) return Response.json({ success: true, skipped: 'no_action_in_batch' });
 
     if (action === 'embedVideo') {
       // Create video session record

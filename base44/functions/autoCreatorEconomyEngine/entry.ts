@@ -25,7 +25,9 @@ Deno.serve(async (req) => {
     results.creator_payouts_processed = creatorPayoutsProcessed;
 
     // 2. Auto-optimize creator payouts
-    await base44.asServiceRole.functions.invoke('autoCreatorPayoutOptimization', {});
+    await base44.asServiceRole.functions.invoke('autoCreatorPayoutOptimization', {}).catch(e => {
+      results.creator_payout_opt_error = e.message;
+    });
     results.creator_payout_optimization_run = true;
 
     // 3. Check subscription renewals
