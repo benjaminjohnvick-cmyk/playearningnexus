@@ -253,7 +253,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
 
               {/* Desktop Navigation — scrollable single row, visible md+ */}
-              <nav className="hidden md:flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar min-w-0 px-2 max-w-[50%]">
+              <nav className="hidden md:flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar min-w-0 px-2 max-w-[40%]">
                 <Link to="/DeveloperToolsHub" className="flex-shrink-0">
                   <Button variant={currentPageName === 'DeveloperToolsHub' ? "default" : "ghost"} size="sm"
                     className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md whitespace-nowrap" : "bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold border border-violet-300 whitespace-nowrap"}>
