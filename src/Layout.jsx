@@ -5,12 +5,12 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
-import { 
-  Home, 
-  LayoutDashboard, 
-  Briefcase, 
-  FileText, 
-  Settings, 
+import {
+  Home,
+  LayoutDashboard,
+  Briefcase,
+  FileText,
+  Settings,
   LogOut,
   Menu,
   X,
@@ -31,8 +31,8 @@ import {
   AlertCircle,
   Brain,
   ShieldCheck,
-  Gamepad2
-} from 'lucide-react';
+  Gamepad2 } from
+'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
 import LogoutPromptModal from '@/components/user/LogoutPromptModal';
@@ -105,11 +105,11 @@ export default function Layout({ children, currentPageName }) {
     queryFn: async () => {
       const now = new Date().toISOString();
       const events = await base44.entities.LiveEvent.filter({ is_active: true });
-      return events.filter(e => new Date(e.start_time) <= new Date(now) && new Date(e.end_time) >= new Date(now));
+      return events.filter((e) => new Date(e.start_time) <= new Date(now) && new Date(e.end_time) >= new Date(now));
     },
     enabled: isAuthenticated && mountSideEffects,
     staleTime: 1000 * 60 * 10, // 10 minutes
-    gcTime: 1000 * 60 * 30,
+    gcTime: 1000 * 60 * 30
   });
 
   useEffect(() => {
@@ -150,69 +150,69 @@ export default function Layout({ children, currentPageName }) {
   const handleActualLogout = () => base44.auth.logout();
 
   const navigation = [
-    { name: 'Home', icon: Home, path: 'Home' },
-    { name: 'Game Store', icon: ShoppingCart, path: 'InAppGameStore' },
-    { name: 'Surveys', icon: DollarSign, path: 'Surveys', requireAuth: true },
-    { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
-    { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
-    { name: 'Wishlist', icon: Heart, path: 'Wishlist', requireAuth: true },
-    { name: 'Transfer Money', icon: ArrowRightLeft, path: 'MoneyTransfer', requireAuth: true },
-    { name: 'Profile', icon: User, path: 'UserProfile', requireAuth: true },
-    { name: 'Creator Hub', icon: Star, path: 'CreatorDashboard', requireAuth: true },
-    { name: 'Referrals', icon: Users, path: 'ReferralDashboard', requireAuth: true },
-    { name: 'Affiliate Store', icon: DollarSign, path: 'AffiliateMarketplace', requireAuth: true },
-    { name: 'AI Affiliate MLM', icon: TrendingUp, path: 'AffiliateMLMDashboard', requireAuth: true },
-    { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
-    { name: 'Referral Analytics', icon: TrendingUp, path: 'ReferralAnalytics', requireAuth: true },
-    { name: 'Link Tracking', icon: TrendingUp, path: 'ReferralTracking', requireAuth: true },
-    { name: 'Payout Settings', icon: Settings, path: 'PayoutSettings', requireAuth: true },
-    { name: 'Referral Hub', icon: Users, path: 'ReferralHub', requireAuth: true },
-    { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', requireAuth: true },
-    { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', requireAuth: true },
-    { name: 'Survey Embed', icon: Globe, path: 'SurveyEmbedManager', requireAuth: true },
-    { name: 'AI Automation Center', icon: Bot, path: 'AIAutomationCenter', requireAuth: true },
-    { name: 'Payout History', icon: DollarSign, path: 'PayoutHistory', requireAuth: true },
-    { name: 'My Payouts', icon: DollarSign, path: 'MyPayouts', requireAuth: true },
-    { name: 'Payout Status', icon: DollarSign, path: 'PayoutStatus', requireAuth: true },
-    { name: 'My Orders', icon: ShoppingCart, path: 'MyOrders', requireAuth: true },
-    { name: 'Campaigns', icon: TrendingUp, path: 'Campaigns', requireAuth: true },
-    { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },
-    { name: 'Challenges', icon: Trophy, path: 'Challenges', requireAuth: true },
-    { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
-    { name: 'Survey Builder', icon: FileText, path: 'SurveyTemplateBuilder', requireAuth: true },
-    { name: 'Dispute Center', icon: AlertCircle, path: 'DisputeCenter', requireAuth: true },
-    { name: 'Global Prestige', icon: Star, path: 'GlobalPrestigeHub', requireAuth: true },
-    { name: 'Survey Marketplace', icon: ShoppingCart, path: 'SurveyMarketplace', requireAuth: true },
-    { name: 'Earnings Simulator', icon: TrendingUp, path: 'EarningsSimulatorPage', requireAuth: true },
-    { name: 'Achievements', icon: Trophy, path: 'AchievementsPage', requireAuth: true },
-    { name: 'Leaderboard', icon: Trophy, path: 'GlobalLeaderboard' },
-    { name: 'Daily Streak', icon: Star, path: 'DailyEarningStreak', requireAuth: true },
-    { name: 'Contact Us', icon: Mail, path: 'ContactUs' },
-    { name: 'Referral Leaderboard', icon: Trophy, path: 'ReferralLeaderboardPage', requireAuth: true },
-    { name: 'Survey Analytics', icon: BarChart2, path: 'SurveyAdminDashboard', requireAuth: true },
-    { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
-    { name: 'Manage Payouts', icon: DollarSign, path: 'ManagePayouts', requireAuth: true },
-    { name: 'My Respondent Profile', icon: User, path: 'RespondentProfile', requireAuth: true },
-    { name: 'Advanced Analytics', icon: TrendingUp, path: 'AdvancedSurveyAnalytics', requireAuth: true },
-    { name: 'Survey Analytics', icon: TrendingUp, path: 'SurveyAnalytics', requireAuth: true },
-    { name: 'Business Analytics', icon: TrendingUp, path: 'BusinessSurveyAnalytics', requireAuth: true },
-    { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
-    { name: 'AI Generator', icon: Bot, path: 'MovieStarGenerator', requireAuth: true },
-    { name: 'Inbox', icon: Mail, path: 'UserInbox', requireAuth: true },
-    { name: 'Leaderboard', icon: Trophy, path: 'Leaderboard', requireAuth: true },
-    { name: 'Tournaments', icon: Swords, path: 'Tournaments', requireAuth: true },
-    { name: 'Guilds', icon: Users, path: 'Guilds', requireAuth: true },
-    { name: 'Rewards', icon: Trophy, path: 'Gamification', requireAuth: true },
-    { name: 'Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
-    { name: 'Seller Upload', icon: ShoppingCart, path: 'SellerUpload', requireAuth: true },
-    { name: 'Revenue Hub', icon: DollarSign, path: 'RevenueHub' },
-    { name: 'Pricing', icon: DollarSign, path: 'Pricing' },
-    { name: 'AI Game Creator', icon: Gamepad2, path: 'DeveloperToolsHub', requireAuth: true },
-    { name: 'Game Voting Hub', icon: Gamepad2, path: 'GameVotingHub' },
-    { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
-    { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
-    { name: 'Tournaments', icon: Trophy, path: 'Tournaments', requireAuth: true },
-  ];
+  { name: 'Home', icon: Home, path: 'Home' },
+  { name: 'Game Store', icon: ShoppingCart, path: 'InAppGameStore' },
+  { name: 'Surveys', icon: DollarSign, path: 'Surveys', requireAuth: true },
+  { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
+  { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
+  { name: 'Wishlist', icon: Heart, path: 'Wishlist', requireAuth: true },
+  { name: 'Transfer Money', icon: ArrowRightLeft, path: 'MoneyTransfer', requireAuth: true },
+  { name: 'Profile', icon: User, path: 'UserProfile', requireAuth: true },
+  { name: 'Creator Hub', icon: Star, path: 'CreatorDashboard', requireAuth: true },
+  { name: 'Referrals', icon: Users, path: 'ReferralDashboard', requireAuth: true },
+  { name: 'Affiliate Store', icon: DollarSign, path: 'AffiliateMarketplace', requireAuth: true },
+  { name: 'AI Affiliate MLM', icon: TrendingUp, path: 'AffiliateMLMDashboard', requireAuth: true },
+  { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
+  { name: 'Referral Analytics', icon: TrendingUp, path: 'ReferralAnalytics', requireAuth: true },
+  { name: 'Link Tracking', icon: TrendingUp, path: 'ReferralTracking', requireAuth: true },
+  { name: 'Payout Settings', icon: Settings, path: 'PayoutSettings', requireAuth: true },
+  { name: 'Referral Hub', icon: Users, path: 'ReferralHub', requireAuth: true },
+  { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', requireAuth: true },
+  { name: 'PPC Marketplace', icon: TrendingUp, path: 'PPCMarketplace', requireAuth: true },
+  { name: 'Survey Embed', icon: Globe, path: 'SurveyEmbedManager', requireAuth: true },
+  { name: 'AI Automation Center', icon: Bot, path: 'AIAutomationCenter', requireAuth: true },
+  { name: 'Payout History', icon: DollarSign, path: 'PayoutHistory', requireAuth: true },
+  { name: 'My Payouts', icon: DollarSign, path: 'MyPayouts', requireAuth: true },
+  { name: 'Payout Status', icon: DollarSign, path: 'PayoutStatus', requireAuth: true },
+  { name: 'My Orders', icon: ShoppingCart, path: 'MyOrders', requireAuth: true },
+  { name: 'Campaigns', icon: TrendingUp, path: 'Campaigns', requireAuth: true },
+  { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },
+  { name: 'Challenges', icon: Trophy, path: 'Challenges', requireAuth: true },
+  { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
+  { name: 'Survey Builder', icon: FileText, path: 'SurveyTemplateBuilder', requireAuth: true },
+  { name: 'Dispute Center', icon: AlertCircle, path: 'DisputeCenter', requireAuth: true },
+  { name: 'Global Prestige', icon: Star, path: 'GlobalPrestigeHub', requireAuth: true },
+  { name: 'Survey Marketplace', icon: ShoppingCart, path: 'SurveyMarketplace', requireAuth: true },
+  { name: 'Earnings Simulator', icon: TrendingUp, path: 'EarningsSimulatorPage', requireAuth: true },
+  { name: 'Achievements', icon: Trophy, path: 'AchievementsPage', requireAuth: true },
+  { name: 'Leaderboard', icon: Trophy, path: 'GlobalLeaderboard' },
+  { name: 'Daily Streak', icon: Star, path: 'DailyEarningStreak', requireAuth: true },
+  { name: 'Contact Us', icon: Mail, path: 'ContactUs' },
+  { name: 'Referral Leaderboard', icon: Trophy, path: 'ReferralLeaderboardPage', requireAuth: true },
+  { name: 'Survey Analytics', icon: BarChart2, path: 'SurveyAdminDashboard', requireAuth: true },
+  { name: 'Notifications', icon: Settings, path: 'NotificationSettings', requireAuth: true },
+  { name: 'Manage Payouts', icon: DollarSign, path: 'ManagePayouts', requireAuth: true },
+  { name: 'My Respondent Profile', icon: User, path: 'RespondentProfile', requireAuth: true },
+  { name: 'Advanced Analytics', icon: TrendingUp, path: 'AdvancedSurveyAnalytics', requireAuth: true },
+  { name: 'Survey Analytics', icon: TrendingUp, path: 'SurveyAnalytics', requireAuth: true },
+  { name: 'Business Analytics', icon: TrendingUp, path: 'BusinessSurveyAnalytics', requireAuth: true },
+  { name: 'Developer Rankings', icon: Trophy, path: 'DeveloperLeaderboards' },
+  { name: 'AI Generator', icon: Bot, path: 'MovieStarGenerator', requireAuth: true },
+  { name: 'Inbox', icon: Mail, path: 'UserInbox', requireAuth: true },
+  { name: 'Leaderboard', icon: Trophy, path: 'Leaderboard', requireAuth: true },
+  { name: 'Tournaments', icon: Swords, path: 'Tournaments', requireAuth: true },
+  { name: 'Guilds', icon: Users, path: 'Guilds', requireAuth: true },
+  { name: 'Rewards', icon: Trophy, path: 'Gamification', requireAuth: true },
+  { name: 'Developers', icon: Briefcase, path: 'BusinessDashboard', requireAuth: true },
+  { name: 'Seller Upload', icon: ShoppingCart, path: 'SellerUpload', requireAuth: true },
+  { name: 'Revenue Hub', icon: DollarSign, path: 'RevenueHub' },
+  { name: 'Pricing', icon: DollarSign, path: 'Pricing' },
+  { name: 'AI Game Creator', icon: Gamepad2, path: 'DeveloperToolsHub', requireAuth: true },
+  { name: 'Game Voting Hub', icon: Gamepad2, path: 'GameVotingHub' },
+  { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
+  { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
+  { name: 'Tournaments', icon: Trophy, path: 'Tournaments', requireAuth: true }];
+
 
   if (user?.role === 'admin') {
     navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
@@ -222,21 +222,21 @@ export default function Layout({ children, currentPageName }) {
     navigation.push({ name: 'UX Heatmap', icon: TrendingUp, path: 'UXHeatmapDashboard', requireAuth: true });
   }
 
-  const filteredNav = navigation.filter(item => !item.requireAuth || isAuthenticated);
+  const filteredNav = navigation.filter((item) => !item.requireAuth || isAuthenticated);
 
   return (
     <LocaleProvider>
       <div
-        className="min-h-screen bg-white"
-      >
+        className="min-h-screen bg-white">
+        
         {/* Header - Only show on Home page */}
         {currentPageName === 'Home' && <header
           className="sticky top-0 z-50 border-b-2 border-red-200 shadow-lg"
           style={{
             background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(254, 242, 242, 0.8))',
             boxShadow: '0 4px 30px rgba(220, 38, 38, 0.1)'
-          }}
-        >
+          }}>
+          
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex items-center justify-between gap-3">
               {/* Logo + Contest Button */}
@@ -256,61 +256,61 @@ export default function Layout({ children, currentPageName }) {
               <nav className="hidden md:flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar min-w-0 px-2 max-w-[40%]">
                 <Link to="/DeveloperToolsHub" className="flex-shrink-0">
                   <Button variant={currentPageName === 'DeveloperToolsHub' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md whitespace-nowrap" : "bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold border border-violet-300 whitespace-nowrap"}>
+                  className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md whitespace-nowrap" : "bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold border border-violet-300 whitespace-nowrap"}>
                     🎮 AI Game Creator
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Home')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Home' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Home' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
+                  className={currentPageName === 'Home' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap hidden" : "hover:bg-red-50 whitespace-nowrap"}>
                     🏠 Home
                   </Button>
                 </Link>
                 <Link to={createPageUrl('InAppGameStore')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'InAppGameStore' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'InAppGameStore' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
+                  className={currentPageName === 'InAppGameStore' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     🎮 Store
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Surveys')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Surveys' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Surveys' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
+                  className={currentPageName === 'Surveys' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     📋 Surveys
                   </Button>
                 </Link>
                 <Link to={createPageUrl('UserDashboard')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'UserDashboard' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'UserDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
+                  className={currentPageName === 'UserDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     📊 Dashboard
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Wishlist')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Wishlist' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Wishlist' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
+                  className={currentPageName === 'Wishlist' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     ❤️ Wishlist
                   </Button>
                 </Link>
                 <Link to={createPageUrl('PPCMarketplace')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'PPCMarketplace' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'PPCMarketplace' ? "bg-gradient-to-r from-purple-600 to-blue-600 shadow-md whitespace-nowrap" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200 whitespace-nowrap"}>
+                  className={currentPageName === 'PPCMarketplace' ? "bg-gradient-to-r from-purple-600 to-blue-600 shadow-md whitespace-nowrap" : "hover:bg-purple-50 text-purple-700 font-semibold border border-purple-200 whitespace-nowrap"}>
                     💰 PPC
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Withdrawal')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Withdrawal' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Withdrawal' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md whitespace-nowrap" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200 whitespace-nowrap"}>
+                  className={currentPageName === 'Withdrawal' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md whitespace-nowrap" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200 whitespace-nowrap"}>
                     💵 Withdraw
                   </Button>
                 </Link>
                 <Link to={createPageUrl('ReferralContest')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'ReferralContest' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'ReferralContest' ? "bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-md whitespace-nowrap" : "hover:bg-yellow-50 text-yellow-700 font-semibold whitespace-nowrap"}>
+                  className={currentPageName === 'ReferralContest' ? "bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-md whitespace-nowrap" : "hover:bg-yellow-50 text-yellow-700 font-semibold whitespace-nowrap"}>
                     🏆 Contest
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Tournaments')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Tournaments' ? "default" : "ghost"} size="sm"
-                    className={currentPageName === 'Tournaments' ? "bg-gradient-to-r from-yellow-500 to-orange-600 shadow-md whitespace-nowrap" : "hover:bg-yellow-50 text-yellow-700 font-semibold border border-yellow-200 whitespace-nowrap"}>
+                  className={currentPageName === 'Tournaments' ? "bg-gradient-to-r from-yellow-500 to-orange-600 shadow-md whitespace-nowrap" : "hover:bg-yellow-50 text-yellow-700 font-semibold border border-yellow-200 whitespace-nowrap"}>
                     🏆 Tournaments
                   </Button>
                 </Link>
@@ -318,28 +318,28 @@ export default function Layout({ children, currentPageName }) {
 
               {/* Desktop Right: user controls */}
               <div className="hidden md:flex items-center gap-3 flex-shrink-0 ml-auto">
-                {isAuthenticated && user ? (
-                    <>
+                {isAuthenticated && user ?
+                <>
                       <div className="text-right hidden lg:block">
                         <p className="text-xs font-medium text-gray-900">{user.full_name}</p>
                         <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
                       </div>
-                      {mountSideEffects && (
-                        <Suspense fallback={null}>
+                      {mountSideEffects &&
+                  <Suspense fallback={null}>
                           <div className="hidden lg:block">
                             <PushNotificationManager />
                             <SurveyDemandAlerts user={user} />
                           </div>
                         </Suspense>
-                      )}
+                  }
                       <NotificationCenter user={user} />
-                    {user?.role === 'admin' && (
-                      <Link to={createPageUrl('AdminDashboard')}>
+                    {user?.role === 'admin' &&
+                  <Link to={createPageUrl('AdminDashboard')}>
                         <Button variant="ghost" size="icon" title="Admin Dashboard">
                           <ShieldCheck className="w-4 h-4 text-purple-600" />
                         </Button>
                       </Link>
-                    )}
+                  }
                     <Link to={createPageUrl('Settings')}>
                       <Button variant="ghost" size="icon">
                         <Settings className="w-4 h-4" />
@@ -348,12 +348,12 @@ export default function Layout({ children, currentPageName }) {
                     <Button variant="ghost" size="icon" onClick={handleLogoutClick}>
                       <LogOut className="w-4 h-4" />
                     </Button>
-                  </>
-                ) : (
-                  <Button onClick={() => base44.auth.redirectToLogin()} className="bg-gradient-to-r from-red-600 to-red-700 shadow-lg" size="sm">
+                  </> :
+
+                <Button onClick={() => base44.auth.redirectToLogin()} className="bg-gradient-to-r from-red-600 to-red-700 shadow-lg" size="sm">
                     Sign In
                   </Button>
-                )}
+                }
               </div>
 
               {/* Mobile: Menu Button Only */}
@@ -366,23 +366,23 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="md:hidden border-t bg-white">
+          {isMenuOpen &&
+          <div className="md:hidden border-t bg-white">
               <div className="px-4 py-3 space-y-1">
-                {filteredNav.map((item) => (
-                  <Link key={item.name} to={createPageUrl(item.path)} onClick={() => setIsMenuOpen(false)}>
+                {filteredNav.map((item) =>
+              <Link key={item.name} to={createPageUrl(item.path)} onClick={() => setIsMenuOpen(false)}>
                     <Button
-                      variant={currentPageName === item.path ? "default" : "ghost"}
-                      className={`w-full justify-start text-sm ${currentPageName === item.path ? "bg-gradient-to-r from-blue-600 to-blue-700" : ""}`}
-                    >
+                  variant={currentPageName === item.path ? "default" : "ghost"}
+                  className={`w-full justify-start text-sm ${currentPageName === item.path ? "bg-gradient-to-r from-blue-600 to-blue-700" : ""}`}>
+                  
                       <item.icon className="w-4 h-4 mr-2" />
                       {item.name}
                     </Button>
                   </Link>
-                ))}
+              )}
 
-                {isAuthenticated && user ? (
-                  <>
+                {isAuthenticated && user ?
+              <>
                     <div className="pt-3 pb-1 border-t">
                       <p className="text-sm font-medium text-gray-900">{user.full_name}</p>
                       <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)} earned</p>
@@ -393,49 +393,49 @@ export default function Layout({ children, currentPageName }) {
                       </Button>
                     </Link>
                     <Button
-                      variant="ghost"
-                      className="w-full justify-start text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
-                      onClick={() => { setIsMenuOpen(false); handleLogoutClick(); }}
-                    >
+                  variant="ghost"
+                  className="w-full justify-start text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => {setIsMenuOpen(false);handleLogoutClick();}}>
+                  
                       <LogOut className="w-4 h-4 mr-2" />Logout
                     </Button>
-                  </>
-                ) : (
-                  <Button
-                    onClick={() => { setIsMenuOpen(false); base44.auth.redirectToLogin(); }}
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-sm"
-                  >
+                  </> :
+
+              <Button
+                onClick={() => {setIsMenuOpen(false);base44.auth.redirectToLogin();}}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-sm">
+                
                     Sign In
                   </Button>
-                )}
+              }
               </div>
             </div>
-          )}
+          }
         </header>}
 
         {/* PPC Widget Top Bar — deferred to avoid initial load spike */}
-         {isAuthenticated && user && mountSideEffects && (
-           <div className="sticky top-0 z-40 bg-white border-b border-red-200 shadow-sm">
+         {isAuthenticated && user && mountSideEffects &&
+        <div className="sticky top-0 z-40 bg-white border-b border-red-200 shadow-sm">
              <PPCAdSearchWidget variant="compact" />
            </div>
-         )}
+        }
 
          {/* Main Content */}
          <main>{children}</main>
 
          {/* Global AI Daily Goal Sidebar — only on Dashboard, deferred */}
-         {isAuthenticated && user && currentPageName === 'UserDashboard' && mountSideEffects && (
-           <div className="fixed right-4 top-32 z-30 w-80 max-h-[calc(100vh-150px)] overflow-y-auto hidden lg:block">
+         {isAuthenticated && user && currentPageName === 'UserDashboard' && mountSideEffects &&
+        <div className="fixed right-4 top-32 z-30 w-80 max-h-[calc(100vh-150px)] overflow-y-auto hidden lg:block">
              <Suspense fallback={null}>
                <AIPersonalizedDailyGoal user={user} />
              </Suspense>
            </div>
-         )}
+        }
 
          <FloatingNavSidebar currentPageName={currentPageName} />
 
-         {mountSideEffects && (
-           <Suspense fallback={null}>
+         {mountSideEffects &&
+        <Suspense fallback={null}>
              {isAuthenticated && user && <SurveyAlertWatcher user={user} />}
              {isAuthenticated && user && <SurveyNotificationBanner userId={user.id} />}
              {isAuthenticated && user && <DailyFeedbackModal user={user} />}
@@ -446,7 +446,7 @@ export default function Layout({ children, currentPageName }) {
              {isAuthenticated && user && <PriceDropAlertBadge user={user} />}
              {isAuthenticated && user && <WishlistAutoAddNotifier user={user} />}
            </Suspense>
-         )}
+        }
          <SupportChatButton />
         {isAuthenticated && mountSideEffects && <WidgetDownloadPrompt />}
 
@@ -457,17 +457,17 @@ export default function Layout({ children, currentPageName }) {
           onClose={() => setShowLogoutPrompt(false)}
           onLogout={handleActualLogout}
           user={user}
-          contextData={logoutContext}
-        />
+          contextData={logoutContext} />
+        
 
         {/* Customer Feedback Survey - Always Visible */}
-        {isAuthenticated && user && mountSideEffects && (
-          <div className="fixed bottom-4 right-4 w-96 max-h-[500px] z-20 shadow-xl">
+        {isAuthenticated && user && mountSideEffects &&
+        <div className="fixed bottom-4 right-4 w-96 max-h-[500px] z-20 shadow-xl">
             <Suspense fallback={null}>
               <CustomerFeedbackSurvey />
             </Suspense>
           </div>
-        )}
+        }
 
         {/* Footer */}
         <footer className="border-t bg-white mt-20">
@@ -505,6 +505,6 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </footer>
       </div>
-    </LocaleProvider>
-  );
+    </LocaleProvider>);
+
 }
