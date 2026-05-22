@@ -10,56 +10,83 @@ export default function RevenueStreamsSection() {
 
   const streams = [
     {
+      id: 'rewarded_video',
+      name: 'Rewarded Video Ads',
+      icon: '📺',
+      earning: '$5–$25 CPM',
+      description: 'AppLovin MAX-style rewarded video — highest-earning ad format with AI-optimized timing',
+      details: ['AI bid optimization every 15 min', 'Fill rates up to 95%', 'CPM up to $25'],
+      monthlyBudget: '$50-500+'
+    },
+    {
+      id: 'interstitial',
+      name: 'Interstitial Ads',
+      icon: '🖥️',
+      earning: '$6–$10 CPM',
+      description: 'Full-screen interstitial placements with AXON-powered frequency capping and targeting',
+      details: ['AI frequency capping', 'Placement A/B testing', 'Real-time waterfall bidding'],
+      monthlyBudget: '$30-300+'
+    },
+    {
+      id: 'playable',
+      name: 'Playable Ads',
+      icon: '🎮',
+      earning: '$20–$60 CPM',
+      description: 'Interactive playable ad units — the highest CPM format, reserved for premium inventory',
+      details: ['CPM up to $60', 'Best for high-LTV users', 'AXON LTV targeting'],
+      monthlyBudget: '$100-1,000+'
+    },
+    {
+      id: 'native_offerwall',
+      name: 'Native / Offerwall',
+      icon: '🏬',
+      earning: '$15–$22 CPM',
+      description: 'Native offerwall ads that blend seamlessly into your game or app with high completion rates',
+      details: ['High completion rates', 'Seamless integration', 'CPA & CPE models'],
+      monthlyBudget: '$40-400+'
+    },
+    {
+      id: 'ua_campaigns',
+      name: 'User Acquisition (UA)',
+      icon: '🎯',
+      earning: 'CPI $0.50–$3',
+      description: 'Run AppLovin-style CPI/CPA/ROAS user acquisition campaigns powered by AXON AI predictions',
+      details: ['AXON LTV prediction', 'ROAS bidding engine', 'Payback period tracking'],
+      monthlyBudget: 'Custom budget'
+    },
+    {
       id: 'surveys',
-      name: 'Surveys',
+      name: 'PPC Survey Ads',
       icon: '📋',
-      earning: '$3-50/month',
-      description: 'Complete quick surveys and market research studies',
-      details: ['2-10 min surveys', 'Instant payouts', 'Global access'],
+      earning: '$3–$50/month',
+      description: 'Earn from PPC survey completions — layered on top of ad mediation for maximum revenue density',
+      details: ['3,000+ monthly responses', 'Anti-fraud trust scoring', 'Instant payouts'],
       monthlyBudget: '$3-50'
     },
     {
-      id: 'ppc',
-      name: 'PPC Ads',
-      icon: '📺',
-      earning: '$5-100/month',
-      description: 'Click and interact with sponsored ads',
-      details: ['Easy engagement', 'Daily limit: 10 ads', 'Mobile friendly'],
-      monthlyBudget: '$5-100'
-    },
-    {
       id: 'referrals',
-      name: 'Referrals',
+      name: 'Referrals & MLM',
       icon: '👥',
       earning: '10% lifetime',
-      description: 'Earn commission from each referred user',
-      details: ['Passive income', 'Lifetime earnings', 'Leaderboard rewards'],
+      description: 'Multi-level referral commissions — earn from your network and their networks',
+      details: ['3-level MLM structure', 'Lifetime earnings', 'Leaderboard bonuses'],
       monthlyBudget: 'Variable'
     },
     {
-      id: 'games',
-      name: 'Game Purchases',
-      icon: '🎮',
-      earning: 'Varies',
-      description: 'Buy discounted games at 50% revenue share',
-      details: ['Premium library', 'Exclusive titles', 'Collection rewards'],
-      monthlyBudget: 'Custom'
-    },
-    {
-      id: 'wishlist',
-      name: 'Wishlist Sharing',
-      icon: '❤️',
-      earning: '$1-20/month',
-      description: 'Share wishlists and earn from conversions',
-      details: ['Share & earn', 'Multiple shares', 'Bonus entries'],
-      monthlyBudget: '$1-20'
+      id: 'ctv',
+      name: 'Connected TV (CTV)',
+      icon: '📡',
+      earning: '$30–$80 CPM',
+      description: 'Enterprise-tier CTV inventory — the highest CPM channel, available in the Enterprise plan',
+      details: ['CPM up to $80', 'Premium brand advertisers', 'Enterprise plan only'],
+      monthlyBudget: '$500-5,000+'
     },
     {
       id: 'creator',
       name: 'Creator Hub',
       icon: '⭐',
-      earning: '50% revenue',
-      description: 'Create content and monetize your audience',
+      earning: '50% revenue share',
+      description: 'Create content, run campaigns, and monetize your audience through the platform',
       details: ['Direct payouts', 'Analytics dashboard', 'Growth tools'],
       monthlyBudget: '$10-500+'
     },
@@ -90,7 +117,7 @@ export default function RevenueStreamsSection() {
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           <div className="bg-white rounded-xl p-5 border border-amber-100">
             <p className="text-sm text-gray-600 mb-2">Total Selected Streams</p>
-            <p className="text-3xl font-black text-amber-600">{selectedCount}/6</p>
+            <p className="text-3xl font-black text-amber-600">{selectedCount}/9</p>
           </div>
           <div className="bg-white rounded-xl p-5 border border-amber-100">
             <p className="text-sm text-gray-600 mb-2">Estimated Monthly Income</p>

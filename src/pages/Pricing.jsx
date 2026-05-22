@@ -266,10 +266,10 @@ export default function Pricing() {
                     { n: 3, title: 'Freemium Gating', emoji: '🔓', desc: 'Free core features; advanced tools behind paid tier' },
                     { n: 4, title: 'Pay-per-Use Credits', emoji: '🪙', desc: 'Credits for AI tools, reports, API calls, extra features' },
                     { n: 5, title: 'Affiliate Commissions', emoji: '🔗', desc: '3-level MLM — earn from referrals, their referrals, and theirs' },
-                    { n: 6, title: 'Rewarded Video Ads', emoji: '📺', desc: 'Earn while watching — AI-optimized slot timing & rewards' },
-                    { n: 7, title: 'Interstitial & Banner Ads', emoji: '📱', desc: 'AI-placed native ads with CTR optimization' },
-                    { n: 8, title: 'Sponsored Listings', emoji: '📢', desc: 'Brand placements, AI A/B tested copy, guaranteed impressions' },
-                    { n: 9, title: 'Behavioral Targeting', emoji: '🎯', desc: 'Anonymous premium audience segments for high CPM ads' },
+                    { n: 6, title: 'Rewarded Video Ads (MAX)', emoji: '📺', desc: 'AppLovin MAX-style rewarded video — AI bid optimization every 15 min, CPM up to $25, 95% fill rate' },
+                    { n: 7, title: 'Interstitial & Banner Ads', emoji: '📱', desc: 'AXON-powered full-screen interstitials + banner placements — waterfall bidding, A/B tested placement' },
+                    { n: 8, title: 'Playable Ads', emoji: '🎮', desc: 'Interactive playable ad units — highest CPM format ($20–$60), targets high-LTV users via AXON predictions' },
+                    { n: 9, title: 'Native / Offerwall Ads', emoji: '🏬', desc: 'Seamless native offerwall placements — CPM $15–$22, CPA & CPE models, blends into game UI' },
                     { n: 10, title: 'Market Research Reports', emoji: '📊', desc: 'Sell GDPR-safe anonymized insights to brands & researchers' },
                     { n: 11, title: 'Creator & Influencer Deals', emoji: '🤝', desc: 'AI brand-creator matching — 15% commission on every deal' },
                     { n: 12, title: 'Transaction Fees', emoji: '💸', desc: 'Auto 5% cut on all marketplace transactions, real-time' },
@@ -279,8 +279,8 @@ export default function Pricing() {
                     { n: 16, title: 'Crowdfunding', emoji: '❤️', desc: 'Community-funded features with AI pitch generation' },
                     { n: 17, title: 'API Access Fees', emoji: '🔑', desc: 'Pay-per-use API tiers + integration fees for developers' },
                     { n: 18, title: 'AI Models as a Service', emoji: '🤖', desc: 'Proprietary AI APIs licensed to external businesses' },
-                    { n: 19, title: 'App Referral Programs', emoji: '📈', desc: 'Promote partner apps on the platform for commission' },
-                    { n: 20, title: 'Data Intelligence', emoji: '🧠', desc: 'Behavioral analytics dashboards sold as B2B SaaS product' },
+                    { n: 19, title: 'User Acquisition (UA) Campaigns', emoji: '🎯', desc: 'AppLovin AXON-style CPI/CPA/ROAS UA campaigns — LTV prediction, ROAS bidding, $0.50–$3 CPI targeting' },
+                    { n: 20, title: 'Connected TV (CTV) Inventory', emoji: '📡', desc: 'Enterprise CTV ad inventory — CPM $30–$80, premium brand advertisers, highest-value channel on platform' },
                   ].map((s) => (
                     <div key={s.n} className="bg-white/5 border border-white/10 rounded-xl p-3 hover:bg-white/10 transition-colors">
                       <div className="flex items-center gap-2 mb-1">
