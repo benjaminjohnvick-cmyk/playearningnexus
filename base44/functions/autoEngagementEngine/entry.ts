@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
 
     // 5. Proactive Support — analyze tickets + UX sessions
     await invoke('proactiveSupportAnalyzer', {});
-    await invoke('aiSupportEngine', {});
+    // aiSupportEngine requires an explicit action param — skip batch call
     results.proactive_support_triggered = true;
 
     // 6. AI Game Creator — generate game concepts from feedback

@@ -3,93 +3,77 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 // Automates: daily platform health checks, batch daily goal generation, smart payout scheduling,
 // business client setup, payout advance engine, personalized offers expiry, dynamic pricing
 Deno.serve(async (req) => {
+  const base44 = createClientFromRequest(req);
+  const results = {};
+  const errors = {};
+  const now = new Date().toISOString();
+
+  const run = async (key, fn, payload = {}) => {
+    try {
+      results[key] = await base44.asServiceRole.functions.invoke(fn, payload);
+    } catch (e) {
+      errors[key] = e.message;
+      console.warn(`[HealthEngine] ${key} failed: ${e.message}`);
+    }
+  };
+
   try {
-    const base44 = createClientFromRequest(req);
+    // 1. Batch daily goal generation
+    await run('daily_goals', 'batchDailyGoalGenerator', {});
+    await run('ai_daily_goals', 'generateAIDailyGoal', { batch: true });
 
-    const results = {};
-    const now = new Date().toISOString();
-    const today = now.split('T')[0];
+    // 2. Payout scheduling
+    await run('smart_payout_scheduler', 'smartPayoutScheduler', {});
+    await run('ai_payout_scheduler', 'aiPayoutScheduler', {});
+    await run('ai_payout_scheduler_engine', 'aiPayoutSchedulerEngine', {});
+    await run('ai_payout_advance', 'aiPayoutAdvanceEngine', {});
 
-    // 1. Batch daily goal generation for all active users
-    await base44.asServiceRole.functions.invoke('batchDailyGoalGenerator', {});
-    results.daily_goals_generated = true;
+    // 3. Business client setup
+    await run('business_client_setup', 'autoBusinessClientSetup', {});
+    await run('register_business_client', 'autoRegisterBusinessClient', {});
 
-    // 2. Generate AI daily goals for individual users
-    await base44.asServiceRole.functions.invoke('generateAIDailyGoal', { batch: true });
-    results.ai_daily_goals_generated = true;
-
-    // 3. Smart payout scheduler — optimize timing
-    await base44.asServiceRole.functions.invoke('smartPayoutScheduler', {});
-    await base44.asServiceRole.functions.invoke('aiPayoutScheduler', {});
-    await base44.asServiceRole.functions.invoke('aiPayoutSchedulerEngine', {});
-    results.payout_scheduling_optimized = true;
-
-    // 4. AI payout advance engine — pre-approve advances
-    await base44.asServiceRole.functions.invoke('aiPayoutAdvanceEngine', {});
-    results.payout_advances_processed = true;
-
-    // 5. Auto-register new business clients
-    await base44.asServiceRole.functions.invoke('autoBusinessClientSetup', {});
-    await base44.asServiceRole.functions.invoke('autoRegisterBusinessClient', {});
-    results.business_clients_setup = true;
-
-    // 6. Verify business clients
-    const pendingClients = await base44.asServiceRole.entities.BusinessClient.filter({ account_status: 'pending' });
+    // 4. Verify pending business clients
+    const pendingClients = await base44.asServiceRole.entities.BusinessClient.filter({ account_status: 'pending' }).catch(() => []);
     let clientsVerified = 0;
     for (const client of pendingClients.slice(0, 10)) {
-      await base44.asServiceRole.functions.invoke('verifyBusinessClient', { client_id: client.id });
+      await base44.asServiceRole.functions.invoke('verifyBusinessClient', { client_id: client.id }).catch(() => {});
       clientsVerified++;
     }
     results.business_clients_verified = clientsVerified;
 
-    // 7. Expire personalized offers
-    const activeOffers = await base44.asServiceRole.entities.PersonalizedOffer.filter({ status: 'active' });
+    // 5. Expire personalized offers
+    const activeOffers = await base44.asServiceRole.entities.PersonalizedOffer.filter({ status: 'active' }).catch(() => []);
     let offersExpired = 0;
     for (const offer of activeOffers) {
       if (offer.expires_at && offer.expires_at < now) {
-        await base44.asServiceRole.entities.PersonalizedOffer.update(offer.id, { status: 'expired' });
+        await base44.asServiceRole.entities.PersonalizedOffer.update(offer.id, { status: 'expired' }).catch(() => {});
         offersExpired++;
       }
     }
     results.personalized_offers_expired = offersExpired;
 
-    // 8. Update dynamic pricing models
-    const pricingModels = await base44.asServiceRole.entities.DynamicPricing.list('-updated_date', 20);
+    // 6. Dynamic pricing models count
+    const pricingModels = await base44.asServiceRole.entities.DynamicPricing.list('-updated_date', 20).catch(() => []);
     results.dynamic_pricing_models = pricingModels.length;
 
-    // 9. Batch game recommendations
-    await base44.asServiceRole.functions.invoke('batchGameRecommendations', {});
-    results.game_recommendations_batched = true;
+    // 7. Batch game recommendations
+    await run('game_recommendations', 'batchGameRecommendations', {});
 
-    // 10. AI payout optimizer
-    await base44.asServiceRole.functions.invoke('aiPayoutOptimizer', {});
-    results.payout_optimized = true;
+    // 8. Payout optimization
+    await run('payout_optimizer', 'aiPayoutOptimizer', {});
+    await run('payout_insight', 'aiPayoutInsight', {});
+    await run('payout_fraud_monitor', 'fraudPayoutMonitor', {});
+    await run('payout_recommendations', 'autoPayoutRecommendations', {});
 
-    // 11. AI payout insight
-    await base44.asServiceRole.functions.invoke('aiPayoutInsight', {});
-    results.payout_insights_generated = true;
-
-    // 12. Payout fraud monitor
-    await base44.asServiceRole.functions.invoke('fraudPayoutMonitor', {});
-    results.payout_fraud_monitored = true;
-
-    // 13. Request payout recommendations for eligible users
-    await base44.asServiceRole.functions.invoke('autoPayoutRecommendations', {});
-    results.payout_recommendations_sent = true;
-
-    // 14. Global settings health check
-    const globalSettings = await base44.asServiceRole.entities.GlobalSettings.list('-updated_date', 1);
+    // 9. Global settings version
+    const globalSettings = await base44.asServiceRole.entities.GlobalSettings.list('-updated_date', 1).catch(() => []);
     results.global_settings_version = globalSettings[0]?.version || 'unknown';
 
-    // 15. UX session recorder batch processing
-    await base44.asServiceRole.functions.invoke('uxSessionRecorder', { batch: true });
-    results.ux_sessions_recorded = true;
+    // 10. UX tracking
+    await run('ux_sessions', 'uxSessionRecorder', { batch: true });
+    await run('ux_analysis', 'uxAnalysisEngine', {});
 
-    // 16. UX analysis engine
-    await base44.asServiceRole.functions.invoke('uxAnalysisEngine', {});
-    results.ux_analysis_run = true;
-
-    return Response.json({ success: true, results });
+    return Response.json({ success: true, results, errors: Object.keys(errors).length > 0 ? errors : undefined });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

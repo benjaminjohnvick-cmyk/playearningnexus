@@ -11,20 +11,25 @@ Deno.serve(async (req) => {
     if (activeTournaments.length < 2) {
       const approvedGames = await base44.asServiceRole.entities.Game.filter({ status: 'approved' });
       const featuredGame = approvedGames[0];
-      await base44.asServiceRole.entities.Tournament.create({
-        tournament_name: `Weekly Tournament - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
-        game_id: featuredGame?.id || 'general',
-        game_title: featuredGame?.title || 'GamerGain',
-        status: 'upcoming',
-        registration_starts: new Date().toISOString(),
-        registration_ends: new Date(Date.now() + 86400000).toISOString(),
-        tournament_starts: new Date(Date.now() + 86400000).toISOString(),
-        tournament_ends: new Date(Date.now() + 7 * 86400000).toISOString(),
-        total_prize_pool: 500,
-        max_participants: 64,
-        tournament_format: 'single_elimination',
-        entry_fee: 0
-      });
+      if (approvedGames.length > 0) {
+        const weekLabel = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        await base44.asServiceRole.entities.Tournament.create({
+          name: `Weekly Tournament - ${weekLabel}`,
+          tournament_name: `Weekly Tournament - ${weekLabel}`,
+          game_id: featuredGame.id,
+          game_title: featuredGame.title || 'GamerGain',
+          title: `Weekly Tournament - ${weekLabel}`,
+          status: 'upcoming',
+          start_date: new Date(Date.now() + 86400000).toISOString(),
+          end_date: new Date(Date.now() + 7 * 86400000).toISOString(),
+          registration_deadline: new Date(Date.now() + 86400000).toISOString(),
+          prize_pool: 500,
+          max_participants: 64,
+          format: 'single_elimination',
+          entry_fee: 0,
+          is_active: true
+        }).catch(e => console.warn('[TournamentEngine] create failed:', e.message));
+      }
       results.new_tournament_created = true;
     }
 

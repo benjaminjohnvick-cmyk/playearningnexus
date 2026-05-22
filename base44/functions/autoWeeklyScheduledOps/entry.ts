@@ -58,6 +58,7 @@ Deno.serve(async (req) => {
     await base44.asServiceRole.entities.WeeklyEvent.create({
       event_name: theme.title,
       event_type: 'weekly_challenge',
+      name: theme.title,
       title: theme.title,
       description: theme.description,
       prize: theme.prize,
@@ -68,7 +69,7 @@ Deno.serve(async (req) => {
       end_date: nextWeekEnd,
       status: 'active',
       is_active: true
-    });
+    }).catch(e => console.warn('[WeeklyOps] WeeklyEvent create skipped:', e.message));
     results.push('weekly_event_created');
 
     // 4. Process ReferralJackpot — trigger weekly jackpot

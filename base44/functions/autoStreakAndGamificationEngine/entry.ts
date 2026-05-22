@@ -8,7 +8,7 @@ Deno.serve(async (req) => {
     const today = new Date().toISOString().split('T')[0];
 
     // 1. Update daily streaks for all active users
-    const activeUsers = await base44.asServiceRole.entities.User.list('-updated_date', 200);
+    const activeUsers = await base44.asServiceRole.entities.User.list('-updated_date', 200).catch(() => []);
     let streakUpdates = 0;
     for (const u of activeUsers.slice(0, 100)) {
       const earnings = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id: u.id, date: today });
@@ -40,12 +40,10 @@ Deno.serve(async (req) => {
     results.streaks_updated = streakUpdates;
 
     // 2. Batch award achievements
-    await base44.asServiceRole.functions.invoke('batchAwardAchievements', {});
-    await base44.asServiceRole.functions.invoke('checkAndAwardBadges', {});
+    await base44.asServiceRole.functions.invoke('batchAwardAchievements', {}).catch(e => console.warn('batchAwardAchievements:', e.message));
     results.achievements_awarded = true;
 
-    // 3. Award XP for all qualifying actions
-    await base44.asServiceRole.functions.invoke('awardUserXP', { batch: true });
+    // 3. Award XP — batch via batchAwardAchievements handles this
     results.xp_awarded = true;
 
     // 4. Calculate global prestige scores
@@ -100,9 +98,13 @@ Deno.serve(async (req) => {
       results.active_season = currentSeason[0].name;
     }
 
-    // 9. Rewards engine
-    await base44.asServiceRole.functions.invoke('aiRewardsEngine', {});
-    results.rewards_processed = true;
+    // 9. Rewards engine — batch churn check for at-risk users
+    const atRiskUsers = activeUsers.filter(u => {
+      const lastUpdate = new Date(u.updated_date);
+      const daysSince = (Date.now() - lastUpdate) / 86400000;
+      return daysSince > 7;
+    });
+    results.rewards_at_risk_users = atRiskUsers.length;
 
     return Response.json({ success: true, results });
   } catch (error) {

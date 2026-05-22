@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 // Automates: transaction reconciliation, revenue distribution, developer payouts, daily tier checks
 Deno.serve(async (req) => {
+  try {
   const base44 = createClientFromRequest(req);
   const results = {};
   const errors = [];
@@ -94,4 +95,7 @@ Deno.serve(async (req) => {
   results.revenue_forecast_updated = true;
 
   return Response.json({ success: true, results, errors });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
 });

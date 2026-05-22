@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 // Automates: push notifications, email reminders, survey alerts, payout alerts, streak reminders, weekly top earners
 Deno.serve(async (req) => {
+  try {
   const base44 = createClientFromRequest(req);
   const results = {};
   const errors = [];
@@ -72,4 +73,7 @@ Deno.serve(async (req) => {
   }
 
   return Response.json({ success: true, results, errors });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
 });

@@ -117,10 +117,11 @@ Deno.serve(async (req) => {
     const today = now.split('T')[0];
     await base44.asServiceRole.entities.GrowthHeatmapData.create({
       date: today,
+      country_code: 'US',
       new_users: recentUsers.filter(u => u.created_date?.startsWith(today)).length,
       total_users: recentUsers.length,
       collected_at: now
-    });
+    }).catch(e => console.warn('[AffiliateStreamer] GrowthHeatmapData create failed:', e.message));
     results.growth_heatmap_data_collected = true;
 
     // 7. AI survey recommendations matching

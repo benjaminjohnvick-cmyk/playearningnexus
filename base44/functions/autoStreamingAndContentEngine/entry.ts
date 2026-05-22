@@ -84,13 +84,11 @@ Deno.serve(async (req) => {
     }
     results.subdomains_approved = subdomainsApproved;
 
-    // 8. AI viral content publisher
-    await base44.asServiceRole.functions.invoke('aiViralContentPublisher', {});
-    results.viral_content_published = true;
+    // 8. AI viral content publisher (requires user context — skipped in batch)
+    results.viral_content_published = 'skipped_requires_user_context';
 
-    // 9. AI content generator and share
-    await base44.asServiceRole.functions.invoke('aiContentGeneratorAndShare', {});
-    results.content_generated_and_shared = true;
+    // 9. AI content generator and share (requires user context — skipped in batch)
+    results.content_generated_and_shared = 'skipped_requires_user_context';
 
     return Response.json({ success: true, results });
   } catch (error) {

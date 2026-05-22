@@ -5,8 +5,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (user?.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const results = {};
     const now = new Date().toISOString();
@@ -59,9 +57,8 @@ Deno.serve(async (req) => {
     }
     results.membership_tier_upgrades = membershipUpgrades;
 
-    // 5. AI rewards engine
-    await base44.asServiceRole.functions.invoke('aiRewardsEngine', {});
-    results.ai_rewards_processed = true;
+    // 5. AI rewards engine — requires action param, skip in batch
+    results.ai_rewards_processed = 'skipped_requires_action';
 
     // 6. Award achievements in batch
     await base44.asServiceRole.functions.invoke('awardAchievements', { batch: true });
