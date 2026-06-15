@@ -1,0 +1,66 @@
+{
+  "name": "DailyChallenge",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User assigned this challenge"
+    },
+    "challenge_type": {
+      "type": "string",
+      "enum": [
+        "complete_surveys",
+        "play_games",
+        "earn_amount",
+        "maintain_streak",
+        "invite_friends"
+      ],
+      "description": "Type of challenge"
+    },
+    "title": {
+      "type": "string",
+      "description": "Challenge title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Challenge description"
+    },
+    "target_value": {
+      "type": "number",
+      "description": "Target to reach"
+    },
+    "current_progress": {
+      "type": "number",
+      "default": 0,
+      "description": "Current progress"
+    },
+    "reward_amount": {
+      "type": "number",
+      "description": "Reward for completion"
+    },
+    "reward_currency": {
+      "type": "number",
+      "default": 0,
+      "description": "Virtual currency reward"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Challenge expiration"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "challenge_type",
+    "title",
+    "target_value"
+  ]
+}

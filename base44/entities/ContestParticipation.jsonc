@@ -1,0 +1,76 @@
+{
+  "name": "ContestParticipation",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Participant user ID"
+    },
+    "contest_id": {
+      "type": "string",
+      "description": "Contest ID"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Contest date"
+    },
+    "part1_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user completed part 1 (social post)"
+    },
+    "part1_completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When part 1 was completed"
+    },
+    "part2_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user completed part 2 (business outreach)"
+    },
+    "part2_completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When part 2 was completed"
+    },
+    "opted_out": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user opted out"
+    },
+    "users_referred": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of users referred"
+    },
+    "businesses_referred": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of businesses referred"
+    },
+    "generated_image_url": {
+      "type": "string",
+      "description": "AI-generated image URL"
+    },
+    "social_post_caption": {
+      "type": "string",
+      "description": "Caption for social post"
+    },
+    "celebrity_name": {
+      "type": "string",
+      "description": "Celebrity name chosen by user"
+    },
+    "earnings": {
+      "type": "number",
+      "default": 0,
+      "description": "Earnings from this contest"
+    }
+  },
+  "required": [
+    "user_id",
+    "contest_id",
+    "date"
+  ]
+}

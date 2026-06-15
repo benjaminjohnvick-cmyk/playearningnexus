@@ -1,0 +1,128 @@
+{
+  "name": "BusinessClient",
+  "type": "object",
+  "properties": {
+    "company_name": {
+      "type": "string",
+      "description": "Company or developer name"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Primary contact email"
+    },
+    "contact_phone": {
+      "type": "string",
+      "description": "Contact phone number"
+    },
+    "owner_user_id": {
+      "type": "string",
+      "description": "User ID of the business owner"
+    },
+    "paypal_email": {
+      "type": "string",
+      "description": "PayPal email for payments"
+    },
+    "total_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Total revenue earned (50% of survey revenue after install fees)"
+    },
+    "total_installs": {
+      "type": "number",
+      "default": 0,
+      "description": "Total installs across all games"
+    },
+    "games_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of games submitted"
+    },
+    "account_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "pending",
+        "suspended"
+      ],
+      "default": "pending",
+      "description": "Account status"
+    },
+    "priority_slots_purchased": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of priority slots purchased"
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether onboarding is complete"
+    },
+    "marketplace_store_id": {
+      "type": "string",
+      "description": "Which marketplace store manages this client"
+    },
+    "install_tracking_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Link tracking for $0.50 per install"
+    },
+    "social_media_campaign_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "$4.50 per install campaign across all platforms"
+    },
+    "minimum_installs_target": {
+      "type": "number",
+      "default": 100000,
+      "description": "Contract complete after 100k installs"
+    },
+    "ghl_integration_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "GoHighLevel CRM integration"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Developer/company logo"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Short tagline or slogan"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Detailed developer/company bio"
+    },
+    "social_links": {
+      "type": "object",
+      "description": "Social media and website links",
+      "properties": {
+        "website": {
+          "type": "string"
+        },
+        "twitter": {
+          "type": "string"
+        },
+        "linkedin": {
+          "type": "string"
+        },
+        "github": {
+          "type": "string"
+        },
+        "facebook": {
+          "type": "string"
+        },
+        "instagram": {
+          "type": "string"
+        },
+        "youtube": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "company_name",
+    "contact_email"
+  ]
+}

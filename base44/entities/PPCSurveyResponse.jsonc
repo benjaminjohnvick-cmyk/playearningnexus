@@ -1,0 +1,108 @@
+{
+  "name": "PPCSurveyResponse",
+  "type": "object",
+  "properties": {
+    "survey_id": {
+      "type": "string",
+      "description": "PPCSurvey ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who responded"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_index": {
+            "type": "number"
+          },
+          "selected_option": {
+            "type": "string",
+            "enum": [
+              "a",
+              "b",
+              "c",
+              "d"
+            ]
+          },
+          "open_text": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "generated_sale": {
+      "type": "boolean",
+      "default": false
+    },
+    "payout_to_user": {
+      "type": "number",
+      "default": 0
+    },
+    "payout_to_creator": {
+      "type": "number",
+      "default": 0
+    },
+    "time_taken_seconds": {
+      "type": "number"
+    },
+    "language": {
+      "type": "string",
+      "default": "en"
+    },
+    "quality_score": {
+      "type": "number",
+      "description": "Data quality score 0-100"
+    },
+    "quality_penalties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "device_fingerprint": {
+      "type": "string",
+      "description": "Browser/device fingerprint hash"
+    },
+    "fraud_risk_score": {
+      "type": "number",
+      "description": "0-100 fraud risk score"
+    },
+    "fraud_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of fraud signals detected"
+    },
+    "fraud_action": {
+      "type": "string",
+      "enum": [
+        "allow",
+        "flag",
+        "block"
+      ],
+      "default": "allow"
+    },
+    "is_flagged": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flagged for review"
+    },
+    "is_blocked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Blocked \u2014 not counted in results"
+    }
+  },
+  "required": [
+    "survey_id",
+    "user_id"
+  ]
+}

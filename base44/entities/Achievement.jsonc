@@ -1,0 +1,64 @@
+{
+  "name": "Achievement",
+  "type": "object",
+  "properties": {
+    "achievement_key": {
+      "type": "string",
+      "description": "Unique identifier (e.g., 'surveys_50')"
+    },
+    "title": {
+      "type": "string",
+      "description": "Achievement title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Achievement description"
+    },
+    "badge_icon_url": {
+      "type": "string",
+      "description": "Badge image URL"
+    },
+    "badge_color": {
+      "type": "string",
+      "description": "Badge color (hex)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "surveys",
+        "streaks",
+        "referrals",
+        "earnings",
+        "quality"
+      ],
+      "description": "Achievement category"
+    },
+    "requirement_type": {
+      "type": "string",
+      "enum": [
+        "count",
+        "threshold",
+        "streak"
+      ],
+      "description": "How achievement is earned"
+    },
+    "requirement_value": {
+      "type": "number",
+      "description": "Value to reach"
+    },
+    "tier": {
+      "type": "number",
+      "description": "Tier level (1=bronze, 2=silver, 3=gold)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "achievement_key",
+    "title",
+    "requirement_type",
+    "requirement_value"
+  ]
+}

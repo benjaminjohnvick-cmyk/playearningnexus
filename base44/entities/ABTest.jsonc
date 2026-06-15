@@ -1,0 +1,100 @@
+{
+  "name": "ABTest",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Test creator"
+    },
+    "test_name": {
+      "type": "string",
+      "description": "Test name"
+    },
+    "test_type": {
+      "type": "string",
+      "enum": [
+        "link",
+        "campaign",
+        "content"
+      ],
+      "description": "What is being tested"
+    },
+    "variant_a_id": {
+      "type": "string",
+      "description": "First variant (link/campaign ID)"
+    },
+    "variant_b_id": {
+      "type": "string",
+      "description": "Second variant (link/campaign ID)"
+    },
+    "variant_a_name": {
+      "type": "string",
+      "description": "Variant A label"
+    },
+    "variant_b_name": {
+      "type": "string",
+      "description": "Variant B label"
+    },
+    "variant_a_clicks": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_clicks": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_a_conversions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_conversions": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_a_earnings": {
+      "type": "number",
+      "default": 0
+    },
+    "variant_b_earnings": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "completed",
+        "paused"
+      ],
+      "default": "running"
+    },
+    "winner": {
+      "type": "string",
+      "enum": [
+        "a",
+        "b",
+        "tie"
+      ],
+      "description": "Winning variant"
+    },
+    "confidence_level": {
+      "type": "number",
+      "description": "Statistical confidence %"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "user_id",
+    "test_name",
+    "test_type",
+    "variant_a_id",
+    "variant_b_id"
+  ]
+}

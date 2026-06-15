@@ -1,0 +1,61 @@
+{
+  "name": "PromoCode",
+  "type": "object",
+  "properties": {
+    "developer_id": {
+      "type": "string",
+      "description": "Business client who created the promo code"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "Game this promo applies to"
+    },
+    "code": {
+      "type": "string",
+      "description": "Unique promo code"
+    },
+    "discount_type": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "fixed_amount"
+      ],
+      "description": "Type of discount"
+    },
+    "discount_value": {
+      "type": "number",
+      "description": "Discount amount or percentage"
+    },
+    "max_uses": {
+      "type": "number",
+      "description": "Maximum number of uses"
+    },
+    "current_uses": {
+      "type": "number",
+      "default": 0,
+      "description": "Current usage count"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Expiration date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether code is currently active"
+    },
+    "revenue_generated": {
+      "type": "number",
+      "default": 0,
+      "description": "Total revenue from this promo"
+    }
+  },
+  "required": [
+    "developer_id",
+    "game_id",
+    "code",
+    "discount_type",
+    "discount_value"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "DailyEarnings",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who earned"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of earnings (YYYY-MM-DD)"
+    },
+    "total_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Total earned today (user's 50% share)"
+    },
+    "total_surveys_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of surveys completed today"
+    },
+    "goal_met": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the $3 daily goal was met"
+    },
+    "referral_bonus_paid": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether referrer bonus was already paid for today"
+    }
+  },
+  "required": [
+    "user_id",
+    "date"
+  ]
+}

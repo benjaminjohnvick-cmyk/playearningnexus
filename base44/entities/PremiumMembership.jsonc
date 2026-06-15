@@ -1,0 +1,72 @@
+{
+  "name": "PremiumMembership",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User with premium membership"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Premium membership start date"
+    },
+    "days_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Days where $3 requirement was met"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Premium status"
+    },
+    "daily_goal": {
+      "type": "number",
+      "default": 3,
+      "description": "Daily earnings goal in dollars"
+    },
+    "sms_reminders_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "SMS reminder preference"
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "Phone number for SMS reminders"
+    },
+    "lockout_mode_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether lockout mode is active"
+    },
+    "lockout_start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When lockout mode started"
+    },
+    "lockout_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When lockout mode ends (1 year from start)"
+    },
+    "auto_renew_lockout": {
+      "type": "boolean",
+      "default": true,
+      "description": "Auto-renew lockout mode annually"
+    },
+    "next_session_scheduled_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Next scheduled app usage time"
+    },
+    "lockout_cycle_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of lockout cycles completed"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "name": "LiveEvent",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "double_xp",
+        "guild_war",
+        "special_challenge",
+        "bonus_rewards",
+        "tournament",
+        "flash_sale"
+      ],
+      "description": "Type of event"
+    },
+    "title": {
+      "type": "string",
+      "description": "Event title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Event description"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When event starts"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When event ends"
+    },
+    "reward_multiplier": {
+      "type": "number",
+      "default": 1,
+      "description": "Multiplier for earnings/XP during event"
+    },
+    "reward_credits": {
+      "type": "number",
+      "default": 0,
+      "description": "Bonus credits for participation"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "Specific game for event (optional)"
+    },
+    "guild_id": {
+      "type": "string",
+      "description": "Guild-specific event (optional)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether event is currently active"
+    },
+    "participants_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of participants"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Event banner image"
+    },
+    "requirements": {
+      "type": "object",
+      "description": "Requirements to participate (min level, etc.)"
+    },
+    "event_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_id": {
+            "type": "string"
+          },
+          "item_name": {
+            "type": "string"
+          },
+          "base_price": {
+            "type": "number"
+          },
+          "current_price": {
+            "type": "number"
+          },
+          "discount_percentage": {
+            "type": "number"
+          }
+        }
+      },
+      "default": [],
+      "description": "Event-specific items with dynamic pricing"
+    },
+    "engagement_metrics": {
+      "type": "object",
+      "description": "Event engagement data",
+      "properties": {
+        "total_purchases": {
+          "type": "number"
+        },
+        "total_revenue": {
+          "type": "number"
+        },
+        "average_session_time": {
+          "type": "number"
+        },
+        "conversion_rate": {
+          "type": "number"
+        }
+      }
+    },
+    "ai_recommendations": {
+      "type": "object",
+      "description": "AI-generated monetization recommendations"
+    }
+  },
+  "required": [
+    "title",
+    "start_time",
+    "end_time",
+    "event_type"
+  ]
+}

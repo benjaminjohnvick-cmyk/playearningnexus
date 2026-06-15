@@ -1,0 +1,123 @@
+{
+  "name": "ReferralCampaign",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Campaign creator"
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "campaign_type": {
+      "type": "string",
+      "enum": [
+        "social_media",
+        "email",
+        "direct_link",
+        "influencer",
+        "contest"
+      ],
+      "description": "Campaign category"
+    },
+    "target_platform": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "twitter",
+        "instagram",
+        "youtube",
+        "tiktok",
+        "linkedin",
+        "email",
+        "general"
+      ],
+      "description": "Target platform"
+    },
+    "description": {
+      "type": "string",
+      "description": "Campaign description"
+    },
+    "promotional_content": {
+      "type": "string",
+      "description": "AI-generated promotional text"
+    },
+    "target_audience": {
+      "type": "string",
+      "description": "Target audience description"
+    },
+    "bonus_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Bonus reward amount in USD"
+    },
+    "bonus_description": {
+      "type": "string",
+      "description": "Description of the bonus reward"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Campaign start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Campaign end date"
+    },
+    "referral_links": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Associated referral link IDs"
+    },
+    "total_clicks": {
+      "type": "number",
+      "default": 0,
+      "description": "Total clicks"
+    },
+    "total_conversions": {
+      "type": "number",
+      "default": 0,
+      "description": "Successful conversions"
+    },
+    "conversion_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Conversion percentage"
+    },
+    "total_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Earnings from campaign"
+    },
+    "ai_generated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether AI helped create this"
+    },
+    "ai_suggestions": {
+      "type": "object",
+      "description": "AI recommendations"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused",
+        "completed"
+      ],
+      "default": "draft",
+      "description": "Campaign status"
+    }
+  },
+  "required": [
+    "user_id",
+    "campaign_name",
+    "campaign_type"
+  ]
+}

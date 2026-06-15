@@ -1,0 +1,40 @@
+{
+  "name": "UserInventory",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who owns this item"
+    },
+    "product_id": {
+      "type": "string",
+      "description": "Product/item ID"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "Game this item belongs to"
+    },
+    "cosmetic_item_id": {
+      "type": "string",
+      "description": "Cosmetic item ID (legacy)"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of items owned"
+    },
+    "is_equipped": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether item is currently equipped"
+    },
+    "acquired_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When item was acquired"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

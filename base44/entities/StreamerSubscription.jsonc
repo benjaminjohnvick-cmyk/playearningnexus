@@ -1,0 +1,62 @@
+{
+  "name": "StreamerSubscription",
+  "type": "object",
+  "properties": {
+    "subscriber_user_id": {
+      "type": "string",
+      "description": "User who subscribed"
+    },
+    "streamer_user_id": {
+      "type": "string",
+      "description": "Streamer being subscribed to"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "description": "Subscription tier"
+    },
+    "price_monthly": {
+      "type": "number",
+      "description": "Monthly subscription price"
+    },
+    "perks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of perks for this tier"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Subscription start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Subscription end date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether subscription is active"
+    },
+    "auto_renew": {
+      "type": "boolean",
+      "default": true,
+      "description": "Auto-renewal enabled"
+    }
+  },
+  "required": [
+    "subscriber_user_id",
+    "streamer_user_id",
+    "tier",
+    "price_monthly"
+  ]
+}

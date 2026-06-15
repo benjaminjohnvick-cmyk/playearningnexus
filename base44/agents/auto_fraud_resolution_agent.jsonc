@@ -56,19 +56,19 @@
     },
     {
       "function_name": "fraudScanEngine",
-      "description": "Comprehensive fraud scan across all platform activity"
+      "description": "Comprehensive fraud scan across all activity"
     },
     {
       "function_name": "computeUserTrustScore",
-      "description": "Calculate trust score for a specific user"
+      "description": "Calculate user trust score"
     },
     {
       "function_name": "aiFraudScorer",
-      "description": "AI-powered fraud probability scoring"
+      "description": "AI fraud probability scoring"
     },
     {
       "function_name": "realtimeFraudMonitor",
-      "description": "Real-time fraud monitoring stream"
+      "description": "Real-time fraud monitoring"
     },
     {
       "function_name": "flagSuspiciousReferrals",
@@ -76,19 +76,19 @@
     },
     {
       "function_name": "checkSurveyFraud",
-      "description": "Check for survey fraud indicators"
+      "description": "Check for survey fraud"
     },
     {
       "function_name": "detectSuspiciousResponses",
-      "description": "Detect suspicious survey responses"
+      "description": "Detect suspicious responses"
     },
     {
       "function_name": "aiPayoutFraudDetection",
-      "description": "AI fraud detection for payout requests"
+      "description": "Fraud detection for payouts"
     },
     {
       "function_name": "fraudAlertNotifier",
-      "description": "Send fraud alerts to admins for critical cases"
+      "description": "Alert admins for critical fraud cases"
     },
     {
       "function_name": "fraudDetector",
@@ -96,8 +96,21 @@
     },
     {
       "function_name": "earningVelocityMonitor",
-      "description": "Monitor abnormal earning velocity patterns"
+      "description": "Monitor abnormal earning patterns"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "auto_fraud_resolution_agent"
 }

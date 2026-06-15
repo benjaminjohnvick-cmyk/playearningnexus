@@ -68,23 +68,23 @@
     },
     {
       "function_name": "aiSupportEngine",
-      "description": "AI-powered support ticket analysis and resolution"
+      "description": "AI-powered ticket analysis and resolution"
     },
     {
       "function_name": "aiDisputeResolver",
-      "description": "Auto-resolve disputes with evidence analysis"
+      "description": "Auto-resolve disputes with evidence"
     },
     {
       "function_name": "aiDisputeReview",
-      "description": "Detailed dispute review and recommendation"
+      "description": "Detailed dispute review"
     },
     {
       "function_name": "analyzeClaimEvidence",
-      "description": "Analyze evidence submitted with a claim"
+      "description": "Analyze claim evidence"
     },
     {
       "function_name": "processRewardPayout",
-      "description": "Process a reward payout as ticket resolution"
+      "description": "Process reward payout as ticket resolution"
     },
     {
       "function_name": "requestManualPayout",
@@ -92,16 +92,29 @@
     },
     {
       "function_name": "sendPushNotification",
-      "description": "Notify user when their ticket is resolved"
+      "description": "Notify user when ticket is resolved"
     },
     {
       "function_name": "autoRegisterBusinessClient",
-      "description": "Auto-register and onboard a developer"
+      "description": "Auto-register developer for onboarding issues"
     },
     {
       "function_name": "adminAlertNotifier",
-      "description": "Alert admin for tickets requiring human intervention"
+      "description": "Alert admin for escalated tickets"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "auto_support_resolution_agent"
 }

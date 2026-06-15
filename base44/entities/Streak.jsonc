@@ -1,0 +1,41 @@
+{
+  "name": "Streak",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User maintaining the streak"
+    },
+    "current_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Current consecutive days"
+    },
+    "longest_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Best streak achieved"
+    },
+    "last_activity_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Last date user completed surveys"
+    },
+    "total_bonus_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Total bonus from streaks"
+    },
+    "streak_milestones": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "default": [],
+      "description": "Streak milestones reached (7, 14, 30, 60, 100)"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

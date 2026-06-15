@@ -64,23 +64,23 @@
     },
     {
       "function_name": "verifyBusinessClient",
-      "description": "Verify and validate a developer/business client account"
+      "description": "Verify developer account legitimacy"
     },
     {
       "function_name": "autoRegisterBusinessClient",
-      "description": "Auto-register new business client in the system"
+      "description": "Auto-register new developers"
     },
     {
       "function_name": "aiOnboardingPersonalizer",
-      "description": "Create personalized onboarding experience for developer"
+      "description": "Create personalized developer onboarding"
     },
     {
       "function_name": "gameSentimentReport",
-      "description": "Analyze game sentiment and user feedback"
+      "description": "Analyze game sentiment"
     },
     {
       "function_name": "aiPriceEngine",
-      "description": "AI pricing optimization for game products"
+      "description": "AI pricing optimization"
     },
     {
       "function_name": "calculateDeveloperPayout",
@@ -88,19 +88,19 @@
     },
     {
       "function_name": "processAutomatedPayouts",
-      "description": "Process automated developer payouts"
+      "description": "Process developer payouts"
     },
     {
       "function_name": "chargeInstallCPI",
-      "description": "Charge install cost-per-install fees"
+      "description": "Charge install fees"
     },
     {
       "function_name": "aiDisputeResolver",
-      "description": "Auto-resolve developer disputes"
+      "description": "Resolve developer disputes"
     },
     {
       "function_name": "aiMarketingCopyGenerator",
-      "description": "Generate marketing copy for developer game promotion"
+      "description": "Generate game promotion copy"
     },
     {
       "function_name": "sendPushNotification",
@@ -108,12 +108,25 @@
     },
     {
       "function_name": "adminAlertNotifier",
-      "description": "Alert admin for borderline game submissions"
+      "description": "Alert admin for borderline submissions"
     },
     {
       "function_name": "gameVotingPipeline",
-      "description": "Run game through community voting pipeline"
+      "description": "Run game through community voting"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "auto_developer_onboarding_agent"
 }

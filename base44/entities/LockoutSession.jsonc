@@ -1,0 +1,70 @@
+{
+  "name": "LockoutSession",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User in lockout session"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of this lockout session"
+    },
+    "scheduled_start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled time to start using app"
+    },
+    "actual_start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When user actually started"
+    },
+    "goal_amount": {
+      "type": "number",
+      "default": 3,
+      "description": "Daily earning goal"
+    },
+    "amount_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount earned in this session"
+    },
+    "goal_met": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether daily goal was achieved"
+    },
+    "exit_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When user exited app"
+    },
+    "next_scheduled_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled time for next session"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "goal_met",
+        "scheduled",
+        "expired"
+      ],
+      "default": "active",
+      "description": "Session status"
+    },
+    "phone_locked": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether phone is currently locked"
+    }
+  },
+  "required": [
+    "user_id",
+    "session_date"
+  ]
+}

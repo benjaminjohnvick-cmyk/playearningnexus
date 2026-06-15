@@ -1,0 +1,52 @@
+{
+  "name": "PushSubscription",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who owns this subscription"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Push service endpoint URL"
+    },
+    "auth": {
+      "type": "string",
+      "description": "Authentication token (base64)"
+    },
+    "p256dh": {
+      "type": "string",
+      "description": "Encryption key (base64)"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "Browser user agent"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether subscription is active"
+    },
+    "notification_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "response_submission",
+          "survey_match",
+          "payout_notification",
+          "achievement"
+        ]
+      },
+      "default": [
+        "response_submission",
+        "survey_match"
+      ],
+      "description": "Types of notifications to receive"
+    }
+  },
+  "required": [
+    "user_id",
+    "endpoint"
+  ]
+}

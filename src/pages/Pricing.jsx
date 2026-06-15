@@ -6,18 +6,27 @@ import BusinessPricingSection from '@/components/home/BusinessPricingSection';
 import BusinessRevenueSubscription from '@/components/home/BusinessRevenueSubscription';
 import RevenueStreamsSection from '@/components/revenue/RevenueStreamsSection';
 import WhiteLabelSection from '@/components/pricing/WhiteLabelSection';
+import SurveyUserTiers from '@/components/pricing/SurveyUserTiers';
+import BusinessSurveyTiers from '@/components/pricing/BusinessSurveyTiers';
+import FeaturedGameBidding from '@/components/pricing/FeaturedGameBidding';
+import PPCNetworkPricing from '@/components/pricing/PPCNetworkPricing';
+import SocialMediaMarketingPricing from '@/components/pricing/SocialMediaMarketingPricing';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, DollarSign, TrendingUp, Zap, Handshake, ShieldCheck, Star, CheckCircle, Bot } from 'lucide-react';
+import { ArrowRight, DollarSign, TrendingUp, Zap, Handshake, ShieldCheck, Star, CheckCircle, Bot, Users, Megaphone, Gamepad2 } from 'lucide-react';
 
 export default function Pricing() {
   const [activeCategory, setActiveCategory] = useState('all');
 
   const categories = [
    { id: 'all', label: '💰 All Plans', icon: DollarSign },
-   { id: 'plans', label: '🎯 Subscription Plans', icon: TrendingUp },
-   { id: 'business', label: '🏢 Business Tiers', icon: ShieldCheck },
+   { id: 'user-surveys', label: '📋 User Survey Tiers', icon: Users },
+   { id: 'business-surveys', label: '🏢 Business Survey Tiers', icon: ShieldCheck },
+   { id: 'featured-bidding', label: '🎮 Featured Game Bidding', icon: Gamepad2 },
+   { id: 'ppc', label: '📺 PPC Network', icon: Megaphone },
+   { id: 'social', label: '📱 Social Media Ads', icon: TrendingUp },
+   { id: 'plans', label: '🎯 Business Portals', icon: TrendingUp },
    { id: 'revenue', label: '📊 Revenue Subscriptions', icon: Zap },
    { id: 'streams', label: '📈 20 Revenue Streams', icon: Bot },
    { id: 'partner', label: '🤝 White-Label', icon: Handshake },
@@ -93,6 +102,27 @@ export default function Pricing() {
 
         {/* Content Based on Category */}
         <div className="space-y-8 bg-white relative z-10 pointer-events-auto">
+
+          {(activeCategory === 'all' || activeCategory === 'user-surveys') && (
+            <SurveyUserTiers />
+          )}
+
+          {(activeCategory === 'all' || activeCategory === 'business-surveys') && (
+            <BusinessSurveyTiers />
+          )}
+
+          {(activeCategory === 'all' || activeCategory === 'featured-bidding') && (
+            <FeaturedGameBidding />
+          )}
+
+          {(activeCategory === 'all' || activeCategory === 'ppc') && (
+            <PPCNetworkPricing />
+          )}
+
+          {(activeCategory === 'all' || activeCategory === 'social') && (
+            <SocialMediaMarketingPricing />
+          )}
+
           {(activeCategory === 'all' || activeCategory === 'plans') && (
             <>
               <PricingSection />

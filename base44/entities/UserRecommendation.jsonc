@@ -1,0 +1,50 @@
+{
+  "name": "UserRecommendation",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User receiving recommendation"
+    },
+    "recommendation_type": {
+      "type": "string",
+      "enum": [
+        "game",
+        "survey",
+        "challenge",
+        "event"
+      ],
+      "description": "What is being recommended"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of recommended item"
+    },
+    "relevance_score": {
+      "type": "number",
+      "description": "AI relevance score (0-100)"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why this was recommended"
+    },
+    "shown": {
+      "type": "boolean",
+      "default": false
+    },
+    "clicked": {
+      "type": "boolean",
+      "default": false
+    },
+    "converted": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "user_id",
+    "recommendation_type",
+    "entity_id",
+    "relevance_score"
+  ]
+}

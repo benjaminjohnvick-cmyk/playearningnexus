@@ -1,0 +1,72 @@
+{
+  "name": "SocialMediaPost",
+  "type": "object",
+  "properties": {
+    "developer_id": {
+      "type": "string",
+      "description": "Business client who created the post"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "Game being promoted"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "twitter",
+        "facebook",
+        "instagram",
+        "linkedin",
+        "tiktok"
+      ],
+      "description": "Target social media platform"
+    },
+    "content": {
+      "type": "string",
+      "description": "Generated post content"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Generated or attached image"
+    },
+    "hashtags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Suggested hashtags"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to post"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "posted"
+      ],
+      "default": "draft",
+      "description": "Post status"
+    },
+    "post_type": {
+      "type": "string",
+      "enum": [
+        "promotional",
+        "educational",
+        "engagement",
+        "announcement",
+        "behind_the_scenes"
+      ],
+      "description": "Type of post"
+    }
+  },
+  "required": [
+    "developer_id",
+    "platform",
+    "content"
+  ]
+}

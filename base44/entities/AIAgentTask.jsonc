@@ -1,0 +1,56 @@
+{
+  "name": "AIAgentTask",
+  "type": "object",
+  "properties": {
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "message_board_posting",
+        "social_media_outreach",
+        "email_campaign",
+        "sms_campaign",
+        "marketing_material_creation",
+        "store_creation",
+        "performance_tracking",
+        "language_translation",
+        "currency_conversion"
+      ],
+      "description": "Type of AI task"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "completed",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Task status"
+    },
+    "target_entity_id": {
+      "type": "string",
+      "description": "Game, user, or business client ID"
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Task-specific parameters"
+    },
+    "result": {
+      "type": "string",
+      "description": "Task result or output"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Who/what created the task"
+    },
+    "nvidia_dgx_processed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Processed by NVIDIA DGX Spark"
+    }
+  },
+  "required": [
+    "task_type"
+  ]
+}

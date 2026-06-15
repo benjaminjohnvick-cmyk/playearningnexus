@@ -1,0 +1,81 @@
+{
+  "name": "PersonalizedOffer",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Target user"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "Related game"
+    },
+    "offer_type": {
+      "type": "string",
+      "enum": [
+        "discount",
+        "bonus_currency",
+        "limited_bundle",
+        "retention",
+        "churn_prevention",
+        "first_purchase"
+      ],
+      "description": "Type of offer"
+    },
+    "title": {
+      "type": "string",
+      "description": "Offer title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Offer description"
+    },
+    "discount_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Discount percentage if applicable"
+    },
+    "original_price": {
+      "type": "number",
+      "description": "Original price"
+    },
+    "offer_price": {
+      "type": "number",
+      "description": "Discounted offer price"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Offer expiration"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether offer is active"
+    },
+    "conversion_probability": {
+      "type": "number",
+      "description": "AI predicted conversion probability"
+    },
+    "user_segment": {
+      "type": "string",
+      "description": "User spending segment"
+    },
+    "claimed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user claimed offer"
+    },
+    "claimed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When offer was claimed"
+    }
+  },
+  "required": [
+    "user_id",
+    "game_id",
+    "offer_type",
+    "title"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "name": "CreatorSubscriptionTier",
+  "type": "object",
+  "properties": {
+    "creator_user_id": {
+      "type": "string",
+      "description": "Creator who owns this tier"
+    },
+    "tier_name": {
+      "type": "string",
+      "description": "Name of the tier (e.g., Bronze, Silver, Gold)"
+    },
+    "tier_level": {
+      "type": "number",
+      "description": "Tier level (1-5)"
+    },
+    "price_monthly": {
+      "type": "number",
+      "description": "Monthly subscription price"
+    },
+    "perks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of perks (exclusive content, badges, etc.)"
+    },
+    "exclusive_content_access": {
+      "type": "boolean",
+      "default": true,
+      "description": "Access to exclusive content"
+    },
+    "custom_badge": {
+      "type": "string",
+      "description": "Custom badge for subscribers"
+    },
+    "priority_support": {
+      "type": "boolean",
+      "default": false,
+      "description": "Priority in chat/support"
+    },
+    "ad_free_experience": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ad-free viewing"
+    },
+    "subscriber_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of active subscribers"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether tier is active"
+    }
+  },
+  "required": [
+    "creator_user_id",
+    "tier_name",
+    "tier_level",
+    "price_monthly"
+  ]
+}

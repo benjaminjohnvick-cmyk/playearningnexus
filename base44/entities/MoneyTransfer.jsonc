@@ -1,0 +1,40 @@
+{
+  "name": "MoneyTransfer",
+  "type": "object",
+  "properties": {
+    "sender_user_id": {
+      "type": "string",
+      "description": "User sending money"
+    },
+    "receiver_user_id": {
+      "type": "string",
+      "description": "User receiving money"
+    },
+    "receiver_email": {
+      "type": "string",
+      "description": "Email of receiver for lookup"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount transferred"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "failed"
+      ],
+      "default": "completed",
+      "description": "Transfer status"
+    },
+    "note": {
+      "type": "string",
+      "description": "Optional note for transfer"
+    }
+  },
+  "required": [
+    "sender_user_id",
+    "receiver_user_id",
+    "amount"
+  ]
+}

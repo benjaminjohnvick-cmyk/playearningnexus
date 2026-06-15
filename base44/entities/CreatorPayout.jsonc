@@ -1,0 +1,79 @@
+{
+  "name": "CreatorPayout",
+  "type": "object",
+  "properties": {
+    "creator_user_id": {
+      "type": "string",
+      "description": "Creator receiving payout"
+    },
+    "period_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Payout period start"
+    },
+    "period_end": {
+      "type": "string",
+      "format": "date",
+      "description": "Payout period end"
+    },
+    "tips_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Earnings from tips"
+    },
+    "subscriptions_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Earnings from subscriptions"
+    },
+    "sponsorships_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Earnings from sponsorships"
+    },
+    "total_amount": {
+      "type": "number",
+      "description": "Total payout amount"
+    },
+    "platform_fee": {
+      "type": "number",
+      "default": 0,
+      "description": "Platform fee deducted"
+    },
+    "net_amount": {
+      "type": "number",
+      "description": "Net amount after fees"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "completed",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Payout status"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "paypal",
+        "stripe",
+        "bank_transfer"
+      ],
+      "description": "Payment method"
+    },
+    "transaction_id": {
+      "type": "string",
+      "description": "External transaction ID"
+    }
+  },
+  "required": [
+    "creator_user_id",
+    "period_start",
+    "period_end",
+    "total_amount",
+    "net_amount"
+  ]
+}

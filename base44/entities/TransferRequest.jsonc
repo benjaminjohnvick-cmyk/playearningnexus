@@ -1,0 +1,32 @@
+{
+  "name": "TransferRequest",
+  "type": "object",
+  "properties": {
+    "requester_user_id": {
+      "type": "string",
+      "description": "User requesting transfer access"
+    },
+    "requested_user_id": {
+      "type": "string",
+      "description": "User being requested"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Request status"
+    },
+    "message": {
+      "type": "string",
+      "description": "Optional message from requester"
+    }
+  },
+  "required": [
+    "requester_user_id",
+    "requested_user_id"
+  ]
+}

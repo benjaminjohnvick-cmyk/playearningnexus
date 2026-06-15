@@ -77,7 +77,7 @@
     },
     {
       "function_name": "churnPredictionEngine",
-      "description": "Predict churn probability for users"
+      "description": "Predict user churn probability"
     },
     {
       "function_name": "aiUserRetention",
@@ -89,31 +89,31 @@
     },
     {
       "function_name": "aiRewardsEngine",
-      "description": "Award bonuses and rewards to retain users"
+      "description": "Award bonuses to retain users"
     },
     {
       "function_name": "awardAchievements",
-      "description": "Award achievements for milestone completions"
+      "description": "Award achievements for milestones"
     },
     {
       "function_name": "checkAndAwardBadges",
-      "description": "Check and award earned badges"
+      "description": "Check and award badges"
     },
     {
       "function_name": "awardUserXP",
-      "description": "Award XP points for user activity"
+      "description": "Award XP for activity"
     },
     {
       "function_name": "calculateGlobalPrestige",
-      "description": "Calculate and update global prestige scores"
+      "description": "Calculate prestige scores"
     },
     {
       "function_name": "aiPriceEngine",
-      "description": "AI dynamic pricing optimization"
+      "description": "Dynamic pricing optimization"
     },
     {
       "function_name": "getPersonalizedSurveys",
-      "description": "Get personalized survey recommendations per user"
+      "description": "Get personalized survey recommendations"
     },
     {
       "function_name": "aiSurveyRecommendationEngine",
@@ -121,19 +121,19 @@
     },
     {
       "function_name": "surveyStreakReminder",
-      "description": "Send streak reminders to at-risk users"
+      "description": "Send streak reminders"
     },
     {
       "function_name": "sendDailyReminder",
-      "description": "Send personalized daily goal reminders"
+      "description": "Send daily goal reminders"
     },
     {
       "function_name": "dailyTierCheck",
-      "description": "Check and update user tier assignments"
+      "description": "Check user tier assignments"
     },
     {
       "function_name": "updateUserTiers",
-      "description": "Update user tier assignments based on activity"
+      "description": "Update user tiers"
     },
     {
       "function_name": "abTestAssigner",
@@ -141,7 +141,7 @@
     },
     {
       "function_name": "trackABTestMetrics",
-      "description": "Track A/B test performance metrics"
+      "description": "Track A/B test metrics"
     },
     {
       "function_name": "surveyABTestOptimizer",
@@ -153,8 +153,21 @@
     },
     {
       "function_name": "sendPushNotification",
-      "description": "Send personalized push notifications to users"
+      "description": "Send personalized push notifications"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "auto_retention_monetization_agent"
 }

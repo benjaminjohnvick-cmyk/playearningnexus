@@ -1,0 +1,33 @@
+{
+  "name": "GameVote",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who voted"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "Game being voted for"
+    },
+    "vote_type": {
+      "type": "string",
+      "enum": [
+        "feature_request",
+        "upvote",
+        "downvote"
+      ],
+      "description": "Type of vote"
+    },
+    "vote_weight": {
+      "type": "number",
+      "default": 1,
+      "description": "Vote weight (premium users might have more)"
+    }
+  },
+  "required": [
+    "user_id",
+    "game_id",
+    "vote_type"
+  ]
+}

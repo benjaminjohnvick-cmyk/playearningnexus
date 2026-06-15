@@ -1,0 +1,68 @@
+{
+  "name": "ContestVerification",
+  "type": "object",
+  "properties": {
+    "participation_id": {
+      "type": "string",
+      "description": "Contest participation ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "verification_type": {
+      "type": "string",
+      "enum": [
+        "social_post",
+        "business_outreach"
+      ],
+      "description": "Type of verification"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Verification status"
+    },
+    "post_url": {
+      "type": "string",
+      "description": "URL of social media post"
+    },
+    "hashtags_found": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Hashtags detected in post"
+    },
+    "image_matched": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether generated image was detected"
+    },
+    "caption_matched": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether caption was used"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When verification completed"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Reason for rejection if applicable"
+    }
+  },
+  "required": [
+    "participation_id",
+    "user_id",
+    "verification_type"
+  ]
+}

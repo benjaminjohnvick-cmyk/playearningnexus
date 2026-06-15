@@ -1,0 +1,51 @@
+{
+  "name": "LeaderboardEntry",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User on leaderboard"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "total_earnings": {
+      "type": "number",
+      "default": 0,
+      "description": "Total earnings"
+    },
+    "surveys_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Total surveys completed"
+    },
+    "current_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Current login streak"
+    },
+    "achievements_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total achievements unlocked"
+    },
+    "rank": {
+      "type": "number",
+      "description": "Current rank position"
+    },
+    "rank_change": {
+      "type": "number",
+      "default": 0,
+      "description": "Change from last week"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last leaderboard update"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

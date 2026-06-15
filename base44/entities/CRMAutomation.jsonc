@@ -1,0 +1,77 @@
+{
+  "name": "CRMAutomation",
+  "type": "object",
+  "properties": {
+    "automation_type": {
+      "type": "string",
+      "enum": [
+        "welcome_sequence",
+        "winback",
+        "developer_onboarding",
+        "compliance_alert",
+        "payout_notification",
+        "review_request",
+        "price_drop_alert"
+      ],
+      "description": "Type of automation"
+    },
+    "target_segment": {
+      "type": "string",
+      "enum": [
+        "new_users",
+        "inactive_users",
+        "power_users",
+        "new_developers",
+        "all_developers",
+        "all_users"
+      ],
+      "description": "Target audience segment"
+    },
+    "trigger_event": {
+      "type": "string",
+      "description": "Event that triggers automation"
+    },
+    "trigger_conditions": {
+      "type": "object",
+      "description": "Conditions that must be met"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action_type": {
+            "type": "string"
+          },
+          "delay_hours": {
+            "type": "number"
+          },
+          "template": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Sequence of actions to execute"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether automation is active"
+    },
+    "execution_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times executed"
+    },
+    "success_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Success rate percentage"
+    }
+  },
+  "required": [
+    "automation_type",
+    "target_segment",
+    "trigger_event"
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "name": "ReferralPrediction",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User for prediction"
+    },
+    "prediction_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Prediction generated date"
+    },
+    "predicted_30_day_earnings": {
+      "type": "number",
+      "description": "Forecasted earnings in 30 days"
+    },
+    "predicted_90_day_earnings": {
+      "type": "number",
+      "description": "Forecasted earnings in 90 days"
+    },
+    "predicted_new_referrals_30_days": {
+      "type": "number",
+      "description": "Expected new referrals"
+    },
+    "churn_risk_score": {
+      "type": "number",
+      "description": "Churn probability 0-100"
+    },
+    "churn_risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "description": "Risk category"
+    },
+    "confidence_score": {
+      "type": "number",
+      "description": "Prediction confidence 0-100"
+    },
+    "key_factors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Main factors affecting prediction"
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "AI recommendations to improve"
+    }
+  },
+  "required": [
+    "user_id",
+    "prediction_date"
+  ]
+}

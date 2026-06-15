@@ -1,0 +1,34 @@
+{
+  "name": "GeneratedImage",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who generated the image"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Name used in generation"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Generated image URL"
+    },
+    "original_image_url": {
+      "type": "string",
+      "description": "Original uploaded image URL"
+    },
+    "description": {
+      "type": "string",
+      "description": "Transformation style description"
+    },
+    "edited_image_url": {
+      "type": "string",
+      "description": "Edited version URL if edited"
+    }
+  },
+  "required": [
+    "user_id",
+    "image_url"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "UserGroup",
+  "type": "object",
+  "properties": {
+    "group_number": {
+      "type": "number",
+      "description": "Sequential group number"
+    },
+    "max_capacity": {
+      "type": "number",
+      "default": 100000,
+      "description": "Maximum users in this group (100k per group)"
+    },
+    "current_users": {
+      "type": "number",
+      "default": 0,
+      "description": "Current number of users"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether group is actively accepting users"
+    },
+    "created_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When group was created"
+    },
+    "current_featured_game_id": {
+      "type": "string",
+      "description": "Current featured game for this group"
+    },
+    "featured_game_start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When current featured game started"
+    },
+    "marketplace_store_id": {
+      "type": "string",
+      "description": "Associated marketplace store"
+    }
+  },
+  "required": [
+    "group_number"
+  ]
+}

@@ -73,44 +73,57 @@
     },
     {
       "function_name": "aiOrchestrator",
-      "description": "Run the main AI orchestration pipeline across all platform domains"
+      "description": "Run main AI orchestration pipeline across all platform domains"
     },
     {
       "function_name": "aiPlatformInsights",
-      "description": "Get platform-wide health insights and metrics"
+      "description": "Get platform-wide health metrics"
     },
     {
       "function_name": "adminAlertNotifier",
-      "description": "Send critical alerts to admins when human intervention is needed"
+      "description": "Send critical alerts when human intervention is needed"
     },
     {
       "function_name": "evaluateAgentPerformance",
-      "description": "Evaluate how well agents are performing and log results"
+      "description": "Evaluate agent performance and log results"
     },
     {
       "function_name": "applyApprovedLearnings",
-      "description": "Apply approved learnings from memory to improve agent behavior"
+      "description": "Apply learnings to improve automation decisions"
     },
     {
       "function_name": "reconciliationEngine",
-      "description": "Run financial reconciliation across all payment systems"
+      "description": "Run financial reconciliation"
     },
     {
       "function_name": "fraudScanEngine",
-      "description": "Run comprehensive fraud scan across all platform activity"
+      "description": "Comprehensive fraud scan"
     },
     {
       "function_name": "processScheduledPayouts",
-      "description": "Process all scheduled payouts automatically"
+      "description": "Process all scheduled payouts"
     },
     {
       "function_name": "dailyTierCheck",
-      "description": "Check and update user tier assignments daily"
+      "description": "Check and update user tier assignments"
     },
     {
       "function_name": "milestoneAlertChecker",
-      "description": "Check and award milestone achievements to users"
+      "description": "Check and award milestone achievements"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "master_orchestrator"
 }

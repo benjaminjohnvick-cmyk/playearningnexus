@@ -1,0 +1,58 @@
+{
+  "name": "WeeklyEvent",
+  "type": "object",
+  "properties": {
+    "event_name": {
+      "type": "string",
+      "description": "Event name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Event description"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "bonus_earnings",
+        "special_challenges",
+        "limited_games",
+        "community_goal"
+      ],
+      "description": "Type of event"
+    },
+    "bonus_multiplier": {
+      "type": "number",
+      "default": 1,
+      "description": "Earnings multiplier during event"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "participants_count": {
+      "type": "number",
+      "default": 0
+    },
+    "rewards": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Event rewards structure"
+    }
+  },
+  "required": [
+    "event_name",
+    "event_type",
+    "start_date",
+    "end_date"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "ForumPost",
+  "type": "object",
+  "properties": {
+    "author_user_id": {
+      "type": "string",
+      "description": "Post author"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "general",
+        "games",
+        "developers",
+        "support",
+        "suggestions"
+      ],
+      "description": "Forum category"
+    },
+    "title": {
+      "type": "string",
+      "description": "Post title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Post content"
+    },
+    "replies_count": {
+      "type": "number",
+      "default": 0
+    },
+    "views": {
+      "type": "number",
+      "default": 0
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_locked": {
+      "type": "boolean",
+      "default": false
+    },
+    "parent_post_id": {
+      "type": "string",
+      "description": "For replies"
+    }
+  },
+  "required": [
+    "author_user_id",
+    "category",
+    "title",
+    "content"
+  ]
+}

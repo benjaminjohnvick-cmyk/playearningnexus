@@ -1,0 +1,68 @@
+{
+  "name": "AutomatedPayment",
+  "type": "object",
+  "properties": {
+    "developer_id": {
+      "type": "string",
+      "description": "Business client receiving payment"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "Game this payment relates to"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who generated this revenue"
+    },
+    "amount_owed": {
+      "type": "number",
+      "description": "Amount owed to developer"
+    },
+    "install_fee_deducted": {
+      "type": "number",
+      "default": 0,
+      "description": "Install fee already deducted"
+    },
+    "daily_revenue_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Daily $1 revenue earned"
+    },
+    "survey_revenue_share": {
+      "type": "number",
+      "default": 0,
+      "description": "50% of survey earnings"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "paid",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Payment status"
+    },
+    "install_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When user installed the app"
+    },
+    "days_since_install": {
+      "type": "number",
+      "default": 0,
+      "description": "Days since installation"
+    },
+    "last_payment_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last payment date"
+    }
+  },
+  "required": [
+    "developer_id",
+    "game_id",
+    "user_id"
+  ]
+}

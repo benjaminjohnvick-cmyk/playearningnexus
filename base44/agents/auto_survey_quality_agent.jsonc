@@ -68,55 +68,55 @@
     },
     {
       "function_name": "dailyAISurveyGenerator",
-      "description": "Generate fresh AI surveys every day"
+      "description": "Generate daily AI surveys"
     },
     {
       "function_name": "aiSurveyGenerator",
-      "description": "Generate custom AI survey on demand"
+      "description": "Generate custom AI surveys"
     },
     {
       "function_name": "aiSurveyLaunchOptimizer",
-      "description": "Optimize survey before launch for best performance"
+      "description": "Optimize surveys before launch"
     },
     {
       "function_name": "surveyQualityAutoScan",
-      "description": "Auto-scan survey quality in real-time"
+      "description": "Auto-scan survey quality"
     },
     {
       "function_name": "surveyHealthMonitor",
-      "description": "Monitor survey health metrics"
+      "description": "Monitor survey health"
     },
     {
       "function_name": "surveyQualityMonitor",
-      "description": "Monitor response quality in real-time"
+      "description": "Monitor response quality"
     },
     {
       "function_name": "scoreSurveyResponse",
-      "description": "Score individual survey response quality"
+      "description": "Score individual survey responses"
     },
     {
       "function_name": "detectSuspiciousResponses",
-      "description": "Detect suspicious or fraudulent responses"
+      "description": "Detect suspicious responses"
     },
     {
       "function_name": "checkSurveyFraud",
-      "description": "Check for survey fraud patterns"
+      "description": "Check for survey fraud"
     },
     {
       "function_name": "aiSurveyAutoDistribute",
-      "description": "Auto-distribute surveys to optimal user segments"
+      "description": "Auto-distribute surveys to optimal segments"
     },
     {
       "function_name": "scheduleSurveyDistribution",
-      "description": "Schedule survey distribution for optimal timing"
+      "description": "Schedule survey distribution"
     },
     {
       "function_name": "rankSurveysForUser",
-      "description": "Rank and personalize survey feed per user"
+      "description": "Rank surveys per user"
     },
     {
       "function_name": "aiSurveyMatchEngine",
-      "description": "Match surveys to the most qualified users"
+      "description": "Match surveys to qualified users"
     },
     {
       "function_name": "aiSurveyMatcher",
@@ -124,7 +124,7 @@
     },
     {
       "function_name": "analyzeClaimEvidence",
-      "description": "Analyze evidence for survey dispute claims"
+      "description": "Analyze dispute claim evidence"
     },
     {
       "function_name": "aiDisputeResolver",
@@ -132,15 +132,15 @@
     },
     {
       "function_name": "respondentMicroPayout",
-      "description": "Process micro-payouts for valid dispute resolutions"
+      "description": "Process micro-payouts for valid disputes"
     },
     {
       "function_name": "runSurveyIntelligence",
-      "description": "Run deep survey intelligence analysis"
+      "description": "Deep survey intelligence analysis"
     },
     {
       "function_name": "surveyAnalyticsAI",
-      "description": "AI-powered survey performance analytics"
+      "description": "AI survey performance analytics"
     },
     {
       "function_name": "analyzeFeedbackSurvey",
@@ -148,7 +148,7 @@
     },
     {
       "function_name": "surveyABTestOptimizer",
-      "description": "Optimize surveys via A/B test results"
+      "description": "Optimize via A/B test results"
     },
     {
       "function_name": "aiFeedbackABOptimizer",
@@ -160,12 +160,25 @@
     },
     {
       "function_name": "classifyResponseThemes",
-      "description": "Classify themes from survey responses"
+      "description": "Classify response themes"
     },
     {
       "function_name": "notifyHighQualityResponse",
-      "description": "Notify and reward high quality respondents"
+      "description": "Reward high quality respondents"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "auto_survey_quality_agent"
 }

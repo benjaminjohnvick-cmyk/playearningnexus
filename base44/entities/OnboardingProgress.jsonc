@@ -1,0 +1,59 @@
+{
+  "name": "OnboardingProgress",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User being onboarded"
+    },
+    "current_step": {
+      "type": "number",
+      "default": 0,
+      "description": "Current onboarding step"
+    },
+    "completed_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Completed step IDs"
+    },
+    "skipped_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Skipped step IDs"
+    },
+    "payout_preferences_set": {
+      "type": "boolean",
+      "default": false
+    },
+    "first_link_created": {
+      "type": "boolean",
+      "default": false
+    },
+    "first_campaign_created": {
+      "type": "boolean",
+      "default": false
+    },
+    "gamification_viewed": {
+      "type": "boolean",
+      "default": false
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When onboarding completed"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

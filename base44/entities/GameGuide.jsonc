@@ -1,0 +1,63 @@
+{
+  "name": "GameGuide",
+  "type": "object",
+  "properties": {
+    "game_id": {
+      "type": "string",
+      "description": "Game this guide is for"
+    },
+    "author_user_id": {
+      "type": "string",
+      "description": "User who created guide"
+    },
+    "title": {
+      "type": "string",
+      "description": "Guide title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Guide content (markdown)"
+    },
+    "guide_type": {
+      "type": "string",
+      "enum": [
+        "tutorial",
+        "tips",
+        "walkthrough",
+        "strategy"
+      ],
+      "description": "Type of guide"
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0
+    },
+    "downvotes": {
+      "type": "number",
+      "default": 0
+    },
+    "views": {
+      "type": "number",
+      "default": 0
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "game_id",
+    "author_user_id",
+    "title",
+    "content"
+  ]
+}

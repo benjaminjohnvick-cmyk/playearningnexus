@@ -1,0 +1,82 @@
+{
+  "name": "CreatorProfile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Creator user ID"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Creator display name"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Creator biography"
+    },
+    "profile_image_url": {
+      "type": "string",
+      "description": "Profile image URL"
+    },
+    "banner_image_url": {
+      "type": "string",
+      "description": "Banner image URL"
+    },
+    "content_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "streams",
+          "videos",
+          "guides",
+          "reviews",
+          "tutorials"
+        ]
+      },
+      "default": [],
+      "description": "Types of content created"
+    },
+    "game_genres": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Game genres they focus on"
+    },
+    "total_subscribers": {
+      "type": "number",
+      "default": 0,
+      "description": "Total subscriber count"
+    },
+    "total_followers": {
+      "type": "number",
+      "default": 0,
+      "description": "Total follower count"
+    },
+    "average_engagement_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Average engagement rate"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Verified creator status"
+    },
+    "social_links": {
+      "type": "object",
+      "description": "Social media links"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Featured on marketplace"
+    }
+  },
+  "required": [
+    "user_id",
+    "display_name"
+  ]
+}

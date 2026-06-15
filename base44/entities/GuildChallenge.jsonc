@@ -1,0 +1,81 @@
+{
+  "name": "GuildChallenge",
+  "type": "object",
+  "properties": {
+    "guild_id": {
+      "type": "string"
+    },
+    "challenge_name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "challenge_type": {
+      "type": "string",
+      "enum": [
+        "survey_sprint",
+        "gaming_marathon",
+        "engagement_race",
+        "earning_battle",
+        "referral_push"
+      ]
+    },
+    "target_metric": {
+      "type": "string",
+      "description": "What are we tracking (surveys completed, games played, etc)"
+    },
+    "target_amount": {
+      "type": "number",
+      "description": "Goal to reach"
+    },
+    "current_progress": {
+      "type": "number",
+      "default": 0
+    },
+    "progress_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "reward_pool": {
+      "type": "number",
+      "description": "Total reward for completing challenge"
+    },
+    "duration_days": {
+      "type": "number",
+      "default": 7
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "active",
+        "completed",
+        "failed"
+      ],
+      "default": "upcoming"
+    },
+    "starts_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ends_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tier_multipliers": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Bonus % by guild tier"
+    }
+  },
+  "required": [
+    "guild_id",
+    "challenge_name",
+    "challenge_type"
+  ]
+}

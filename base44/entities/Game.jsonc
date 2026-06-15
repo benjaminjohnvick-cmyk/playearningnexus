@@ -1,0 +1,150 @@
+{
+  "name": "Game",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Game title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Game description"
+    },
+    "developer_id": {
+      "type": "string",
+      "description": "Business client who owns this game"
+    },
+    "price": {
+      "type": "number",
+      "default": 0,
+      "description": "Game price in USD (0 for free)"
+    },
+    "icon_url": {
+      "type": "string",
+      "description": "Game icon/logo"
+    },
+    "screenshots": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Game screenshot URLs"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Gameplay video URL"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "puzzle",
+        "action",
+        "strategy",
+        "casual",
+        "rpg",
+        "simulation",
+        "sports",
+        "racing",
+        "adventure"
+      ],
+      "description": "Game category"
+    },
+    "platform": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "ios",
+          "android",
+          "web"
+        ]
+      },
+      "description": "Supported platforms"
+    },
+    "download_url": {
+      "type": "string",
+      "description": "Where to download/access the game"
+    },
+    "app_file_url": {
+      "type": "string",
+      "description": "Uploaded APK/IPA file URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "featured",
+        "library",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Game status in the platform"
+    },
+    "featured_start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When game started being featured"
+    },
+    "featured_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When 6-day featured period ends"
+    },
+    "user_group_id": {
+      "type": "string",
+      "description": "Which user group sees this game"
+    },
+    "total_installs": {
+      "type": "number",
+      "default": 0,
+      "description": "Total install count"
+    },
+    "total_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Total revenue generated"
+    },
+    "average_rating": {
+      "type": "number",
+      "default": 0,
+      "description": "Average user rating"
+    },
+    "total_ratings": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of ratings"
+    },
+    "priority_payment": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether developer paid $600k for priority"
+    },
+    "priority_payment_amount": {
+      "type": "number",
+      "description": "Amount paid for priority (if auction)"
+    },
+    "marketplace_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Approved for marketplace listing"
+    },
+    "concept_survey_id": {
+      "type": "string",
+      "description": "Survey ID for testing app concept"
+    },
+    "submission_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When app was submitted"
+    },
+    "queue_position": {
+      "type": "number",
+      "description": "Position in featured queue"
+    }
+  },
+  "required": [
+    "title",
+    "developer_id"
+  ]
+}

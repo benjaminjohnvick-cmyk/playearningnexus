@@ -1,0 +1,58 @@
+{
+  "name": "GuildReward",
+  "type": "object",
+  "properties": {
+    "guild_id": {
+      "type": "string"
+    },
+    "challenge_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "reward_type": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "badge",
+        "treasury_contribution",
+        "level_boost"
+      ]
+    },
+    "reward_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "contribution_percentage": {
+      "type": "number",
+      "description": "% of challenge pool earned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "claimed",
+        "processed"
+      ],
+      "default": "pending"
+    },
+    "claimed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "awarded_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "guild_id",
+    "challenge_id",
+    "user_id",
+    "reward_type"
+  ]
+}

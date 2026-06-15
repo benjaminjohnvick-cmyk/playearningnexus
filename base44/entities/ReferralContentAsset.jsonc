@@ -1,0 +1,64 @@
+{
+  "name": "ReferralContentAsset",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Asset title"
+    },
+    "asset_type": {
+      "type": "string",
+      "enum": [
+        "social_post",
+        "email_copy",
+        "banner",
+        "caption"
+      ],
+      "description": "Type of asset"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "twitter",
+        "facebook",
+        "tiktok",
+        "email",
+        "universal"
+      ],
+      "default": "universal"
+    },
+    "content": {
+      "type": "string",
+      "description": "Text content / copy (use {{referral_link}} as placeholder)"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Banner or image URL"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "created_by_admin": {
+      "type": "boolean",
+      "default": true
+    },
+    "times_used": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "asset_type",
+    "content"
+  ]
+}

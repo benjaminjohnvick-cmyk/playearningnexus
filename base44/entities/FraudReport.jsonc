@@ -1,0 +1,51 @@
+{
+  "name": "FraudReport",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User flagged for fraud"
+    },
+    "fraud_type": {
+      "type": "string",
+      "enum": [
+        "survey_abuse",
+        "multiple_accounts",
+        "bot_activity",
+        "suspicious_pattern"
+      ],
+      "description": "Type of fraud detected"
+    },
+    "confidence_score": {
+      "type": "number",
+      "description": "AI confidence (0-100)"
+    },
+    "evidence": {
+      "type": "string",
+      "description": "Evidence details"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "confirmed",
+        "false_positive"
+      ],
+      "default": "pending"
+    },
+    "action_taken": {
+      "type": "string",
+      "description": "Action taken by admin"
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "Admin who reviewed"
+    }
+  },
+  "required": [
+    "user_id",
+    "fraud_type",
+    "confidence_score"
+  ]
+}

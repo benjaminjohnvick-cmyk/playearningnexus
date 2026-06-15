@@ -64,35 +64,35 @@
     },
     {
       "function_name": "paypalPayout",
-      "description": "Process PayPal payout to user or developer"
+      "description": "Process PayPal payouts"
     },
     {
       "function_name": "cashappPayout",
-      "description": "Process CashApp payout"
+      "description": "Process CashApp payouts"
     },
     {
       "function_name": "venmoPayout",
-      "description": "Process Venmo payout"
+      "description": "Process Venmo payouts"
     },
     {
       "function_name": "aiPayoutFraudDetection",
-      "description": "Fraud detection for payout requests"
+      "description": "Fraud screen all payout requests"
     },
     {
       "function_name": "aiPayoutOptimizer",
-      "description": "Optimize payout method, timing, and batching"
+      "description": "Optimize payout method and timing"
     },
     {
       "function_name": "smartPayoutScheduler",
-      "description": "Schedule and batch payouts for cost efficiency"
+      "description": "Batch and schedule payouts"
     },
     {
       "function_name": "processAutomatedPayouts",
-      "description": "Process all automated developer payouts"
+      "description": "Process automated developer payouts"
     },
     {
       "function_name": "processReferralCommissions",
-      "description": "Process referral commission payouts"
+      "description": "Process referral commissions"
     },
     {
       "function_name": "processReferralDailyBonus",
@@ -100,15 +100,15 @@
     },
     {
       "function_name": "calculateDeveloperPayout",
-      "description": "Calculate developer revenue share payout amount"
+      "description": "Calculate developer revenue share"
     },
     {
       "function_name": "reconciliationEngine",
-      "description": "Reconcile all payout records with payment providers"
+      "description": "Reconcile payout records"
     },
     {
       "function_name": "sendWithdrawalNotification",
-      "description": "Notify user of withdrawal status"
+      "description": "Notify users of withdrawal status"
     },
     {
       "function_name": "requestPayout",
@@ -116,8 +116,21 @@
     },
     {
       "function_name": "respondentMicroPayout",
-      "description": "Process micro-payouts for survey respondents"
+      "description": "Process survey micro-payouts"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "auto_payout_agent"
 }

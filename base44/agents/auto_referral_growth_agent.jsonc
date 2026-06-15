@@ -79,55 +79,55 @@
     },
     {
       "function_name": "trackReferralClick",
-      "description": "Track referral link clicks and attribute properly"
+      "description": "Track referral link clicks"
     },
     {
       "function_name": "verifyReferralConversion",
-      "description": "Verify and confirm referral conversion events"
+      "description": "Verify referral conversions"
     },
     {
       "function_name": "processReferralCommissions",
-      "description": "Process referral commission payments"
+      "description": "Process referral commissions"
     },
     {
       "function_name": "processReferralDailyBonus",
-      "description": "Process daily referral activity bonuses"
+      "description": "Process daily referral bonuses"
     },
     {
       "function_name": "referralContestLeaderboard",
-      "description": "Update and manage referral contest leaderboards"
+      "description": "Update contest leaderboards"
     },
     {
       "function_name": "weeklyContestWinner",
-      "description": "Auto-select and pay weekly contest winners"
+      "description": "Auto-select and pay contest winners"
     },
     {
       "function_name": "awardReferralJackpotEntries",
-      "description": "Award jackpot entries for referral milestones"
+      "description": "Award jackpot entries"
     },
     {
       "function_name": "awardSocialMediaJackpotEntries",
-      "description": "Award jackpot entries for social media actions"
+      "description": "Award social media jackpot entries"
     },
     {
       "function_name": "createReferralSquad",
-      "description": "Create new referral squad"
+      "description": "Create referral squads"
     },
     {
       "function_name": "flagSuspiciousReferrals",
-      "description": "Flag and investigate suspicious referral patterns"
+      "description": "Flag suspicious referral patterns"
     },
     {
       "function_name": "aiReferralEmailNotifier",
-      "description": "Send AI-personalized referral email campaigns"
+      "description": "AI referral email campaigns"
     },
     {
       "function_name": "referralWelcomeEmail",
-      "description": "Send welcome email to new referral signups"
+      "description": "Send welcome emails"
     },
     {
       "function_name": "referralMilestoneEmail",
-      "description": "Send milestone celebration emails"
+      "description": "Send milestone emails"
     },
     {
       "function_name": "referralReengagementEmail",
@@ -135,20 +135,33 @@
     },
     {
       "function_name": "paypalPayout",
-      "description": "Process referral commission payout via PayPal"
+      "description": "Process commission payouts via PayPal"
     },
     {
       "function_name": "aiBudgetReallocation",
-      "description": "Shift referral campaign budget to best channels"
+      "description": "Shift campaign budget to best channels"
     },
     {
       "function_name": "sendPushNotification",
-      "description": "Notify users of referral updates and wins"
+      "description": "Notify users of referral updates"
     },
     {
       "function_name": "aiContentGeneratorAndShare",
       "description": "Generate viral referral content"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "auto_referral_growth_agent"
 }

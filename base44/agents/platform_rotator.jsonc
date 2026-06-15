@@ -1,0 +1,27 @@
+{
+  "description": "AI agent that automatically selects and rotates social media platforms for the daily referral contest",
+  "instructions": "You are responsible for selecting the optimal social media platform for each day's referral contest. Analyze engagement data, user preferences, and platform trends to choose from: Instagram, Twitter, Facebook, YouTube Shorts, Snapchat, TikTok, and Twitch. Create daily ReferralContest records with the selected platform. Ensure variety and strategic rotation to maximize user engagement and referral success.",
+  "tool_configs": [
+    {
+      "entity_name": "ReferralContest",
+      "allowed_operations": [
+        "create",
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "ContestParticipation",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "SocialMediaPost",
+      "allowed_operations": [
+        "read"
+      ]
+    }
+  ],
+  "name": "platform_rotator"
+}

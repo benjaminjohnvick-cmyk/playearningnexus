@@ -1,0 +1,88 @@
+{
+  "name": "BugReport",
+  "type": "object",
+  "properties": {
+    "game_id": {
+      "type": "string",
+      "description": "Game with the bug"
+    },
+    "reporter_user_id": {
+      "type": "string",
+      "description": "User who reported the bug"
+    },
+    "title": {
+      "type": "string",
+      "description": "Bug title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed bug description"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "description": "Bug severity"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "crash",
+        "performance",
+        "ui",
+        "gameplay",
+        "payment",
+        "other"
+      ],
+      "description": "Bug category"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "resolved",
+        "closed",
+        "wont_fix"
+      ],
+      "default": "open",
+      "description": "Bug status"
+    },
+    "platform": {
+      "type": "string",
+      "description": "Platform where bug occurred (ios, android, web)"
+    },
+    "steps_to_reproduce": {
+      "type": "string",
+      "description": "Steps to reproduce the bug"
+    },
+    "screenshot_url": {
+      "type": "string",
+      "description": "Screenshot of the bug"
+    },
+    "developer_notes": {
+      "type": "string",
+      "description": "Internal notes from developer"
+    },
+    "resolution": {
+      "type": "string",
+      "description": "How the bug was resolved"
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of users experiencing this bug"
+    }
+  },
+  "required": [
+    "game_id",
+    "reporter_user_id",
+    "title",
+    "description"
+  ]
+}

@@ -47,7 +47,7 @@
     },
     {
       "function_name": "aiOrderFulfillment",
-      "description": "AI agent that places the physical order on external vendor site"
+      "description": "AI agent that places physical orders on vendor sites"
     },
     {
       "function_name": "aiOrderVetting",
@@ -55,7 +55,7 @@
     },
     {
       "function_name": "aiProductReview",
-      "description": "AI review of completed orders for quality signals"
+      "description": "AI review of completed orders"
     },
     {
       "function_name": "sendPushNotification",
@@ -63,16 +63,29 @@
     },
     {
       "function_name": "adminAlertNotifier",
-      "description": "Alert admin for failed fulfillments requiring intervention"
+      "description": "Alert admin for failed fulfillments"
     },
     {
       "function_name": "validateStoreAccess",
-      "description": "Validate user's store access and eligibility"
+      "description": "Validate user store access"
     },
     {
       "function_name": "processRewardPayout",
       "description": "Process reward payout tied to order"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "auto_order_fulfillment_agent"
 }

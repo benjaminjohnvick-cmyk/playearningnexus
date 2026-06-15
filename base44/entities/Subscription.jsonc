@@ -1,0 +1,51 @@
+{
+  "name": "Subscription",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Subscriber user ID"
+    },
+    "plan_type": {
+      "type": "string",
+      "enum": [
+        "basic",
+        "premium",
+        "vip"
+      ],
+      "description": "Subscription tier"
+    },
+    "price_monthly": {
+      "type": "number",
+      "description": "Monthly subscription cost"
+    },
+    "benefits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Subscription benefits"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "auto_renew": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "user_id",
+    "plan_type",
+    "price_monthly"
+  ]
+}

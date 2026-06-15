@@ -1,0 +1,76 @@
+{
+  "name": "SurveySchedule",
+  "type": "object",
+  "properties": {
+    "survey_id": {
+      "type": "string",
+      "description": "PPCSurvey to schedule"
+    },
+    "creator_id": {
+      "type": "string",
+      "description": "Survey creator"
+    },
+    "launch_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When survey should go live"
+    },
+    "timezone": {
+      "type": "string",
+      "description": "Creator's timezone (e.g., America/New_York)"
+    },
+    "schedule_type": {
+      "type": "string",
+      "enum": [
+        "one_time",
+        "recurring"
+      ],
+      "default": "one_time"
+    },
+    "recurrence_pattern": {
+      "type": "object",
+      "description": "For recurring: { frequency: 'daily'|'weekly'|'monthly', interval: 1, end_date?: '2026-12-31' }",
+      "properties": {
+        "frequency": {
+          "type": "string",
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly"
+          ]
+        },
+        "interval": {
+          "type": "number"
+        },
+        "end_date": {
+          "type": "string"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "active",
+        "paused",
+        "completed",
+        "cancelled"
+      ],
+      "default": "scheduled"
+    },
+    "next_launch_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total_launches": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times this survey has launched"
+    }
+  },
+  "required": [
+    "survey_id",
+    "creator_id",
+    "launch_datetime"
+  ]
+}

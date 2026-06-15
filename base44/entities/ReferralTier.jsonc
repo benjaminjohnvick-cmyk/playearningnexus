@@ -1,0 +1,49 @@
+{
+  "name": "ReferralTier",
+  "type": "object",
+  "properties": {
+    "tier_name": {
+      "type": "string",
+      "description": "Tier name (Bronze, Silver, Gold, Platinum, Diamond)"
+    },
+    "tier_level": {
+      "type": "number",
+      "description": "Tier level (1-5)"
+    },
+    "min_referrals": {
+      "type": "number",
+      "description": "Minimum active referrals needed"
+    },
+    "min_commission_earned": {
+      "type": "number",
+      "description": "Minimum commission earned needed"
+    },
+    "bonus_multiplier": {
+      "type": "number",
+      "default": 1,
+      "description": "Commission multiplier for this tier"
+    },
+    "badge_icon": {
+      "type": "string",
+      "description": "Icon for the tier badge"
+    },
+    "badge_color": {
+      "type": "string",
+      "description": "Color for the tier badge"
+    },
+    "perks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Perks available at this tier"
+    }
+  },
+  "required": [
+    "tier_name",
+    "tier_level",
+    "min_referrals",
+    "min_commission_earned"
+  ]
+}

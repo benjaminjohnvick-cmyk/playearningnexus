@@ -1,0 +1,74 @@
+{
+  "name": "MarketingCampaign",
+  "type": "object",
+  "properties": {
+    "developer_id": {
+      "type": "string",
+      "description": "Business client running campaign"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "Game being promoted"
+    },
+    "campaign_name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "campaign_type": {
+      "type": "string",
+      "enum": [
+        "email",
+        "sms",
+        "social_media",
+        "in_app"
+      ],
+      "description": "Campaign channel"
+    },
+    "target_audience": {
+      "type": "object",
+      "description": "Targeting criteria"
+    },
+    "content": {
+      "type": "string",
+      "description": "Campaign content/message"
+    },
+    "budget": {
+      "type": "number",
+      "default": 0
+    },
+    "spent": {
+      "type": "number",
+      "default": 0
+    },
+    "impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "clicks": {
+      "type": "number",
+      "default": 0
+    },
+    "conversions": {
+      "type": "number",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "developer_id",
+    "game_id",
+    "campaign_name",
+    "campaign_type"
+  ]
+}
