@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, CheckCircle, Play, ArrowRight, RefreshCw, Mail } from 'lucide-react';
+import { ShieldCheck, CheckCircle, Play, ArrowRight, RefreshCw, Mail, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import StripePaymentModal from '@/components/payments/StripePaymentModal';
 
 const DEFAULT_USERS = 100000;
+const ANNUAL_BUDGET = 3650;
 
 export default function PPCNetworkPricing() {
   const [userCount, setUserCount] = useState(DEFAULT_USERS);
+  const [showPayment, setShowPayment] = useState(false);
   const annualBudget = 3650; // $3,650/year minimum
   const userEarningPotential = 1460; // $4/day × 365 = $1,460/year user can earn
   const grossProfit = annualBudget - userEarningPotential; // $3,650 - $1,460 = $2,190
@@ -187,13 +190,28 @@ export default function PPCNetworkPricing() {
         </div>
       </div>
 
-      <div className="text-center">
-        <Link to={createPageUrl('AdBusinessDashboard')}>
-          <Button className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold px-8 py-4 text-lg">
-            Start Your PPC Campaign <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-        </Link>
+      <div className="text-center space-y-3">
+        <Button
+          onClick={() => setShowPayment(true)}
+          className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold px-8 py-4 text-lg"
+        >
+          <CreditCard className="w-5 h-5 mr-2" /> Pay $3,650 & Start Campaign <ArrowRight className="w-5 h-5 ml-2" />
+        </Button>
+        <p className="text-xs text-gray-400">Secure payment powered by Stripe. Campaign activates instantly after payment.</p>
       </div>
+
+      <StripePaymentModal
+        isOpen={showPayment}
+        onClose={() => setShowPayment(false)}
+        amount={ANNUAL_BUDGET}
+        description="PPC Network — Annual Campaign (Paid Upfront)"
+        metadata={{ plan: 'ppc_annual' }}
+        onSuccess={() => {
+          setTimeout(() => {
+            window.location.href = createPageUrl('AdBusinessDashboard');
+          }, 2000);
+        }}
+      />
     </section>
   );
 }

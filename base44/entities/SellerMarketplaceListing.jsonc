@@ -1,0 +1,131 @@
+{
+  "name": "SellerMarketplaceListing",
+  "type": "object",
+  "description": "Third-party seller product listings with real-time bidding for featured placement",
+  "properties": {
+    "seller_user_id": {
+      "type": "string",
+      "description": "User ID of the seller"
+    },
+    "seller_name": {
+      "type": "string"
+    },
+    "seller_avatar_url": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "product_description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "electronics",
+        "gaming",
+        "fashion",
+        "home",
+        "beauty",
+        "sports",
+        "toys",
+        "books",
+        "other"
+      ]
+    },
+    "price": {
+      "type": "number",
+      "description": "Product sale price"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "product_url": {
+      "type": "string",
+      "description": "External URL to purchase the product"
+    },
+    "bid_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Daily bid for featured placement"
+    },
+    "placement_tier": {
+      "type": "string",
+      "enum": [
+        "featured",
+        "standard",
+        "basic"
+      ],
+      "default": "basic"
+    },
+    "bid_rank": {
+      "type": "number",
+      "default": 0,
+      "description": "Current rank in the bidding auction (1 = top featured)"
+    },
+    "total_impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "total_clicks": {
+      "type": "number",
+      "default": 0
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0
+    },
+    "daily_budget": {
+      "type": "number",
+      "default": 5
+    },
+    "auto_bid": {
+      "type": "boolean",
+      "default": false,
+      "description": "AI auto-adjusts bid to maintain rank"
+    },
+    "max_bid": {
+      "type": "number",
+      "default": 10,
+      "description": "Maximum bid for auto-bidding"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused",
+        "sold_out",
+        "rejected"
+      ],
+      "default": "active"
+    },
+    "rating": {
+      "type": "number",
+      "default": 0
+    },
+    "review_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_verified_seller": {
+      "type": "boolean",
+      "default": false
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "seller_user_id",
+    "seller_name",
+    "product_name",
+    "price",
+    "category"
+  ]
+}
