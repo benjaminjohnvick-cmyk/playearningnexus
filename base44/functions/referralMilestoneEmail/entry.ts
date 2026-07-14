@@ -26,6 +26,13 @@ Deno.serve(async (req) => {
     const referrer = allUsers.find(u => u.id === seq.referrer_user_id);
     if (!user?.email) return Response.json({ ok: true, message: 'No email' });
 
+    // Daily email throttle — max 1 automated email per user per day
+    const todayStr = new Date().toISOString().split('T')[0];
+    const lastEmailDate = user.last_automated_email_date?.split('T')[0];
+    if (lastEmailDate === todayStr) {
+      return Response.json({ ok: true, message: 'User already received an automated email today', throttled: true });
+    }
+
     const referrerName = referrer?.full_name || 'your friend';
 
     await base44.asServiceRole.integrations.Core.SendEmail({
@@ -73,6 +80,8 @@ Deno.serve(async (req) => {
       total_earned,
       last_activity_date: new Date().toISOString(),
     });
+
+    await base44.asServiceRole.entities.User.update(user_id, { last_automated_email_date: new Date().toISOString() });
 
     // Notify referrer too
     if (referrer) {

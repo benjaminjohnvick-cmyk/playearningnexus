@@ -17,7 +17,9 @@ Deno.serve(async (req) => {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     let sent = 0;
+    let throttled = 0;
     const results = [];
+    const todayStr = new Date().toISOString().split('T')[0];
 
     for (const seq of sequences) {
       // Skip if milestone already reached (they're engaged)
@@ -32,6 +34,10 @@ Deno.serve(async (req) => {
       const user = allUsers.find(u => u.id === seq.user_id);
       const referrer = allUsers.find(u => u.id === seq.referrer_user_id);
       if (!user?.email) continue;
+
+      // Daily email throttle — max 1 automated email per user per day
+      const lastEmailDate = user.last_automated_email_date?.split('T')[0];
+      if (lastEmailDate === todayStr) { throttled++; continue; }
 
       const referrerName = referrer?.full_name || 'your friend';
       const totalEarned = seq.total_earned || 0;
@@ -82,11 +88,12 @@ Deno.serve(async (req) => {
         reengagement_count: (seq.reengagement_count || 0) + 1,
       });
 
+      await base44.asServiceRole.entities.User.update(user.id, { last_automated_email_date: new Date().toISOString() });
       sent++;
       results.push({ user_id: seq.user_id, email: user.email });
     }
 
-    return Response.json({ ok: true, sent, results });
+    return Response.json({ ok: true, sent, throttled, results });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

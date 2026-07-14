@@ -9,6 +9,15 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'user_id required' }, { status: 400 });
     }
 
+    // Daily email throttle — max 1 automated email per user per day
+    const todayStr = new Date().toISOString().split('T')[0];
+    const user = await base44.asServiceRole.entities.User.filter({ id: user_id });
+    const userRecord = user?.[0];
+    const lastEmailDate = userRecord?.last_automated_email_date?.split('T')[0];
+    if (lastEmailDate === todayStr) {
+      return Response.json({ success: true, incentive_type: 'standard', throttled: true, message: 'User already received an automated email today' });
+    }
+
     // Determine incentive tier based on churn score
     let incentiveType = 'standard';
     let bonusAmount = 2;
@@ -37,6 +46,9 @@ Deno.serve(async (req) => {
           <p><a href="https://gamergain.com/login">Log in now</a></p>
         `,
       });
+      if (userRecord) {
+        await base44.asServiceRole.entities.User.update(user_id, { last_automated_email_date: new Date().toISOString() });
+      }
     } catch (e) {
       console.error('Email send failed:', e);
     }

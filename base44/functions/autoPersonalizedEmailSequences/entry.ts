@@ -13,10 +13,16 @@ Deno.serve(async (req) => {
     const users = await base44.entities.User.filter({}, '-created_date', 500);
     
     let emailsSent = 0;
+    let throttled = 0;
     const sequences = [];
+    const todayStr = new Date().toISOString().split('T')[0];
 
     for (const appUser of users) {
       try {
+        // Daily email throttle — max 1 automated email per user per day
+        const lastEmailDate = appUser.last_automated_email_date?.split('T')[0];
+        if (lastEmailDate === todayStr) { throttled++; continue; }
+
         // Get user profile and activity data
         const userProfile = {
           name: appUser.full_name,
@@ -62,6 +68,7 @@ Return JSON with:
             body: emailSequence.email_body,
             from_name: 'GamerGain'
           });
+          await base44.entities.User.update(appUser.id, { last_automated_email_date: new Date().toISOString() });
           emailsSent++;
         }
 
@@ -82,6 +89,7 @@ Return JSON with:
     return Response.json({
       users_analyzed: users.length,
       emails_sent: emailsSent,
+      throttled,
       awaiting_review: sequences.filter(s => s.awaiting_review).length,
       sample_sequences: sequences.slice(0, 20)
     });

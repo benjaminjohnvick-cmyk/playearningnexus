@@ -142,6 +142,11 @@
       "type": "string",
       "format": "date-time"
     },
+    "last_automated_email_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date of last automated email sent to this user (daily throttle: max 1 automated email per day)"
+    },
     "respondent_profile": {
       "type": "object",
       "description": "Survey respondent targeting profile",

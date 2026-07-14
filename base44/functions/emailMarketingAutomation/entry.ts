@@ -13,9 +13,15 @@ Deno.serve(async (req) => {
     const results = { sent: 0, skipped: 0, errors: 0 };
 
     const allUsers = await base44.asServiceRole.entities.User.list();
+    const todayStr = new Date().toISOString().split('T')[0];
+    const alreadyEmailedToday = new Set();
 
     for (const u of allUsers) {
       if (!u.email) { results.skipped++; continue; }
+
+      // Daily email throttle — max 1 automated email per user per day
+      const lastEmailDate = u.last_automated_email_date?.split('T')[0];
+      if (lastEmailDate === todayStr || alreadyEmailedToday.has(u.id)) { results.skipped++; continue; }
 
       try {
         if (campaign_type === 'onboarding') {
@@ -44,7 +50,8 @@ Let's get earning!
 — The GamerGain Team`.trim(),
           });
 
-          await base44.asServiceRole.entities.User.update(u.id, { onboarding_email_sent: true });
+          await base44.asServiceRole.entities.User.update(u.id, { onboarding_email_sent: true, last_automated_email_date: new Date().toISOString() });
+          alreadyEmailedToday.add(u.id);
           results.sent++;
         }
 
@@ -76,7 +83,8 @@ See you soon,
 — The GamerGain Team`.trim(),
           });
 
-          await base44.asServiceRole.entities.User.update(u.id, { last_winback_sent: now.toISOString() });
+          await base44.asServiceRole.entities.User.update(u.id, { last_winback_sent: now.toISOString(), last_automated_email_date: new Date().toISOString() });
+          alreadyEmailedToday.add(u.id);
           results.sent++;
         }
 
@@ -118,7 +126,8 @@ Keep earning,
 — The GamerGain Team`.trim(),
           });
 
-          await base44.asServiceRole.entities.User.update(u.id, { last_weekly_summary_sent: now.toISOString() });
+          await base44.asServiceRole.entities.User.update(u.id, { last_weekly_summary_sent: now.toISOString(), last_automated_email_date: new Date().toISOString() });
+          alreadyEmailedToday.add(u.id);
           results.sent++;
         }
       } catch {

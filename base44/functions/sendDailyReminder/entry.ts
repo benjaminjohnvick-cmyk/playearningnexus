@@ -17,10 +17,21 @@ Deno.serve(async (req) => {
 
     let emailsSent = 0;
     let smsSent = 0;
+    let throttled = 0;
     const errors = [];
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const alreadyEmailedToday = new Set();
 
     for (const user of users) {
       if (!user.email) continue;
+
+      // Daily email throttle — max 1 automated email per user per day
+      const lastEmailDate = user.last_automated_email_date?.split('T')[0];
+      if (lastEmailDate === todayStr || alreadyEmailedToday.has(user.id)) {
+        throttled++;
+        continue;
+      }
 
       const earned = earningsMap[user.id] || 0;
       if (earned >= 3) continue; // Already hit goal today, skip
@@ -93,6 +104,8 @@ The GamerGain Team
           body,
           from_name: 'GamerGain'
         });
+        await base44.asServiceRole.entities.User.update(user.id, { last_automated_email_date: new Date().toISOString() });
+        alreadyEmailedToday.add(user.id);
         emailsSent++;
       } catch (emailErr) {
         errors.push(`Failed to email ${user.email}: ${emailErr.message}`);
@@ -103,8 +116,9 @@ The GamerGain Team
       ok: true,
       emailsSent,
       smsSent,
+      throttled,
       errors,
-      message: `Sent ${emailsSent} emails and ${smsSent} SMS reminders`
+      message: `Sent ${emailsSent} emails and ${smsSent} SMS reminders (${throttled} throttled)`
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

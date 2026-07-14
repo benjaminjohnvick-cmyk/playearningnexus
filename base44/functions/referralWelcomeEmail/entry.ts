@@ -23,6 +23,13 @@ Deno.serve(async (req) => {
       return Response.json({ ok: true, message: 'Welcome already sent' });
     }
 
+    // Daily email throttle — max 1 automated email per user per day
+    const todayStr = new Date().toISOString().split('T')[0];
+    const lastEmailDate = referredUser.last_automated_email_date?.split('T')[0];
+    if (lastEmailDate === todayStr) {
+      return Response.json({ ok: true, message: 'User already received an automated email today', throttled: true });
+    }
+
     const referrerName = referrerUser?.full_name || 'a friend';
     const referralCode = `REF-${referred_user_id.slice(0, 8).toUpperCase()}`;
 
@@ -82,6 +89,8 @@ Deno.serve(async (req) => {
         is_active: true,
       });
     }
+
+    await base44.asServiceRole.entities.User.update(referred_user_id, { last_automated_email_date: new Date().toISOString() });
 
     return Response.json({ ok: true, message: `Welcome email sent to ${referredUser.email}` });
   } catch (error) {

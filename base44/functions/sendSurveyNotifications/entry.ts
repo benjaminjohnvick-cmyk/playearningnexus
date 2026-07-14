@@ -30,12 +30,15 @@ Deno.serve(async (req) => {
 
     let totalNotified = 0;
     const results = [];
+    const todayStr = new Date().toISOString().split('T')[0];
+    const alreadyEmailedToday = new Set();
 
     for (const survey of surveys) {
       const targeting = survey.targeting || {};
       const matchedUsers = respondents.filter(u => isMatch(u.respondent_profile, targeting));
 
       let emailsSent = 0;
+      let throttled = 0;
       let inAppSent = 0;
 
       for (const user of matchedUsers) {
@@ -57,8 +60,13 @@ Deno.serve(async (req) => {
           inAppSent++;
         }
 
-        // Email notification
+        // Email notification — enforce daily throttle
         if (prefs.email_enabled !== false) {
+          const lastEmailDate = user.last_automated_email_date?.split('T')[0];
+          if (lastEmailDate === todayStr || alreadyEmailedToday.has(user.id)) {
+            throttled++;
+            continue;
+          }
           const profile = user.respondent_profile;
           const interestMatch = getInterestMatches(profile.interests || [], survey);
 
@@ -67,11 +75,13 @@ Deno.serve(async (req) => {
             subject: `🎯 A survey was created just for you — Earn $${survey.cost_per_response || 2}`,
             body: buildEmailBody(user, survey, interestMatch),
           });
+          await base44.asServiceRole.entities.User.update(user.id, { last_automated_email_date: new Date().toISOString() });
+          alreadyEmailedToday.add(user.id);
           emailsSent++;
         }
       }
 
-      results.push({ survey_id: survey.id, title: survey.title, matched: matchedUsers.length, emails_sent: emailsSent, in_app_sent: inAppSent });
+      results.push({ survey_id: survey.id, title: survey.title, matched: matchedUsers.length, emails_sent: emailsSent, throttled, in_app_sent: inAppSent });
       totalNotified += matchedUsers.length;
     }
 
