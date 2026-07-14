@@ -162,6 +162,7 @@ const FeaturedGameDashboard = lazy(() => import('./pages/FeaturedGameDashboard')
 const ThirdPartySellerMarketplace = lazy(() => import('./pages/ThirdPartySellerMarketplace'));
 const SocialMediaAdPoster = lazy(() => import('./pages/SocialMediaAdPoster'));
 const UpfrontEarningsPage = lazy(() => import('./pages/UpfrontEarningsPage'));
+const AffiliatesHub = lazy(() => import('./pages/AffiliatesHub'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -392,6 +393,7 @@ const AuthenticatedApp = () => {
       <Route path="/ThirdPartySellerMarketplace" element={<LayoutWrapper currentPageName="ThirdPartySellerMarketplace"><ThirdPartySellerMarketplace /></LayoutWrapper>} />
       <Route path="/SocialMediaAdPoster" element={<LayoutWrapper currentPageName="SocialMediaAdPoster"><SocialMediaAdPoster /></LayoutWrapper>} />
       <Route path="/UpfrontEarningsPage" element={<LayoutWrapper currentPageName="UpfrontEarningsPage"><UpfrontEarningsPage /></LayoutWrapper>} />
+      <Route path="/AffiliatesHub" element={<LayoutWrapper currentPageName="AffiliatesHub"><AffiliatesHub /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
