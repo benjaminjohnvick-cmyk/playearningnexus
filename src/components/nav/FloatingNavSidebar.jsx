@@ -35,9 +35,6 @@ const NAV_SECTIONS = [
     { name: 'Get $1,460 Upfront', icon: DollarSign, path: 'UpfrontEarningsPage', color: 'green' },
     { name: 'Affiliate Marketing', icon: Megaphone, path: 'AffiliateMarketingPage', color: 'green' },
   ]},
-  { group: 'Affiliate', items: [
-    { name: 'Affiliates Hub', icon: Megaphone, path: 'AffiliatesHub', color: 'purple' },
-  ]},
   { group: 'Social', items: [
     { name: 'Referral Contest', icon: Trophy, path: 'ReferralContest', color: 'blue' },
     { name: 'Levels & Badges', icon: Star, path: 'LevelAndBadgesPage', color: 'blue' },
