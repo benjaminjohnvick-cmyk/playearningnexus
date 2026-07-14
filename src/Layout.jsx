@@ -32,7 +32,8 @@ import {
   Brain,
   ShieldCheck,
   Gamepad2,
-  Megaphone } from
+  Megaphone,
+  Store } from
 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
@@ -153,6 +154,7 @@ export default function Layout({ children, currentPageName }) {
   const navigation = [
   { name: 'Home', icon: Home, path: 'Home' },
   { name: 'Game Store', icon: ShoppingCart, path: 'InAppGameStore' },
+  { name: 'Marketplace', icon: Store, path: 'ThirdPartySellerMarketplace', requireAuth: true },
   { name: 'Surveys', icon: DollarSign, path: 'Surveys', requireAuth: true },
   { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
   { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
@@ -214,7 +216,6 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Affiliate Marketing', icon: Megaphone, path: 'AffiliateMarketingPage', requireAuth: true },
   { name: 'Game Voting Hub', icon: Gamepad2, path: 'GameVotingHub' },
   { name: 'Daily Earnings Tracker', icon: DollarSign, path: 'FeaturedGameDashboard', requireAuth: true },
-  { name: 'Seller Marketplace', icon: ShoppingCart, path: 'ThirdPartySellerMarketplace', requireAuth: true },
   { name: 'AI Ad Poster', icon: Megaphone, path: 'SocialMediaAdPoster', requireAuth: true },
   { name: 'Get $1,460 Upfront', icon: DollarSign, path: 'UpfrontEarningsPage', requireAuth: true },
   { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
