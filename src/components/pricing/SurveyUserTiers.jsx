@@ -10,6 +10,7 @@ const tiers = [
     color: 'border-green-400 bg-green-50',
     badgeColor: 'bg-green-100 text-green-800',
     requirements: [
+      'At least $8.00/day minimum — split 50/50 ($4.00 to you, $4.00 to platform)',
       'Complete a minimum of 4 surveys per day',
       'Must complete the required daily PPC ad task first',
       'Watch at least 16 video ads (30 sec each) per day',
@@ -31,6 +32,7 @@ const tiers = [
     color: 'border-blue-400 bg-blue-50',
     badgeColor: 'bg-blue-100 text-blue-800',
     requirements: [
+      'At least $8.00/day minimum — split 50/50 ($4.00 to you, $4.00 to platform)',
       'Complete a minimum of 4 surveys per day',
       'Must complete the required daily PPC ad task first',
       'Watch at least 16 video ads (30 sec each) per day',
@@ -53,6 +55,7 @@ const tiers = [
     color: 'border-yellow-400 bg-yellow-50',
     badgeColor: 'bg-yellow-100 text-yellow-800',
     requirements: [
+      'At least $8.00/day minimum — split 50/50 ($4.00 to you, $4.00 to platform)',
       'Complete a minimum of 4 surveys per day',
       'Must complete the required daily PPC ad task first',
       'Watch at least 16 video ads (30 sec each) per day',

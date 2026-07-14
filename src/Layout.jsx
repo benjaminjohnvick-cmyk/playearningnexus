@@ -31,7 +31,8 @@ import {
   AlertCircle,
   Brain,
   ShieldCheck,
-  Gamepad2 } from
+  Gamepad2,
+  Megaphone } from
 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
@@ -209,7 +210,10 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Pricing', icon: DollarSign, path: 'Pricing' },
   { name: 'AI Game Creator', icon: Gamepad2, path: 'DeveloperToolsHub', requireAuth: true },
   { name: 'Game Monetization', icon: DollarSign, path: 'GameMonetizationDashboard', requireAuth: true },
+  { name: 'Dev Earnings', icon: TrendingUp, path: 'DeveloperEarningsDashboard', requireAuth: true },
+  { name: 'Affiliate Marketing', icon: Megaphone, path: 'AffiliateMarketingPage', requireAuth: true },
   { name: 'Game Voting Hub', icon: Gamepad2, path: 'GameVotingHub' },
+  { name: 'Daily Earnings Tracker', icon: DollarSign, path: 'FeaturedGameDashboard', requireAuth: true },
   { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
   { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
   { name: 'Tournaments', icon: Trophy, path: 'Tournaments', requireAuth: true }];
@@ -221,6 +225,7 @@ export default function Layout({ children, currentPageName }) {
     navigation.push({ name: 'Users', icon: Bot, path: 'AdminUsers', requireAuth: true });
     navigation.push({ name: 'Feedback Intelligence', icon: Brain, path: 'FeedbackAdminDashboard', requireAuth: true });
     navigation.push({ name: 'UX Heatmap', icon: TrendingUp, path: 'UXHeatmapDashboard', requireAuth: true });
+    navigation.push({ name: 'AI Revenue Tracker', icon: DollarSign, path: 'AIRevenueTracker', requireAuth: true });
   }
 
   const filteredNav = navigation.filter((item) => !item.requireAuth || isAuthenticated);

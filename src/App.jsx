@@ -155,6 +155,10 @@ const AIDisputeResolutionCenter = lazy(() => import('./pages/AIDisputeResolution
 const AIVideoStudio = lazy(() => import('./pages/AIVideoStudio'));
 const AIAutomationLearningDashboard = lazy(() => import('./pages/AIAutomationLearningDashboard'));
 const GameMonetizationDashboard = lazy(() => import('./pages/GameMonetizationDashboard'));
+const DeveloperEarningsDashboard = lazy(() => import('./pages/DeveloperEarningsDashboard'));
+const AffiliateMarketingPage = lazy(() => import('./pages/AffiliateMarketingPage'));
+const AIRevenueTracker = lazy(() => import('./pages/AIRevenueTracker'));
+const FeaturedGameDashboard = lazy(() => import('./pages/FeaturedGameDashboard'));
 
 const PageLoader = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -378,6 +382,10 @@ const AuthenticatedApp = () => {
       <Route path="/AIVideoStudio" element={<LayoutWrapper currentPageName="AIVideoStudio"><AIVideoStudio /></LayoutWrapper>} />
       <Route path="/AIAutomationLearningDashboard" element={<LayoutWrapper currentPageName="AIAutomationLearningDashboard"><AIAutomationLearningDashboard /></LayoutWrapper>} />
       <Route path="/GameMonetizationDashboard" element={<LayoutWrapper currentPageName="GameMonetizationDashboard"><GameMonetizationDashboard /></LayoutWrapper>} />
+      <Route path="/DeveloperEarningsDashboard" element={<LayoutWrapper currentPageName="DeveloperEarningsDashboard"><DeveloperEarningsDashboard /></LayoutWrapper>} />
+      <Route path="/AffiliateMarketingPage" element={<LayoutWrapper currentPageName="AffiliateMarketingPage"><AffiliateMarketingPage /></LayoutWrapper>} />
+      <Route path="/AIRevenueTracker" element={<LayoutWrapper currentPageName="AIRevenueTracker"><AIRevenueTracker /></LayoutWrapper>} />
+      <Route path="/FeaturedGameDashboard" element={<LayoutWrapper currentPageName="FeaturedGameDashboard"><FeaturedGameDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>

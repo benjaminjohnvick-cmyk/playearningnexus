@@ -10,9 +10,12 @@ const DEFAULT_USERS = 100000;
 
 export default function PPCNetworkPricing() {
   const [userCount, setUserCount] = useState(DEFAULT_USERS);
-  const dailyCost = 8;
-  const annualCost = dailyCost * 365; // $2,920
-  const costPerUser = userCount > 0 ? (annualCost / userCount).toFixed(4) : '0';
+  const annualBudget = 3650; // $3,650/year minimum
+  const userEarningPotential = 1460; // $4/day × 365 = $1,460/year user can earn
+  const grossProfit = annualBudget - userEarningPotential; // $3,650 - $1,460 = $2,190
+  const referralFee = 500; // $500 affiliate/referral fee
+  const netProfit = grossProfit - referralFee; // $2,190 - $500 = $1,690
+  const costPerUser = userCount > 0 ? (annualBudget / userCount).toFixed(4) : '0';
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-12">
@@ -21,29 +24,41 @@ export default function PPCNetworkPricing() {
           📺 PPC Network Pricing
         </Badge>
         <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">
-          PPC Advertising Network — $8/Day, $2,920/Year
+          PPC Advertising Network — $3,650/Year Minimum
         </h2>
         <p className="text-gray-500 max-w-3xl mx-auto">
-          Your ads are shown to <strong>all users</strong> on the platform. Minimum budget: <strong>$2,920/year ($8/day)</strong>.
-          Paid upfront annually, auto-renews every year. Includes video ads, survey question ads, and a <strong>2× ROI guarantee</strong>.
+          Your ads are shown to <strong>all users</strong> on the platform. Minimum budget: <strong>$3,650/year (paid upfront)</strong>.
+          Users who connect a credit card can receive <strong>$1,460 upfront</strong> (a year's worth of survey revenue).
+          Includes 30-second video ads, survey question ads, and a <strong>2× ROI guarantee</strong>.
         </p>
       </div>
 
-      {/* Cost Per User Calculator */}
+      {/* Profit Calculator */}
       <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-8 text-white mb-8">
-        <h3 className="text-xl font-black mb-2 text-center">📊 Cost Per User Calculator</h3>
+        <h3 className="text-xl font-black mb-2 text-center">📊 Profit Calculator</h3>
         <p className="text-orange-100 text-sm text-center mb-6">
-          Total annual cost ÷ number of platform users = your cost per user
+          $3,650 (budget) − $1,460 (user earnings) − $500 (referral fee) = <strong>$1,690 net profit</strong>
         </p>
-        <div className="grid md:grid-cols-4 gap-4 items-center">
-          <div className="text-center">
-            <p className="text-sm text-orange-200 mb-2">Annual Budget</p>
-            <div className="bg-white/20 rounded-xl px-4 py-3">
-              <p className="text-2xl font-black">${annualCost.toLocaleString()}</p>
-              <p className="text-xs text-orange-200">$8/day × 365</p>
-            </div>
+        <div className="grid md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white/20 rounded-xl px-4 py-3 text-center">
+            <p className="text-xs text-orange-200 mb-1">Annual Budget (paid upfront)</p>
+            <p className="text-2xl font-black">${annualBudget.toLocaleString()}</p>
           </div>
-          <div className="text-center text-2xl font-black text-orange-200">÷</div>
+          <div className="bg-white/20 rounded-xl px-4 py-3 text-center">
+            <p className="text-xs text-orange-200 mb-1">User Earning Potential</p>
+            <p className="text-2xl font-black">−${userEarningPotential.toLocaleString()}</p>
+            <p className="text-xs text-orange-200">$4/day × 365 days</p>
+          </div>
+          <div className="bg-white/20 rounded-xl px-4 py-3 text-center">
+            <p className="text-xs text-orange-200 mb-1">Referral/Affiliate Fee</p>
+            <p className="text-2xl font-black">−${referralFee}</p>
+          </div>
+          <div className="bg-yellow-400 rounded-xl px-4 py-3 text-center">
+            <p className="text-xs text-gray-800 mb-1">Net Profit</p>
+            <p className="text-2xl font-black text-gray-900">${netProfit.toLocaleString()}</p>
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4 items-center">
           <div className="text-center">
             <label className="block text-sm text-orange-200 mb-2">Platform Users</label>
             <input
@@ -67,27 +82,27 @@ export default function PPCNetworkPricing() {
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         {[
           {
-            name: 'Daily Rate',
-            price: '$8.00/day',
-            desc: 'The minimum daily budget. Reach all platform users every day.',
-            icon: '📅',
-            color: 'border-blue-300',
-            bg: 'bg-blue-50',
-          },
-          {
-            name: 'Annual Plan (Required)',
-            price: '$2,920/year',
-            desc: 'Paid upfront. Auto-renews every year. Email notification sent before renewal.',
+            name: 'Annual Budget (Required)',
+            price: '$3,650/year',
+            desc: 'Minimum budget, paid upfront for one year. Auto-renews annually with 30-day email notice.',
             icon: '📆',
             color: 'border-green-400',
             bg: 'bg-green-50',
             highlight: true,
           },
           {
-            name: 'After Auto-Renewal',
-            price: 'Auto-charged annually',
-            desc: 'You\'ll receive an email 30 days before renewal. Budget auto-renews unless cancelled.',
-            icon: '🔄',
+            name: 'User Upfront Option',
+            price: '$1,460 upfront',
+            desc: 'Users who add a credit card receive $1,460 upfront (a full year of survey revenue). $8/day charged to card for missed survey days.',
+            icon: '💳',
+            color: 'border-blue-300',
+            bg: 'bg-blue-50',
+          },
+          {
+            name: 'Referral/Affiliate Fee',
+            price: '$500',
+            desc: 'Earned by affiliates who sign up 1 new PPC business + 1 new survey taker (with credit card on file).',
+            icon: '🤝',
             color: 'border-purple-300',
             bg: 'bg-purple-50',
           },
@@ -139,7 +154,7 @@ export default function PPCNetworkPricing() {
             </h3>
             <div className="bg-yellow-400 rounded-xl p-4 mb-4">
               <p className="font-black text-gray-900">We keep advertising until you double your ROI</p>
-              <p className="text-sm text-gray-800 mt-1">$2,920/year minimum → we guarantee at least $5,840 in advertising value</p>
+              <p className="text-sm text-gray-800 mt-1">$3,650/year minimum → we guarantee at least $7,300 in advertising value</p>
             </div>
             <ul className="space-y-2">
               {[

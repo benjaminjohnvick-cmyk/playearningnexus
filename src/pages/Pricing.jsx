@@ -11,6 +11,7 @@ import BusinessSurveyTiers from '@/components/pricing/BusinessSurveyTiers';
 import FeaturedGameBidding from '@/components/pricing/FeaturedGameBidding';
 import PPCNetworkPricing from '@/components/pricing/PPCNetworkPricing';
 import SocialMediaMarketingPricing from '@/components/pricing/SocialMediaMarketingPricing';
+import InAppAdMonetization from '@/components/pricing/InAppAdMonetization';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +26,7 @@ export default function Pricing() {
    { id: 'business-surveys', label: '🏢 Business Survey Tiers', icon: ShieldCheck },
    { id: 'featured-bidding', label: '🎮 Featured Game Bidding', icon: Gamepad2 },
    { id: 'ppc', label: '📺 PPC Network', icon: Megaphone },
+   { id: 'in-app-ads', label: '📱 In-App Ad Monetization', icon: TrendingUp },
    { id: 'social', label: '📱 Social Media Ads', icon: TrendingUp },
    { id: 'plans', label: '🎯 Business Portals', icon: TrendingUp },
    { id: 'revenue', label: '📊 Revenue Subscriptions', icon: Zap },
@@ -117,6 +119,10 @@ export default function Pricing() {
 
           {(activeCategory === 'all' || activeCategory === 'ppc') && (
             <PPCNetworkPricing />
+          )}
+
+          {(activeCategory === 'all' || activeCategory === 'in-app-ads') && (
+            <InAppAdMonetization />
           )}
 
           {(activeCategory === 'all' || activeCategory === 'social') && (
