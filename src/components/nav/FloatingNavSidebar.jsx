@@ -6,7 +6,7 @@ import {
   Home, ShoppingCart, FileText, LayoutDashboard, Heart, Trophy,
   DollarSign, Users, User, TrendingUp, Star, Gamepad2, Mail,
   Settings, Swords, BarChart2, Globe, ArrowRightLeft, Briefcase,
-  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket, Brain, Zap, ShieldCheck, KeyRound, ClipboardList
+  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket, Brain, Zap, ShieldCheck, KeyRound, ClipboardList, Store
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -14,6 +14,7 @@ const NAV_SECTIONS = [
   { group: 'Main', items: [
     { name: 'Home', icon: Home, path: 'Home', color: 'red' },
     { name: 'Store', icon: ShoppingCart, path: 'Store', color: 'red' },
+    { name: 'Marketplace', icon: Store, path: 'ThirdPartySellerMarketplace', color: 'red' },
     { name: 'My Orders', icon: ShoppingCart, path: 'MyOrders', color: 'green' },
     { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', color: 'blue' },
     { name: 'Wishlist', icon: Heart, path: 'Wishlist', color: 'red' },
