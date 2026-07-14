@@ -6,7 +6,7 @@ import {
   Home, ShoppingCart, FileText, LayoutDashboard, Heart, Trophy,
   DollarSign, Users, User, TrendingUp, Star, Gamepad2, Mail,
   Settings, Swords, BarChart2, Globe, ArrowRightLeft, Briefcase,
-  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket, Brain, Zap, ShieldCheck, KeyRound, ClipboardList, Store
+  ChevronLeft, ChevronRight, Activity, Wallet, Bell, Building2, Grid2x2, Ticket, Brain, Zap, ShieldCheck, KeyRound, ClipboardList, Store, Megaphone
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -31,6 +31,9 @@ const NAV_SECTIONS = [
     { name: 'Earnings Simulator', icon: Activity, path: 'EarningsSimulatorPage', color: 'green' },
     { name: 'Daily Streak', icon: Star, path: 'DailyEarningStreak', color: 'green' },
     { name: 'Contest Entries', icon: Ticket, path: 'ContestEntries', color: 'green' },
+    { name: 'Daily Earnings Tracker', icon: TrendingUp, path: 'FeaturedGameDashboard', color: 'green' },
+    { name: 'Get $1,460 Upfront', icon: DollarSign, path: 'UpfrontEarningsPage', color: 'green' },
+    { name: 'Affiliate Marketing', icon: Megaphone, path: 'AffiliateMarketingPage', color: 'green' },
   ]},
   { group: 'Social', items: [
     { name: 'Referral Contest', icon: Trophy, path: 'ReferralContest', color: 'blue' },
@@ -44,6 +47,7 @@ const NAV_SECTIONS = [
   { group: 'Advertiser', items: [
     { name: 'Ad Dashboard', icon: Building2, path: 'AdBusinessDashboard', color: 'yellow' },
     { name: 'Ad Grid', icon: Grid2x2, path: 'GoogleAdsOverlay', color: 'yellow' },
+    { name: 'AI Ad Poster', icon: Megaphone, path: 'SocialMediaAdPoster', color: 'yellow' },
   ]},
   { group: 'Developers', items: [
     { name: 'Dev Portal', icon: Briefcase, path: 'BusinessDashboard', color: 'red' },
@@ -53,6 +57,7 @@ const NAV_SECTIONS = [
     { name: 'Financial Dashboard', icon: DollarSign, path: 'DevFinancialDashboard', color: 'red' },
     { name: 'A/B Testing', icon: Activity, path: 'DevABTesting', color: 'red' },
     { name: 'Bug Reports', icon: Globe, path: 'DevBugReports', color: 'red' },
+    { name: 'Dev Earnings', icon: TrendingUp, path: 'DeveloperEarningsDashboard', color: 'red' },
   ]},
   { group: 'AI Agents', items: [
     { name: 'AI Agents Control', icon: Brain, path: 'AIAgentsSettings', color: 'purple' },
@@ -116,6 +121,7 @@ const ADMIN_NAV_SECTION = { group: 'Administrator', items: [
   { name: 'UX Heatmap', icon: BarChart2, path: 'UXHeatmapDashboard', color: 'purple' },
   { name: 'Risk Monitoring', icon: Globe, path: 'AdminRiskMonitoring', color: 'purple' },
   { name: 'Growth Heatmap', icon: TrendingUp, path: 'AdminGrowthHeatmap', color: 'purple' },
+  { name: 'AI Revenue Tracker', icon: DollarSign, path: 'AIRevenueTracker', color: 'purple' },
 ]};
 
 export default function FloatingNavSidebar({ currentPageName }) {
