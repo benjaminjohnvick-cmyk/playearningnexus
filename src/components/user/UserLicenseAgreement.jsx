@@ -96,16 +96,29 @@ export default function UserLicenseAgreement({ isOpen, onAccept, onDecline }) {
               <h3 className="font-bold text-lg">10. Contact & Referrals</h3>
               <p>You consent to the platform using your referral code to invite others. Marketing communications may be sent via email, SMS, and social media with your consent.</p>
 
-              <h3 className="font-bold text-lg">11. Multi-Language & Currency</h3>
+              <h3 className="font-bold text-lg">11. Automatic Affiliate Enrollment</h3>
+              <p>By creating an account on GamerGain, you are automatically enrolled as a Social Media Affiliate. This means:</p>
+              <ul className="list-disc ml-6 space-y-1">
+                <li>Your account is registered as an affiliate in our MLM (Multi-Level Marketing) referral system</li>
+                <li>You earn commissions from referrals up to 3 levels deep when your referrals complete surveys and earn</li>
+                <li>AI automatically evaluates your social media performance and advances your affiliate tier (Starter → Growth → Pro → Gold → Platinum) when you meet the requirements</li>
+                <li>Higher tiers unlock increased commission percentages and campaign allocations</li>
+                <li>Your affiliate tier is reviewed daily using AI analysis of your social media posts, engagement, and conversion metrics</li>
+                <li>You receive a unique referral link (https://gamergain.app/ref/[CODE]) to share and earn from</li>
+                <li>Affiliate earnings are processed and paid out monthly via your selected payout method</li>
+              </ul>
+              <p className="mt-2">This affiliate enrollment is included at no additional cost and is part of your standard GamerGain membership.</p>
+
+              <h3 className="font-bold text-lg mt-4">12. Multi-Language & Currency</h3>
               <p>The platform automatically translates content and converts currency based on your preferences.</p>
 
-              <h3 className="font-bold text-lg">12. Third-Party Surveys</h3>
+              <h3 className="font-bold text-lg mt-4">13. Third-Party Surveys</h3>
               <p>We use third-party survey providers (including Pollfish) to generate revenue. By participating, you agree to their terms as well.</p>
 
-              <h3 className="font-bold text-lg">13. Data Usage</h3>
+              <h3 className="font-bold text-lg mt-4">14. Data Usage</h3>
               <p>We track your engagement, survey completion, and game usage to improve the platform and measure performance.</p>
 
-              <h3 className="font-bold text-lg">14. Termination</h3>
+              <h3 className="font-bold text-lg mt-4">15. Termination</h3>
               <p>We reserve the right to suspend or terminate accounts that violate these terms or fail to meet daily survey requirements.</p>
             </div>
 

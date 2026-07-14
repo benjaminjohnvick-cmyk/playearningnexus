@@ -130,6 +130,19 @@ export default function SocialMediaSetup() {
     setConnected(prev => [...prev, ...newlyConnected]);
     setLoading(false);
 
+    // Auto-enroll user as affiliate when connecting social media
+    if (newlyConnected.length > 0) {
+      try {
+        await base44.functions.invoke('enrollSocialAffiliate', {
+          user_id: user.id,
+          accepted_ula: true,
+          social_platforms_connected: newlyConnected,
+        });
+      } catch (e) {
+        console.error('Affiliate enrollment error:', e);
+      }
+    }
+
     // Trigger AI posts immediately for all newly connected platforms (2 posts each)
     if (newlyConnected.length > 0) {
       setPosting(true);

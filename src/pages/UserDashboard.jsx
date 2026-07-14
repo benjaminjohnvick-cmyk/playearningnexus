@@ -43,6 +43,7 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import SurveyGate from '../components/surveys/SurveyGate';
+import DailyEarningsProgressBar from '../components/dashboard/DailyEarningsProgressBar';
 
 export default function UserDashboard() {
   const [user, setUser] = useState(null);
@@ -277,6 +278,14 @@ export default function UserDashboard() {
         </div>
 
 
+
+        {/* Daily $8 Earnings Progress Bar */}
+        <div className="mb-6">
+          <DailyEarningsProgressBar
+            earned={todayEarnings?.total_earned || 0}
+            goal={8}
+          />
+        </div>
 
         {/* Survey Alert Center */}
         <div className="mb-6">
