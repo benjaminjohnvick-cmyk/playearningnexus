@@ -284,6 +284,7 @@ export default function UserDashboard() {
           <DailyEarningsProgressBar
             earned={todayEarnings?.total_earned || 0}
             goal={8}
+            surveysCompleted={todayEarnings?.total_surveys_completed || 0}
           />
         </div>
 

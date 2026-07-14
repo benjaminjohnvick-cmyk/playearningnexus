@@ -1,18 +1,22 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { DollarSign, Target, TrendingUp, Clock } from "lucide-react";
+import { DollarSign, Target, TrendingUp, ClipboardCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-export default function DailyEarningsProgressBar({ earned = 0, goal = 8 }) {
+export default function DailyEarningsProgressBar({ earned = 0, goal = 8, surveysCompleted = 0, surveyMinimum = 4 }) {
   const currentEarned = Number(earned) || 0;
+  const currentSurveys = Number(surveysCompleted) || 0;
   const userShare = currentEarned * 0.5;
   const platformShare = currentEarned * 0.5;
   const userGoal = goal * 0.5;
 
   const pct = Math.min((currentEarned / goal) * 100, 100);
+  const surveyPct = Math.min((currentSurveys / surveyMinimum) * 100, 100);
   const remaining = Math.max(goal - currentEarned, 0).toFixed(2);
+  const surveysRemaining = Math.max(surveyMinimum - currentSurveys, 0);
   const isComplete = currentEarned >= goal;
+  const surveyGoalMet = currentSurveys >= surveyMinimum;
 
   return (
     <Card className={`overflow-hidden border-2 ${isComplete ? 'border-green-400' : 'border-red-200'} shadow-lg`}>
@@ -60,6 +64,31 @@ export default function DailyEarningsProgressBar({ earned = 0, goal = 8 }) {
             </div>
             {/* 50% midpoint marker */}
             <div className="absolute top-0 bottom-0 w-0.5 bg-gray-300" style={{ left: '50%' }} />
+          </div>
+
+          {/* 4-Survey Minimum Tracker */}
+          <div className={`rounded-xl border-2 p-4 ${surveyGoalMet ? 'border-green-300 bg-green-50' : 'border-amber-300 bg-amber-50'}`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <ClipboardCheck className={`w-4 h-4 ${surveyGoalMet ? 'text-green-600' : 'text-amber-600'}`} />
+                <span className="text-sm font-bold text-gray-800">Daily Survey Minimum</span>
+              </div>
+              <span className="text-sm font-black text-gray-900">
+                {currentSurveys} / {surveyMinimum}
+              </span>
+            </div>
+            <div className="relative h-4 rounded-full bg-white overflow-hidden mb-2">
+              <div
+                className={`h-full rounded-full transition-all duration-700 ease-out ${surveyGoalMet ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-amber-400 to-orange-500'}`}
+                style={{ width: `${Math.max(surveyPct, 3)}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-[11px]">
+              <span className={surveyGoalMet ? 'text-green-600 font-bold' : 'text-amber-600'}>
+                {surveyGoalMet ? '✅ Survey minimum reached!' : `${surveysRemaining} survey${surveysRemaining !== 1 ? 's' : ''} remaining`}
+              </span>
+              <span className="text-gray-400">~$2.00 per survey</span>
+            </div>
           </div>
 
           {/* Split Breakdown */}
