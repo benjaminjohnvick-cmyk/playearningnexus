@@ -175,6 +175,11 @@ export default function Home() {
                     For Developers
                   </Button>
                 </Link>
+                <Link to={createPageUrl('AffiliateMarketingPage')}>
+                  <Button size="sm" variant="outline" className="border-pink-300 text-pink-100 hover:bg-pink-500/20 bg-pink-500/10">
+                    💰 Become an Affiliate
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 
@@ -299,6 +304,18 @@ export default function Home() {
               <Link to="/DeveloperToolsHub">
                 <Button className="bg-white text-violet-700 hover:bg-violet-50 font-bold">
                   Launch AI Game Creator <ArrowRight className="w-4 h-4 ml-1" />
+                </Button>
+              </Link>
+            </div>
+
+            {/* Affiliate Marketing CTA */}
+            <div className="bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl p-6 text-white text-center">
+              <div className="text-2xl mb-2">💰</div>
+              <h3 className="text-xl font-black mb-1">Become an Affiliate Marketer</h3>
+              <p className="text-pink-100 text-sm mb-4">Earn $500 for your first referral + 10% of revenue from every business client you bring. 4 tiers with increasing bonuses.</p>
+              <Link to="/AffiliateMarketingPage">
+                <Button className="bg-white text-pink-700 hover:bg-pink-50 font-bold">
+                  Sign Up as Affiliate <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             </div>

@@ -1,11 +1,10 @@
 {
   "name": "SellerMarketplaceListing",
   "type": "object",
-  "description": "Third-party seller product listings with real-time bidding for featured placement",
+  "description": "Third-party seller product listings with real-time bidding for featured placement and buyer counter-bidding",
   "properties": {
     "seller_user_id": {
-      "type": "string",
-      "description": "User ID of the seller"
+      "type": "string"
     },
     "seller_name": {
       "type": "string"
@@ -34,15 +33,18 @@
       ]
     },
     "price": {
+      "type": "number"
+    },
+    "min_bid_price": {
       "type": "number",
-      "description": "Product sale price"
+      "default": 0,
+      "description": "Minimum price seller accepts for buyer bids"
     },
     "image_url": {
       "type": "string"
     },
     "product_url": {
-      "type": "string",
-      "description": "External URL to purchase the product"
+      "type": "string"
     },
     "bid_amount": {
       "type": "number",
@@ -57,11 +59,6 @@
         "basic"
       ],
       "default": "basic"
-    },
-    "bid_rank": {
-      "type": "number",
-      "default": 0,
-      "description": "Current rank in the bidding auction (1 = top featured)"
     },
     "total_impressions": {
       "type": "number",
@@ -81,13 +78,64 @@
     },
     "auto_bid": {
       "type": "boolean",
-      "default": false,
-      "description": "AI auto-adjusts bid to maintain rank"
+      "default": false
     },
     "max_bid": {
       "type": "number",
-      "default": 10,
-      "description": "Maximum bid for auto-bidding"
+      "default": 10
+    },
+    "buyer_bids": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "bidder_user_id": {
+            "type": "string"
+          },
+          "bidder_name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "rejected",
+              "countered"
+            ],
+            "default": "pending"
+          },
+          "counter_amount": {
+            "type": "number",
+            "description": "Seller's counter-bid amount"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "default": []
+    },
+    "survey_payback": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "daily_pledge": {
+          "type": "number",
+          "description": "Daily survey earnings pledged toward purchase"
+        },
+        "payback_days": {
+          "type": "number",
+          "description": "Calculated days to pay off via surveys"
+        }
+      }
     },
     "status": {
       "type": "string",

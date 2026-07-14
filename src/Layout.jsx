@@ -216,6 +216,7 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Daily Earnings Tracker', icon: DollarSign, path: 'FeaturedGameDashboard', requireAuth: true },
   { name: 'Seller Marketplace', icon: ShoppingCart, path: 'ThirdPartySellerMarketplace', requireAuth: true },
   { name: 'AI Ad Poster', icon: Megaphone, path: 'SocialMediaAdPoster', requireAuth: true },
+  { name: 'Get $1,460 Upfront', icon: DollarSign, path: 'UpfrontEarningsPage', requireAuth: true },
   { name: 'Developer Onboarding', icon: Briefcase, path: 'DeveloperOnboarding', requireAuth: true },
   { name: 'Notification Inbox', icon: Mail, path: 'NotificationInbox', requireAuth: true },
   { name: 'Tournaments', icon: Trophy, path: 'Tournaments', requireAuth: true }];

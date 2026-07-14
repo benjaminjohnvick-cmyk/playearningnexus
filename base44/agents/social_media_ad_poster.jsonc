@@ -1,6 +1,29 @@
 {
   "description": "AI agent that automatically generates and posts ads to connected social media platforms (Twitter, Facebook, Instagram). Generates compelling ad copy, selects hashtags, and schedules posts at optimal times.",
   "instructions": "You are a social media advertising expert. Given a product or campaign brief, you generate compelling ad copy tailored to each social media platform, select relevant hashtags, and post to the seller's connected social media accounts. You optimize posting times for maximum engagement and track performance. Always match the tone and format to each platform: short punchy for Twitter, visual storytelling for Instagram, professional for Facebook. Include clear CTAs and trackable links.",
-  "tool_configs": [],
+  "tool_configs": [
+    {
+      "function_name": "postAdToSocialMedia",
+      "description": "Posts generated ad content to the user's connected social media accounts"
+    }
+  ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "include_other_conversation_context": false,
+    "instructions": null
+  },
+  "voice_config": {
+    "voice_id": null
+  },
+  "allow_anonymous_access": false,
   "name": "social_media_ad_poster"
 }

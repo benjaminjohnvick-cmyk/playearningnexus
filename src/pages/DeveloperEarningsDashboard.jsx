@@ -40,11 +40,15 @@ export default function DeveloperEarningsDashboard() {
   const pendingTotal = pendingPayouts.reduce((sum, p) => sum + (p.amount || 0), 0);
   const completedTotal = completedPayouts.reduce((sum, p) => sum + (p.amount || 0), 0);
 
-  // Enterprise upgrade tracking
-  const ENTERPRISE_THRESHOLD = 400000;
-  const upgradeProgress = Math.min(100, (totalEarnings / ENTERPRISE_THRESHOLD) * 100);
-  const remainingToUpgrade = Math.max(0, ENTERPRISE_THRESHOLD - totalEarnings);
-  const needsUpgrade = totalEarnings >= ENTERPRISE_THRESHOLD;
+  // Enterprise upgrade tracking — two thresholds
+  const ENTERPRISE_THRESHOLD_100K = 100000;
+  const ENTERPRISE_THRESHOLD_400K = 400000;
+  const upgradeProgress100k = Math.min(100, (totalEarnings / ENTERPRISE_THRESHOLD_100K) * 100);
+  const upgradeProgress400k = Math.min(100, (totalEarnings / ENTERPRISE_THRESHOLD_400K) * 100);
+  const remainingTo100k = Math.max(0, ENTERPRISE_THRESHOLD_100K - totalEarnings);
+  const remainingTo400k = Math.max(0, ENTERPRISE_THRESHOLD_400K - totalEarnings);
+  const needsUpgrade100k = totalEarnings >= ENTERPRISE_THRESHOLD_100K;
+  const needsUpgrade400k = totalEarnings >= ENTERPRISE_THRESHOLD_400K;
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -89,21 +93,25 @@ export default function DeveloperEarningsDashboard() {
             </CardContent>
           </Card>
 
-          <Card className={`border-2 ${needsUpgrade ? 'border-red-500' : 'border-purple-400'}`}>
+          <Card className={`border-2 ${needsUpgrade400k ? 'border-red-500' : needsUpgrade100k ? 'border-orange-400' : 'border-purple-400'}`}>
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-2">
-                <ShieldCheck className={`w-8 h-8 ${needsUpgrade ? 'text-red-600' : 'text-purple-600'}`} />
-                <Badge className={needsUpgrade ? 'bg-red-100 text-red-800' : 'bg-purple-100 text-purple-800'}>
-                  {needsUpgrade ? 'Upgrade Required' : 'Enterprise Status'}
+                <ShieldCheck className={`w-8 h-8 ${needsUpgrade400k ? 'text-red-600' : needsUpgrade100k ? 'text-orange-600' : 'text-purple-600'}`} />
+                <Badge className={needsUpgrade400k ? 'bg-red-100 text-red-800' : needsUpgrade100k ? 'bg-orange-100 text-orange-800' : 'bg-purple-100 text-purple-800'}>
+                  {needsUpgrade400k ? 'Tier 3 Required' : needsUpgrade100k ? 'Enterprise Active' : 'Enterprise Status'}
                 </Badge>
               </div>
-              <p className="text-2xl font-black text-gray-900">{needsUpgrade ? 'ACTION NEEDED' : `$${remainingToUpgrade.toLocaleString()} to go`}</p>
-              <p className="text-xs text-gray-500 mt-1">Auto-upgrade at ${ENTERPRISE_THRESHOLD.toLocaleString()} earnings</p>
+              <p className="text-2xl font-black text-gray-900">
+                {needsUpgrade400k ? 'TIER 3 MANDATORY' : needsUpgrade100k ? `$${remainingTo400k.toLocaleString()} to Tier 3` : `$${remainingTo100k.toLocaleString()} to Enterprise`}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {needsUpgrade400k ? 'Auto-enrolled in Tier 3 Brand Partnership' : needsUpgrade100k ? 'Enterprise enrolled — Tier 3 at $400K' : `Auto-upgrade at $${ENTERPRISE_THRESHOLD_100K.toLocaleString()}`}
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Enterprise Upgrade Tracker */}
+        {/* Enterprise Upgrade Tracker — Two Thresholds */}
         <Card className="mb-8 border-2 border-purple-300">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -112,48 +120,73 @@ export default function DeveloperEarningsDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="mb-4">
+            {/* $100K Threshold */}
+            <div className="mb-6">
               <div className="flex justify-between mb-2">
-                <span className="text-sm font-bold text-gray-700">Progress to $400,000 (mandatory Enterprise upgrade)</span>
-                <span className="text-sm font-black text-purple-600">{upgradeProgress.toFixed(1)}%</span>
+                <span className="text-sm font-bold text-gray-700">Threshold 1: $100,000 → Mandatory Enterprise Upgrade (1 year)</span>
+                <span className="text-sm font-black text-orange-600">{upgradeProgress100k.toFixed(1)}%</span>
               </div>
-              <Progress value={upgradeProgress} className="h-4" />
-              <div className="flex justify-between mt-2 text-xs text-gray-500">
+              <Progress value={upgradeProgress100k} className="h-4 mb-2" />
+              <div className="flex justify-between text-xs text-gray-500">
                 <span>${totalEarnings.toLocaleString(undefined, { maximumFractionDigits: 0 })} earned</span>
-                <span>${ENTERPRISE_THRESHOLD.toLocaleString()} threshold</span>
+                <span>${ENTERPRISE_THRESHOLD_100K.toLocaleString()} threshold</span>
               </div>
+              {needsUpgrade100k ? (
+                <div className="mt-3 bg-orange-50 border-2 border-orange-300 rounded-xl p-3 flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-black text-orange-900 text-sm">Enterprise Tier Auto-Enrolled ✓</p>
+                    <p className="text-xs text-orange-700 mt-1">
+                      You've reached $100,000 in earnings. Automatically enrolled in Enterprise tier for 1 year.
+                      All fees deducted from your ongoing developer earnings — no out-of-pocket payment required.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500 mt-2">
+                  Remaining: <strong>${remainingTo100k.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> until Enterprise auto-upgrade
+                </p>
+              )}
             </div>
 
-            {needsUpgrade ? (
-              <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 flex items-start gap-3">
-                <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-black text-red-900">Mandatory Enterprise Upgrade Triggered!</p>
-                  <p className="text-sm text-red-700 mt-1">
-                    Your cumulative earnings have reached ${ENTERPRISE_THRESHOLD.toLocaleString()}. You have been automatically enrolled
-                    in the Enterprise tier for 1 year. All fees are deducted from your ongoing developer earnings — no out-of-pocket payment required.
-                    This allows GamerGain to continue promoting your app.
-                  </p>
-                  <Link to={createPageUrl('DeveloperOnboarding')}>
-                    <Button className="mt-3 bg-red-600 hover:bg-red-700 text-white">
-                      View Enterprise Enrollment <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
+            {/* $400K Threshold */}
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="text-sm font-bold text-gray-700">Threshold 2: $400,000 → Tier 3 Brand Partnership ($1M/2yr)</span>
+                <span className="text-sm font-black text-red-600">{upgradeProgress400k.toFixed(1)}%</span>
+              </div>
+              <Progress value={upgradeProgress400k} className="h-4 mb-2" />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>${totalEarnings.toLocaleString(undefined, { maximumFractionDigits: 0 })} earned</span>
+                <span>${ENTERPRISE_THRESHOLD_400K.toLocaleString()} threshold</span>
+              </div>
+              {needsUpgrade400k ? (
+                <div className="mt-3 bg-red-50 border-2 border-red-300 rounded-xl p-4 flex items-start gap-3">
+                  <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-black text-red-900">Mandatory Tier 3 Brand Partnership Triggered!</p>
+                    <p className="text-sm text-red-700 mt-1">
+                      Your cumulative earnings have reached ${ENTERPRISE_THRESHOLD_400K.toLocaleString()}. You have been automatically enrolled
+                      in the Tier 3 Brand Partnership ($1,000,000 over 2 years). All fees are deducted from your ongoing developer earnings.
+                      This allows GamerGain to continue promoting your app.
+                    </p>
+                    <Link to={createPageUrl('DeveloperOnboarding')}>
+                      <Button className="mt-3 bg-red-600 hover:bg-red-700 text-white">
+                        View Tier 3 Enrollment <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="bg-purple-50 rounded-xl p-4">
-                <p className="text-sm text-gray-700">
-                  <ShieldCheck className="w-4 h-4 inline mr-1 text-purple-600" />
-                  When your cumulative earnings reach <strong>$400,000</strong>, you'll be automatically enrolled in the Enterprise tier
-                  for 1 year. All fees are paid from your earnings — <strong>no out-of-pocket payment required</strong>.
-                  AI tracks this automatically.
-                </p>
+              ) : needsUpgrade100k ? (
                 <p className="text-xs text-gray-500 mt-2">
-                  Remaining: <strong>${remainingToUpgrade.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> until auto-upgrade
+                  Enterprise active. <strong>${remainingTo400k.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> until Tier 3 Brand Partnership auto-enrollment
                 </p>
-              </div>
-            )}
+              ) : (
+                <p className="text-xs text-gray-500 mt-2">
+                  At $400K: Tier 3 Brand Partnership ($1M/2yr) auto-enrolls. AI tracks this automatically.
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -241,14 +274,18 @@ export default function DeveloperEarningsDashboard() {
               All Enterprise tier subscription fees and Tier 3 Brand Partnership commitments ($1M/2yr) are automatically
               deducted from your accrued game earnings. No out-of-pocket payment is ever required.
             </p>
-            <div className="grid sm:grid-cols-3 gap-3">
-              <div className="bg-white rounded-lg p-3 border border-blue-200 text-center">
-                <p className="text-xs text-gray-500">Enterprise auto-upgrade threshold</p>
+            <div className="grid sm:grid-cols-4 gap-3">
+              <div className="bg-white rounded-lg p-3 border border-orange-200 text-center">
+                <p className="text-xs text-gray-500">Enterprise auto-upgrade</p>
+                <p className="font-black text-gray-900">$100,000</p>
+              </div>
+              <div className="bg-white rounded-lg p-3 border border-red-200 text-center">
+                <p className="text-xs text-gray-500">Tier 3 Brand Partnership</p>
                 <p className="font-black text-gray-900">$400,000</p>
               </div>
               <div className="bg-white rounded-lg p-3 border border-blue-200 text-center">
-                <p className="text-xs text-gray-500">Enterprise duration</p>
-                <p className="font-black text-gray-900">1 year (auto-renews)</p>
+                <p className="text-xs text-gray-500">Tier 3 commitment</p>
+                <p className="font-black text-gray-900">$1M / 2 years</p>
               </div>
               <div className="bg-white rounded-lg p-3 border border-blue-200 text-center">
                 <p className="text-xs text-gray-500">Payment method</p>

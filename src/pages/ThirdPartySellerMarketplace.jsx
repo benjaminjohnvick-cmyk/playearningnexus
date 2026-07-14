@@ -6,10 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Store, TrendingUp, Gavel, Plus, Star, ExternalLink, Zap, Crown } from 'lucide-react';
+import { Store, TrendingUp, Gavel, Plus, Star, ExternalLink, Zap, Crown, Percent } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import StripePaymentModal from '@/components/payments/StripePaymentModal';
+import BuyerBidDialog from '@/components/marketplace/BuyerBidDialog';
 
 const CATEGORIES = [
   { value: 'electronics', label: 'Electronics' },
@@ -36,6 +37,7 @@ export default function ThirdPartySellerMarketplace() {
     product_description: '',
     category: 'gaming',
     price: 0,
+    min_bid_price: 0,
     image_url: '',
     product_url: '',
     bid_amount: 5,
@@ -117,7 +119,9 @@ export default function ThirdPartySellerMarketplace() {
     );
   }
 
-  const ListingCard = ({ listing, rank }) => (
+  const ListingCard = ({ listing, rank }) => {
+    const platformFee = Math.max(0.80, (listing.price || 0) * 0.10);
+    return (
     <Card className={`overflow-hidden ${listing.placement_tier === 'featured' ? 'border-2 border-yellow-400 shadow-lg' : ''}`}>
       <div className="relative">
         {listing.image_url ? (
@@ -146,18 +150,33 @@ export default function ThirdPartySellerMarketplace() {
             <h3 className="font-bold text-gray-900 text-sm">{listing.product_name}</h3>
             <p className="text-xs text-gray-500">by {listing.seller_name}</p>
           </div>
-          <p className="text-lg font-black text-gray-900">${listing.price}</p>
+          <div className="text-right">
+            <p className="text-lg font-black text-gray-900">${listing.price}</p>
+            <p className="text-xs text-gray-400">+${platformFee.toFixed(2)} fee</p>
+          </div>
         </div>
-        <p className="text-xs text-gray-600 line-clamp-2 mb-3">{listing.product_description}</p>
-        <div className="flex items-center justify-between mb-3">
+        <p className="text-xs text-gray-600 line-clamp-2 mb-2">{listing.product_description}</p>
+        <div className="flex items-center justify-between mb-2">
           <Badge variant="outline" className="text-xs capitalize">{listing.category}</Badge>
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
             {listing.rating?.toFixed(1) || '0.0'} ({listing.review_count || 0})
           </div>
         </div>
-        <div className="flex items-center justify-between mb-3 text-xs">
-          <span className="text-gray-500">Bid: <strong className="text-blue-600">${listing.bid_amount}/day</strong></span>
+        {/* Fee disclosure */}
+        <div className="bg-blue-50 rounded-lg px-2 py-1 mb-2 flex items-center gap-1 text-xs">
+          <Percent className="w-3 h-3 text-blue-500" />
+          <span className="text-gray-600">10% fee (${platformFee.toFixed(2)}, min $0.80) on all sales</span>
+        </div>
+        {/* Bids count */}
+        {(listing.buyer_bids?.length || 0) > 0 && (
+          <div className="flex items-center gap-1 text-xs text-green-600 mb-2">
+            <Gavel className="w-3 h-3" />
+            {listing.buyer_bids.length} active bid(s) — highest: ${Math.max(...listing.buyer_bids.map(b => b.amount)).toFixed(2)}
+          </div>
+        )}
+        <div className="flex items-center justify-between mb-2 text-xs">
+          <span className="text-gray-500">Featured bid: <strong className="text-blue-600">${listing.bid_amount}/day</strong></span>
           <span className="text-gray-500">{listing.total_impressions || 0} views</span>
         </div>
         <div className="flex gap-2">
@@ -168,13 +187,17 @@ export default function ThirdPartySellerMarketplace() {
               </Button>
             </a>
           )}
+          {user && listing.seller_user_id !== user.id && (
+            <BuyerBidDialog listing={listing} user={user} onBidPlaced={loadData} />
+          )}
           {user && listing.seller_user_id === user.id && (
             <BoostBidButton listing={listing} onBoost={handleBoostBid} />
           )}
         </div>
       </CardContent>
     </Card>
-  );
+    );
+  };
 
   const BoostBidButton = ({ listing, onBoost }) => {
     const [open, setOpen] = useState(false);
@@ -234,6 +257,15 @@ export default function ThirdPartySellerMarketplace() {
               <Plus className="w-4 h-4 mr-2" /> List a Product
             </Button>
           )}
+        </div>
+
+        {/* Fee Info Banner */}
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+          <Percent className="w-8 h-8 text-blue-600 flex-shrink-0" />
+          <div>
+            <p className="font-black text-gray-900 text-sm">10% Fee on All Sales (Minimum $0.80)</p>
+            <p className="text-xs text-gray-600">Facebook Marketplace-style fee structure. Buyers can bid on items and sellers can counter-bid in real time. Pay with survey earnings using the survey payback calculator.</p>
+          </div>
         </div>
 
         {/* Category Filter */}
@@ -332,6 +364,11 @@ export default function ThirdPartySellerMarketplace() {
                   <Label>Price ($)</Label>
                   <Input type="number" value={newListing.price} onChange={e => setNewListing({...newListing, price: parseFloat(e.target.value) || 0})} />
                 </div>
+              </div>
+              <div>
+                <Label>Minimum Bid Price for Buyers ($) — optional</Label>
+                <Input type="number" value={newListing.min_bid_price} onChange={e => setNewListing({...newListing, min_bid_price: parseFloat(e.target.value) || 0})} min="0" placeholder="0 (leave 0 for no minimum)" />
+                <p className="text-xs text-gray-400 mt-1">Buyers can bid on your item. Set the minimum price you'll accept.</p>
               </div>
               <div>
                 <Label>Image URL</Label>
