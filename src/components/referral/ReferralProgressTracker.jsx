@@ -20,7 +20,7 @@ const MILESTONES = [
     jackpotEntries: 1,
     commissionBoost: null,
     exclusiveSurveys: false,
-    perks: ['1 Jackpot Entry', 'Rookie Badge', 'Profile Flair'],
+    perks: ['1 Prize Pool Point', 'Rookie Badge', 'Profile Flair'],
   },
   {
     count: 25,
@@ -34,7 +34,7 @@ const MILESTONES = [
     jackpotEntries: 5,
     commissionBoost: null,
     exclusiveSurveys: true,
-    perks: ['5 Jackpot Entries', 'Network Builder Badge', 'Priority Survey Access'],
+    perks: ['5 Prize Pool Points', 'Network Builder Badge', 'Priority Survey Access'],
   },
   {
     count: 50,
@@ -48,7 +48,7 @@ const MILESTONES = [
     jackpotEntries: 15,
     commissionBoost: 5,
     exclusiveSurveys: true,
-    perks: ['15 Jackpot Entries', 'Growth Champion Badge', 'Custom Frame', '+5% Commission'],
+    perks: ['15 Prize Pool Points', 'Growth Champion Badge', 'Custom Frame', '+5% Commission'],
   },
   {
     count: 100,
@@ -62,7 +62,7 @@ const MILESTONES = [
     jackpotEntries: 50,
     commissionBoost: 10,
     exclusiveSurveys: true,
-    perks: ['50 Jackpot Entries', 'Legend Badge', 'Golden Frame', '+10% Commission', 'VIP Survey Pool'],
+    perks: ['50 Prize Pool Points', 'Legend Badge', 'Golden Frame', '+10% Commission', 'VIP Survey Pool'],
   },
 ];
 
@@ -131,7 +131,7 @@ function MilestoneCard({ milestone, totalReferrals, userId, qc }) {
     onSuccess: () => {
       qc.invalidateQueries(['rm', userId, milestone.count]);
       qc.invalidateQueries(['milestones', userId]);
-      toast.success(`🎉 ${milestone.label} unlocked! +${milestone.jackpotEntries} jackpot entries awarded!`);
+      toast.success(`🎉 ${milestone.label} unlocked! +${milestone.jackpotEntries} prize pool points awarded!`);
     },
   });
 
@@ -203,7 +203,7 @@ function MilestoneCard({ milestone, totalReferrals, userId, qc }) {
         >
           {claimMutation.isPending
             ? '...'
-            : <><Gift className="w-4 h-4 mr-2" /> Claim {milestone.jackpotEntries} Jackpot Entries</>}
+            : <><Gift className="w-4 h-4 mr-2" /> Claim {milestone.jackpotEntries} Prize Pool Points</>}
         </Button>
       )}
       {isClaimed && (

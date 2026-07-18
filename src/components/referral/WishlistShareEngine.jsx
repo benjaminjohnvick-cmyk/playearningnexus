@@ -50,7 +50,7 @@ export default function WishlistShareEngine({ userId }) {
             <Share2 className="w-5 h-5" />
             Wishlist Share Referral
           </CardTitle>
-          <CardDescription>Share your wishlist & earn Jackpot Entries or credit</CardDescription>
+          <CardDescription>Share your wishlist & earn Prize Pool Points or credit</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {wishlistItems.length > 0 ? (

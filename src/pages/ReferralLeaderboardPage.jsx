@@ -168,7 +168,7 @@ export default function ReferralLeaderboardPage() {
           </div>
         </div>
 
-        {/* Live Jackpot */}
+        {/* Live Prize Pool */}
         <JackpotWidget />
 
         {/* Commission tiers */}

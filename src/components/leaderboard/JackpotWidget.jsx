@@ -53,9 +53,9 @@ export default function JackpotWidget() {
 
           <div className="grid grid-cols-3 gap-3 mb-4">
             {[
-              { icon: Ticket, label: 'Contest Entries', value: jackpot.total_entries || 0 },
-              { icon: Users, label: 'Participants', value: Math.ceil((jackpot.total_entries || 0) / 5) },
-              { icon: TrendingUp, label: 'Your Chances', value: 'Earn entries →' },
+              { icon: Ticket, label: 'Performance Points', value: jackpot.total_entries || 0 },
+              { icon: Users, label: 'Competitors', value: Math.ceil((jackpot.total_entries || 0) / 5) },
+              { icon: TrendingUp, label: 'Ranked By', value: 'Skill →' },
             ].map(s => (
               <div key={s.label} className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
                 <s.icon className="w-4 h-4 mx-auto mb-1 opacity-75" />
@@ -68,8 +68,9 @@ export default function JackpotWidget() {
           <div className="bg-white/15 rounded-xl p-3 text-xs flex items-start gap-2">
             <Zap className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-yellow-300" />
             <span className="opacity-90">
-              Hit <strong>5, 25, 50 or 100 referral milestones</strong> to earn contest entries.
-              Most entries wins quarterly. Prize must be spent on GamerGain.
+              <strong>Open to everyone.</strong> The more real referrals you drive, the more you earn — everyone gets a
+              share <strong>in proportion to the verified referrals</strong> they bring, with a bonus for top performers.
+              Decided by results, never luck. The pool is funded from the revenue those referrals generate.
             </span>
           </div>
         </div>

@@ -14,7 +14,7 @@ export default function RewardDistributionPanel() {
   const [processing, setProcessing] = useState(false);
   const [autoResults, setAutoResults] = useState(null);
   const [manualForm, setManualForm] = useState({ target_user_id: '', amount: '', reward_type: 'contest_win', reward_note: '' });
-  const [contestForm, setContestForm] = useState({ winner_user_id: '', prize_amount: '', contest_name: '7 Million User Referral Contest' });
+  const [contestForm, setContestForm] = useState({ winner_user_id: '', prize_amount: '', contest_name: '7 Million User Referral Prize Pool' });
 
   const { data: recentPayouts = [] } = useQuery({
     queryKey: ['recentPayouts'],
@@ -71,7 +71,7 @@ export default function RewardDistributionPanel() {
     setProcessing(false);
     if (res.data.ok) {
       toast.success(`Contest prize sent via ${res.data.method}!`);
-      setContestForm({ winner_user_id: '', prize_amount: '', contest_name: '7 Million User Referral Contest' });
+      setContestForm({ winner_user_id: '', prize_amount: '', contest_name: '7 Million User Referral Prize Pool' });
     } else {
       toast.error('Contest payout failed: ' + (res.data.error || 'Unknown'));
     }

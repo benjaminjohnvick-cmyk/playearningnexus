@@ -26,6 +26,8 @@ const NAV_SECTIONS = [
     { name: 'Surveys', icon: TrendingUp, path: 'PPCMarketplace', color: 'green' },
     { name: 'Paid PPC Ads', icon: DollarSign, path: 'GoogleAdsOverlay', color: 'green' },
     { name: 'Head-to-Head Contest', icon: Swords, path: 'HeadToHeadContest', color: 'green' },
+    { name: 'Weekly Feature Vote', icon: Ticket, path: 'WeeklyFeatureVote', color: 'green' },
+    { name: 'Weekly Referral Post', icon: Megaphone, path: 'WeeklyReferralContest', color: 'green' },
     { name: 'Withdrawal', icon: DollarSign, path: 'Withdrawal', color: 'green' },
     { name: 'My Payouts', icon: Wallet, path: 'MyPayouts', color: 'green' },
     { name: 'Earnings Simulator', icon: Activity, path: 'EarningsSimulatorPage', color: 'green' },
@@ -36,7 +38,7 @@ const NAV_SECTIONS = [
     { name: 'Affiliate Marketing', icon: Megaphone, path: 'AffiliateMarketingPage', color: 'green' },
   ]},
   { group: 'Social', items: [
-    { name: 'Referral Contest', icon: Trophy, path: 'ReferralContest', color: 'blue' },
+    { name: 'Referral Prize Pool', icon: Trophy, path: 'ReferralContest', color: 'blue' },
     { name: 'Levels & Badges', icon: Star, path: 'LevelAndBadgesPage', color: 'blue' },
     { name: 'Referrals', icon: Users, path: 'ReferralDashboard', color: 'blue' },
     { name: 'Leaderboard & Seasons', icon: Trophy, path: 'GlobalLeaderboard', color: 'blue' },
@@ -73,6 +75,7 @@ const NAV_SECTIONS = [
     { name: 'Notifications', icon: Mail, path: 'NotificationInbox', color: 'blue' },
     { name: 'Dispute Center', icon: Globe, path: 'DisputeCenter', color: 'blue' },
     { name: 'Transfer Money', icon: ArrowRightLeft, path: 'MoneyTransfer', color: 'blue' },
+    { name: 'Shared Wallet Groups', icon: Users, path: 'SharedWalletGroups', color: 'blue' },
     { name: 'Global Prestige', icon: Star, path: 'GlobalPrestigeHub', color: 'blue' },
   ]},
 ];
@@ -122,6 +125,9 @@ const ADMIN_NAV_SECTION = { group: 'Administrator', items: [
   { name: 'Risk Monitoring', icon: Globe, path: 'AdminRiskMonitoring', color: 'purple' },
   { name: 'Growth Heatmap', icon: TrendingUp, path: 'AdminGrowthHeatmap', color: 'purple' },
   { name: 'AI Revenue Tracker', icon: DollarSign, path: 'AIRevenueTracker', color: 'purple' },
+  { name: 'Viral Content AI', icon: Megaphone, path: 'ViralContentDashboard', color: 'purple' },
+  { name: 'AI Dispute Automation', icon: Brain, path: 'AIDisputeAutomationDashboard', color: 'purple' },
+  { name: 'Client Re-engagement', icon: Building2, path: 'BusinessClientReengagementDashboard', color: 'purple' },
 ]};
 
 export default function FloatingNavSidebar({ currentPageName }) {

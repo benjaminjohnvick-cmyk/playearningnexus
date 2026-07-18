@@ -1,0 +1,60 @@
+{
+  "name": "Survey",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who was offered / completed the survey"
+    },
+    "title": {
+      "type": "string",
+      "description": "Survey title"
+    },
+    "category": {
+      "type": "string",
+      "description": "Survey category / topic (e.g. Tech, Finance, Health)"
+    },
+    "provider": {
+      "type": "string",
+      "description": "Survey source or provider (e.g. bitlabs, internal, ppc)"
+    },
+    "external_survey_id": {
+      "type": "string",
+      "description": "Provider-side survey identifier"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "in_progress",
+        "completed",
+        "disqualified",
+        "expired"
+      ],
+      "default": "available",
+      "description": "Lifecycle status of the survey for this user"
+    },
+    "reward_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Reward offered for completing the survey (USD)"
+    },
+    "earnings": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount actually earned by the user for this survey (USD)"
+    },
+    "estimated_time_minutes": {
+      "type": "number",
+      "description": "Estimated completion time in minutes"
+    },
+    "completion_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user completed the survey"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

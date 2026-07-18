@@ -107,7 +107,7 @@ export default function WhiteLabelSection() {
                 Start AI Setup — Free <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
-            <Link to={createPageUrl('PartnerPortal')}>
+            <Link to={createPageUrl('PartnerOnboarding')}>
               <Button variant="outline" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-bold px-8 py-6 text-lg">
                 View Partner Dashboard
               </Button>

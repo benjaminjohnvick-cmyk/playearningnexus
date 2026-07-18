@@ -39,7 +39,7 @@ export default function ShareWishlistButton({ userId, size = 'sm' }) {
       try {
         await navigator.share({
           title: 'Check out my wishlist!',
-          text: 'Browse my wishlist and help me win Jackpot Entries',
+          text: 'Browse my wishlist and help me win Prize Pool Points',
           url: shareLink,
         });
       } catch (err) {
@@ -74,7 +74,7 @@ export default function ShareWishlistButton({ userId, size = 'sm' }) {
         <DialogHeader>
           <DialogTitle>Share Your Wishlist</DialogTitle>
           <DialogDescription>
-            Share with friends to earn Jackpot Entries & credit
+            Share with friends to earn Prize Pool Points & credit
           </DialogDescription>
         </DialogHeader>
 

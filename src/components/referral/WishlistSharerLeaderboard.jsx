@@ -39,7 +39,7 @@ export default function WishlistSharerLeaderboard() {
 
   return (
     <div className="space-y-6">
-      {/* Jackpot Winner Announcement */}
+      {/* Prize Pool Winner Announcement */}
       {jackpotWinner && (
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
@@ -64,7 +64,7 @@ export default function WishlistSharerLeaderboard() {
             </div>
             <h3 className="text-2xl font-bold">🎉 Wishlist Sharer Champion!</h3>
             <p className="text-lg opacity-90">
-              {jackpotWinner.conversions} conversions • {jackpotWinner.jackpot_entries} Jackpot Entries
+              {jackpotWinner.conversions} conversions • {jackpotWinner.jackpot_entries} Prize Pool Points
             </p>
           </div>
         </motion.div>
@@ -77,7 +77,7 @@ export default function WishlistSharerLeaderboard() {
             <Trophy className="w-5 h-5 text-yellow-500" />
             Top Wishlist Sharers
           </CardTitle>
-          <CardDescription>Real-time rankings by conversions & Jackpot Entries</CardDescription>
+          <CardDescription>Real-time rankings by conversions & Prize Pool Points</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">

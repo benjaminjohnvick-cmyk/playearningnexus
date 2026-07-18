@@ -132,7 +132,7 @@ export default function ActiveReferralContestSection({ user }) {
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h2 className="text-2xl font-black text-gray-900">🏆 Active Referral Contest</h2>
+            <h2 className="text-2xl font-black text-gray-900">🏆 Active Referral Prize Pool</h2>
             <Badge className="bg-red-100 text-red-700 border-red-200 animate-pulse text-xs font-bold">
               <Flame className="w-3 h-3 mr-1" /> LIVE
             </Badge>

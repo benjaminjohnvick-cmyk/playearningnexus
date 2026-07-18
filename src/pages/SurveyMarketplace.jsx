@@ -8,9 +8,27 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Store, Plus, Tag, MapPin, Cpu, Users, DollarSign, Loader2, Search, ArrowLeftRight, Star, Lock } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Store, Plus, Tag, MapPin, Cpu, Users, DollarSign, Loader2, Search, ArrowLeftRight, Star, Lock, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+
+// Soft client-side guard so a respondent isn't rewarded twice for the same listing
+// (there is no backend response entity to check against).
+const respondedKey = (userId) => `sm_responded_${userId}`;
+const getResponded = (userId) => {
+  try { return JSON.parse(localStorage.getItem(respondedKey(userId)) || '[]'); }
+  catch { return []; }
+};
+const markResponded = (userId, listingId) => {
+  try {
+    const set = new Set(getResponded(userId));
+    set.add(listingId);
+    localStorage.setItem(respondedKey(userId), JSON.stringify([...set]));
+  } catch { /* ignore storage errors */ }
+};
 
 const INTEREST_TAGS = ['Tech','Finance','Health','Gaming','Travel','Food','Fashion','Sports','Music','Education','Parenting','Environment','Business','Entertainment'];
 const GEO_TAGS = ['USA','Canada','UK','Europe','Asia','Latin America','Australia','Africa','Middle East'];
@@ -220,6 +238,180 @@ function CreateListingForm({ user, prestige, onCreated, onCancel }) {
   );
 }
 
+function ResponseDialog({ listing, user, onClose, onSubmitted }) {
+  const isSurvey = listing.listing_type === 'micro_survey';
+  const questions = isSurvey ? (listing.questions || []) : [];
+  const [answers, setAnswers] = useState({});
+  const [note, setNote] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const setAnswer = (i, v) => setAnswers(a => ({ ...a, [i]: v }));
+
+  const allAnswered = !isSurvey || questions.every((q, i) => {
+    const v = answers[i];
+    return v !== undefined && v !== null && String(v).trim() !== '';
+  });
+
+  const isFull = (listing.responses_count || 0) >= listing.max_responses;
+  const alreadyResponded = getResponded(user.id).includes(listing.id);
+
+  const handleSubmit = async () => {
+    if (listing.creator_user_id === user.id) {
+      return toast.error("You can't respond to your own listing");
+    }
+    if (isSurvey && !allAnswered) {
+      return toast.error('Please answer all questions');
+    }
+    setSubmitting(true);
+    try {
+      // 1) Update the listing response count (and close it out when full)
+      const newCount = (listing.responses_count || 0) + 1;
+      const updates = { responses_count: newCount };
+      if (newCount >= listing.max_responses) updates.status = 'completed';
+      await base44.entities.SurveyMarketplaceListing.update(listing.id, updates);
+
+      // 2) Credit the respondent's reward, if any
+      if (listing.reward_amount > 0) {
+        await base44.entities.Transaction.create({
+          user_id: user.id,
+          amount: listing.reward_amount,
+          currency: 'USD',
+          transaction_type: 'survey_earning',
+          status: 'completed',
+          notes: `Survey Marketplace ${listing.listing_type.replace('_', ' ')}: ${listing.title}`,
+        });
+      }
+
+      // 3) Notify the listing creator
+      await base44.entities.Notification.create({
+        user_id: listing.creator_user_id,
+        title: 'New marketplace response',
+        message: `${user.full_name || 'A member'} responded to "${listing.title}"`,
+        notification_type: 'marketplace_response',
+        related_entity_id: listing.id,
+      });
+
+      markResponded(user.id, listing.id);
+      toast.success(
+        listing.reward_amount > 0
+          ? `Response submitted — $${listing.reward_amount.toFixed(2)} credited!`
+          : 'Response submitted — thanks!'
+      );
+      onSubmitted();
+    } catch (e) {
+      toast.error(e?.message || 'Something went wrong. Please try again.');
+    }
+    setSubmitting(false);
+  };
+
+  return (
+    <Dialog open onOpenChange={(v) => { if (!v) onClose(); }}>
+      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            {isSurvey ? '📋' : listing.listing_type === 'trade' ? '🔄' : '↔️'} {listing.title}
+          </DialogTitle>
+          <DialogDescription>
+            by {listing.creator_name}
+            {listing.reward_amount > 0 && <> · <span className="text-green-600 font-semibold">${listing.reward_amount.toFixed(2)} reward</span></>}
+          </DialogDescription>
+        </DialogHeader>
+
+        {alreadyResponded ? (
+          <div className="py-8 text-center text-gray-500">
+            <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-green-500" />
+            <p className="font-medium">You've already responded to this listing.</p>
+          </div>
+        ) : isFull ? (
+          <div className="py-8 text-center text-gray-500">
+            <Lock className="w-12 h-12 mx-auto mb-3 opacity-40" />
+            <p className="font-medium">This listing has reached its response limit.</p>
+          </div>
+        ) : (
+          <div className="space-y-5 py-2">
+            {listing.description && <p className="text-sm text-gray-600">{listing.description}</p>}
+
+            {listing.swap_offer && (
+              <div className="bg-blue-50 rounded-lg px-3 py-2 flex items-center gap-2">
+                <ArrowLeftRight className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                <p className="text-sm text-blue-700">In exchange: {listing.swap_offer}</p>
+              </div>
+            )}
+
+            {isSurvey && questions.map((q, i) => (
+              <div key={i} className="space-y-2">
+                <Label className="text-sm font-medium">{i + 1}. {q.question}</Label>
+
+                {(q.type === 'multiple_choice' || q.type === 'yes_no') && (
+                  <RadioGroup value={answers[i] || ''} onValueChange={v => setAnswer(i, v)}>
+                    {(q.type === 'yes_no' ? ['Yes', 'No'] : (q.options || [])).map((opt, oi) => (
+                      <div key={oi} className="flex items-center gap-2">
+                        <RadioGroupItem value={opt} id={`q${i}-o${oi}`} />
+                        <Label htmlFor={`q${i}-o${oi}`} className="text-sm font-normal cursor-pointer">{opt}</Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                )}
+
+                {q.type === 'rating' && (
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setAnswer(i, n)}
+                        className="p-1"
+                        aria-label={`Rate ${n}`}
+                      >
+                        <Star className={`w-6 h-6 ${answers[i] >= n ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {q.type === 'text' && (
+                  <Textarea
+                    value={answers[i] || ''}
+                    onChange={e => setAnswer(i, e.target.value)}
+                    placeholder="Your answer…"
+                    className="h-20 text-sm"
+                  />
+                )}
+              </div>
+            ))}
+
+            {!isSurvey && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Message to the creator <span className="text-gray-400">(optional)</span></Label>
+                <Textarea
+                  value={note}
+                  onChange={e => setNote(e.target.value)}
+                  placeholder={listing.listing_type === 'trade' ? 'Details of your trade offer…' : 'What you can offer in the swap…'}
+                  className="h-20 text-sm"
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose} disabled={submitting}>Cancel</Button>
+          {!alreadyResponded && !isFull && (
+            <Button
+              onClick={handleSubmit}
+              disabled={submitting || (isSurvey && !allAnswered)}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <CheckCircle2 className="w-4 h-4 mr-1" />}
+              {isSurvey ? 'Submit Response' : listing.listing_type === 'trade' ? 'Send Trade Offer' : 'Send Swap Offer'}
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function SurveyMarketplace() {
   const [user, setUser] = useState(null);
   const [prestige, setPrestige] = useState(null);
@@ -227,6 +419,7 @@ export default function SurveyMarketplace() {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterTag, setFilterTag] = useState('all');
+  const [respondingListing, setRespondingListing] = useState(null);
   const qc = useQueryClient();
 
   useEffect(() => {
@@ -260,7 +453,10 @@ export default function SurveyMarketplace() {
   });
 
   const handleRespond = (listing) => {
-    toast.success(`Responding to: ${listing.title}`, { description: 'Feature coming soon — full response flow launching!' });
+    if (listing.creator_user_id === user?.id) {
+      return toast.error("You can't respond to your own listing");
+    }
+    setRespondingListing(listing);
   };
 
   const handleToggleListing = async (listing) => {
@@ -397,6 +593,18 @@ export default function SurveyMarketplace() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {respondingListing && (
+        <ResponseDialog
+          listing={respondingListing}
+          user={user}
+          onClose={() => setRespondingListing(null)}
+          onSubmitted={() => {
+            setRespondingListing(null);
+            qc.invalidateQueries({ queryKey: ['survey_marketplace'] });
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -75,7 +75,7 @@ export function useRealtimeNotifications(userId) {
       if (!meta) return;
 
       toast.success(`${meta.emoji} ${meta.msg}`, {
-        description: `+${milestone.jackpot_entries_awarded} jackpot entries earned!`,
+        description: `+${milestone.jackpot_entries_awarded} prize pool points earned!`,
         duration: 8000,
       });
 
@@ -84,7 +84,7 @@ export function useRealtimeNotifications(userId) {
         user_id: userId,
         type: 'achievement_unlocked',
         title: `${meta.emoji} Milestone: ${milestone.milestone_count} Referrals!`,
-        message: `${meta.msg} You earned +${milestone.jackpot_entries_awarded} jackpot entries.`,
+        message: `${meta.msg} You earned +${milestone.jackpot_entries_awarded} prize pool points.`,
         status: 'unread',
         delivery_method: ['in_app'],
         action_url: '/ReferralDashboard',

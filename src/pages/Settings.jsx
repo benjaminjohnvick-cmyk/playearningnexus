@@ -48,6 +48,8 @@ export default function Settings() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const { data: membership } = useQuery({
     queryKey: ['premium-membership', user?.id],
@@ -85,6 +87,58 @@ export default function Settings() {
       toast.error('Failed to update profile');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    // Client-side validation
+    if (!currentPassword || !newPassword) {
+      return toast.error('Please fill in all password fields');
+    }
+    if (newPassword.length < 8) {
+      return toast.error('New password must be at least 8 characters');
+    }
+    if (!/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      return toast.error('New password must include both letters and numbers');
+    }
+    if (newPassword === currentPassword) {
+      return toast.error('New password must be different from your current password');
+    }
+    if (newPassword !== confirmPassword) {
+      return toast.error('New password and confirmation do not match');
+    }
+
+    setChangingPassword(true);
+    try {
+      // Feature-detect a password API on the auth SDK. This platform uses hosted /
+      // social sign-in, so an in-app password method may not be available.
+      const auth = base44.auth;
+      const method =
+        (typeof auth.updatePassword === 'function' && auth.updatePassword) ||
+        (typeof auth.changePassword === 'function' && auth.changePassword) ||
+        (typeof auth.setPassword === 'function' && auth.setPassword) ||
+        null;
+
+      if (method) {
+        await method.call(auth, {
+          current_password: currentPassword,
+          new_password: newPassword,
+        });
+        toast.success('Password updated successfully');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        // No in-app password API: passwords are managed by the sign-in provider.
+        toast.message('Your password is managed by your sign-in provider', {
+          description: 'Redirecting you to the secure page to update it…',
+        });
+        setTimeout(() => base44.auth.redirectToLogin(), 1500);
+      }
+    } catch (error) {
+      toast.error(error?.message || 'Failed to update password. Please check your current password.');
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -464,14 +518,28 @@ export default function Settings() {
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="Enter new password"
                       />
+                      <p className="text-xs text-gray-500 mt-1">At least 8 characters, with letters and numbers.</p>
+                    </div>
+                    <div>
+                      <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Re-enter new password"
+                      />
+                      {confirmPassword && newPassword !== confirmPassword && (
+                        <p className="text-xs text-red-500 mt-1">Passwords do not match.</p>
+                      )}
                     </div>
                     <Button
                       variant="outline"
                       className="w-full"
-                      disabled={!currentPassword || !newPassword}
-                      onClick={() => toast.info('Password change feature coming soon')}
+                      disabled={!currentPassword || !newPassword || !confirmPassword || changingPassword}
+                      onClick={handleChangePassword}
                     >
-                      Update Password
+                      {changingPassword ? 'Updating…' : 'Update Password'}
                     </Button>
                   </div>
                 </div>

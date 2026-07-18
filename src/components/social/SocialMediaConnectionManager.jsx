@@ -159,7 +159,7 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
           <CardHeader>
             <CardTitle>Connect New Account</CardTitle>
             <CardDescription>
-              Connect additional social media accounts and earn jackpot entries!
+              Connect additional social media accounts and earn prize pool points!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

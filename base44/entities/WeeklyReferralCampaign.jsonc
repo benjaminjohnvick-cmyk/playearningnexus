@@ -1,0 +1,96 @@
+{
+  "name": "WeeklyReferralCampaign",
+  "type": "object",
+  "properties": {
+    "week_of": {
+      "type": "string",
+      "format": "date",
+      "description": "Monday of the campaign week"
+    },
+    "week_index": {
+      "type": "number",
+      "description": "Sequential week number used to rotate the platform"
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["twitter", "instagram", "facebook", "tiktok", "linkedin"],
+      "description": "The required social platform for this week"
+    },
+    "title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "closed", "concluded"],
+      "default": "active"
+    },
+    "is_mandatory": {
+      "type": "boolean",
+      "default": false,
+      "description": "Opt-in by default. Participation is voluntary and incentivized, never forced (avoids coercion/unfair-practice risk)."
+    },
+    "reward_per_post": {
+      "type": "number",
+      "default": 0.1,
+      "description": "USD earned per post, credited on next survey completion or auto-credited after a grace period so earned rewards are never forfeited"
+    },
+    "requires_disclosure": {
+      "type": "boolean",
+      "default": true,
+      "description": "All referral posts must carry an FTC affiliate/ad disclosure"
+    },
+    "disclosure_text": {
+      "type": "string",
+      "default": "#ad",
+      "description": "Disclosure appended to auto-generated posts (FTC endorsement compliance)"
+    },
+    "tracks": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["business_referral", "user_referral"] },
+      "default": ["business_referral", "user_referral"],
+      "description": "Separate leaderboards for business vs individual-user referrers"
+    },
+    "closes_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total_posts": {
+      "type": "number",
+      "default": 0
+    },
+    "participant_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "leaderboard_business": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "string" },
+          "user_name": { "type": "string" },
+          "posts": { "type": "number" },
+          "conversions": { "type": "number" },
+          "commission_earned": { "type": "number" }
+        }
+      },
+      "default": []
+    },
+    "leaderboard_user": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "string" },
+          "user_name": { "type": "string" },
+          "posts": { "type": "number" },
+          "conversions": { "type": "number" },
+          "commission_earned": { "type": "number" }
+        }
+      },
+      "default": []
+    }
+  },
+  "required": ["week_of", "platform", "status"]
+}

@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
             user_id: user.id,
             type: 'weekly_event_ended',
             title: `🎊 Weekly Event Ended!`,
-            message: `"${weeklyEvent.title}" is over! Winner: ${winner?.full_name || 'a lucky gamer'}. Prize: ${weeklyEvent.prize || 'Reward'}. New event coming soon!`,
+            message: `"${weeklyEvent.title}" is over! Winner: ${winner?.full_name || 'a top gamer'}. Prize: ${weeklyEvent.prize || 'Reward'}. New event coming soon!`,
             is_read: false
           });
         }

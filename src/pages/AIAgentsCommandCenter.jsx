@@ -129,8 +129,8 @@ const AGENTS = [
     icon: Users,
     color: 'from-indigo-500 to-blue-600',
     bg: 'bg-indigo-50 border-indigo-200',
-    description: 'Conversion tracking, jackpot awards, email campaigns, squads',
-    actions: ['Award Jackpot Entries', 'Send Referral Campaign', 'Process Commissions'],
+    description: 'Conversion tracking, prize pool awards, email campaigns, squads',
+    actions: ['Award Prize Pool Points', 'Send Referral Campaign', 'Process Commissions'],
   },
   {
     key: 'survey_operations_agent',

@@ -75,7 +75,7 @@ Rules:
 - YouTube Shorts: attention-grabbing first line, story arc, clear CTA
 - Instagram: storytelling caption, 15-20 hashtags at end, referral link in bio note
 - Highlight real earnings, make it feel genuine not spammy
-- Mention the contest/jackpot potential ($1M+) where natural
+- Mention the contest/prize pool potential ($1M+) where natural
 
 Return JSON with keys: tiktok, youtube_shorts, instagram (each a string).`,
         response_json_schema: {
@@ -133,7 +133,7 @@ Return JSON with keys: tiktok, youtube_shorts, instagram (each a string).`,
             </div>
             <div className="bg-white/15 rounded-xl p-3">
               <p className="text-2xl font-black">$1M+</p>
-              <p className="text-xs text-pink-200">Jackpot Potential</p>
+              <p className="text-xs text-pink-200">Prize Pool Potential</p>
             </div>
           </div>
         </CardContent>
@@ -245,7 +245,7 @@ Return JSON with keys: tiktok, youtube_shorts, instagram (each a string).`,
       <Card className="border border-purple-200 bg-purple-50">
         <CardContent className="p-4 text-xs text-purple-700">
           <p className="font-semibold mb-1">💡 How Auto-Creator drives viral growth</p>
-          <p>AI analyzes your highest-earning days and game milestones to craft authentic stories. Your referral link is woven in naturally — every click that converts earns you <strong>10% of that user's profits forever</strong>. Post consistently to unlock the $1M+ jackpot potential.</p>
+          <p>AI analyzes your highest-earning days and game milestones to craft authentic stories. Your referral link is woven in naturally — every click that converts earns you <strong>10% of that user's profits forever</strong>. Post consistently to unlock the $1M+ prize pool potential.</p>
         </CardContent>
       </Card>
     </div>

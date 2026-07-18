@@ -1,0 +1,59 @@
+{
+  "name": "EcosystemRunLog",
+  "type": "object",
+  "properties": {
+    "run_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trigger": {
+      "type": "string",
+      "enum": ["scheduled", "manual"],
+      "default": "scheduled"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["completed", "partial", "failed", "skipped"],
+      "default": "completed"
+    },
+    "data_snapshot": {
+      "type": "string",
+      "description": "JSON snapshot of the survey/vote/suggestion volumes ingested this run"
+    },
+    "insights": {
+      "type": "string",
+      "description": "AI-generated demand/opportunity insights for this cycle"
+    },
+    "generated": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pillar": { "type": "string" },
+          "action": { "type": "string" },
+          "reference_id": { "type": "string" },
+          "requires_review": { "type": "boolean" }
+        }
+      },
+      "default": [],
+      "description": "What the engine created/queued this run"
+    },
+    "actions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "duration_ms": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "run_at",
+    "status"
+  ]
+}

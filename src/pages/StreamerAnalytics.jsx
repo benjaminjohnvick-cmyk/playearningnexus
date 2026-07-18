@@ -44,10 +44,17 @@ export default function StreamerAnalytics() {
 
   const { data: spectators = [] } = useQuery({
     queryKey: ['spectatorData', user?.id],
-    queryFn: () => base44.entities.GameEngagement.filter({ 
+    queryFn: () => base44.entities.GameEngagement.filter({
       session_type: 'spectating'
     }),
     enabled: !!user
+  });
+
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['allUsersForDemographics'],
+    queryFn: () => base44.entities.User.list(),
+    enabled: !!user,
+    staleTime: 10 * 60 * 1000
   });
 
   if (!user) {
@@ -89,6 +96,54 @@ export default function StreamerAnalytics() {
   const subscriberChurn = subscriptions
     .filter(s => !s.is_active && new Date(s.end_date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
     .length;
+
+  // ----- Audience demographics (derived from spectator engagement + supporter profiles) -----
+  // Collect the set of users who engaged with this streamer (viewers, subscribers, tippers, gifters).
+  // Field names vary across entities, so we defensively check several and drop anything undefined.
+  const audienceUserIds = [...new Set([
+    ...spectators.map(s => s.user_id),
+    ...subscriptions.map(s => s.subscriber_user_id || s.user_id || s.subscriber_id),
+    ...tips.map(t => t.tipper_user_id || t.user_id || t.sender_id),
+    ...gifts.map(g => g.sender_id || g.user_id)
+  ].filter(Boolean))];
+
+  const audienceProfiles = allUsers.filter(u => audienceUserIds.includes(u.id));
+
+  // Geographic distribution — prefer the user's profile country, fall back to engagement country.
+  const countryCounts = {};
+  audienceProfiles.forEach(u => {
+    const c = u.country || u.location || 'Unknown';
+    countryCounts[c] = (countryCounts[c] || 0) + 1;
+  });
+  spectators.forEach(s => {
+    if (s.country && !audienceProfiles.some(u => u.id === s.user_id)) {
+      countryCounts[s.country] = (countryCounts[s.country] || 0) + 1;
+    }
+  });
+  const countryData = Object.entries(countryCounts)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 6);
+
+  // Watch-time distribution buckets (minutes per spectating session).
+  const watchBuckets = { '0-10m': 0, '10-30m': 0, '30-60m': 0, '60m+': 0 };
+  spectators.forEach(s => {
+    const d = s.duration_minutes || 0;
+    if (d < 10) watchBuckets['0-10m']++;
+    else if (d < 30) watchBuckets['10-30m']++;
+    else if (d < 60) watchBuckets['30-60m']++;
+    else watchBuckets['60m+']++;
+  });
+  const watchTimeData = Object.entries(watchBuckets).map(([name, value]) => ({ name, value }));
+
+  // New vs returning audience, based on account tenure.
+  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const newViewers = audienceProfiles.filter(
+    u => u.created_date && new Date(u.created_date).getTime() > thirtyDaysAgo
+  ).length;
+  const returningViewers = Math.max(audienceProfiles.length - newViewers, 0);
+  const topCountry = countryData[0]?.name || 'N/A';
+  const hasDemographicData = audienceProfiles.length > 0 || spectators.length > 0;
 
   const COLORS = ['#8b5cf6', '#ec4899', '#3b82f6', '#10b981'];
 
@@ -337,19 +392,163 @@ export default function StreamerAnalytics() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="demographics">
-            <Card>
-              <CardHeader>
-                <CardTitle>Audience Demographics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-gray-500">
-                  <MapPin className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>Demographic data coming soon</p>
-                  <p className="text-sm mt-2">Track viewer locations, age groups, and preferences</p>
+          <TabsContent value="demographics" className="space-y-4">
+            {!hasDemographicData ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Audience Demographics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12 text-gray-500">
+                    <MapPin className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>No audience data yet</p>
+                    <p className="text-sm mt-2">Once viewers watch your streams, their locations, watch time, and audience mix will appear here.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                {/* Summary cards */}
+                <div className="grid md:grid-cols-4 gap-4">
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-gray-600">Audience Size</p>
+                          <p className="text-2xl font-bold text-purple-600">{audienceProfiles.length}</p>
+                        </div>
+                        <Users className="w-8 h-8 text-purple-600 opacity-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-gray-600">Top Location</p>
+                          <p className="text-2xl font-bold text-blue-600">{topCountry}</p>
+                        </div>
+                        <MapPin className="w-8 h-8 text-blue-600 opacity-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-gray-600">New (30d)</p>
+                          <p className="text-2xl font-bold text-green-600">{newViewers}</p>
+                        </div>
+                        <TrendingUp className="w-8 h-8 text-green-600 opacity-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-gray-600">Returning</p>
+                          <p className="text-2xl font-bold text-pink-600">{returningViewers}</p>
+                        </div>
+                        <Heart className="w-8 h-8 text-pink-600 opacity-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Geographic distribution */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Top Viewer Locations</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {countryData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={280}>
+                          <BarChart data={countryData} layout="vertical" margin={{ left: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis type="number" allowDecimals={false} />
+                            <YAxis type="category" dataKey="name" width={90} />
+                            <Tooltip />
+                            <Bar dataKey="value" name="Viewers" radius={[0, 4, 4, 0]}>
+                              {countryData.map((entry, index) => (
+                                <Cell key={`country-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <p className="text-center py-12 text-gray-500 text-sm">No location data available yet.</p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Watch-time distribution */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Watch Time Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={280}>
+                        <BarChart data={watchTimeData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis allowDecimals={false} />
+                          <Tooltip />
+                          <Bar dataKey="value" name="Sessions" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* New vs returning */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Audience Composition</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-8 items-center">
+                      <ResponsiveContainer width="100%" height={220}>
+                        <PieChart>
+                          <Pie
+                            data={[
+                              { name: 'New (30d)', value: newViewers },
+                              { name: 'Returning', value: returningViewers }
+                            ]}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={80}
+                            dataKey="value"
+                          >
+                            {[0, 1].map((entry, index) => (
+                              <Cell key={`comp-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                          <span className="font-medium">New viewers (last 30 days)</span>
+                          <span className="font-bold text-green-600">{newViewers}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-pink-50 rounded-lg">
+                          <span className="font-medium">Returning viewers</span>
+                          <span className="font-bold text-pink-600">{returningViewers}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                          <span className="font-medium">Distinct countries</span>
+                          <span className="font-bold text-purple-600">{Object.keys(countryCounts).length}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </TabsContent>
         </Tabs>
       </div>

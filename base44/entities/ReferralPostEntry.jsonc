@@ -1,0 +1,70 @@
+{
+  "name": "ReferralPostEntry",
+  "type": "object",
+  "properties": {
+    "campaign_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "week_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["twitter", "instagram", "facebook", "tiktok", "linkedin"]
+    },
+    "track": {
+      "type": "string",
+      "enum": ["business_referral", "user_referral"],
+      "default": "user_referral",
+      "description": "Whether this is a business or individual-user referral"
+    },
+    "post_url": {
+      "type": "string",
+      "description": "Link to the user's proof-of-post"
+    },
+    "referral_code": {
+      "type": "string",
+      "description": "Referral code shared in the post"
+    },
+    "was_doubled": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if this entry counts toward a doubled assignment (user missed the prior week)"
+    },
+    "reward_amount": {
+      "type": "number",
+      "default": 0.1
+    },
+    "reward_pending": {
+      "type": "boolean",
+      "default": true,
+      "description": "Reward is held until the user next completes a survey"
+    },
+    "reward_credited": {
+      "type": "boolean",
+      "default": false
+    },
+    "reward_credited_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "conversions": {
+      "type": "number",
+      "default": 0,
+      "description": "Referral conversions attributed to this post"
+    },
+    "commission_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Standard affiliate commission earned from this post's conversions"
+    }
+  },
+  "required": ["campaign_id", "user_id", "platform"]
+}

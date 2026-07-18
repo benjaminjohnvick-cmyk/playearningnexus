@@ -66,13 +66,13 @@ export default function ReferralGrowthEngine() {
     }
   };
 
-  // Award jackpot entries for milestone referrals
+  // Award prize pool points for milestone referrals
   const awardJackpotEntries = async () => {
     setJackpotRunning(true);
     try {
       const res = await base44.functions.invoke('awardReferralJackpotEntries', { user_id: user.id });
       queryClient.invalidateQueries({ queryKey: ['referral-jackpot-entries', user?.id] });
-      toast.success(`${res.data?.entries_awarded || 0} jackpot entries awarded!`);
+      toast.success(`${res.data?.entries_awarded || 0} prize pool points awarded!`);
     } catch (e) {
       toast.error('Failed: ' + e.message);
     } finally {
@@ -119,12 +119,12 @@ export default function ReferralGrowthEngine() {
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <Zap className="w-7 h-7 text-red-600" /> Referral Growth Engine
             </h1>
-            <p className="text-gray-500 text-sm mt-0.5">AI email campaigns, real-time conversion tracking & auto jackpot rewards</p>
+            <p className="text-gray-500 text-sm mt-0.5">AI email campaigns, real-time conversion tracking & auto prize pool rewards</p>
           </div>
           <div className="flex gap-2">
             <Button onClick={awardJackpotEntries} disabled={jackpotRunning} variant="outline" size="sm" className="gap-2 border-yellow-300 text-yellow-700 hover:bg-yellow-50">
               {jackpotRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Ticket className="w-4 h-4" />}
-              Award Jackpot Entries
+              Award Prize Pool Points
             </Button>
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function ReferralGrowthEngine() {
           <TabsList className="bg-white shadow-sm border">
             <TabsTrigger value="email_engine"><Bot className="w-3.5 h-3.5 mr-1" />AI Email Engine</TabsTrigger>
             <TabsTrigger value="conversions"><TrendingUp className="w-3.5 h-3.5 mr-1" />Conversion Tracking</TabsTrigger>
-            <TabsTrigger value="jackpot"><Ticket className="w-3.5 h-3.5 mr-1" />Jackpot Entries ({jackpotEntries.length})</TabsTrigger>
+            <TabsTrigger value="jackpot"><Ticket className="w-3.5 h-3.5 mr-1" />Prize Pool Points ({jackpotEntries.length})</TabsTrigger>
             <TabsTrigger value="referrals"><Users className="w-3.5 h-3.5 mr-1" />My Referrals</TabsTrigger>
           </TabsList>
 
@@ -308,11 +308,11 @@ export default function ReferralGrowthEngine() {
             </Card>
           </TabsContent>
 
-          {/* Jackpot Entries */}
+          {/* Prize Pool Points */}
           <TabsContent value="jackpot" className="mt-4 space-y-3">
             <div className="p-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl text-white flex items-center justify-between">
               <div>
-                <p className="font-bold text-lg">🎰 Your Jackpot Entries</p>
+                <p className="font-bold text-lg">🏆 Your Prize Pool Points</p>
                 <p className="text-sm opacity-90">Auto-awarded when referred users hit their first earnings milestone ($4)</p>
               </div>
               <div className="text-right">
@@ -323,7 +323,7 @@ export default function ReferralGrowthEngine() {
             {jackpotEntries.length === 0 ? (
               <div className="text-center py-12 text-gray-400 text-sm">
                 <Ticket className="w-12 h-12 mx-auto mb-3 text-gray-200" />
-                No jackpot entries yet — refer users and help them hit their first $4 milestone to earn entries!
+                No prize pool points yet — refer users and help them hit their first $4 milestone to earn entries!
               </div>
             ) : (
               <div className="space-y-2">
@@ -357,7 +357,7 @@ export default function ReferralGrowthEngine() {
                     <p className="font-medium text-gray-800">User {r.referred_user_id?.slice(0, 10).toUpperCase() || 'Anonymous'}</p>
                     <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
                       <span>Earned: ${(r.total_earnings || 0).toFixed(2)}</span>
-                      {r.milestone_4_paid && <Badge className="text-xs bg-yellow-100 text-yellow-700">🎰 Jackpot Entry Awarded</Badge>}
+                      {r.milestone_4_paid && <Badge className="text-xs bg-yellow-100 text-yellow-700">🏆 Prize Pool Entry Awarded</Badge>}
                     </div>
                   </div>
                   <div className="text-right">

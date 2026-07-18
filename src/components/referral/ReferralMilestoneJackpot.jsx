@@ -18,7 +18,7 @@ const MILESTONES = [
     reward_color: 'from-green-400 to-emerald-500',
     border: 'border-green-300',
     bg: 'bg-green-50',
-    perks: ['1 jackpot entry', 'Rookie Recruiter badge', 'Profile flair'],
+    perks: ['1 prize pool point', 'Rookie Recruiter badge', 'Profile flair'],
   },
   {
     count: 25,
@@ -29,7 +29,7 @@ const MILESTONES = [
     reward_color: 'from-blue-400 to-indigo-500',
     border: 'border-blue-300',
     bg: 'bg-blue-50',
-    perks: ['5 jackpot entries', 'Network Builder badge', 'Priority survey access'],
+    perks: ['5 prize pool points', 'Network Builder badge', 'Priority survey access'],
   },
   {
     count: 50,
@@ -40,7 +40,7 @@ const MILESTONES = [
     reward_color: 'from-orange-400 to-red-500',
     border: 'border-orange-300',
     bg: 'bg-orange-50',
-    perks: ['15 jackpot entries', 'Growth Champion badge', 'Custom profile frame', 'Bonus 5% commission'],
+    perks: ['15 prize pool points', 'Growth Champion badge', 'Custom profile frame', 'Bonus 5% commission'],
   },
   {
     count: 100,
@@ -51,7 +51,7 @@ const MILESTONES = [
     reward_color: 'from-yellow-400 to-amber-500',
     border: 'border-yellow-300',
     bg: 'bg-yellow-50',
-    perks: ['50 jackpot entries', 'Referral Legend badge', 'Exclusive golden frame', '10% commission boost', 'VIP survey pool access'],
+    perks: ['50 prize pool points', 'Referral Legend badge', 'Exclusive golden frame', '10% commission boost', 'VIP survey pool access'],
   },
 ];
 
@@ -79,7 +79,7 @@ function MilestoneCard({ milestone, totalReferrals, achieved, userId, qc }) {
     onSuccess: () => {
       qc.invalidateQueries(['milestone', userId, milestone.count]);
       qc.invalidateQueries(['milestones', userId]);
-      toast.success(`🎉 ${milestone.label} milestone claimed! +${milestone.jackpot_entries} jackpot entries!`);
+      toast.success(`🎉 ${milestone.label} milestone claimed! +${milestone.jackpot_entries} prize pool points!`);
     },
   });
 
@@ -109,7 +109,7 @@ function MilestoneCard({ milestone, totalReferrals, achieved, userId, qc }) {
             <Ticket className="w-4 h-4 text-purple-500" />
             <span className="font-black text-purple-700">+{milestone.jackpot_entries}</span>
           </div>
-          <p className="text-xs text-gray-400">jackpot entries</p>
+          <p className="text-xs text-gray-400">prize pool points</p>
         </div>
       </div>
 
@@ -137,7 +137,7 @@ function MilestoneCard({ milestone, totalReferrals, achieved, userId, qc }) {
       {achieved && !isClaimed && (
         <Button size="sm" className={`w-full bg-gradient-to-r ${milestone.reward_color} text-white font-bold`}
           onClick={() => claimMutation.mutate()} disabled={claimMutation.isPending}>
-          {claimMutation.isPending ? '...' : `🎉 Claim ${milestone.jackpot_entries} Jackpot Entries`}
+          {claimMutation.isPending ? '...' : `🎉 Claim ${milestone.jackpot_entries} Prize Pool Points`}
         </Button>
       )}
     </motion.div>
@@ -164,7 +164,8 @@ function JackpotWidget({ userId, totalReferrals }) {
   };
 
   const myEntries = milestones.reduce((s, m) => s + (m.jackpot_entries_awarded || 0), 0);
-  const myChance = activeJackpot.total_entries > 0 ? ((myEntries / (activeJackpot.total_entries + myEntries)) * 100).toFixed(1) : 0;
+  // Share of total performance points (a standing indicator) — winners are ranked by skill, not chance.
+  const myPointShare = activeJackpot.total_entries > 0 ? ((myEntries / (activeJackpot.total_entries + myEntries)) * 100).toFixed(1) : 0;
 
   return (
     <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 text-white overflow-hidden">
@@ -174,17 +175,17 @@ function JackpotWidget({ userId, totalReferrals }) {
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2.5 bg-white/20 rounded-2xl"><Trophy className="w-7 h-7" /></div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest opacity-75">Active Jackpot</p>
-              <h2 className="text-2xl font-black">${(activeJackpot.jackpot_amount || 0).toLocaleString()}</h2>
+              <p className="text-xs font-bold uppercase tracking-widest opacity-75">Active Skill Tournament</p>
+              <h2 className="text-2xl font-black">${(activeJackpot.prize_pool || activeJackpot.jackpot_amount || 0).toLocaleString()}</h2>
             </div>
-            <Badge className="ml-auto bg-yellow-400 text-yellow-900 font-bold animate-pulse">10% of Profits</Badge>
+            <Badge className="ml-auto bg-yellow-400 text-yellow-900 font-bold animate-pulse">Prize Pool</Badge>
           </div>
 
           <div className="grid grid-cols-3 gap-3 mb-4">
             {[
-              { label: 'My Entries', value: myEntries, icon: Ticket },
-              { label: 'Win Chance', value: `${myChance}%`, icon: Star },
-              { label: 'Total Entries', value: activeJackpot.total_entries || 0, icon: Users },
+              { label: 'My Points', value: myEntries, icon: Ticket },
+              { label: 'Point Share', value: `${myPointShare}%`, icon: Star },
+              { label: 'Total Points', value: activeJackpot.total_entries || 0, icon: Users },
             ].map(s => (
               <div key={s.label} className="bg-white/15 rounded-xl p-3 text-center">
                 <s.icon className="w-4 h-4 mx-auto mb-1 opacity-75" />
@@ -195,12 +196,12 @@ function JackpotWidget({ userId, totalReferrals }) {
           </div>
 
           <div className="bg-white/15 rounded-xl p-3 text-xs">
-            <p className="font-bold mb-1">🎰 How the Jackpot Works</p>
+            <p className="font-bold mb-1">🏆 How the Prize Pool Works</p>
             <ul className="space-y-0.5 opacity-85">
-              <li>• Hit referral milestones (5, 25, 50, 100) to earn entries</li>
-              <li>• The user with the <strong>most entries</strong> wins the jackpot</li>
-              <li>• Jackpot = 10% of after-tax platform profits, spent on-site</li>
-              <li>• Winners announced quarterly — prizes must be spent on GamerGain</li>
+              <li>• Hit referral milestones (5, 25, 50, 100) to earn points</li>
+              <li>• <strong>Everyone earns a share</strong> in proportion to the verified referrals they drive</li>
+              <li>• Top performers get a bonus — decided by results, never chance</li>
+              <li>• The pool is funded from the revenue those referrals generate</li>
             </ul>
           </div>
         </div>
@@ -220,7 +221,7 @@ export default function ReferralMilestoneJackpot({ userId, totalReferrals = 0 })
 
       <div>
         <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-          <Gift className="w-4 h-4 text-purple-600" /> Milestone Rewards — Earn Permanent Jackpot Entries
+          <Gift className="w-4 h-4 text-purple-600" /> Milestone Rewards — Earn Permanent Prize Pool Points
           <Badge className="bg-purple-100 text-purple-700 text-xs">{achievedMilestones.length}/{MILESTONES.length} achieved</Badge>
         </h3>
         <div className="grid md:grid-cols-2 gap-4">

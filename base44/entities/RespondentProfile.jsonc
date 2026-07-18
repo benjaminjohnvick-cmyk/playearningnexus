@@ -1,0 +1,53 @@
+{
+  "name": "RespondentProfile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User this respondent profile belongs to"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "age": {
+      "type": "number",
+      "description": "Respondent age, used for survey targeting"
+    },
+    "gender": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Interest tags used for survey matching"
+    },
+    "quality_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Response quality / reliability score"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the respondent's identity/demographics are verified"
+    },
+    "completed_surveys": {
+      "type": "number",
+      "default": 0
+    },
+    "demographics": {
+      "type": "object",
+      "description": "Additional demographic attributes",
+      "default": {}
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

@@ -99,7 +99,7 @@ export default function ReferralContestPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 p-6">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-black text-gray-900 mb-8 flex items-center gap-3">
-          <Trophy className="w-10 h-10 text-yellow-500" /> Referral Contests
+          <Trophy className="w-10 h-10 text-yellow-500" /> Referral Prize Pools
         </h1>
 
         <div className="grid md:grid-cols-3 gap-6 mb-8">

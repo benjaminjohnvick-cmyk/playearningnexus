@@ -113,7 +113,7 @@ export default function ReferralSquadsPage() {
                         <p className="text-2xl font-bold text-blue-600">{squad.total_active_referrals}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-600">Jackpot Entries</p>
+                        <p className="text-xs text-gray-600">Prize Pool Points</p>
                         <p className="text-2xl font-bold text-purple-600">{squad.total_jackpot_entries}</p>
                       </div>
                     </div>

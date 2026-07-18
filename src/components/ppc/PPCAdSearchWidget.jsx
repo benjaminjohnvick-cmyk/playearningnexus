@@ -182,7 +182,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
   };
 
   const handleSocialConnectionsChange = () => {
-    toast.success('Account connected! You earned bonus jackpot entries!');
+    toast.success('Account connected! You earned bonus prize pool points!');
     setShowSocialManager(false);
   };
 
@@ -420,7 +420,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs opacity-90">Current Jackpot Pool</p>
+              <p className="text-xs opacity-90">Current Prize Pool</p>
               <motion.p 
                 className="text-3xl font-bold"
                 key={jackpotData?.totalJackpot}

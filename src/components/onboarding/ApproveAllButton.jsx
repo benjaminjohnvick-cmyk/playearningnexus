@@ -24,7 +24,7 @@ const MORE_INFO_ITEMS = [
   {
     icon: <Bot className="w-5 h-5 text-pink-500" />,
     title: '📲 Social Media Onboarding — Automatic at Sign-Up',
-    desc: 'No manual OAuth flows needed. The AI Onboarding Agent handles all connection setup, permission configuration, and immediately schedules your first AI-generated content across all 5 platforms. You earn jackpot entries (50–75 per platform) and $0.20 per published post starting from day one.'
+    desc: 'No manual OAuth flows needed. The AI Onboarding Agent handles all connection setup, permission configuration, and immediately schedules your first AI-generated content across all 5 platforms. You earn prize pool points (50–75 per platform) and $0.20 per published post starting from day one.'
   },
   {
     icon: <TrendingUp className="w-5 h-5 text-emerald-500" />,

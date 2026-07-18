@@ -72,6 +72,9 @@ const SmartPayoutDashboard = lazy(() => import('./pages/SmartPayoutDashboard'));
 const ContestEntries = lazy(() => import('./pages/ContestEntries'));
 const PaidPPCAdsMosaic = lazy(() => import('./pages/PaidPPCAdsMosaic'));
 const HeadToHeadContest = lazy(() => import('./pages/HeadToHeadContest'));
+const WeeklyFeatureVote = lazy(() => import('./pages/WeeklyFeatureVote'));
+const WeeklyReferralContest = lazy(() => import('./pages/WeeklyReferralContest'));
+const SharedWalletGroups = lazy(() => import('./pages/SharedWalletGroups'));
 const AIContentHub = lazy(() => import('./pages/AIContentHub'));
 const Store = lazy(() => import('./pages/Store'));
 const AIAgentsSettings = lazy(() => import('./pages/AIAgentsSettings'));
@@ -302,6 +305,9 @@ const AuthenticatedApp = () => {
       <Route path="/ContestEntries" element={<LayoutWrapper currentPageName="ContestEntries"><ContestEntries /></LayoutWrapper>} />
       <Route path="/PaidPPCAdsMosaic" element={<PaidPPCAdsMosaic />} />
       <Route path="/HeadToHeadContest" element={<LayoutWrapper currentPageName="HeadToHeadContest"><HeadToHeadContest /></LayoutWrapper>} />
+      <Route path="/WeeklyFeatureVote" element={<LayoutWrapper currentPageName="WeeklyFeatureVote"><WeeklyFeatureVote /></LayoutWrapper>} />
+      <Route path="/WeeklyReferralContest" element={<LayoutWrapper currentPageName="WeeklyReferralContest"><WeeklyReferralContest /></LayoutWrapper>} />
+      <Route path="/SharedWalletGroups" element={<LayoutWrapper currentPageName="SharedWalletGroups"><SharedWalletGroups /></LayoutWrapper>} />
       <Route path="/AIContentHub" element={<LayoutWrapper currentPageName="AIContentHub"><AIContentHub /></LayoutWrapper>} />
       <Route path="/Store" element={<LayoutWrapper currentPageName="Store"><Store /></LayoutWrapper>} />
       <Route path="/AIAgentsSettings" element={<LayoutWrapper currentPageName="AIAgentsSettings"><AIAgentsSettings /></LayoutWrapper>} />

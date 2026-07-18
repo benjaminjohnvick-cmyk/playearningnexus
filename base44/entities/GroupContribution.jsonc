@@ -1,0 +1,13 @@
+{
+  "name": "GroupContribution",
+  "type": "object",
+  "description": "A member's contribution of credits into a SharedWalletGroup pool.",
+  "properties": {
+    "group_id": { "type": "string" },
+    "user_id": { "type": "string" },
+    "user_name": { "type": "string" },
+    "amount": { "type": "number" },
+    "month": { "type": "string", "description": "YYYY-MM the contribution counts toward" }
+  },
+  "required": ["group_id", "user_id", "amount"]
+}

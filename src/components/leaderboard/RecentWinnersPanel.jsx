@@ -23,7 +23,7 @@ export default function RecentWinnersPanel() {
     <div className="space-y-2">
       <div className="flex items-center gap-2 mb-3">
         <Trophy className="w-4 h-4 text-yellow-500" />
-        <h3 className="text-sm font-bold text-gray-800">Recent Jackpot Winners</h3>
+        <h3 className="text-sm font-bold text-gray-800">Recent Prize Pool Winners</h3>
         <span className="text-xs text-gray-400 ml-auto">Quarterly draws</span>
       </div>
       {winners.map((w, i) => (
@@ -44,7 +44,7 @@ export default function RecentWinnersPanel() {
       ))}
       <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-xs text-indigo-700">
         <Gift className="w-3.5 h-3.5 inline mr-1" />
-        <strong>You could be next.</strong> Refer friends to earn jackpot entries every quarter.
+        <strong>You could be next.</strong> Refer friends to earn prize pool points every quarter.
       </div>
     </div>
   );

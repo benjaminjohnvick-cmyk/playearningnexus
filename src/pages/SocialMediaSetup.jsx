@@ -158,7 +158,7 @@ export default function SocialMediaSetup() {
       setPosting(false);
     }
 
-    // Award jackpot entries per-platform (TikTok/Instagram/Snapchat = 75, others = 50)
+    // Award prize pool points per-platform (TikTok/Instagram/Snapchat = 75, others = 50)
     const entriesEarned = newlyConnected.reduce((sum, p) => {
       return sum + (['instagram', 'snapchat', 'tiktok'].includes(p) ? 75 : 50);
     }, 0);
@@ -195,7 +195,7 @@ export default function SocialMediaSetup() {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Connect Social Media</h1>
           <p className="text-gray-600">
-            Select the platforms you have — AI will automatically post 2 ads per day on each one & you'll earn jackpot entries every time.
+            Select the platforms you have — AI will automatically post 2 ads per day on each one & you'll earn prize pool points every time.
           </p>
           <p className="text-xs text-red-500 font-semibold mt-2 uppercase tracking-wide">Required to continue</p>
         </motion.div>
@@ -237,7 +237,7 @@ export default function SocialMediaSetup() {
                               {isConnected && <Badge className="bg-green-600 text-white text-xs">Connected</Badge>}
                             </div>
                             <p className="text-sm text-gray-600 truncate">{platform.description}</p>
-                            <p className="text-xs font-semibold text-purple-600 mt-1">+{platform.entries} jackpot entries</p>
+                            <p className="text-xs font-semibold text-purple-600 mt-1">+{platform.entries} prize pool points</p>
                           </div>
                           <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                             isConnected ? 'border-green-500 bg-green-500' : isSelected ? 'border-purple-500 bg-purple-500' : 'border-gray-300'
@@ -259,7 +259,7 @@ export default function SocialMediaSetup() {
                   className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-4 text-white text-center mb-6"
                 >
                   <Gift className="w-6 h-6 mx-auto mb-1" />
-                  <p className="font-bold text-lg">You'll earn {totalEntries} jackpot entries!</p>
+                  <p className="font-bold text-lg">You'll earn {totalEntries} prize pool points!</p>
                   <p className="text-sm opacity-90">Plus 2 AI-generated posts per platform</p>
                 </motion.div>
               )}
@@ -317,7 +317,7 @@ export default function SocialMediaSetup() {
                   { icon: '🎯', text: 'Select your highest-performing affiliate content daily' },
                   { icon: '✍️', text: 'Adapt it into short-form viral TikTok/Reels scripts using AI' },
                   { icon: '📅', text: 'Schedule & auto-post with trending hashtags to all your connected accounts' },
-                  { icon: '💰', text: 'Earn $0.20 + jackpot entries per published post' },
+                  { icon: '💰', text: 'Earn $0.20 + prize pool points per published post' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <span className="text-xl">{item.icon}</span>
@@ -326,7 +326,7 @@ export default function SocialMediaSetup() {
                 ))}
               </div>
               <p className="text-xs text-purple-700 font-semibold mb-5">
-                Connected {connected.length} platform{connected.length !== 1 ? 's' : ''}. AI engine is live. +{connected.length * 50} jackpot entries added!
+                Connected {connected.length} platform{connected.length !== 1 ? 's' : ''}. AI engine is live. +{connected.length * 50} prize pool points added!
               </p>
               <div className="flex gap-3 flex-col sm:flex-row">
                 <Button
@@ -356,7 +356,7 @@ export default function SocialMediaSetup() {
               <p className="text-gray-600 mb-2">
                 <span className="font-bold text-green-600">{connected.length} platform{connected.length !== 1 ? 's' : ''} connected</span> — AI is posting ads automatically for you twice a day
               </p>
-              <p className="text-purple-700 font-semibold mb-8">+{connected.length * 50} jackpot entries added to your account!</p>
+              <p className="text-purple-700 font-semibold mb-8">+{connected.length * 50} prize pool points added to your account!</p>
 
               <div className="grid grid-cols-2 gap-4 mb-6 text-left">
                 <Card className="p-4 bg-green-50 border-green-200">
@@ -367,7 +367,7 @@ export default function SocialMediaSetup() {
                 <Card className="p-4 bg-purple-50 border-purple-200">
                   <Gift className="w-5 h-5 text-purple-600 mb-2" />
                   <p className="font-bold text-gray-900 text-sm">Earning Per Post</p>
-                  <p className="text-xs text-gray-600">$0.20 + jackpot entries</p>
+                  <p className="text-xs text-gray-600">$0.20 + prize pool points</p>
                 </Card>
               </div>
 

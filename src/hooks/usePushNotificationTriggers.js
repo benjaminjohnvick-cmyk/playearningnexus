@@ -89,7 +89,7 @@ export const usePushNotificationTriggers = (user) => {
 };
 
 const notifyJackpotHigh = (amount) => {
-  toast.success(`🎉 Jackpot Alert! Pool now at $${amount.toFixed(2)}!`, {
+  toast.success(`🎉 Prize Pool Alert! Pool now at $${amount.toFixed(2)}!`, {
     description: 'Each search adds to the prize pool',
     duration: 5000
   });
@@ -97,11 +97,11 @@ const notifyJackpotHigh = (amount) => {
   // Send web push if supported
   if ('serviceWorker' in navigator && 'Notification' in window) {
     navigator.serviceWorker.ready.then(registration => {
-      registration.showNotification('🎰 Jackpot Milestone!', {
+      registration.showNotification('🏆 Prize Pool Milestone!', {
         body: `The PPC pool just hit $${amount.toFixed(2)}! Keep searching to win big.`,
         icon: 'https://img.icons8.com/color/96/000000/treasure.png',
         badge: 'https://img.icons8.com/color/96/000000/cash.png',
-        tag: 'jackpot-alert'
+        tag: 'prize-pool-alert'
       });
     });
   }

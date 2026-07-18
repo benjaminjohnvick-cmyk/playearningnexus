@@ -24,7 +24,7 @@ export default function WishlistSharerLeaderboardPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
           <h1 className="text-4xl font-bold mb-2">🏆 Wishlist Sharers Leaderboard</h1>
-          <p className="text-gray-600">Top earners from sharing their wishlists — Jackpot Entries, conversions & more</p>
+          <p className="text-gray-600">Top earners from sharing their wishlists — Prize Pool Points, conversions & more</p>
         </div>
         <WishlistSharerLeaderboard />
       </div>

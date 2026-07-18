@@ -50,7 +50,8 @@ export default function ContestEntries() {
   }, [activeReferrals]);
 
   const myEntries = entryBreakdown.reduce((s, e) => s + e.entries, 0);
-  const myWinChance = jackpot.total_entries > 0 ? ((myEntries / jackpot.total_entries) * 100).toFixed(2) : 0;
+  // Share of total performance points (standing indicator) — winners ranked by skill, not chance.
+  const myPointShare = jackpot.total_entries > 0 ? ((myEntries / jackpot.total_entries) * 100).toFixed(2) : 0;
 
   const MILESTONE_THRESHOLDS = [
     { refs: 5,   entries: 1,  label: '5 Referrals',   color: 'from-blue-400 to-blue-600' },
@@ -97,9 +98,9 @@ export default function ContestEntries() {
             <p className="text-6xl font-black mb-4">${(jackpot.jackpot_amount || 0).toLocaleString()}</p>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { icon: Ticket, label: 'Total Entries', value: jackpot.total_entries || 0 },
-                { icon: Star,   label: 'Your Entries',  value: myEntries },
-                { icon: TrendingUp, label: 'Win Chance', value: `${myWinChance}%` },
+                { icon: Ticket, label: 'Total Points', value: jackpot.total_entries || 0 },
+                { icon: Star,   label: 'Your Points',  value: myEntries },
+                { icon: TrendingUp, label: 'Point Share', value: `${myPointShare}%` },
               ].map(s => (
                 <div key={s.label} className="bg-white/15 backdrop-blur-sm rounded-xl p-3 text-center">
                   <s.icon className="w-4 h-4 mx-auto mb-1 opacity-75" />

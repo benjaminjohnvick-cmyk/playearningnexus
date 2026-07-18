@@ -122,7 +122,7 @@ export default function ReferralDashboard() {
               <TrendingUp className="w-3.5 h-3.5" /> Tier Progress
             </TabsTrigger>
             <TabsTrigger value="jackpot" className="flex items-center gap-1.5 text-purple-700 font-bold">
-              <Ticket className="w-3.5 h-3.5" /> 🎰 Jackpot
+              <Ticket className="w-3.5 h-3.5" /> 🏆 Prize Pool
             </TabsTrigger>
             <TabsTrigger value="referrals" className="flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5" /> My Referrals

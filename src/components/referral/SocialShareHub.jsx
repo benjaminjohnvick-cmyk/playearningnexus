@@ -83,7 +83,7 @@ export default function SocialShareHub({ user, referralLink }) {
 
   const awardEntryMutation = useMutation({
     mutationFn: async (platform) => {
-      // Log the share as a jackpot entry
+      // Log the share as a prize pool point
       await base44.entities.ReferralMilestone.create({
         user_id: user.id,
         milestone_count: 0,
@@ -107,7 +107,7 @@ export default function SocialShareHub({ user, referralLink }) {
     onSuccess: (_, platform) => {
       qc.invalidateQueries(['share-stats', user?.id]);
       setShareCount(p => p + 1);
-      toast.success(`🎰 +1 jackpot entry awarded for sharing on ${platform}!`);
+      toast.success(`🏆 +1 prize pool point awarded for sharing on ${platform}!`);
     },
   });
 
@@ -155,8 +155,8 @@ export default function SocialShareHub({ user, referralLink }) {
       <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-4 flex items-start gap-3">
         <Zap className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
         <div className="text-sm">
-          <p className="font-bold text-purple-800">Earn Jackpot Entries for Every Share!</p>
-          <p className="text-xs text-purple-700 mt-0.5">Each time you click "Share Now" on any platform, you automatically earn <strong>+1 jackpot entry</strong>. Share across multiple platforms to stack entries!</p>
+          <p className="font-bold text-purple-800">Earn Prize Pool Points for Every Share!</p>
+          <p className="text-xs text-purple-700 mt-0.5">Each time you click "Share Now" on any platform, you automatically earn <strong>+1 prize pool point</strong>. Share across multiple platforms to stack entries!</p>
         </div>
       </div>
 

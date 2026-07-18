@@ -165,7 +165,7 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Referrals', icon: Users, path: 'ReferralDashboard', requireAuth: true },
   { name: 'Affiliate Store', icon: DollarSign, path: 'AffiliateMarketplace', requireAuth: true },
   { name: 'AI Affiliate MLM', icon: TrendingUp, path: 'AffiliateMLMDashboard', requireAuth: true },
-  { name: 'Referral Contest', icon: Star, path: 'ReferralContest', requireAuth: true },
+  { name: 'Referral Prize Pool', icon: Star, path: 'ReferralContest', requireAuth: true },
   { name: 'Referral Analytics', icon: TrendingUp, path: 'ReferralAnalytics', requireAuth: true },
   { name: 'Link Tracking', icon: TrendingUp, path: 'ReferralTracking', requireAuth: true },
   { name: 'Payout Settings', icon: Settings, path: 'PayoutSettings', requireAuth: true },
