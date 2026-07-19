@@ -174,6 +174,33 @@ Users can form groups (family/friends/team), pool credits toward large-ticket it
 - Page: `SharedWalletGroups.jsx` — create/join, pool + monthly-goal progress, contribute, copy invite code. Routed + in the sidebar's Account group.
 - **Money uses closed-loop platform credits, not external cash** (lower regulatory risk); spending is owner-approved and capped by the pool. See `COMPLIANCE-AND-ASSUMPTIONS.md` flags for money-transmitter/escrow considerations before enabling real-cash pooling.
 
+## 12. Mobile app wrapper — Android & iOS (Capacitor)
+
+Wrapped the PWA for the app stores (config committed to the repo; native build runs on your machine):
+- `capacitor.config.json` — app id `com.playearningnexus.app`, `webDir: dist`, splash/theme.
+- `package.json` — Capacitor deps (`@capacitor/core|android|ios|app|cli|assets`) + `cap:*` scripts.
+- `public/manifest.json` — the previously-missing PWA manifest (icons, standalone, theme).
+- `index.html` — mobile/PWA meta tags (theme-color, iOS standalone, apple-touch-icon).
+- `MOBILE-APP-WRAPPER-GUIDE.md` — full step-by-step: install → generate icons → add android/ios → build → sign → submit to Play Store & App Store, plus a PWABuilder zero-code alternative and app-store-review caveats (Apple 4.2, earning/payment rules).
+- Native project generation and store builds must run on your machine (iOS needs a Mac + Xcode); those can't run in the cloud.
+
+## 13. App icons + Privacy Policy & Terms (legal pages)
+
+- **Placeholder icon set** generated: `public/icons/icon-192.png`, `icon-512.png`, `icon-512-maskable.png`, `apple-touch-icon.png`, and `assets/icon.png` (1024 source). Swap for your real brand icon and re-run `npm run cap:assets`.
+- **In-app legal pages** (public, render without login — required by app stores): `src/pages/PrivacyPolicy.jsx` → `/PrivacyPolicy`, `src/pages/TermsOfService.jsx` → `/TermsOfService`. Routed in `App.jsx`, linked in the sidebar Account section, cross-linked to each other.
+- **Standalone docs:** `PRIVACY-POLICY.md`, `TERMS-OF-SERVICE.md` (same content), plus `LEGAL-PAGES-GUIDE.md` explaining placeholders and store requirements.
+- These legal docs are **templates tailored to this app** (surveys, earnings, referrals, skill contests, wallet groups) and **must be reviewed by a lawyer**; fill the `[BRACKET]` placeholders in both the pages and the .md files.
+- **Native apps:** Capacitor already unifies the PWA and native shells (one web codebase → both). The `android/`/`ios/` project folders are generated on your machine via `npx cap add ...` (iOS needs a Mac) — that step can't run in the cloud.
+
+## 14. Wrapper-only native architecture (no committed native folders)
+
+Reworked the mobile wrapper so the repo stays wrapper-only — there are **no `android/`/`ios/` project files in git**:
+- `.gitignore` now excludes `/android`, `/ios`, `.gradle`, `*.keystore`, `.capacitor` — native folders are generated build artifacts, never committed.
+- `src/lib/native.js` — native behavior (status bar, splash hide, Android back button) implemented in the **web/TS layer** via Capacitor plugins, guarded by `isNativePlatform()` (no-ops on web). Initialized from `src/main.jsx`. No hand-written native code to maintain.
+- `scripts/regenerate-native.sh` + `npm run native:regenerate` — one command rebuilds the native shells from the wrapper on demand (`cap add` if missing + `cap sync`), then you open in Android Studio/Xcode.
+- `package.json` — added `@capacitor/status-bar` + `@capacitor/splash-screen`; replaced the `cap:add:*` scripts with `native:regenerate`.
+- Guide updated to explain the wrapper-only model and the trade-off (commit native folders only if you ever need custom native source).
+
 ## ⚠️ One thing to reconcile
 If your live Base44 backend **already defines a `Survey` entity** (it may simply have been excluded from the export), do not import the new `Survey.jsonc` on top of it — reconcile the schemas instead. Everything else is purely additive and safe to merge.
 

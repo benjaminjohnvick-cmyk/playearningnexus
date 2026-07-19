@@ -77,6 +77,8 @@ const NAV_SECTIONS = [
     { name: 'Transfer Money', icon: ArrowRightLeft, path: 'MoneyTransfer', color: 'blue' },
     { name: 'Shared Wallet Groups', icon: Users, path: 'SharedWalletGroups', color: 'blue' },
     { name: 'Global Prestige', icon: Star, path: 'GlobalPrestigeHub', color: 'blue' },
+    { name: 'Privacy Policy', icon: ShieldCheck, path: 'PrivacyPolicy', color: 'blue' },
+    { name: 'Terms of Service', icon: FileText, path: 'TermsOfService', color: 'blue' },
   ]},
 ];
 

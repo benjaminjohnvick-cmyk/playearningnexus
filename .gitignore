@@ -16,6 +16,15 @@ dist
 dist-ssr
 *.local
 
+# Native platform folders are GENERATED build artifacts, not source.
+# The repo is wrapper-only: android/ and ios/ are regenerated at build time
+# via `npm run native:regenerate` (npx cap add + sync) and are never committed.
+/android
+/ios
+.gradle
+*.keystore
+.capacitor
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -29,3 +38,4 @@ dist-ssr
 
 .env
 base44/.app.jsonc
+node_modules

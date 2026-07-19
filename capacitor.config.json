@@ -1,0 +1,19 @@
+{
+  "appId": "com.playearningnexus.app",
+  "appName": "PlayEarning Nexus",
+  "webDir": "dist",
+  "backgroundColor": "#111827",
+  "android": {
+    "allowMixedContent": false
+  },
+  "ios": {
+    "contentInset": "always"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#111827",
+      "showSpinner": false
+    }
+  }
+}
