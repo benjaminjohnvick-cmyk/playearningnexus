@@ -1,5 +1,5 @@
 {
-  "name": "base44-app",
+  "name": "playearning-nexus",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -17,14 +17,12 @@
     "native:regenerate": "bash scripts/regenerate-native.sh"
   },
   "dependencies": {
-    "@base44/sdk": "^0.8.39",
     "@capacitor/android": "^6.1.2",
     "@capacitor/app": "^6.0.1",
     "@capacitor/core": "^6.1.2",
     "@capacitor/ios": "^6.1.2",
     "@capacitor/splash-screen": "^6.0.3",
     "@capacitor/status-bar": "^6.0.2",
-    "@base44/vite-plugin": "^1.0.30",
     "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^4.1.2",
     "@paypal/react-paypal-js": "^8.1.3",

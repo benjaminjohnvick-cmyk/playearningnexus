@@ -38,4 +38,3 @@ dist-ssr
 
 .env
 base44/.app.jsonc
-node_modules

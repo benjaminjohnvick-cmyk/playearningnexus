@@ -1,11 +1,17 @@
-# PlayEarning Nexus — Master Launch Guide
+# PlayEarning Nexus — Master Launch Guide (Updated)
+
 ### Everything to configure, build, and ship — in the order to do it
 
-This is the single, end-to-end guide to take the app from code to live on web, Android, and iOS. It's ordered by best practice and efficiency: set up accounts → wire APIs → build → PWA → deploy → automate → legal → native apps → go live. Companion docs referenced here: `CONFIG-AND-SECRETS.md`, `SETUP-RUNBOOK.md`, `MOBILE-APP-WRAPPER-GUIDE.md`, `COMPLIANCE-AND-ASSUMPTIONS.md`.
+_Updated July 19, 2026. This is the single, end-to-end guide to take the app from code to live on web, Android, and iOS. It's ordered by best practice and efficiency: set up accounts → wire APIs → build → PWA → deploy → automate → legal → native apps → go live._
+
+**Repository status:** ✅ All code is on GitHub `main` and verified current — backend functions (including the merit-based prize pool), the frontend pages, the Capacitor mobile wrapper, the in-app legal pages, and all docs. Repo: `https://github.com/benjaminjohnvick-cmyk/playearningnexus`.
+
+**Companion docs:** `CONFIG-AND-SECRETS.md`, `SETUP-RUNBOOK.md`, `MOBILE-APP-WRAPPER-GUIDE.md`, `APP-STORE-SUBMISSION-CHECKLIST.md`, `LEGAL-PAGES-GUIDE.md`, `PRIVACY-POLICY.md`, `TERMS-OF-SERVICE.md`, `COMPLIANCE-AND-ASSUMPTIONS.md`, `GITHUB-PUSH-STEPS.md`.
 
 ## How the app is built (read first)
-- **Backend** = **Base44** (hosted). It runs the 526 functions, 235 databases, 76 agents, authentication, and the AI/email/image integrations, and it auto-scales. Its **secrets live in Base44**, never in the repo.
-- **Frontend** = a **React + Vite PWA**. Public `VITE_*` values are build-time. It deploys as a static site (and wraps to native via Capacitor).
+- **Backend** = **Base44** (hosted). It runs the 526 functions, 235 databases (entities), 76 agents, authentication, and the AI/email/image integrations, and it auto-scales. Its **secrets live in Base44**, never in the repo.
+- **Frontend** = a **React + Vite PWA** (208 pages). Public `VITE_*` values are build-time. It deploys as a static site and wraps to native via **Capacitor**.
+- **Mobile** = **wrapper-only**. There are **no `android/`/`ios/` folders in the repo** — they're git-ignored and regenerated on demand with `npm run native:regenerate`. All native behavior lives in the web layer (`src/lib/native.js`).
 - **Rule:** if it's a *secret*, it goes in **Base44**. If it starts with `VITE_`, it's public and goes in the **frontend build**.
 
 ---
@@ -88,6 +94,8 @@ Everything the code references. "Where" = Base44 backend secret, or frontend `.e
 ### E. Payout methods present in code
 PayPal and Stripe (keyed above). **Venmo** and **Cash App** payout functions exist; these typically route through PayPal/manual review rather than a separate API key — confirm your payout operations before enabling.
 
+> Full details and exact variable names: `CONFIG-AND-SECRETS.md` and `SETUP-RUNBOOK.md`.
+
 ---
 
 ## PHASE 3 — Configure the keys
@@ -104,6 +112,8 @@ VITE_VAPID_PUBLIC_KEY=xxx
 
 ## PHASE 4 — Build & smoke-test
 ```
+git clone https://github.com/benjaminjohnvick-cmyk/playearningnexus.git
+cd playearningnexus
 npm install
 npm run build        # must produce ./dist with no errors
 npm run lint         # optional but recommended
@@ -112,9 +122,9 @@ npm run preview      # open the built app locally and click through
 Verify: sign-in works, a Stripe/PayPal **test-mode** transaction completes, a survey/referral action credits.
 
 ## PHASE 5 — Finish the PWA (works on Android + iOS)
-The manifest and meta tags are already in the repo. Remaining:
-1. **Create app icons.** Provide `public/icons/icon-192.png`, `icon-512.png`, and `icon-512-maskable.png` (the manifest references these). Easiest: put a 1024×1024 `assets/icon.png` and run `npm run cap:assets`, or generate PWA icons at [realfavicongenerator.net](https://realfavicongenerator.net).
-2. **Confirm the service worker** (`public/service-worker.js`) is registered and caching what you want.
+The manifest, mobile meta tags, and a **placeholder icon set** are already in the repo. Remaining:
+1. **Swap in your real icon.** Replace `assets/icon.png` with your final **1024×1024** PNG, then run `npm run cap:assets` to regenerate `public/icons/icon-192.png`, `icon-512.png`, `icon-512-maskable.png`, and `apple-touch-icon.png`. (Placeholders ship now so it builds; use your real logo before launch.)
+2. **Confirm the service worker** is registered and caching what you want.
 3. **Test install:** deploy (Phase 6), then on **Android Chrome** use "Add to Home screen / Install app"; on **iOS Safari** use Share → "Add to Home Screen." Confirm it opens full-screen with your icon and name.
 > A well-formed PWA installs on both platforms from the browser. For **app-store** distribution, do Phase 9.
 
@@ -125,31 +135,32 @@ The manifest and meta tags are already in the repo. Remaining:
 4. Set the `VITE_*` env vars in the host's build settings.
 5. **Custom domain + HTTPS:** attach your domain and an ACM certificate.
 6. Point `VITE_BASE44_APP_BASE_URL` and `APP_URL` at production.
+7. **Confirm the public legal URLs resolve** (needed for the app stores): `https://yourdomain.com/PrivacyPolicy` and `/TermsOfService`.
 
 ## PHASE 7 — Turn on backend automation (schedules)
 Your automation functions/agents need schedules configured in **Base44** (cron). Recommended cadence:
-- **Daily:** `autoReferralContestDaily`, `autonomousEcosystemEngine` (if `EcosystemConfig.autonomous_mode` = true), `autoDailyOperationsEngine`, `generateAIDailyGoal`, survey generation.
-- **Weekly:** `processWeeklyJackpot` (skill-based prize pool), `generateWeeklyFeatureVoteSurvey` + `concludeWeeklyFeatureVote`, `weeklyContestWinner`, `autoWeeklyReportsEngine`.
+- **Daily:** `autoReferralContestDaily`, `autonomousEcosystemEngine` (if `EcosystemConfig.autonomous_mode` = true), `creditPendingReferralPostRewards` (grace-period sweep), `autoDailyOperationsEngine`, `generateAIDailyGoal`, survey generation.
+- **Weekly:** `processWeeklyJackpot` (the merit-based, open, self-funding prize pool), `generateWeeklyReferralCampaign` + `concludeWeeklyReferralCampaign`, `generateWeeklyFeatureVoteSurvey` + `concludeWeeklyFeatureVote`, `weeklyContestWinner`, `autoWeeklyReportsEngine`.
 - **Every 6–12h:** `masterOrchestrator`, `aiOrchestrator`.
-- **Set platform config:** `GlobalSettings` (e.g., prize-pool contribution), admin credentials, and default `EcosystemConfig`/`ReferralJackpot` values (entry fee, funding rate).
+- **Set platform config:** `GlobalSettings` (e.g., prize-pool contribution), admin credentials, and default `EcosystemConfig` / `ReferralJackpot` values (entry fee, `pool_funding_rate`).
 
 ## PHASE 8 — Legal & compliance (do before public launch)
-From `COMPLIANCE-AND-ASSUMPTIONS.md`:
-- **Privacy Policy + Terms of Service** (required by app stores and law).
+The in-app pages exist (`src/pages/PrivacyPolicy.jsx`, `src/pages/TermsOfService.jsx`) and matching docs (`PRIVACY-POLICY.md`, `TERMS-OF-SERVICE.md`) — but they are **templates with `[BRACKET]` placeholders and must be completed and lawyer-reviewed**. See `LEGAL-PAGES-GUIDE.md`. From `COMPLIANCE-AND-ASSUMPTIONS.md`:
+- **Privacy Policy + Terms of Service** — fill in every placeholder, publish at public URLs, have a lawyer review. Required by app stores and law.
 - **Data privacy:** GDPR/CCPA consent capture + opt-out (you collect demographics and survey data).
 - **FTC disclosures** on referral/affiliate posts (already enforced in code as `#ad`).
-- **Contest/sweepstakes rules** for the skill prize pool + feature votes (official rules, eligibility, state gating).
+- **Contest rules** for the **merit-based** prize pool + feature votes (official rules, eligibility, state gating). Note: the prize pool is skill/merit-based and open to all — **not** a random draw — which is deliberate for legality; keep it that way.
 - **Money-transmitter/escrow review** before enabling real-cash pooling in Shared Wallet Groups (currently closed-loop credits).
 - **MLM/referral commission review** (pyramid-scheme rules — tie rewards to real sales).
 - **Payments:** confirm Stripe/PayPal accounts verified, tax reporting (1099 thresholds), and payout compliance.
 
 ## PHASE 9 — Native apps (Android + iOS)
-Follow `MOBILE-APP-WRAPPER-GUIDE.md` (Capacitor is already configured in the repo). Summary:
-1. `npm install` → add icon → `npm run cap:assets`.
-2. `npm run cap:build` → `npm run cap:add:android` / `cap:add:ios`.
-3. Open in **Android Studio** / **Xcode** (iOS needs a **Mac**), set version + signing, build.
-4. Submit to **Google Play** and **App Store** with listings, screenshots, privacy labels.
-> Store-review watch-outs: Apple Guideline 4.2 (not "just a website"), and extra scrutiny on **earning/rewards/payments** apps. Prepare listings and privacy labels accordingly.
+Follow `MOBILE-APP-WRAPPER-GUIDE.md`. The repo is **wrapper-only** (Capacitor configured; native folders regenerated, not committed). Summary:
+1. `npm install` → put your **1024×1024** icon at `assets/icon.png`.
+2. `npm run native:regenerate` — one command: builds `dist/`, generates icons, creates the `android/` (and, on a Mac, `ios/`) shells, and syncs. Re-run this whenever you build; never commit the generated folders.
+3. Open in **Android Studio** (`npm run cap:open:android`) / **Xcode** (`npm run cap:open:ios`, **Mac only**), set version + signing, build a signed `.aab` / archive.
+4. Submit to **Google Play** and **App Store** — see the full **`APP-STORE-SUBMISSION-CHECKLIST.md`** before you upload.
+> Store-review watch-outs: Apple Guideline 4.2 (not "just a website"), and extra scrutiny on **earning/rewards/payments** apps. In your Apple review notes, explain that the prize pool and referral rewards are **skill/merit-based, not gambling**, and include a demo login. **Keep your Android signing keystore safe** — you need it for every future update.
 
 ## PHASE 10 — Final QA & go-live checklist
 - [ ] Clean `npm run build` (no errors)
@@ -159,28 +170,51 @@ Follow `MOBILE-APP-WRAPPER-GUIDE.md` (Capacitor is already configured in the rep
 - [ ] Real (small) Stripe + PayPal transaction succeeds
 - [ ] Payout path tested end-to-end
 - [ ] Survey → credit flow works (internal + BitLabs)
-- [ ] Referral post + reward credit works
+- [ ] Referral post + reward credit works (with `#ad` disclosure)
 - [ ] Web push (and SMS if used) fire
 - [ ] PWA installs on Android + iOS; deep links work (SPA fallback OK)
 - [ ] Automation schedules enabled (Phase 7)
-- [ ] Privacy Policy + Terms live and linked
+- [ ] Privacy Policy + Terms **completed, lawyer-reviewed, live, and linked**
 - [ ] Custom domain + HTTPS active
+- [ ] Real app icon swapped in (not the placeholder)
 - [ ] Error monitoring in place (optional: add Sentry/logging)
+- [ ] `APP-STORE-SUBMISSION-CHECKLIST.md` completed (if launching on stores)
 - [ ] Native apps approved (if launching on stores)
 
 ---
 
 ## What's already done (so you don't redo it)
-- ✅ Full codebase (208 pages, 526 functions, 235 databases, 76 agents) — built and pushed to GitHub.
+- ✅ Full codebase (208 pages, 526 functions, 235 databases, 76 agents) — built and **verified live on GitHub `main`**.
 - ✅ All API integrations **wired in code** (every key above is already read via `Deno.env.get` / `import.meta.env`) — you only supply values.
-- ✅ PWA manifest + mobile meta tags + service worker.
-- ✅ Capacitor wrapper config for Android/iOS.
-- ✅ Compliance changes (opt-in, FTC disclosure, skill-based prize pool, closed-loop wallets).
-- ✅ Docs: this guide + config, deploy, wrapper, and compliance references.
+- ✅ PWA manifest + mobile meta tags + service worker + **placeholder icon set**.
+- ✅ **Wrapper-only** Capacitor setup for Android/iOS (`npm run native:regenerate`; native folders git-ignored).
+- ✅ Compliance changes (opt-in participation, FTC `#ad` disclosure, **merit-based open self-funding prize pool**, closed-loop wallets).
+- ✅ In-app **Privacy Policy** and **Terms** pages (template state — needs your details + lawyer review).
+- ✅ Docs: this guide + config, setup, wrapper, legal, compliance, app-store checklist, and push-steps references.
 
 ## What only you can do (needs your accounts/machine)
 - Supply the real API key **values** (Phase 2–3).
 - Publish the Base44 backend and set schedules (Phase 7).
 - Deploy the frontend + domain (Phase 6).
-- Generate the native apps and submit to stores — iOS requires a **Mac** (Phase 9).
-- Legal documents and reviews (Phase 8).
+- Complete + legally review the Privacy Policy and Terms (Phase 8).
+- Swap in the real app icon and generate/submit the native apps — iOS requires a **Mac** (Phase 9).
+
+---
+
+## Quick reference — the commands you'll actually run
+```
+# Get the code
+git clone https://github.com/benjaminjohnvick-cmyk/playearningnexus.git
+cd playearningnexus && npm install
+
+# Web: build, check, preview
+npm run build && npm run preview
+
+# Icons (after placing assets/icon.png, 1024x1024)
+npm run cap:assets
+
+# Native apps (wrapper-only; regenerates android/ and ios/)
+npm run native:regenerate
+npm run cap:open:android      # Android Studio
+npm run cap:open:ios          # Xcode (Mac only)
+```

@@ -98,5 +98,13 @@ Deploy `./dist` to either:
 - [ ] A Stripe/PayPal test transaction completes
 - [ ] A test survey/referral action credits correctly
 - [ ] Web push / SMS fire (if used)
+- [ ] Public legal pages resolve: `/PrivacyPolicy` and `/TermsOfService` (required by the app stores)
+
+---
+
+## Next: native apps & store submission
+This runbook covers **API keys and web deploy** only. For the mobile apps, continue with:
+- `MOBILE-APP-WRAPPER-GUIDE.md` — turn the PWA into Android/iOS apps (wrapper-only Capacitor; `npm run native:regenerate`).
+- `APP-STORE-SUBMISSION-CHECKLIST.md` — everything to complete before uploading to Google Play / the App Store.
 
 > Full key inventory and security notes: `CONFIG-AND-SECRETS.md`. Pre-launch legal items (MLM, data privacy, contest/sweepstakes, money-transmitter): `COMPLIANCE-AND-ASSUMPTIONS.md`.

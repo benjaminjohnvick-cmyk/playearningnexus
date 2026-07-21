@@ -77,6 +77,10 @@ const WeeklyReferralContest = lazy(() => import('./pages/WeeklyReferralContest')
 const SharedWalletGroups = lazy(() => import('./pages/SharedWalletGroups'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
+const Login = lazy(() => import('./pages/Login'));
+const Signup = lazy(() => import('./pages/Signup'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AIContentHub = lazy(() => import('./pages/AIContentHub'));
 const Store = lazy(() => import('./pages/Store'));
 const AIAgentsSettings = lazy(() => import('./pages/AIAgentsSettings'));
@@ -185,6 +189,25 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+
+  // Public auth pages must render outside the auth gate (otherwise redirecting to /login
+  // while unauthenticated would loop). Login/signup/legal are reachable without a session.
+  const publicPaths = ['/login', '/signup', '/forgot-password', '/reset-password', '/PrivacyPolicy', '/TermsOfService'];
+  const isPublicPage = publicPaths.includes(window.location.pathname);
+  if (isPublicPage) {
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
+          <Route path="/TermsOfService" element={<TermsOfService />} />
+        </Routes>
+      </Suspense>
+    );
+  }
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -312,6 +335,10 @@ const AuthenticatedApp = () => {
       <Route path="/SharedWalletGroups" element={<LayoutWrapper currentPageName="SharedWalletGroups"><SharedWalletGroups /></LayoutWrapper>} />
       <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/AIContentHub" element={<LayoutWrapper currentPageName="AIContentHub"><AIContentHub /></LayoutWrapper>} />
       <Route path="/Store" element={<LayoutWrapper currentPageName="Store"><Store /></LayoutWrapper>} />
       <Route path="/AIAgentsSettings" element={<LayoutWrapper currentPageName="AIAgentsSettings"><AIAgentsSettings /></LayoutWrapper>} />

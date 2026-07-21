@@ -1,0 +1,26 @@
+# Local dev: Postgres + the Nexus backend. `docker compose up` then load db/schema.sql.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: nexus
+      POSTGRES_PASSWORD: nexus
+      POSTGRES_DB: nexus
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+  backend:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://nexus:nexus@db:5432/nexus
+    ports: ["8000:8000"]
+    depends_on: [db]
+  # Local email capture for password-reset testing. UI at http://localhost:8025
+  # To use: set EMAIL_PROVIDER=smtp, SMTP_HOST=mailhog, SMTP_PORT=1025 in .env
+  mailhog:
+    image: mailhog/mailhog
+    ports: ["1025:1025", "8025:8025"]
+volumes:
+  pgdata:

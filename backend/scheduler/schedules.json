@@ -1,0 +1,19 @@
+{
+  "_comment": "Cron schedules for automation functions (UTC). Mirrors the Master Launch Guide Phase 7. Edit freely.",
+  "jobs": [
+    { "name": "daily-referral-contest",     "cron": "0 9 * * *",   "function": "autoReferralContestDaily" },
+    { "name": "daily-ecosystem-engine",      "cron": "15 9 * * *",  "function": "autonomousEcosystemEngine" },
+    { "name": "daily-credit-pending",        "cron": "30 9 * * *",  "function": "creditPendingReferralPostRewards" },
+    { "name": "daily-operations",            "cron": "0 10 * * *",  "function": "autoDailyOperationsEngine" },
+    { "name": "daily-ai-goal",               "cron": "0 8 * * *",   "function": "generateAIDailyGoal" },
+    { "name": "weekly-prize-pool",           "cron": "0 12 * * 1",  "function": "processWeeklyJackpot" },
+    { "name": "weekly-referral-campaign-new","cron": "0 8 * * 1",   "function": "generateWeeklyReferralCampaign" },
+    { "name": "weekly-referral-conclude",    "cron": "0 7 * * 1",   "function": "concludeWeeklyReferralCampaign" },
+    { "name": "weekly-featurevote-new",      "cron": "0 8 * * 2",   "function": "generateWeeklyFeatureVoteSurvey" },
+    { "name": "weekly-featurevote-conclude", "cron": "0 7 * * 2",   "function": "concludeWeeklyFeatureVote" },
+    { "name": "weekly-contest-winner",       "cron": "0 13 * * 1",  "function": "weeklyContestWinner" },
+    { "name": "weekly-reports",              "cron": "0 6 * * 1",   "function": "autoWeeklyReportsEngine" },
+    { "name": "orchestrator-master-6h",      "cron": "0 */6 * * *", "function": "masterOrchestrator" },
+    { "name": "orchestrator-ai-6h",          "cron": "0 */6 * * *", "function": "aiOrchestrator" }
+  ]
+}
