@@ -1,5 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { gate } from "../../sdk/oversight.ts";
+import { isPartnerPayout } from "../../sdk/payout-policy.ts";
 import Stripe from 'npm:stripe@14.25.0';
 
 // CashApp Cash Card is a Visa debit card.
@@ -12,6 +14,12 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    // --- Human-in-the-loop oversight gate (auto-added; leaf money/enforcement action) ---
+    {
+      const __ovBody = await req.clone().json().catch(() => ({}));
+      const __ov = await gate({ action: "cashappPayout", amount: Number(__ovBody.amount ?? __ovBody.total ?? __ovBody.payout_amount ?? 0) || 0, agent: __ovBody.agent ?? "automation", summary: "cashappPayout — automated money/enforcement action", payload: __ovBody, evidence: __ovBody.evidence ?? null, approvalToken: __ovBody.approvalToken });
+      if (!__ov.proceed) return Response.json({ gated: true, status: "pending_approval", reviewId: __ov.reviewId }, { status: 202 });
+    }
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -20,10 +28,12 @@ export default __handler(async (req) => {
     const body = await req.json();
     const { payoutId, cardToken, amount, currency = 'usd', payout_type } = body;
 
-    const isBusinessRole = BUSINESS_ROLES.includes(user.role);
-    const isEligiblePayoutType = ['referral_commission', 'contest_win'].includes(payout_type);
-    if (!isBusinessRole && !isEligiblePayoutType) {
-      return Response.json({ error: 'Forbidden: You are not eligible for Cash App payouts.' }, { status: 403 });
+    // --- Closed-loop policy: no cash out to regular users; business partners only ---
+    if (!isPartnerPayout({ role: user?.role, payout_type })) {
+      return Response.json({
+        blocked: true, closed_loop: true, cash_sent: false,
+        message: 'Closed-loop platform: user earnings remain as on-site credit (redeemable for perks) and are not paid out as cash. Only business-partner revenue shares are paid via Cash App.',
+      }, { status: 200 });
     }
 
     if (!payoutId || !cardToken || !amount) {

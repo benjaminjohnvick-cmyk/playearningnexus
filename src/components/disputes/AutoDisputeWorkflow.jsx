@@ -121,8 +121,7 @@ Return JSON: decision ('approved'|'escalated'|'rejected'), goodwill_amount (numb
 
     // 3. Apply decision
     if (aiDecision.decision === 'approved' && aiDecision.goodwill_amount > 0) {
-      const newBalance = parseFloat(((user.current_balance || 0) + aiDecision.goodwill_amount).toFixed(2));
-      await base44.auth.updateMe({ current_balance: newBalance });
+      await base44.functions.invoke('awardReward', { amount: aiDecision.goodwill_amount, reason: 'dispute_goodwill' });
 
       // Create payout record
       await base44.entities.Payout.create({

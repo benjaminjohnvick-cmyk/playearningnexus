@@ -1,0 +1,9 @@
+{
+  "_comment": "Autonomous AGENT schedules (UTC cron). Each fires an agent via /agents/<agent> with a message. Agent actions still pass through the oversight gate + per-agent cost caps, so scheduled autonomy stays safe (money/fraud actions queue for human approval; low-risk runs auto). Add/remove freely. Start conservative and widen as you trust each agent.",
+  "agents": [
+    { "name": "fraud-sweep-4h",   "cron": "0 */4 * * *", "agent": "auto_fraud_resolution_agent",        "message": "Scan recent activity for fraud signals and take permitted action. High-risk actions will queue for human approval." },
+    { "name": "retention-daily",  "cron": "0 11 * * *",  "agent": "auto_retention_monetization_agent",  "message": "Find at-risk users from today's survey signals and propose retention offers." },
+    { "name": "support-triage-2h","cron": "0 */2 * * *", "agent": "auto_support_resolution_agent",      "message": "Triage and resolve open support items within your permissions." },
+    { "name": "survey-quality-6h","cron": "0 */6 * * *", "agent": "auto_survey_quality_agent",          "message": "Review recent survey signals for quality and flag anomalies." }
+  ]
+}

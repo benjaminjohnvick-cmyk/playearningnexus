@@ -25,6 +25,9 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
 
 const MIN_WITHDRAWAL = 10;
+// Closed-loop: only business/partner accounts can withdraw cash. Regular users' earnings are
+// store credit. Kept in sync with backend sdk/payout-policy.json (the server also enforces it).
+const WITHDRAW_ROLES = ['business', 'business_client', 'admin', 'developer', 'survey_creator', 'ppc_advertiser', 'affiliate'];
 const FULL_ELIGIBILITY_AMOUNT = 50; // $50 = 100% eligible
 
 const PAYOUT_METHODS = [
@@ -220,6 +223,9 @@ function CashAppWithdrawForm({ user, balance, payouts, queryClient }) {
     const amt = parseFloat(amount);
     if (!amt || amt < MIN_WITHDRAWAL) return toast.error(`Minimum withdrawal is $${MIN_WITHDRAWAL}`);
     if (amt > balance) return toast.error('Amount exceeds your available balance');
+    // Closed-loop: only business/partner accounts can withdraw cash. Regular users' earnings
+    // are store credit — block BEFORE any balance deduction so credit is never lost.
+    if (!WITHDRAW_ROLES.includes(user?.role)) return toast.error('Cash withdrawal is for business/partner accounts. Your earnings are store credit — spend them in the store, on products, or top up with “Add Credit”.');
     if (!stripe || !elements) return toast.error('Stripe not loaded yet.');
 
     setSubmitting(true);
@@ -241,7 +247,7 @@ function CashAppWithdrawForm({ user, balance, payouts, queryClient }) {
         description: `Cash App Instant Payout — $${amt.toFixed(2)}`,
       });
 
-      await base44.auth.updateMe({ current_balance: Math.max(0, balance - amt) });
+      await base44.functions.invoke('spendBalance', { amount: amt, reason: 'withdrawal' });
 
       const res = await base44.functions.invoke('cashappPayout', {
         payoutId: payout.id, cardToken: token.id, amount: amt, currency: 'usd',
@@ -364,6 +370,8 @@ export default function Withdrawal() {
     const amt = parseFloat(amount);
     if (!amt || amt < MIN_WITHDRAWAL) return toast.error(`Minimum withdrawal is $${MIN_WITHDRAWAL}`);
     if (amt > balance) return toast.error('Amount exceeds your available balance');
+    // Closed-loop: only business/partner accounts can withdraw cash (see WITHDRAW_ROLES).
+    if (!WITHDRAW_ROLES.includes(user?.role)) return toast.error('Cash withdrawal is for business/partner accounts. Your earnings are store credit — spend them in the store, on products, or top up with “Add Credit”.');
     if (!recipient || recipient.length < 3) return toast.error(`Please enter your ${selectedMethod?.label} details`);
 
     setSubmitting(true);
@@ -381,7 +389,7 @@ export default function Withdrawal() {
         description: `${selectedMethod?.label} withdrawal — $${amt.toFixed(2)}`,
       });
 
-      await base44.auth.updateMe({ current_balance: Math.max(0, balance - amt) });
+      await base44.functions.invoke('spendBalance', { amount: amt, reason: 'withdrawal' });
 
       if (method === 'paypal') {
         try {

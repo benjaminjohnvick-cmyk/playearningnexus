@@ -6,12 +6,15 @@
 // Route: POST /agents/:name  { message, context? }  → { reply, steps }
 import { db } from "../sdk/db.ts";
 import { limited, LLM_CONCURRENCY } from "../sdk/queue.ts";
+import { gate, needsApproval, SENSITIVE_ENTITIES } from "../sdk/oversight.ts";
+import { capsFor, costOf, logUsage, resolveModel, spentTodayUsd } from "./guardrails.ts";
+import { gatherEvidence } from "../sdk/survey-evidence.ts";
 
 type AgentDef = { description: string; instructions: string; model: string | null; tools: { entity: string; ops: string[] }[] };
 const registry: Record<string, AgentDef> = JSON.parse(await Deno.readTextFile(new URL("./agents.json", import.meta.url)));
 
-const MODEL = Deno.env.get("AGENT_MODEL") ?? Deno.env.get("LLM_MODEL_LARGE") ?? "gpt-4o";
-const MAX_STEPS = Number(Deno.env.get("AGENT_MAX_STEPS") ?? "6");
+// Model selection and step/cost limits are governed per-agent by guardrails.ts
+// (agent-guardrails.json), replacing the old single global model + step count.
 
 export function listAgents() { return Object.keys(registry); }
 
@@ -35,23 +38,61 @@ function fn(name: string, description: string, props: Record<string, unknown>, r
   return { type: "function", function: { name, description, parameters: { type: "object", properties: props, required } } };
 }
 
-async function runTool(def: AgentDef, name: string, args: Record<string, unknown>) {
+async function runTool(def: AgentDef, name: string, args: Record<string, unknown>, agentName = "agent") {
   const m = name.match(/^(read|create|update)_(.+)$/);
   if (!m) return { error: "unknown tool" };
   const [, op, entity] = m;
   const allowed = def.tools.find((t) => t.entity === entity);
   if (!allowed) return { error: "entity not permitted" };
   if (op === "read" && allowed.ops.includes("read")) return await db.filter(entity, (args.query as Record<string, unknown>) ?? {}, undefined, (args.limit as number) ?? 25);
-  if (op === "create" && allowed.ops.includes("create")) return await db.create(entity, (args.data as Record<string, unknown>) ?? {});
-  if (op === "update" && allowed.ops.includes("update")) return await db.update(entity, args.id as string, (args.data as Record<string, unknown>) ?? {});
+
+  // Writes to sensitive entities (money/account/etc.) route through the human-in-the-loop
+  // gate. Low-risk writes execute immediately (and are audit-logged); sensitive ones are
+  // queued for approval and reported back to the agent so it doesn't assume success.
+  if ((op === "create" || op === "update")) {
+    const write = op === "create" ? allowed.ops.includes("create") : allowed.ops.includes("update");
+    if (!write) return { error: "operation not permitted" };
+    if (SENSITIVE_ENTITIES.has(entity) || needsApproval(entity)) {
+      // Attach the survey signals that justify this action (AI proposes, survey data justifies).
+      const data = (args.data as Record<string, unknown>) ?? {};
+      const evidence = args.evidence ??
+        await gatherEvidence({ userId: (data.user_id as string) ?? (args.id as string) }).catch(() => null);
+      const g = await gate({
+        action: entity,
+        agent: agentName,
+        summary: `Agent "${agentName}" requested to ${op} a ${entity} record`,
+        payload: { op, entity, id: args.id ?? null, data: args.data ?? {} },
+        evidence,
+      });
+      if (!g.proceed) {
+        return { queued_for_approval: true, review_id: g.reviewId, note: `This ${entity} ${op} needs human approval and was queued. It has NOT executed.` };
+      }
+    }
+    if (op === "create") return await db.create(entity, (args.data as Record<string, unknown>) ?? {});
+    return await db.update(entity, args.id as string, (args.data as Record<string, unknown>) ?? {});
+  }
   return { error: "operation not permitted" };
 }
 
-export async function runAgent(name: string, message: string, context?: unknown): Promise<{ reply: string; steps: unknown[] }> {
+export async function runAgent(name: string, message: string, context?: unknown): Promise<{ reply: string; steps: unknown[]; blocked?: boolean; cost_usd?: number; model?: string }> {
   const def = registry[name];
   if (!def) throw new Error(`Unknown agent: ${name}`);
   const key = Deno.env.get("OPENAI_API_KEY");
   if (!key) throw new Error("OPENAI_API_KEY not set (agent runtime uses OpenAI function-calling)");
+
+  // --- Guardrails: pin the model and enforce cost caps for this agent ---
+  const model = resolveModel(name, def);
+  const caps = capsFor(name);
+  const spentBefore = await spentTodayUsd(name);
+  if (spentBefore >= caps.dailyUsdCap) {
+    return {
+      reply: `(Paused: ${name} has reached its daily AI budget of $${caps.dailyUsdCap.toFixed(2)}. Raise it in agent-guardrails.json or wait for the next UTC day.)`,
+      steps: [],
+      blocked: true,
+      cost_usd: 0,
+      model,
+    };
+  }
 
   const tools = toolsFor(def);
   const messages: Record<string, unknown>[] = [
@@ -59,28 +100,44 @@ export async function runAgent(name: string, message: string, context?: unknown)
     { role: "user", content: context ? `${message}\n\nContext: ${JSON.stringify(context)}` : message },
   ];
   const steps: unknown[] = [];
+  let runCost = 0;
 
-  for (let i = 0; i < MAX_STEPS; i++) {
+  for (let i = 0; i < caps.maxSteps; i++) {
     const j = await limited("llm", LLM_CONCURRENCY, async () => {
       const r = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
-        body: JSON.stringify({ model: def.model && def.model.startsWith("gpt") ? def.model : MODEL, messages, tools, tool_choice: "auto" }),
+        body: JSON.stringify({ model, messages, tools, tool_choice: "auto" }),
       });
       if (!r.ok) throw Object.assign(new Error(`OpenAI ${r.status}`), { status: r.status });
       return await r.json();
     });
+
+    // Meter this call's cost and enforce the caps before doing more work.
+    const stepCost = costOf(model, j?.usage);
+    runCost += stepCost;
+    await logUsage(name, model, j?.usage, stepCost);
+    if (spentBefore + runCost >= caps.dailyUsdCap || runCost >= caps.perRunUsdCap) {
+      return {
+        reply: `(Stopped mid-run: ${name} hit a cost cap (run $${runCost.toFixed(4)} / day $${(spentBefore + runCost).toFixed(4)}). Adjust caps in agent-guardrails.json.)`,
+        steps,
+        blocked: true,
+        cost_usd: runCost,
+        model,
+      };
+    }
+
     const msg = j?.choices?.[0]?.message;
     if (!msg) break;
     messages.push(msg);
     const calls = msg.tool_calls ?? [];
-    if (!calls.length) return { reply: msg.content ?? "", steps };
+    if (!calls.length) return { reply: msg.content ?? "", steps, cost_usd: runCost, model };
     for (const c of calls) {
-      let out; try { out = await runTool(def, c.function.name, JSON.parse(c.function.arguments || "{}")); }
+      let out; try { out = await runTool(def, c.function.name, JSON.parse(c.function.arguments || "{}"), name); }
       catch (e) { out = { error: (e as Error).message }; }
       steps.push({ tool: c.function.name, result: out });
       messages.push({ role: "tool", tool_call_id: c.id, content: JSON.stringify(out).slice(0, 4000) });
     }
   }
-  return { reply: "(agent reached step limit)", steps };
+  return { reply: "(agent reached step limit)", steps, cost_usd: runCost, model };
 }

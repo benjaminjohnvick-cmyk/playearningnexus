@@ -131,7 +131,7 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
       // Credit user for completing (Type 2 — paid per sale trigger, Type 1 — $4 per response shared)
       const userEarning = survey.survey_type === 'data_collection' ? 2.00 : 0; // $2 user share of $4
       if (userEarning > 0) {
-        await base44.auth.updateMe({ current_balance: (user.current_balance || 0) + userEarning });
+        await base44.functions.invoke('awardReward', { amount: userEarning, reason: 'ppc_survey' });
         // Fire a reward notification for the notifier to pick up
         await base44.entities.Notification.create({
           user_id: user.id,

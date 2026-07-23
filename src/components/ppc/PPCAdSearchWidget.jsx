@@ -69,8 +69,7 @@ export default function PPCAdSearchWidget({ variant = 'compact' }) {
       const todayFeeKey = `shop_search_fee_${user.id}_${new Date().toDateString()}`;
       if (!localStorage.getItem(todayFeeKey)) {
         localStorage.setItem(todayFeeKey, '1');
-        const newBal = Math.max(0, (user.current_balance || 0) - 0.05);
-        base44.auth.updateMe({ current_balance: newBal }).catch(() => {});
+        base44.functions.invoke('spendBalance', { amount: 0.05, reason: 'shop_search_fee' }).catch(() => {});
         toast.info('$0.05 search fee deducted from your earnings.');
       }
     }

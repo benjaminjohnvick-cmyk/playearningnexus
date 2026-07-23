@@ -1,0 +1,29 @@
+{
+  "_comment": "Non-money guardrails for the AI agents: per-agent MODEL PINNING and COST CAPS. Model resolution order = perAgent.model -> the agent's model in agents.json -> defaultModel (aliases like 'automatic'/'large'/'small' are mapped below). Cost caps are enforced from real token usage using the pricing table; spend is metered per agent per UTC day via the existing AgentPerformanceLog entity. Raise/lower caps here with no code change. Prices are USD per 1,000 tokens — update them if your provider's pricing changes or you switch providers.",
+  "defaultModel": "gpt-4o",
+  "smallModel": "gpt-4o-mini",
+  "modelAliases": {
+    "automatic": "gpt-4o",
+    "large": "gpt-4o",
+    "small": "gpt-4o-mini",
+    "mini": "gpt-4o-mini",
+    "": "gpt-4o"
+  },
+  "pricing": {
+    "gpt-4o": { "inPer1k": 0.005, "outPer1k": 0.015 },
+    "gpt-4o-mini": { "inPer1k": 0.00015, "outPer1k": 0.0006 }
+  },
+  "defaults": {
+    "dailyUsdCap": 10,
+    "perRunUsdCap": 1.5,
+    "maxSteps": 6
+  },
+  "perAgent": {
+    "admin_superagent": { "model": "gpt-4o", "dailyUsdCap": 50, "perRunUsdCap": 3, "maxSteps": 8 },
+    "auto_fraud_resolution_agent": { "model": "gpt-4o", "dailyUsdCap": 25 },
+    "auto_payout_agent": { "model": "gpt-4o", "dailyUsdCap": 25 },
+    "auto_social_content_agent": { "model": "gpt-4o-mini", "dailyUsdCap": 5 },
+    "auto_support_resolution_agent": { "model": "gpt-4o-mini", "dailyUsdCap": 8 },
+    "ai_content_hub": { "model": "gpt-4o-mini", "dailyUsdCap": 8 }
+  }
+}

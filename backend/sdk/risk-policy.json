@@ -1,0 +1,20 @@
+{
+  "_comment": "Human-in-the-loop risk policy. CRITICAL actions ALWAYS require a human approval before executing (money movement, account/role changes, fraud rulings, deletes). HIGH actions require approval when a money amount >= autoApproveMoneyUnder (0 = always require) or when no amount applies. Everything else (low) auto-executes and is audit-logged. To let small payouts auto-clear once you trust the agents, raise autoApproveMoneyUnder (e.g. 5 = auto-approve under $5). Matching is by substring on the action/entity name, case-insensitive.",
+  "autoApproveMoneyUnder": 0,
+  "critical": [
+    "payout", "paypal", "stripe", "payment", "withdraw", "refund",
+    "transfer", "wallet", "commission", "chargeback",
+    "ban", "suspend", "terminate", "delete",
+    "fraud", "prize", "jackpot"
+  ],
+  "high": [
+    "email", "sms", "send", "publish", "post", "social", "campaign",
+    "contest", "winner", "invite", "role", "apikey", "rotate",
+    "approve", "credit", "reward", "bonus", "gift"
+  ],
+  "sensitiveEntities": [
+    "Payout", "PayoutRequest", "WithdrawalRequest", "Transaction",
+    "GiftTransaction", "AdTransaction", "PPCTransaction",
+    "User", "Referral", "ReferralJackpot"
+  ]
+}

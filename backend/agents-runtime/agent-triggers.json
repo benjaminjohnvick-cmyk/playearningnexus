@@ -1,0 +1,8 @@
+{
+  "_comment": "Event-driven agent triggers: map a domain-event type to the agents that should react when emitEvent(type,...) fires. Fired agents run through the oversight gate + cost caps, so this is safe autonomy. Add an event type with a list of agent names to subscribe them; remove to unsubscribe. Emit new event types from anywhere with emitEvent() (see sdk/events.ts).",
+  "survey.signal.created": ["auto_survey_quality_agent"],
+  "fraud.flag.raised": ["auto_fraud_resolution_agent"],
+  "payout.threshold.reached": ["auto_payout_agent"],
+  "user.churn_risk": ["auto_retention_monetization_agent"],
+  "support.ticket.opened": ["auto_support_resolution_agent"]
+}

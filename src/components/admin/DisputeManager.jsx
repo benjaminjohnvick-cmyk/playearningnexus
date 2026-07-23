@@ -124,7 +124,7 @@ export default function DisputeManager() {
         const users = await base44.entities.User.list();
         const user = users.find(u => u.id === dispute.user_id);
         if (user) {
-          await base44.auth.updateMe({ current_balance: (user.current_balance || 0) + parseFloat(amount) });
+          await base44.functions.invoke('awardReward', { user_id: dispute.user_id, amount: parseFloat(amount), reason: 'dispute_refund' });
         }
         await base44.entities.Notification.create({
           user_id: dispute.user_id,

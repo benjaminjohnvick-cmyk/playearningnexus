@@ -14,6 +14,7 @@
     { "name": "weekly-contest-winner",       "cron": "0 13 * * 1",  "function": "weeklyContestWinner" },
     { "name": "weekly-reports",              "cron": "0 6 * * 1",   "function": "autoWeeklyReportsEngine" },
     { "name": "orchestrator-master-6h",      "cron": "0 */6 * * *", "function": "masterOrchestrator" },
-    { "name": "orchestrator-ai-6h",          "cron": "0 */6 * * *", "function": "aiOrchestrator" }
+    { "name": "orchestrator-ai-6h",          "cron": "0 */6 * * *", "function": "aiOrchestrator" },
+    { "name": "survey-ingest-hourly",        "cron": "0 * * * *",   "function": "surveyIngest" }
   ]
 }

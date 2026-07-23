@@ -23,4 +23,24 @@ for (const job of cfg.jobs) {
   Deno.cron(job.name, job.cron, () => invoke(job.function));
   console.log(`registered ${job.name}: "${job.cron}" → ${job.function}`);
 }
-console.log(`Scheduler up — ${cfg.jobs.length} jobs, backend ${BACKEND}`);
+
+// --- Autonomous AGENT schedules -------------------------------------------------
+// Fire agents on cron (not just functions). Agent actions still pass through the
+// oversight gate + per-agent cost caps, so scheduled autonomy stays safe.
+const agentCfg = JSON.parse(await Deno.readTextFile(new URL("./agent-schedules.json", import.meta.url)));
+async function invokeAgent(agentName: string, message: string) {
+  const token = await signJwt(SERVICE_USER_ID, { service: true });
+  const res = await fetch(`${BACKEND}/agents/${agentName}`, {
+    method: "POST",
+    headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+    body: JSON.stringify({ message, context: { scheduled: true } }),
+  });
+  console.log(`[cron-agent] ${agentName} → ${res.status}`);
+}
+const agentJobs = agentCfg.agents ?? [];
+for (const job of agentJobs) {
+  Deno.cron(job.name, job.cron, () => invokeAgent(job.agent, job.message ?? "Scheduled run: act within your permissions."));
+  console.log(`registered agent ${job.name}: "${job.cron}" → ${job.agent}`);
+}
+
+console.log(`Scheduler up — ${cfg.jobs.length} function jobs + ${agentJobs.length} agent jobs, backend ${BACKEND}`);

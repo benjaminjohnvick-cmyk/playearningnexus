@@ -14,6 +14,23 @@ async function userIdFrom(req: Request): Promise<string | null> {
   return payload?.sub ?? null;
 }
 
+// Economy fields on the User entity are SERVER-ONLY. Clients reach this route directly, so
+// even though RLS limits a user to their own record, we must stop them writing their own
+// balance/earnings here. All balance changes go through awardReward / spendBalance /
+// placeStoreOrder / purchaseStoreCredit / transferCredit (which use the service-role SDK and
+// bypass this route). This closes the client-side tamper vector at the entity layer too.
+const PROTECTED_USER_ECONOMY = new Set([
+  "current_balance", "total_earnings", "survey_balance", "commission_balance", "commission_earned",
+  "virtual_currency", "points", "available_balance", "wallet_balance", "lifetime_earnings",
+  "bnpl_credit_limit", "bnpl_active",
+]);
+function stripEconomy(entity: string, data: Record<string, unknown> | undefined): Record<string, unknown> {
+  if (entity !== "User" || !data) return data ?? {};
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(data)) if (!PROTECTED_USER_ECONOMY.has(k)) out[k] = v;
+  return out;
+}
+
 export async function entityRoutes(req: Request, pathname: string): Promise<Response> {
   const m = pathname.match(/^\/entities\/([A-Za-z0-9_]+)\/([a-zA-Z]+)$/);
   if (!m) return Response.json({ error: "Not found" }, { status: 404 });
@@ -38,20 +55,20 @@ export async function entityRoutes(req: Request, pathname: string): Promise<Resp
         return Response.json(row);
       }
       case "create": {
-        const data = body.data ?? body;
+        const data = stripEconomy(entity, body.data ?? body);
         // Stamp ownership on user-scoped creates.
         if (scope === "owner") { const of = ownerFieldFor(entity); if (of && data[of] == null && uid) data[of] = uid; }
         return Response.json(await db.create(entity, data, uid ?? undefined));
       }
       case "update": {
         if (scope !== "global") { const row = await db.get(entity, body.id); if (!row || !ownedBy(row, entity, uid)) return Response.json({ error: "Forbidden" }, { status: 403 }); }
-        return Response.json(await db.update(entity, body.id, body.data ?? {}));
+        return Response.json(await db.update(entity, body.id, stripEconomy(entity, body.data ?? {})));
       }
       case "delete": {
         if (scope !== "global") { const row = await db.get(entity, body.id); if (!row || !ownedBy(row, entity, uid)) return Response.json({ error: "Forbidden" }, { status: 403 }); }
         return Response.json(await db.remove(entity, body.id));
       }
-      case "bulkCreate": return Response.json(await db.bulkCreate(entity, body.docs ?? [], uid ?? undefined));
+      case "bulkCreate": return Response.json(await db.bulkCreate(entity, (body.docs ?? []).map((d: Record<string, unknown>) => stripEconomy(entity, d)), uid ?? undefined));
       default: return Response.json({ error: `Unknown op ${op}` }, { status: 400 });
     }
   } catch (e) {

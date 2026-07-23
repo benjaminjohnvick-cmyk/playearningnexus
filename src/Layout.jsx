@@ -177,6 +177,7 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Payout History', icon: DollarSign, path: 'PayoutHistory', requireAuth: true },
   { name: 'My Payouts', icon: DollarSign, path: 'MyPayouts', requireAuth: true },
   { name: 'Payout Status', icon: DollarSign, path: 'PayoutStatus', requireAuth: true },
+  { name: 'Add Store Credit', icon: DollarSign, path: 'AddStoreCredit', requireAuth: true },
   { name: 'My Orders', icon: ShoppingCart, path: 'MyOrders', requireAuth: true },
   { name: 'Campaigns', icon: TrendingUp, path: 'Campaigns', requireAuth: true },
   { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },
@@ -286,6 +287,12 @@ export default function Layout({ children, currentPageName }) {
                   <Button variant={currentPageName === 'UserDashboard' ? "default" : "ghost"} size="sm"
                   className={currentPageName === 'UserDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
                     📊 Dashboard
+                  </Button>
+                </Link>
+                <Link to={createPageUrl('AddStoreCredit')} className="flex-shrink-0 hidden lg:block">
+                  <Button variant={currentPageName === 'AddStoreCredit' ? "default" : "ghost"} size="sm"
+                  className={currentPageName === 'AddStoreCredit' ? "bg-gradient-to-r from-green-600 to-green-700 shadow-md whitespace-nowrap" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200 whitespace-nowrap"}>
+                    ➕ Add Credit
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Withdrawal')} className="flex-shrink-0 hidden lg:block">

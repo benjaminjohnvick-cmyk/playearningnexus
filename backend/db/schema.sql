@@ -2635,3 +2635,36 @@ CREATE TABLE IF NOT EXISTS "AppLog" (
   data         jsonb NOT NULL DEFAULT '{}'::jsonb
 );
 CREATE INDEX IF NOT EXISTS "AppLog_created" ON "AppLog" (created_date DESC);
+
+-- ============================================================================
+-- Survey-evidence pipeline + domain events (added: agent triggers & evidence)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS "SurveySignal" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SurveySignal_data_gin" ON "SurveySignal" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SurveySignal_created" ON "SurveySignal" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "SurveyEvidence" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SurveyEvidence_data_gin" ON "SurveyEvidence" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SurveyEvidence_created" ON "SurveyEvidence" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "DomainEvent" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "DomainEvent_data_gin" ON "DomainEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "DomainEvent_created" ON "DomainEvent" (created_date DESC);

@@ -53,6 +53,20 @@ export async function authRoutes(req: Request, pathname: string): Promise<Respon
     if (!payload) return Response.json({ error: "Unauthorized" }, { status: 401 });
     const patch = await req.json();
     delete patch.password_hash; delete patch.role; // don't let users self-elevate
+    // ECONOMY FIELDS ARE SERVER-ONLY. The client cannot set its own balance/earnings/points —
+    // all balance changes must go through awardReward / spendBalance / placeStoreOrder /
+    // purchaseStoreCredit (which use asServiceRole). This closes the client-side tamper vector.
+    const PROTECTED_ECONOMY_FIELDS = [
+      "current_balance", "total_earnings", "survey_balance", "commission_balance",
+      "commission_earned", "virtual_currency", "points", "available_balance", "wallet_balance",
+      "lifetime_earnings", "bnpl_credit_limit", "bnpl_active",
+    ];
+    let strippedEconomy = false;
+    for (const f of PROTECTED_ECONOMY_FIELDS) { if (f in patch) { delete patch[f]; strippedEconomy = true; } }
+    if (strippedEconomy) {
+      // Surface any missed client call site instead of silently dropping it.
+      try { await db.create("AppLog", { source: "security", event: "blocked_client_balance_write", user_id: payload.sub, at: new Date().toISOString() }); } catch { /* non-fatal */ }
+    }
     const updated = await db.update("User", payload.sub, patch);
     return updated ? Response.json(safeUser(updated)) : Response.json({ error: "Not found" }, { status: 404 });
   }

@@ -1,0 +1,5 @@
+{
+  "_comment": "CLOSED-LOOP FOR USERS, CASH TO PARTNERS. A payout is allowed as real CASH only if the recipient's role is in partnerRoles OR the payout_type is in partnerPayoutTypes. Everything else — regular-user earnings such as referral_commission, contest_win, mlm_commission, reward — is blocked at the money rails and stays as on-site credit (redeemable via redeemRewardPerk). Enforced at the PayPal/CashApp/Venmo rails, so no function can cash out a user regardless of what initiates it. Widen/narrow the partner lists freely.",
+  "partnerRoles": ["admin", "developer", "survey_creator", "ppc_advertiser", "affiliate", "business", "business_client"],
+  "partnerPayoutTypes": ["revenue_share", "developer_payout", "creator_payout", "affiliate_commission", "affiliate_payout", "ppc_payout", "sponsorship", "business_payout", "partner_payout"]
+}

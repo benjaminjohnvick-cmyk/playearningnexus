@@ -1,9 +1,16 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { gate } from "../../sdk/oversight.ts";
 
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    // --- Human-in-the-loop oversight gate (auto-added; leaf money/enforcement action) ---
+    {
+      const __ovBody = await req.clone().json().catch(() => ({}));
+      const __ov = await gate({ action: "calculateDeveloperPayout", amount: Number(__ovBody.amount ?? __ovBody.total ?? __ovBody.payout_amount ?? 0) || 0, agent: __ovBody.agent ?? "automation", summary: "calculateDeveloperPayout — automated money/enforcement action", payload: __ovBody, evidence: __ovBody.evidence ?? null, approvalToken: __ovBody.approvalToken });
+      if (!__ov.proceed) return Response.json({ gated: true, status: "pending_approval", reviewId: __ov.reviewId }, { status: 202 });
+    }
     const user = await base44.auth.me();
 
     if (!user?.role || user.role !== 'admin') {

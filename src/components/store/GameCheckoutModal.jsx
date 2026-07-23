@@ -48,11 +48,15 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
   const avgRating = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   const recordPurchase = async (paymentMethod, paymentRef = null) => {
+    // Store-credit purchases deduct (price + 10% markup) and grant the game SERVER-SIDE —
+    // the client can no longer write its own balance. Card/BNPL only grant the entitlement.
+    if (paymentMethod === 'balance') {
+      const sRes = await base44.functions.invoke('spendBalance', { amount: priceWithMarkup, reason: 'game_purchase', grant_game_id: game.id });
+      if ((sRes?.data ?? sRes)?.error) throw new Error((sRes?.data ?? sRes).error);
+    } else {
+      await base44.auth.updateMe({ game_library: [...(user.game_library || []), game.id] });
+    }
     await Promise.all([
-      base44.auth.updateMe({
-        game_library: [...(user.game_library || []), game.id],
-        ...(paymentMethod === 'balance' ? { current_balance: userBalance - subtotal } : {})
-      }),
       base44.entities.Transaction.create({
         user_id: user.id,
         game_id: game.id,
@@ -88,8 +92,7 @@ export default function GameCheckoutModal({ game, user, onClose, onPurchaseCompl
 
   const handleBalancePurchase = async () => {
     setPurchasingBalance(true);
-    await recordPurchase('balance');
-    await base44.auth.updateMe({ current_balance: userBalance - priceWithMarkup });
+    await recordPurchase('balance'); // deducts price + 10% markup (see recordPurchase)
     setPurchasingBalance(false);
     toast.success(`🎮 ${game.title} added to your library!`);
     queryClient.invalidateQueries();

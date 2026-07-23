@@ -71,7 +71,7 @@ export default function DailyLoginStreak({ user, compact = false }) {
     const milestone = MILESTONES.find(m => m.days === streak);
     const totalBonus = dailyBonus + (milestone?.bonus || 0);
 
-    base44.auth.updateMe({ points: (user.points || 0) + totalBonus })
+    base44.functions.invoke('awardReward', { amount: totalBonus, field: 'points', reason: 'daily_login', claim_key: `login_${new Date().toDateString()}` })
       .then(() => {
         if (milestone) {
           // Award badge if not already owned

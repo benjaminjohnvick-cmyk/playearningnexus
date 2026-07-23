@@ -34,12 +34,17 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
 
   if (!product) return null;
 
-  // 10% markup for regular users only — business/admin accounts pay no markup
-  const isBusinessUser = user?.role === 'business' || user?.role === 'admin';
+  // 10% markup for regular users only — business-capacity accounts pay no markup.
+  // Business capacity = the same partner roles that can receive cash payouts (kept in sync
+  // with backend sdk/payout-policy.json). The SERVER re-computes and enforces this on order.
+  const BUSINESS_ROLES = ['business', 'business_client', 'admin', 'developer', 'survey_creator', 'ppc_advertiser', 'affiliate'];
+  const isBusinessUser = BUSINESS_ROLES.includes(user?.role);
   const rawPrice = product.price || (product.price_with_markup ? product.price_with_markup / 1.1 : 0);
   const basePrice = isBusinessUser ? rawPrice : rawPrice * 1.1;
-  const cardSurcharge = isBusinessUser ? 0 : basePrice * 0.10;
-  const cardPrice = basePrice + cardSurcharge;
+  // Single 10% markup applied ONCE at item purchase (already in basePrice). No extra card
+  // surcharge — paying by card costs the same as paying by store credit.
+  const cardSurcharge = 0;
+  const cardPrice = basePrice;
   const markupLabel = isBusinessUser ? '(no platform fee — business account)' : '(includes 10% platform fee)';
   const withdrawalFeeReserve = basePrice * 0.10;
   const totalRequired = basePrice + withdrawalFeeReserve;
@@ -63,25 +68,15 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
     const addr = savedAddress;
     const addrString = `${user.full_name}, ${addr.street}${addr.apt ? ' ' + addr.apt : ''}, ${addr.city}, ${addr.state} ${addr.zip}, ${addr.country || 'US'}`;
     try {
-      const newBalance = (user?.current_balance || 0) - basePrice;
-      await base44.auth.updateMe({ current_balance: Math.max(0, newBalance) });
-      const order = await base44.entities.Order.create({
-        user_id: user.id,
-        product_name: product.product_name || product.name,
-        product_image_url: product.product_image_url || product.image_url,
-        product_type: 'physical_product',
-        source: 'ppc_marketplace',
-        amount: basePrice,
-        payment_method: 'survey_balance',
-        vendor_name: product.vendor_name || product.vendor,
-        vendor_url: product.vendor_url || product.url,
+      // Server-authoritative: it applies the markup, deducts store credit, creates the
+      // Order, and triggers AI fulfillment. No client-side balance math.
+      const res = await base44.functions.invoke('placeStoreOrder', {
+        product,
         shipping_address: addrString,
-        shipping_status: 'pending_ai_fulfillment',
-        ai_vetting_status: 'not_started',
-        funds_released: false,
-        notes: `One-click order. Ship to: ${addrString}. ${isBusinessUser ? 'Business account — no markup.' : '10% platform fee applied.'}`
+        payment_method: 'survey_balance',
       });
-      base44.functions.invoke('aiOrderFulfillment', { order_id: order.id }).catch(() => {});
+      const out = res?.data ?? res;
+      if (out?.error) throw new Error(out.error);
       setStep('done');
       // Pre-fill address for done screen display
       setAddress({ full_name: user.full_name, street: addr.street, apt: addr.apt || '', city: addr.city, state: addr.state, zip: addr.zip, country: addr.country || 'US' });
@@ -94,31 +89,17 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
 
   const handleOrder = async (method, ppOrderId) => {
     setSubmitting(true);
-    const chargeAmount = method === 'credit_card' ? cardPrice : basePrice;
     try {
-      const newBalance = (user?.current_balance || 0) - chargeAmount;
-      await base44.auth.updateMe({ current_balance: Math.max(0, newBalance) });
-
-      // Create order with shipping address — AI fulfillment reads this to deliver
-      const order = await base44.entities.Order.create({
-        user_id: user.id,
-        product_name: product.product_name || product.name,
-        product_image_url: product.product_image_url || product.image_url,
-        product_type: 'physical_product',
-        source: 'ppc_marketplace',
-        amount: chargeAmount,
-        payment_method: method,
-        vendor_name: product.vendor_name || product.vendor,
-        vendor_url: product.vendor_url || product.url,
+      // Server-authoritative order: markup + store-credit deduction happen on the server
+      // (can't be bypassed by the client), then AI fulfillment ships to the address.
+      const res = await base44.functions.invoke('placeStoreOrder', {
+        product,
         shipping_address: shippingAddressString(),
-        shipping_status: 'pending_ai_fulfillment',
-        ai_vetting_status: 'not_started',
-        funds_released: false,
-        notes: `Order placed via GamerGain. PayPal Auth: ${ppOrderId || 'N/A'}. Ship to: ${shippingAddressString()}. ${isBusinessUser ? 'Business account — no markup.' : '10% platform fee applied.'}`
+        payment_method: method,
+        paypal_order_id: ppOrderId || null,
       });
-
-      // Kick off AI fulfillment immediately in the background
-      base44.functions.invoke('aiOrderFulfillment', { order_id: order.id }).catch(() => {});
+      const out = res?.data ?? res;
+      if (out?.error) throw new Error(out.error);
 
       setStep('done');
       toast.success("Order placed! Our AI is purchasing this for you now.");
@@ -195,7 +176,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
                 <CreditCard className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-blue-800 font-semibold">Paying by credit card: <strong>${cardPrice.toFixed(2)}</strong></p>
-                  {!isBusinessUser && <p className="text-blue-600 text-xs mt-0.5">Includes 10% processing fee (${cardSurcharge.toFixed(2)})</p>}
+                  {!isBusinessUser && <p className="text-blue-600 text-xs mt-0.5">Includes the one-time 10% platform fee</p>}
                 </div>
               </div>
             ) : (
@@ -392,7 +373,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
               <p className="font-semibold text-sm text-gray-800 mb-1">Credit Card</p>
               <p className="text-xs text-gray-500 mb-2">
                 Total: <strong className="text-blue-700">${cardPrice.toFixed(2)}</strong>
-                {!isBusinessUser && <span className="text-gray-400"> (includes 10% platform fee + 10% card surcharge)</span>}
+                {!isBusinessUser && <span className="text-gray-400"> (includes the one-time 10% platform fee)</span>}
               </p>
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700"

@@ -171,26 +171,14 @@ export default function MoneyTransfer() {
 
       const receiver = selectedUser;
 
-      // Deduct from sender
-      await base44.auth.updateMe({
-        current_balance: user.current_balance - transferAmount
-      });
-
-      // Add to receiver
-      const receiverCurrentBalance = receiver.current_balance || 0;
-      await base44.entities.User.update(receiver.id, {
-        current_balance: receiverCurrentBalance + transferAmount
-      });
-
-      // Create transfer record
-      await base44.entities.MoneyTransfer.create({
-        sender_user_id: user.id,
+      // Move the credit server-side (debit sender + credit receiver + record) — the client
+      // can no longer write balances directly.
+      const tRes = await base44.functions.invoke('transferCredit', {
         receiver_user_id: receiver.id,
-        receiver_email: receiver.email,
         amount: transferAmount,
-        status: 'completed',
-        note: note || ''
+        note: note || '',
       });
+      if ((tRes?.data ?? tRes)?.error) throw new Error((tRes?.data ?? tRes).error);
 
       // Create transaction records
       await base44.entities.Transaction.create({

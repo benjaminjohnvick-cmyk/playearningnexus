@@ -333,7 +333,7 @@ export default function GoogleAdsOverlay() {
     setLoading(true);
     setSurveyStep(0);
     try {
-      await base44.auth.updateMe({ total_earnings: (user?.total_earnings || 0) + 0.25 });
+      await base44.functions.invoke('awardReward', { amount: 0.25, field: 'total_earnings', reason: 'ad_view' });
       setEarned(prev => prev + 0.25);
 
       // Credit referrer if applicable

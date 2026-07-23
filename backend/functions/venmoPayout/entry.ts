@@ -1,5 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { gate } from "../../sdk/oversight.ts";
+import { isPartnerPayout } from "../../sdk/payout-policy.ts";
 
 // Venmo is owned by PayPal. PayPal Payouts API sends directly to Venmo-linked email or phone.
 // This is fully automated — money arrives in the recipient's Venmo balance instantly.
@@ -26,6 +28,12 @@ async function getPayPalAccessToken() {
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    // --- Human-in-the-loop oversight gate (auto-added; leaf money/enforcement action) ---
+    {
+      const __ovBody = await req.clone().json().catch(() => ({}));
+      const __ov = await gate({ action: "venmoPayout", amount: Number(__ovBody.amount ?? __ovBody.total ?? __ovBody.payout_amount ?? 0) || 0, agent: __ovBody.agent ?? "automation", summary: "venmoPayout — automated money/enforcement action", payload: __ovBody, evidence: __ovBody.evidence ?? null, approvalToken: __ovBody.approvalToken });
+      if (!__ov.proceed) return Response.json({ gated: true, status: "pending_approval", reviewId: __ov.reviewId }, { status: 202 });
+    }
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -34,10 +42,12 @@ export default __handler(async (req) => {
     const body = await req.json();
     const { payoutId, venmoContact, amount, currency = 'USD', payout_type } = body;
 
-    const isBusinessRole = BUSINESS_ROLES.includes(user.role);
-    const isEligiblePayoutType = ['referral_commission', 'contest_win'].includes(payout_type);
-    if (!isBusinessRole && !isEligiblePayoutType) {
-      return Response.json({ error: 'Forbidden: You are not eligible for Venmo payouts.' }, { status: 403 });
+    // --- Closed-loop policy: no cash out to regular users; business partners only ---
+    if (!isPartnerPayout({ role: user?.role, payout_type })) {
+      return Response.json({
+        blocked: true, closed_loop: true, cash_sent: false,
+        message: 'Closed-loop platform: user earnings remain as on-site credit (redeemable for perks) and are not paid out as cash. Only business-partner revenue shares are paid via Venmo.',
+      }, { status: 200 });
     }
 
     if (!payoutId || !venmoContact || !amount) {

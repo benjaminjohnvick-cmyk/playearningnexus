@@ -122,8 +122,7 @@ export default function OnboardingQuestWidget({ user }) {
     localStorage.setItem(`onboarding_claimed_${user.id}`, JSON.stringify(newClaimed));
 
     // Credit reward to balance
-    const newBalance = parseFloat(((user?.current_balance || 0) + quest.reward).toFixed(2));
-    await base44.auth.updateMe({ current_balance: newBalance });
+    await base44.functions.invoke('awardReward', { amount: quest.reward, reason: 'onboarding_quest', claim_key: `quest_${quest.id}` });
     toast.success(`+$${quest.reward.toFixed(2)} credited! Quest complete 🎉`, { description: quest.title });
     qc.invalidateQueries();
   };
