@@ -178,6 +178,7 @@ export default function Layout({ children, currentPageName }) {
   { name: 'My Payouts', icon: DollarSign, path: 'MyPayouts', requireAuth: true },
   { name: 'Payout Status', icon: DollarSign, path: 'PayoutStatus', requireAuth: true },
   { name: 'Add Store Credit', icon: DollarSign, path: 'AddStoreCredit', requireAuth: true },
+  { name: 'AI Learning', icon: Bot, path: 'AgentLearningDashboard', requireAuth: true },
   { name: 'My Orders', icon: ShoppingCart, path: 'MyOrders', requireAuth: true },
   { name: 'Campaigns', icon: TrendingUp, path: 'Campaigns', requireAuth: true },
   { name: 'Notifications', icon: Settings, path: 'NotificationHistory', requireAuth: true },

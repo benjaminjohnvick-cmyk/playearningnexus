@@ -32,7 +32,7 @@ export default __handler(async (req) => {
     }
 
     const method = data.method || 'unknown';
-    const activityLink = `https://app.base44.com/apps/your-app/data/Payout/${data.id}`;
+    const activityLink = `${(Deno.env.get('APP_URL') ?? '').replace(/\/$/, '')}/AdminDashboard`;
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: ADMIN_EMAIL,
@@ -65,7 +65,7 @@ export default __handler(async (req) => {
     if (!hitMilestone) return Response.json({ ok: true, skipped: true });
 
     const userName = data.full_name || data.email || 'Unknown User';
-    const activityLink = `https://app.base44.com/apps/your-app/data/User/${data.id}`;
+    const activityLink = `${(Deno.env.get('APP_URL') ?? '').replace(/\/$/, '')}/AdminDashboard`;
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: ADMIN_EMAIL,

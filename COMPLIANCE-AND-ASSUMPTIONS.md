@@ -54,11 +54,11 @@ Per your point — rewarding people for the referrals they actually drive is a *
 - **Shared wallet groups / money pooling.** Letting users pool funds and transfer to each other can trigger **money-transmitter / escrow / stored-value** licensing (state MTL, FinCEN, and equivalents abroad). To reduce risk, the shared-wallet feature I built moves **closed-loop platform credits** (redeemable on-platform), not external cash — closed-loop stored value is generally lower-risk than open money transmission. Before allowing real cash contributions, cash-out of pooled funds, or transfers that function like remittance, have counsel confirm licensing, add group terms, KYC where required, and contribution/withdrawal limits. Group spend is owner-approved and capped by the pool balance by design.
 
 ## What I changed in code this round
-- `base44/entities/WeeklyReferralCampaign.jsonc` — `is_mandatory` default false; added `requires_disclosure`, `disclosure_text`.
-- `base44/entities/FeatureVoteSurvey.jsonc` — `is_mandatory` default false.
-- `base44/functions/generateWeeklyReferralCampaign/entry.ts` — opt-in + disclosure; non-coercive copy.
-- `base44/functions/generateWeeklyFeatureVoteSurvey/entry.ts` — opt-in; non-coercive copy.
-- `base44/functions/creditPendingReferralPostRewards/entry.ts` — added grace-period fair-crediting across users.
-- `base44/functions/autoReferralContestDaily/entry.ts` — **NEW** daily end-to-end automation with all guardrails.
-- `base44/agents/weekly_referral_campaign_agent.jsonc` — now daily + compliance rules.
+- the `WeeklyReferralCampaign` table (`backend/db/schema.sql`) — `is_mandatory` default false; added `requires_disclosure`, `disclosure_text`.
+- the `FeatureVoteSurvey` table (`backend/db/schema.sql`) — `is_mandatory` default false.
+- `backend/functions/generateWeeklyReferralCampaign/entry.ts` — opt-in + disclosure; non-coercive copy.
+- `backend/functions/generateWeeklyFeatureVoteSurvey/entry.ts` — opt-in; non-coercive copy.
+- `backend/functions/creditPendingReferralPostRewards/entry.ts` — added grace-period fair-crediting across users.
+- `backend/functions/autoReferralContestDaily/entry.ts` — **NEW** daily end-to-end automation with all guardrails.
+- `backend/agents-runtime/agents.json` (agent `weekly_referral_campaign_agent`) — now daily + compliance rules.
 - `src/pages/WeeklyReferralContest.jsx`, `src/pages/WeeklyFeatureVote.jsx` — opt-in + #ad disclosure copy.

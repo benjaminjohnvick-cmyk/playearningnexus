@@ -36,9 +36,6 @@ export default __handler(async (req) => {
     }
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-
-    // Business eligibility check
-    const BUSINESS_ROLES = ['admin', 'developer', 'survey_creator', 'ppc_advertiser'];
     const body = await req.json();
     const { payoutId, venmoContact, amount, currency = 'USD', payout_type } = body;
 

@@ -1,29 +1,301 @@
 {
-  "_comment": "Non-money guardrails for the AI agents: per-agent MODEL PINNING and COST CAPS. Model resolution order = perAgent.model -> the agent's model in agents.json -> defaultModel (aliases like 'automatic'/'large'/'small' are mapped below). Cost caps are enforced from real token usage using the pricing table; spend is metered per agent per UTC day via the existing AgentPerformanceLog entity. Raise/lower caps here with no code change. Prices are USD per 1,000 tokens — update them if your provider's pricing changes or you switch providers.",
-  "defaultModel": "gpt-4o",
-  "smallModel": "gpt-4o-mini",
-  "modelAliases": {
-    "automatic": "gpt-4o",
-    "large": "gpt-4o",
-    "small": "gpt-4o-mini",
-    "mini": "gpt-4o-mini",
-    "": "gpt-4o"
+ "_comment": "Non-money guardrails for the AI agents: per-agent MODEL PINNING and COST CAPS. Model resolution order = perAgent.model -> the agent's model in agents.json -> defaultModel (aliases like 'automatic'/'large'/'small' are mapped below). Cost caps are enforced from real token usage using the pricing table; spend is metered per agent per UTC day via the existing AgentPerformanceLog entity. Raise/lower caps here with no code change. Prices are USD per 1,000 tokens \u2014 update them if your provider's pricing changes or you switch providers.",
+ "defaultModel": "gpt-4o",
+ "smallModel": "gpt-4o-mini",
+ "modelAliases": {
+  "automatic": "gpt-4o",
+  "large": "gpt-4o",
+  "small": "gpt-4o-mini",
+  "mini": "gpt-4o-mini",
+  "": "gpt-4o"
+ },
+ "pricing": {
+  "gpt-4o": {
+   "inPer1k": 0.005,
+   "outPer1k": 0.015
   },
-  "pricing": {
-    "gpt-4o": { "inPer1k": 0.005, "outPer1k": 0.015 },
-    "gpt-4o-mini": { "inPer1k": 0.00015, "outPer1k": 0.0006 }
-  },
-  "defaults": {
-    "dailyUsdCap": 10,
-    "perRunUsdCap": 1.5,
-    "maxSteps": 6
-  },
-  "perAgent": {
-    "admin_superagent": { "model": "gpt-4o", "dailyUsdCap": 50, "perRunUsdCap": 3, "maxSteps": 8 },
-    "auto_fraud_resolution_agent": { "model": "gpt-4o", "dailyUsdCap": 25 },
-    "auto_payout_agent": { "model": "gpt-4o", "dailyUsdCap": 25 },
-    "auto_social_content_agent": { "model": "gpt-4o-mini", "dailyUsdCap": 5 },
-    "auto_support_resolution_agent": { "model": "gpt-4o-mini", "dailyUsdCap": 8 },
-    "ai_content_hub": { "model": "gpt-4o-mini", "dailyUsdCap": 8 }
+  "gpt-4o-mini": {
+   "inPer1k": 0.00015,
+   "outPer1k": 0.0006
   }
+ },
+ "defaults": {
+  "dailyUsdCap": 10,
+  "perRunUsdCap": 1.5,
+  "maxSteps": 6
+ },
+ "perAgent": {
+  "admin_superagent": {
+   "model": "gpt-4o",
+   "dailyUsdCap": 50,
+   "perRunUsdCap": 3,
+   "maxSteps": 8
+  },
+  "auto_fraud_resolution_agent": {
+   "model": "gpt-4o",
+   "dailyUsdCap": 25
+  },
+  "auto_payout_agent": {
+   "model": "gpt-4o",
+   "dailyUsdCap": 25
+  },
+  "auto_social_content_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "auto_support_resolution_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 8
+  },
+  "ai_content_hub": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 8
+  },
+  "ab_test_optimizer": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "ad_operations_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "advanced_crm_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "ai_order_fulfillment": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "auto_developer_onboarding_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "auto_order_fulfillment_agent": {
+   "model": "gpt-4o"
+  },
+  "auto_referral_growth_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "auto_retention_monetization_agent": {
+   "model": "gpt-4o"
+  },
+  "auto_survey_quality_agent": {
+   "model": "gpt-4o"
+  },
+  "automation_guardian": {
+   "model": "gpt-4o"
+  },
+  "autonomous_affiliate_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "autonomous_ecosystem_superagent": {
+   "model": "gpt-4o"
+  },
+  "campaign_optimizer": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "challenge_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "churn_predictor": {
+   "model": "gpt-4o"
+  },
+  "compliance_monitor": {
+   "model": "gpt-4o"
+  },
+  "concept_tester": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "content_and_social_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "content_recommender": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "crm_automation_engine": {
+   "model": "gpt-4o"
+  },
+  "crm_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "daily_reminder_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "developer_success_agent": {
+   "model": "gpt-4o"
+  },
+  "feature_vote_growth_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "feedback_analysis_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "final_decision_agent": {
+   "model": "gpt-4o"
+  },
+  "fraud_detection": {
+   "model": "gpt-4o"
+  },
+  "gamification_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "growth_engine_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "growth_superagent": {
+   "model": "gpt-4o"
+  },
+  "infrastructure_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "ltv_predictor": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "market_analyzer": {
+   "model": "gpt-4o"
+  },
+  "marketing_automation": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "master_automation_superagent": {
+   "model": "gpt-4o"
+  },
+  "master_orchestrator": {
+   "model": "gpt-4o"
+  },
+  "mlm_affiliate_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "monetization_optimizer": {
+   "model": "gpt-4o"
+  },
+  "order_analytics_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "order_fulfillment_agent": {
+   "model": "gpt-4o"
+  },
+  "payout_operations_agent": {
+   "model": "gpt-4o"
+  },
+  "platform_automation_superagent": {
+   "model": "gpt-4o"
+  },
+  "platform_operations_superagent": {
+   "model": "gpt-4o"
+  },
+  "platform_rotator": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "referral_contest_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "referral_growth_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "referral_payout_manager": {
+   "model": "gpt-4o"
+  },
+  "revenue_forecaster": {
+   "model": "gpt-4o"
+  },
+  "revenue_growth_superagent": {
+   "model": "gpt-4o"
+  },
+  "security_intelligence_superagent": {
+   "model": "gpt-4o"
+  },
+  "sentiment_analyzer": {
+   "model": "gpt-4o"
+  },
+  "smart_support_agent": {
+   "model": "gpt-4o"
+  },
+  "sms_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "sms_notification_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "social_media_ad_poster": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "social_media_onboarding_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "store_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "support_bot": {
+   "model": "gpt-4o"
+  },
+  "survey_intelligence_agent": {
+   "model": "gpt-4o"
+  },
+  "survey_operations_agent": {
+   "model": "gpt-4o"
+  },
+  "survey_quality_monitor": {
+   "model": "gpt-4o"
+  },
+  "survey_ux_fraud_agent": {
+   "model": "gpt-4o"
+  },
+  "tournament_ai_manager": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "translation_specialist": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "universal_admin_action_agent": {
+   "model": "gpt-4o"
+  },
+  "universal_user_action_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "ux_feedback_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  },
+  "voice_generator": {
+   "model": "gpt-4o"
+  },
+  "weekly_referral_campaign_agent": {
+   "model": "gpt-4o"
+  },
+  "youtube_integration_agent": {
+   "model": "gpt-4o-mini",
+   "dailyUsdCap": 5
+  }
+ }
 }

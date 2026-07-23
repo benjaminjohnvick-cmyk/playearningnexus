@@ -18,6 +18,8 @@ export default __handler(async (req) => {
   // ── GET /widget.js  ── serve the embeddable JS loader
   if (req.method === 'GET' && path === 'widget') {
     const surveyId = url.searchParams.get('survey_id') || '';
+    // Self-hosted: the widget calls THIS backend. Publicly reachable URL from env, else the request origin.
+    const apiOrigin = (Deno.env.get('BACKEND_PUBLIC_URL') ?? new URL(req.url).origin).replace(/\/$/, '');
     const widgetScript = `
 (function() {
   var surveyId = "${surveyId}";
@@ -62,7 +64,7 @@ export default __handler(async (req) => {
   var visitorId = localStorage.getItem('gg_visitor') || Math.random().toString(36).slice(2);
   localStorage.setItem('gg_visitor', visitorId);
 
-  var API_BASE = "https://base44.com";
+  var API_BASE = "${apiOrigin}";
 
   function fetchSurvey() {
     container.innerHTML = '<div style="padding:24px;text-align:center;color:#6b7280;">Loading survey...</div>';
@@ -162,7 +164,7 @@ export default __handler(async (req) => {
     });
   }
 
-  window.__GG_API__ = "https://base44app.com/api/functions/surveyWidget";
+  window.__GG_API__ = "${apiOrigin}/functions/surveyWidget";
   fetchSurvey();
 })();
 `;

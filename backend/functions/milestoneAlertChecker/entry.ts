@@ -39,7 +39,7 @@ export default __handler(async (req) => {
     // Get user details from PPCTransaction (has user_id)
     const userTx = transactions[0];
     const userName = record.user_id;
-    const activityLink = `https://app.base44.com/data/DailyEarnings/${record.id}`;
+    const activityLink = `${(Deno.env.get('APP_URL') ?? '').replace(/\/$/, '')}/AdminDashboard`;
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: ADMIN_EMAIL,

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { isPartnerPayout } from "../../sdk/payout-policy.ts";
 import { gate } from "../../sdk/oversight.ts";
 
 export default __handler(async (req) => {
@@ -14,14 +15,14 @@ export default __handler(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Business eligibility check
-    const BUSINESS_ROLES = ['admin', 'developer', 'survey_creator', 'ppc_advertiser'];
+    // Closed-loop eligibility: cash only for business partners (shared policy)
     const { amount, payment_method, payment_details, payout_type } = await req.json();
 
-    const isBusinessRole = BUSINESS_ROLES.includes(user.role);
-    const isEligiblePayoutType = ['referral_commission', 'contest_win'].includes(payout_type);
-    if (!isBusinessRole && !isEligiblePayoutType) {
-      return Response.json({ error: 'Forbidden: You are not eligible for cash payouts.' }, { status: 403 });
+    if (!isPartnerPayout({ role: user?.role, payout_type })) {
+      return Response.json({
+        blocked: true, closed_loop: true,
+        message: 'Closed-loop platform: user earnings remain as on-site store credit and cannot be cashed out. Only business-partner revenue shares are paid in cash.',
+      }, { status: 200 });
     }
 
     if (!amount || amount < 5) return Response.json({ error: 'Minimum payout is $5' }, { status: 400 });

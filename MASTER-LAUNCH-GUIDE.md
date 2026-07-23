@@ -2,24 +2,29 @@
 
 ### Everything to configure, build, and ship — in the order to do it
 
-_Updated July 19, 2026. This is the single, end-to-end guide to take the app from code to live on web, Android, and iOS. It's ordered by best practice and efficiency: set up accounts → wire APIs → build → PWA → deploy → automate → legal → native apps → go live._
+_Updated July 21, 2026. This is the single, end-to-end guide to take the app from code to live on web, Android, and iOS. It's ordered by best practice and efficiency: set up accounts → wire APIs → build → PWA → deploy → automate → legal → native apps → go live._
 
-**Repository status:** ✅ All code is on GitHub `main` and verified current — backend functions (including the merit-based prize pool), the frontend pages, the Capacitor mobile wrapper, the in-app legal pages, and all docs. Repo: `https://github.com/benjaminjohnvick-cmyk/playearningnexus`.
+**This app is fully self-hosted — it no longer uses Base44.** The backend runs on your own Deno + PostgreSQL stack.
 
-**Companion docs:** `CONFIG-AND-SECRETS.md`, `SETUP-RUNBOOK.md`, `MOBILE-APP-WRAPPER-GUIDE.md`, `APP-STORE-SUBMISSION-CHECKLIST.md`, `LEGAL-PAGES-GUIDE.md`, `PRIVACY-POLICY.md`, `TERMS-OF-SERVICE.md`, `COMPLIANCE-AND-ASSUMPTIONS.md`, `GITHUB-PUSH-STEPS.md`.
+**Repository status:** ✅ All code is on GitHub `main` and current — the self-hosted backend, the frontend, the Capacitor mobile wrapper, the in-app legal pages, and all docs. Repo: `https://github.com/benjaminjohnvick-cmyk/playearningnexus`.
+
+**Companion docs:** `CONFIG-AND-SECRETS.md`, `SETUP-RUNBOOK.md`, `backend/PHASE-2-RUNBOOK.md`, `DEVELOPER-HANDOFF-BRIEF.md`, `MOBILE-APP-WRAPPER-GUIDE.md`, `APP-STORE-SUBMISSION-CHECKLIST.md`, `LEGAL-PAGES-GUIDE.md`, `PRIVACY-POLICY.md`, `TERMS-OF-SERVICE.md`, `COMPLIANCE-AND-ASSUMPTIONS.md`, `DE-BASE44-REWORK.md`.
 
 ## How the app is built (read first)
-- **Backend** = **Base44** (hosted). It runs the 526 functions, 235 databases (entities), 76 agents, authentication, and the AI/email/image integrations, and it auto-scales. Its **secrets live in Base44**, never in the repo.
-- **Frontend** = a **React + Vite PWA** (208 pages). Public `VITE_*` values are build-time. It deploys as a static site and wraps to native via **Capacitor**.
+- **Backend** = a **self-hosted Deno service** (`/backend`). It runs the 526 functions (as HTTP routes), 239 PostgreSQL tables, JWT + Google authentication, an agent runtime, a cron scheduler, and the AI/email/image integrations. You deploy it as a container; it scales with your host. **Secrets live in your backend host's environment**, never in the repo.
+- **Database** = **PostgreSQL** (schema in `backend/db/schema.sql`). Use a managed provider (Neon, Supabase, RDS) or your own.
+- **Frontend** = a **React + Vite PWA** (208 pages). Public `VITE_*` values are build-time. It deploys as a static site and wraps to native via **Capacitor**. It points at the backend via `VITE_NEXUS_API_URL`.
 - **Mobile** = **wrapper-only**. There are **no `android/`/`ios/` folders in the repo** — they're git-ignored and regenerated on demand with `npm run native:regenerate`. All native behavior lives in the web layer (`src/lib/native.js`).
-- **Rule:** if it's a *secret*, it goes in **Base44**. If it starts with `VITE_`, it's public and goes in the **frontend build**.
+- **Rule:** if it's a *secret*, it goes in the **backend host's env** (`backend/.env`). If it starts with `VITE_`, it's public and goes in the **frontend build** (`.env.local`).
+
+> **New with self-hosting:** the AI/email/image features (`InvokeLLM`, `SendEmail`, `GenerateImage`, etc.) used to run free on Base44's credentials — now they use **your own** OpenAI/Anthropic, SendGrid/SES, and S3 keys. LLM usage is the main variable cost; budget for it.
 
 ---
 
 ## LAUNCH SEQUENCE AT A GLANCE
 1. Create accounts (Phase 1)
 2. Get all API keys (Phase 2 — the complete list)
-3. Configure keys — Base44 + frontend (Phase 3)
+3. Configure keys — backend host + frontend (Phase 3)
 4. Build & smoke-test (Phase 4)
 5. Finish the PWA — icons + install test (Phase 5)
 6. Deploy the web app — host, domain, HTTPS (Phase 6)
@@ -33,7 +38,12 @@ _Updated July 19, 2026. This is the single, end-to-end guide to take the app fro
 ## PHASE 1 — Accounts to create first
 | Account | For | Cost |
 |---|---|---|
-| **Base44** | Backend hosting + publish | your plan |
+| **Backend host** (Render / Railway / Fly.io / AWS) | Runs the Deno backend container | pay-as-you-go |
+| **Managed Postgres** (Neon / Supabase / RDS) | The database | free tier → pay-as-you-go |
+| **OpenAI or Anthropic** | LLM features (was free via Base44) | usage-based |
+| **SendGrid or AWS SES** | Email (reset/invite/notifications) | free tier → usage |
+| **AWS S3** (or compatible) | File uploads | pay-as-you-go |
+| **Google Cloud** (optional) | "Sign in with Google" OAuth client | free |
 | **Stripe** | Card payments | free; fees per txn |
 | **PayPal Developer** (Business) | PayPal payments + payouts | free; fees |
 | **BitLabs** | Third-party survey supply | revenue share |
@@ -50,9 +60,22 @@ _Updated July 19, 2026. This is the single, end-to-end guide to take the app fro
 ---
 
 ## PHASE 2 — COMPLETE API / KEY LIST
-Everything the code references. "Where" = Base44 backend secret, or frontend `.env`. "Priority" = needed to launch vs. can follow.
+Everything the code references. "Where" = backend host env (`backend/.env`), or frontend `.env`. "Priority" = needed to launch vs. can follow.
 
-### A. Backend secrets — set in Base44 (never in the repo)
+### A. Backend secrets — set in your backend host's env / `backend/.env` (never in the repo)
+
+**Self-hosted platform (new — these replace what Base44 used to provide):**
+| Key | Powers | Where to get it | Priority |
+|---|---|---|---|
+| `DATABASE_URL` | PostgreSQL connection | Your managed Postgres provider | **Required** |
+| `AUTH_JWT_SECRET` | Signs user login tokens | Generate a long random string | **Required** |
+| `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`) | LLM / agents / image / speech | OpenAI or Anthropic dashboard | **Required** (AI features) |
+| `SENDGRID_API_KEY` (or SES/SMTP) | Email (reset, invites, notifications) | SendGrid, or AWS SES | **Required** (auth email) |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `S3_BUCKET` / `AWS_REGION` | File uploads → S3 | AWS IAM + S3 | High |
+| `GOOGLE_CLIENT_ID` | Verify "Sign in with Google" | Google Cloud Console | Optional |
+| `FRONTEND_URL` | Password-reset links | Your frontend domain | **Required** |
+
+**Your app integrations:**
 | Key | Powers | Where to get it | Priority |
 |---|---|---|---|
 | `STRIPE_SECRET_KEY` | Card charges/payouts | Stripe → Developers → API keys (Secret `sk_live_…`) | **Required** |
@@ -77,15 +100,14 @@ Everything the code references. "Where" = Base44 backend secret, or frontend `.e
 ### B. Frontend variables — set at build time (`.env.local` / host env)
 | Key | Powers | Where to get it | Priority |
 |---|---|---|---|
-| `VITE_BASE44_APP_ID` | Base44 app id | Base44 app settings | **Required** |
-| `VITE_BASE44_APP_BASE_URL` | Backend URL | Base44 app (`*.base44.app`) | **Required** |
-| `VITE_BASE44_FUNCTIONS_VERSION` | Functions version pin | Base44 (optional) | Optional |
+| `VITE_NEXUS_API_URL` | Your backend URL | Your deployed backend (e.g. `https://api.yourdomain.com`) | **Required** |
+| `VITE_GOOGLE_CLIENT_ID` | "Continue with Google" button | Google Cloud Console (same client id) | Optional |
 | `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe checkout (public) | Stripe → API keys (`pk_live_…`) | **Required** |
 | `VITE_PAYPAL_CLIENT_ID` | PayPal buttons (public) | PayPal Developer | **Required** |
 | `VITE_VAPID_PUBLIC_KEY` | Web push (public half) | Same VAPID pair as backend | High |
 
-### C. Handled by Base44 — NO keys needed
-`InvokeLLM`, `GenerateImage`, `GenerateSpeech`, `SendEmail`, `UploadFile` (all AI, email, and file-upload features run on Base44's platform credentials).
+### C. AI / email / image / file — now use YOUR keys (no longer free via Base44)
+`InvokeLLM`, `GenerateImage`, `GenerateSpeech`, `SendEmail`, `UploadFile` used to run on Base44's platform credentials. Self-hosted, they use your own: **LLM** → `OPENAI_API_KEY`/`ANTHROPIC_API_KEY`; **email** → SendGrid/SES; **uploads** → S3 (all in Phase 2-A above). LLM usage is the main variable cost.
 
 ### D. Free / no-key external services (already working)
 - **Maps:** React Leaflet + OpenStreetMap tiles — no key.
@@ -99,16 +121,16 @@ PayPal and Stripe (keyed above). **Venmo** and **Cash App** payout functions exi
 ---
 
 ## PHASE 3 — Configure the keys
-1. **Base44 backend:** open your app → backend environment/secrets → add every key in Phase 2-A. Save.
+1. **Backend:** set every key from Phase 2-A in your backend host's environment (or `backend/.env` locally). Start from `backend/.env.example`.
 2. **Frontend:** create `.env.local` in the repo root with the Phase 2-B values (and set the same in your host's build settings later). Example:
 ```
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=https://your-app.base44.app
+VITE_NEXUS_API_URL=https://api.yourdomain.com
+VITE_GOOGLE_CLIENT_ID=xxx            # optional (Google sign-in)
 VITE_STRIPE_PUBLISHABLE_KEY=pk_live_xxx
 VITE_PAYPAL_CLIENT_ID=xxx
 VITE_VAPID_PUBLIC_KEY=xxx
 ```
-3. **Publish the backend** in Base44 so functions/entities/agents go live.
+3. **Deploy the backend** container and load `backend/db/schema.sql` into your Postgres so functions/tables/agents are live. (Locally: `cd backend && docker compose up`.)
 
 ## PHASE 4 — Build & smoke-test
 ```
@@ -134,11 +156,11 @@ The manifest, mobile meta tags, and a **placeholder icon set** are already in th
 3. **SPA history fallback (required):** the app uses `BrowserRouter`, so redirect `404/403 → /index.html` (Amplify: a single rewrite rule; S3/CloudFront: error-document or a CloudFront function). Without this, deep links break.
 4. Set the `VITE_*` env vars in the host's build settings.
 5. **Custom domain + HTTPS:** attach your domain and an ACM certificate.
-6. Point `VITE_BASE44_APP_BASE_URL` and `APP_URL` at production.
+6. Point `VITE_NEXUS_API_URL` (frontend) and `APP_URL` / `FRONTEND_URL` (backend) at production.
 7. **Confirm the public legal URLs resolve** (needed for the app stores): `https://yourdomain.com/PrivacyPolicy` and `/TermsOfService`.
 
 ## PHASE 7 — Turn on backend automation (schedules)
-Your automation functions/agents need schedules configured in **Base44** (cron). Recommended cadence:
+Your automation functions run on a schedule via the included scheduler (`backend/scheduler`, uses `Deno.cron`) or your host's cron / AWS EventBridge. Recommended cadence:
 - **Daily:** `autoReferralContestDaily`, `autonomousEcosystemEngine` (if `EcosystemConfig.autonomous_mode` = true), `creditPendingReferralPostRewards` (grace-period sweep), `autoDailyOperationsEngine`, `generateAIDailyGoal`, survey generation.
 - **Weekly:** `processWeeklyJackpot` (the merit-based, open, self-funding prize pool), `generateWeeklyReferralCampaign` + `concludeWeeklyReferralCampaign`, `generateWeeklyFeatureVoteSurvey` + `concludeWeeklyFeatureVote`, `weeklyContestWinner`, `autoWeeklyReportsEngine`.
 - **Every 6–12h:** `masterOrchestrator`, `aiOrchestrator`.
@@ -164,7 +186,7 @@ Follow `MOBILE-APP-WRAPPER-GUIDE.md`. The repo is **wrapper-only** (Capacitor co
 
 ## PHASE 10 — Final QA & go-live checklist
 - [ ] Clean `npm run build` (no errors)
-- [ ] All **Required** keys set in Base44 + frontend
+- [ ] All **Required** keys set in the backend host env + frontend
 - [ ] Backend **published**; entities/functions/agents live
 - [ ] Sign-in / OAuth works in production
 - [ ] Real (small) Stripe + PayPal transaction succeeds
@@ -194,7 +216,7 @@ Follow `MOBILE-APP-WRAPPER-GUIDE.md`. The repo is **wrapper-only** (Capacitor co
 
 ## What only you can do (needs your accounts/machine)
 - Supply the real API key **values** (Phase 2–3).
-- Publish the Base44 backend and set schedules (Phase 7).
+- Deploy the backend container + Postgres, and turn on the scheduler (Phase 7).
 - Deploy the frontend + domain (Phase 6).
 - Complete + legally review the Privacy Policy and Terms (Phase 8).
 - Swap in the real app icon and generate/submit the native apps — iOS requires a **Mac** (Phase 9).

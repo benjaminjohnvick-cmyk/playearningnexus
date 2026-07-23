@@ -20,7 +20,8 @@ The path from code to live, and everything to hand a developer.
 - **PHASE-2-RUNBOOK.md** — how to boot the backend locally and smoke-test it (the first thing a dev does).
 - **DEVELOPER-HANDOFF-BRIEF.md** — one-page brief to hand whoever you hire.
 - **DEVELOPER-JOB-POST.md** — ready-to-post job description + screening questions.
-- **Launch-Hours-Estimate.pdf** — the ~55–100 hour breakdown.
+- **LAUNCH-UNDER-100-HOURS.md** — the UPDATED plan: what's already built (~105–160h of work done) and the remaining ~70–95h path to launch.
+- **Launch-Hours-Estimate.pdf** — the original ~55–100 hour breakdown (superseded by the above).
 - **GITBASH-PUSH-GUIDE.md** — how to push the code to GitHub from your PC.
 
 ## 📁 02 — Mobile Apps
@@ -31,6 +32,14 @@ The path from code to live, and everything to hand a developer.
 For when you're planning real scale (e.g. 100k users on AWS). Hand these to your developer.
 - **AWS-SCALING-ARCHITECTURE.md** — a build-straight-from-it one-pager: the AWS architecture (Fargate auto-scaling, RDS + RDS Proxy + read replicas, ElastiCache, SQS workers), sizing, cost sketch, and build order.
 - **LOAD-TEST-PLAN.md** — how to prove the app handles the target load before launch: what to test, load profiles, pass/fail targets, and where it'll bend first.
+
+## 📁 06 — Agent System & Payments
+The autonomous-AI + human-oversight build and the money/store model (added after launch).
+- **AGENT-OVERSIGHT-IMPLEMENTATION.md** / **AGENT-OVERSIGHT-COVERAGE.md** — human-in-the-loop approval gate on money/fraud actions, and the map of exactly what's gated.
+- **AGENT-GUARDRAILS.md** — per-agent model pinning + daily/per-run cost caps.
+- **AGENT-TRIGGERS-AND-SURVEY-EVIDENCE.md** — autonomous agent scheduling + event triggers, and the survey-evidence pipeline.
+- **PAYOUT-CLOSED-LOOP.md** — closed-loop: users earn store credit, only business partners get cash.
+- **STORE-ORDERS-AND-MARKUP.md** — product-search → AI-fulfilled orders, the one-time 10% markup, buy-store-credit-by-card, and the unified business/regular user classes.
 
 ## 📁 03 — Legal & Compliance
 - **PRIVACY-POLICY.md** / **TERMS-OF-SERVICE.md** — templates (need your details + a lawyer's review).

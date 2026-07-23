@@ -9,6 +9,7 @@ import { limited, LLM_CONCURRENCY } from "../sdk/queue.ts";
 import { gate, needsApproval, SENSITIVE_ENTITIES } from "../sdk/oversight.ts";
 import { capsFor, costOf, logUsage, resolveModel, spentTodayUsd } from "./guardrails.ts";
 import { gatherEvidence } from "../sdk/survey-evidence.ts";
+import { recallLessons, recordOutcome } from "./learning.ts";
 
 type AgentDef = { description: string; instructions: string; model: string | null; tools: { entity: string; ops: string[] }[] };
 const registry: Record<string, AgentDef> = JSON.parse(await Deno.readTextFile(new URL("./agents.json", import.meta.url)));
@@ -95,11 +96,14 @@ export async function runAgent(name: string, message: string, context?: unknown)
   }
 
   const tools = toolsFor(def);
+  // RECALL: steer this run by what the agent (and the platform) has already learned.
+  const lessons = await recallLessons(name);
   const messages: Record<string, unknown>[] = [
-    { role: "system", content: `${def.instructions}\n\nUse the provided tools to read/write data as needed. When done, reply to the user directly.` },
+    { role: "system", content: `${def.instructions}\n\nUse the provided tools to read/write data as needed. When done, reply to the user directly.${lessons}` },
     { role: "user", content: context ? `${message}\n\nContext: ${JSON.stringify(context)}` : message },
   ];
   const steps: unknown[] = [];
+  const toolsUsed: string[] = [];
   let runCost = 0;
 
   for (let i = 0; i < caps.maxSteps; i++) {
@@ -131,13 +135,20 @@ export async function runAgent(name: string, message: string, context?: unknown)
     if (!msg) break;
     messages.push(msg);
     const calls = msg.tool_calls ?? [];
-    if (!calls.length) return { reply: msg.content ?? "", steps, cost_usd: runCost, model };
+    if (!calls.length) {
+      // RECORD: the agent finished with a reply — provisional success (Increment 4 grounds it).
+      await recordOutcome(name, { summary: msg.content ?? "", success: true, cost_usd: runCost, tools_used: toolsUsed });
+      return { reply: msg.content ?? "", steps, cost_usd: runCost, model };
+    }
     for (const c of calls) {
+      toolsUsed.push(c.function.name);
       let out; try { out = await runTool(def, c.function.name, JSON.parse(c.function.arguments || "{}"), name); }
       catch (e) { out = { error: (e as Error).message }; }
       steps.push({ tool: c.function.name, result: out });
       messages.push({ role: "tool", tool_call_id: c.id, content: JSON.stringify(out).slice(0, 4000) });
     }
   }
+  // RECORD: hit the step limit without a clean finish — a weak signal (not a success).
+  await recordOutcome(name, { summary: "reached step limit without finishing", success: false, cost_usd: runCost, tools_used: toolsUsed });
   return { reply: "(agent reached step limit)", steps, cost_usd: runCost, model };
 }

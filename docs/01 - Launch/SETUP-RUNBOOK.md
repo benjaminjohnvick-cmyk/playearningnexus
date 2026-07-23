@@ -93,6 +93,34 @@ No extra config beyond those env vars.
 
 ---
 
+## Step 3.5 — Pre-deploy validation (run before deploying)
+Catch build/type errors **before** they hit production. Best run in a Linux environment (a GitHub Codespace, or your CI) — Windows-on-ARM machines hit native-module issues that don't reflect the real build.
+
+**Frontend build (the main gate):**
+```
+npm install
+npm run build      # must finish with "✓ built in ..." and produce ./dist
+```
+> If `npm install` fails on `sharp`/`node-gyp` on a Windows-ARM PC, that's an environment quirk, not a code issue — use a Codespace, or `npm install --ignore-scripts`. The build must ultimately pass on Linux (which is where your host builds it).
+
+**Backend typecheck (Deno):**
+```
+# install Deno once (Linux/Codespace):
+curl -fsSL https://deno.land/install.sh | sh
+export PATH="$HOME/.deno/bin:$PATH"
+
+cd backend
+# core (server + SDK + agent runtime):
+deno check server/main.ts sdk/oversight.ts sdk/events.ts sdk/survey-evidence.ts sdk/payout-policy.ts agents-runtime/agent-runtime.ts agents-runtime/guardrails.ts
+# money/economy + agent functions:
+deno check functions/awardReward/entry.ts functions/spendBalance/entry.ts functions/transferCredit/entry.ts functions/placeStoreOrder/entry.ts functions/purchaseStoreCredit/entry.ts functions/surveyIngest/entry.ts functions/oversightApprove/entry.ts functions/oversightReject/entry.ts functions/oversightPending/entry.ts
+```
+The first `deno check` downloads remote imports (`npm:stripe`, `deno.land/x/postgres`, etc.) — normal, one-time. No output + clean exit = it typechecks. Any error names the file + line — fix before deploying.
+
+> Note: `deno check server/main.ts` does not follow the functions loaded dynamically at runtime, which is why the money/agent functions are listed explicitly above. The true end-to-end gate is the backend booting and `/health` returning `{"ok":true}` (Step 4).
+
+---
+
 ## Step 4 — Deploy the backend
 1. Provision a **Postgres** database and load the schema: `psql "$DATABASE_URL" -f backend/db/schema.sql`.
 2. Deploy the **Deno backend** as a container (Dockerfile included) to Render / Railway / Fly.io / AWS,

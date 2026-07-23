@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Code2, Copy, Check, Globe, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
-const WIDGET_API = 'https://base44app.com/api/functions/surveyWidget';
+const WIDGET_API = `${import.meta.env.VITE_NEXUS_API_URL || ''}/functions/surveyWidget`; // self-hosted backend
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);

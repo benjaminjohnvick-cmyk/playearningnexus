@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Copy, Check, Code2, Globe, BarChart2, Zap, ExternalLink, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
-const WIDGET_API = 'https://base44app.com/api/functions/surveyWidget';
+const WIDGET_API = `${import.meta.env.VITE_NEXUS_API_URL || ''}/functions/surveyWidget`; // self-hosted backend
 
 function CopyButton({ text, label = 'Copy' }) {
   const [copied, setCopied] = useState(false);

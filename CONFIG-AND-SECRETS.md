@@ -1,46 +1,78 @@
-# PlayEarning Nexus — Configuration, API Keys & Auth Inventory
+# GamerGain / PlayEarning Nexus — Configuration, API Keys & Auth Inventory
+### Self-hosted stack (Base44 removed)
 
 ## Summary — no secrets are stored in the code
-I scanned the entire codebase (`src/` and `base44/`) for hardcoded secrets, API keys, tokens, and credentials. **None are present**, and there are no `.env` files in the export. This is the correct, secure design: every secret is read at runtime from an environment variable, and the actual *values* live in Base44's backend secret manager — not in the repo. So there is nothing sensitive to "pull" from the file; there is only the **list of keys the app expects you to configure**, below.
+No hardcoded secrets, API keys, or credentials live in the repo — every secret is read at runtime
+from an environment variable. On the **self-hosted** stack the values live in **your backend host's
+environment (or a `.env` file / secrets manager)** — never in the repo, and never in the frontend
+bundle. This doc is the **list of keys you configure**.
 
-The only concrete identifiers present in the file are non-secret:
-- `VITE_BASE44_APP_ID = cbef744a8545c389ef439ea6` (public app identifier, in README example)
-- `VITE_BASE44_APP_BASE_URL = https://my-to-do-list-81bfaad7.base44.app` (README example)
+Two places hold config:
+- **Backend** (`/backend`, Deno) — reads secrets via `Deno.env.get(...)`. Set these in your host's
+  env or `backend/.env` (git-ignored).
+- **Frontend** (React/Vite) — public, build-time `import.meta.env.VITE_*` values in `.env.local`.
 
-## Backend secrets the app expects (set these in Base44 → backend env/secrets)
-Read via `Deno.env.get(...)` inside `base44/functions/*`. Values are NOT in the code.
+## Backend secrets — set in your backend host's env / `backend/.env`
+### Core (self-hosted platform)
+| Env var | Used for |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection (e.g. Neon/Supabase/RDS) — **required** |
+| `AUTH_JWT_SECRET` | Signs user JWTs — **required**, use a long random string |
+| `FRONTEND_URL` | Builds password-reset links |
+| `CORS_ORIGIN` | Your frontend domain |
 
-| Env var | Used for | # of functions |
-|---|---|---|
-| `PAYPAL_CLIENT_ID` / `PAYPAL_SECRET_KEY` | PayPal payouts & orders | 9 |
-| `STRIPE_SECRET_KEY` | Stripe payments | 8 |
-| `BITLABS_API_KEY` | BitLabs survey provider | 5 |
-| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_PHONE_NUMBER` | SMS notifications | 4 |
-| `TWITTER_API_KEY` / `TWITTER_API_SECRET` | Twitter/X posting | 4 |
-| `APP_URL` | Absolute links in emails/webhooks | 4 |
-| `FACEBOOK_APP_ID` / `FACEBOOK_APP_SECRET` | Facebook OAuth & posting | 3 |
-| `INSTAGRAM_APP_ID` / `INSTAGRAM_APP_SECRET` | Instagram posting | 2 |
-| `SCRAPINGBEE_API_KEY` | Web scraping (competitive intel) | 2 |
-| `BROWSERLESS_API_KEY` | Headless browser tasks | 2 |
-| `SNAPCHAT_CLIENT_ID` / `SNAPCHAT_CLIENT_SECRET` | Snapchat integration | 1 |
-| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Web push notifications | 1 |
-| `PAYOUT_WEBHOOK_URL` / `PAYOUT_WEBHOOK_SECRET` | Payout webhook verification | 1 |
+### AI / email / images (formerly free via Base44 — now YOUR provider keys)
+| Env var | Used for |
+|---|---|
+| `OPENAI_API_KEY` *(or `ANTHROPIC_API_KEY` + `LLM_PROVIDER=anthropic`)* | `InvokeLLM`, agent runtime, `GenerateImage`, `GenerateSpeech` |
+| `SENDGRID_API_KEY` *(or `EMAIL_PROVIDER=ses` + AWS keys, or `=smtp`)* | `SendEmail`, password-reset & invite emails |
+| `EMAIL_FROM` | From-address for outbound email |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_REGION` / `S3_BUCKET` | `UploadFile` → S3 |
+| `GOOGLE_CLIENT_ID` | Verifies "Sign in with Google" |
 
-## Frontend public config (safe to expose — build-time `import.meta.env.VITE_*`)
+### Your existing app integrations (unchanged)
+| Env var | Used for |
+|---|---|
+| `PAYPAL_CLIENT_ID` / `PAYPAL_SECRET_KEY` | PayPal payouts & orders |
+| `STRIPE_SECRET_KEY` | Stripe payments |
+| `BITLABS_API_KEY` | BitLabs survey provider |
+| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_PHONE_NUMBER` | SMS |
+| `TWITTER_API_KEY` / `TWITTER_API_SECRET` | Twitter/X posting |
+| `FACEBOOK_APP_ID` / `FACEBOOK_APP_SECRET` | Facebook OAuth & posting |
+| `INSTAGRAM_APP_ID` / `INSTAGRAM_APP_SECRET` | Instagram posting |
+| `SNAPCHAT_CLIENT_ID` / `SNAPCHAT_CLIENT_SECRET` | Snapchat |
+| `SCRAPINGBEE_API_KEY` / `BROWSERLESS_API_KEY` | Competitive-intel scraping |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Web push |
+| `PAYOUT_WEBHOOK_URL` / `PAYOUT_WEBHOOK_SECRET` | Payout webhook verification |
+| `APP_URL` | Absolute links in emails/webhooks |
+
+> Full annotated list with defaults: `backend/.env.example`.
+
+## Frontend public config — `.env.local` (safe to expose; build-time `VITE_*`)
 | Env var | Purpose |
 |---|---|
-| `VITE_BASE44_APP_ID` | Base44 app id |
-| `VITE_BASE44_APP_BASE_URL` | Base44 backend URL |
-| `VITE_BASE44_FUNCTIONS_VERSION` | Functions version pin |
+| `VITE_NEXUS_API_URL` | **Your backend URL** (replaces the old Base44 app id/base url) |
+| `VITE_GOOGLE_CLIENT_ID` | Enables the "Continue with Google" button (optional) |
 | `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe publishable (public) key |
 | `VITE_PAYPAL_CLIENT_ID` | PayPal client id (public) |
 | `VITE_VAPID_PUBLIC_KEY` | Web push public key |
+| `VITE_LOGIN_URL` *(optional)* | Login route (default `/login`) |
 
-## Base44-managed integrations (no key needed in your code)
-These run through Base44's platform credentials via `base44.integrations.Core.*`:
-`InvokeLLM`, `GenerateImage`, `GenerateSpeech`, `SendEmail`, `UploadFile`.
+> The old `VITE_BASE44_APP_ID` / `VITE_BASE44_APP_BASE_URL` / `VITE_BASE44_FUNCTIONS_VERSION` are
+> **gone** — there's no Base44 to point at. Just set `VITE_NEXUS_API_URL`.
+
+## What changed vs the Base44 version
+- Secrets used to live in **Base44's secret manager**; now they live in **your backend host's env**.
+- `InvokeLLM` / `GenerateImage` / `GenerateSpeech` / `SendEmail` / `UploadFile` used to run free on
+  **Base44's platform credentials**; now they use **your own** OpenAI/Anthropic, SendGrid/SES, and S3
+  keys (this is the real cost driver — budget for LLM usage especially).
+- Auth used to be Base44-hosted; now it's **your JWT + optional Google**, so you also set
+  `AUTH_JWT_SECRET` and (optionally) `GOOGLE_CLIENT_ID`.
 
 ## Recommendations
-1. **Set the backend secrets in Base44's secret manager**, not in any committed file. Keep `.env` gitignored (it already is).
-2. **Never commit real values** — do not paste live keys into this repo, a Claude project doc, or a chat. If a real key ever lands in the repo, rotate it.
-3. Publishable/public keys (`VITE_STRIPE_PUBLISHABLE_KEY`, `VITE_PAYPAL_CLIENT_ID`, VAPID public) are safe in the frontend build by design.
+1. Set backend secrets in your **host's env or a secrets manager**, never in a committed file. Keep
+   `backend/.env` git-ignored (it is).
+2. **Never commit real values** — not to the repo, a Claude project doc, or a chat. If a real key
+   ever lands in the repo, rotate it.
+3. Publishable/public keys (`VITE_STRIPE_PUBLISHABLE_KEY`, `VITE_PAYPAL_CLIENT_ID`, VAPID public)
+   are safe in the frontend build by design.
