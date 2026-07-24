@@ -27,7 +27,7 @@ export default __handler(async (req) => {
         },
         {
           subject: `Your weekly rewards summary 📊`,
-          body: `Hi {{user_name}},\n\nGreat week! You've completed {{surveys_this_week}} surveys and earned ${{earnings_this_week}}.\n\nNext week, we'll have even better surveys for you.\n\nKeep playing! 🏆`,
+          body: `Hi {{user_name}},\n\nGreat week! You've completed {{surveys_this_week}} surveys and earned \${{earnings_this_week}}.\n\nNext week, we'll have even better surveys for you.\n\nKeep playing! 🏆`,
           delay: 604800000, // 7 days
         },
       ],
@@ -46,7 +46,7 @@ export default __handler(async (req) => {
       milestone_congratulations: [
         {
           subject: `Congrats! You've earned your first $10! 🎊`,
-          body: `{{user_name}},\n\nCongratulations on reaching your first $10!\n\nThis is just the beginning. Users like you average ${{avg_monthly_earnings}}/month.\n\nYour next milestone: $25 ({{surveys_until_25}} surveys away)\n\nKeep crushing it! 💪`,
+          body: `{{user_name}},\n\nCongratulations on reaching your first $10!\n\nThis is just the beginning. Users like you average \${{avg_monthly_earnings}}/month.\n\nYour next milestone: $25 ({{surveys_until_25}} surveys away)\n\nKeep crushing it! 💪`,
           delay: 0,
         },
       ],

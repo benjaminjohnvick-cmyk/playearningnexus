@@ -31,7 +31,7 @@ export default __handler(async (req) => {
 
 USER PROFILE:
 - Average Daily Earnings: $${avgDailyEarnings.toFixed(2)}
-- Best Day Ever: $${maxDailyEarningsDay.toFixed(2)}
+- Best Day Ever: $${maxEarningsDay.toFixed(2)}
 - Total Lifetime Earnings: $${user.total_earnings || 0}
 - Completion Preference: ${preferredType}
 - Completion Rate: ${(completionRate * 100).toFixed(0)}%

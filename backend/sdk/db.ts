@@ -56,10 +56,10 @@ function buildWhere(entity: string, query: Record<string, unknown>, startIdx = 1
           const ph = arr.map(() => `$${i++}`);
           arr.forEach((a) => params.push(a));
           if (sys.has(key)) clauses.push(`${quoteCol(key)} IN (${ph.join(",")})`);
-          else clauses.push(`data->>'${key}' IN (${ph.join(",")})`);
+          else clauses.push(`data->>${jsonKey(key)} IN (${ph.join(",")})`);
         } else if (OPS[op]) {
           if (sys.has(key)) { clauses.push(`${quoteCol(key)} ${OPS[op]} $${i}`); params.push(opVal); i++; }
-          else { clauses.push(`(data->>'${key}') ${OPS[op]} $${i}`); params.push(String(opVal)); i++; }
+          else { clauses.push(`(data->>${jsonKey(key)}) ${OPS[op]} $${i}`); params.push(String(opVal)); i++; }
         }
       }
     } else if (sys.has(key)) {
@@ -74,15 +74,22 @@ function buildWhere(entity: string, query: Record<string, unknown>, startIdx = 1
   return { where: clauses.length ? "WHERE " + clauses.join(" AND ") : "", params, next: i };
 }
 
-const quoteCol = (c: string) => `"${c}"`;
-const quoteTbl = (t: string) => `"${t}"`;
+// Identifiers are wrapped in double quotes; escape any embedded double quote so a crafted
+// name can't break out of the identifier. (Table/entity names are already regex-limited at
+// the route, but this hardens column names and any future callers.)
+const quoteCol = (c: string) => `"${String(c).replace(/"/g, '""')}"`;
+const quoteTbl = (t: string) => `"${String(t).replace(/"/g, '""')}"`;
+// Safely embed a JSONB key/field as a single-quoted SQL literal. Filter keys and the sort
+// field arrive from the request body with no allowlist, so escaping the single quote here
+// closes SQL injection through `data->>'<key>'`.
+const jsonKey = (k: string) => `'${String(k).replace(/'/g, "''")}'`;
 
 function orderBy(sort?: string): string {
   if (!sort) return "ORDER BY created_date DESC";
   const desc = sort.startsWith("-");
   const field = desc ? sort.slice(1) : sort;
   const sys = new Set(["id", "created_date", "updated_date", "created_by"]);
-  const col = sys.has(field) ? quoteCol(field) : `data->>'${field}'`;
+  const col = sys.has(field) ? quoteCol(field) : `data->>${jsonKey(field)}`;
   return `ORDER BY ${col} ${desc ? "DESC" : "ASC"}`;
 }
 

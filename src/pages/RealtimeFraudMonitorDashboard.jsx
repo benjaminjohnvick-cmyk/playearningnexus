@@ -39,7 +39,7 @@ export default function RealtimeFraudMonitorDashboard() {
       );
       return reports;
     },
-    enabled: !!user?.role === 'admin',
+    enabled: user?.role === 'admin',
     refetchInterval: 5000 // Real-time: update every 5 seconds
   });
 
@@ -54,7 +54,7 @@ export default function RealtimeFraudMonitorDashboard() {
       );
       return sessions;
     },
-    enabled: !!user?.role === 'admin',
+    enabled: user?.role === 'admin',
     refetchInterval: 5000
   });
 
@@ -68,7 +68,7 @@ export default function RealtimeFraudMonitorDashboard() {
       );
       return lockouts;
     },
-    enabled: !!user?.role === 'admin'
+    enabled: user?.role === 'admin'
   });
 
   // Mutation to freeze account

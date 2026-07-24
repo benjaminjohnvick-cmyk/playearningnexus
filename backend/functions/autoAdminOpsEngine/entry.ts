@@ -4,10 +4,10 @@ import { __handler } from "../../sdk/runtime.ts";
 // Category 5: Admin & Operations Automation
 // Handles: Game rotation, order fulfillment, user management, audit logging, dispute resolution
 export default __handler(async (req) => {
+  const results = {};
+  const errors = [];
   try {
     const base44 = createClientFromRequest(req);
-    const results = {};
-    const errors = [];
 
     const invoke = async (fn, payload = {}) => {
       try {

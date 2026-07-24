@@ -49,7 +49,7 @@ export default function SurveyAdminDashboard() {
   const { data: users = [] } = useQuery({
     queryKey: ['admin-users-demo'],
     queryFn: () => base44.entities.User.list(),
-    enabled: !!user?.role === 'admin',
+    enabled: user?.role === 'admin',
   });
 
   const stats = useMemo(() => {

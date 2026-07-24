@@ -72,7 +72,7 @@ export default function DisputeAutoApprovalSettings() {
     }));
   };
 
-  if (!user?.role === 'admin') return <div className="p-6 text-center text-slate-500">Admin access required</div>;
+  if (user?.role !== 'admin') return <div className="p-6 text-center text-slate-500">Admin access required</div>;
   if (isLoading) return <div className="p-6 text-center text-slate-500">Loading settings...</div>;
   if (!settings) return <div className="p-6 text-center text-slate-500">No settings configured</div>;
 
