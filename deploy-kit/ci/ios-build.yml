@@ -1,0 +1,78 @@
+# GitHub Actions — build the Capacitor iOS app on a macOS runner (no local Mac needed)
+# and upload to TestFlight via the App Store Connect API key.
+#
+# Install: copy to `.github/workflows/ios-build.yml`.
+# Required repo Secrets (Settings → Secrets and variables → Actions):
+#   APPSTORE_API_KEY_ID     - App Store Connect API Key ID
+#   APPSTORE_API_ISSUER_ID  - App Store Connect Issuer ID
+#   APPSTORE_API_KEY_P8     - the full contents of the AuthKey_XXXX.p8 file
+#   IOS_BUNDLE_ID           - com.playearningnexus.app
+#
+# Note: macOS runner minutes are free for public repos, metered (but cheap) for private repos.
+
+name: iOS Build & TestFlight
+
+on:
+  workflow_dispatch:        # run manually from the Actions tab
+  push:
+    branches: [ ios-release ]
+
+jobs:
+  build-ios:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps & build web
+        run: |
+          npm install --ignore-scripts
+          npm run build
+
+      - name: Add & sync Capacitor iOS
+        run: |
+          npx cap add ios 2>/dev/null || echo "ios/ already present"
+          npx cap sync ios
+
+      - name: Install Apple API key
+        run: |
+          mkdir -p ~/private_keys
+          echo "${{ secrets.APPSTORE_API_KEY_P8 }}" > ~/private_keys/AuthKey_${{ secrets.APPSTORE_API_KEY_ID }}.p8
+
+      - name: Archive & export (automatic signing via API key)
+        env:
+          API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App \
+            -configuration Release -archivePath $RUNNER_TEMP/App.xcarchive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${API_KEY_ID}.p8 \
+            -authenticationKeyID "$API_KEY_ID" \
+            -authenticationKeyIssuerID "$API_ISSUER_ID" \
+            archive
+          xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive \
+            -exportOptionsPlist ../../deploy-kit/ci/ExportOptions.plist \
+            -exportPath $RUNNER_TEMP/export \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${API_KEY_ID}.p8 \
+            -authenticationKeyID "$API_KEY_ID" \
+            -authenticationKeyIssuerID "$API_ISSUER_ID"
+
+      - name: Upload to TestFlight
+        env:
+          API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+        run: |
+          xcrun altool --upload-app -f "$RUNNER_TEMP/export/App.ipa" -t ios \
+            --apiKey "$API_KEY_ID" --apiIssuer "$API_ISSUER_ID"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ${{ runner.temp }}/export/*.ipa

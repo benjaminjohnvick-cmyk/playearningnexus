@@ -19,7 +19,7 @@ PlayEarning Nexus ("we") is operated by [COMPANY LEGAL NAME]. This policy explai
 Provide the service; process payments/payouts; match surveys and personalize (incl. AI); prevent fraud; send service and (with consent) marketing messages; comply with legal/tax obligations.
 
 ## 4. How we share it
-Payment processors (Stripe, PayPal); survey providers (e.g., BitLabs); social platforms you connect; service providers (our cloud hosting, database, email, and file-storage providers; AI providers for survey matching; SMS via Twilio); and legal/safety recipients. **We do not sell personal information for money.**
+Payment processors (Stripe, PayPal); survey providers (e.g., BitLabs); social platforms you connect; service providers (hosting/backend via Base44, SMS via Twilio); and legal/safety recipients. **We do not sell personal information for money.**
 
 ## 5. Cookies, tracking & notifications
 Local storage/similar for sign-in, preferences, and analytics. Manage push notifications in device/browser settings.

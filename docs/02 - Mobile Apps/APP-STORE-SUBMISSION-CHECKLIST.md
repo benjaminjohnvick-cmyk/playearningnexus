@@ -30,7 +30,7 @@ Play requires you to declare what data you collect and why.
 
 - [ ] List every data type collected: account info, email, payment info, device identifiers, approximate/precise location (if used), usage analytics.
 - [ ] Declare encryption in transit and whether users can request deletion.
-- [ ] Make sure the form matches what the app + your backend actually collect (mismatches get flagged).
+- [ ] Make sure the form matches what the app + Base44 backend actually collect (mismatches get flagged).
 - [ ] Complete **Content rating** questionnaire (the earning/contest features affect the rating).
 - [ ] Complete the **Financial features** declaration if prompted (payments, "earn real money").
 

@@ -2,11 +2,13 @@
 
 ### Everything to configure, build, and ship — in the order to do it
 
-_Updated July 21, 2026. This is the single, end-to-end guide to take the app from code to live on web, Android, and iOS. It's ordered by best practice and efficiency: set up accounts → wire APIs → build → PWA → deploy → automate → legal → native apps → go live._
+_Updated July 24, 2026. This is the single, end-to-end guide to take the app from code to live on web, Android, and iOS. It's ordered by best practice and efficiency: set up accounts → wire APIs → build → PWA → deploy → automate → legal → native apps → go live._
 
 **This app is fully self-hosted — it no longer uses Base44.** The backend runs on your own Deno + PostgreSQL stack.
 
-**Repository status:** ✅ All code is on GitHub `main` and current — the self-hosted backend, the frontend, the Capacitor mobile wrapper, the in-app legal pages, and all docs. Repo: `https://github.com/benjaminjohnvick-cmyk/playearningnexus`.
+**Repository status (verified 2026-07-24):** ✅ All code is on GitHub `main` and current — the self-hosted backend, the frontend, the Capacitor mobile wrapper, the in-app legal pages, and all docs. Repo: `https://github.com/benjaminjohnvick-cmyk/playearningnexus`.
+
+**Code audit (2026-07-24):** A full static audit (TypeScript compiler + ESLint over ~230k lines + a security-pattern battery) was run and all findings fixed and pushed — including a SQL-injection vector in the data layer, an admin auth-bypass, dead Base44 URLs in two emails, and the AI-order-fulfillment margin/email bugs. Details in `FULL-CODE-AUDIT-0724.md`. Still open (not blocking): server-side card-payment verification in `placeStoreOrder`, and sanitizing user-derived HTML in the three `dangerouslySetInnerHTML` spots.
 
 **Companion docs:** `CONFIG-AND-SECRETS.md`, `SETUP-RUNBOOK.md`, `backend/PHASE-2-RUNBOOK.md`, `DEVELOPER-HANDOFF-BRIEF.md`, `MOBILE-APP-WRAPPER-GUIDE.md`, `APP-STORE-SUBMISSION-CHECKLIST.md`, `LEGAL-PAGES-GUIDE.md`, `PRIVACY-POLICY.md`, `TERMS-OF-SERVICE.md`, `COMPLIANCE-AND-ASSUMPTIONS.md`, `DE-BASE44-REWORK.md`.
 
