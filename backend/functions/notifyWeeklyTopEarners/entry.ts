@@ -1,6 +1,9 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
+// Self-hosted app URL (replaces the dead base44.app domain). Set APP_URL in your env.
+const APP_URL = (Deno.env.get("APP_URL") || "https://gamergain.app").replace(/\/$/, "");
+
 /**
  * Scheduled weekly — finds top earners for the past 7 days and sends winner notifications.
  */
@@ -78,7 +81,7 @@ ${medals[i]}
 
 Keep it up and compete for the top spot next week. Your ranking is live on the leaderboard now.
 
-👉 View Leaderboard: https://gamergain.base44.app/Leaderboard
+👉 View Leaderboard: ${APP_URL}/Leaderboard
 
 Happy earning!
 — The GamerGain Team`,

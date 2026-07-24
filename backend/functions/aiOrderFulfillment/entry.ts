@@ -199,6 +199,11 @@ export default __handler(async (req) => {
     if (!orders?.length) return Response.json({ error: 'Order not found' }, { status: 404 });
     const order = orders[0];
 
+    // Source the item against the TRUE product cost (raw_price), NOT the marked-up total
+    // the user paid (order.amount = raw_price × 1.10 for regular users). Sourcing at
+    // order.amount would let the AI spend the platform's 10% margin on the item itself.
+    const sourcingBudget = Number(order.raw_price ?? order.amount) || Number(order.amount) || 0;
+
     if (order.shipping_status !== 'pending_ai_fulfillment') {
       return Response.json({ message: 'Order not in pending_ai_fulfillment state', current: order.shipping_status });
     }
@@ -238,13 +243,13 @@ export default __handler(async (req) => {
 Product Name: ${order.product_name}
 Vendor URL: ${order.vendor_url || 'Not provided'}
 Vendor Name: ${order.vendor_name || 'Unknown'}
-Target Amount: $${order.amount}
+Target Amount: $${sourcingBudget}
 ${vendorPageHtml ? `\nPage Content (first 4000 chars):\n${vendorPageHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').substring(0, 4000)}` : '\nNote: Page could not be fetched. Use your knowledge of this retailer.'}
 
 Determine:
 1. is_available — is the product in stock?
 2. actual_price — listed price
-3. price_match — within 10% of $${order.amount}?
+3. price_match — within 10% of $${sourcingBudget}?
 4. checkout_url — direct buy/add-to-cart URL
 5. requires_account — needs login?
 6. requires_captcha — has bot protection?
@@ -308,7 +313,7 @@ Determine:
 
     if (!useOriginalUrl) {
       log('No vendor URL or product out of stock — searching for best listing');
-      bestListing = await findBestListing(base44, order.product_name, order.amount);
+      bestListing = await findBestListing(base44, order.product_name, sourcingBudget);
       log(`Best listing found: ${bestListing?.retailer_name} — ${bestListing?.product_url} (confidence: ${bestListing?.confidence})`);
     }
 
@@ -346,7 +351,7 @@ Determine:
 Product: ${order.product_name}
 Retailer: ${finalRetailerName}
 Product URL: ${finalProductUrl}
-Price: $${order.amount}
+Price: $${sourcingBudget}
 Shipping Address: ${order.shipping_address}
 
 Known vendor checkout steps: ${JSON.stringify(vendorIntel?.checkout_steps || [])}
@@ -389,7 +394,7 @@ Generate a complete Playwright-compatible automation plan:
       checkoutSteps: checkoutPlan?.ordered_steps || [],
       shippingAddress: order.shipping_address,
       productName: order.product_name,
-      amount: order.amount
+      amount: sourcingBudget
     });
 
     log(`Step 4 browser: executed=${browserResult?.executed}, steps=${browserResult?.steps_completed?.length}`);
@@ -517,8 +522,12 @@ Based on all the above, determine:
     // ════════════════════════════════════════════════════════════════════════
     log('Step 6: Notifying user');
 
-    await base44.asServiceRole.integrations.Core.SendEmail({
-      to: order.user_id,
+    // order.user_id is an ID, not an address — look up the buyer's real email.
+    const buyer = (await base44.asServiceRole.entities.User.filter({ id: order.user_id }).catch(() => []))?.[0];
+    const buyerEmail = buyer?.email || order.shipping_email || null;
+
+    if (buyerEmail) await base44.asServiceRole.integrations.Core.SendEmail({
+      to: buyerEmail,
       subject: `✅ Order Placed — ${order.product_name}`,
       body: `Your GamerGain order has been <strong>automatically purchased</strong> by our AI fulfillment system!\n\n` +
         `<strong>Product:</strong> ${order.product_name}\n` +

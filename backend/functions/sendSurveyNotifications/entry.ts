@@ -1,6 +1,9 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
+// Self-hosted app URL (replaces the dead base44.app domain). Set APP_URL in your env.
+const APP_URL = (Deno.env.get("APP_URL") || "https://gamergain.app").replace(/\/$/, "");
+
 /**
  * Sends targeted survey-match notifications to respondents whose demographics
  * and verified skills align with newly active or recently updated surveys.
@@ -165,7 +168,7 @@ A new survey on GamerGain was specifically targeted to people like you!
 🎯 Why you: ${matchNote}
 
 👉 Complete it now before spots fill up:
-https://gamergain.base44.app/Surveys
+${APP_URL}/Surveys
 
 Tips for a fast payout:
 • Answer all questions honestly and thoughtfully
