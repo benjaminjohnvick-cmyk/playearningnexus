@@ -9,9 +9,30 @@ import { Pool, type PoolClient } from "https://deno.land/x/postgres@v0.19.3/mod.
 const POOL_SIZE = Number(Deno.env.get("PG_POOL_SIZE") ?? "10");
 const pool = new Pool(Deno.env.get("DATABASE_URL")!, POOL_SIZE, true);
 
+// DORMANT scale scaffolding, behind a flag. Reads route to a read replica ONLY when
+// DATABASE_REPLICA_URL is set; otherwise every read uses the primary (identical to before).
+// This is the flip you make when read volume outgrows one instance — no call-site changes.
+// Writes always go to the primary. Replica lag is eventual, so writes-then-immediate-read
+// still uses the primary via withClient; withReadClient is for the read-heavy list/filter paths.
+const REPLICA_URL = Deno.env.get("DATABASE_REPLICA_URL");
+const REPLICA_POOL_SIZE = Number(Deno.env.get("PG_REPLICA_POOL_SIZE") ?? String(POOL_SIZE));
+const replicaPool = REPLICA_URL ? new Pool(REPLICA_URL, REPLICA_POOL_SIZE, true) : null;
+
 export async function withClient<T>(fn: (c: PoolClient) => Promise<T>): Promise<T> {
   const c = await pool.connect();
   try { return await fn(c); } finally { c.release(); }
+}
+
+/** Run a READ against the replica pool when configured, else the primary. Best-effort:
+ *  a replica connection failure falls back to the primary so reads never hard-fail. */
+export async function withReadClient<T>(fn: (c: PoolClient) => Promise<T>): Promise<T> {
+  if (!replicaPool) return await withClient(fn);
+  try {
+    const c = await replicaPool.connect();
+    try { return await fn(c); } finally { c.release(); }
+  } catch (_e) {
+    return await withClient(fn); // replica unreachable → serve from primary
+  }
 }
 
 const SYSTEM_COLS: Record<string, Set<string>> = {
@@ -99,7 +120,7 @@ export const db = {
     let sql = `SELECT * FROM ${quoteTbl(entity)} ${where} ${orderBy(sort)}`;
     const p = [...params];
     if (limit) { sql += ` LIMIT $${next}`; p.push(limit); }
-    return await withClient(async (c) => {
+    return await withReadClient(async (c) => {
       const r = await c.queryObject<Record<string, unknown>>(sql, p);
       return r.rows.map((row) => rowToDoc(entity, row));
     });

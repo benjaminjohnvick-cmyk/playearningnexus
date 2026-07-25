@@ -76,3 +76,8 @@ New scripts/flags now in the kit and codebase — they replace hand-work, loweri
 - **Native push** — wired in `src/lib/native.js` + `registerPushToken` function.
 - **Agent tooling** — `backend/tools/validate-guardrails.mjs` (money-safety: all agents pinned+capped),
   `agent-smoke.mjs` (config integrity), `agent-dedupe-report.mjs` (consolidation candidates).
+- **AI-provider & scale toggles** (see `AI-PROVIDER-AND-SCALE-TOGGLES.md`) — the **Claude switch**
+  (`LLM_PROVIDER=anthropic` routes all AI + 76 agents through Claude), an **image-provider toggle**
+  (`IMAGE_PROVIDER`), and **dormant scale knobs** (`REDIS_URL`, `DATABASE_REPLICA_URL`,
+  `QUEUE_DRIVER=sqs`). All off by default and pre-built, so they add **$0** to the estimate — the
+  developer sets one env var, not a day of integration work.

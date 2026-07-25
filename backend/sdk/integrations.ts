@@ -26,6 +26,28 @@ const MODEL_MAP: Record<string, string> = {
   default: Deno.env.get("LLM_MODEL_DEFAULT") ?? "gpt-4o-mini",
 };
 
+// Claude equivalents, tiered the same small/large/default way so the Anthropic
+// path honours per-call model tiers instead of one flat model. Overridable via env.
+// ANTHROPIC_MODEL (legacy) still works as a flat override for every tier.
+const CLAUDE_MODEL_MAP: Record<string, string> = {
+  gpt_5_mini: Deno.env.get("CLAUDE_MODEL_SMALL") ?? "claude-3-5-haiku-latest",
+  gpt_5: Deno.env.get("CLAUDE_MODEL_LARGE") ?? "claude-3-5-sonnet-latest",
+  default: Deno.env.get("CLAUDE_MODEL_DEFAULT") ?? "claude-3-5-sonnet-latest",
+};
+
+/** Resolve a Base44 alias (or raw model id) to a real model id for the active provider. */
+function resolveModelId(alias?: string): string {
+  const key = alias ?? "default";
+  if (LLM_PROVIDER === "anthropic") {
+    const flat = Deno.env.get("ANTHROPIC_MODEL"); // legacy flat override → same model for every tier
+    if (flat) return flat;
+    // If a raw Claude id was passed through, use it as-is; else map the alias/tier.
+    if (key.startsWith("claude")) return key;
+    return CLAUDE_MODEL_MAP[key] ?? CLAUDE_MODEL_MAP.default;
+  }
+  return MODEL_MAP[key] ?? MODEL_MAP.default;
+}
+
 /** InvokeLLM — returns a string, or a parsed object when response_json_schema is given.
  *  Runs through a concurrency limiter with retry/backoff so provider rate limits are absorbed. */
 export function InvokeLLM(args: LLMArgs): Promise<unknown> {
@@ -34,7 +56,7 @@ export function InvokeLLM(args: LLMArgs): Promise<unknown> {
 
 async function invokeLLMRaw(args: LLMArgs): Promise<unknown> {
   const wantJson = !!args.response_json_schema;
-  const model = MODEL_MAP[args.model ?? "default"] ?? MODEL_MAP.default;
+  const model = resolveModelId(args.model);
   const sys = wantJson
     ? "You are a helpful assistant. Respond ONLY with valid JSON matching the requested schema. No prose."
     : "You are a helpful assistant.";
@@ -44,7 +66,7 @@ async function invokeLLMRaw(args: LLMArgs): Promise<unknown> {
       method: "POST",
       headers: { "content-type": "application/json", "x-api-key": ANTHROPIC_KEY!, "anthropic-version": "2023-06-01" },
       body: JSON.stringify({
-        model: Deno.env.get("ANTHROPIC_MODEL") ?? "claude-3-5-sonnet-latest",
+        model, // tiered small/large/default via CLAUDE_MODEL_MAP (or ANTHROPIC_MODEL flat override)
         max_tokens: 2048, system: sys,
         messages: [{ role: "user", content: args.prompt + (wantJson ? `\n\nJSON schema: ${JSON.stringify(args.response_json_schema)}` : "") }],
       }),
@@ -105,13 +127,38 @@ async function sendEmailRaw(args: { to: string; subject: string; body: string; f
   return { success: r.ok, status: r.status };
 }
 
-/** GenerateImage — OpenAI images by default; returns { url }. */
+/** GenerateImage — companion image provider (Claude has no image API).
+ *  IMAGE_PROVIDER: openai (default) | stability. Keeps images working regardless of LLM_PROVIDER,
+ *  so you can run Claude for all text/reasoning and one small key for images.
+ *  IMAGE_API_KEY overrides the provider's key if you want image billing separate from the LLM key. */
 export async function GenerateImage(args: { prompt: string; size?: string }) {
+  const provider = Deno.env.get("IMAGE_PROVIDER") ?? "openai";
+
+  if (provider === "stability") {
+    const key = Deno.env.get("IMAGE_API_KEY") ?? Deno.env.get("STABILITY_API_KEY");
+    const engine = Deno.env.get("IMAGE_MODEL") ?? "stable-image/generate/core";
+    const form = new FormData();
+    form.append("prompt", args.prompt);
+    form.append("output_format", "png");
+    const r = await fetch(`https://api.stability.ai/v2beta/${engine}`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${key}`, accept: "application/json" },
+      body: form,
+    });
+    if (!r.ok && (r.status === 429 || r.status >= 500)) throw Object.assign(new Error(`Stability ${r.status}`), { status: r.status });
+    const j = await r.json();
+    // Stability returns base64; hand back a data URL so callers get a usable src.
+    return { url: j?.image ? `data:image/png;base64,${j.image}` : "" };
+  }
+
+  // default: OpenAI images
+  const key = Deno.env.get("IMAGE_API_KEY") ?? OPENAI_KEY;
   const r = await fetch("https://api.openai.com/v1/images/generations", {
     method: "POST",
-    headers: { "content-type": "application/json", authorization: `Bearer ${OPENAI_KEY}` },
+    headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
     body: JSON.stringify({ model: Deno.env.get("IMAGE_MODEL") ?? "dall-e-3", prompt: args.prompt, size: args.size ?? "1024x1024", n: 1 }),
   });
+  if (!r.ok && (r.status === 429 || r.status >= 500)) throw Object.assign(new Error(`OpenAI image ${r.status}`), { status: r.status });
   const j = await r.json();
   return { url: j?.data?.[0]?.url ?? "" };
 }

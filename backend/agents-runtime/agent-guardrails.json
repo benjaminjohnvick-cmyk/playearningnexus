@@ -1,5 +1,5 @@
 {
- "_comment": "Non-money guardrails for the AI agents: per-agent MODEL PINNING and COST CAPS. Model resolution order = perAgent.model -> the agent's model in agents.json -> defaultModel (aliases like 'automatic'/'large'/'small' are mapped below). Cost caps are enforced from real token usage using the pricing table; spend is metered per agent per UTC day via the existing AgentPerformanceLog entity. Raise/lower caps here with no code change. Prices are USD per 1,000 tokens \u2014 update them if your provider's pricing changes or you switch providers.",
+ "_comment": "Non-money guardrails for the AI agents: per-agent MODEL PINNING and COST CAPS. Model resolution order = perAgent.model -> the agent's model in agents.json -> defaultModel (aliases like 'automatic'/'large'/'small' are mapped below). Cost caps are enforced from real token usage using the pricing table; spend is metered per agent per UTC day via the existing AgentPerformanceLog entity. Raise/lower caps here with no code change. Prices are USD per 1,000 tokens \u2014 update them if your provider's pricing changes or you switch providers. CLAUDE SWITCH: set LLM_PROVIDER=anthropic to route every agent through Claude with no per-agent edits \u2014 the OpenAI model pins below are translated to their Claude equivalents at runtime (gpt-4o -> claude-3-5-sonnet, gpt-4o-mini -> claude-3-5-haiku; override via CLAUDE_MODEL_LARGE/CLAUDE_MODEL_SMALL/CLAUDE_MODEL_DEFAULT). Claude per-1k prices are included below so the USD caps stay accurate on either provider. Flipping LLM_PROVIDER back to openai restores OpenAI exactly.",
  "defaultModel": "gpt-4o",
  "smallModel": "gpt-4o-mini",
  "modelAliases": {
@@ -17,6 +17,18 @@
   "gpt-4o-mini": {
    "inPer1k": 0.00015,
    "outPer1k": 0.0006
+  },
+  "claude-3-5-sonnet-latest": {
+   "inPer1k": 0.003,
+   "outPer1k": 0.015
+  },
+  "claude-3-5-haiku-latest": {
+   "inPer1k": 0.0008,
+   "outPer1k": 0.004
+  },
+  "claude-3-opus-latest": {
+   "inPer1k": 0.015,
+   "outPer1k": 0.075
   }
  },
  "defaults": {

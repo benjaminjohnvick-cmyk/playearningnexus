@@ -39,6 +39,96 @@ function fn(name: string, description: string, props: Record<string, unknown>, r
   return { type: "function", function: { name, description, parameters: { type: "object", properties: props, required } } };
 }
 
+// --- Provider selection (Claude switch) -------------------------------------
+// LLM_PROVIDER=anthropic routes every agent through Claude's Messages API instead of
+// OpenAI's chat/completions. The two APIs describe tools and return tool calls in
+// different shapes, so the loop below is written provider-agnostically and the two
+// builders here translate to/from each provider's native format. Flip LLM_PROVIDER to
+// switch cleanly — no per-agent edits needed; model pins translate via OPENAI_TO_CLAUDE.
+const LLM_PROVIDER = Deno.env.get("LLM_PROVIDER") ?? "openai"; // openai | anthropic
+
+// Reversible model translation so the OpenAI model pins in agent-guardrails.json keep
+// working when you flip to Claude (and flipping back restores OpenAI exactly).
+const OPENAI_TO_CLAUDE: Record<string, string> = {
+  "gpt-4o": Deno.env.get("CLAUDE_MODEL_LARGE") ?? "claude-3-5-sonnet-latest",
+  "gpt-4o-mini": Deno.env.get("CLAUDE_MODEL_SMALL") ?? "claude-3-5-haiku-latest",
+  "gpt-4-turbo": Deno.env.get("CLAUDE_MODEL_LARGE") ?? "claude-3-5-sonnet-latest",
+  "gpt-4": Deno.env.get("CLAUDE_MODEL_LARGE") ?? "claude-3-5-sonnet-latest",
+  "gpt-3.5-turbo": Deno.env.get("CLAUDE_MODEL_SMALL") ?? "claude-3-5-haiku-latest",
+};
+function providerModel(model: string): string {
+  if (LLM_PROVIDER !== "anthropic") return model;
+  if (model.startsWith("claude")) return model;
+  return OPENAI_TO_CLAUDE[model] ?? (Deno.env.get("CLAUDE_MODEL_DEFAULT") ?? "claude-3-5-sonnet-latest");
+}
+
+// Anthropic tool specs: same tools as toolsFor() but in Claude's { name, input_schema } shape.
+function anthropicToolsFor(def: AgentDef) {
+  return (toolsFor(def) as { function: { name: string; description: string; parameters: unknown } }[])
+    .map((t) => ({ name: t.function.name, description: t.function.description, input_schema: t.function.parameters }));
+}
+
+// One normalized turn regardless of provider.
+type NormalCall = { id: string; name: string; args: Record<string, unknown> };
+type NormalTurn = { assistant: Record<string, unknown>; text: string; calls: NormalCall[]; usage: unknown };
+
+async function callModel(opts: {
+  key: string; model: string; system: string; messages: Record<string, unknown>[]; tools: unknown[];
+}): Promise<NormalTurn> {
+  if (LLM_PROVIDER === "anthropic") {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "x-api-key": opts.key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({
+        model: opts.model, max_tokens: 2048, system: opts.system, messages: opts.messages,
+        ...(opts.tools.length ? { tools: opts.tools } : {}),
+      }),
+    });
+    if (!r.ok) throw Object.assign(new Error(`Anthropic ${r.status}`), { status: r.status });
+    const j = await r.json();
+    const blocks: { type: string; text?: string; id?: string; name?: string; input?: unknown }[] = j?.content ?? [];
+    const text = blocks.filter((b) => b.type === "text").map((b) => b.text ?? "").join("");
+    const calls: NormalCall[] = blocks.filter((b) => b.type === "tool_use")
+      .map((b) => ({ id: b.id ?? "", name: b.name ?? "", args: (b.input as Record<string, unknown>) ?? {} }));
+    // Anthropic usage → normalize to the {prompt_tokens, completion_tokens} shape costOf expects.
+    const u = j?.usage ?? {};
+    const usage = { prompt_tokens: u.input_tokens ?? 0, completion_tokens: u.output_tokens ?? 0 };
+    return { assistant: { role: "assistant", content: j?.content ?? [] }, text, calls, usage };
+  }
+
+  // default: OpenAI
+  const r = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { authorization: `Bearer ${opts.key}`, "content-type": "application/json" },
+    body: JSON.stringify({
+      model: opts.model,
+      messages: [{ role: "system", content: opts.system }, ...opts.messages],
+      ...(opts.tools.length ? { tools: opts.tools, tool_choice: "auto" } : {}),
+    }),
+  });
+  if (!r.ok) throw Object.assign(new Error(`OpenAI ${r.status}`), { status: r.status });
+  const j = await r.json();
+  const msg = j?.choices?.[0]?.message ?? {};
+  const calls: NormalCall[] = (msg.tool_calls ?? []).map((c: { id: string; function: { name: string; arguments: string } }) => {
+    let args: Record<string, unknown> = {};
+    try { args = JSON.parse(c.function.arguments || "{}"); } catch { /* leave empty */ }
+    return { id: c.id, name: c.function.name, args };
+  });
+  return { assistant: msg, text: msg.content ?? "", calls, usage: j?.usage };
+}
+
+// Append tool results in each provider's native shape so the next turn sees them.
+function pushToolResults(messages: Record<string, unknown>[], results: { id: string; output: unknown }[]) {
+  if (LLM_PROVIDER === "anthropic") {
+    messages.push({
+      role: "user",
+      content: results.map((r) => ({ type: "tool_result", tool_use_id: r.id, content: JSON.stringify(r.output).slice(0, 4000) })),
+    });
+  } else {
+    for (const r of results) messages.push({ role: "tool", tool_call_id: r.id, content: JSON.stringify(r.output).slice(0, 4000) });
+  }
+}
+
 async function runTool(def: AgentDef, name: string, args: Record<string, unknown>, agentName = "agent") {
   const m = name.match(/^(read|create|update)_(.+)$/);
   if (!m) return { error: "unknown tool" };
@@ -78,11 +168,20 @@ async function runTool(def: AgentDef, name: string, args: Record<string, unknown
 export async function runAgent(name: string, message: string, context?: unknown): Promise<{ reply: string; steps: unknown[]; blocked?: boolean; cost_usd?: number; model?: string }> {
   const def = registry[name];
   if (!def) throw new Error(`Unknown agent: ${name}`);
-  const key = Deno.env.get("OPENAI_API_KEY");
-  if (!key) throw new Error("OPENAI_API_KEY not set (agent runtime uses OpenAI function-calling)");
+  const key = LLM_PROVIDER === "anthropic" ? Deno.env.get("ANTHROPIC_API_KEY") : Deno.env.get("OPENAI_API_KEY");
+  if (!key) {
+    throw new Error(
+      LLM_PROVIDER === "anthropic"
+        ? "ANTHROPIC_API_KEY not set (LLM_PROVIDER=anthropic → agent runtime uses Claude)"
+        : "OPENAI_API_KEY not set (agent runtime uses OpenAI function-calling)",
+    );
+  }
 
   // --- Guardrails: pin the model and enforce cost caps for this agent ---
-  const model = resolveModel(name, def);
+  // resolveModel returns the pinned id (OpenAI ids in the config); providerModel()
+  // translates it to the Claude equivalent when LLM_PROVIDER=anthropic. Metering uses
+  // the same active model so the daily USD caps stay accurate on whichever provider.
+  const model = providerModel(resolveModel(name, def));
   const caps = capsFor(name);
   const spentBefore = await spentTodayUsd(name);
   if (spentBefore >= caps.dailyUsdCap) {
@@ -95,11 +194,13 @@ export async function runAgent(name: string, message: string, context?: unknown)
     };
   }
 
-  const tools = toolsFor(def);
+  const tools = LLM_PROVIDER === "anthropic" ? anthropicToolsFor(def) : toolsFor(def);
   // RECALL: steer this run by what the agent (and the platform) has already learned.
   const lessons = await recallLessons(name);
+  const system = `${def.instructions}\n\nUse the provided tools to read/write data as needed. When done, reply to the user directly.${lessons}`;
+  // System prompt is passed out-of-band (OpenAI prepends it as a system message; Anthropic
+  // takes it as the `system` param), so `messages` starts with just the user turn.
   const messages: Record<string, unknown>[] = [
-    { role: "system", content: `${def.instructions}\n\nUse the provided tools to read/write data as needed. When done, reply to the user directly.${lessons}` },
     { role: "user", content: context ? `${message}\n\nContext: ${JSON.stringify(context)}` : message },
   ];
   const steps: unknown[] = [];
@@ -107,20 +208,12 @@ export async function runAgent(name: string, message: string, context?: unknown)
   let runCost = 0;
 
   for (let i = 0; i < caps.maxSteps; i++) {
-    const j = await limited("llm", LLM_CONCURRENCY, async () => {
-      const r = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
-        body: JSON.stringify({ model, messages, tools, tool_choice: "auto" }),
-      });
-      if (!r.ok) throw Object.assign(new Error(`OpenAI ${r.status}`), { status: r.status });
-      return await r.json();
-    });
+    const turn = await limited("llm", LLM_CONCURRENCY, () => callModel({ key: key!, model, system, messages, tools }));
 
     // Meter this call's cost and enforce the caps before doing more work.
-    const stepCost = costOf(model, j?.usage);
+    const stepCost = costOf(model, turn.usage);
     runCost += stepCost;
-    await logUsage(name, model, j?.usage, stepCost);
+    await logUsage(name, model, turn.usage, stepCost);
     if (spentBefore + runCost >= caps.dailyUsdCap || runCost >= caps.perRunUsdCap) {
       return {
         reply: `(Stopped mid-run: ${name} hit a cost cap (run $${runCost.toFixed(4)} / day $${(spentBefore + runCost).toFixed(4)}). Adjust caps in agent-guardrails.json.)`,
@@ -131,22 +224,21 @@ export async function runAgent(name: string, message: string, context?: unknown)
       };
     }
 
-    const msg = j?.choices?.[0]?.message;
-    if (!msg) break;
-    messages.push(msg);
-    const calls = msg.tool_calls ?? [];
-    if (!calls.length) {
+    messages.push(turn.assistant);
+    if (!turn.calls.length) {
       // RECORD: the agent finished with a reply — provisional success (Increment 4 grounds it).
-      await recordOutcome(name, { summary: msg.content ?? "", success: true, cost_usd: runCost, tools_used: toolsUsed });
-      return { reply: msg.content ?? "", steps, cost_usd: runCost, model };
+      await recordOutcome(name, { summary: turn.text, success: true, cost_usd: runCost, tools_used: toolsUsed });
+      return { reply: turn.text, steps, cost_usd: runCost, model };
     }
-    for (const c of calls) {
-      toolsUsed.push(c.function.name);
-      let out; try { out = await runTool(def, c.function.name, JSON.parse(c.function.arguments || "{}"), name); }
+    const results: { id: string; output: unknown }[] = [];
+    for (const c of turn.calls) {
+      toolsUsed.push(c.name);
+      let out; try { out = await runTool(def, c.name, c.args, name); }
       catch (e) { out = { error: (e as Error).message }; }
-      steps.push({ tool: c.function.name, result: out });
-      messages.push({ role: "tool", tool_call_id: c.id, content: JSON.stringify(out).slice(0, 4000) });
+      steps.push({ tool: c.name, result: out });
+      results.push({ id: c.id, output: out });
     }
+    pushToolResults(messages, results);
   }
   // RECORD: hit the step limit without a clean finish — a weak signal (not a success).
   await recordOutcome(name, { summary: "reached step limit without finishing", success: false, cost_usd: runCost, tools_used: toolsUsed });
