@@ -37,6 +37,11 @@ jobs:
           npx cap add ios 2>/dev/null || echo "ios/ already present"
           npx cap sync ios
 
+      - name: Auto-bump build number (from the CI run number)
+        run: |
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${GITHUB_RUN_NUMBER}" ios/App/App/Info.plist 2>/dev/null \
+            && echo "Set iOS CFBundleVersion to ${GITHUB_RUN_NUMBER}" || echo "Info.plist not found yet — skipped"
+
       - name: Install Apple API key
         run: |
           mkdir -p ~/private_keys

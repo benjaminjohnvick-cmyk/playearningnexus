@@ -1,0 +1,7 @@
+# App identity for fastlane. Secrets come from env/CI (never commit real values).
+app_identifier("com.playearningnexus.app")   # Android package + iOS bundle id
+
+# iOS: the Apple ID email + team are read from env when present.
+apple_id(ENV["APPLE_ID"]) if ENV["APPLE_ID"]
+
+# Android: the Play service-account JSON is passed via PLAY_SERVICE_ACCOUNT_JSON (see Fastfile).

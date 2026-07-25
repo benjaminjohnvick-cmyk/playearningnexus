@@ -57,3 +57,22 @@ round (common for earn-money apps), so treat that as the single budget risk. The
 - Ship **Android + iOS via CI** — no Mac purchase, no per-platform rewrite.
 - Keep the **iOS review clean** (demo login, merit-not-gambling framing) to avoid rejection-round hours.
 - Defer the **full AWS load test** until real traffic justifies it (the plan is ready when you need it).
+
+---
+
+## Automation added (drives the estimate down further)
+
+New scripts/flags now in the kit and codebase — they replace hand-work, lowering the launch to
+**~30–45 h (~$2,250–$3,375)**, or **~38–57 h (~$2,850–$4,275) with the load test**:
+
+- **`deploy-kit/launch.sh`** + **`deploy-kit/env-check.mjs`** — validate keys (pings each provider) and prep.
+- **`deploy-kit/railway/railway-deploy.sh`** — provisions Postgres, pushes env vars, deploys via the Railway CLI.
+- **Backend flags** — `AUTO_MIGRATE` (schema loads itself on boot), `SCHEDULER_INLINE` (one service, not two),
+  `FRONTEND_DIR` (backend serves the built frontend → no separate frontend deploy, no CORS).
+- **`deploy-kit/e2e-smoke.mjs`** — one-command critical-path test (signup→survey→store→payout).
+- **`backend/tools/seed-demo.ts`** — instant demo data for testing/review.
+- **`fastlane/`** + **`deploy-kit/mobile/gen-screenshots.mjs`** — one-command store submission + auto screenshots.
+- **Reviewer demo mode** — `/ReviewerLogin` + gated `demoLogin` function (set `REVIEWER_DEMO=1`) for clean App Store review.
+- **Native push** — wired in `src/lib/native.js` + `registerPushToken` function.
+- **Agent tooling** — `backend/tools/validate-guardrails.mjs` (money-safety: all agents pinned+capped),
+  `agent-smoke.mjs` (config integrity), `agent-dedupe-report.mjs` (consolidation candidates).

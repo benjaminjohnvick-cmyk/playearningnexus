@@ -2668,3 +2668,14 @@ CREATE TABLE IF NOT EXISTS "DomainEvent" (
 );
 CREATE INDEX IF NOT EXISTS "DomainEvent_data_gin" ON "DomainEvent" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "DomainEvent_created" ON "DomainEvent" (created_date DESC);
+
+-- DeviceToken: native push tokens (FCM/APNs) registered by the mobile app
+CREATE TABLE IF NOT EXISTS "DeviceToken" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "DeviceToken_data_gin" ON "DeviceToken" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "DeviceToken_created" ON "DeviceToken" (created_date DESC);

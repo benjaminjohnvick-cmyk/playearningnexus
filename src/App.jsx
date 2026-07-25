@@ -129,6 +129,7 @@ const AutomationReviewDashboard = lazy(() => import('./pages/AutomationReviewDas
 const AgentOversightQueue = lazy(() => import('./pages/AgentOversightQueue'));
 const AddStoreCredit = lazy(() => import('./pages/AddStoreCredit'));
 const AgentLearningDashboard = lazy(() => import('./pages/AgentLearningDashboard'));
+const ReviewerLogin = lazy(() => import('./pages/ReviewerLogin'));
 const WhiteLabelSetup = lazy(() => import('./pages/WhiteLabelSetup'));
 const AutomationGuardianDashboard = lazy(() => import('./pages/AutomationGuardianDashboard'));
 const DisputeClaimsUser = lazy(() => import('./pages/DisputeClaimsUser'));
@@ -391,6 +392,7 @@ const AuthenticatedApp = () => {
       <Route path="/AgentOversightQueue" element={<LayoutWrapper currentPageName="AgentOversightQueue"><AgentOversightQueue /></LayoutWrapper>} />
       <Route path="/AddStoreCredit" element={<LayoutWrapper currentPageName="AddStoreCredit"><AddStoreCredit /></LayoutWrapper>} />
       <Route path="/AgentLearningDashboard" element={<LayoutWrapper currentPageName="AgentLearningDashboard"><AgentLearningDashboard /></LayoutWrapper>} />
+      <Route path="/ReviewerLogin" element={<ReviewerLogin />} />
       <Route path="/WhiteLabelSetup" element={<WhiteLabelSetup />} />
       <Route path="/AutomationGuardianDashboard" element={<LayoutWrapper currentPageName="AutomationGuardianDashboard"><AutomationGuardianDashboard /></LayoutWrapper>} />
       <Route path="/DisputeClaimsUser" element={<LayoutWrapper currentPageName="DisputeClaimsUser"><DisputeClaimsUser /></LayoutWrapper>} />

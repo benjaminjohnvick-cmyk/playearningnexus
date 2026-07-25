@@ -5,9 +5,11 @@
 🧍 **OWNER** (only you can; needs your identity/card) · 🛠 **DEVELOPER** (following the kit) ·
 🤖 **SCRIPT** (`launch.sh` does it) · ⏳ **WAIT** (external review/approval; nobody can rush it).
 
-**Cost of the developer's part:** the 🛠 steps below total **~50–66 hours at $75/hour =
-~$3,750–$4,950** for the full PWA + Android + iOS launch. The 🧍 owner steps and the fixed fees
-(Apple $99/yr, Google $25, domain, hosting) are separate — see `GamerGain-Launch-Estimate.pdf`.
+**Cost of the developer's part:** with the automation now in the kit (see the cheat-sheet at the
+bottom), the 🛠 steps total **~30–45 hours at $75/hour = ~$2,250–$3,375** for the full PWA + Android +
+iOS launch — or **~$2,850–$4,275 with the user-capacity load test**. The 🧍 owner steps and the fixed
+fees (Apple $99/yr, Google $25, domain, hosting) are separate — see `GamerGain-Launch-Estimate.pdf`.
+The per-phase hours below are the pre-automation figures; the cheat-sheet scripts bring them down.
 
 ---
 
@@ -75,4 +77,15 @@ an account and get the key for each, then write them into `API-KEYS-WORKSHEET.md
 2. Fill in the keys worksheet (Phase 1).
 3. Get the legal pages lawyer-reviewed (Phase 6).
 4. Approve going live.
-Everything else is the developer following the kit — **~50–66 hours, ~$3,750–$4,950 at $75/hr.**
+Everything else is the developer following the kit — **~30–45 hours, ~$2,250–$3,375 at $75/hr** (with the new automation).
+
+---
+
+## Automation cheat-sheet (run these instead of doing it by hand)
+- `node deploy-kit/env-check.mjs` — verify every key works before deploying
+- `bash deploy-kit/railway/railway-deploy.sh` — provision + deploy on Railway (backend serves frontend, schema auto-loads, scheduler inline)
+- `deno run -A backend/tools/seed-demo.ts` — seed demo data
+- `BACKEND_URL=… node deploy-kit/e2e-smoke.mjs` — one-command critical-path smoke test
+- `node backend/tools/validate-guardrails.mjs` && `node backend/tools/agent-smoke.mjs` — pre-launch agent checks
+- Mobile: push to the `android-release` / `ios-release` branch (CI builds + auto-bumps the build number); `fastlane` submits
+- App review: give reviewers the `/ReviewerLogin` URL (set `REVIEWER_DEMO=1`)

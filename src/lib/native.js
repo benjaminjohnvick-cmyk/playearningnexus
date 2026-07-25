@@ -30,5 +30,41 @@ export async function initNative() {
       if (canGoBack) window.history.back();
       else App.exitApp();
     });
+
+    // Deep links + OAuth return. When the app is opened via a URL
+    // (com.playearningnexus.app://... or an https universal link), route it into the SPA.
+    // This makes "Sign in with Google" and referral/deep links work inside the wrapper.
+    App.addListener('appUrlOpen', ({ url }) => {
+      try {
+        const u = new URL(url);
+        // OAuth return: if the provider handed back a token/code, stash it and go to the app.
+        const token = u.searchParams.get('token') || u.hashParams?.get?.('access_token');
+        if (token && typeof localStorage !== 'undefined') localStorage.setItem('nexus_token', token);
+        // Route the path (strip the scheme/host) into the client-side router.
+        const path = (u.pathname || '/') + (u.search || '');
+        window.location.assign(path && path !== '/' ? path : '/');
+      } catch { /* ignore malformed deep links */ }
+    });
   } catch { /* plugin optional */ }
+
+  // Native push notifications (FCM on Android, APNs on iOS). Registers for a device token and
+  // posts it to the backend so the server can send pushes. No-ops if the plugin isn't installed.
+  try {
+    const { PushNotifications } = await import('@capacitor/push-notifications');
+    const perm = await PushNotifications.requestPermissions();
+    if (perm.receive === 'granted') {
+      await PushNotifications.register();
+      PushNotifications.addListener('registration', async (t) => {
+        try {
+          const api = (import.meta.env?.VITE_NEXUS_API_URL || '').replace(/\/$/, '');
+          const jwt = typeof localStorage !== 'undefined' ? localStorage.getItem('nexus_token') : null;
+          if (api && jwt) await fetch(`${api}/functions/registerPushToken`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', authorization: `Bearer ${jwt}` },
+            body: JSON.stringify({ token: t.value, platform: Capacitor.getPlatform?.() || 'unknown' }),
+          });
+        } catch { /* token post is best-effort */ }
+      });
+    }
+  } catch { /* push plugin optional — app works fine without it */ }
 }

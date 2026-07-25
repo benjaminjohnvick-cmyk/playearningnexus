@@ -1,0 +1,56 @@
+# Fastlane — one-command store submissions for both platforms.
+# Android uploads the .aab to Play; iOS uploads the .ipa to TestFlight / the App Store.
+# Metadata + screenshots live under fastlane/metadata (Play) and fastlane/screenshots.
+# Auth is via env/CI secrets (see fastlane/Appfile). Install: `gem install fastlane` or use the CI job.
+
+default_platform(:android)
+
+platform :android do
+  desc "Upload the signed AAB to Google Play (internal track) with metadata + screenshots"
+  lane :deploy do
+    upload_to_play_store(
+      track: "internal",
+      aab: ENV["AAB_PATH"] || "android/app/build/outputs/bundle/release/app-release.aab",
+      json_key_data: ENV["PLAY_SERVICE_ACCOUNT_JSON"],
+      skip_upload_apk: true,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+      release_status: "draft"
+    )
+  end
+end
+
+platform :ios do
+  desc "Upload the IPA to TestFlight (uses the App Store Connect API key)"
+  lane :beta do
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APPSTORE_API_KEY_ID"],
+      issuer_id: ENV["APPSTORE_API_ISSUER_ID"],
+      key_content: ENV["APPSTORE_API_KEY_P8"]
+    )
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: ENV["IPA_PATH"] || "build/ios/ipa/App.ipa",
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Submit the current build to App Store review"
+  lane :release do
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APPSTORE_API_KEY_ID"],
+      issuer_id: ENV["APPSTORE_API_ISSUER_ID"],
+      key_content: ENV["APPSTORE_API_KEY_P8"]
+    )
+    deliver(
+      api_key: api_key,
+      ipa: ENV["IPA_PATH"] || "build/ios/ipa/App.ipa",
+      submit_for_review: true,
+      automatic_release: true,
+      force: true,
+      precheck_include_in_app_purchases: false,
+      submission_information: { add_id_info_uses_idfa: false }
+    )
+  end
+end

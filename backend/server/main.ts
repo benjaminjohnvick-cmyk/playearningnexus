@@ -6,6 +6,18 @@ import { entityRoutes } from "./entity-routes.ts";
 import { integrationRoutes } from "./integration-routes.ts";
 import { runAgent, listAgents } from "../agents-runtime/agent-runtime.ts";
 import { extraRoutes } from "./extra-routes.ts";
+import { autoMigrate } from "./migrate.ts";
+import { frontendEnabled, serveStatic } from "./static.ts";
+
+// Ensure the DB schema exists before serving (idempotent; skip with AUTO_MIGRATE=0).
+await autoMigrate();
+
+// Optional: run the cron scheduler inside this same process (one service instead of two).
+// Needs --unstable-cron in the start command and BACKEND_URL pointing at this server.
+if ((Deno.env.get("SCHEDULER_INLINE") ?? "0") === "1") {
+  try { await import("../scheduler/main.ts"); console.log("[scheduler] running inline in the web process"); }
+  catch (e) { console.warn("[scheduler] inline start failed (needs --unstable-cron):", (e as Error).message); }
+}
 
 const manifest: string[] = JSON.parse(await Deno.readTextFile(new URL("../functions/_manifest.json", import.meta.url)));
 
@@ -32,7 +44,7 @@ Deno.serve({ port: PORT }, async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
 
   // Health check
-  if (url.pathname === "/health") return Response.json({ ok: true, functions: loaded, agents: listAgents().length });
+  if (url.pathname === "/health") return Response.json({ ok: true, functions: loaded, agents: listAgents().length, frontend: frontendEnabled(), scheduler_inline: (Deno.env.get("SCHEDULER_INLINE") ?? "0") === "1" });
 
   // Auth endpoints: /auth/signup, /auth/login, /auth/me
   if (url.pathname.startsWith("/auth/")) {
@@ -86,6 +98,12 @@ Deno.serve({ port: PORT }, async (req) => {
     return res;
   }
 
+  // Single-service mode: serve the built frontend (SPA) for any non-API GET, if FRONTEND_DIR is set.
+  if (frontendEnabled() && req.method === "GET") {
+    const res = await serveStatic(url.pathname);
+    if (res) return res;
+  }
+
   return Response.json({ error: "Not found" }, { status: 404, headers: CORS });
 });
-console.log(`Nexus backend listening on :${PORT}`);
+console.log(`Nexus backend listening on :${PORT}${frontendEnabled() ? " (serving frontend + API on one origin)" : ""}`);

@@ -4,9 +4,9 @@
 You're being brought in to **stand up, deploy, and ship** an app whose code is already written.
 This is a configuration/integration/deployment job, not a build-from-scratch job. Read this page,
 then the linked docs, and you'll have everything you need. Working from the pre-built execution kit,
-estimated total: **~50–66 hours at $75/hour = ~$3,750–$4,950** for the full PWA + Android + iOS launch,
+estimated total: **~30–45 hours at $75/hour = ~$2,250–$3,375** for the full PWA + Android + iOS launch,
 **plus ~8–12 h (~$600–900) for the load test** that measures how many users the app can handle — a
-grand total of **~$4,350–$5,950**. (External waits — app-store review, lawyer sign-off — don't consume
+grand total of **~$2,850–$4,275** (the kit's added automation drives this down). (External waits — app-store review, lawyer sign-off — don't consume
 your time, and the owner-provided accounts/fees are separate.)
 
 ---
