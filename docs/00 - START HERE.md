@@ -5,7 +5,7 @@ Welcome — this folder holds every guide and document for your app, **updated f
 stack (Base44 has been removed).** Your app now runs on its own React frontend + Deno backend +
 PostgreSQL. Below is what each folder contains and the order to read things in.
 
-_Updated July 24, 2026. Repo: https://github.com/benjaminjohnvick-cmyk/playearningnexus (verified current)._
+_Updated July 25, 2026. Repo: https://github.com/benjaminjohnvick-cmyk/playearningnexus (verified current)._
 
 > **What's new (2026-07-24):** A full static code audit was run and all findings fixed & pushed — see **`04 - Architecture & Migration/FULL-CODE-AUDIT-0724.md`** (a SQL-injection vector, an admin auth-bypass, dead Base44 URLs, and AI-order-fulfillment bugs, all fixed). The **Master Launch Guide** and **Developer Handoff Brief** are now included as **PDFs** in `01 - Launch/`, and `FULL-CODEBASE.txt` has been regenerated from the current code.
 

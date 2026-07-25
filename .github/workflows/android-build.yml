@@ -1,0 +1,79 @@
+# GitHub Actions — build & sign the Capacitor Android app bundle (.aab) in the cloud.
+# No Android Studio, no local machine needed — Android builds on a free Linux runner.
+#
+# Install: copy to `.github/workflows/android-build.yml`.
+#
+# Required repo Secrets (Settings → Secrets and variables → Actions):
+#   ANDROID_KEYSTORE_BASE64  - your upload keystore, base64-encoded (see one-time step below)
+#   ANDROID_KEYSTORE_PASSWORD
+#   ANDROID_KEY_ALIAS
+#   ANDROID_KEY_PASSWORD
+#   (optional) PLAY_SERVICE_ACCOUNT_JSON - Google Play service-account JSON to auto-upload
+#
+# ── ONE-TIME: create the upload keystore (runs on ANY machine with a JDK — no Android Studio) ──
+#   keytool -genkeypair -v -keystore upload.keystore -alias upload \
+#     -keyalg RSA -keysize 2048 -validity 10000
+#   base64 -w0 upload.keystore   # copy the output into the ANDROID_KEYSTORE_BASE64 secret
+#   (On macOS use `base64 -b0`. Back up upload.keystore — you need it for every future update.)
+
+name: Android Build & Play
+
+on:
+  workflow_dispatch:          # run manually from the Actions tab
+  push:
+    branches: [ android-release ]
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install deps & build web
+        run: |
+          npm install --ignore-scripts
+          npm run build
+
+      - name: Add & sync Capacitor Android
+        run: |
+          npx cap add android 2>/dev/null || echo "android/ already present"
+          npx cap sync android
+
+      - name: Decode the upload keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > $RUNNER_TEMP/upload.keystore
+
+      - name: Build signed AAB (release)
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=$RUNNER_TEMP/upload.keystore \
+            -Pandroid.injected.signing.store.password="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.ANDROID_KEY_ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.ANDROID_KEY_PASSWORD }}"
+
+      - name: Upload the .aab as a build artifact (download & submit manually if you prefer)
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+
+      # ── OPTIONAL: auto-publish to Google Play (needs PLAY_SERVICE_ACCOUNT_JSON + the app already
+      #    created once in Play Console). Remove this step to just download the .aab and upload by hand. ──
+      - name: Publish to Google Play (internal track)
+        if: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.playearningnexus.app
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: internal
