@@ -40,12 +40,12 @@ const PLANS = [
     key: 'yearly',
     label: 'Annual',
     icon: <Star className="w-5 h-5" />,
-    price: 2000,
+    price: 5000,
     period: '/year',
-    total: '$2,000 once',
-    description: 'One-time discounted payment. Save $880 vs monthly.',
-    yearTotal: 'Best value — save $880',
-    badge: 'SAVE $880',
+    total: '$5,000 once',
+    description: 'Premium annual program — includes the upfront-advance match, a 2× ROI guarantee ($10,000 in orders), and free social credits.',
+    yearTotal: 'Premium — 2× ROI guaranteed',
+    badge: 'PREMIUM',
     color: 'border-green-500',
     highlight: false,
   },
@@ -201,7 +201,7 @@ export default function PPCGridPricing({ user, onActivated }) {
             <p className="text-white font-black text-lg">{p.label}</p>
             <div className="flex items-baseline gap-1 my-1">
               <span className="text-3xl font-black text-white">
-                {p.key === 'daily' ? '$8' : p.key === 'monthly' ? '$240' : '$2,000'}
+                {p.key === 'daily' ? '$8' : p.key === 'monthly' ? '$240' : '$5,000'}
               </span>
               <span className="text-gray-400 text-sm">{p.period}</span>
             </div>
@@ -242,8 +242,8 @@ export default function PPCGridPricing({ user, onActivated }) {
 
       {/* Pricing note */}
       <div className="bg-blue-900/20 border border-blue-600/30 rounded-xl p-3 text-xs text-blue-300">
-        <p><strong>Minimum price:</strong> $2,880/year · $240/month · $8/day</p>
-        <p className="mt-0.5 text-gray-400">All plans require a 1-year minimum. Your card is charged automatically. Annual plan is discounted to <strong className="text-green-400">$2,000</strong> (save $880 vs monthly).</p>
+        <p><strong>Plans:</strong> $5,000/year (Premium) · $240/month · $8/day</p>
+        <p className="mt-0.5 text-gray-400">All plans require a 1-year minimum. Your card is charged automatically. The <strong className="text-green-400">$5,000</strong> Premium annual plan adds the upfront-advance match, a 2× ROI guarantee ($10,000 in orders), and free social-media ad credits.</p>
       </div>
 
       {/* CTA */}

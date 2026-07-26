@@ -13,11 +13,11 @@ const ANNUAL_BUDGET = 3650;
 export default function PPCNetworkPricing() {
   const [userCount, setUserCount] = useState(DEFAULT_USERS);
   const [showPayment, setShowPayment] = useState(false);
-  const annualBudget = 3650; // $3,650/year minimum
-  const userEarningPotential = 1460; // $4/day × 365 = $1,460/year user can earn
-  const grossProfit = annualBudget - userEarningPotential; // $3,650 - $1,460 = $2,190
+  const annualBudget = 5000; // $5,000/year Premium PPC grid
+  const userEarningPotential = 1460; // user's upfront advance = $1,460
+  const grossProfit = annualBudget - userEarningPotential; // $5,000 - $1,460 = $3,540
   const referralFee = 500; // $500 affiliate/referral fee
-  const netProfit = grossProfit - referralFee; // $2,190 - $500 = $1,690
+  const netProfit = grossProfit - referralFee; // $3,540 - $500 = $3,040
   const costPerUser = userCount > 0 ? (annualBudget / userCount).toFixed(4) : '0';
 
   return (
@@ -27,10 +27,10 @@ export default function PPCNetworkPricing() {
           📺 PPC Network Pricing
         </Badge>
         <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">
-          PPC Advertising Network — $3,650/Year Minimum
+          PPC Advertising Network — $5,000/Year
         </h2>
         <p className="text-gray-500 max-w-3xl mx-auto">
-          Your ads are shown to <strong>all users</strong> on the platform. Minimum budget: <strong>$3,650/year (paid upfront)</strong>.
+          Your ads are shown to <strong>all users</strong> on the platform. Annual budget: <strong>$5,000/year (paid upfront)</strong>.
           Users who connect a credit card can receive <strong>$1,460 upfront</strong> (a year's worth of survey revenue).
           Includes 30-second video ads, survey question ads, and a <strong>2× ROI guarantee</strong>.
         </p>
@@ -40,7 +40,7 @@ export default function PPCNetworkPricing() {
       <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-8 text-white mb-8">
         <h3 className="text-xl font-black mb-2 text-center">📊 Profit Calculator</h3>
         <p className="text-orange-100 text-sm text-center mb-6">
-          $3,650 (budget) − $1,460 (user earnings) − $500 (referral fee) = <strong>$1,690 net profit</strong>
+          $5,000 (budget) − $1,460 (user advance) − $500 (referral fee) = <strong>$3,040 net profit</strong>
         </p>
         <div className="grid md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white/20 rounded-xl px-4 py-3 text-center">
@@ -86,8 +86,8 @@ export default function PPCNetworkPricing() {
         {[
           {
             name: 'Annual Budget (Required)',
-            price: '$3,650/year',
-            desc: 'Minimum budget, paid upfront for one year. Auto-renews annually with 30-day email notice.',
+            price: '$5,000/year',
+            desc: 'Annual budget, paid upfront for one year. Auto-renews annually with 30-day email notice.',
             icon: '📆',
             color: 'border-green-400',
             bg: 'bg-green-50',
@@ -157,7 +157,7 @@ export default function PPCNetworkPricing() {
             </h3>
             <div className="bg-yellow-400 rounded-xl p-4 mb-4">
               <p className="font-black text-gray-900">We keep advertising until you double your ROI</p>
-              <p className="text-sm text-gray-800 mt-1">$3,650/year minimum → we guarantee at least $7,300 in advertising value</p>
+              <p className="text-sm text-gray-800 mt-1">$5,000/year → we guarantee at least $10,000 in orders (2× your investment)</p>
             </div>
             <ul className="space-y-2">
               {[
@@ -195,7 +195,7 @@ export default function PPCNetworkPricing() {
           onClick={() => setShowPayment(true)}
           className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold px-8 py-4 text-lg"
         >
-          <CreditCard className="w-5 h-5 mr-2" /> Pay $3,650 & Start Campaign <ArrowRight className="w-5 h-5 ml-2" />
+          <CreditCard className="w-5 h-5 mr-2" /> Pay $5,000 & Start Campaign <ArrowRight className="w-5 h-5 ml-2" />
         </Button>
         <p className="text-xs text-gray-400">Secure payment powered by Stripe. Campaign activates instantly after payment.</p>
       </div>

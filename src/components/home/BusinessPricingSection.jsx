@@ -96,7 +96,7 @@ const portals = [
     features: [
       'Daily plan: $8/day — pay only for active days',
       'Monthly plan: $240/month — best for consistent campaigns',
-      'Annual plan: $2,000/year — maximum savings (1-year minimum)',
+      'Annual plan: $5,000/year — Premium (upfront-advance match + 2× ROI guarantee + social credits)',
       'PPC task ads — users complete your ad task for a reward',
       'Social media amplification via creator referral network',
       'AI bid optimizer automatically adjusts spend for max ROI',
@@ -106,10 +106,10 @@ const portals = [
     roi: [
       { label: 'Daily plan', value: '$8/day' },
       { label: 'Monthly plan', value: '$240/month' },
-      { label: 'Annual plan (min. 1 year)', value: '$2,000/year' },
+      { label: 'Annual plan (min. 1 year)', value: '$5,000/year' },
       { label: 'Cost per engaged action vs. Meta/Google', value: '$0.40 vs. $2–$15 CPC' },
     ],
-    highlight: 'Flexible $8/day, $240/month, or $2,000/year ad grid plans — verified human engagement at a fraction of Meta and Google CPC.',
+    highlight: 'Flexible $8/day, $240/month, or $5,000/year Premium ad grid plans — verified human engagement at a fraction of Meta and Google CPC.',
     highlightColor: 'yellow',
   },
   {

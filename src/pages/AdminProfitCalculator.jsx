@@ -69,7 +69,7 @@ export default function AdminProfitCalculator() {
   // Ad Revenue
   const ad_daily_revenue = inputs.daily_ad_plans * 8 * 30;
   const ad_monthly_revenue = inputs.monthly_ad_plans * 240;
-  const ad_annual_revenue = inputs.annual_ad_plans * 2000;
+  const ad_annual_revenue = inputs.annual_ad_plans * 5000;
   const ad_total_revenue = ad_daily_revenue + ad_monthly_revenue + ad_annual_revenue;
 
   // Developer Revenue
@@ -220,7 +220,7 @@ export default function AdminProfitCalculator() {
               <CardContent className="space-y-3">
                 <InputRow label="Daily plans active ($8/day × 30)" field="daily_ad_plans" />
                 <InputRow label="Monthly plans ($240/mo)" field="monthly_ad_plans" />
-                <InputRow label="Annual plans ($2,000/yr)" field="annual_ad_plans" />
+                <InputRow label="Annual plans ($5,000/yr)" field="annual_ad_plans" />
                 <div className="mt-2 p-2 bg-yellow-50 rounded text-xs text-yellow-700">
                   Ad Revenue: <strong>${ad_total_revenue.toLocaleString()}/mo</strong>
                 </div>

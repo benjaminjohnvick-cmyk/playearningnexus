@@ -21,7 +21,7 @@ const affiliateTiers = [
       'Allow access to all your social media accounts',
       'Sign up 1 new user referral',
       'Sign up 1 new PPC Survey Network business client',
-      'Both referrals must be active (PPC business must pay the $3,650/yr minimum)',
+      'Both referrals must be active (PPC business must pay the $5,000/yr Premium plan)',
     ],
     desc: 'The entry-level affiliate bonus. Get $500 for connecting a new user AND a new PPC business client to the platform.',
   },

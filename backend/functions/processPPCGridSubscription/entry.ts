@@ -8,7 +8,7 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), { apiVersion: '2023
 const PLANS = {
   daily:   { amount: 800,    interval: 'day',   interval_count: 1,  label: 'PPC Grid Daily ($8/day)'       },
   monthly: { amount: 24000,  interval: 'month',  interval_count: 1,  label: 'PPC Grid Monthly ($240/month)' },
-  yearly:  { amount: 200000, interval: 'year',   interval_count: 1,  label: 'PPC Grid Annual ($2,000/year)' },
+  yearly:  { amount: 500000, interval: 'year',   interval_count: 1,  label: 'PPC Grid Annual ($5,000/year)' },
 };
 
 export default __handler(async (req) => {
