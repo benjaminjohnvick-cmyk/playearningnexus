@@ -2679,3 +2679,25 @@ CREATE TABLE IF NOT EXISTS "DeviceToken" (
 );
 CREATE INDEX IF NOT EXISTS "DeviceToken_data_gin" ON "DeviceToken" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "DeviceToken_created" ON "DeviceToken" (created_date DESC);
+
+-- PremiumPPCMembership: a user's 1:1 Premium PPC enrollment (card-on-file + advance ledger)
+CREATE TABLE IF NOT EXISTS "PremiumPPCMembership" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PremiumPPCMembership_data_gin" ON "PremiumPPCMembership" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "PremiumPPCMembership_created" ON "PremiumPPCMembership" (created_date DESC);
+
+-- PremiumPPCCharge: per-day reconcile ledger (met / charged / failed) for Premium PPC
+CREATE TABLE IF NOT EXISTS "PremiumPPCCharge" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PremiumPPCCharge_data_gin" ON "PremiumPPCCharge" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "PremiumPPCCharge_created" ON "PremiumPPCCharge" (created_date DESC);

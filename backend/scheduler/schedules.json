@@ -90,6 +90,11 @@
       "name": "attribute-outcomes-3h",
       "cron": "0 */3 * * *",
       "function": "attributeOutcomes"
+    },
+    {
+      "name": "daily-premium-ppc-reconcile",
+      "cron": "0 8 * * *",
+      "function": "premiumPPCDailyReconcile"
     }
   ]
 }
