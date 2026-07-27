@@ -9,6 +9,9 @@ export default function Leaderboard({ entries, currentUserId }) {
   const rest = entries.slice(3);
   const currentUserEntry = entries.find(e => e.user_id === currentUserId);
 
+  // Points earned THIS period = cumulative total minus the baseline captured at the last reset.
+  const weeklyOf = (e) => Math.max(0, (Number(e.total_earnings) || 0) - (Number(e.period_baseline) || 0));
+
   const getRankIcon = (rank) => {
     switch(rank) {
       case 1: return <Crown className="w-6 h-6 text-yellow-500" />;
@@ -68,7 +71,9 @@ export default function Leaderboard({ entries, currentUserId }) {
                     <div>
                       <p className="font-bold text-lg">{entry.user_name || `User ${entry.user_id.slice(0, 8)}`}</p>
                       <div className="flex gap-3 text-sm text-gray-600">
-                        <span>${(entry.total_earnings || 0).toFixed(2)}</span>
+                        <span className="font-semibold text-green-700">+${weeklyOf(entry).toFixed(2)} this week</span>
+                        <span>•</span>
+                        <span className="text-gray-500">${(entry.total_earnings || 0).toFixed(2)} all-time</span>
                         <span>•</span>
                         <span>{entry.surveys_completed} surveys</span>
                         <span>•</span>
@@ -97,7 +102,10 @@ export default function Leaderboard({ entries, currentUserId }) {
                   <span className="text-sm font-bold text-gray-600 w-8">#{entry.rank}</span>
                   <span className="font-medium text-gray-900">{entry.user_name || `User ${entry.user_id.slice(0, 8)}`}</span>
                 </div>
-                <span className="text-sm font-bold text-green-600">${(entry.total_earnings || 0).toFixed(2)}</span>
+                <div className="text-right">
+                  <span className="text-sm font-bold text-green-600">+${weeklyOf(entry).toFixed(2)}</span>
+                  <span className="block text-[11px] text-gray-400">${(entry.total_earnings || 0).toFixed(2)} all-time</span>
+                </div>
               </div>
             ))}
           </div>

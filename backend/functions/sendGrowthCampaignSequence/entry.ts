@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { emailUnsubscribeFooter } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -39,7 +40,7 @@ export default __handler(async (req) => {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: campaign.affiliate_email,
           subject: emailForToday.email_subject,
-          body: emailForToday.email_body
+          body: emailForToday.email_body + emailUnsubscribeFooter({ email: campaign.affiliate_email })
         });
 
         // Update email status

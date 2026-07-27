@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 export default __handler(async (req) => {
   try {
@@ -66,7 +67,9 @@ async function postToTwitter(content, base44) {
   let previousTweetId = null;
 
   for (let i = 0; i < tweets.length; i++) {
-    const text = tweets[i] + (i < tweets.length - 1 ? ' 1/' + tweets.length : '');
+    const __base = tweets[i] + (i < tweets.length - 1 ? ' 1/' + tweets.length : '');
+    // Compliance (Wave 2): FTC disclosure on the final tweet of the thread.
+    const text = (i === tweets.length - 1) ? withAdDisclosure(__base) : __base;
     
     const response = await fetch('https://api.twitter.com/2/tweets', {
       method: 'POST',
@@ -102,7 +105,7 @@ async function postToInstagram(content, base44) {
   for (let i = 0; i < captions.length; i++) {
     // In production, would upload images first, then create carousel
     // For now, log the content
-    console.log(`Instagram post ${i + 1}: ${captions[i]}`);
+    console.log(`Instagram post ${i + 1}: ${withAdDisclosure(captions[i])}`);
   }
 }
 

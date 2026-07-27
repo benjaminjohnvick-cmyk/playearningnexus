@@ -95,6 +95,41 @@
       "name": "daily-premium-ppc-reconcile",
       "cron": "0 8 * * *",
       "function": "premiumPPCDailyReconcile"
+    },
+    {
+      "name": "daily-membership-fee",
+      "cron": "30 8 * * *",
+      "function": "membershipDailyFee"
+    },
+    {
+      "name": "daily-ai-optimizer",
+      "cron": "0 7 * * *",
+      "function": "aiOptimizerRun"
+    },
+    {
+      "name": "daily-ai-pricing-optimizer",
+      "cron": "20 7 * * *",
+      "function": "aiPricingOptimizer"
+    },
+    {
+      "name": "weekly-pricing-survey",
+      "cron": "0 16 * * 1",
+      "function": "generatePricingSurvey"
+    },
+    {
+      "name": "daily-leaderboard-reset-check",
+      "cron": "0 8 * * *",
+      "function": "leaderboardReset"
+    },
+    {
+      "name": "ai-experiment-evaluate",
+      "cron": "0 */6 * * *",
+      "function": "aiExperimentEvaluate"
+    },
+    {
+      "name": "daily-user-ai-profiles",
+      "cron": "30 6 * * *",
+      "function": "buildUserAIProfiles"
     }
   ]
 }

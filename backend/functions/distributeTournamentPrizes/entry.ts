@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
+import { getNumber } from "../../sdk/settings.ts";
 
 export default __handler(async (req) => {
   try {
@@ -38,10 +39,14 @@ export default __handler(async (req) => {
     // Sort by placement
     const sorted = participants.sort((a, b) => (a.final_placement || 999) - (b.final_placement || 999));
 
+    // Platform takes an adjustable cut of the pool (default 0 = winners keep 100%); the rest is
+    // split 50/30/20 across the top 3.
+    const platformCut = await getNumber("TOURNAMENT_PLATFORM_CUT", 0);
+    const distributable = tournament.total_prize_pool * (1 - Math.min(1, Math.max(0, platformCut)));
     const prizeDistribution = {
-      1: Math.floor(tournament.total_prize_pool * 0.5),
-      2: Math.floor(tournament.total_prize_pool * 0.3),
-      3: Math.floor(tournament.total_prize_pool * 0.2),
+      1: Math.floor(distributable * 0.5),
+      2: Math.floor(distributable * 0.3),
+      3: Math.floor(distributable * 0.2),
     };
 
     const distributions = [];

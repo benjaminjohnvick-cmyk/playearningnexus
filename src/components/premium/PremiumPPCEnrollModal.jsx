@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { CreditCard, Lock, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
+import { Sparkles, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
-// Premium PPC enrollment: saves a card on file (does NOT charge it), records T&C consent, then
-// enrolls the user (1:1 advertiser match) and disburses their in-store-credit advance.
+// Premium PPC enrollment (NO-PENALTY POINTS model): records T&C consent and enrolls the user
+// (1:1 advertiser match). There is NO card charge, NO upfront advance, and NO debt — the user earns
+// points as they go, and a missed day simply doesn't earn.
 const TERMS_VERSION = 'v1';
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
-const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
 function EnrollForm({ onDone }) {
-  const stripe = useStripe();
-  const elements = useElements();
   const [consent, setConsent] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
@@ -25,31 +20,11 @@ function EnrollForm({ onDone }) {
     setProcessing(true);
     setError(null);
     try {
-      // 1) Turn the card into a saved PaymentMethod id (no charge happens here).
-      let paymentMethodId;
-      if (stripe && elements) {
-        const { error: pmErr, paymentMethod } = await stripe.createPaymentMethod({
-          type: 'card',
-          card: elements.getElement(CardElement),
-        });
-        if (pmErr) { setError(pmErr.message); setProcessing(false); return; }
-        paymentMethodId = paymentMethod.id;
-      } else {
-        // Stripe not configured (test mode): the backend is in test mode and stores the id
-        // without touching a card, so enrollment still works end-to-end for testing.
-        paymentMethodId = `pm_test_${Date.now()}`;
-      }
-
-      // 2) Enroll (checks the 1:1 advertiser slot + records consent + saves the card).
+      // Enroll (checks the 1:1 advertiser slot + records consent). No card is required or charged.
       const enroll = await base44.functions.invoke('premiumPPCEnroll', {
-        payment_method_id: paymentMethodId,
         consent: { accepted: true, terms_version: TERMS_VERSION },
       });
-
-      // 3) Disburse the advance (up to $1,460 in store credit).
-      const advance = await base44.functions.invoke('premiumPPCRequestAdvance', {});
-
-      onDone?.({ enroll: enroll.data, advance: advance.data });
+      onDone?.({ enroll: enroll.data });
     } catch (err) {
       setError(err?.response?.data?.error || err?.message || 'Enrollment failed.');
       setProcessing(false);
@@ -58,14 +33,10 @@ function EnrollForm({ onDone }) {
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      <div className="rounded-lg border border-gray-200 p-3">
-        {stripe ? (
-          <CardElement options={{ style: { base: { fontSize: '16px' } } }} />
-        ) : (
-          <p className="text-xs text-gray-500">
-            Test mode — Stripe isn’t configured, so no card is collected. Enrollment will run without a real card.
-          </p>
-        )}
+      <div className="rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm text-blue-900">
+        You earn points as you go — up to <strong>$4/day</strong>, up to <strong>$1,460/year</strong>.
+        A day you don’t participate simply doesn’t earn. There’s <strong>no charge, no debt, and nothing to repay</strong>.
+        Points are redeemable in the catalog.
       </div>
 
       <label className="flex items-start gap-2 text-xs text-gray-600">
@@ -76,9 +47,9 @@ function EnrollForm({ onDone }) {
           className="mt-0.5"
         />
         <span>
-          I agree to the Premium PPC terms: I authorize GamerGain to charge my card <strong>$8 for each day
-          I do not earn $8</strong>, until my advance is repaid to my matched advertiser. The advance is
-          in-store credit (not withdrawable cash).
+          I agree to the Premium PPC terms: I earn points by participating (up to $4/day), a missed day
+          simply doesn’t earn, and I am <strong>never charged and never owe anything</strong>. Points are
+          redeemable in the catalog and are not withdrawable as cash.
         </span>
       </label>
 
@@ -96,13 +67,9 @@ function EnrollForm({ onDone }) {
         {processing ? (
           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enrolling…</>
         ) : (
-          <><CreditCard className="w-4 h-4 mr-2" /> Add card & get $1,460 upfront</>
+          <><Sparkles className="w-4 h-4 mr-2" /> Join Premium PPC — start earning</>
         )}
       </Button>
-
-      <div className="flex items-center gap-2 text-xs text-gray-400 justify-center">
-        <Lock className="w-3 h-3" /> Card saved securely by Stripe. No charge is made now.
-      </div>
     </form>
   );
 }
@@ -121,10 +88,10 @@ export default function PremiumPPCEnrollModal({ isOpen, onClose, onEnrolled }) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-blue-500" /> Join Premium PPC
+            <Sparkles className="w-5 h-5 text-blue-500" /> Join Premium PPC
           </DialogTitle>
           <DialogDescription>
-            Add a card on file and receive up to $1,460 in store credit upfront.
+            Earn points as you go — up to $4/day, up to $1,460/year. No card, no charge, no debt.
           </DialogDescription>
         </DialogHeader>
 
@@ -133,16 +100,11 @@ export default function PremiumPPCEnrollModal({ isOpen, onClose, onEnrolled }) {
             <CheckCircle className="w-8 h-8 text-green-600 flex-shrink-0" />
             <div>
               <p className="font-black">You’re enrolled! 🎉</p>
-              <p className="text-sm">
-                ${(done.advance?.advance_granted ?? 0).toLocaleString()} in store credit added
-                {done.enroll?.live_mode === false ? ' (test mode — no card charged).' : '.'}
-              </p>
+              <p className="text-sm">Start participating to earn points — up to $4/day, up to $1,460/year.</p>
             </div>
           </div>
         ) : (
-          <Elements stripe={stripePromise}>
-            <EnrollForm onDone={handleDone} />
-          </Elements>
+          <EnrollForm onDone={handleDone} />
         )}
       </DialogContent>
     </Dialog>

@@ -1,145 +1,124 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { AFFILIATE_ACTIVATION_THRESHOLD, bountyFor, commissionMode, ongoingRateFor, resolveTier } from "../../sdk/affiliate.ts";
+import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
 
-/**
- * distributeMLMBonus
- *
- * Called whenever a user earns from PPC ads or BitLabs surveys.
- * Logic:
- *  - Tracks cumulative PPC+BitLabs earnings for this user in their Referral record.
- *  - Every $8 earned (net to the user = $4, meaning $8 gross at 50/50 split),
- *    pays $0.25 website credit to each of the 3 upline referrers.
- *  - Also handles the one-time $5 direct referral website credit when a referred user
- *    first hits the $8 gross milestone.
- *
- * Payload:
- *  { user_id, amount, source: "ppc" | "bitlabs" }
- */
+// Largest credible per-event referral earning. Anything above this is treated as an injection
+// attempt and rejected — a real earning event is at most a few dollars.
+const MAX_COMMISSIONABLE_EARN = 10000;
+
+// distributeMLMBonus (AFFILIATE engine) — SINGLE-TIER, pays ONLY the direct referrer. No downline.
+//
+// Two modes (AFFILIATE_COMMISSION_MODE):
+//   • "ongoing" (default): a recurring commission — a % of EACH referral earning, rate scaled by the
+//     affiliate's tier. Recurring "residual" income; still single-tier (not MLM).
+//   • "bounty": a one-time flat bounty when a referral first becomes active, scaled by tier.
+//
+// Payload: { user_id, amount?, source? }
 export default __handler(async (req) => {
   try {
+    // Credit-granting: only other server functions (internal invoke), schedulers, or admins may call.
+    const denied = await requireInternalOrAdmin(req);
+    if (denied) return denied;
+
     const base44 = createClientFromRequest(req);
-    const { user_id, amount, source } = await req.json();
-
-    if (!user_id || !amount || !["ppc", "bitlabs"].includes(source)) {
-      return Response.json({ error: 'Invalid payload. Required: user_id, amount, source (ppc|bitlabs)' }, { status: 400 });
+    const { user_id, amount } = await req.json();
+    if (!user_id) return Response.json({ error: "user_id required" }, { status: 400 });
+    // Bound the client-supplied earning so a caller can't inject an arbitrary commission base.
+    const amountNum = Number(amount);
+    if (amount !== undefined && (!Number.isFinite(amountNum) || amountNum < 0 || amountNum > MAX_COMMISSIONABLE_EARN)) {
+      return Response.json({ error: "Invalid amount" }, { status: 400 });
     }
 
-    // 1. Find the MLM node for this user
-    const nodes = await base44.asServiceRole.entities.MLMNode.filter({ user_id });
-    if (!nodes.length) {
-      return Response.json({ message: 'No MLM node for user — skipping', user_id });
-    }
-    const node = nodes[0];
-
-    // 2. Find the Referral record where this user is the referred party
     const referrals = await base44.asServiceRole.entities.Referral.filter({ referred_user_id: user_id });
-    if (!referrals.length) {
-      return Response.json({ message: 'User has no referrer — skipping MLM bonus', user_id });
-    }
-    const referral = referrals[0];
+    const referral = (referrals || [])[0];
+    if (!referral) return Response.json({ message: "No referrer — skipping", user_id });
+    const affiliateId = referral.referrer_user_id || referral.level_1_referrer_id;
+    if (!affiliateId) return Response.json({ message: "No affiliate on referral", referral_id: referral.id });
 
-    // 3. Update cumulative PPC+BitLabs earnings
-    const newTotal = (referral.ppc_bitlabs_earnings || 0) + amount;
-    const previousMilestone = referral.last_mlm_milestone || 0;
-    const newMilestone = Math.floor(newTotal / 8) * 8; // nearest lower multiple of 8
+    const accounts = await base44.asServiceRole.entities.AffiliateAccount.filter({ user_id: affiliateId });
+    const account = (accounts || [])[0];
+    const mode = commissionMode();
 
-    const bonusesToPay = (newMilestone - previousMilestone) / 8; // number of new $8 milestones crossed
+    if (mode === "ongoing") {
+      const earn = Number(amount) || 0;
+      if (earn <= 0) return Response.json({ message: "No earning amount for a commission", user_id });
 
-    const payoutsLog = referral.mlm_payouts_log || [];
-    let mlmBonusesPaid = referral.mlm_bonuses_paid || 0;
+      // Count this referral toward the affiliate's tier the first time they generate a commission.
+      const priorActive = Number(account?.active_referrals_count ?? 0);
+      const firstTime = !referral.affiliate_activated;
+      const activeReferrals = firstTime ? priorActive + 1 : priorActive;
+      const tier = resolveTier(activeReferrals);
+      const rate = ongoingRateFor(activeReferrals);
+      const commission = round2(earn * rate);
+      if (commission <= 0) return Response.json({ message: "Commission rounds to zero", earn, rate });
 
-    const uplineIds = [
-      referral.level_1_referrer_id,
-      referral.level_2_referrer_id,
-      referral.level_3_referrer_id
-    ].filter(Boolean);
-
-    const notificationPromises = [];
-
-    // 4. For each new $8 milestone crossed, pay $0.25 to each upline (up to 3 levels)
-    for (let i = 0; i < bonusesToPay; i++) {
-      const milestoneCrossed = previousMilestone + (i + 1) * 8;
-      const logEntry = { milestone: milestoneCrossed, paid_at: new Date().toISOString(), level_1_paid: false, level_2_paid: false, level_3_paid: false };
-
-      for (let lvl = 0; lvl < uplineIds.length; lvl++) {
-        const uplineUserId = uplineIds[lvl];
-        // Get or create MLM node for upline user
-        const uplineNodes = await base44.asServiceRole.entities.MLMNode.filter({ user_id: uplineUserId });
-        if (uplineNodes.length) {
-          const uplineNode = uplineNodes[0];
-          const newCredit = (uplineNode.website_credit_balance || 0) + 0.25;
-          const newBonuses = (uplineNode.total_mlm_bonuses_received || 0) + 0.25;
-          await base44.asServiceRole.entities.MLMNode.update(uplineNode.id, {
-            website_credit_balance: newCredit,
-            total_mlm_bonuses_received: newBonuses
-          });
-          if (lvl === 0) logEntry.level_1_paid = true;
-          if (lvl === 1) logEntry.level_2_paid = true;
-          if (lvl === 2) logEntry.level_3_paid = true;
-
-          // Notify upline user
-          notificationPromises.push(
-            base44.asServiceRole.entities.Notification.create({
-              user_id: uplineUserId,
-              type: 'mlm_bonus',
-              title: '💰 MLM Bonus Earned!',
-              message: `You earned $0.25 website credit — your Level ${lvl + 1} downline member just hit a $8 earning milestone on GamerGain!`,
-              is_read: false
-            }).catch(() => {})
-          );
-        }
+      if (!account) {
+        await base44.asServiceRole.entities.AffiliateAccount.create({
+          user_id: affiliateId, affiliate_credit_balance: commission, total_commissions_earned: commission,
+          active_referrals_count: activeReferrals, tier: tier.name, created_at: new Date().toISOString(),
+        });
+      } else {
+        await base44.asServiceRole.entities.AffiliateAccount.update(account.id, {
+          affiliate_credit_balance: round2(Number(account.affiliate_credit_balance ?? 0) + commission),
+          total_commissions_earned: round2(Number(account.total_commissions_earned ?? 0) + commission),
+          active_referrals_count: activeReferrals, tier: tier.name,
+        });
       }
-
-      payoutsLog.push(logEntry);
-      mlmBonusesPaid += 1;
-
-      // 5. First $8 milestone: also pay the direct referrer the $5 direct referral credit
-      if (milestoneCrossed === 8 && !referral.milestone_4_paid && uplineIds[0]) {
-        const level1Nodes = await base44.asServiceRole.entities.MLMNode.filter({ user_id: uplineIds[0] });
-        if (level1Nodes.length) {
-          const l1 = level1Nodes[0];
-          await base44.asServiceRole.entities.MLMNode.update(l1.id, {
-            website_credit_balance: (l1.website_credit_balance || 0) + 5,
-            direct_referral_credits_earned: (l1.direct_referral_credits_earned || 0) + 5,
-            total_referrals_converted: (l1.total_referrals_converted || 0) + 1
-          });
-          notificationPromises.push(
-            base44.asServiceRole.entities.Notification.create({
-              user_id: uplineIds[0],
-              type: 'referral_bonus',
-              title: '🎉 $5 Referral Credit Earned!',
-              message: `Your referred user just hit their first $8 milestone on GamerGain! You've earned $5 website credit.`,
-              is_read: false
-            }).catch(() => {})
-          );
-        }
+      if (firstTime) {
+        await base44.asServiceRole.entities.Referral.update(referral.id, { affiliate_activated: true, status: "active" }).catch(() => null);
       }
+      await base44.asServiceRole.entities.Referral.update(referral.id, {
+        commission_earned: round2(Number(referral.commission_earned ?? 0) + commission),
+      }).catch(() => null);
+
+      await base44.asServiceRole.entities.Notification.create({
+        user_id: affiliateId, type: "affiliate_commission",
+        title: `💰 Affiliate Commission: +$${commission.toFixed(2)}`,
+        message: `You earned $${commission.toFixed(2)} (${Math.round(rate * 100)}% ${tier.name} rate) from a referral's activity. Keep sharing!`,
+        is_read: false,
+      }).catch(() => null);
+
+      return Response.json({ success: true, mode, affiliate_id: affiliateId, commission, rate, tier: tier.name, active_referrals: activeReferrals });
     }
 
-    // 6. Update the Referral record
+    // --- bounty mode (one-time per active referral) ---
+    if (referral.affiliate_bounty_paid) return Response.json({ message: "Bounty already paid", referral_id: referral.id });
+    const earnRows = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id });
+    const cumEarned = (earnRows || []).reduce(
+      (s: number, e: Record<string, unknown>) => s + (Number(e.amount ?? e.total_earned) || 0), 0);
+    if (cumEarned < AFFILIATE_ACTIVATION_THRESHOLD) {
+      return Response.json({ message: "Referred user not yet active", cumEarned, threshold: AFFILIATE_ACTIVATION_THRESHOLD });
+    }
+    const priorActive = Number(account?.active_referrals_count ?? 0);
+    const newActive = priorActive + 1;
+    const tier = resolveTier(newActive);
+    const bounty = bountyFor(newActive);
+    if (!account) {
+      await base44.asServiceRole.entities.AffiliateAccount.create({
+        user_id: affiliateId, affiliate_credit_balance: bounty, total_bounties_earned: bounty,
+        active_referrals_count: newActive, tier: tier.name, created_at: new Date().toISOString(),
+      });
+    } else {
+      await base44.asServiceRole.entities.AffiliateAccount.update(account.id, {
+        affiliate_credit_balance: round2(Number(account.affiliate_credit_balance ?? 0) + bounty),
+        total_bounties_earned: round2(Number(account.total_bounties_earned ?? 0) + bounty),
+        active_referrals_count: newActive, tier: tier.name,
+      });
+    }
     await base44.asServiceRole.entities.Referral.update(referral.id, {
-      ppc_bitlabs_earnings: newTotal,
-      last_mlm_milestone: newMilestone,
-      mlm_bonuses_paid: mlmBonusesPaid,
-      mlm_payouts_log: payoutsLog,
-      milestone_4_paid: newMilestone >= 8 ? true : referral.milestone_4_paid
-    });
-
-    // 7. Update node's total downline earnings
-    await base44.asServiceRole.entities.MLMNode.update(node.id, {
-      total_downline_ppc_bitlabs_earnings: (node.total_downline_ppc_bitlabs_earnings || 0) + amount
-    });
-
-    await Promise.all(notificationPromises);
-
-    return Response.json({
-      success: true,
-      user_id,
-      new_total: newTotal,
-      milestones_crossed: bonusesToPay,
-      bonuses_distributed: bonusesToPay * uplineIds.length * 0.25
-    });
+      affiliate_bounty_paid: true, affiliate_bounty_amount: bounty, status: "active", activated_at: new Date().toISOString(),
+    }).catch(() => null);
+    await base44.asServiceRole.entities.Notification.create({
+      user_id: affiliateId, type: "affiliate_bounty",
+      title: `💰 Affiliate Bounty: +$${bounty.toFixed(2)}!`,
+      message: `A referral you drove just became active — you earned a $${bounty.toFixed(2)} ${tier.name} bounty. You now have ${newActive} active referrals!`,
+      is_read: false,
+    }).catch(() => null);
+    return Response.json({ success: true, mode, affiliate_id: affiliateId, bounty, tier: tier.name, active_referrals: newActive });
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: (error as Error).message }, { status: 500 });
   }
 });
+
+function round2(n: number): number { return Math.round((Number(n) || 0) * 100) / 100; }

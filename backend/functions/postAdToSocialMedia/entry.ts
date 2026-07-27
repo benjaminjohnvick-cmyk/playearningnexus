@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 export default __handler(async (req) => {
   try {
@@ -23,25 +24,28 @@ export default __handler(async (req) => {
     });
 
     const results = [];
-    
+
+    // Compliance (Wave 2): FTC requires a clear sponsorship disclosure on posted ads.
+    const discContent = withAdDisclosure(content);
+
     for (const connection of connections) {
       if (!selectedPlatforms.includes(connection.platform)) continue;
 
       try {
         let postResult;
-        
+
         switch (connection.platform) {
           case 'facebook':
-            postResult = await postToFacebook(connection, content, imageUrl);
+            postResult = await postToFacebook(connection, discContent, imageUrl);
             break;
           case 'twitter':
-            postResult = await postToTwitter(connection, content, imageUrl);
+            postResult = await postToTwitter(connection, discContent, imageUrl);
             break;
           case 'instagram':
-            postResult = await postToInstagram(connection, content, imageUrl);
+            postResult = await postToInstagram(connection, discContent, imageUrl);
             break;
           case 'snapchat':
-            postResult = await postToSnapchat(connection, content, imageUrl);
+            postResult = await postToSnapchat(connection, discContent, imageUrl);
             break;
         }
 

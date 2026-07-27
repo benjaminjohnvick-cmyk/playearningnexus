@@ -136,6 +136,12 @@ export default function GlobalLeaderboard() {
     staleTime: 2 * 60 * 1000,
   });
 
+  const { data: archives = [] } = useQuery({
+    queryKey: ['glb-archives'],
+    queryFn: () => base44.entities.LeaderboardArchive.filter({}, '-period_end', 6),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const userMap = useMemo(() => Object.fromEntries(allUsers.map(u => [u.id, u])), [allUsers]);
 
   const dailyRanked = useMemo(() => {
@@ -255,6 +261,33 @@ export default function GlobalLeaderboard() {
             <SeasonPanel currentUserId={user?.id} />
           </TabsContent>
         </Tabs>
+
+        {/* Past champions (archived weekly periods) */}
+        {archives.length > 0 && (
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-gray-600 uppercase tracking-wide">Past Champions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {archives.map(a => (
+                <div key={a.id} className="rounded-lg border p-3">
+                  <div className="text-xs text-gray-500 mb-1">
+                    {new Date(a.period_start).toLocaleDateString()} – {new Date(a.period_end).toLocaleDateString()}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(a.winners || []).slice(0, 3).map(w => (
+                      <span key={`${a.id}-${w.rank}`} className="text-sm font-medium">
+                        {w.rank === 1 ? '🥇' : w.rank === 2 ? '🥈' : '🥉'} {w.user_name || 'Player'}
+                        <span className="text-gray-400"> ({Number(w.period_score || 0).toLocaleString()})</span>
+                      </span>
+                    ))}
+                    {(a.winners || []).length === 0 && <span className="text-sm text-gray-400">No winners recorded.</span>}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Top 10 badge legend */}
         <Card className="border-0 shadow-sm">

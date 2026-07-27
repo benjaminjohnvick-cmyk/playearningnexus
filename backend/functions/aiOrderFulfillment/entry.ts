@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { blockedOrderReason } from "../../sdk/catalog-policy.ts";
 
 /**
  * AI Order Fulfillment — Fully Autonomous Pipeline
@@ -198,6 +199,16 @@ export default __handler(async (req) => {
     const orders = await base44.asServiceRole.entities.Order.filter({ id: orderId });
     if (!orders?.length) return Response.json({ error: 'Order not found' }, { status: 404 });
     const order = orders[0];
+
+    // Compliance (Wave 2): defense-in-depth — never auto-source a regulated/age-restricted item,
+    // even if it somehow reached an order.
+    const __blocked = blockedOrderReason({ name: order.product_name, category: order.product_category || order.category });
+    if (__blocked) {
+      await base44.asServiceRole.entities.Order.update(order.id, {
+        shipping_status: 'blocked_restricted', ai_vetting_status: 'blocked', block_reason: __blocked,
+      }).catch(() => null);
+      return Response.json({ error: `Order blocked: ${__blocked}. Regulated/age-restricted items are not fulfilled.`, order_id: order.id }, { status: 400 });
+    }
 
     // Source the item against the TRUE product cost (raw_price), NOT the marked-up total
     // the user paid (order.amount = raw_price × 1.10 for regular users). Sourcing at

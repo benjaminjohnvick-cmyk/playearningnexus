@@ -1,6 +1,7 @@
 // Scheduled function: detects users inactive 24+ hours and sends personalized streak reminders
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { canSms, SMS_OPT_OUT_SUFFIX } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -94,16 +95,16 @@ The GamerGain Team
         notifsSent++;
       } catch (_) {}
 
-      // Try SMS if phone available
+      // Try SMS if phone available AND the user has TCPA consent
       const phoneNumber = user.phone_number;
-      if (phoneNumber) {
+      if (phoneNumber && (await canSms(user))) {
         try {
           const twilioSid = Deno.env.get('TWILIO_ACCOUNT_SID');
           const twilioToken = Deno.env.get('TWILIO_AUTH_TOKEN');
           const twilioPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
 
           if (twilioSid && twilioToken && twilioPhone) {
-            const smsBody = `GamerGain 🔥 ${streakMsg} Complete surveys in 8 min → gamergain.app/Surveys`;
+            const smsBody = `GamerGain 🔥 ${streakMsg} Complete surveys in 8 min → gamergain.app/Surveys` + SMS_OPT_OUT_SUFFIX;
             const resp = await fetch(
               `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`,
               {

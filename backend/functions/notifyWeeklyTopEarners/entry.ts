@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { emailUnsubscribeFooter } from "../../sdk/messaging-consent.ts";
 
 // Self-hosted app URL (replaces the dead base44.app domain). Set APP_URL in your env.
 const APP_URL = (Deno.env.get("APP_URL") || "https://gamergain.app").replace(/\/$/, "");
@@ -84,7 +85,7 @@ Keep it up and compete for the top spot next week. Your ranking is live on the l
 👉 View Leaderboard: ${APP_URL}/Leaderboard
 
 Happy earning!
-— The GamerGain Team`,
+— The GamerGain Team` + emailUnsubscribeFooter(winner),
       });
 
       notified++;

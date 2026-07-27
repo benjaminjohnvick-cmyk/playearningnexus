@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { emailUnsubscribeFooter } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -39,7 +40,7 @@ The GamerGain Team
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: email,
       subject: `${referrerName} invited you to join GamerGain 💰`,
-      body: emailBody,
+      body: emailBody + emailUnsubscribeFooter({ email }),
       from_name: 'GamerGain'
     });
 

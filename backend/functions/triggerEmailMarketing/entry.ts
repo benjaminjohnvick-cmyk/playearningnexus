@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { canEmailMarket, emailUnsubscribeFooter } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -12,6 +13,12 @@ export default __handler(async (req) => {
 
     const user = await base44.asServiceRole.entities.User.filter({ id: user_id }).then(r => r[0]);
     if (!user) return Response.json({ error: 'User not found' }, { status: 404 });
+
+    // Compliance (Wave 2 / CAN-SPAM): only send marketing email to opted-in users; gated by the
+    // email_marketing kill-switch. Transactional email (via Core.SendEmail elsewhere) is unaffected.
+    if (!(await canEmailMarket(user))) {
+      return Response.json({ skipped: true, reason: 'user not opted in to marketing email, or email_marketing is off' });
+    }
 
     const flowTemplates = {
       welcome_series: [
@@ -92,7 +99,7 @@ export default __handler(async (req) => {
     await base44.integrations.Core.SendEmail({
       to: user.email,
       subject: emailSubject,
-      body: emailBody,
+      body: emailBody + emailUnsubscribeFooter(user),
       from_name: 'GamerGain',
     });
 

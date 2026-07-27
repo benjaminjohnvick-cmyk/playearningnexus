@@ -2,6 +2,8 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
 import { isPartnerPayout } from "../../sdk/payout-policy.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
+import { applyBackupWithholding } from "../../sdk/tax.ts";
 
 // Venmo is owned by PayPal. PayPal Payouts API sends directly to Venmo-linked email or phone.
 // This is fully automated — money arrives in the recipient's Venmo balance instantly.
@@ -47,6 +49,12 @@ export default __handler(async (req) => {
       }, { status: 200 });
     }
 
+    // --- cash_out kill-switch: an emergency brake on ALL cash disbursement (safe-default OFF) ---
+    if (!(await isEnabled('cash_out', user?.jurisdiction ?? user?.state ?? null))) {
+      return Response.json({ blocked: true, cash_out_disabled: true, cash_sent: false,
+        message: 'Cash payouts are currently disabled.' }, { status: 403 });
+    }
+
     if (!payoutId || !venmoContact || !amount) {
       return Response.json({ error: 'Missing required fields: payoutId, venmoContact, amount' }, { status: 400 });
     }
@@ -61,6 +69,9 @@ export default __handler(async (req) => {
       return Response.json({ error: 'Please provide a valid email or phone number linked to your Venmo account.' }, { status: 400 });
     }
 
+    // Tax: backup withholding when no W-9 is on file — send net, set aside `withheld`.
+    const wh = applyBackupWithholding(Number(amount), user);
+
     const accessToken = await getPayPalAccessToken();
     const batchId = `GG_VENMO_${payoutId}_${Date.now()}`;
 
@@ -68,12 +79,12 @@ export default __handler(async (req) => {
       sender_batch_header: {
         sender_batch_id: batchId,
         email_subject: 'Your GamerGain Payout Has Arrived!',
-        email_message: `Your GamerGain earnings of $${amount.toFixed(2)} have been sent to your Venmo account.`,
+        email_message: `Your GamerGain earnings of $${wh.net.toFixed(2)} have been sent to your Venmo account.`,
       },
       items: [
         {
           recipient_type: recipientType,
-          amount: { value: amount.toFixed(2), currency },
+          amount: { value: wh.net.toFixed(2), currency },
           receiver: recipientValue,
           note: 'GamerGain earnings payout',
           sender_item_id: payoutId,
@@ -104,13 +115,16 @@ export default __handler(async (req) => {
       status: 'processing',
       paypal_batch_id: batchPayoutId,
       external_transaction_id: batchPayoutId,
+      net_amount: wh.net,
+      withheld_amount: wh.withheld,
+      withholding_rate: wh.rate,
     });
 
     await base44.asServiceRole.entities.Notification.create({
       user_id: user.id,
       type: 'purchase_complete',
       title: '💙 Venmo Payout Sent!',
-      message: `Your $${amount.toFixed(2)} Venmo payout is on its way to ${venmoContact}. Batch ID: ${batchPayoutId}`,
+      message: `Your $${wh.net.toFixed(2)} Venmo payout is on its way to ${venmoContact}.${wh.withheld > 0 ? ` ($${wh.withheld.toFixed(2)} withheld — submit your W-9 to receive the full amount.)` : ''} Batch ID: ${batchPayoutId}`,
       status: 'unread',
       delivery_method: ['in_app'],
     });

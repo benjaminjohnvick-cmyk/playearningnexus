@@ -49,6 +49,9 @@
  */
 import AIAgents from './pages/AIAgents';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminSettings from './pages/AdminSettings';
+import AIOptimization from './pages/AIOptimization';
+import AdminPricingFeedback from './pages/AdminPricingFeedback';
 import AdminUsers from './pages/AdminUsers';
 import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import BusinessDashboard from './pages/BusinessDashboard';
@@ -77,6 +80,8 @@ import InAppGameStore from './pages/InAppGameStore';
 import InAppStore from './pages/InAppStore';
 import IntegrationSettings from './pages/IntegrationSettings';
 import Leaderboard from './pages/Leaderboard';
+import WeeklyLeaderboard from './pages/WeeklyLeaderboard';
+import Marketplace from './pages/Marketplace';
 import MonetizationHub from './pages/MonetizationHub';
 import MoneyTransfer from './pages/MoneyTransfer';
 import MovieStarGenerator from './pages/MovieStarGenerator';
@@ -111,6 +116,9 @@ import __Layout from './Layout.jsx';
 export const PAGES = {
     "AIAgents": AIAgents,
     "AdminDashboard": AdminDashboard,
+    "AdminSettings": AdminSettings,
+    "AIOptimization": AIOptimization,
+    "AdminPricingFeedback": AdminPricingFeedback,
     "AdminUsers": AdminUsers,
     "AffiliateMarketplace": AffiliateMarketplace,
     "BusinessDashboard": BusinessDashboard,
@@ -139,6 +147,8 @@ export const PAGES = {
     "InAppStore": InAppStore,
     "IntegrationSettings": IntegrationSettings,
     "Leaderboard": Leaderboard,
+    "WeeklyLeaderboard": WeeklyLeaderboard,
+    "Marketplace": Marketplace,
     "MonetizationHub": MonetizationHub,
     "MoneyTransfer": MoneyTransfer,
     "MovieStarGenerator": MovieStarGenerator,

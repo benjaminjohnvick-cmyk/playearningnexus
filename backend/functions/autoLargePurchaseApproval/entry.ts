@@ -1,8 +1,14 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
+import { getNumber } from "../../sdk/settings.ts";
 
 export default __handler(async (req) => {
   try {
+    // Auto-approves orders + places external orders — not callable by arbitrary public clients.
+    const denied = await requireInternalOrAdmin(req);
+    if (denied) return denied;
+
     const base44 = createClientFromRequest(req);
     const { order_id } = await req.json();
 
@@ -11,8 +17,9 @@ export default __handler(async (req) => {
     const order = await base44.asServiceRole.entities.Order.get(order_id);
     const user = await base44.asServiceRole.entities.User.get(order.user_id);
 
-    // Check if order requires manual review
-    if (order.amount > 500) {
+    // Orders above the admin-adjustable ceiling need AI vetting before auto-approval.
+    const maxAutoOrder = await getNumber("AI_FULFILLMENT_MAX_ORDER_USD", 500);
+    if (order.amount > maxAutoOrder) {
       // Large purchase: Run AI vetting
       const vettingResult = await base44.functions.invoke('aiOrderVetting', {
         order_id

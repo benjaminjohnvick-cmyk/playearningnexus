@@ -2701,3 +2701,212 @@ CREATE TABLE IF NOT EXISTS "PremiumPPCCharge" (
 );
 CREATE INDEX IF NOT EXISTS "PremiumPPCCharge_data_gin" ON "PremiumPPCCharge" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "PremiumPPCCharge_created" ON "PremiumPPCCharge" (created_date DESC);
+
+-- ===========================================================================
+-- Compliance foundation (Master Plan 0.1–0.5). All are the standard jsonb-doc
+-- shape used everywhere else in this schema.
+-- ===========================================================================
+
+-- ComplianceFlag: live on/off overrides for risky features (0.1 feature-flag layer)
+CREATE TABLE IF NOT EXISTS "ComplianceFlag" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ComplianceFlag_data_gin" ON "ComplianceFlag" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ComplianceFlag_created" ON "ComplianceFlag" (created_date DESC);
+
+-- ConsentRecord: append-only consent & disclosure ledger (0.3 + 0.5 terms acceptance)
+CREATE TABLE IF NOT EXISTS "ConsentRecord" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ConsentRecord_data_gin" ON "ConsentRecord" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ConsentRecord_created" ON "ConsentRecord" (created_date DESC);
+
+-- MoneyLedgerEntry: immutable money-movement audit log (0.4)
+CREATE TABLE IF NOT EXISTS "MoneyLedgerEntry" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "MoneyLedgerEntry_data_gin" ON "MoneyLedgerEntry" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "MoneyLedgerEntry_created" ON "MoneyLedgerEntry" (created_date DESC);
+
+-- IdempotencyKey: one-shot guard for money operations (0.4)
+CREATE TABLE IF NOT EXISTS "IdempotencyKey" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "IdempotencyKey_data_gin" ON "IdempotencyKey" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "IdempotencyKey_created" ON "IdempotencyKey" (created_date DESC);
+-- Strict exactly-once: a UNIQUE index on the idempotency key (a duplicate insert now fails at the DB
+-- rather than racing through the read-then-write check in sdk/ledger.ts).
+CREATE UNIQUE INDEX IF NOT EXISTS "IdempotencyKey_key" ON "IdempotencyKey" ((data->>'key'));
+
+-- AffiliateAccount: per-affiliate ledger (replaces the legacy MLMNode) — balance, bounties, tier
+CREATE TABLE IF NOT EXISTS "AffiliateAccount" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AffiliateAccount_data_gin" ON "AffiliateAccount" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AffiliateAccount_created" ON "AffiliateAccount" (created_date DESC);
+
+-- DMCARequest: DMCA takedown notices + counter-notices + their resolutions
+CREATE TABLE IF NOT EXISTS "DMCARequest" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "DMCARequest_data_gin" ON "DMCARequest" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "DMCARequest_created" ON "DMCARequest" (created_date DESC);
+
+-- TaxProfile: per-user W-9 tax info for 1099 reporting. RESTRICTED — contains TIN/SSN; encrypt at
+-- rest or hold via your 1099 provider in production. Reports surface only the masked TIN.
+CREATE TABLE IF NOT EXISTS "TaxProfile" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "TaxProfile_data_gin" ON "TaxProfile" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "TaxProfile_created" ON "TaxProfile" (created_date DESC);
+
+-- AI optimization engine entities (self-learning price/settings optimizer)
+
+-- OptimizationSignal
+CREATE TABLE IF NOT EXISTS "OptimizationSignal" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "OptimizationSignal_data_gin" ON "OptimizationSignal" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "OptimizationSignal_created" ON "OptimizationSignal" (created_date DESC);
+
+-- OptimizationRecommendation
+CREATE TABLE IF NOT EXISTS "OptimizationRecommendation" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "OptimizationRecommendation_data_gin" ON "OptimizationRecommendation" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "OptimizationRecommendation_created" ON "OptimizationRecommendation" (created_date DESC);
+
+-- OptimizationOutcome
+CREATE TABLE IF NOT EXISTS "OptimizationOutcome" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "OptimizationOutcome_data_gin" ON "OptimizationOutcome" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "OptimizationOutcome_created" ON "OptimizationOutcome" (created_date DESC);
+
+-- AILearningState
+CREATE TABLE IF NOT EXISTS "AILearningState" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AILearningState_data_gin" ON "AILearningState" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AILearningState_created" ON "AILearningState" (created_date DESC);
+
+-- PricingFeedback
+CREATE TABLE IF NOT EXISTS "PricingFeedback" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PricingFeedback_data_gin" ON "PricingFeedback" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "PricingFeedback_created" ON "PricingFeedback" (created_date DESC);
+
+-- LeaderboardArchive (weekly leaderboard period snapshots)
+CREATE TABLE IF NOT EXISTS "LeaderboardArchive" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "LeaderboardArchive_data_gin" ON "LeaderboardArchive" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "LeaderboardArchive_created" ON "LeaderboardArchive" (created_date DESC);
+
+-- OptimizationExperiment
+CREATE TABLE IF NOT EXISTS "OptimizationExperiment" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "OptimizationExperiment_data_gin" ON "OptimizationExperiment" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "OptimizationExperiment_created" ON "OptimizationExperiment" (created_date DESC);
+
+-- SessionRating
+CREATE TABLE IF NOT EXISTS "SessionRating" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SessionRating_data_gin" ON "SessionRating" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SessionRating_created" ON "SessionRating" (created_date DESC);
+
+-- UserAIProfile
+CREATE TABLE IF NOT EXISTS "UserAIProfile" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "UserAIProfile_data_gin" ON "UserAIProfile" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "UserAIProfile_created" ON "UserAIProfile" (created_date DESC);
+
+-- SurveyHonestyAnalysis
+CREATE TABLE IF NOT EXISTS "SurveyHonestyAnalysis" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SurveyHonestyAnalysis_data_gin" ON "SurveyHonestyAnalysis" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SurveyHonestyAnalysis_created" ON "SurveyHonestyAnalysis" (created_date DESC);
+
+-- MarketplaceListing
+CREATE TABLE IF NOT EXISTS "MarketplaceListing" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "MarketplaceListing_data_gin" ON "MarketplaceListing" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "MarketplaceListing_created" ON "MarketplaceListing" (created_date DESC);

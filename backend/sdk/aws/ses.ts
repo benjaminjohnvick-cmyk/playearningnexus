@@ -1,9 +1,10 @@
+import { snapString } from "../settings.ts";
 // SES v2 SendEmail via signed POST. Enable with EMAIL_PROVIDER=ses.
 import { signedFetch, credsFromEnv } from "./sigv4.ts";
 
 export async function sesSend(args: { to: string; subject: string; body: string; from?: string }) {
   const creds = credsFromEnv();
-  const from = args.from ?? Deno.env.get("EMAIL_FROM") ?? "no-reply@yourdomain.com";
+  const from = args.from ?? snapString("EMAIL_FROM", "no-reply@yourdomain.com");
   const host = `email.${creds.region}.amazonaws.com`;
   const payload = JSON.stringify({
     FromEmailAddress: from,

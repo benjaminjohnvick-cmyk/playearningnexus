@@ -1,5 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
+import { featureAllowed, prizeNeedsRegistration } from "../../sdk/jurisdiction.ts";
 
 // Weekly OPEN, MERIT-BASED referral reward (formerly a random jackpot).
 // Every participant earns in proportion to the VERIFIED, revenue-generating
@@ -16,6 +18,12 @@ export default __handler(async (req) => {
     const user = await base44.auth.me();
     if (user?.role !== 'admin') {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+    }
+
+    // Compliance (Wave 2): kill-switch for prize-pool features (already merit-based / no-chance, but
+    // this lets an admin disable it globally or per jurisdiction).
+    if (!(await isEnabled('jackpots'))) {
+      return Response.json({ skipped: true, reason: 'jackpots kill-switch is off' });
     }
 
     const periodStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
@@ -85,6 +93,7 @@ export default __handler(async (req) => {
     const winners = [];
     let paidCount = 0;
     let paidTotal = 0;
+    const heldForJurisdiction: Array<{ user_id: string; prize: number; reason: string }> = [];
     for (let i = 0; i < participants.length; i++) {
       const p = participants[i];
       const prize = Math.round((prizes[p.userId] || 0) * 100) / 100;
@@ -92,6 +101,18 @@ export default __handler(async (req) => {
       let u: any = null;
       try { u = await base44.asServiceRole.entities.User.get(p.userId); } catch { /* ignore */ }
       const email = u?.email || p.email;
+
+      // Jurisdiction gate: don't pay where prize competitions are blocked, and hold (don't auto-pay)
+      // prizes at/above the state's sweepstakes-registration threshold for manual review.
+      const juris = u?.jurisdiction ?? u?.state ?? null;
+      if (!featureAllowed("jackpots", juris)) {
+        heldForJurisdiction.push({ user_id: p.userId, prize, reason: "feature_blocked_in_jurisdiction" });
+        continue;
+      }
+      if (prizeNeedsRegistration(prize, juris)) {
+        heldForJurisdiction.push({ user_id: p.userId, prize, reason: "prize_registration_threshold" });
+        continue;
+      }
       try {
         await base44.asServiceRole.functions.invoke('paypalPayout', {
           recipient_email: email, amount: prize,
@@ -128,6 +149,7 @@ export default __handler(async (req) => {
       platform_margin_kept: Math.round(totalRevenue * (1 - fundingRate) * 100) / 100,
       participants_paid: paidCount, total_paid: Math.round(paidTotal * 100) / 100,
       top_finishers: winners,
+      held_for_jurisdiction: heldForJurisdiction,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { canEmailMarket, emailUnsubscribeFooter } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -48,7 +49,7 @@ Here's how to get started:
 Your dashboard is ready: https://gamergain.app/UserDashboard
 
 Let's get earning!
-— The GamerGain Team`.trim(),
+— The GamerGain Team`.trim() + emailUnsubscribeFooter(u),
           });
 
           await base44.asServiceRole.entities.User.update(u.id, { onboarding_email_sent: true, last_automated_email_date: new Date().toISOString() });
@@ -57,6 +58,8 @@ Let's get earning!
         }
 
         else if (campaign_type === 'winback') {
+          // Compliance (Wave 2 / CAN-SPAM): promotional — opted-in users only.
+          if (!(await canEmailMarket(u))) { results.skipped++; continue; }
           // Users who haven't logged in for 3+ days
           const lastLogin = u.last_login_date ? new Date(u.last_login_date) : new Date(u.created_date);
           const daysSince = (now - lastLogin) / (1000 * 60 * 60 * 24);
@@ -81,7 +84,7 @@ ${balance > 0 ? `💰 You have $${balance.toFixed(2)} in your account ready to w
 Come back and earn: https://gamergain.app/Surveys
 
 See you soon,
-— The GamerGain Team`.trim(),
+— The GamerGain Team`.trim() + emailUnsubscribeFooter(u),
           });
 
           await base44.asServiceRole.entities.User.update(u.id, { last_winback_sent: now.toISOString(), last_automated_email_date: new Date().toISOString() });
@@ -90,6 +93,8 @@ See you soon,
         }
 
         else if (campaign_type === 'weekly_summary') {
+          // Compliance (Wave 2 / CAN-SPAM): promotional — opted-in users only.
+          if (!(await canEmailMarket(u))) { results.skipped++; continue; }
           // Send to all active users weekly
           if (u.last_weekly_summary_sent) {
             const daysSince = (now - new Date(u.last_weekly_summary_sent)) / (1000 * 60 * 60 * 24);
@@ -124,7 +129,7 @@ ${aiSummary || 'Keep up the great work! More surveys and opportunities are waiti
 👥 Refer friends for $1 each: https://gamergain.app/ReferralDashboard
 
 Keep earning,
-— The GamerGain Team`.trim(),
+— The GamerGain Team`.trim() + emailUnsubscribeFooter(u),
           });
 
           await base44.asServiceRole.entities.User.update(u.id, { last_weekly_summary_sent: now.toISOString(), last_automated_email_date: new Date().toISOString() });

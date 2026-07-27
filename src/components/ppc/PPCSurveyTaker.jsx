@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { startSurvey, trackSurveyAnswer, finishSurvey } from '@/lib/uxTracker';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,9 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
   const [phase, setPhase] = useState('taking'); // taking | submitting | done
   const [startTime] = useState(Date.now());
   const queryClient = useQueryClient();
+
+  // Survey-honesty capture: instrument this survey so the AI can judge genuine answering vs mashing.
+  useEffect(() => { startSurvey(survey.id); }, [survey.id]);
 
   // Language routing: pick the best matching language version for this user
   const userLang = user?.preferred_language || user?.language || 'en';
@@ -69,6 +73,7 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
 
   const handleSelect = (option) => {
     setSelectedAnswer(option);
+    trackSurveyAnswer(`q${currentQ}`);
     const newAnswers = [...answers, { question_index: currentQ, selected_option: option }];
     setAnswers(newAnswers);
 
@@ -97,6 +102,9 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
         language: usedLanguage,
         time_taken_seconds: timeTaken,
       });
+
+      // Ship the survey-honesty interaction trace (timings + mouse) for AI analysis.
+      finishSurvey(responseRecord.id, survey.id);
 
       // Score the response asynchronously (fire-and-forget)
       base44.functions.invoke('scoreSurveyResponse', {

@@ -165,6 +165,33 @@ export const db = {
       return { id, deleted: true };
     });
   },
+  // Atomic conditional update: only applies (and returns the row) if data->>field still equals
+  // `equals`. Returns null if the row is gone or the condition no longer holds — used to claim a
+  // resource (e.g. flip a listing active→sold) without a race.
+  async updateIf(entity: string, id: string, patch: Record<string, unknown>, cond: { field: string; equals: string }) {
+    const { cols, data } = docToColumns(entity, patch);
+    const sets: string[] = []; const params: unknown[] = []; let i = 1;
+    for (const [k, v] of Object.entries(cols)) { sets.push(`${quoteCol(k)} = $${i++}`); params.push(v); }
+    if (Object.keys(data).length) { sets.push(`data = data || $${i++}::jsonb`); params.push(JSON.stringify(data)); }
+    sets.push(`updated_date = now()`);
+    const field = String(cond.field).replace(/[^a-zA-Z0-9_]/g, "");
+    params.push(id); const idP = i++;
+    params.push(cond.equals); const valP = i++;
+    const sql = `UPDATE ${quoteTbl(entity)} SET ${sets.join(",")} WHERE id = $${idP} AND data->>'${field}' = $${valP} RETURNING *`;
+    return await withClient(async (c) => {
+      const r = await c.queryObject<Record<string, unknown>>(sql, params);
+      return r.rows[0] ? rowToDoc(entity, r.rows[0]) : null;
+    });
+  },
+  // Atomic JSONB array append (no read-modify-write race). Appends `value` to data->field.
+  async appendToArray(entity: string, id: string, field: string, value: unknown) {
+    const f = String(field).replace(/[^a-zA-Z0-9_]/g, "");
+    const sql = `UPDATE ${quoteTbl(entity)} SET data = jsonb_set(data, '{${f}}', COALESCE(data->'${f}', '[]'::jsonb) || $2::jsonb), updated_date = now() WHERE id = $1 RETURNING *`;
+    return await withClient(async (c) => {
+      const r = await c.queryObject<Record<string, unknown>>(sql, [id, JSON.stringify(value)]);
+      return r.rows[0] ? rowToDoc(entity, r.rows[0]) : null;
+    });
+  },
   async bulkCreate(entity: string, docs: Record<string, unknown>[], createdBy?: string) {
     const out = [];
     for (const d of docs) out.push(await this.create(entity, d, createdBy));

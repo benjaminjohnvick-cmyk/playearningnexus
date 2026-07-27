@@ -8,6 +8,22 @@ import { runAgent, listAgents } from "../agents-runtime/agent-runtime.ts";
 import { extraRoutes } from "./extra-routes.ts";
 import { autoMigrate } from "./migrate.ts";
 import { frontendEnabled, serveStatic } from "./static.ts";
+import { primeSettings, snapBool } from "../sdk/settings.ts";
+import { verifyJwt } from "../sdk/auth.ts";
+import { db } from "../sdk/db.ts";
+
+// True only for a request bearing a valid admin bearer token (used for the maintenance-mode bypass).
+async function requesterIsAdmin(req: Request): Promise<boolean> {
+  try {
+    const authz = req.headers.get("authorization") ?? "";
+    const token = authz.toLowerCase().startsWith("bearer ") ? authz.slice(7) : null;
+    if (!token) return false;
+    const payload = await verifyJwt(token);
+    if (!payload?.sub) return false;
+    const u = await db.get("User", payload.sub);
+    return (u as Record<string, unknown> | null)?.role === "admin";
+  } catch { return false; }
+}
 
 // Ensure the DB schema exists before serving (idempotent; skip with AUTO_MIGRATE=0).
 await autoMigrate();
@@ -74,6 +90,15 @@ Deno.serve({ port: PORT }, async (req) => {
     }
   }
 
+  // Maintenance mode: when ON, only admins may reach data / function / integration routes. Auth,
+  // health, static, and OPTIONS stay open so the login page and status still load.
+  if (url.pathname.startsWith("/entities/") || url.pathname.startsWith("/functions/") || url.pathname.startsWith("/integrations/")) {
+    await primeSettings().catch(() => {});
+    if (snapBool("MAINTENANCE_MODE", false) && !(await requesterIsAdmin(req))) {
+      return Response.json({ error: "maintenance", message: "GamerGain is briefly down for maintenance. Please check back soon." }, { status: 503, headers: CORS });
+    }
+  }
+
   // Entity routes (frontend DB access): /entities/:name/:op
   if (url.pathname.startsWith("/entities/")) {
     const res = await entityRoutes(req, url.pathname);
@@ -93,6 +118,8 @@ Deno.serve({ port: PORT }, async (req) => {
   if (m) {
     const handler = functionRegistry.get(m[1]);
     if (!handler) return Response.json({ error: "Function not found" }, { status: 404, headers: CORS });
+    // Refresh the admin-settings snapshot so every function sees live DB overrides (30s-cached; cheap).
+    await primeSettings().catch(() => {});
     const res = await handler(req);
     for (const [k, v] of Object.entries(CORS)) res.headers.set(k, v);
     return res;

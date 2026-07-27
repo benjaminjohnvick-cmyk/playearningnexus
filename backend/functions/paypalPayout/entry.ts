@@ -2,6 +2,9 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
 import { isPartnerPayout } from "../../sdk/payout-policy.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
+import { postLedgerEntry } from "../../sdk/ledger.ts";
+import { applyBackupWithholding } from "../../sdk/tax.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
@@ -38,6 +41,12 @@ export default __handler(async (req) => {
       }, { status: 200 });
     }
 
+    // --- cash_out kill-switch: an emergency brake on ALL cash disbursement (safe-default OFF) ---
+    if (!(await isEnabled('cash_out', user?.jurisdiction ?? user?.state ?? null))) {
+      return Response.json({ blocked: true, cash_out_disabled: true, cash_sent: false,
+        message: 'Cash payouts are currently disabled.' }, { status: 403 });
+    }
+
     if (!payoutId || !recipientEmail || !amount) {
       return Response.json({ error: 'Missing required fields: payoutId, recipientEmail, amount' }, { status: 400 });
     }
@@ -67,6 +76,9 @@ export default __handler(async (req) => {
     }
     // ---------------------------------------------------------------------------
 
+    // Tax: backup withholding when no W-9 is on file — send net, set aside `withheld`.
+    const wh = applyBackupWithholding(Number(amount), user);
+
     const accessToken = await getPayPalAccessToken();
 
     const batchId = `GG_${payoutId}_${Date.now()}`;
@@ -75,12 +87,12 @@ export default __handler(async (req) => {
       sender_batch_header: {
         sender_batch_id: batchId,
         email_subject: 'Your GamerGain Payout Has Arrived!',
-        email_message: `Congratulations! Your earnings of $${amount.toFixed(2)} have been sent to your PayPal account.`,
+        email_message: `Congratulations! Your earnings of $${wh.net.toFixed(2)} have been sent to your PayPal account.`,
       },
       items: [
         {
           recipient_type: 'EMAIL',
-          amount: { value: amount.toFixed(2), currency },
+          amount: { value: wh.net.toFixed(2), currency },
           receiver: recipientEmail,
           note: 'GamerGain survey & referral earnings payout',
           sender_item_id: payoutId,
@@ -116,14 +128,24 @@ export default __handler(async (req) => {
       status: 'processing',
       paypal_batch_id: batchPayoutId,
       external_transaction_id: batchPayoutId,
+      net_amount: wh.net,
+      withheld_amount: wh.withheld,
+      withholding_rate: wh.rate,
     });
+
+    // Compliance (Wave 2): immutable money-movement audit entry.
+    await postLedgerEntry({
+      user_id: user.id, type: 'payout_paypal', amount: -Math.abs(Number(amount) || 0), currency,
+      ref: batchPayoutId, idempotency_key: `paypalPayout:${payoutId}`,
+      meta: { recipient_email: recipientEmail, payout_type: payout_type ?? null },
+    }).catch(() => null);
 
     // Send notification
     await base44.asServiceRole.entities.Notification.create({
       user_id: user.id,
       type: 'purchase_complete',
       title: '💸 Withdrawal Processing!',
-      message: `Your $${amount.toFixed(2)} PayPal payout is on its way to ${recipientEmail}. Batch ID: ${batchPayoutId}`,
+      message: `Your $${wh.net.toFixed(2)} PayPal payout is on its way to ${recipientEmail}.${wh.withheld > 0 ? ` ($${wh.withheld.toFixed(2)} withheld — submit your W-9 to receive the full amount.)` : ''} Batch ID: ${batchPayoutId}`,
       status: 'unread',
       delivery_method: ['in_app'],
     });

@@ -49,6 +49,10 @@ import { useSurveyMatchNotifications } from '@/hooks/useSurveyMatchNotifications
 import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
 import WidgetDownloadPrompt from '@/components/widgets/WidgetDownloadPrompt';
 import PPCWelcomePopup from '@/components/user/PPCWelcomePopup';
+import AgeVerificationModal from '@/components/user/AgeVerificationModal';
+import SessionRatingModal from '@/components/user/SessionRatingModal';
+import AIChatAssistant from '@/components/user/AIChatAssistant';
+import ExperimentVotePrompt from '@/components/user/ExperimentVotePrompt';
 
 // Lazy load non-critical components
 const SurveyAlertWatcher = lazy(() => import('@/components/surveys/SurveyAlertWatcher'));
@@ -74,6 +78,7 @@ export default function Layout({ children, currentPageName }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLogoutPrompt, setShowLogoutPrompt] = useState(false);
   const [showPPCPopup, setShowPPCPopup] = useState(false);
+  const [showSessionRating, setShowSessionRating] = useState(false);
   const [promptShownThisSession, setPromptShownThisSession] = useState(false);
   const [logoutContext, setLogoutContext] = useState({});
 
@@ -86,13 +91,23 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     if (user) {
-      initTracker(user.id);
+      if (!user.tracking_opt_out) initTracker(user.id); // behavioral analytics; honored opt-out (disclosed in privacy policy)
       if (!sessionStorage.getItem('ppc_popup_shown_v2')) {
         sessionStorage.setItem('ppc_popup_shown_v2', '1');
         setShowPPCPopup(true);
       }
     }
   }, [user?.id]);
+
+  // End-of-session rating: prompt once per session after a few minutes of use.
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('gg_session_rated')) return;
+    const t = setTimeout(() => {
+      if (typeof sessionStorage === 'undefined' || !sessionStorage.getItem('gg_session_rated')) setShowSessionRating(true);
+    }, 3 * 60 * 1000);
+    return () => clearTimeout(t);
+  }, [isAuthenticated, user?.id]);
 
   // Track page changes
   useEffect(() => {
@@ -154,7 +169,7 @@ export default function Layout({ children, currentPageName }) {
   const navigation = [
   { name: 'Home', icon: Home, path: 'Home' },
   { name: 'Game Store', icon: ShoppingCart, path: 'InAppGameStore' },
-  { name: 'Marketplace', icon: Store, path: 'ThirdPartySellerMarketplace', requireAuth: true },
+  { name: 'Marketplace', icon: Store, path: 'Marketplace', requireAuth: true },
   { name: 'Surveys', icon: DollarSign, path: 'Surveys', requireAuth: true },
   { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
   { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
@@ -191,6 +206,7 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Earnings Simulator', icon: TrendingUp, path: 'EarningsSimulatorPage', requireAuth: true },
   { name: 'Achievements', icon: Trophy, path: 'AchievementsPage', requireAuth: true },
   { name: 'Leaderboard', icon: Trophy, path: 'GlobalLeaderboard' },
+  { name: 'Weekly Leaderboard', icon: Trophy, path: 'WeeklyLeaderboard' },
   { name: 'Daily Streak', icon: Star, path: 'DailyEarningStreak', requireAuth: true },
   { name: 'Contact Us', icon: Mail, path: 'ContactUs' },
   { name: 'Referral Leaderboard', icon: Trophy, path: 'ReferralLeaderboardPage', requireAuth: true },
@@ -227,6 +243,9 @@ export default function Layout({ children, currentPageName }) {
 
   if (user?.role === 'admin') {
     navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
+    navigation.push({ name: 'Platform Settings', icon: Settings, path: 'AdminSettings', requireAuth: true });
+    navigation.push({ name: 'AI Optimization', icon: Brain, path: 'AIOptimization', requireAuth: true });
+    navigation.push({ name: 'Pricing Feedback', icon: DollarSign, path: 'AdminPricingFeedback', requireAuth: true });
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });
     navigation.push({ name: 'Users', icon: Bot, path: 'AdminUsers', requireAuth: true });
     navigation.push({ name: 'Feedback Intelligence', icon: Brain, path: 'FeedbackAdminDashboard', requireAuth: true });
@@ -240,7 +259,10 @@ export default function Layout({ children, currentPageName }) {
     <LocaleProvider>
       <div
         className="min-h-screen bg-white">
-        
+
+        {/* Accessibility: skip to main content (WCAG 2.4.1 Bypass Blocks) */}
+        <a href="#main-content" className="skip-link">Skip to main content</a>
+
         {/* Header - Only show on Home page */}
         {currentPageName === 'Home' && <header
           className="sticky top-0 z-50 border-b-2 border-red-200 shadow-lg"
@@ -415,7 +437,7 @@ export default function Layout({ children, currentPageName }) {
         }
 
          {/* Main Content */}
-         <main>{children}</main>
+         <main id="main-content" tabIndex={-1}>{children}</main>
 
          {/* Global AI Daily Goal Sidebar — only on Dashboard, deferred */}
          {isAuthenticated && user && currentPageName === 'UserDashboard' && mountSideEffects &&
@@ -445,6 +467,10 @@ export default function Layout({ children, currentPageName }) {
         {isAuthenticated && mountSideEffects && <WidgetDownloadPrompt />}
 
         {showPPCPopup && <PPCWelcomePopup onClose={() => setShowPPCPopup(false)} />}
+        {isAuthenticated && user?.needs_age_verification && <AgeVerificationModal />}
+        {showSessionRating && <SessionRatingModal onClose={() => { try { sessionStorage.setItem('gg_session_rated', '1'); } catch { /* ignore */ } setShowSessionRating(false); }} />}
+        {isAuthenticated && user && <AIChatAssistant />}
+        {isAuthenticated && user && <ExperimentVotePrompt userId={user.id} />}
 
         <LogoutPromptModal
           isOpen={showLogoutPrompt}

@@ -3,6 +3,7 @@
 import { db } from "../sdk/db.ts";
 import { signJwt, verifyJwt } from "../sdk/auth.ts";
 import { Core } from "../sdk/integrations.ts";
+import { getNumber } from "../sdk/settings.ts";
 
 const FRONTEND_URL = (Deno.env.get("FRONTEND_URL") ?? "http://localhost:5173").replace(/\/$/, "");
 const RESET_TTL_MIN = Number(Deno.env.get("RESET_TOKEN_TTL_MIN") ?? "60");
@@ -27,11 +28,38 @@ async function checkPw(pw: string, stored: string): Promise<boolean> {
 
 export async function authRoutes(req: Request, pathname: string): Promise<Response> {
   if (pathname === "/auth/signup" && req.method === "POST") {
-    const { email, password, full_name } = await req.json();
+    const { email, password, full_name, date_of_birth, over_18 } = await req.json();
     if (!email || !password) return Response.json({ error: "email and password required" }, { status: 400 });
+
+    // --- 18+ AGE GATE (compliance) ---------------------------------------------------------------
+    // A money-earning app is 18+ only (removes COPPA and minor-contract exposure). Require either a
+    // date of birth that computes to >= 18, or an explicit over-18 attestation. The attestation is
+    // stored on the user record as evidence.
+    const minAge = await getNumber("MIN_AGE", 18);
+    let ageOk = false;
+    let dobIso: string | null = null;
+    if (date_of_birth) {
+      const dob = new Date(date_of_birth);
+      if (!isNaN(dob.getTime())) {
+        dobIso = dob.toISOString().slice(0, 10);
+        const years = (Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+        ageOk = years >= minAge;
+      }
+    } else if (over_18 === true) {
+      ageOk = true;
+    }
+    if (!ageOk) {
+      return Response.json({ error: `You must be ${minAge} or older to use GamerGain. Please provide a date of birth showing you are at least ${minAge}.` }, { status: 403 });
+    }
+    // --------------------------------------------------------------------------------------------
+
     const existing = await db.filter("User", { email }, undefined, 1);
     if (existing.length) return Response.json({ error: "Email already registered" }, { status: 409 });
-    const user = await db.create("User", { email, password_hash: await hash(password), role: "user", full_name, current_balance: 0, total_earnings: 0 });
+    const user = await db.create("User", {
+      email, password_hash: await hash(password), role: "user", full_name,
+      current_balance: 0, total_earnings: 0,
+      date_of_birth: dobIso, age_verified_18plus: true, age_attestation_at: new Date().toISOString(),
+    });
     const token = await signJwt(user.id as string, { email });
     return Response.json({ token, user: safeUser(user) });
   }
@@ -53,6 +81,15 @@ export async function authRoutes(req: Request, pathname: string): Promise<Respon
     if (!payload) return Response.json({ error: "Unauthorized" }, { status: 401 });
     const patch = await req.json();
     delete patch.password_hash; delete patch.role; // don't let users self-elevate
+    // AGE / IDENTITY VERIFICATION IS SERVER-ONLY. A client must never be able to mark itself 18+ or
+    // change its DOB to pass the age gate — that's set at signup or by a server-side verification
+    // path, never here. This closes the self-grant-18+ tamper vector.
+    for (const f of ["age_verified_18plus", "needs_age_verification", "age_attestation_at", "date_of_birth"]) {
+      if (f in patch) {
+        delete patch[f];
+        try { await db.create("AppLog", { source: "security", event: "blocked_client_age_write", field: f, user_id: payload.sub, at: new Date().toISOString() }); } catch { /* non-fatal */ }
+      }
+    }
     // ECONOMY FIELDS ARE SERVER-ONLY. The client cannot set its own balance/earnings/points —
     // all balance changes must go through awardReward / spendBalance / placeStoreOrder /
     // purchaseStoreCredit (which use asServiceRole). This closes the client-side tamper vector.
@@ -68,6 +105,41 @@ export async function authRoutes(req: Request, pathname: string): Promise<Respon
       try { await db.create("AppLog", { source: "security", event: "blocked_client_balance_write", user_id: payload.sub, at: new Date().toISOString() }); } catch { /* non-fatal */ }
     }
     const updated = await db.update("User", payload.sub, patch);
+    return updated ? Response.json(safeUser(updated)) : Response.json({ error: "Not found" }, { status: 404 });
+  }
+
+  // --- Complete age verification (server-only setter for the 18+ gate) --------------------------
+  // Google/social signups start with needs_age_verification=true. This is the ONLY path that sets
+  // age_verified_18plus, so the age fields stay unsettable via /auth/updateMe (anti-tamper).
+  if (pathname === "/auth/complete-age-verification" && req.method === "POST") {
+    const authz = req.headers.get("authorization") ?? "";
+    const token = authz.toLowerCase().startsWith("bearer ") ? authz.slice(7) : null;
+    const payload = token ? await verifyJwt(token) : null;
+    if (!payload) return Response.json({ error: "Unauthorized" }, { status: 401 });
+    const { date_of_birth, over_18 } = await req.json().catch(() => ({}));
+    const minAge = await getNumber("MIN_AGE", 18);
+
+    let ageOk = false;
+    let dobIso: string | null = null;
+    if (date_of_birth) {
+      const dob = new Date(date_of_birth);
+      if (!isNaN(dob.getTime())) {
+        dobIso = dob.toISOString().slice(0, 10);
+        const years = (Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+        ageOk = years >= minAge;
+      }
+    } else if (over_18 === true) {
+      ageOk = true;
+    }
+    if (!ageOk) {
+      return Response.json({ error: `You must be ${minAge} or older to use GamerGain.` }, { status: 403 });
+    }
+    const updated = await db.update("User", payload.sub, {
+      date_of_birth: dobIso,
+      age_verified_18plus: true,
+      needs_age_verification: false,
+      age_attestation_at: new Date().toISOString(),
+    });
     return updated ? Response.json(safeUser(updated)) : Response.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -159,7 +231,9 @@ export async function authRoutes(req: Request, pathname: string): Promise<Respon
     let rows = await db.filter("User", { email: info.email }, undefined, 1);
     let user = rows[0];
     if (!user) {
-      user = await db.create("User", { email: info.email, role: "user", full_name: info.name ?? "", avatar_url: info.picture ?? "", google_sub: info.sub, current_balance: 0, total_earnings: 0 });
+      // Google sign-in doesn't provide age. Create the account but mark it as needing the 18+
+      // check so the app can prompt for a date of birth before any earning is enabled.
+      user = await db.create("User", { email: info.email, role: "user", full_name: info.name ?? "", avatar_url: info.picture ?? "", google_sub: info.sub, current_balance: 0, total_earnings: 0, age_verified_18plus: false, needs_age_verification: true });
     }
     const jwt = await signJwt(user.id as string, { email: info.email });
     return Response.json({ token: jwt, user: safeUser(user) });

@@ -49,6 +49,7 @@ const entities = new Proxy({}, {
 const auth = {
   async me() { return api('/auth/me', { method: 'GET' }); },
   async updateMe(data) { return api('/auth/updateMe', { body: data }); },
+  async completeAgeVerification(data) { return api('/auth/complete-age-verification', { body: data }); },
   async login(email, password) { const r = await api('/auth/login', { body: { email, password } }); setToken(r.token); return r.user; },
   async signup(email, password, full_name) { const r = await api('/auth/signup', { body: { email, password, full_name } }); setToken(r.token); return r.user; },
   async requestPasswordReset(email) { return api('/auth/request-reset', { body: { email } }); },

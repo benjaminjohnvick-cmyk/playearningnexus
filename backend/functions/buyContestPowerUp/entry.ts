@@ -1,5 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { featureAllowed } from "../../sdk/jurisdiction.ts";
+import { getNumber } from "../../sdk/settings.ts";
 
 // Purchases a head-to-head contest power-up, deducting virtual currency from the
 // buyer and recording a ContestPowerUp. Called from HeadToHeadContest.
@@ -9,6 +11,15 @@ export default __handler(async (req) => {
     const user = await base44.auth.me();
     if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Compliance (Wave 2): paid contest features are jurisdiction- and age-gated.
+    const __jur = user.jurisdiction ?? user.state ?? null;
+    if (!featureAllowed("jackpots", __jur)) {
+      return Response.json({ error: "Contest features aren't available in your location." }, { status: 403 });
+    }
+    if (user.age_verified_18plus !== true) {
+      return Response.json({ error: "You must verify you're 18 or older to buy contest power-ups." }, { status: 403 });
     }
 
     const body = await req.json();
@@ -22,7 +33,7 @@ export default __handler(async (req) => {
       );
     }
 
-    const COST = 0.5; // matches ContestPowerUp.cost default
+    const COST = await getNumber("CONTEST_POWERUP_PRICE", 0.5); // admin-adjustable; default matches ContestPowerUp.cost
     const balance = user.virtual_currency || 0;
     if (balance < COST) {
       return Response.json(

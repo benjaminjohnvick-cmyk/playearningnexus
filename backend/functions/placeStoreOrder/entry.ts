@@ -1,6 +1,8 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { isBusinessAccount, applyMarkup, STORE_MARKUP } from "../../sdk/payout-policy.ts";
+import { getNumber } from "../../sdk/settings.ts";
+import { blockedOrderReason } from "../../sdk/catalog-policy.ts";
 
 // Server-authoritative store order (product OR online service → pay → AI fulfillment).
 //
@@ -30,13 +32,24 @@ export default __handler(async (req) => {
       return Response.json({ error: "Missing shipping_address" }, { status: 400 });
     }
 
+    // Compliance (Wave 2): block regulated / age-restricted categories from AI fulfillment.
+    const __blocked = blockedOrderReason({
+      name: product.product_name || product.name,
+      category: product.category || product.product_category,
+    });
+    if (__blocked) {
+      return Response.json({ error: `This item can't be fulfilled: ${__blocked}. Regulated and age-restricted products are not available.` }, { status: 400 });
+    }
+
     const business = isBusinessAccount(user.role);
     const rawPrice = Number(product.price ?? (product.price_with_markup ? product.price_with_markup / (1 + STORE_MARKUP) : 0)) || 0;
     if (rawPrice <= 0) return Response.json({ error: "Invalid product price" }, { status: 400 });
 
     // Markup rule: NONE on refund-credit payments (anyone), NONE for business accounts; otherwise 10%.
     const markupFree = payment_method === "refund_credit" || business;
-    const charge = markupFree ? round2(rawPrice) : applyMarkup(rawPrice, user.role);
+    // Store markup is admin-adjustable live (STORE_MARKUP). applyMarkup() stays as the env-default fallback.
+    const markupRate = markupFree ? 0 : await getNumber("STORE_MARKUP", STORE_MARKUP);
+    const charge = round2(rawPrice * (1 + markupRate));
     const markupApplied = round2(charge - rawPrice);
 
     // Deduct the right balance on the server (authoritative).

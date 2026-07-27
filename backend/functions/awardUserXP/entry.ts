@@ -1,7 +1,8 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { getNumber } from "../../sdk/settings.ts";
 
-const LEVEL_XP_CURVE = 100; // Each level requires 100 more XP than previous
+const LEVEL_XP_CURVE = 100; // Default per-level slope (admin-adjustable via XP_PER_LEVEL)
 const XP_PER_SURVEY = 10;
 const XP_PER_STREAK_DAY = 5;
 
@@ -72,9 +73,10 @@ export default __handler(async (req) => {
     let newFrame = userLevel.profile_frame;
     let unlockedCategories = userLevel.unlocked_survey_categories || [];
 
-    // Check for level ups
+    // Check for level ups (per-level slope is admin-adjustable / AI-optimized).
+    const levelXpCurve = await getNumber("XP_PER_LEVEL", LEVEL_XP_CURVE);
     while (currentLevel < 50) {
-      const xpRequired = LEVEL_XP_CURVE * currentLevel;
+      const xpRequired = levelXpCurve * currentLevel;
       if (newTotalXp >= xpRequired) {
         currentLevel++;
         leveledUp = true;

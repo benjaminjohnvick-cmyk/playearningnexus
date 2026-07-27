@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { canEmailMarket, emailUnsubscribeFooter } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -23,6 +24,9 @@ export default __handler(async (req) => {
         // Daily email throttle — max 1 automated email per user per day
         const lastEmailDate = appUser.last_automated_email_date?.split('T')[0];
         if (lastEmailDate === todayStr) { throttled++; continue; }
+
+        // Compliance (Wave 2 / CAN-SPAM): only send to opted-in users; gated by email_marketing flag.
+        if (!(await canEmailMarket(appUser))) { throttled++; continue; }
 
         // Get user profile and activity data
         const userProfile = {
@@ -66,7 +70,7 @@ Return JSON with:
           await base44.integrations.Core.SendEmail({
             to: appUser.email,
             subject: emailSequence.email_subject,
-            body: emailSequence.email_body,
+            body: emailSequence.email_body + emailUnsubscribeFooter(appUser),
             from_name: 'GamerGain'
           });
           await base44.entities.User.update(appUser.id, { last_automated_email_date: new Date().toISOString() });

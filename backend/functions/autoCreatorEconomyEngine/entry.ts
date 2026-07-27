@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { getNumber } from "../../sdk/settings.ts";
 
 // Automates: creator payouts, subscription renewals, tip processing, content monetization, IAP validation
 export default __handler(async (req) => {
@@ -46,20 +47,24 @@ export default __handler(async (req) => {
     }
     results.subscriptions_flagged_for_renewal = renewalsProcessed;
 
-    // 4. Process streamer tips
+    // 4. Process streamer tips — platform keeps CREATOR_PLATFORM_FEE (default 0 = creator gets 100%).
+    const creatorFee = Math.min(1, Math.max(0, await getNumber("CREATOR_PLATFORM_FEE", 0)));
     const pendingTips = await base44.asServiceRole.entities.StreamerTip.filter({ status: 'pending' });
     let tipsProcessed = 0;
     for (const tip of pendingTips.slice(0, 50)) {
+      const netTip = Math.round(((Number(tip.amount) || 0) * (1 - creatorFee)) * 100) / 100;
       await base44.asServiceRole.entities.StreamerTip.update(tip.id, {
         status: 'processed',
-        processed_at: now
+        processed_at: now,
+        platform_fee: Math.round(((Number(tip.amount) || 0) * creatorFee) * 100) / 100,
+        net_amount: netTip,
       });
-      // Credit streamer
+      // Credit streamer their net share
       if (tip.streamer_id && tip.amount) {
         const streamer = await base44.asServiceRole.entities.CreatorProfile.filter({ user_id: tip.streamer_id });
         if (streamer.length > 0) {
           await base44.asServiceRole.entities.CreatorProfile.update(streamer[0].id, {
-            total_tips_received: (streamer[0].total_tips_received || 0) + tip.amount
+            total_tips_received: (streamer[0].total_tips_received || 0) + netTip
           });
         }
       }

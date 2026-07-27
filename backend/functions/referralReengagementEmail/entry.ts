@@ -1,6 +1,7 @@
 // Scheduled: runs daily — sends re-engagement emails to stalled referrals (7+ days inactive, < $5 earned)
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { canEmailMarket } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -40,6 +41,9 @@ export default __handler(async (req) => {
       const lastEmailDate = user.last_automated_email_date?.split('T')[0];
       if (lastEmailDate === todayStr) { throttled++; continue; }
 
+      // Compliance (Wave 2 / CAN-SPAM): promotional re-engagement — opted-in users only.
+      if (!(await canEmailMarket(user))) { throttled++; continue; }
+
       const referrerName = referrer?.full_name || 'your friend';
       const totalEarned = seq.total_earned || 0;
       const remaining = Math.max(0, 5 - totalEarned).toFixed(2);
@@ -76,7 +80,7 @@ export default __handler(async (req) => {
     </a>
   </div>
   <div style="padding:16px 32px;border-top:1px solid #e5e7eb;text-align:center;">
-    <p style="color:#9ca3af;font-size:12px;margin:0;">GamerGain · Unsubscribe anytime</p>
+    <p style="color:#9ca3af;font-size:12px;margin:0;">GamerGain · <a href="${(Deno.env.get('FRONTEND_URL')||'https://gamergain.app').replace(/\/$/,'')}/unsubscribe?email=${encodeURIComponent(user.email)}" style="color:#9ca3af;">Unsubscribe</a></p>
   </div>
 </div>
         `.trim(),

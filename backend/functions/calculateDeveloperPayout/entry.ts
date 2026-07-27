@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
+import { getNumber } from "../../sdk/settings.ts";
 
 export default __handler(async (req) => {
   try {
@@ -40,8 +41,9 @@ export default __handler(async (req) => {
     const totalAdCredit = adCredits.reduce((sum, ad) => sum + (ad.total_advertising_credit || 0), 0);
     const adCreditUsed = adCredits.reduce((sum, ad) => sum + (ad.credit_used || 0), 0);
 
-    // Calculate 50/50 split
-    const developerShare = totalRevenue * 0.5;
+    // Developer's cut of revenue (admin-adjustable; default 0.5 = the current 50/50 split).
+    const devShareRate = await getNumber("DEVELOPER_REVENUE_SHARE", 0.5);
+    const developerShare = totalRevenue * devShareRate;
 
     // Net payout = developer share (advertising credit is already accounted in IAPAdvertisingCredit)
     const netPayoutAmount = developerShare;

@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
+import { releaseReservation } from "../../sdk/payout-reservation.ts";
 
 export default __handler(async (req) => {
   const base44 = createClientFromRequest(req);
@@ -72,6 +73,11 @@ export default __handler(async (req) => {
           body: `Great news! Your payout of $${pr.amount} has been approved and will arrive via ${pr.method || 'PayPal'} within 1-3 business days.`
         });
       } else if (pr.status === 'rejected') {
+        // Release the reserved hold — the money never left, so restore it to available balance.
+        if (!pr.reservation_released) {
+          await releaseReservation(base44, pr.user_id, Number(pr.amount) || 0).catch(() => null);
+          await base44.asServiceRole.entities.PayoutRequest.update(pr.id, { reservation_released: true }).catch(() => null);
+        }
         await base44.integrations.Core.SendEmail({
           to: user.email,
           subject: '❌ Payout Request Rejected',

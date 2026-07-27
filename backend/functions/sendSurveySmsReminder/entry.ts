@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { canSms, SMS_OPT_OUT_SUFFIX } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -34,11 +35,11 @@ export default __handler(async (req) => {
 
     for (const user of users) {
       const phoneNumber = user.phone_number;
-      const smsPref = user.notification_preferences?.sms_enabled;
 
-      // Skip if no phone number or SMS not enabled
+      // Compliance (Wave 2 / TCPA): only send to users who AFFIRMATIVELY opted in to SMS and haven't
+      // opted out; the whole channel is gated by the sms_marketing kill-switch (default OFF).
       if (!phoneNumber) { noPhone++; continue; }
-      if (smsPref === false) { optedOut++; continue; }
+      if (!(await canSms(user))) { optedOut++; continue; }
 
       const earned = earningsMap[user.id] || 0;
 
@@ -46,7 +47,7 @@ export default __handler(async (req) => {
       if (earned >= DAILY_GOAL) { alreadyCompleted++; continue; }
 
       const remaining = (DAILY_GOAL - earned).toFixed(2);
-      const smsBody = `🎮 GamerGain: You still need $${remaining} in survey earnings today! Complete your surveys now to hit your $${DAILY_GOAL.toFixed(2)} goal. ${appUrl}/Surveys`;
+      const smsBody = `🎮 GamerGain: You still need $${remaining} in survey earnings today! Complete your surveys now to hit your $${DAILY_GOAL.toFixed(2)} goal. ${appUrl}/Surveys` + SMS_OPT_OUT_SUFFIX;
 
       try {
         const smsResponse = await fetch(

@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import LockoutModeSettings from '../components/premium/LockoutModeSettings';
 import LocaleSettings from '../components/locale/LocaleSettings';
 import { useQuery } from '@tanstack/react-query';
+import DataPrivacyControls from '../components/user/DataPrivacyControls';
 
 export default function Settings() {
   const [user, setUser] = useState(null);
@@ -209,7 +210,7 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="profile">
               <User className="w-4 h-4 mr-2" />
               Profile
@@ -229,6 +230,10 @@ export default function Settings() {
             <TabsTrigger value="security">
               <Shield className="w-4 h-4 mr-2" />
               Security
+            </TabsTrigger>
+            <TabsTrigger value="privacy">
+              <Shield className="w-4 h-4 mr-2" />
+              Privacy
             </TabsTrigger>
           </TabsList>
 
@@ -553,6 +558,9 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+          <TabsContent value="privacy">
+            <DataPrivacyControls />
           </TabsContent>
         </Tabs>
       </div>

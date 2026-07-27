@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
 
 // Server-authoritative user-to-user STORE-CREDIT transfer (closed-loop platform credit, not
 // cash). Both sides move on the server: debit sender, credit receiver, record the transfer.
@@ -13,6 +14,12 @@ export default __handler(async (req) => {
     const base44 = createClientFromRequest(req);
     const sender = await base44.auth.me();
     if (!sender) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+    // Compliance (Wave 2): user-to-user value movement is a money-transmission trigger. Gated OFF by
+    // default; an admin can enable it (per jurisdiction) once counsel signs off.
+    if (!(await isEnabled("p2p_transfers"))) {
+      return Response.json({ error: "User-to-user transfers are currently disabled (compliance kill-switch: p2p_transfers)." }, { status: 403 });
+    }
 
     const body = await req.json();
     const amount = Math.round((Number(body.amount) || 0) * 100) / 100;

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { getNumber } from "../../sdk/settings.ts";
 
 export default __handler(async (req) => {
   try {
@@ -32,8 +33,9 @@ export default __handler(async (req) => {
     // Award jackpot entries (5 per conversion)
     const jackpotEntriesAwarded = 5;
     
-    // Award wishlist credit (random $1-5)
-    const creditAwarded = Math.floor(Math.random() * 5) + 1;
+    // Award wishlist credit — a fixed, admin-adjustable amount (not random, so conversions are
+    // deterministic and auditable).
+    const creditAwarded = await getNumber("WISHLIST_REFERRAL_CREDIT", 2);
 
     // Update referral
     await base44.asServiceRole.entities.WishlistShareReferral.update(referral.id, {

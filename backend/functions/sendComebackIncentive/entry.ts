@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { canEmailMarket, emailUnsubscribeFooter } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -17,6 +18,11 @@ export default __handler(async (req) => {
     const lastEmailDate = userRecord?.last_automated_email_date?.split('T')[0];
     if (lastEmailDate === todayStr) {
       return Response.json({ success: true, incentive_type: 'standard', throttled: true, message: 'User already received an automated email today' });
+    }
+
+    // Compliance (Wave 2 / CAN-SPAM): promotional win-back — opted-in users only.
+    if (!(await canEmailMarket(userRecord ?? { email }))) {
+      return Response.json({ success: true, skipped: true, reason: 'user not opted in to marketing email' });
     }
 
     // Determine incentive tier based on churn score
@@ -45,7 +51,7 @@ export default __handler(async (req) => {
           <p><strong>${message}</strong></p>
           <p>Your account is all set, just log in and start earning!</p>
           <p><a href="https://gamergain.com/login">Log in now</a></p>
-        `,
+        ` + emailUnsubscribeFooter(userRecord ?? { email }),
       });
       if (userRecord) {
         await base44.asServiceRole.entities.User.update(user_id, { last_automated_email_date: new Date().toISOString() });

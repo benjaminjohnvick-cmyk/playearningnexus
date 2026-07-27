@@ -1,6 +1,9 @@
 #env
 .env
 .env.*
+# ...but DO keep the committed env templates (they document every variable, no secrets):
+!.env.example
+!**/.env.example
 
 # Logs
 logs

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { canSms, SMS_OPT_OUT_SUFFIX } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -59,17 +60,17 @@ Happy earning,
 The GamerGain Team
       `.trim();
 
-      // Try SMS first if phone number is set, otherwise send email
+      // Try SMS first if phone number is set AND the user has TCPA consent, otherwise send email.
       const phoneNumber = user.phone_number;
 
-      if (phoneNumber) {
+      if (phoneNumber && (await canSms(user))) {
         try {
           const twilioSid = Deno.env.get('TWILIO_ACCOUNT_SID');
           const twilioToken = Deno.env.get('TWILIO_AUTH_TOKEN');
           const twilioPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
 
           if (twilioSid && twilioToken && twilioPhone) {
-            const smsBody = `GamerGain: You're $${remaining} away from your $3 daily goal! Complete surveys to unlock the store. ${req.headers.get('origin') || 'https://gamergain.app'}/InAppGameStore`;
+            const smsBody = `GamerGain: You're $${remaining} away from your $3 daily goal! Complete surveys to unlock the store. ${req.headers.get('origin') || 'https://gamergain.app'}/InAppGameStore` + SMS_OPT_OUT_SUFFIX;
 
             const smsResponse = await fetch(
               `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`,

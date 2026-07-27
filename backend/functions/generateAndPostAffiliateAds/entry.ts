@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 /**
  * generateAndPostAffiliateAds
@@ -94,6 +95,8 @@ Respond as JSON.`,
         } else if (platform === 'snapchat' || platform === 'tiktok') {
           adContent = (todayTopic.snapchat_tiktok_ad || '').replace('[REFERRAL_LINK]', referralLink);
         }
+        // Compliance (Wave 2): FTC sponsorship disclosure on every affiliate ad.
+        adContent = withAdDisclosure(adContent);
 
         // Log the post attempt
         const postRecord = await base44.asServiceRole.entities.AffiliateAdPost.create({

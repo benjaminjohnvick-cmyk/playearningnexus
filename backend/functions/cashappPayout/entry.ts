@@ -2,6 +2,8 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
 import { isPartnerPayout } from "../../sdk/payout-policy.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
+import { applyBackupWithholding } from "../../sdk/tax.ts";
 import Stripe from 'npm:stripe@14.25.0';
 
 // CashApp Cash Card is a Visa debit card.
@@ -33,12 +35,20 @@ export default __handler(async (req) => {
       }, { status: 200 });
     }
 
+    // --- cash_out kill-switch: an emergency brake on ALL cash disbursement (safe-default OFF) ---
+    if (!(await isEnabled('cash_out', user?.jurisdiction ?? user?.state ?? null))) {
+      return Response.json({ blocked: true, cash_out_disabled: true, cash_sent: false,
+        message: 'Cash payouts are currently disabled.' }, { status: 403 });
+    }
+
     if (!payoutId || !cardToken || !amount) {
       return Response.json({ error: 'Missing required fields: payoutId, cardToken, amount' }, { status: 400 });
     }
     if (amount < 10) return Response.json({ error: 'Minimum payout is $10' }, { status: 400 });
 
-    const amountCents = Math.round(amount * 100);
+    // Tax: backup withholding when no W-9 is on file — pay net, set aside `withheld`.
+    const wh = applyBackupWithholding(Number(amount), user);
+    const amountCents = Math.round(wh.net * 100);
 
     // Create or retrieve a Stripe Connected Account for this user
     let stripeAccountId = user.stripe_account_id;
@@ -86,13 +96,16 @@ export default __handler(async (req) => {
     await base44.asServiceRole.entities.Payout.update(payoutId, {
       status: 'processing',
       external_transaction_id: payout.id,
+      net_amount: wh.net,
+      withheld_amount: wh.withheld,
+      withholding_rate: wh.rate,
     });
 
     await base44.asServiceRole.entities.Notification.create({
       user_id: user.id,
       type: 'purchase_complete',
       title: '💚 Cash App Payout Sent!',
-      message: `Your $${amount.toFixed(2)} has been sent to your Cash Card via Stripe Instant Payout. Arrives within 30 minutes. ID: ${payout.id}`,
+      message: `Your $${wh.net.toFixed(2)} has been sent to your Cash Card via Stripe Instant Payout.${wh.withheld > 0 ? ` ($${wh.withheld.toFixed(2)} withheld — submit your W-9 to receive the full amount.)` : ''} Arrives within 30 minutes. ID: ${payout.id}`,
       status: 'unread',
       delivery_method: ['in_app'],
     });

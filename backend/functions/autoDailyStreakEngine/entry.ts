@@ -1,7 +1,9 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { getNumber } from "../../sdk/settings.ts";
+import { allowedEarn } from "../../sdk/earn-cap.ts";
 
-// Daily: update streaks, send reminders for at-risk streaks
+// Daily: update streaks, send reminders for at-risk streaks, pay the daily streak reward
 export default __handler(async (req) => {
   const base44 = createClientFromRequest(req);
 
@@ -67,6 +69,31 @@ export default __handler(async (req) => {
         }
       }
     }
+
+    // Pay the daily streak reward to users with an active streak today (STREAK_DAILY_REWARD; default
+    // 0 = off). Idempotent per day, and clamped by the per-user daily earnings cap.
+    const streakReward = await getNumber("STREAK_DAILY_REWARD", 0);
+    let streakRewardsPaid = 0;
+    if (streakReward > 0) {
+      for (const streak of milestoneStreaks) {
+        if (streak.last_activity_date !== today || (streak.current_streak || 0) < 1) continue;
+        if (streak.reward_paid_date === today) continue; // already paid today
+        const { allowed } = await allowedEarn(base44, streak.user_id, streakReward);
+        if (allowed <= 0) continue;
+        const user = (await base44.asServiceRole.entities.User.filter({ id: streak.user_id }))[0];
+        if (!user) continue;
+        await base44.asServiceRole.entities.User.update(streak.user_id, {
+          current_balance: (user.current_balance || 0) + allowed,
+          total_earnings: (user.total_earnings || 0) + allowed,
+        });
+        const de = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id: streak.user_id, date: today });
+        if (de.length) await base44.asServiceRole.entities.DailyEarnings.update(de[0].id, { total_earned: (de[0].total_earned || 0) + allowed });
+        else await base44.asServiceRole.entities.DailyEarnings.create({ user_id: streak.user_id, date: today, total_earned: allowed });
+        await base44.asServiceRole.entities.Streak.update(streak.id, { reward_paid_date: today });
+        streakRewardsPaid++;
+      }
+    }
+    results.streak_rewards_paid = streakRewardsPaid;
 
     results.updated = streaks.length;
     return Response.json({ ok: true, ...results });

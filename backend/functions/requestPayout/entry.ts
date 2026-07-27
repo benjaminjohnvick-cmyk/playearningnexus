@@ -1,7 +1,11 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { isPartnerPayout } from "../../sdk/payout-policy.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
+import { getNumber } from "../../sdk/settings.ts";
+import { applyBackupWithholding } from "../../sdk/tax.ts";
 import { gate } from "../../sdk/oversight.ts";
+import { postLedgerEntry } from "../../sdk/ledger.ts";
 
 export default __handler(async (req) => {
   try {
@@ -25,14 +29,26 @@ export default __handler(async (req) => {
       }, { status: 200 });
     }
 
-    if (!amount || amount < 5) return Response.json({ error: 'Minimum payout is $5' }, { status: 400 });
+    // --- cash_out kill-switch: an emergency brake on ALL cash disbursement (safe-default OFF) ---
+    if (!(await isEnabled('cash_out', user?.jurisdiction ?? user?.state ?? null))) {
+      return Response.json({ blocked: true, cash_out_disabled: true,
+        message: 'Cash payouts are currently disabled.' }, { status: 403 });
+    }
+
+    const minPayout = await getNumber("MIN_PAYOUT_USD", 5);
+    if (!amount || amount < minPayout) return Response.json({ error: `Minimum payout is $${minPayout}` }, { status: 400 });
     if (!payment_method) return Response.json({ error: 'Missing payment method' }, { status: 400 });
 
-    // Check available balance
+    // Check available balance (earnings minus already-reserved pending payouts).
     const availableBalance = user.total_earnings - (user.pending_payouts || 0);
     if (availableBalance < amount) {
       return Response.json({ error: 'Insufficient balance' }, { status: 400 });
     }
+
+    // Reserve the funds immediately so a second (concurrent/repeat) request can't pass the same
+    // balance check and double-spend. Best-effort without a DB transaction; re-reads current value.
+    const reserved = (user.pending_payouts || 0) + Number(amount);
+    await base44.asServiceRole.entities.User.update(user.id, { pending_payouts: reserved });
 
     // Get trust score
     const trustScores = await base44.asServiceRole.entities.RespondentTrustScore.filter({ user_id: user.id });
@@ -61,12 +77,19 @@ export default __handler(async (req) => {
 
     const passedSafetyChecks = riskScore < 50 && trustScore >= 40;
 
+    // Tax: backup withholding when no W-9 is on file. The user's balance is reduced by the gross
+    // amount; they receive `net`, and `withheld` is set aside for IRS remittance.
+    const wh = applyBackupWithholding(Number(amount), user);
+
     // Create payout request
     const payoutRequest = await base44.asServiceRole.entities.PayoutRequest.create({
       user_id: user.id,
       user_email: user.email,
       user_name: user.full_name,
-      amount,
+      amount,                          // gross (counts toward the 1099 total)
+      net_amount: wh.net,              // what the partner actually receives
+      withheld_amount: wh.withheld,    // backup withholding set aside
+      withholding_rate: wh.rate,
       payment_method,
       payment_details,
       trust_score: trustScore,
@@ -80,13 +103,22 @@ export default __handler(async (req) => {
       status: passedSafetyChecks ? 'approved' : 'pending',
     });
 
+    // Compliance (Wave 2): immutable money-movement audit entry for the request.
+    await postLedgerEntry({
+      user_id: user.id, type: 'payout_request', amount: -Math.abs(Number(amount) || 0), currency: 'USD',
+      ref: payoutRequest.id, idempotency_key: `requestPayout:${payoutRequest.id}`,
+      meta: { payment_method, payout_type: payout_type ?? null, auto_approved: passedSafetyChecks },
+    }).catch(() => null);
+
     // If auto-approved, trigger payout webhook
     if (passedSafetyChecks) {
       const webhookPayload = {
         request_id: payoutRequest.id,
         user_id: user.id,
         user_email: user.email,
-        amount,
+        amount: wh.net,                // send the net (post-withholding) amount
+        gross_amount: wh.gross,
+        withheld_amount: wh.withheld,
         payment_method,
         payment_details,
         timestamp: new Date().toISOString(),
@@ -118,6 +150,12 @@ export default __handler(async (req) => {
       trust_score: trustScore,
       risk_score: riskScore,
       risk_flags: riskFactors,
+      gross_amount: wh.gross,
+      net_amount: wh.net,
+      withheld_amount: wh.withheld,
+      withholding_note: wh.withheld > 0
+        ? `$${wh.withheld.toFixed(2)} backup withholding applied (no W-9 on file). Submit your W-9 to receive the full amount.`
+        : null,
       next_steps: passedSafetyChecks
         ? 'Your payout is processing and will arrive within 1-2 business days.'
         : 'Your request is pending admin review. You\'ll receive an email within 24 hours.',

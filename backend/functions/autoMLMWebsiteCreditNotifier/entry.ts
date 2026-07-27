@@ -33,7 +33,7 @@ export default __handler(async (req) => {
           user_id: node.user_id,
           type: 'website_credit_milestone',
           title: `🎉 $${milestone} Website Credit Milestone!`,
-          message: `You've accumulated $${milestone} in platform credit from your MLM referral network! Redeem it in the store today.`,
+          message: `You've accumulated $${milestone} in platform credit from your affiliate referrals! Redeem it in the store today.`,
           is_read: false
         });
 
@@ -42,7 +42,7 @@ export default __handler(async (req) => {
           user_id: node.user_id,
           activity_type: 'achievement',
           title: `💳 Earned $${milestone} in Website Credit`,
-          description: `MLM referral network milestone reached!`,
+          description: `Affiliate referral milestone reached!`,
           icon: '💳',
           is_public: true
         });

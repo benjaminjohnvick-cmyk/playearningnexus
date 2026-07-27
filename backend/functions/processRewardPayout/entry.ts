@@ -1,5 +1,8 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { isPartnerPayout } from "../../sdk/payout-policy.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
+import { applyBackupWithholding } from "../../sdk/tax.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
@@ -55,6 +58,10 @@ export default __handler(async (req) => {
     const payload = await req.json().catch(() => ({}));
     const { action } = payload;
 
+    // Closed-loop policy: cash only leaves the system for business-partner payouts, and only while
+    // the cash_out kill-switch is ON. Regular-user earnings stay as on-site credit.
+    const cashOutOn = await isEnabled("cash_out");
+
     // ── Process all pending rewards automatically ──────────────────────────────
     if (action === 'process_all') {
       const token = await getPayPalToken();
@@ -68,6 +75,9 @@ export default __handler(async (req) => {
       for (const u of allUsers) {
         const pending = u.pending_earnings || 0;
         if (pending <= 0) continue;
+
+        // Closed-loop: skip anyone who isn't a cash-eligible business partner (or if cash_out is off).
+        if (!cashOutOn || !isPartnerPayout({ role: u.role, payout_type: 'referral_commission' })) continue;
 
         const pref = allPrefs.find(p => p.user_id === u.id);
         if (!pref || !pref.auto_payout_enabled) continue;
@@ -83,10 +93,13 @@ export default __handler(async (req) => {
           if (daysSinceLast < minDays) continue;
         }
 
+        // Tax: backup withholding when no W-9 is on file — send net, set aside `withheld`.
+        const wh = applyBackupWithholding(pending, u);
+
         // Send via PayPal
         const paypalResult = await sendPayPalPayout(
-          token, pref.paypal_email, pending,
-          `GamerGain referral earnings payout of $${pending.toFixed(2)}`,
+          token, pref.paypal_email, wh.net,
+          `GamerGain referral earnings payout of $${wh.net.toFixed(2)}`,
           `ref_${u.id}_${Date.now()}`
         );
 
@@ -96,7 +109,10 @@ export default __handler(async (req) => {
         // Record payout
         const payoutRecord = await base44.asServiceRole.entities.Payout.create({
           user_id: u.id,
-          amount: pending,
+          amount: pending,               // gross
+          net_amount: wh.net,
+          withheld_amount: wh.withheld,
+          withholding_rate: wh.rate,
           method: 'paypal',
           status: success ? 'completed' : 'failed',
           external_transaction_id: payoutId,
@@ -113,7 +129,7 @@ export default __handler(async (req) => {
             user_id: u.id,
             type: 'referral_earnings',
             title: '💸 Payout Sent!',
-            message: `$${pending.toFixed(2)} has been sent to your PayPal (${pref.paypal_email}). It may take 1–3 business days to arrive.`,
+            message: `$${wh.net.toFixed(2)} has been sent to your PayPal (${pref.paypal_email}).${wh.withheld > 0 ? ` ($${wh.withheld.toFixed(2)} withheld — submit your W-9 to receive the full amount.)` : ''} It may take 1–3 business days to arrive.`,
             status: 'unread',
             delivery_method: ['in_app'],
           });
@@ -133,6 +149,12 @@ export default __handler(async (req) => {
       const targetUser = allUsers.find(u => u.id === target_user_id);
       if (!targetUser) return Response.json({ error: 'User not found' }, { status: 404 });
 
+      // Closed-loop: only business partners can receive cash, and only while cash_out is ON.
+      if (!cashOutOn || !isPartnerPayout({ role: targetUser.role, payout_type: reward_type || 'manual' })) {
+        return Response.json({ blocked: true, closed_loop: true, cash_sent: false,
+          message: 'Closed-loop platform: this recipient is not cash-eligible. Reward remains as on-site credit.' }, { status: 200 });
+      }
+
       const prefs = await base44.asServiceRole.entities.PayoutPreference.filter({ user_id: target_user_id });
       const pref = prefs[0];
 
@@ -140,10 +162,12 @@ export default __handler(async (req) => {
         return Response.json({ error: 'User has no PayPal payout method configured' }, { status: 400 });
       }
 
+      // Tax: backup withholding when no W-9 is on file — send net, set aside `withheld`.
+      const wh = applyBackupWithholding(Number(amount), targetUser);
       const token = await getPayPalToken();
       const note = reward_note || `GamerGain reward: ${reward_type || 'contest_win'}`;
       const paypalResult = await sendPayPalPayout(
-        token, pref.paypal_email, amount, note,
+        token, pref.paypal_email, wh.net, note,
         `${reward_type || 'reward'}_${target_user_id}_${Date.now()}`
       );
 
@@ -152,7 +176,10 @@ export default __handler(async (req) => {
 
       await base44.asServiceRole.entities.Payout.create({
         user_id: target_user_id,
-        amount,
+        amount,                          // gross
+        net_amount: wh.net,
+        withheld_amount: wh.withheld,
+        withholding_rate: wh.rate,
         method: 'paypal',
         status: success ? 'completed' : 'failed',
         external_transaction_id: payoutId,
@@ -165,7 +192,7 @@ export default __handler(async (req) => {
           user_id: target_user_id,
           type: 'referral_earnings',
           title: '🎉 You received a reward!',
-          message: `$${amount.toFixed(2)} has been sent to your PayPal account. ${note}`,
+          message: `$${wh.net.toFixed(2)} has been sent to your PayPal account.${wh.withheld > 0 ? ` ($${wh.withheld.toFixed(2)} withheld — submit your W-9 for the full amount.)` : ''} ${note}`,
           status: 'unread',
           delivery_method: ['in_app'],
         });
@@ -185,8 +212,11 @@ export default __handler(async (req) => {
       const prefs = await base44.asServiceRole.entities.PayoutPreference.filter({ user_id: winner_user_id });
       const pref = prefs[0];
 
-      if (!pref || pref.payout_method !== 'paypal' || !pref.paypal_email) {
-        // Credit to balance instead if no PayPal configured
+      // Closed-loop: unless the winner is a cash-eligible partner (and cash_out is ON), keep the
+      // prize as on-site credit rather than sending cash.
+      const winnerCashOk = cashOutOn && isPartnerPayout({ role: winner.role, payout_type: 'contest_win' });
+      if (!winnerCashOk || !pref || pref.payout_method !== 'paypal' || !pref.paypal_email) {
+        // Credit to balance instead if not cash-eligible or no PayPal configured
         await base44.asServiceRole.auth.updateUser(winner_user_id, {
           pending_earnings: (winner.pending_earnings || 0) + prize_amount,
           total_earnings: (winner.total_earnings || 0) + prize_amount,
@@ -202,10 +232,12 @@ export default __handler(async (req) => {
         return Response.json({ ok: true, method: 'balance_credit', amount: prize_amount });
       }
 
+      // Tax: backup withholding when no W-9 is on file — send net, set aside `withheld`.
+      const wh = applyBackupWithholding(Number(prize_amount), winner);
       const token = await getPayPalToken();
       const note = `GamerGain contest win: ${contest_name} — Prize: $${prize_amount.toFixed(2)}`;
       const paypalResult = await sendPayPalPayout(
-        token, pref.paypal_email, prize_amount, note,
+        token, pref.paypal_email, wh.net, note,
         `contest_${winner_user_id}_${Date.now()}`
       );
 
@@ -213,7 +245,10 @@ export default __handler(async (req) => {
 
       await base44.asServiceRole.entities.Payout.create({
         user_id: winner_user_id,
-        amount: prize_amount,
+        amount: prize_amount,            // gross
+        net_amount: wh.net,
+        withheld_amount: wh.withheld,
+        withholding_rate: wh.rate,
         method: 'paypal',
         status: success ? 'completed' : 'failed',
         external_transaction_id: paypalResult.batch_header?.payout_batch_id,
@@ -226,7 +261,7 @@ export default __handler(async (req) => {
           user_id: winner_user_id,
           type: 'referral_earnings',
           title: `🏆 Contest Win Paid: ${contest_name}!`,
-          message: `$${prize_amount.toFixed(2)} has been sent to your PayPal (${pref.paypal_email}). Congratulations!`,
+          message: `$${wh.net.toFixed(2)} has been sent to your PayPal (${pref.paypal_email}).${wh.withheld > 0 ? ` ($${wh.withheld.toFixed(2)} withheld — submit your W-9 for the full amount.)` : ''} Congratulations!`,
           status: 'unread',
           delivery_method: ['in_app'],
         });

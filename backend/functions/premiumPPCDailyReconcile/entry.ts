@@ -1,141 +1,134 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import {
-  BUSINESS_REFUND_PER_DAY, chargeSavedCardOffSession, DAILY_MIN_EARN, hasDoubled,
-  liveChargesEnabled, MISSED_DAY_CHARGE, round2, SOCIAL_CREDIT_PER_DAY, utcDay,
+  annualEarnCeiling, BUSINESS_REFUND_PER_DAY, hasDoubled, round2, SOCIAL_CREDIT_PER_DAY, utcDay,
 } from "../../sdk/premium-ppc.ts";
+import { dailyBoostCap, LAPSE_AFTER_DAYS, streakMultiplier } from "../../sdk/premium-boost.ts";
 
-// premiumPPCDailyReconcile — runs once/day (scheduler, service token).
-// For each active member who took an advance and still owes their half:
-//   • If they earned >= $8 today → nothing owed today (recorded as "met").
-//   • If they earned < $8 → charge $8 to their card (off-session; simulated unless live charges
-//     are on), credit that $8 back to the matched advertiser (cash refund, capped at 50% of grid),
-//     and grant the advertiser 4×$8 = $32 in social-media marketing credit ON TOP of the refund.
-// Idempotent per (member, day): a day already processed is skipped.
+// premiumPPCDailyReconcile — runs once/day (scheduler, service token). NO-PENALTY model with legal
+// engagement boosts:
+//   • On an ACTIVE day the member earns a premium BOOST on top of their normal activity —
+//     FRONT-LOADED (big early, an "upfront" feel), STREAK-multiplied (consistency pays more), and
+//     capped to the annual ceiling.
+//   • A MISSED day costs NOTHING. After LAPSE_AFTER_DAYS consecutive inactive days, premium status
+//     simply LAPSES to free (a lost benefit, never a debt); it reactivates on the next active day.
+//   • Advertisers earn pay-for-performance credit on active days (until they've doubled).
+// Idempotent per (member, day).
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     const body = await req.json().catch(() => ({}));
-    // Service/admin only (the scheduler calls this with a service token = seed admin).
     if (!user || (user.role !== "admin" && body.scheduled !== true)) {
       return Response.json({ error: "Forbidden (admin/scheduler only)." }, { status: 403 });
     }
 
     const today = utcDay();
-    const members = await base44.asServiceRole.entities.PremiumPPCMembership.filter({ status: "active" }, "-created_date", 5000);
+    const active = await base44.asServiceRole.entities.PremiumPPCMembership.filter({ status: "active" }, "-created_date", 5000);
+    const lapsed = await base44.asServiceRole.entities.PremiumPPCMembership.filter({ status: "lapsed" }, "-created_date", 5000);
+    const members = [...(active || []), ...(lapsed || [])];
 
-    let processed = 0, charged = 0, met = 0, failed = 0, skipped = 0;
-    let totalRefunded = 0, totalSocial = 0;
+    let processed = 0, boostedDays = 0, missedDays = 0, lapsedCount = 0, skipped = 0;
+    let totalBoost = 0, totalRefund = 0, totalSocial = 0;
     const details: unknown[] = [];
 
-    for (const m of (members || [])) {
-      const disbursed = round2(m.advance_disbursed ?? 0);
-      const repaid = round2(m.repaid_to_advertiser ?? 0);
-      const owed = round2(disbursed - repaid);
-      if (disbursed <= 0 || owed <= 0) { skipped++; continue; } // nothing to reconcile
-
+    for (const m of members) {
       // Idempotency: already processed this member today?
       const todays = await base44.asServiceRole.entities.PremiumPPCCharge.filter({ membership_id: m.id, date: today });
       if ((todays || []).length) { skipped++; continue; }
-
       processed++;
 
-      // Did the user earn >= $8 today?
+      // How much did the user earn today from normal activity?
       const earnRows = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id: m.user_id });
       const earnedToday = round2((earnRows || [])
         .filter((e: Record<string, unknown>) => String(e.date ?? e.created_date ?? "").slice(0, 10) === today)
-        .reduce((s: number, e: Record<string, unknown>) => s + (Number(e.amount) || 0), 0));
+        .reduce((s: number, e: Record<string, unknown>) => s + (Number(e.amount ?? e.total_earned) || 0), 0));
+      const isActive = earnedToday > 0;
 
-      if (earnedToday >= DAILY_MIN_EARN) {
-        met++;
+      const ceiling = annualEarnCeiling();
+      const priorPoints = round2(m.points_earned_total ?? 0);
+      const enrolledAt = String(m.enrolled_at ?? m.created_date ?? new Date().toISOString());
+      const dayNum = Math.max(1, Math.floor((Date.now() - new Date(enrolledAt).getTime()) / (24 * 60 * 60 * 1000)) + 1);
+
+      if (!isActive) {
+        // Missed day — nothing owed, nothing charged. Track the streak break + possible lapse.
+        missedDays++;
+        const daysSinceActive = m.last_active_date
+          ? Math.floor((Date.now() - new Date(String(m.last_active_date)).getTime()) / (24 * 60 * 60 * 1000))
+          : 999;
+        const willLapse = m.status !== "lapsed" && daysSinceActive >= LAPSE_AFTER_DAYS;
+        if (willLapse) lapsedCount++;
+        await base44.asServiceRole.entities.PremiumPPCMembership.update(m.id, {
+          streak: 0,
+          missed_days: round2((m.missed_days ?? 0) + 1),
+          status: willLapse ? "lapsed" : m.status,
+          last_reconciled_date: today,
+        }).catch(() => null);
         await base44.asServiceRole.entities.PremiumPPCCharge.create({
           membership_id: m.id, user_id: m.user_id, advertiser_user_id: m.advertiser_user_id,
-          date: today, earned_today: earnedToday, amount_charged: 0,
-          advertiser_cash_credit: 0, advertiser_social_credit: 0, status: "met",
-          created_at: new Date().toISOString(),
+          date: today, earned_today: 0, boost_granted: 0, amount_charged: 0,
+          status: willLapse ? "lapsed" : "missed", created_at: new Date().toISOString(),
         }).catch(() => null);
+        details.push({ member: m.id, status: willLapse ? "lapsed" : "missed" });
         continue;
       }
 
-      // Missed day → charge the user min($8, remaining owed) so we never charge past the advance.
-      const chargeAmt = round2(Math.min(MISSED_DAY_CHARGE, owed));
-      // Business gets 50% of the day's charge ($4) as STORE CREDIT; platform keeps the other $4.
-      const businessRefund = round2((chargeAmt / MISSED_DAY_CHARGE) * BUSINESS_REFUND_PER_DAY);
-      const platformKeep = round2(chargeAmt - businessRefund);
+      // ACTIVE — grant the front-loaded, streak-multiplied boost, capped to the remaining ceiling.
+      const newStreak = round2((m.streak ?? 0) + 1);
+      const cap = dailyBoostCap(dayNum);
+      const remaining = round2(Math.max(0, ceiling - priorPoints));
+      const boost = round2(Math.min(cap * streakMultiplier(newStreak), remaining));
 
-      const result = await chargeSavedCardOffSession({
-        customerId: m.stripe_customer_id, paymentMethodId: m.payment_method_id,
-        amount: chargeAmt,
-        description: `GamerGain Premium PPC — missed-day charge ${today} ($${chargeAmt})`,
-        metadata: { user_id: m.user_id, membership_id: m.id, type: "premium_ppc_missed_day", date: today },
-      });
-
-      if (!result.ok) {
-        failed++;
-        await base44.asServiceRole.entities.PremiumPPCCharge.create({
-          membership_id: m.id, user_id: m.user_id, advertiser_user_id: m.advertiser_user_id,
-          date: today, earned_today: earnedToday, amount_charged: 0,
-          business_refund_credit: 0, advertiser_social_credit: 0,
-          status: "failed", error: result.error, created_at: new Date().toISOString(),
-        }).catch(() => null);
-        details.push({ member: m.id, status: "failed", error: result.error });
-        continue;
+      if (boost > 0) {
+        const urows = await base44.asServiceRole.entities.User.filter({ id: m.user_id });
+        const bal = round2(Number((urows || [])[0]?.current_balance ?? 0));
+        await base44.asServiceRole.entities.User.update(m.user_id, { current_balance: round2(bal + boost) }).catch(() => null);
       }
 
-      // Credit the matched advertiser: $4 STORE CREDIT (refund) + $32 social credit — but the social
-      // credit only flows until the advertiser has DOUBLED their investment ($10,000 in orders).
-      const advertiser = await base44.asServiceRole.entities.User.filter({ id: m.advertiser_user_id });
-      const adv = (advertiser || [])[0] ?? {};
+      // Advertiser pay-for-performance on active days (until they've doubled their investment).
+      const advRows = await base44.asServiceRole.entities.User.filter({ id: m.advertiser_user_id });
+      const adv = (advRows || [])[0] ?? {};
       const doubled = hasDoubled(Number(adv.ppc_orders_value_delivered ?? 0));
-      const socialCredit = doubled ? 0 : round2((chargeAmt / MISSED_DAY_CHARGE) * SOCIAL_CREDIT_PER_DAY);
+      const refund = round2(BUSINESS_REFUND_PER_DAY);
+      const social = doubled ? 0 : round2(SOCIAL_CREDIT_PER_DAY);
+      if (m.advertiser_user_id) {
+        await base44.asServiceRole.entities.User.update(m.advertiser_user_id, {
+          refund_credit_balance: round2(Number(adv.refund_credit_balance ?? 0) + refund),
+          social_marketing_credit_balance: round2(Number(adv.social_marketing_credit_balance ?? 0) + social),
+        }).catch(() => null);
+      }
 
-      const newRefundBal = round2(Number(adv.refund_credit_balance ?? 0) + businessRefund);
-      const newSocialBal = round2(Number(adv.social_marketing_credit_balance ?? 0) + socialCredit);
-      await base44.asServiceRole.entities.User.update(m.advertiser_user_id, {
-        refund_credit_balance: newRefundBal,
-        social_marketing_credit_balance: newSocialBal,
-      }).catch(() => null);
-
-      const newRepaid = round2(repaid + chargeAmt);
-      const newBizRefund = round2((m.business_refund_credit ?? 0) + businessRefund);
-      const newSocialTotal = round2((m.social_credit_to_advertiser ?? 0) + socialCredit);
-      const fullyRepaid = newRepaid >= disbursed;
+      const newPoints = round2(priorPoints + boost);
+      boostedDays++;
       await base44.asServiceRole.entities.PremiumPPCMembership.update(m.id, {
-        repaid_to_advertiser: newRepaid,
-        business_refund_credit: newBizRefund,
-        social_credit_to_advertiser: newSocialTotal,
-        status: fullyRepaid ? "repaid" : "active",
-        last_charge_date: today,
-      });
+        points_earned_total: newPoints,
+        streak: newStreak,
+        met_days: round2((m.met_days ?? 0) + 1),
+        last_active_date: today,
+        last_reconciled_date: today,
+        business_refund_credit: round2((m.business_refund_credit ?? 0) + refund),
+        social_credit_to_advertiser: round2((m.social_credit_to_advertiser ?? 0) + social),
+        status: newPoints >= ceiling ? "ceiling_reached" : "active",
+      }).catch(() => null);
 
       await base44.asServiceRole.entities.PremiumPPCCharge.create({
         membership_id: m.id, user_id: m.user_id, advertiser_user_id: m.advertiser_user_id,
-        date: today, earned_today: earnedToday, amount_charged: chargeAmt,
-        business_refund_credit: businessRefund, platform_kept: platformKeep,
-        advertiser_social_credit: socialCredit, advertiser_doubled: doubled,
-        stripe_payment_intent: result.id, simulated: result.simulated, status: "charged",
+        date: today, earned_today: earnedToday, boost_granted: boost, streak: newStreak, day_number: dayNum,
+        business_refund_credit: refund, advertiser_social_credit: social, amount_charged: 0, status: "earned",
         created_at: new Date().toISOString(),
       }).catch(() => null);
 
-      await base44.asServiceRole.entities.AdTransaction.create({
-        user_id: m.user_id, advertiser_user_id: m.advertiser_user_id, type: "premium_ppc_missed_day",
-        amount: -chargeAmt, business_refund_credit: businessRefund, platform_kept: platformKeep,
-        advertiser_social_credit: socialCredit,
-        description: `Missed-day charge $${chargeAmt}; business +$${businessRefund} store credit${socialCredit ? ` + $${socialCredit} social` : " (doubled — social stopped)"}; platform +$${platformKeep}`,
-        stripe_id: result.id, simulated: result.simulated, created_at: new Date().toISOString(),
-      }).catch(() => null);
-
-      charged++;
-      totalRefunded = round2(totalRefunded + businessRefund);
-      totalSocial = round2(totalSocial + socialCredit);
-      details.push({ member: m.id, status: "charged", amount: chargeAmt, social: socialCredit, simulated: result.simulated, fully_repaid: fullyRepaid });
+      totalBoost = round2(totalBoost + boost);
+      totalRefund = round2(totalRefund + refund);
+      totalSocial = round2(totalSocial + social);
+      details.push({ member: m.id, status: "earned", boost, streak: newStreak, day: dayNum });
     }
 
     return Response.json({
-      success: true, date: today, live_mode: liveChargesEnabled(),
-      processed, charged, met, failed, skipped,
-      total_refunded_to_advertisers: totalRefunded, total_social_credit_granted: totalSocial,
+      success: true, date: today, model: "no-penalty-points-boost",
+      processed, boosted_days: boostedDays, missed_days: missedDays, lapsed: lapsedCount, skipped,
+      total_boost_granted: totalBoost, total_refunded_to_advertisers: totalRefund, total_social_credit_granted: totalSocial,
+      note: "Boost is earned (front-loaded + streak); missed days cost nothing; status lapses (no debt).",
       details,
     });
   } catch (error) {

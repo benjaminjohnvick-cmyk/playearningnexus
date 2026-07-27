@@ -1,11 +1,22 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { featureAllowed } from "../../sdk/jurisdiction.ts";
+import { getNumber } from "../../sdk/settings.ts";
 
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // Compliance (Wave 2): prize competitions are jurisdiction- and age-gated.
+    const __jur = user.jurisdiction ?? user.state ?? null;
+    if (!featureAllowed("jackpots", __jur)) {
+      return Response.json({ error: "Prize competitions aren't available in your location." }, { status: 403 });
+    }
+    if (user.age_verified_18plus !== true) {
+      return Response.json({ error: "You must verify you're 18 or older to enter prize competitions." }, { status: 403 });
+    }
 
     const { tournament_id } = await req.json();
     if (!tournament_id) return Response.json({ error: 'Missing tournament_id' }, { status: 400 });
@@ -35,10 +46,14 @@ export default __handler(async (req) => {
       return Response.json({ error: 'Tournament full' }, { status: 400 });
     }
 
-    // Deduct entry fee if applicable
+    // Deduct entry fee if applicable. Per-tournament entry_fee wins; if a tournament
+    // sets none, fall back to the admin-adjustable global default (0 = free).
+    const entryFee = Number(tournament.entry_fee) > 0
+      ? Number(tournament.entry_fee)
+      : await getNumber("TOURNAMENT_ENTRY_FEE", 0);
     let entryFeePaid = false;
-    if (tournament.entry_fee > 0) {
-      if (user.total_earnings < tournament.entry_fee) {
+    if (entryFee > 0) {
+      if (user.total_earnings < entryFee) {
         return Response.json({ error: 'Insufficient balance for entry fee' }, { status: 400 });
       }
       entryFeePaid = true;
@@ -56,7 +71,7 @@ export default __handler(async (req) => {
     });
 
     // Update tournament participant count and prize pool
-    const newPrizePool = tournament.total_prize_pool + tournament.entry_fee;
+    const newPrizePool = tournament.total_prize_pool + (entryFeePaid ? entryFee : 0);
     await base44.asServiceRole.entities.Tournament.update(tournament_id, {
       current_participants: tournament.current_participants + 1,
       total_prize_pool: newPrizePool,

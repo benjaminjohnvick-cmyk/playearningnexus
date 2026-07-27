@@ -1,12 +1,13 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import {
-  advanceLimit, liveChargesEnabled, PPC_GRID_ANNUAL_PRICE,
-} from "../../sdk/premium-ppc.ts";
+import { annualEarnCeiling, DAILY_EARN_CAP, PPC_GRID_ANNUAL_PRICE } from "../../sdk/premium-ppc.ts";
+import { WELCOME_BONUS } from "../../sdk/premium-boost.ts";
 
 // premiumPPCEnroll — a user joins the (free) Premium PPC program.
-// Requires: explicit T&C consent + a card on file (authorization for later variable charges).
-// Enforces the 1:1 advertiser⇄user cap: there must be an unmatched paying advertiser slot.
+//
+// NO-PENALTY MODEL: enrollment requires explicit T&C consent. A card on file is now OPTIONAL and is
+// NEVER used to charge for missed days (there are none) — the user earns points as they go and owes
+// nothing. Enforces the 1:1 advertiser⇄user cap: there must be an unmatched paying advertiser slot.
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -18,14 +19,13 @@ export default __handler(async (req) => {
     if (consent.accepted !== true || !consent.terms_version) {
       return Response.json({ error: "You must accept the Premium PPC terms (consent.accepted + terms_version required)." }, { status: 400 });
     }
+    // A card on file is OPTIONAL — kept only if you later add a paid membership tier. It is NEVER
+    // charged for missed days.
     const paymentMethodId = body.payment_method_id ?? null;
-    if (!paymentMethodId) {
-      return Response.json({ error: "A card on file is required (payment_method_id). It authorizes the missed-day charges described in the terms." }, { status: 400 });
-    }
 
     // Already enrolled?
     const existing = await base44.asServiceRole.entities.PremiumPPCMembership.filter({ user_id: user.id });
-    const active = (existing || []).find((m: Record<string, unknown>) => m.status === "active" || m.status === "repaid");
+    const active = (existing || []).find((m: Record<string, unknown>) => m.status === "active" || m.status === "ceiling_reached");
     if (active) return Response.json({ error: "You are already enrolled in Premium PPC.", membership: active }, { status: 409 });
 
     // --- 1:1 advertiser slot check ---
@@ -33,7 +33,7 @@ export default __handler(async (req) => {
     const advertisers = await base44.asServiceRole.entities.User.filter({ ppc_grid_active: true });
     const memberships = await base44.asServiceRole.entities.PremiumPPCMembership.list("-created_date", 5000);
     const taken = new Set((memberships || [])
-      .filter((m: Record<string, unknown>) => m.status === "active" || m.status === "repaid")
+      .filter((m: Record<string, unknown>) => m.status === "active" || m.status === "ceiling_reached")
       .map((m: Record<string, unknown>) => m.advertiser_user_id));
     const openAdvertiser = (advertisers || []).find((a: Record<string, unknown>) => a.id !== user.id && !taken.has(a.id));
     if (!openAdvertiser) {
@@ -44,68 +44,47 @@ export default __handler(async (req) => {
       }, { status: 409 });
     }
 
-    // --- Card on file ---
-    // Live mode: create/attach a Stripe customer + payment method so we can charge off-session
-    // later. Test mode: store the ids without touching Stripe (nothing will be charged anyway).
-    let stripeCustomerId: string | null = user.stripe_customer_id ?? null;
-    if (liveChargesEnabled()) {
-      const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-      if (!stripeKey) return Response.json({ error: "STRIPE_SECRET_KEY not set (required when PREMIUM_PPC_LIVE_CHARGES=1)." }, { status: 500 });
-      if (!stripeCustomerId) {
-        const cRes = await fetch("https://api.stripe.com/v1/customers", {
-          method: "POST",
-          headers: { authorization: `Bearer ${stripeKey}`, "content-type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({ email: user.email ?? "", name: user.full_name ?? "", "metadata[user_id]": user.id }),
-        });
-        const c = await cRes.json();
-        if (!cRes.ok || c.error) return Response.json({ error: c?.error?.message ?? "Stripe customer create failed" }, { status: 400 });
-        stripeCustomerId = c.id;
-        await base44.asServiceRole.entities.User.update(user.id, { stripe_customer_id: stripeCustomerId });
-      }
-      // Attach the payment method + make it default for off-session use.
-      const aRes = await fetch(`https://api.stripe.com/v1/payment_methods/${paymentMethodId}/attach`, {
-        method: "POST",
-        headers: { authorization: `Bearer ${stripeKey}`, "content-type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ customer: stripeCustomerId! }),
-      });
-      const a = await aRes.json();
-      if (!aRes.ok || a.error) return Response.json({ error: a?.error?.message ?? "Stripe attach failed" }, { status: 400 });
-      await fetch(`https://api.stripe.com/v1/customers/${stripeCustomerId}`, {
-        method: "POST",
-        headers: { authorization: `Bearer ${stripeKey}`, "content-type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ "invoice_settings[default_payment_method]": paymentMethodId }),
-      });
-    } else if (!stripeCustomerId) {
-      stripeCustomerId = `test_cus_${user.id}`;
-    }
-
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
     const membership = await base44.asServiceRole.entities.PremiumPPCMembership.create({
       user_id: user.id,
       advertiser_user_id: openAdvertiser.id,
-      stripe_customer_id: stripeCustomerId,
-      payment_method_id: paymentMethodId,
+      payment_method_id: paymentMethodId, // optional; never charged for missed days
       consent: { accepted: true, terms_version: consent.terms_version, at: new Date().toISOString(), ip },
       grid_price: PPC_GRID_ANNUAL_PRICE,
-      advance_limit: advanceLimit(),
-      advance_disbursed: 0,
-      repaid_to_advertiser: 0,
+      annual_earn_ceiling: annualEarnCeiling(),
+      daily_earn_cap: DAILY_EARN_CAP,
+      points_earned_total: WELCOME_BONUS,
+      streak: 0,
+      met_days: 0,
+      missed_days: 0,
       business_refund_credit: 0,
       social_credit_to_advertiser: 0,
       status: "active",
-      live_mode: liveChargesEnabled(),
       enrolled_at: new Date().toISOString(),
     });
+
+    // Welcome bonus — a genuine reward for joining (EARNED, not an advance; nothing is repaid).
+    if (WELCOME_BONUS > 0) {
+      const bal = Math.round((Number(user.current_balance ?? 0) + WELCOME_BONUS) * 100) / 100;
+      await base44.asServiceRole.entities.User.update(user.id, { current_balance: bal }).catch(() => null);
+      await base44.asServiceRole.entities.Notification.create({
+        user_id: user.id, type: "premium_welcome_bonus",
+        title: `🎁 $${WELCOME_BONUS} Welcome Bonus!`,
+        message: `Welcome to Premium PPC — here's $${WELCOME_BONUS} in points to start. Your first weeks earn at an accelerated rate, and keeping a daily streak earns even more.`,
+        is_read: false,
+      }).catch(() => null);
+    }
 
     return Response.json({
       success: true,
       membership,
       matched_advertiser_id: openAdvertiser.id,
-      advance_available: advanceLimit(),
-      live_mode: liveChargesEnabled(),
-      note: liveChargesEnabled()
-        ? "Live mode: your card may be charged $8 for each day you do not earn $8, per the terms."
-        : "TEST MODE: no real charges will occur until the platform enables live charges.",
+      annual_earn_ceiling: annualEarnCeiling(),
+      daily_earn_cap: DAILY_EARN_CAP,
+      welcome_bonus: WELCOME_BONUS,
+      note: `You start with a $${WELCOME_BONUS} welcome bonus, then earn points as you go — accelerated ` +
+        `in your first weeks and boosted by daily streaks, up to $${annualEarnCeiling()}/year. Missed days ` +
+        `simply don't earn — there is no charge, no debt, and nothing to repay.`,
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

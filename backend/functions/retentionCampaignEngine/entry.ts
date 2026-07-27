@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { canSms, SMS_OPT_OUT_SUFFIX } from "../../sdk/messaging-consent.ts";
 
 /**
  * Automated Retention Campaign Engine
@@ -162,14 +163,14 @@ Return JSON with:
           console.error('Email failed for', user.email, e.message);
         }
 
-        // Send SMS via Twilio if user has phone
-        if (TWILIO_ACCOUNT_SID && user.phone_number) {
+        // Send SMS via Twilio if user has phone AND TCPA consent
+        if (TWILIO_ACCOUNT_SID && user.phone_number && (await canSms(user))) {
           try {
             const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
             const smsBody = new URLSearchParams({
               To: user.phone_number,
               From: TWILIO_PHONE,
-              Body: campaignData.sms_message
+              Body: campaignData.sms_message + SMS_OPT_OUT_SUFFIX
             });
             const smsResp = await fetch(twilioUrl, {
               method: 'POST',

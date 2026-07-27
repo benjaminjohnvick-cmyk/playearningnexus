@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { emailUnsubscribeFooter } from "../../sdk/messaging-consent.ts";
 
 export default __handler(async (req) => {
   try {
@@ -42,7 +43,7 @@ export default __handler(async (req) => {
     await base44.integrations.Core.SendEmail({
       to: user.email,
       subject: `Your Weekly Report: ${stats.total_referrals} Referrals, $${stats.total_revenue.toFixed(2)} Earned`,
-      body: emailBody,
+      body: emailBody + emailUnsubscribeFooter(user),
       from_name: 'GamerGain'
     });
 

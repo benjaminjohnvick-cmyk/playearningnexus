@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { featureAllowed } from "../../sdk/jurisdiction.ts";
 
 // Pays the entry fee to join the current weekly SKILL tournament. The fee is
 // deducted from the user's balance and added to the prize pool. Winners are
@@ -9,6 +10,15 @@ export default __handler(async (req) => {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // Compliance (Wave 2): prize competitions are jurisdiction- and age-gated.
+    const __jur = user.jurisdiction ?? user.state ?? null;
+    if (!featureAllowed("jackpots", __jur)) {
+      return Response.json({ error: "Prize competitions aren't available in your location." }, { status: 403 });
+    }
+    if (user.age_verified_18plus !== true) {
+      return Response.json({ error: "You must verify you're 18 or older to enter prize competitions." }, { status: 403 });
+    }
 
     // Find the current active tournament to read its entry fee.
     const actives = await base44.asServiceRole.entities.ReferralJackpot.filter({ status: 'active' }, '-created_date', 1);

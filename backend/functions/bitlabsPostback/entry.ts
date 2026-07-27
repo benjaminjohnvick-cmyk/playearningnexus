@@ -1,5 +1,28 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { getNumber } from "../../sdk/settings.ts";
+import { allowedEarn } from "../../sdk/earn-cap.ts";
+
+// HMAC-SHA256 of the callback URL (signature param stripped), hex, constant-time compared.
+async function verifyHmac(url: URL, provided: string, secret: string): Promise<boolean> {
+  try {
+    const u = new URL(url.toString());
+    u.searchParams.delete("hash");
+    u.searchParams.delete("signature");
+    const message = u.pathname + u.search;
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+    const mac = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(message));
+    const hex = [...new Uint8Array(mac)].map((b) => b.toString(16).padStart(2, "0")).join("");
+    const a = hex.toLowerCase();
+    const b = String(provided).toLowerCase();
+    if (a.length !== b.length) return false;
+    let diff = 0;
+    for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    return diff === 0;
+  } catch {
+    return false;
+  }
+}
 
 // BitLabs calls this URL when a survey is completed
 // Set the postback URL in BitLabs dashboard to: {your_function_url}/bitlabsPostback
@@ -18,11 +41,21 @@ export default __handler(async (req) => {
       return Response.json({ error: 'Missing uid or reward' }, { status: 400 });
     }
 
-    // Validate request is from BitLabs using API key
+    // --- Verify the postback is genuinely from BitLabs (this is a MONEY-IN endpoint). ------------
+    // Auth is now MANDATORY: either a shared token matching BITLABS_API_KEY (append &token=<key> to
+    // the postback URL in the BitLabs dashboard), OR a valid HMAC-SHA256 signature over the callback
+    // URL using BITLABS_WEBHOOK_SECRET. An unauthenticated postback is REJECTED — previously a
+    // request with no token was accepted, which let anyone credit an arbitrary balance.
     const apiKey = Deno.env.get('BITLABS_API_KEY');
+    const secret = Deno.env.get('BITLABS_WEBHOOK_SECRET');
     const token = url.searchParams.get('token') || req.headers.get('x-api-key');
-    if (token && token !== apiKey) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    const sig = url.searchParams.get('hash') || url.searchParams.get('signature') || req.headers.get('x-bitlabs-signature');
+
+    let authorized = false;
+    if (apiKey && token && token === apiKey) authorized = true;
+    if (!authorized && secret && sig) authorized = await verifyHmac(url, sig, secret);
+    if (!authorized) {
+      return new Response('Unauthorized', { status: 401 });
     }
 
     // Get all users and find by ID (uid = user.id)
@@ -32,8 +65,12 @@ export default __handler(async (req) => {
       return new Response('OK', { status: 200 }); // Return OK to prevent retries
     }
 
-    // 50/50 split: user gets half the reward
-    const userEarnings = reward / 2;
+    // Revenue split (admin-adjustable; AI-optimized within bounds), then the daily earnings cap.
+    const rewardShare = await getNumber("SURVEY_REWARD_CONVERSION", 0.5);
+    let userEarnings = Math.round(reward * rewardShare * 100) / 100;
+    const allowance = await allowedEarn(base44, uid, userEarnings);
+    if (allowance.capped) userEarnings = allowance.allowed;
+    if (userEarnings <= 0) return Response.json({ ok: true, capped: true, reason: 'Daily earnings cap reached', cap: allowance.cap });
     const today = new Date().toISOString().split('T')[0];
 
     // Update or create DailyEarnings
@@ -69,7 +106,7 @@ export default __handler(async (req) => {
       amount: userEarnings,
       transaction_type: 'survey_completion',
       status: 'completed',
-      description: `Survey completed (50% of $${reward.toFixed(2)} reward)`,
+      description: `Survey completed (your share of $${reward.toFixed(2)} reward)`,
       payment_intent_id: surveyId
     });
 

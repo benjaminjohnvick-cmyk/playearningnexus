@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
 
 // Buy store credit with a card (regular users). This is 1:1 — NO markup at top-up.
 // The single 10% platform fee is charged ONCE later, when the user buys an item
@@ -10,6 +11,12 @@ export default __handler(async (req) => {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+    // Compliance (Wave 2): purchased stored value can trigger money-transmission / prepaid rules.
+    // Gated OFF by default — points/credit are EARNED, not purchased — until counsel signs off.
+    if (!(await isEnabled("store_credit_purchase"))) {
+      return Response.json({ error: "Buying store credit is currently disabled (compliance kill-switch: store_credit_purchase). Credit is earned, not purchased." }, { status: 403 });
+    }
 
     const body = await req.json();
     const amount = Math.round((Number(body.amount) || 0) * 100) / 100;
