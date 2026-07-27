@@ -52,23 +52,74 @@ const AMAZON_DOMAINS: Record<string, string> = {
   MX: "amazon.com.mx", BR: "amazon.com.br",
 };
 
-/** Build a shopper-facing "find the real product" search link for a listing's title.
- *  If an AUTHORIZED affiliate provider is configured for the country, the link is a real affiliate
- *  search URL (monetized, compliant, clearly disclosed). Otherwise it's a neutral shopping search so
- *  the user can go buy the real thing right away. The platform listing itself stays original + in the
- *  closed-loop points economy — this button is a convenience/affiliate funnel, not a resale of a real
- *  product we don't hold. */
-export function buildSearchLink(country: string, query: string): { url: string; affiliate: boolean; retailer: string } {
+// Supported sort orders for the "find the real thing" search, mapped per engine. These are the
+// conventional e-commerce sorts; each engine gets the closest native equivalent.
+export type SortKey = "relevance" | "price_asc" | "price_desc" | "rating" | "newest";
+export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: "relevance", label: "Best match" },
+  { key: "price_asc", label: "Price: Low to High" },
+  { key: "price_desc", label: "Price: High to Low" },
+  { key: "rating", label: "Avg. customer review" },
+  { key: "newest", label: "Newest" },
+];
+
+export interface SearchOpts { sort?: SortKey; minPrice?: number; maxPrice?: number; category?: string; }
+
+interface SearchEngine { key: string; label: string; url: string; affiliate: boolean; }
+
+// Google Shopping sort tokens (tbs=mr:1,<...>).
+const GOOGLE_SORT: Record<SortKey, string> = { relevance: "", price_asc: "price:1,ppr_min:0", price_desc: "", rating: "", newest: "" };
+// eBay _sop sort codes.
+const EBAY_SORT: Record<SortKey, string> = { relevance: "12", price_asc: "15", price_desc: "16", rating: "12", newest: "10" };
+// Amazon storefront s= sort tokens.
+const AMAZON_SORT: Record<SortKey, string> = { relevance: "relevanceblender", price_asc: "price-asc-rank", price_desc: "price-desc-rank", rating: "review-rank", newest: "date-desc-rank" };
+
+/** Build shopper-facing "find the real product" search links across multiple engines, so a click
+ *  pulls up real listings from across the internet. When an AUTHORIZED Amazon Associate tag is
+ *  configured, the Amazon link carries it (monetized + disclosed); every engine honors the chosen
+ *  sort and price range. The platform listing itself stays original and priced in closed-loop points —
+ *  these links are a discovery/affiliate funnel, not a resale of a product we don't hold. */
+export function buildSearchLinks(country: string, query: string, opts: SearchOpts = {}): { affiliate: boolean; engines: SearchEngine[] } {
   const c = (country || "US").toUpperCase();
-  const q = encodeURIComponent((query || "").trim().slice(0, 150));
-  const amazon = AFFILIATE_PROVIDERS.find((p) => p.key === "amazon");
+  const raw = (query || "").trim().slice(0, 150);
+  const q = encodeURIComponent(raw);
+  const sort: SortKey = opts.sort && SORT_OPTIONS.some((s) => s.key === opts.sort) ? opts.sort : "relevance";
   const tag = Deno.env.get("AMAZON_ASSOCIATE_TAG");
-  if (amazon && amazon.countries.includes(c) && tag) {
-    const domain = AMAZON_DOMAINS[c] || "amazon.com";
-    return { url: `https://www.${domain}/s?k=${q}&tag=${encodeURIComponent(tag)}`, affiliate: true, retailer: "Amazon" };
-  }
-  // Neutral fallback: Google Shopping search (no affiliate tag, no data leakage beyond the query).
-  return { url: `https://www.google.com/search?tbm=shop&q=${q}`, affiliate: false, retailer: "shopping search" };
+  const amazon = AFFILIATE_PROVIDERS.find((p) => p.key === "amazon");
+  const domain = AMAZON_DOMAINS[c] || "amazon.com";
+
+  // Price-range clause where an engine supports it in-URL (Amazon: low-price/high-price cents).
+  const engines: SearchEngine[] = [];
+
+  // Amazon (affiliate tag appended only when authorized/configured).
+  let amazonUrl = `https://www.${domain}/s?k=${q}&s=${AMAZON_SORT[sort]}`;
+  if (opts.minPrice) amazonUrl += `&low-price=${Math.max(0, Math.floor(opts.minPrice))}`;
+  if (opts.maxPrice) amazonUrl += `&high-price=${Math.max(0, Math.floor(opts.maxPrice))}`;
+  const amazonAffiliate = !!(amazon && amazon.countries.includes(c) && tag);
+  if (amazonAffiliate) amazonUrl += `&tag=${encodeURIComponent(tag!)}`;
+  engines.push({ key: "amazon", label: "Amazon", url: amazonUrl, affiliate: amazonAffiliate });
+
+  // Google Shopping (aggregates listings from across the web).
+  let googleUrl = `https://www.google.com/search?tbm=shop&q=${q}`;
+  if (GOOGLE_SORT[sort]) googleUrl += `&tbs=${encodeURIComponent("mr:1," + GOOGLE_SORT[sort])}`;
+  engines.push({ key: "google", label: "Google Shopping", url: googleUrl, affiliate: false });
+
+  // eBay.
+  let ebayUrl = `https://www.ebay.com/sch/i.html?_nkw=${q}&_sop=${EBAY_SORT[sort]}`;
+  if (opts.minPrice) ebayUrl += `&_udlo=${Math.max(0, opts.minPrice)}`;
+  if (opts.maxPrice) ebayUrl += `&_udhi=${Math.max(0, opts.maxPrice)}`;
+  engines.push({ key: "ebay", label: "eBay", url: ebayUrl, affiliate: false });
+
+  return { affiliate: amazonAffiliate, engines };
+}
+
+/** Back-compat single-link helper (Amazon-affiliate when configured, else Google Shopping). */
+export function buildSearchLink(country: string, query: string): { url: string; affiliate: boolean; retailer: string } {
+  const { engines } = buildSearchLinks(country, query);
+  const amazon = engines.find((e) => e.key === "amazon");
+  if (amazon?.affiliate) return { url: amazon.url, affiliate: true, retailer: "Amazon" };
+  const google = engines.find((e) => e.key === "google")!;
+  return { url: google.url, affiliate: false, retailer: "shopping search" };
 }
 
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;

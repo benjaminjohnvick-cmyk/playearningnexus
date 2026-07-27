@@ -20,6 +20,12 @@ export default function Marketplace() {
   const [form, setForm] = useState({ title: '', description: '', price_points: '', price_usd: '', category: 'general', condition: 'used', images: [], anonymous: false });
   const [busy, setBusy] = useState('');
   const [uploading, setUploading] = useState(false);
+  // On-site listing search/sort/filter (best-practice marketplace controls).
+  const [q, setQ] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+  const [catFilter, setCatFilter] = useState('all');
+  // "Find the real thing" aggregated internet search modal.
+  const [realSearch, setRealSearch] = useState({ open: false, listing: null, sort: 'relevance', minPrice: '', maxPrice: '', engines: [], loading: false, disclosure: '' });
 
   // Source presentation: label + badge tint. Affiliate listings are clearly marked per FTC.
   function sourceMeta(l) {
@@ -92,18 +98,34 @@ export default function Marketplace() {
     finally { setBusy(''); }
   }
 
-  // "Now go search for the real thing" — opens an affiliate (when configured) or neutral shopping
-  // search for the product so users can buy the real item right away. The platform listing itself
-  // stays original and priced in closed-loop points.
-  async function searchReal(listing) {
-    setBusy(listing.id + 'search');
+  // On-site listings filtered + sorted by the toolbar controls.
+  const categories = React.useMemo(() => ['all', ...Array.from(new Set(listings.map((l) => l.category).filter(Boolean)))], [listings]);
+  const visible = React.useMemo(() => {
+    let arr = listings.slice();
+    if (q.trim()) { const t = q.toLowerCase(); arr = arr.filter((l) => (l.title || '').toLowerCase().includes(t) || (l.description || '').toLowerCase().includes(t)); }
+    if (catFilter !== 'all') arr = arr.filter((l) => l.category === catFilter);
+    const price = (l) => (l.price_usd != null ? l.price_usd : (l.price_points || 0) / 100);
+    if (sortBy === 'price_asc') arr.sort((a, b) => price(a) - price(b));
+    else if (sortBy === 'price_desc') arr.sort((a, b) => price(b) - price(a));
+    else arr.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)); // newest
+    return arr;
+  }, [listings, q, catFilter, sortBy]);
+
+  // "Now go find the real thing" — opens an aggregated, sortable search across Amazon, Google Shopping
+  // and eBay so real listings from across the internet come up. Sort + price range are honored per
+  // engine. The platform listing stays original and priced in closed-loop points.
+  async function openRealSearch(listing, override = {}) {
+    const next = { open: true, listing, sort: override.sort ?? 'relevance', minPrice: override.minPrice ?? '', maxPrice: override.maxPrice ?? '', engines: [], loading: true, disclosure: '' };
+    setRealSearch(next);
     try {
-      const res = await base44.functions.invoke('marketplaceSearchLink', { listing_id: listing.id });
-      const url = res.data?.url;
-      if (url) window.open(url, '_blank', 'noopener,noreferrer');
-      else toast.error('Could not build a search link.');
-    } catch (e) { toast.error(e?.data?.error || e.message || 'Search failed'); }
-    finally { setBusy(''); }
+      const res = await base44.functions.invoke('marketplaceSearchLink', {
+        listing_id: listing.id,
+        sort: next.sort,
+        min_price: next.minPrice ? Number(next.minPrice) : undefined,
+        max_price: next.maxPrice ? Number(next.maxPrice) : undefined,
+      });
+      setRealSearch((s) => ({ ...s, engines: res.data?.engines || [], disclosure: res.data?.disclosure || '', loading: false }));
+    } catch (e) { toast.error(e?.data?.error || e.message || 'Search failed'); setRealSearch((s) => ({ ...s, loading: false })); }
   }
 
   async function buy(listing, method) {
@@ -161,13 +183,31 @@ export default function Marketplace() {
         </Card>
       )}
 
+      {/* Search / sort / filter toolbar for on-site listings. */}
+      {!loading && listings.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="relative flex-1 min-w-[180px]">
+            <Search className="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2 text-zinc-400" />
+            <Input className="pl-8" placeholder="Search listings…" value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          <select className="border rounded-md h-9 px-2 text-sm bg-white" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="newest">Newest</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+          </select>
+          <select className="border rounded-md h-9 px-2 text-sm bg-white" value={catFilter} onChange={(e) => setCatFilter(e.target.value)}>
+            {categories.map((c) => <option key={c} value={c}>{c === 'all' ? 'All categories' : c}</option>)}
+          </select>
+        </div>
+      )}
+
       {loading ? (
         <div className="p-8 flex items-center gap-2 text-zinc-500"><Loader2 className="w-5 h-5 animate-spin" /> Loading…</div>
-      ) : listings.length === 0 ? (
-        <div className="text-sm text-zinc-400">No listings yet — be the first to sell something.</div>
+      ) : visible.length === 0 ? (
+        <div className="text-sm text-zinc-400">{listings.length === 0 ? 'No listings yet — be the first to sell something.' : 'No listings match your search.'}</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {listings.map((l) => (
+          {visible.map((l) => (
             <Card key={l.id} className="overflow-hidden">
               <div className="relative">
                 {(l.image_url || l.images?.[0]) && <img src={l.image_url || l.images[0]} alt={l.title} className="w-full h-40 object-cover" />}
@@ -207,13 +247,61 @@ export default function Marketplace() {
                   </div>
                 )}
                 {l.source !== 'affiliate' && (
-                  <Button size="sm" variant="ghost" className="w-full mt-2 text-xs" disabled={busy === l.id + 'search'} onClick={() => searchReal(l)}>
+                  <Button size="sm" variant="ghost" className="w-full mt-2 text-xs" onClick={() => openRealSearch(l)}>
                     <Search className="w-3 h-3 mr-1" /> Now go find the real thing
                   </Button>
                 )}
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* "Find the real thing" — aggregated, sortable internet search. */}
+      {realSearch.open && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setRealSearch((s) => ({ ...s, open: false }))}>
+          <Card className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-1">
+                <div className="font-semibold flex items-center gap-2"><Search className="w-4 h-4" /> Find the real thing</div>
+                <button className="text-zinc-400 text-xl leading-none" onClick={() => setRealSearch((s) => ({ ...s, open: false }))}>×</button>
+              </div>
+              <div className="text-xs text-zinc-500 mb-3 truncate">Searching for: <span className="font-medium">{realSearch.listing?.title}</span></div>
+
+              <div className="flex flex-wrap gap-2 mb-3">
+                <select className="border rounded-md h-9 px-2 text-sm bg-white flex-1"
+                  value={realSearch.sort}
+                  onChange={(e) => openRealSearch(realSearch.listing, { sort: e.target.value, minPrice: realSearch.minPrice, maxPrice: realSearch.maxPrice })}>
+                  <option value="relevance">Best match</option>
+                  <option value="price_asc">Price: Low to High</option>
+                  <option value="price_desc">Price: High to Low</option>
+                  <option value="rating">Avg. customer review</option>
+                  <option value="newest">Newest</option>
+                </select>
+                <Input className="w-20" type="number" placeholder="Min $" value={realSearch.minPrice}
+                  onChange={(e) => setRealSearch((s) => ({ ...s, minPrice: e.target.value }))} />
+                <Input className="w-20" type="number" placeholder="Max $" value={realSearch.maxPrice}
+                  onChange={(e) => setRealSearch((s) => ({ ...s, maxPrice: e.target.value }))} />
+                <Button size="sm" variant="outline" onClick={() => openRealSearch(realSearch.listing, { sort: realSearch.sort, minPrice: realSearch.minPrice, maxPrice: realSearch.maxPrice })}>Apply</Button>
+              </div>
+
+              {realSearch.loading ? (
+                <div className="py-6 flex items-center gap-2 text-zinc-500 text-sm"><Loader2 className="w-4 h-4 animate-spin" /> Building results…</div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="text-xs text-zinc-500">Open real listings from across the web, sorted your way:</div>
+                  {realSearch.engines.map((e) => (
+                    <Button key={e.key} variant="outline" className="w-full justify-between"
+                      onClick={() => window.open(e.url, '_blank', 'noopener,noreferrer')}>
+                      <span className="flex items-center gap-2"><ExternalLink className="w-4 h-4" /> {e.label}</span>
+                      {e.affiliate ? <Badge className="bg-amber-600 text-white text-[10px]">affiliate</Badge> : null}
+                    </Button>
+                  ))}
+                  {realSearch.disclosure ? <div className="text-[11px] text-zinc-400 pt-1">{realSearch.disclosure}</div> : null}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
