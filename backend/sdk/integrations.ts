@@ -7,6 +7,17 @@
 
 import { limited, LLM_CONCURRENCY, EMAIL_CONCURRENCY } from "./queue.ts";
 import { sesSend } from "./aws/ses.ts";
+import { signedFetch, credsFromEnv } from "./aws/sigv4.ts";
+
+// Chunked base64 encode (btoa on a huge spread arg overflows the call stack).
+function bytesToBase64(bytes: Uint8Array): string {
+  let bin = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(bin);
+}
 
 type LLMArgs = {
   prompt: string;
@@ -95,11 +106,14 @@ export function InvokeLLM(args: LLMArgs): Promise<unknown> {
 async function invokeLLMRaw(args: LLMArgs): Promise<unknown> {
   const wantJson = !!args.response_json_schema;
   const model = resolveModelId(args.model);
+  // Read the LIVE provider (DB→env→default) so an admin switching provider in the panel routes to the
+  // matching API. Using the load-time const here would send a Claude model id to OpenAI (or vice-versa).
+  const provider = snapString("LLM_PROVIDER", LLM_PROVIDER);
   const sys = wantJson
     ? "You are a helpful assistant. Respond ONLY with valid JSON matching the requested schema. No prose."
     : "You are a helpful assistant.";
 
-  if (LLM_PROVIDER === "anthropic") {
+  if (provider === "anthropic") {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "content-type": "application/json", "x-api-key": ANTHROPIC_KEY!, "anthropic-version": "2023-06-01" },
@@ -168,11 +182,56 @@ async function sendEmailRaw(args: { to: string; subject: string; body: string; f
 }
 
 /** GenerateImage — companion image provider (Claude has no image API).
- *  IMAGE_PROVIDER: openai (default) | stability. Keeps images working regardless of LLM_PROVIDER,
- *  so you can run Claude for all text/reasoning and one small key for images.
- *  IMAGE_API_KEY overrides the provider's key if you want image billing separate from the LLM key. */
+ *  IMAGE_PROVIDER: openai (default) | stability | aws_bedrock | aws_sagemaker.
+ *   - aws_bedrock    : true serverless — no infra to run. Amazon Nova Canvas / Titan Image / SDXL on
+ *                      Bedrock. Pay only per generated image (fractions of a cent). Needs AWS creds.
+ *   - aws_sagemaker  : a SageMaker endpoint hosting your OWN open model (SDXL/FLUX). Configure it to
+ *                      scale to zero (async / serverless-style) so you pay only while it's generating.
+ *                      Needs AWS creds + SAGEMAKER_IMAGE_ENDPOINT.
+ *  Both AWS paths generate ORIGINAL images (no third-party catalog content). Returns { url } as a
+ *  data URL (base64) so callers get a usable src even without S3; image-gen.ts persists it to S3. */
 export async function GenerateImage(args: { prompt: string; size?: string }) {
   const provider = snapString("IMAGE_PROVIDER", "openai");
+
+  if (provider === "aws_bedrock") {
+    const creds = credsFromEnv();
+    const region = creds.region;
+    const modelId = snapString("IMAGE_MODEL", "amazon.nova-canvas-v1:0");
+    // Titan / Nova Canvas request shape; Stability-on-Bedrock shape is handled on the response side.
+    const [w, h] = (args.size ?? "1024x1024").split("x").map((n) => Number(n) || 1024);
+    const body = modelId.startsWith("stability.")
+      ? JSON.stringify({ text_prompts: [{ text: args.prompt }], width: w, height: h })
+      : JSON.stringify({ taskType: "TEXT_IMAGE", textToImageParams: { text: args.prompt }, imageGenerationConfig: { numberOfImages: 1, width: w, height: h, quality: "standard" } });
+    const host = `bedrock-runtime.${region}.amazonaws.com`;
+    // Pass the RAW path — signedFetch handles SigV4 path encoding (model ids can contain ':').
+    const r = await signedFetch(creds, "bedrock", host, `/model/${modelId}/invoke`, body);
+    if (!r.ok && (r.status === 429 || r.status >= 500)) throw Object.assign(new Error(`Bedrock ${r.status}`), { status: r.status });
+    if (!r.ok) return { url: "" };
+    const j = await r.json().catch(() => ({}));
+    const b64 = j?.images?.[0] ?? j?.artifacts?.[0]?.base64 ?? "";
+    return { url: b64 ? `data:image/png;base64,${b64}` : "" };
+  }
+
+  if (provider === "aws_sagemaker") {
+    const creds = credsFromEnv();
+    const endpoint = Deno.env.get("SAGEMAKER_IMAGE_ENDPOINT");
+    if (!endpoint) return { url: "" };
+    const host = `runtime.sagemaker.${creds.region}.amazonaws.com`;
+    // Common HF text-to-image container contract: {"inputs": prompt}. Adjust to your container if needed.
+    const body = JSON.stringify({ inputs: args.prompt, parameters: {} });
+    const r = await signedFetch(creds, "sagemaker", host, `/endpoints/${endpoint}/invocations`, body);
+    if (!r.ok && (r.status === 429 || r.status >= 500)) throw Object.assign(new Error(`SageMaker ${r.status}`), { status: r.status });
+    if (!r.ok) return { url: "" };
+    const ct = r.headers.get("content-type") ?? "";
+    if (ct.startsWith("image/")) {
+      const bytes = new Uint8Array(await r.arrayBuffer());
+      return { url: `data:${ct};base64,${bytesToBase64(bytes)}` };
+    }
+    const j = await r.json().catch(() => ({}));
+    // Containers vary: {image|generated_image|artifacts:[{base64}]} or [{"generated_image": "<b64>"}]
+    const b64 = j?.image ?? j?.generated_image ?? j?.[0]?.generated_image ?? j?.artifacts?.[0]?.base64 ?? "";
+    return { url: b64 ? `data:image/png;base64,${b64}` : "" };
+  }
 
   if (provider === "stability") {
     const key = Deno.env.get("IMAGE_API_KEY") ?? Deno.env.get("STABILITY_API_KEY");

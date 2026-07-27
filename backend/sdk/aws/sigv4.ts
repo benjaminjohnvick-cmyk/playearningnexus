@@ -50,7 +50,13 @@ export async function presignS3Put(creds: AwsCreds, bucket: string, key: string,
   return `https://${host}${canonicalUri}?${canonicalQuery}&X-Amz-Signature=${sig}`;
 }
 
-/** Signed POST to an AWS JSON/REST service (used by SES v2). */
+/** Encode each path segment (slashes preserved). */
+const encodeSegments = (p: string) => p.split("/").map((s) => uriEncode(s, true)).join("/");
+
+/** Signed POST to an AWS JSON/REST service (SES v2, Bedrock, SageMaker runtime, …).
+ *  Pass a RAW pathname (unencoded). For non-S3 services SigV4 requires the canonical URI to be the
+ *  path encoded TWICE, while the wire request uses it encoded once — this handles both so model ids
+ *  containing reserved chars (e.g. "amazon.nova-canvas-v1:0") sign correctly. */
 export async function signedFetch(creds: AwsCreds, service: string, host: string, pathname: string, bodyStr: string, contentType = "application/json"): Promise<Response> {
   const { amz, date } = amzDate();
   const scope = `${date}/${creds.region}/${service}/aws4_request`;
@@ -61,11 +67,14 @@ export async function signedFetch(creds: AwsCreds, service: string, host: string
   if (creds.sessionToken) headers["x-amz-security-token"] = creds.sessionToken;
   const signedHeaders = Object.keys(headers).sort().join(";");
   const canonicalHeaders = Object.keys(headers).sort().map((k) => `${k}:${headers[k]}\n`).join("");
-  const canonicalReq = ["POST", pathname, "", canonicalHeaders, signedHeaders, payloadHash].join("\n");
+  // S3 is not path-normalized/double-encoded; every other service double-encodes the path for signing.
+  const wirePath = encodeSegments(pathname);
+  const canonicalUri = service === "s3" ? wirePath : encodeSegments(wirePath);
+  const canonicalReq = ["POST", canonicalUri, "", canonicalHeaders, signedHeaders, payloadHash].join("\n");
   const sts = ["AWS4-HMAC-SHA256", amz, scope, await sha256Hex(canonicalReq)].join("\n");
   const sig = hex(await hmac(await signingKey(creds.secretAccessKey, date, creds.region, service), sts));
   headers["authorization"] = `AWS4-HMAC-SHA256 Credential=${creds.accessKeyId}/${scope}, SignedHeaders=${signedHeaders}, Signature=${sig}`;
-  return await fetch(`https://${host}${pathname}`, { method: "POST", headers, body: bodyStr });
+  return await fetch(`https://${host}${wirePath}`, { method: "POST", headers, body: bodyStr });
 }
 
 export function credsFromEnv(): AwsCreds {

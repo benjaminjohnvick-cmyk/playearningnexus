@@ -4,18 +4,29 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingBag, Plus, Loader2, Coins, CreditCard } from 'lucide-react';
+import { ShoppingBag, Plus, Loader2, Coins, CreditCard, ExternalLink, Search } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLocale } from '@/components/locale/LocaleContext';
 
-// Marketplace — Facebook-Marketplace-style peer listings. Buy with points (closed-loop) or by card
-// (adds the platform markup). Sellers ship; the AI fulfillment lifecycle handles escrow + release.
+// Marketplace — Facebook-Marketplace-style listings. Three sources coexist: original platform catalog
+// (AI-generated, AI-fulfilled), authorized affiliate products (retailer fulfills via affiliate link),
+// and member listings. Buy with points (closed-loop) or by card (adds the platform markup). Prices
+// render in the user's currency; sellers/platform fulfill via the AI fulfillment lifecycle.
 export default function Marketplace() {
+  const { formatPrice } = useLocale();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSell, setShowSell] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', price_points: '', price_usd: '', category: 'general', condition: 'used', images: [] });
+  const [form, setForm] = useState({ title: '', description: '', price_points: '', price_usd: '', category: 'general', condition: 'used', images: [], anonymous: false });
   const [busy, setBusy] = useState('');
   const [uploading, setUploading] = useState(false);
+
+  // Source presentation: label + badge tint. Affiliate listings are clearly marked per FTC.
+  function sourceMeta(l) {
+    if (l.source === 'platform_catalog') return { label: 'GamerGain Official', tint: 'bg-red-600' };
+    if (l.source === 'affiliate') return { label: l.source_label || 'Affiliate', tint: 'bg-amber-600' };
+    return null;
+  }
 
   // Compress an image to a small inline data URL — the no-S3 fallback so listings have photos today.
   function compressToDataUrl(file, maxDim = 800, quality = 0.7) {
@@ -65,16 +76,33 @@ export default function Marketplace() {
     if (!form.title || (!form.price_points && !form.price_usd)) { toast.error('Add a title and at least one price.'); return; }
     setBusy('create');
     try {
-      await base44.functions.invoke('createMarketplaceListing', {
+      // Anonymous listings route through relistItem (no name/PII shown); named listings use the
+      // standard member-seller flow.
+      const fn = form.anonymous ? 'relistItem' : 'createMarketplaceListing';
+      await base44.functions.invoke(fn, {
         ...form,
         price_points: form.price_points ? Number(form.price_points) : null,
         price_usd: form.price_usd ? Number(form.price_usd) : null,
       });
       toast.success('Listing posted!');
       setShowSell(false);
-      setForm({ title: '', description: '', price_points: '', price_usd: '', category: 'general', condition: 'used', images: [] });
+      setForm({ title: '', description: '', price_points: '', price_usd: '', category: 'general', condition: 'used', images: [], anonymous: false });
       await load();
     } catch (e) { toast.error(e?.data?.error || e.message || 'Failed'); }
+    finally { setBusy(''); }
+  }
+
+  // "Now go search for the real thing" — opens an affiliate (when configured) or neutral shopping
+  // search for the product so users can buy the real item right away. The platform listing itself
+  // stays original and priced in closed-loop points.
+  async function searchReal(listing) {
+    setBusy(listing.id + 'search');
+    try {
+      const res = await base44.functions.invoke('marketplaceSearchLink', { listing_id: listing.id });
+      const url = res.data?.url;
+      if (url) window.open(url, '_blank', 'noopener,noreferrer');
+      else toast.error('Could not build a search link.');
+    } catch (e) { toast.error(e?.data?.error || e.message || 'Search failed'); }
     finally { setBusy(''); }
   }
 
@@ -82,8 +110,12 @@ export default function Marketplace() {
     setBusy(listing.id + method);
     try {
       const res = await base44.functions.invoke('purchaseMarketplaceListing', { listing_id: listing.id, payment_method: method });
-      if (res.data?.blocked) toast.error(res.data.message || 'Payment method unavailable');
-      else { toast.success('Purchased! The seller will ship your item.'); await load(); }
+      // Affiliate listing → open the retailer link (they sell + fulfill); nothing charged here.
+      if (res.data?.affiliate && res.data?.redirect_url) {
+        window.open(res.data.redirect_url, '_blank', 'noopener,noreferrer');
+        toast.info('Opening the retailer to complete your purchase.');
+      } else if (res.data?.blocked) toast.error(res.data.message || 'Payment method unavailable');
+      else { toast.success(res.data?.charged ? 'Purchased! Your order is being fulfilled.' : 'Purchased!'); await load(); }
     } catch (e) { toast.error(e?.data?.error || e.message || 'Purchase failed'); }
     finally { setBusy(''); }
   }
@@ -116,6 +148,10 @@ export default function Marketplace() {
                 </label>
               </div>
             </div>
+            <label className="md:col-span-2 flex items-center gap-2 text-sm text-zinc-600">
+              <input type="checkbox" checked={form.anonymous} onChange={(e) => setForm({ ...form, anonymous: e.target.checked })} />
+              List anonymously — hide my name (recommended when reselling something you bought)
+            </label>
             <div className="md:col-span-2 flex justify-end">
               <Button size="sm" disabled={busy === 'create'} onClick={createListing}>
                 {busy === 'create' ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null} Post listing
@@ -133,26 +169,48 @@ export default function Marketplace() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {listings.map((l) => (
             <Card key={l.id} className="overflow-hidden">
-              {l.images?.[0] && <img src={l.images[0]} alt={l.title} className="w-full h-40 object-cover" />}
+              <div className="relative">
+                {(l.image_url || l.images?.[0]) && <img src={l.image_url || l.images[0]} alt={l.title} className="w-full h-40 object-cover" />}
+                {/* Points price overlaid on the image (1 point = 1¢, closed-loop). */}
+                {l.price_points > 0 && (
+                  <span className="absolute top-2 left-2 bg-black/70 text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
+                    <Coins className="w-3 h-3" /> {Number(l.price_points).toLocaleString()} pts
+                  </span>
+                )}
+              </div>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between gap-2">
                   <div className="font-semibold truncate">{l.title}</div>
                   <Badge className="bg-zinc-500 text-white">{l.condition}</Badge>
                 </div>
+                {sourceMeta(l) && (
+                  <Badge className={`${sourceMeta(l).tint} text-white mb-1`}>{sourceMeta(l).label}</Badge>
+                )}
                 <div className="text-xs text-zinc-500 mb-2 line-clamp-2">{l.description}</div>
                 <div className="text-xs text-zinc-500 mb-2">by {l.seller_name || 'Member'}{l.location ? ` · ${l.location}` : ''}</div>
-                <div className="flex gap-2">
-                  {l.price_points > 0 && (
-                    <Button size="sm" variant="outline" disabled={busy === l.id + 'points'} onClick={() => buy(l, 'points')}>
-                      <Coins className="w-4 h-4 mr-1" /> {l.price_points} pts
-                    </Button>
-                  )}
-                  {l.price_usd > 0 && (
-                    <Button size="sm" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
-                      <CreditCard className="w-4 h-4 mr-1" /> ${l.price_usd}
-                    </Button>
-                  )}
-                </div>
+                {l.source === 'affiliate' ? (
+                  <Button size="sm" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
+                    <ExternalLink className="w-4 h-4 mr-1" /> View{l.price_usd > 0 ? ` · ${formatPrice(l.price_usd)}` : ''}
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    {l.price_points > 0 && (
+                      <Button size="sm" variant="outline" disabled={busy === l.id + 'points'} onClick={() => buy(l, 'points')}>
+                        <Coins className="w-4 h-4 mr-1" /> {Number(l.price_points).toLocaleString()} pts
+                      </Button>
+                    )}
+                    {l.price_usd > 0 && (
+                      <Button size="sm" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
+                        <CreditCard className="w-4 h-4 mr-1" /> {formatPrice(l.price_usd)}
+                      </Button>
+                    )}
+                  </div>
+                )}
+                {l.source !== 'affiliate' && (
+                  <Button size="sm" variant="ghost" className="w-full mt-2 text-xs" disabled={busy === l.id + 'search'} onClick={() => searchReal(l)}>
+                    <Search className="w-3 h-3 mr-1" /> Now go find the real thing
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}

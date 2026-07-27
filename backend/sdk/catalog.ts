@@ -17,6 +17,7 @@
 
 import { db } from "./db.ts";
 import { Core } from "./integrations.ts";
+import { generateProductImages } from "./image-gen.ts";
 
 export const PLATFORM_SELLER_ID = "platform_catalog";
 
@@ -42,6 +43,32 @@ export const AFFILIATE_PROVIDERS: AffiliateProvider[] = [
 export function providersForCountry(country: string): AffiliateProvider[] {
   const c = (country || "US").toUpperCase();
   return AFFILIATE_PROVIDERS.filter((p) => p.countries.includes(c) && p.configured());
+}
+
+// Amazon storefront domains per country (for building shopper-facing search links).
+const AMAZON_DOMAINS: Record<string, string> = {
+  US: "amazon.com", CA: "amazon.ca", GB: "amazon.co.uk", DE: "amazon.de", FR: "amazon.fr",
+  IT: "amazon.it", ES: "amazon.es", JP: "amazon.co.jp", IN: "amazon.in", AU: "amazon.com.au",
+  MX: "amazon.com.mx", BR: "amazon.com.br",
+};
+
+/** Build a shopper-facing "find the real product" search link for a listing's title.
+ *  If an AUTHORIZED affiliate provider is configured for the country, the link is a real affiliate
+ *  search URL (monetized, compliant, clearly disclosed). Otherwise it's a neutral shopping search so
+ *  the user can go buy the real thing right away. The platform listing itself stays original + in the
+ *  closed-loop points economy — this button is a convenience/affiliate funnel, not a resale of a real
+ *  product we don't hold. */
+export function buildSearchLink(country: string, query: string): { url: string; affiliate: boolean; retailer: string } {
+  const c = (country || "US").toUpperCase();
+  const q = encodeURIComponent((query || "").trim().slice(0, 150));
+  const amazon = AFFILIATE_PROVIDERS.find((p) => p.key === "amazon");
+  const tag = Deno.env.get("AMAZON_ASSOCIATE_TAG");
+  if (amazon && amazon.countries.includes(c) && tag) {
+    const domain = AMAZON_DOMAINS[c] || "amazon.com";
+    return { url: `https://www.${domain}/s?k=${q}&tag=${encodeURIComponent(tag)}`, affiliate: true, retailer: "Amazon" };
+  }
+  // Neutral fallback: Google Shopping search (no affiliate tag, no data leakage beyond the query).
+  return { url: `https://www.google.com/search?tbm=shop&q=${q}`, affiliate: false, retailer: "shopping search" };
 }
 
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
@@ -80,9 +107,18 @@ export async function generateSeedListings(country: string, count = 12, category
     }));
   }
 
-  for (const it of items.slice(0, count)) {
+  const finalItems = items.slice(0, count).filter((it) => round2(Number(it.price_usd) || 0) > 0);
+
+  // Generate an ORIGINAL image per product via the serverless-GPU pipeline (skipped/null if images
+  // are disabled or no provider is configured — listings then launch text-only). Cost-capped inside.
+  const images = await generateProductImages(
+    finalItems.map((it) => ({ title: String(it.title || "Product"), description: String(it.description || ""), category: it.category || category || "general" })),
+  ).catch(() => finalItems.map(() => null));
+
+  for (let i = 0; i < finalItems.length; i++) {
+    const it = finalItems[i];
     const usd = round2(Number(it.price_usd) || 0);
-    if (usd <= 0) continue;
+    const imageUrl = images[i] || null;
     const listing = await db.create("MarketplaceListing", {
       seller_id: PLATFORM_SELLER_ID, seller_name: "GamerGain Catalog",
       title: String(it.title || "Product").slice(0, 120),
@@ -94,6 +130,8 @@ export async function generateSeedListings(country: string, count = 12, category
       country: c,
       source: "platform_catalog",
       ai_generated: true,
+      image_url: imageUrl,
+      images: imageUrl ? [imageUrl] : [],
       status: "active",
       created_at: new Date().toISOString(),
     }, PLATFORM_SELLER_ID).catch(() => null);

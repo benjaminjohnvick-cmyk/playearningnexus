@@ -580,5 +580,8 @@
 "buildUserAIProfiles",
 "createMarketplaceListing",
 "purchaseMarketplaceListing",
-"userAssistantChat"
+"userAssistantChat",
+"aiCatalogSeed",
+"relistItem",
+"marketplaceSearchLink"
 ]

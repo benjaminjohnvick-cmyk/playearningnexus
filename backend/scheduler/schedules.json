@@ -7,6 +7,12 @@
       "function": "autoReferralContestDaily"
     },
     {
+      "name": "daily-catalog-seed",
+      "cron": "40 9 * * *",
+      "function": "aiCatalogSeed",
+      "_comment": "Populates/tops-up the marketplace catalog for every country in CATALOG_COUNTRIES with original AI listings + images."
+    },
+    {
       "name": "daily-ecosystem-engine",
       "cron": "15 9 * * *",
       "function": "autonomousEcosystemEngine"

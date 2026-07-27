@@ -110,6 +110,7 @@ export function LocaleProvider({ children }) {
       currency,
       setCurrency,
       formatCurrency,
+      formatPrice: formatCurrency, // alias: converts a USD amount to the selected currency
       translate,
       exchangeRates,
       supportedLanguages: SUPPORTED_LANGUAGES,
