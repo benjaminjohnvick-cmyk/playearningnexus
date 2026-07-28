@@ -41,3 +41,11 @@ dist-ssr
 
 .env
 base44/.app.jsonc
+
+# Large generated snapshots / backups — DO NOT commit these to git.
+# The git history itself is the backup (every source + doc file is versioned).
+# Committing the multi-MB code snapshot and repo-backup zip bloats the repo and
+# makes GitHub Desktop slow / prone to crashing. Keep them on disk, out of git.
+snapshots/
+*-repo-backup-*.zip
+GamerGain-FULL-CODEBASE-*.txt
