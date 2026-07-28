@@ -25,7 +25,7 @@ export default function Marketplace() {
   const [sortBy, setSortBy] = useState('newest');
   const [catFilter, setCatFilter] = useState('all');
   // "Find the real thing" aggregated internet search modal.
-  const [realSearch, setRealSearch] = useState({ open: false, listing: null, sort: 'relevance', minPrice: '', maxPrice: '', engines: [], loading: false, disclosure: '' });
+  const [realSearch, setRealSearch] = useState({ open: false, listing: null, query: '', sort: 'relevance', minPrice: '', maxPrice: '', engines: [], loading: false, disclosure: '' });
 
   // Source presentation: label + badge tint. Affiliate listings are clearly marked per FTC.
   function sourceMeta(l) {
@@ -115,11 +115,13 @@ export default function Marketplace() {
   // and eBay so real listings from across the internet come up. Sort + price range are honored per
   // engine. The platform listing stays original and priced in closed-loop points.
   async function openRealSearch(listing, override = {}) {
-    const next = { open: true, listing, sort: override.sort ?? 'relevance', minPrice: override.minPrice ?? '', maxPrice: override.maxPrice ?? '', engines: [], loading: true, disclosure: '' };
+    const query = override.query != null ? override.query : (realSearch.open ? realSearch.query : (listing?.title || ''));
+    const next = { open: true, listing, query, sort: override.sort ?? realSearch.sort ?? 'relevance', minPrice: override.minPrice ?? realSearch.minPrice ?? '', maxPrice: override.maxPrice ?? realSearch.maxPrice ?? '', engines: [], loading: true, disclosure: '' };
     setRealSearch(next);
     try {
       const res = await base44.functions.invoke('marketplaceSearchLink', {
-        listing_id: listing.id,
+        listing_id: listing?.id,
+        query,
         sort: next.sort,
         min_price: next.minPrice ? Number(next.minPrice) : undefined,
         max_price: next.maxPrice ? Number(next.maxPrice) : undefined,
@@ -257,53 +259,96 @@ export default function Marketplace() {
         </div>
       )}
 
-      {/* "Find the real thing" — aggregated, sortable internet search. */}
-      {realSearch.open && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setRealSearch((s) => ({ ...s, open: false }))}>
-          <Card className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-1">
-                <div className="font-semibold flex items-center gap-2"><Search className="w-4 h-4" /> Find the real thing</div>
-                <button className="text-zinc-400 text-xl leading-none" onClick={() => setRealSearch((s) => ({ ...s, open: false }))}>×</button>
-              </div>
-              <div className="text-xs text-zinc-500 mb-3 truncate">Searching for: <span className="font-medium">{realSearch.listing?.title}</span></div>
+      {/* "Find the real thing" — full-screen AI search: editable query bar, in-app catalog matches,
+          and sorted real listings from across the web. */}
+      {realSearch.open && (() => {
+        const t = (realSearch.query || '').toLowerCase();
+        const matches = t ? listings.filter((l) => (l.title || '').toLowerCase().includes(t) || (l.category || '').toLowerCase().includes(t) || (l.description || '').toLowerCase().includes(t)) : listings;
+        return (
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          {/* AI search bar */}
+          <div className="border-b p-3 flex items-center gap-2 sticky top-0 bg-white z-10">
+            <button className="text-zinc-500 text-2xl leading-none px-1" onClick={() => setRealSearch((s) => ({ ...s, open: false }))}>×</button>
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+              <Input className="pl-9" placeholder="Search products…" value={realSearch.query}
+                onChange={(e) => setRealSearch((s) => ({ ...s, query: e.target.value }))}
+                onKeyDown={(e) => { if (e.key === 'Enter') openRealSearch(realSearch.listing, { query: realSearch.query }); }} />
+            </div>
+            <Button size="sm" onClick={() => openRealSearch(realSearch.listing, { query: realSearch.query })}>Search</Button>
+          </div>
 
-              <div className="flex flex-wrap gap-2 mb-3">
-                <select className="border rounded-md h-9 px-2 text-sm bg-white flex-1"
-                  value={realSearch.sort}
-                  onChange={(e) => openRealSearch(realSearch.listing, { sort: e.target.value, minPrice: realSearch.minPrice, maxPrice: realSearch.maxPrice })}>
-                  <option value="relevance">Best match</option>
-                  <option value="price_asc">Price: Low to High</option>
-                  <option value="price_desc">Price: High to Low</option>
-                  <option value="rating">Avg. customer review</option>
-                  <option value="newest">Newest</option>
-                </select>
-                <Input className="w-20" type="number" placeholder="Min $" value={realSearch.minPrice}
-                  onChange={(e) => setRealSearch((s) => ({ ...s, minPrice: e.target.value }))} />
-                <Input className="w-20" type="number" placeholder="Max $" value={realSearch.maxPrice}
-                  onChange={(e) => setRealSearch((s) => ({ ...s, maxPrice: e.target.value }))} />
-                <Button size="sm" variant="outline" onClick={() => openRealSearch(realSearch.listing, { sort: realSearch.sort, minPrice: realSearch.minPrice, maxPrice: realSearch.maxPrice })}>Apply</Button>
-              </div>
+          {/* Filters */}
+          <div className="flex flex-wrap gap-2 p-3 border-b bg-zinc-50">
+            <select className="border rounded-md h-9 px-2 text-sm bg-white"
+              value={realSearch.sort}
+              onChange={(e) => openRealSearch(realSearch.listing, { query: realSearch.query, sort: e.target.value, minPrice: realSearch.minPrice, maxPrice: realSearch.maxPrice })}>
+              <option value="relevance">Best match</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="rating">Avg. customer review</option>
+              <option value="newest">Newest</option>
+            </select>
+            <Input className="w-24" type="number" placeholder="Min $" value={realSearch.minPrice}
+              onChange={(e) => setRealSearch((s) => ({ ...s, minPrice: e.target.value }))} />
+            <Input className="w-24" type="number" placeholder="Max $" value={realSearch.maxPrice}
+              onChange={(e) => setRealSearch((s) => ({ ...s, maxPrice: e.target.value }))} />
+            <Button size="sm" variant="outline" onClick={() => openRealSearch(realSearch.listing, { query: realSearch.query, sort: realSearch.sort, minPrice: realSearch.minPrice, maxPrice: realSearch.maxPrice })}>Apply</Button>
+          </div>
 
+          <div className="flex-1 overflow-y-auto p-4">
+            {/* Real listings from across the web */}
+            <div className="mb-4">
+              <div className="text-sm font-semibold mb-2 flex items-center gap-2"><ExternalLink className="w-4 h-4" /> Real listings from across the web</div>
               {realSearch.loading ? (
-                <div className="py-6 flex items-center gap-2 text-zinc-500 text-sm"><Loader2 className="w-4 h-4 animate-spin" /> Building results…</div>
+                <div className="py-2 flex items-center gap-2 text-zinc-500 text-sm"><Loader2 className="w-4 h-4 animate-spin" /> Building results…</div>
               ) : (
-                <div className="space-y-2">
-                  <div className="text-xs text-zinc-500">Open real listings from across the web, sorted your way:</div>
+                <div className="flex flex-wrap gap-2">
                   {realSearch.engines.map((e) => (
-                    <Button key={e.key} variant="outline" className="w-full justify-between"
-                      onClick={() => window.open(e.url, '_blank', 'noopener,noreferrer')}>
-                      <span className="flex items-center gap-2"><ExternalLink className="w-4 h-4" /> {e.label}</span>
-                      {e.affiliate ? <Badge className="bg-amber-600 text-white text-[10px]">affiliate</Badge> : null}
+                    <Button key={e.key} variant="outline" onClick={() => window.open(e.url, '_blank', 'noopener,noreferrer')}>
+                      <ExternalLink className="w-4 h-4 mr-1" /> {e.label}
+                      {e.affiliate ? <Badge className="bg-amber-600 text-white text-[10px] ml-2">affiliate</Badge> : null}
                     </Button>
                   ))}
-                  {realSearch.disclosure ? <div className="text-[11px] text-zinc-400 pt-1">{realSearch.disclosure}</div> : null}
                 </div>
               )}
-            </CardContent>
-          </Card>
+              {realSearch.disclosure ? <div className="text-[11px] text-zinc-400 pt-1">{realSearch.disclosure}</div> : null}
+            </div>
+
+            {/* In-app catalog matches (buyable with points, closed-loop) */}
+            <div className="text-sm font-semibold mb-2 flex items-center gap-2"><ShoppingBag className="w-4 h-4" /> In the GamerGain catalog</div>
+            {matches.length === 0 ? (
+              <div className="text-sm text-zinc-400">No catalog matches — try the web listings above.</div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {matches.slice(0, 60).map((l) => (
+                  <Card key={l.id} className="overflow-hidden">
+                    <div className="relative">
+                      {(l.image_url || l.images?.[0]) && <img src={l.image_url || l.images[0]} alt={l.title} className="w-full h-28 object-cover" />}
+                      {l.price_points > 0 && (
+                        <span className="absolute top-1 left-1 bg-black/70 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                          <Coins className="w-3 h-3" /> {Number(l.price_points).toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                    <CardContent className="p-2">
+                      <div className="text-xs font-medium truncate">{l.title}</div>
+                      <div className="flex gap-1 mt-1">
+                        {l.price_points > 0 && (
+                          <Button size="sm" variant="outline" className="text-[11px] h-7 px-2" disabled={busy === l.id + 'points'} onClick={() => buy(l, 'points')}>
+                            <Coins className="w-3 h-3 mr-1" /> Buy
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
