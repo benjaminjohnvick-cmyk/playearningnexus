@@ -62,9 +62,10 @@ export function scrubEvent(e: RawEvent): Record<string, unknown> {
   return out;
 }
 
-/** Should telemetry be recorded at all right now, for this user? */
+/** Should telemetry be recorded at all right now, for this user? Honors the UI's `tracking_opt_out`
+ *  (and legacy `behavioral_opt_out`). */
 export async function telemetryEnabled(user: any, jurisdiction?: string | null): Promise<boolean> {
-  if (user?.behavioral_opt_out === true) return false;
+  if (user?.tracking_opt_out === true || user?.behavioral_opt_out === true) return false;
   const flag = await isEnabled("site_telemetry", jurisdiction).catch(() => true);
   if (!flag) return false;
   const on = await getNumber("TELEMETRY_ENABLED", 1).catch(() => 1);

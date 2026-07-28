@@ -23,10 +23,28 @@ function unitHash(s: string): number {
   return ((h >>> 0) % 100000) / 100000;
 }
 
-/** Is this session eligible for screenshot capture right now? */
+// Honor the user's behavioral opt-out. The UI sets `tracking_opt_out`; we accept the legacy
+// `behavioral_opt_out` too so either field disables capture.
+function optedOut(user: any): boolean {
+  return user?.tracking_opt_out === true || user?.behavioral_opt_out === true;
+}
+
+/** Is this session eligible for CHEAP STRUCTURAL (heatmap) capture right now? Gated on the `ux_heatmap`
+ *  flag, which defaults ON — structural snapshots carry no pixels, are ~1 KB, and are analyzed by cheap
+ *  rules, so this design-optimization loop runs from launch at ~$0. Still a rotating sample + opt-out. */
+export async function shouldCaptureStructural(user: any, sessionId: string, jurisdiction?: string | null): Promise<boolean> {
+  if (!sessionId || optedOut(user)) return false;
+  const on = await isEnabled("ux_heatmap", jurisdiction).catch(() => true);
+  if (!on) return false;
+  const pct = Math.max(0, Math.min(1, await getNumber("SESSION_CAPTURE_SAMPLE_PCT", 0.02)));
+  if (pct <= 0) return false;
+  return unitHash(sessionId) < pct;
+}
+
+/** Is this session eligible for PIXEL screenshot capture? Gated on the `session_screenshots` flag, which
+ *  defaults OFF (needs html2canvas + is more privacy-sensitive). Structural capture above is preferred. */
 export async function shouldCapture(user: any, sessionId: string, jurisdiction?: string | null): Promise<boolean> {
-  if (!sessionId) return false;
-  if (user?.behavioral_opt_out === true) return false;
+  if (!sessionId || optedOut(user)) return false;
   const on = await isEnabled("session_screenshots", jurisdiction).catch(() => false);
   if (!on) return false;
   const pct = Math.max(0, Math.min(1, await getNumber("SESSION_CAPTURE_SAMPLE_PCT", 0.02)));

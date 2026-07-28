@@ -1,6 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { shouldCapture, storeShot, storeSnapshot } from "../../sdk/session-capture.ts";
+import { shouldCapture, shouldCaptureStructural, storeShot, storeSnapshot } from "../../sdk/session-capture.ts";
 
 // sessionCaptureIngest (authenticated) — the client asks (action:"check") whether the current session is
 // in the rotating sample; if so it periodically POSTs a tiny STRUCTURAL snapshot (action:"snapshot":
@@ -16,20 +16,23 @@ export default __handler(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const sessionId = String(body?.session_id || "");
-    const capture = await shouldCapture(user, sessionId, (user as any).country);
+    // Cheap structural capture (default ON) drives the "check"/"snapshot" path; pixel screenshots
+    // (default OFF) drive the legacy "frame" path.
+    const structural = await shouldCaptureStructural(user, sessionId, (user as any).country);
 
     if (body?.action === "check" || !body?.action) {
-      return Response.json({ capture });
+      return Response.json({ capture: structural });
     }
 
     if (body?.action === "snapshot") {
-      if (!capture) return Response.json({ ok: true, stored: false, capture: false });
+      if (!structural) return Response.json({ ok: true, stored: false, capture: false });
       if (!body?.snapshot) return Response.json({ error: "snapshot required" }, { status: 400 });
       const ok = await storeSnapshot(user.id, sessionId, body.snapshot);
       return Response.json({ ok: true, stored: ok, capture: true });
     }
 
     if (body?.action === "frame") {
+      const capture = await shouldCapture(user, sessionId, (user as any).country);
       if (!capture) return Response.json({ ok: true, stored: false, capture: false });
       if (!body?.image) return Response.json({ error: "image required" }, { status: 400 });
       const url = await storeShot(user.id, sessionId, String(body.image), body?.path);
