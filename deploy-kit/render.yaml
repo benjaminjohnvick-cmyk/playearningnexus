@@ -1,0 +1,42 @@
+# Free/hobby-tier hosting — the recurring-cost lever (targets ~$0/mo at launch traffic).
+#
+# Pairs a FREE web service (single-service: Deno backend serves the built SPA + API on one origin)
+# with a FREE managed Postgres from Neon or Supabase (persistent free tiers), so hosting is ~$0 until
+# real traffic justifies upgrading. Deploy: connect this repo in the Render dashboard (New → Blueprint)
+# or `render blueprint launch`.
+#
+# Caveats (free tier): the web service spins down after ~15 min idle and cold-starts on the next
+# request (a few seconds) — fine for launch, upgrade to the $7/mo "Starter" when you want always-on.
+# Neon/Supabase free Postgres is persistent (unlike Render's 90-day free PG), so use one of those for
+# the database.
+
+services:
+  - type: web
+    name: gamergain
+    runtime: docker
+    plan: free                       # $0/mo (spins down on idle). Upgrade to "starter" (~$7/mo) for always-on.
+    dockerfilePath: ./deploy-kit/railway/frontend.Dockerfile   # or a Deno Dockerfile; single-service serves SPA + API
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: AUTO_MIGRATE
+        value: "1"                   # schema loads on boot — no manual migration step (saves dev hours)
+      - key: SCHEDULER_INLINE
+        value: "1"                   # cron jobs run in-process — no separate worker (saves a service)
+      - key: FRONTEND_DIR
+        value: "../dist"             # backend serves the built SPA — one service, one origin
+      - key: DATABASE_URL
+        sync: false                  # paste your FREE Neon/Supabase Postgres URL here (persistent free tier)
+      - key: AUTH_JWT_SECRET
+        generateValue: true          # Render generates a strong secret — no manual step
+      - key: AI_DAILY_SPEND_CAP_USD
+        value: "8"                   # hard cap so LLM spend can't run away on the free tier
+      - key: CATALOG_IMAGES_ENABLED
+        value: "0"                   # launch text-only at $0; flip to 1 after adding AWS keys to backfill
+
+# Database option A (recommended free + persistent): Neon (neon.tech) — create a free Postgres, copy the
+#   connection string into DATABASE_URL above. ~0.5GB free, always-on.
+# Database option B: Supabase (supabase.com) — free Postgres, copy the connection string.
+# Either keeps the database at $0/mo at launch scale.

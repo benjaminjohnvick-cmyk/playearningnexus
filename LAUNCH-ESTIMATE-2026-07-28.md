@@ -79,3 +79,30 @@ approved ($0 fixed), **images at the $10 budget posture** (or text-only at $0), 
 low** (~$5–10/mo), **one-country + small catalog** at launch, and a **hobby hosting tier + trial credit**.
 Everything stays fully functional and running — just scoped to web + Android at launch — for
 **~$2,300–$3,100 all-in year one**, inside your original ~$3,000-and-change.
+
+## Keeping EVERYTHING on (web + Android + iOS, all features) at ~$3,000
+Yes, achievable — at the low end, using coding + free-tier levers instead of cutting scope:
+
+| Bucket | Cost with levers | The lever |
+|---|---:|---|
+| Dev (one-time) | $2,000–$2,600 | Prebuilt features ($0) + automated deploy/QA: `launch.sh`, `e2e-smoke.mjs`, `validate.sh` collapse the deploy + test phases so the developer runs commands, not hours |
+| Hosting (yr 1) | **$0–120** | `deploy-kit/render.yaml` free web tier + free persistent Postgres (Neon/Supabase) — single-service, auto-migrate, inline scheduler |
+| LLM (yr 1) | $60–120 | `AI_DAILY_SPEND_CAP_USD=8`, small-tier models, paced jobs |
+| Images | $0–15 | text-only launch ($0) or $10 Titan posture |
+| Play (one-time) | $25 | — |
+| Apple Developer | $99/yr | unavoidable for a native iOS app |
+| Domain | $0–15 | free subdomain, or ~$12–15 |
+| **Year-1 all-in** | **≈ $2,300–$3,000** | everything ON, all three platforms |
+
+Two honest caveats so the number holds:
+- **The wildcard is an iOS App Store rejection round** (common for earn-money apps) — each round adds
+  dev hours. It's mitigated (demo login + "merit, not gambling" framing in `STORE-LISTING-COPY.md`), but
+  it's the one thing that can push past $3,000. Budget a small contingency for it.
+- **Cash-out stays OFF** — not to save money, but for **legal** reasons (real-money withdrawal triggers
+  money-transmission licensing, which is a separate, expensive track). Everything else — marketplace,
+  catalog, AI, welcome rewards, Daily Boost, Affirm, card payments — can be on. This is a compliance
+  guardrail, not a budget cut.
+
+Hard floor you can't code away: **~$139** (Apple $99 + Play $25 + domain ~$15). Everything above that is
+dev hours (cut by automation) and usage (capped + free-tier), so the plan lands **around $3,000 with
+everything on** — with the iOS-review contingency as the only real risk to the number.
