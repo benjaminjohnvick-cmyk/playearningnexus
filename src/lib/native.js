@@ -5,10 +5,16 @@
 // native (Java/Swift) code to maintain and no committed android/ios project.
 // On plain web (the PWA), every call below no-ops via isNativePlatform().
 import { Capacitor } from '@capacitor/core';
+import { initOta, checkForOtaUpdate } from '@/lib/otaUpdate';
+import { startSession } from '@/lib/liveVariants';
 
 export async function initNative() {
   // On web/PWA there is nothing native to do.
   if (!Capacitor?.isNativePlatform?.()) return;
+
+  // OTA live updates: pull newer web bundles to installed apps with no store review (guarded/no-op
+  // until the Capgo plugin is installed). See MOBILE-OTA-LIVE-UPDATES.md.
+  initOta();
 
   // Status bar color to match the app theme.
   try {
@@ -29,6 +35,13 @@ export async function initNative() {
     App.addListener('backButton', ({ canGoBack }) => {
       if (canGoBack) window.history.back();
       else App.exitApp();
+    });
+
+    // App resume (foreground): re-pull the user's variant assignments and check for an OTA bundle, so a
+    // change that was promoted while the app was backgrounded is applied on this open — no downtime,
+    // quiet-swap. This is the native equivalent of "applied the next time they log in".
+    App.addListener('appStateChange', ({ isActive }) => {
+      if (isActive) { try { startSession(true); } catch { /* ignore */ } checkForOtaUpdate(); }
     });
 
     // Deep links + OAuth return. When the app is opened via a URL

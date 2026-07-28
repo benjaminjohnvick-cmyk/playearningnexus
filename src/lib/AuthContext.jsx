@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { startSession, endSession } from '@/lib/liveVariants';
 
 // Self-hosted auth context. Replaces the Base44 app-public-settings / axios-client flow
 // with simple token-based auth against the Nexus backend: if a token is present we load
@@ -48,6 +49,9 @@ export const AuthProvider = ({ children }) => {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
       setIsAuthenticated(true);
+      // Login applier: resolve + apply this user's personalized/segment variants (quiet-swap). Any
+      // change that became a winner while they were away is applied now, at login. Honors opt-out.
+      if (currentUser && !currentUser.tracking_opt_out) { try { startSession(true); } catch { /* non-blocking */ } }
 
       if (currentUser && !currentUser.social_media_connected) {
         sessionStorage.setItem('needs_social_setup', 'true');
@@ -70,6 +74,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = (shouldRedirect = true) => {
+    try { endSession(); } catch { /* non-blocking — finalize the session so winners apply next login */ }
     setUser(null);
     setIsAuthenticated(false);
     if (shouldRedirect) {

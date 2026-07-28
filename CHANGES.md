@@ -1,5 +1,34 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-28 — Personalized (segment) learning + segment→site-wide graduation + login/logout lifecycle + OTA live updates
+
+Option (b): AI changes are tested per user-segment first, kept per-user when they win, and graduated
+site-wide on a big aggregate bump — applied at next login, no downtime, across web/PWA/native. Plus an
+OTA channel so web-layer code reaches installed native apps with no store review. See
+`PERSONALIZATION-AND-GRADUATION.md` and `MOBILE-OTA-LIVE-UPDATES.md`.
+
+- **Segment personalization** (`live-experiments.ts` + `personalization.ts`): experiments can be scoped
+  to a user segment (behavior + top KYC interest; prefix-matched so base segments cover sub-segments).
+  Aggregate significance across the segment is required — no per-single-user noise. Segment winners are
+  **promoted as segment-kept** (applied per-user at login via `resolveVariantOverrides`), NOT flipped
+  globally.
+- **Graduation** (`nominateGraduation` + `runGraduation` + `graduationScan`, scheduled): a segment winner
+  with lift ≥ `GRADUATION_LIFT_PCT` opens a site-wide 24h validation experiment; a pass flips it globally
+  (no downtime, all platforms). Money/compliance never enter this path.
+- **Login/logout lifecycle** (`sessionStart`, `sessionEnd`): login applier resolves + applies the user's
+  segment variants (quiet-swap — winners that landed while away apply at next login, never mid-session);
+  logout finalizes the session. Wired into `AuthContext` (login/logout) and native `appStateChange`
+  (app-resume re-pull).
+- **Optimizer wiring**: `OPTIMIZER_SEGMENT_TESTING` (default on) routes non-sensitive proposals to the
+  most active segment first. Flag `personalized_learning`; settings `GRADUATION_LIFT_PCT`/
+  `SEGMENT_MIN_SAMPLE`. `graduationScan` scheduled every 2h.
+- **OTA live updates** (`src/lib/otaUpdate.js`, `native.js`, `capacitor.config.json`): guarded
+  `@capgo/capacitor-updater` integration (no-op until installed) that pushes web-bundle updates to
+  installed native apps with **no store review**; app-resume checks for updates. `APP-STORE-SUBMISSION-
+  CHECKLIST.md` now documents that ongoing changes are store-review-free.
+
+
+
 ## 2026-07-28 — Live experimentation: 24h test → promote-if-better, bandit, circuit breaker, canary, per-user quiet-swap
 
 Added a live-experiment layer so AI-proposed changes are tested on real traffic and promoted only if the

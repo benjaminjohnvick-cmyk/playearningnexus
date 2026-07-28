@@ -33,6 +33,7 @@ export default __handler(async (req) => {
       key, type, control_value: body.control_value, variant_value: body.variant_value,
       objective_metric: body.objective_metric, guardrails: body.guardrails,
       window_hours: body.window_hours, min_sample: body.min_sample, rationale: body.rationale,
+      segment: body.segment ?? null, origin: "manual",
     });
     if (!exp) return Response.json({ error: "Could not create experiment" }, { status: 500 });
     return Response.json({ success: true, experiment: exp });

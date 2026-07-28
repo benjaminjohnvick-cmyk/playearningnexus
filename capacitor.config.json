@@ -14,6 +14,13 @@
       "launchShowDuration": 1200,
       "backgroundColor": "#111827",
       "showSpinner": false
+    },
+    "CapacitorUpdater": {
+      "autoUpdate": true,
+      "appReadyTimeout": 10000,
+      "responseTimeout": 20,
+      "directUpdate": false,
+      "_comment": "OTA live web-bundle updates (no store review). Inert until '@capgo/capacitor-updater' is installed and a channel is set via the Capgo CLI. See MOBILE-OTA-LIVE-UPDATES.md."
     }
   }
 }

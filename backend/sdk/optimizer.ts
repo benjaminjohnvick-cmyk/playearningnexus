@@ -17,8 +17,19 @@ import { getDef, getNumber, setSetting } from "./settings.ts";
 import { Core } from "./integrations.ts";
 import { requireExperiment, createExperimentForProposal } from "./experiments.ts";
 import { createLiveExperiment, liveEnabled } from "./live-experiments.ts";
+import { topBaseSegment } from "./personalization.ts";
 
 const ACTOR = "ai-optimizer";
+
+// When segment testing is on, the optimizer tests a non-sensitive change on the most active segment
+// FIRST (per-user personalization); a strong segment winner then graduates to a site-wide test. When
+// off (or no populous segment exists), it tests site-wide directly. Either way, promotion is a
+// no-downtime config flip and money/compliance stays out.
+async function targetSegment(): Promise<string | null> {
+  const { getBool } = await import("./settings.ts");
+  if (!(await getBool("OPTIMIZER_SEGMENT_TESTING", true).catch(() => true))) return null;
+  return await topBaseSegment().catch(() => null);
+}
 
 // Map an aggregate optimizer objective to the per-user event a live A/B counts as a "success".
 function liveObjectiveFor(objective: string): string {
@@ -244,9 +255,10 @@ export async function applyOrQueue(p: Proposal, snap: Snapshot): Promise<ApplyRe
   // (bandit traffic-shift + circuit breaker + canary ramp, all no-downtime). Money/compliance-sensitive
   // changes never enter this — they fall through to the human-gated recommendation path below.
   if (!def.sensitive && !priceLike && await liveEnabled().catch(() => false)) {
+    const segment = await targetSegment().catch(() => null);
     const exp = await createLiveExperiment({
       key: p.key, type: "setting", control_value: p.current, variant_value: p.proposed,
-      objective_metric: liveObjectiveFor(p.objective), rationale: p.rationale,
+      objective_metric: liveObjectiveFor(p.objective), rationale: p.rationale, segment,
     }).catch(() => null);
     if (exp) return { key: p.key, status: "live_experiment", from: p.current, to: p.proposed, experiment_id: (exp as any).id };
     // If live creation failed, fall through to the survey/apply paths below.

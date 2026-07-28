@@ -88,11 +88,14 @@ export async function liveEnabled(jurisdiction?: string | null): Promise<boolean
   return flag && setting;
 }
 
-/** Open a live experiment. Non-sensitive keys only — callers must not pass compliance/money settings. */
+/** Open a live experiment. Non-sensitive keys only — callers must not pass compliance/money settings.
+ *  `segment` scopes it: null/undefined = site-wide; a segment string = only users in that segment are
+ *  assigned and measured (segment/aggregate personalization — the aggregate ACROSS that segment's users
+ *  is what must be significant, so it stays statistically valid even though it's "personalized"). */
 export async function createLiveExperiment(input: {
   key: string; type?: "setting" | "flag" | "ui"; control_value: unknown; variant_value: unknown;
   objective_metric?: string; guardrails?: Array<{ metric: string; max_regression_pct: number }>;
-  window_hours?: number; min_sample?: number; rationale?: string;
+  window_hours?: number; min_sample?: number; rationale?: string; segment?: string | null; origin?: string;
 }): Promise<Record<string, unknown> | null> {
   const windowH = input.window_hours ?? Math.max(1, await getNumber("LIVE_TEST_WINDOW_HOURS", 24));
   const minSample = input.min_sample ?? Math.max(1, await getNumber("SELF_LEARNING_MIN_SAMPLE", 30));
@@ -112,8 +115,27 @@ export async function createLiveExperiment(input: {
     status: "running",
     variant_share: baseShare, base_share: baseShare, min_share: 0,
     canary_caps: caps, canary_idx: 0,
+    segment: input.segment ?? null, origin: input.origin ?? "optimizer", graduation_candidate: false,
     rationale: input.rationale ?? "", started_at: nowISO(), last_step_at: nowISO(),
   }, ACTOR).catch(() => null) as Record<string, unknown> | null;
+}
+
+/** Does this user (in `segment`) fall inside the experiment's scope? Site-wide experiments (no segment)
+ *  match everyone; segment experiments match by prefix, so a base-segment experiment ("engaged") also
+ *  covers its interest sub-segments ("engaged:electronics"), while an interest-specific experiment
+ *  matches only that sub-segment. Bigger buckets → statistically valid samples. */
+export function matchesSegment(exp: any, segment?: string | null): boolean {
+  if (!exp?.segment) return true;
+  if (!segment) return false;
+  const s = String(segment), e = String(exp.segment);
+  return s === e || s.startsWith(e + ":");
+}
+
+/** Segment-kept experiments: promoted experiments that carry a segment. Their winning value is applied
+ *  to matching users at request time (NOT flipped globally) — this is the per-user "kept change" layer. */
+export async function segmentKeptExperiments(): Promise<any[]> {
+  const rows = await db.filter("LiveExperiment", { status: "promoted" }, "-decided_at", 300).catch(() => []) as any[];
+  return rows.filter((e) => !!e.segment);
 }
 
 /** All running experiments (cached briefly by the caller if needed). */
@@ -140,24 +162,41 @@ export async function assignVariant(exp: any, user: any, sessionId?: string): Pr
   return variant;
 }
 
-/** Request-time applier: the effective overrides for THIS user across all running experiments. Records
- *  a one-time exposure per (experiment,user). Returns settings/flag overrides + ui variant selections. */
-export async function resolveVariantOverrides(user: any, sessionId?: string): Promise<{
+/** Request-time applier: the effective overrides for THIS user. Combines (1) RUNNING experiments the
+ *  user is eligible for (site-wide or their segment) — assigned + measured, and (2) segment-KEPT
+ *  promoted experiments for the user's segment — the per-user "kept change" layer, applied but no longer
+ *  under test. Global promoted changes are already live via setSetting, so they aren't repeated here.
+ *  Records a one-time exposure per running (experiment,user). `segment` is the user's derived segment. */
+export async function resolveVariantOverrides(user: any, sessionId?: string, segment?: string | null): Promise<{
   settings: Record<string, unknown>; flags: Record<string, boolean>; ui: Record<string, string>;
-  assignments: Array<{ experiment_id: string; key: string; type: string; variant: string }>;
+  assignments: Array<{ experiment_id: string; key: string; type: string; variant: string; kept?: boolean }>;
 }> {
   const out = { settings: {} as Record<string, unknown>, flags: {} as Record<string, boolean>, ui: {} as Record<string, string>, assignments: [] as any[] };
   if (!user?.id || user.tracking_opt_out === true) return out;
-  const exps = await runningExperiments();
-  for (const exp of exps) {
-    const variant = await assignVariant(exp, user, sessionId);
-    const value = variant === "variant" ? exp.variant_value : exp.control_value;
+
+  const put = (exp: any, value: unknown) => {
     if (exp.type === "flag") out.flags[exp.key] = !!(value === true || value === "1" || value === 1);
     else if (exp.type === "ui") out.ui[exp.key] = String(value);
     else out.settings[exp.key] = value;
+  };
+
+  // (1) Running experiments the user is eligible for.
+  const exps = await runningExperiments();
+  for (const exp of exps) {
+    if (!matchesSegment(exp, segment)) continue;
+    const variant = await assignVariant(exp, user, sessionId);
+    put(exp, variant === "variant" ? exp.variant_value : exp.control_value);
     out.assignments.push({ experiment_id: exp.id, key: exp.key, type: exp.type, variant });
-    // One-time exposure event (dedup via the assignment row's `exposed` flag).
     markExposed(exp, user.id, variant).catch(() => {});
+  }
+
+  // (2) Segment-kept promoted experiments for this user's segment (kept change, applied on login).
+  const kept = await segmentKeptExperiments();
+  for (const exp of kept) {
+    if (!matchesSegment(exp, segment)) continue;
+    if (out.assignments.some((a) => a.key === exp.key)) continue; // a running test on the same key wins
+    put(exp, exp.variant_value);
+    out.assignments.push({ experiment_id: exp.id, key: exp.key, type: exp.type, variant: "variant", kept: true });
   }
   return out;
 }
@@ -232,17 +271,26 @@ function nextShare(exp: any, probBetter: number): number {
  *  flip. Money/compliance keys never reach here (guarded at creation). */
 export async function promoteExperiment(exp: any, reason: string): Promise<void> {
   const now = nowISO();
-  try {
-    if (exp.type === "setting") await setSetting(exp.key, exp.variant_value as any, ACTOR);
-    else if (exp.type === "flag") await setSetting(exp.key, exp.variant_value ? 1 : 0, ACTOR).catch(() => null);
-    else if (exp.type === "ui") await setSetting(uiSettingKey(exp.key), String(exp.variant_value), ACTOR).catch(() => null);
-  } catch { /* ui keys may not be in the registry; stored as a raw GlobalSettings row below */ }
-  if (exp.type === "ui") await upsertRawSetting(uiSettingKey(exp.key), String(exp.variant_value));
+  const segmented = !!exp.segment;
+
+  // Segment experiments do NOT flip global config — the winning value is KEPT for the segment's users
+  // and applied per-user at login (resolveVariantOverrides). Only SITE-WIDE experiments flip the global
+  // config that every user (web, PWA, native) reads at request time.
+  if (!segmented) {
+    try {
+      if (exp.type === "setting") await setSetting(exp.key, exp.variant_value as any, ACTOR);
+      else if (exp.type === "flag") await setSetting(exp.key, exp.variant_value ? 1 : 0, ACTOR).catch(() => null);
+      else if (exp.type === "ui") await setSetting(uiSettingKey(exp.key), String(exp.variant_value), ACTOR).catch(() => null);
+    } catch { /* ui keys may not be in the registry; stored as a raw GlobalSettings row below */ }
+    if (exp.type === "ui") await upsertRawSetting(uiSettingKey(exp.key), String(exp.variant_value));
+  }
+
   await db.update("LiveExperiment", exp.id, {
-    status: "promoted", decided_at: now, decision: `promoted: ${reason}`, variant_share: 1, canary_idx: (exp.canary_caps || [1]).length - 1,
+    status: "promoted", decided_at: now, decision: `promoted${segmented ? " (segment-kept)" : " (site-wide)"}: ${reason}`,
+    variant_share: 1, canary_idx: (exp.canary_caps || [1]).length - 1,
   }).catch(() => null);
-  await db.create("AdminAuditLog", { actor_email: ACTOR, action_type: "live_experiment_promote", target: exp.key, details: { from: exp.control_value, to: exp.variant_value, reason }, timestamp: now }, ACTOR).catch(() => null);
-  await db.create("OptimizationOutcome", { key: exp.key, primary_metric: exp.objective_metric, applied_at: now, verdict: "win", auto: true, live_experiment_id: exp.id }, ACTOR).catch(() => null);
+  await db.create("AdminAuditLog", { actor_email: ACTOR, action_type: segmented ? "live_experiment_promote_segment" : "live_experiment_promote_global", target: exp.key, details: { from: exp.control_value, to: exp.variant_value, segment: exp.segment || null, reason }, timestamp: now }, ACTOR).catch(() => null);
+  await db.create("OptimizationOutcome", { key: exp.key, primary_metric: exp.objective_metric, applied_at: now, verdict: "win", auto: true, live_experiment_id: exp.id, segment: exp.segment || null }, ACTOR).catch(() => null);
 }
 
 /** Stop exposing the variant. Control was never changed, so revert = quiet-swap everyone back. */
@@ -277,6 +325,7 @@ export async function tickExperiment(exp: any): Promise<Record<string, unknown>>
   // Early stop on a clear, significant winner/loser (sequential-safe with the min-sample gate).
   if (significant && m.test.prob_variant_better >= 0.95) {
     await promoteExperiment(exp, `significant uptick (+${m.test.lift_pct}% on ${exp.objective_metric}, p=${m.test.p})`);
+    await nominateGraduation(exp, m.test.lift_pct);
     return { key: exp.key, action: "promoted_early", stats: m.test };
   }
   if (significant && m.test.prob_variant_better <= 0.05) {
@@ -287,6 +336,7 @@ export async function tickExperiment(exp: any): Promise<Record<string, unknown>>
   if (windowElapsed) {
     if (significant && m.test.lift_pct > 0) {
       await promoteExperiment(exp, `window elapsed, significant uptick (+${m.test.lift_pct}%, p=${m.test.p})`);
+      await nominateGraduation(exp, m.test.lift_pct);
       return { key: exp.key, action: "promoted", stats: m.test };
     }
     // Inconclusive at the window end → conservative: keep control, stop the test.
@@ -312,5 +362,42 @@ export async function tickAll(): Promise<Array<Record<string, unknown>>> {
   const exps = await runningExperiments();
   const out: Array<Record<string, unknown>> = [];
   for (const exp of exps) out.push(await tickExperiment(exp).catch((e) => ({ key: exp.key, action: "error", error: (e as Error).message })));
+  return out;
+}
+
+// ---- individual/segment → site-wide graduation --------------------------------------------------
+/** Flag a promoted SEGMENT experiment for site-wide graduation when its lift is large enough — i.e. a
+ *  change that worked strongly for one segment is worth validating across the whole base. Site-wide
+ *  experiments (no segment) are already global and are never re-graduated. */
+async function nominateGraduation(exp: any, liftPct: number): Promise<void> {
+  if (!exp.segment) return;
+  const threshold = await getNumber("GRADUATION_LIFT_PCT", 15).catch(() => 15);
+  if (liftPct < threshold) return;
+  await db.update("LiveExperiment", exp.id, { graduation_candidate: true, graduation_lift_pct: liftPct }).catch(() => null);
+  await db.create("AdminAuditLog", { actor_email: ACTOR, action_type: "live_experiment_graduation_nominated", target: exp.key, details: { segment: exp.segment, lift_pct: liftPct }, timestamp: nowISO() }, ACTOR).catch(() => null);
+}
+
+/** Open a site-wide 24h validation experiment for each nominated segment winner that hasn't graduated
+ *  yet. If the site-wide test passes, the normal tick() promotes it globally (a no-downtime config flip
+ *  that reaches web, PWA, and native). Money/compliance keys can never reach here. */
+export async function runGraduation(): Promise<Array<Record<string, unknown>>> {
+  const candidates = (await db.filter("LiveExperiment", { status: "promoted" }, "-decided_at", 300).catch(() => []) as any[])
+    .filter((e) => e.segment && e.graduation_candidate && !e.graduated);
+  const out: Array<Record<string, unknown>> = [];
+  for (const e of candidates) {
+    // Don't double-open: skip if a site-wide experiment on this key is already running/promoted.
+    const existing = await db.filter("LiveExperiment", { key: e.key, segment: null }, "-started_at", 5).catch(() => []) as any[];
+    if (existing.some((x) => x.status === "running" || x.status === "promoted")) {
+      await db.update("LiveExperiment", e.id, { graduated: true }).catch(() => null);
+      continue;
+    }
+    const child = await createLiveExperiment({
+      key: e.key, type: e.type, control_value: e.control_value, variant_value: e.variant_value,
+      objective_metric: e.objective_metric, segment: null, origin: "graduation",
+      rationale: `Graduated from segment "${e.segment}" (+${e.graduation_lift_pct || ""}% there) to a site-wide 24h validation.`,
+    });
+    await db.update("LiveExperiment", e.id, { graduated: true, graduated_to: (child as any)?.id || null }).catch(() => null);
+    out.push({ key: e.key, from_segment: e.segment, site_wide_experiment_id: (child as any)?.id || null });
+  }
   return out;
 }

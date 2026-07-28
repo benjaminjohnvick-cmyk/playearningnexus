@@ -172,6 +172,12 @@
       "cron": "*/10 * * * *",
       "function": "liveExperimentTick",
       "_comment": "Real-time monitor for live A/B holdouts: measure -> circuit breaker -> bandit traffic-shift -> canary ramp -> promote-if-significant / expire-if-inconclusive. No-downtime config flips."
+    },
+    {
+      "name": "graduation-scan-2h",
+      "cron": "15 */2 * * *",
+      "function": "graduationScan",
+      "_comment": "Promotes strong segment winners to a site-wide 24h validation experiment; a pass flips globally (web/PWA/native) with no downtime. Money/compliance excluded."
     }
   ]
 }

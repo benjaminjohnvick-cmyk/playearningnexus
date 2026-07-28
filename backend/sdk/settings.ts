@@ -153,6 +153,11 @@ export const REGISTRY: SettingDef[] = [
   { key: "LIVE_TEST_WINDOW_HOURS", label: "Live-test window (hours)", category: "AI & Agents", type: "number", default: "24", min: 1, help: "How long a live experiment runs before it must decide. A clear significant winner/loser can stop early; ambiguous tests expire to control at the window." },
   { key: "LIVE_TEST_START_SHARE", label: "Live-test starting traffic share", category: "AI & Agents", type: "number", default: "0.1", unit: "×", min: 0.01, max: 1, help: "Fraction of eligible users first exposed to the variant. The bandit grows this toward the canary cap while the variant wins, or shrinks it while it loses." },
 
+  // 9e. Personalized (segment) learning + graduation to site-wide
+  { key: "OPTIMIZER_SEGMENT_TESTING", label: "Test changes per user-segment first", category: "AI & Agents", type: "boolean", default: "1", help: "ON = a non-sensitive change is tested on the most active user SEGMENT first (personalized, applied per-user at login). A strong segment winner then graduates to a site-wide test. OFF = test site-wide directly. Aggregate significance across the segment's users is always required, so it stays statistically valid." },
+  { key: "GRADUATION_LIFT_PCT", label: "Segment→site-wide graduation lift", category: "AI & Agents", type: "number", default: "15", unit: "%", min: 0, help: "A segment winner whose live lift is at least this large is nominated for a site-wide 24h validation experiment (graduationScan). If that passes, it flips globally across web, PWA, and native — no downtime." },
+  { key: "SEGMENT_MIN_SAMPLE", label: "Segment minimum sample size", category: "AI & Agents", type: "number", default: "50", min: 1, help: "Minimum users/events in a segment before a per-segment result is trusted. Guards against 'positive for one user' noise." },
+
   // 10. Compliance & legal (numeric/string; the on/off kill-switches live in complianceFlags)
   { key: "TERMS_VERSION", label: "Terms version (bump to force re-consent)", category: "Compliance & Legal", type: "string", default: "2026-07-01", sensitive: true },
   { key: "AD_DISCLOSURE_TAG", label: "FTC ad-disclosure tag", category: "Compliance & Legal", type: "string", default: "#ad" },

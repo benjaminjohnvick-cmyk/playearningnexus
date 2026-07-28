@@ -4,6 +4,15 @@ Work top to bottom before you upload to **Google Play** or the **Apple App Store
 
 Because this app involves **earning money, payouts, referrals, and prize pools**, it gets extra scrutiny from both stores. Budget time for at least one round of review questions.
 
+> **Ongoing changes are store-review-free.** After the initial submission, day-to-day changes do **not**
+> require another App Store / Play review. The AI self-learning + live-experiment system only ever flips
+> server **config/flags/UI variants**, which installed apps read at request time (no review). Human-built
+> **web-layer** changes (React screens, logic, styles) ship to installed native apps via the **OTA live-update
+> channel** (`MOBILE-OTA-LIVE-UPDATES.md`) — also no review, applied on next open with no downtime. You only
+> return to the store for genuinely **native** additions: a new native plugin, a new OS permission, or a change
+> to the app's core purpose. Set the OTA channel up once (see that doc) and nearly all future change is
+> gate-free across web, PWA, and native.
+
 ---
 
 ## 1. App identity & assets
