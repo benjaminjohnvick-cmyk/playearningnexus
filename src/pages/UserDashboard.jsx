@@ -12,6 +12,7 @@ import GameCard from '../components/games/GameCard';
 import UserLicenseAgreement from '../components/user/UserLicenseAgreement';
 import AIRecommendations from '../components/dashboard/AIRecommendations';
 import PersonalizedGreeting from '../components/user/PersonalizedGreeting';
+import WelcomeRewardsCard from '../components/user/WelcomeRewardsCard';
 import SocialSharePrompt from '../components/social/SocialSharePrompt';
 import ActiveEventsDisplay from '../components/events/ActiveEventsDisplay';
 import StreamDiscovery from '../components/streaming/StreamDiscovery';
@@ -236,6 +237,7 @@ export default function UserDashboard() {
 
       <div className="max-w-7xl mx-auto">
         <PersonalizedGreeting />
+        <WelcomeRewardsCard />
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome back, {user.full_name}!</h1>
