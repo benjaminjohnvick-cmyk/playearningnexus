@@ -26,6 +26,18 @@ const REAL_SEARCH_LABEL = {
   nl: 'Vind het echte product',
   zh: '去找真实商品',
   ar: 'ابحث عن المنتج الحقيقي',
+  ru: 'Найти настоящий товар',
+  pl: 'Znajdź prawdziwy produkt',
+  tr: 'Gerçeğini bul',
+  sv: 'Hitta den riktiga varan',
+  no: 'Finn den ekte varen',
+  da: 'Find den ægte vare',
+  fi: 'Löydä oikea tuote',
+  el: 'Βρες το πραγματικό προϊόν',
+  th: 'ค้นหาสินค้าจริง',
+  id: 'Cari produk aslinya',
+  vi: 'Tìm sản phẩm thật',
+  ms: 'Cari produk sebenar',
 };
 
 // Best-effort country from the browser locale (e.g. "en-US" → "US").

@@ -156,20 +156,32 @@ export function buildSearchLink(country: string, query: string): { url: string; 
 // Per-country currency, display language, and flag. Used to localize catalog listings so points equal
 // one cent in the LOCAL currency, the button speaks the local language, and the image carries the flag.
 export const COUNTRY_CURRENCY: Record<string, string> = {
-  US: "USD", CA: "CAD", GB: "GBP", AU: "AUD", DE: "EUR", FR: "EUR", IT: "EUR", ES: "EUR", NL: "EUR",
-  JP: "JPY", IN: "INR", MX: "MXN", BR: "BRL", KR: "KRW",
+  US: "USD", CA: "CAD", GB: "GBP", AU: "AUD", IE: "EUR", NZ: "NZD", DE: "EUR", AT: "EUR", CH: "CHF",
+  FR: "EUR", BE: "EUR", IT: "EUR", ES: "EUR", NL: "EUR", PT: "EUR", GR: "EUR", FI: "EUR",
+  JP: "JPY", IN: "INR", MX: "MXN", AR: "ARS", CO: "COP", CL: "CLP", BR: "BRL", KR: "KRW", CN: "CNY",
+  RU: "RUB", SE: "SEK", NO: "NOK", DK: "DKK", PL: "PLN", TR: "TRY", SA: "SAR", AE: "AED", EG: "EGP",
+  ZA: "ZAR", SG: "SGD", TH: "THB", ID: "IDR", PH: "PHP", VN: "VND", MY: "MYR", NG: "NGN",
 };
 // Static USD→currency fallback rates (a live rate feed can override; this keeps seeding deterministic).
 const FX_FALLBACK: Record<string, number> = {
-  USD: 1, CAD: 1.36, GBP: 0.79, AUD: 1.53, EUR: 0.92, JPY: 149, INR: 83, MXN: 17.1, BRL: 4.97, KRW: 1325,
+  USD: 1, CAD: 1.36, GBP: 0.79, AUD: 1.53, NZD: 1.65, EUR: 0.92, CHF: 0.88, JPY: 149, INR: 83,
+  MXN: 17.1, ARS: 900, COP: 4000, CLP: 950, BRL: 4.97, KRW: 1325, CNY: 7.2, RUB: 92, SEK: 10.5,
+  NOK: 10.7, DKK: 6.9, PLN: 4.0, TRY: 32, SAR: 3.75, AED: 3.67, EGP: 48, ZAR: 18.5, SGD: 1.35,
+  THB: 36, IDR: 16000, PHP: 58, VND: 25000, MYR: 4.7, NGN: 1500,
 };
 export const COUNTRY_LANGUAGE: Record<string, string> = {
-  US: "en", CA: "en", GB: "en", AU: "en", DE: "de", FR: "fr", IT: "it", ES: "es", NL: "nl",
-  JP: "ja", IN: "hi", MX: "es", BR: "pt", KR: "ko",
+  US: "en", CA: "en", GB: "en", AU: "en", IE: "en", NZ: "en", ZA: "en", SG: "en", PH: "en", NG: "en",
+  DE: "de", AT: "de", CH: "de", FR: "fr", BE: "fr", IT: "it", ES: "es", MX: "es", AR: "es", CO: "es",
+  CL: "es", NL: "nl", PT: "pt", BR: "pt", GR: "el", FI: "fi", JP: "ja", IN: "hi", KR: "ko", CN: "zh",
+  RU: "ru", SE: "sv", NO: "no", DK: "da", PL: "pl", TR: "tr", SA: "ar", AE: "ar", EG: "ar", TH: "th",
+  ID: "id", VN: "vi", MY: "ms",
 };
 export const COUNTRY_FLAG: Record<string, string> = {
-  US: "🇺🇸", CA: "🇨🇦", GB: "🇬🇧", AU: "🇦🇺", DE: "🇩🇪", FR: "🇫🇷", IT: "🇮🇹", ES: "🇪🇸", NL: "🇳🇱",
-  JP: "🇯🇵", IN: "🇮🇳", MX: "🇲🇽", BR: "🇧🇷", KR: "🇰🇷",
+  US: "🇺🇸", CA: "🇨🇦", GB: "🇬🇧", AU: "🇦🇺", IE: "🇮🇪", NZ: "🇳🇿", DE: "🇩🇪", AT: "🇦🇹", CH: "🇨🇭",
+  FR: "🇫🇷", BE: "🇧🇪", IT: "🇮🇹", ES: "🇪🇸", NL: "🇳🇱", PT: "🇵🇹", GR: "🇬🇷", FI: "🇫🇮", JP: "🇯🇵",
+  IN: "🇮🇳", MX: "🇲🇽", AR: "🇦🇷", CO: "🇨🇴", CL: "🇨🇱", BR: "🇧🇷", KR: "🇰🇷", CN: "🇨🇳", RU: "🇷🇺",
+  SE: "🇸🇪", NO: "🇳🇴", DK: "🇩🇰", PL: "🇵🇱", TR: "🇹🇷", SA: "🇸🇦", AE: "🇦🇪", EG: "🇪🇬", ZA: "🇿🇦",
+  SG: "🇸🇬", TH: "🇹🇭", ID: "🇮🇩", PH: "🇵🇭", VN: "🇻🇳", MY: "🇲🇾", NG: "🇳🇬",
 };
 
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
