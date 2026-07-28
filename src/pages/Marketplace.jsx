@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ShoppingBag, Plus, Loader2, Coins, CreditCard, ExternalLink, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocale } from '@/components/locale/LocaleContext';
+import CatalogWelcomeChat from '@/components/marketplace/CatalogWelcomeChat';
 
 // Marketplace — Facebook-Marketplace-style listings. Three sources coexist: original platform catalog
 // (AI-generated, AI-fulfilled), authorized affiliate products (retailer fulfills via affiliate link),
@@ -239,6 +240,7 @@ export default function Marketplace() {
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
+      <CatalogWelcomeChat />
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2"><ShoppingBag className="w-6 h-6" /><h1 className="text-2xl font-bold">Marketplace</h1></div>
         <Button size="sm" onClick={() => setShowSell((v) => !v)}><Plus className="w-4 h-4 mr-1" /> Sell an item</Button>

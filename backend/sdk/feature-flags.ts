@@ -15,7 +15,8 @@ export type FlagName =
   | "premium_ppc" | "card_charging" | "referrals" | "multi_level_referrals"
   | "jackpots" | "social_posting" | "sms_marketing" | "email_marketing"
   | "order_fulfillment" | "store_credit_purchase" | "p2p_transfers"
-  | "cash_out" | "earnings_projections" | "session_recording" | "affirm_bnpl";
+  | "cash_out" | "earnings_projections" | "session_recording" | "affirm_bnpl"
+  | "site_telemetry" | "session_screenshots" | "self_learning" | "kyc_survey";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -35,6 +36,10 @@ const DEFAULTS: Record<FlagName, boolean> = {
   earnings_projections: false,   // OFF — no guaranteed-earnings UI (FTC earnings-claims risk)
   session_recording: true,       // behavioral analytics kill-switch (disclosed in privacy policy)
   affirm_bnpl: false,            // OFF until Affirm merchant keys are set; REAL shippable goods only, never points
+  site_telemetry: true,          // lightweight interaction-event capture (default-on, ~free, disclosed + opt-out honored)
+  session_screenshots: false,    // full-fidelity screenshot/session-replay capture — OFF by default; SAMPLED + capped when on
+  self_learning: true,           // autonomous collect→analyze→experiment→deploy loop (non-sensitive only; money/compliance human-gated)
+  kyc_survey: true,              // mandatory Know-Your-Customer first survey after first login
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];

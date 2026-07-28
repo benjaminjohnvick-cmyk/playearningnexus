@@ -49,6 +49,25 @@ export function initTracker(userId) {
       } catch { /* tracking never breaks the app */ }
     }, { capture: true, passive: true });
 
+    // Scroll depth — record the deepest scroll reached per page (throttled), so the AI can see how
+    // far users actually get. One event per page when they pass 25/50/75/100% marks.
+    let _scrollMarks = {};
+    const _resetScroll = () => { _scrollMarks = {}; };
+    window.addEventListener('gg:pagechange', _resetScroll);
+    document.addEventListener('scroll', () => {
+      if (!_userId) return;
+      try {
+        const doc = document.documentElement;
+        const max = (doc.scrollHeight - doc.clientHeight) || 1;
+        const pct = Math.max(0, Math.min(100, Math.round((doc.scrollTop / max) * 100)));
+        const mark = pct >= 100 ? 100 : pct >= 75 ? 75 : pct >= 50 ? 50 : pct >= 25 ? 25 : 0;
+        if (mark && !_scrollMarks[mark]) {
+          _scrollMarks[mark] = true;
+          queueEvent({ event_type: 'scroll', page: _currentPage, scroll_pct: mark });
+        }
+      } catch { /* never breaks the app */ }
+    }, { capture: true, passive: true });
+
     // Mouse movement is sampled only while a survey-honesty capture is active.
     document.addEventListener('mousemove', (e) => {
       if (!_survey) return;
@@ -107,6 +126,38 @@ export function setPage(pageName, featureArea) {
   }
   _currentPage = pageName;
   _pageStartTime = Date.now();
+  try { window.dispatchEvent(new Event('gg:pagechange')); } catch { /* ignore */ }
+}
+
+// ---- Sampled session screenshot capture (off by default; server decides who's in the sample) ------
+// Asks the backend ONCE per session whether this session is in the rotating capture sample. Only if
+// yes AND an optional html2canvas is present on the page do we capture a few downscaled frames. The
+// vast majority of sessions get a cheap "capture:false" and no image is ever produced or sent. This is
+// the disciplined, budget-safe version of "capture what users see" — a representative sample, not
+// everyone. Server enforces the flag, opt-out, sample rate, and per-session frame cap.
+let _captureInited = false;
+export async function initSessionCapture() {
+  if (_captureInited || !_userId) return;
+  _captureInited = true;
+  try {
+    const res = await base44.functions.invoke('sessionCaptureIngest', { action: 'check', session_id: _sessionId });
+    if (!res?.data?.capture) return;
+    const h2c = (typeof window !== 'undefined') ? window.html2canvas : null;
+    if (typeof h2c !== 'function') return; // no screenshot lib bundled → plumbing ready, no cost incurred
+    let shots = 0;
+    const grab = async () => {
+      if (shots >= 6 || document.hidden) return;
+      try {
+        const canvas = await h2c(document.body, { scale: 0.4, logging: false, useCORS: true });
+        const image = canvas.toDataURL('image/webp', 0.5);
+        const r = await base44.functions.invoke('sessionCaptureIngest', { action: 'frame', session_id: _sessionId, image, path: _currentPage });
+        shots++;
+        if (!r?.data?.capture) shots = 999; // server said stop
+      } catch { /* best-effort */ }
+    };
+    const iv = setInterval(() => { if (shots >= 6) { clearInterval(iv); return; } grab(); }, 20000);
+    window.addEventListener('beforeunload', () => clearInterval(iv));
+  } catch { /* capture is always best-effort */ }
 }
 
 export function trackEvent(eventType, options = {}) {
@@ -151,6 +202,26 @@ async function flushEvents(sync = false) {
     // Silently fail — tracking should never break the app
     _eventQueue = [...batch, ..._eventQueue]; // re-queue
   }
+
+  // Also feed the statistical telemetry layer (telemetryIngest) so the self-learning loop gets
+  // funnel/scroll/drop-off aggregates. Fire-and-forget + fully server-gated (flag + opt-out); a
+  // failure here never affects the primary journey log above.
+  try {
+    base44.functions.invoke('telemetryIngest', { session_id: _sessionId, events: mapToTelemetry(batch) }).catch(() => {});
+  } catch { /* never breaks the app */ }
+}
+
+// Map the internal journey-event shape to the compact telemetry event the backend expects.
+const _TELEMETRY_TYPES = new Set(['page_view','click','scroll','search','view_item','add_to_cart','begin_checkout','purchase','survey_start','survey_complete','drop_off','rage_click','form_error']);
+function mapToTelemetry(batch) {
+  return batch.map((e) => ({
+    type: _TELEMETRY_TYPES.has(e.event_type) ? e.event_type : 'custom',
+    path: e.page || _currentPage || '',
+    target: e.element_id || (e.metadata && e.metadata.tag) || '',
+    value: e.time_on_page_seconds,
+    scroll_pct: e.scroll_pct,
+    meta: e.metadata && typeof e.metadata === 'object' ? { tag: e.metadata.tag } : undefined,
+  }));
 }
 
 export function mapPageToFeature(pageName) {

@@ -148,6 +148,24 @@
       "name": "daily-user-ai-profiles",
       "cron": "30 6 * * *",
       "function": "buildUserAIProfiles"
+    },
+    {
+      "name": "telemetry-stats-6h",
+      "cron": "5 */6 * * *",
+      "function": "telemetryStats",
+      "_comment": "Rolls interaction telemetry into funnel/scroll/drop-off statistics and publishes OptimizationSignals for the self-learning loop."
+    },
+    {
+      "name": "session-capture-analyze-6h",
+      "cron": "35 */6 * * *",
+      "function": "sessionCaptureAnalyzeBatch",
+      "_comment": "Reviews a batch of SAMPLED session screenshots for UX issues, hard-capped by SESSION_CAPTURE_DAILY_BUDGET_USD / AI_DAILY_SPEND_CAP_USD. No-op unless the session_screenshots flag is on."
+    },
+    {
+      "name": "self-learning-cycle-daily",
+      "cron": "30 7 * * *",
+      "function": "selfLearningCycle",
+      "_comment": "Master self-improvement pass: collect+analyze telemetry/capture/KYC -> refresh site model -> propose small, statistically-backed changes -> A/B test with a customer survey -> deploy winners. Money/compliance stays human-gated."
     }
   ]
 }

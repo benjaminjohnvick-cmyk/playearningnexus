@@ -1,5 +1,37 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-28 — KYC survey, catalog first-view chatbot, telemetry + sampled capture, self-learning loop
+
+Added the AI data + self-learning package, all default-safe and built on the existing engines
+(optimizer, experiment/A-B pipeline, session recorder, site-model grounding, welcome-credit):
+
+- **Know-Your-Customer survey** (`backend/sdk/kyc.ts`, `kycSurveyGet`, `kycSurveySubmit`,
+  `src/components/onboarding/KYCSurveyGate.jsx`): the mandatory first survey after first login. Gates
+  the app until completed, captures interests, and grants a **$5 non-cashable** reward (tops up the
+  welcome-rewards pool; per-order cap + expiry apply — $0 cash via breakage). `kyc_survey` flag +
+  `KYC_SURVEY_REQUIRED`/`KYC_REWARD_USD` settings.
+- **Catalog first-view chatbot** (`catalogAssistantChat`,
+  `src/components/marketplace/CatalogWelcomeChat.jsx`): greets a member the first time they open the
+  marketplace and asks what they want, grounded in their KYC answers + real catalog listings.
+- **Interaction telemetry + statistics** (`backend/sdk/telemetry.ts`, `telemetryIngest`,
+  `telemetryStats`; extends `src/lib/uxTracker.js` with scroll depth + a telemetry feed): every
+  interaction is a data point (default-on, ~free), rolled into funnel/scroll/drop-off statistics and
+  published as `OptimizationSignal`s the site model + optimizer already consume. `site_telemetry` flag.
+- **Sampled, budget-capped session screenshots** (`backend/sdk/session-capture.ts`,
+  `sessionCaptureIngest`, `sessionCaptureAnalyzeBatch`): a rotating **fraction** of sessions (not
+  everyone) is captured to the low-cost bucket and analyzed in batches under
+  `SESSION_CAPTURE_DAILY_BUDGET_USD` / `AI_DAILY_SPEND_CAP_USD`. **OFF by default** (`session_screenshots`
+  flag). Disclosed in the privacy policy; opt-out honored; PII masked.
+- **Self-learning loop** (`selfLearningCycle`, scheduled): collect + analyze telemetry/capture/KYC →
+  refresh the site model → propose small, statistically-backed changes → A/B test each with a customer
+  survey (existing experiment pipeline) → deploy customer-favored winners. Money/compliance stays
+  human-gated. Gated on `SELF_LEARNING_MIN_SAMPLE` so changes stay small, iterative, and correlated.
+- Scheduled `telemetryStats`, `sessionCaptureAnalyzeBatch`, and `selfLearningCycle` in
+  `backend/scheduler/schedules.json`. No new paid dependencies — launch cost unchanged; the only cost
+  lever (full screenshot capture) ships off + sampled.
+
+
+
 Two zips (your local "final 2" and the GitHub `main`) were confirmed **byte-for-byte identical**, so these changes apply cleanly to either.
 
 > **Note on "identical yet buggy":** the two zips matching each other only means your local copy and GitHub are the same code — not that the code is correct. Both copies shared the *same* latent gaps (missing backend functions, missing entity schemas, a dead link). Comparing the zips tells you they match; auditing the code is what surfaced the real errors below.

@@ -42,10 +42,16 @@ changes to money-related or compliance-related controls, remain subject to human
 contact us to ask about automated processing that affects you.
 
 ## 5. Behavioral recording and your control over it
-To improve the Service, we record in-Service behavioral events (such as clicks and navigation). You can
-**opt out of behavioral recording** in your privacy settings; when you opt out, behavioral capture
-stops on your next load. Opting out does not stop essential processing needed to run your account and
-transactions.
+To improve the Service, we record in-Service behavioral events (such as page views, clicks, searches,
+scroll depth, and navigation), and we compile these into aggregate, statistical measures (for example
+funnel and drop-off rates) used to improve the Service and its AI. For a **small, rotating sample** of
+sessions we may also capture periodic **screenshots of the app interface** to diagnose usability and
+design problems; sampling is limited and each sampled session is capped to a few frames. We do not
+capture every session, and screenshot capture is off unless enabled. You can **opt out of behavioral
+recording** (which also excludes you from any screenshot sampling) in your privacy settings; when you
+opt out, behavioral capture and screenshot sampling stop on your next load. Personal identifiers in
+captured events are masked. Opting out does not stop essential processing needed to run your account
+and transactions.
 
 ## 6. How we share information
 We share information with: **service providers** (hosting, database, payment processing, email/SMS,

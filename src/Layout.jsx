@@ -43,7 +43,8 @@ import NotificationCenter from '@/components/notifications/NotificationCenter';
 import MegaContestButton from '@/components/referral/MegaContestButton';
 import { LocaleProvider, useLocale } from '@/components/locale/LocaleContext';
 import CustomerFeedbackSurvey from '@/components/feedback/CustomerFeedbackSurvey';
-import { initTracker, setPage, trackEvent } from '@/lib/uxTracker';
+import { initTracker, setPage, trackEvent, initSessionCapture } from '@/lib/uxTracker';
+import KYCSurveyGate from '@/components/onboarding/KYCSurveyGate';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { useSurveyMatchNotifications } from '@/hooks/useSurveyMatchNotifications';
@@ -110,7 +111,7 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     if (user) {
-      if (!user.tracking_opt_out) initTracker(user.id); // behavioral analytics; honored opt-out (disclosed in privacy policy)
+      if (!user.tracking_opt_out) { initTracker(user.id); initSessionCapture(); } // behavioral analytics + sampled session capture; opt-out honored (disclosed in privacy policy)
       if (!sessionStorage.getItem('ppc_popup_shown_v2')) {
         sessionStorage.setItem('ppc_popup_shown_v2', '1');
         setShowPPCPopup(true);
@@ -494,6 +495,7 @@ export default function Layout({ children, currentPageName }) {
         {showSessionRating && <SessionRatingModal onClose={() => { try { sessionStorage.setItem('gg_session_rated', '1'); } catch { /* ignore */ } setShowSessionRating(false); }} />}
         {isAuthenticated && user && <AIChatAssistant />}
         {isAuthenticated && user && <ExperimentVotePrompt userId={user.id} />}
+        {isAuthenticated && user && <KYCSurveyGate />}
 
         <LogoutPromptModal
           isOpen={showLogoutPrompt}
