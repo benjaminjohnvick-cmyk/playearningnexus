@@ -82,13 +82,17 @@ export async function applyOnLogin(user: any, sessionId?: string): Promise<{
   const ov = await resolveVariantOverrides(user, sessionId, segment);
 
   // Snapshot the per-user kept-change state (inspectable/auditable; the source of truth stays the
-  // experiments, but this records exactly what THIS user has applied right now).
+  // experiments). Skip the write entirely when nothing changed since last login — a cheap fingerprint
+  // compare avoids write amplification on every login/app-resume.
   try {
-    const snapshot = { user_id: user.id, segment, applied: ov, at: nowISO() };
+    const fp = JSON.stringify({ s: ov.settings, f: ov.flags, u: ov.ui });
     const existing = await db.filter("UserVariantState", { user_id: user.id }, "-at", 1).catch(() => []) as any[];
-    if (existing.length) await db.update("UserVariantState", existing[0].id, snapshot).catch(() => null);
-    else await db.create("UserVariantState", snapshot, user.id).catch(() => null);
-    await db.update("User", user.id, { last_login_at: nowISO() }).catch(() => null);
+    const prev = existing[0];
+    if (!prev || prev.fp !== fp) {
+      const snapshot = { user_id: user.id, segment, applied: ov, fp, at: nowISO() };
+      if (prev) await db.update("UserVariantState", prev.id, snapshot).catch(() => null);
+      else await db.create("UserVariantState", snapshot, user.id).catch(() => null);
+    }
   } catch { /* snapshot is best-effort */ }
 
   return { segment, settings: ov.settings, flags: ov.flags, ui: ov.ui, assignments: ov.assignments };

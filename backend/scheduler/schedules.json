@@ -178,6 +178,12 @@
       "cron": "15 */2 * * *",
       "function": "graduationScan",
       "_comment": "Promotes strong segment winners to a site-wide 24h validation experiment; a pass flips globally (web/PWA/native) with no downtime. Money/compliance excluded."
+    },
+    {
+      "name": "learning-overhead-monitor-hourly",
+      "cron": "25 * * * *",
+      "function": "learningOverheadMonitor",
+      "_comment": "Watches the self-learning system's own footprint (telemetry/metric/snapshot volume + AI spend) and auto-throttles within bounds so measurement never becomes the cost."
     }
   ]
 }

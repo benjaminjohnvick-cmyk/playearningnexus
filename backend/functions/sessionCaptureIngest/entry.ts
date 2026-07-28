@@ -1,12 +1,13 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { shouldCapture, storeShot } from "../../sdk/session-capture.ts";
+import { shouldCapture, storeShot, storeSnapshot } from "../../sdk/session-capture.ts";
 
-// sessionCaptureIngest (authenticated) — the client asks (action:"check") whether the current session
-// is in the capture sample; if so it periodically POSTs a downscaled frame (action:"frame"). Off by
-// default (session_screenshots flag) and only a small rotating fraction of sessions ever qualifies, so
-// the vast majority of calls are a cheap "capture:false" and no image ever leaves the device.
-// Body: { action:"check"|"frame", session_id, image?: dataURL, path? }
+// sessionCaptureIngest (authenticated) — the client asks (action:"check") whether the current session is
+// in the rotating sample; if so it periodically POSTs a tiny STRUCTURAL snapshot (action:"snapshot":
+// viewport, scroll depth, click coords, element boxes — no pixels, ~1 KB, near-zero cost). A legacy
+// image path (action:"frame") is still accepted for compatibility. Off by default (session_screenshots
+// flag) and only a small fraction of sessions qualify, so most calls are a cheap "capture:false".
+// Body: { action:"check"|"snapshot"|"frame", session_id, snapshot?, image?: dataURL, path? }
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -19,6 +20,13 @@ export default __handler(async (req) => {
 
     if (body?.action === "check" || !body?.action) {
       return Response.json({ capture });
+    }
+
+    if (body?.action === "snapshot") {
+      if (!capture) return Response.json({ ok: true, stored: false, capture: false });
+      if (!body?.snapshot) return Response.json({ error: "snapshot required" }, { status: 400 });
+      const ok = await storeSnapshot(user.id, sessionId, body.snapshot);
+      return Response.json({ ok: true, stored: ok, capture: true });
     }
 
     if (body?.action === "frame") {

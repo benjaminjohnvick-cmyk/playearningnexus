@@ -20,7 +20,8 @@
       "appReadyTimeout": 10000,
       "responseTimeout": 20,
       "directUpdate": false,
-      "_comment": "OTA live web-bundle updates (no store review). Inert until '@capgo/capacitor-updater' is installed and a channel is set via the Capgo CLI. See MOBILE-OTA-LIVE-UPDATES.md."
+      "periodCheckDelay": 600,
+      "_comment": "OTA live web-bundle updates (no store review). autoUpdate downloads DELTA bundles (only changed files) in the background and applies on next open; periodCheckDelay checks every 10 min; the client also checks on app-resume and gates downloads to wifi (see otaUpdate.js). Inert until '@capgo/capacitor-updater' is installed and a channel is set via the Capgo CLI. See MOBILE-OTA-LIVE-UPDATES.md."
     }
   }
 }

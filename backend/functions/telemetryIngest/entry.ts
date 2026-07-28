@@ -1,12 +1,13 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { recordEvents, telemetryEnabled } from "../../sdk/telemetry.ts";
+import { recordEvents, telemetryEnabled, mapJourneyToEvents } from "../../sdk/telemetry.ts";
 
-// telemetryIngest (authenticated) — accepts a batch of lightweight interaction events from the client
-// and stores a compact, scrubbed, bounded row. Default-on and ~free. Silently no-ops (200) when the
-// site_telemetry flag is off, telemetry is disabled, or the user has a behavioral opt-out — so the
-// client never needs special-casing.
-// Body: { session_id, events: [{ type, path, target, value?, scroll_pct?, ts?, meta? }] }
+// telemetryIngest (authenticated) — ONE coalesced write for the client. It (1) always persists the raw
+// journey rows (UserJourneyEvent — the existing journey log, independent of the telemetry flag), and
+// (2) stores the compact statistical aggregate (InteractionEvent) when telemetry is enabled + sampled.
+// This lets the client make a single request per flush instead of two. Silently no-ops the aggregate
+// (still 200) when the site_telemetry flag is off, telemetry is disabled, or the user opted out.
+// Body: { session_id, journey?: [rawJourneyEvent...], events?: [telemetryEvent...] }
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -14,11 +15,21 @@ export default __handler(async (req) => {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json().catch(() => ({}));
-    if (!(await telemetryEnabled(user, (user as any).country))) {
-      return Response.json({ ok: true, recorded: 0, disabled: true });
+    const journey = Array.isArray(body?.journey) ? body.journey.slice(0, 200) : [];
+
+    // (1) Journey log — always best-effort (this is the pre-existing UserJourneyEvent stream).
+    if (journey.length) {
+      const rows = journey.map((e: any) => ({ ...e, user_id: user.id, session_id: String(body?.session_id || e?.session_id || "") }));
+      await base44.entities.UserJourneyEvent.bulkCreate(rows).catch(() => {});
     }
-    const recorded = await recordEvents(user.id, String(body?.session_id || ""), body?.events || []);
-    return Response.json({ ok: true, recorded });
+
+    // (2) Statistical aggregate — gated by flag/opt-out/sample.
+    let recorded = 0;
+    if (await telemetryEnabled(user, (user as any).country)) {
+      const events = Array.isArray(body?.events) && body.events.length ? body.events : mapJourneyToEvents(journey);
+      recorded = await recordEvents(user.id, String(body?.session_id || ""), events);
+    }
+    return Response.json({ ok: true, recorded, journey: journey.length });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

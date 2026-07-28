@@ -6,6 +6,38 @@
 
 import { base44 } from '@/api/base44Client';
 
+// Run a callback during browser idle time when available, so telemetry never competes with UI work.
+const idle = (fn) => (typeof requestIdleCallback === 'function'
+  ? requestIdleCallback(fn, { timeout: 2000 })
+  : setTimeout(fn, 0));
+
+const API_BASE = (import.meta.env?.VITE_NEXUS_API_URL || '').replace(/\/$/, '');
+
+// Best-effort flush that survives page unload/background. Uses fetch({keepalive}) so the request both
+// carries the auth header AND completes after the page goes away (a normal fetch is killed on unload).
+// Falls back to sendBeacon only if keepalive isn't available.
+function flushBeacon() {
+  try {
+    if (_eventQueue.length === 0 || !_userId || !API_BASE) return;
+    const batch = [..._eventQueue];
+    _eventQueue = [];
+    const body = JSON.stringify({ session_id: _sessionId, journey: batch });
+    const token = base44?.auth?.getToken?.();
+    const url = `${API_BASE}/functions/telemetryIngest`;
+    if (typeof fetch === 'function') {
+      fetch(url, {
+        method: 'POST', keepalive: true,
+        headers: { 'content-type': 'application/json', ...(token ? { authorization: `Bearer ${token}` } : {}) },
+        body,
+      }).catch(() => { _eventQueue = [...batch, ..._eventQueue]; });
+    } else if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }));
+    } else {
+      _eventQueue = [...batch, ..._eventQueue];
+    }
+  } catch { /* never breaks the app */ }
+}
+
 let _userId = null;
 let _sessionId = generateSessionId();
 let _pageStartTime = Date.now();
@@ -25,22 +57,26 @@ export function initTracker(userId) {
   _pageStartTime = Date.now();
   try { if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('gg_session_id', _sessionId); } catch { /* ignore */ }
 
-  // Flush on tab close
-  window.addEventListener('beforeunload', () => {
-    flushEvents(true);
-  });
+  // Flush on tab close via sendBeacon (survives unload; SDK fetch does not).
+  window.addEventListener('beforeunload', () => { flushBeacon(); });
+  // Also flush when the tab is hidden (mobile/native background) — more reliable than unload.
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushBeacon(); });
 
-  // Auto-flush every 15 seconds
+  // Auto-flush every 15s, but run the actual send during idle time so it never competes with UI work.
   if (_flushTimer) clearInterval(_flushTimer);
-  _flushTimer = setInterval(() => flushEvents(), 15000);
+  _flushTimer = setInterval(() => idle(() => flushEvents()), 15000);
 
   // Global interaction capture — every meaningful click becomes data (bound once).
   if (!_listenersBound && typeof document !== 'undefined') {
     _listenersBound = true;
     document.addEventListener('click', (e) => {
       try {
-        const t = (e.target?.closest && e.target.closest('button,a,[role="button"],input,select,textarea,[data-track]')) || e.target;
+        const interactive = e.target?.closest && e.target.closest('button,a,[role="button"],input,select,textarea,[data-track]');
+        const t = interactive || e.target;
         if (!t || !_userId) return;
+        // Feed the structural heatmap: click coordinates + whether it was a "dead" click (nothing
+        // interactive under the cursor) — a strong signal of a confusing/mislabeled UI.
+        try { noteClick(e.clientX, e.clientY, t.tagName, !interactive); } catch { /* ignore */ }
         queueEvent({
           event_type: 'click',
           element_id: t.id || (t.getAttribute && (t.getAttribute('data-track') || t.getAttribute('name'))) || null,
@@ -129,34 +165,72 @@ export function setPage(pageName, featureArea) {
   try { window.dispatchEvent(new Event('gg:pagechange')); } catch { /* ignore */ }
 }
 
-// ---- Sampled session screenshot capture (off by default; server decides who's in the sample) ------
-// Asks the backend ONCE per session whether this session is in the rotating capture sample. Only if
-// yes AND an optional html2canvas is present on the page do we capture a few downscaled frames. The
-// vast majority of sessions get a cheap "capture:false" and no image is ever produced or sent. This is
-// the disciplined, budget-safe version of "capture what users see" — a representative sample, not
-// everyone. Server enforces the flag, opt-out, sample rate, and per-session frame cap.
+// ---- Sampled structural / heatmap capture (cheap replacement for pixel screenshots) ---------------
+// Instead of rasterizing the DOM with html2canvas (CPU-heavy, can jank the main thread, and uploads a
+// fat image), we capture a tiny STRUCTURAL snapshot: viewport, how far the user scrolled, where they
+// clicked, and the bounding boxes/labels of the interactive elements + which were above the fold. That
+// gives the AI the same "what do users see, where do they get stuck, what's above the fold, where are
+// the dead zones" design signal for ~1 KB and near-zero client cost — no image, no rasterization. The
+// server still decides who's in the rotating sample; the vast majority get a cheap "capture:false".
 let _captureInited = false;
+let _clickPoints = [];
+let _deadClicks = 0, _rageClicks = 0, _lastClickAt = 0, _lastClickXY = null;
+
+// Record a lightweight click point for the heatmap (bound the array).
+function noteClick(x, y, tag, dead) {
+  if (_clickPoints.length < 60) _clickPoints.push({ x: Math.round(x), y: Math.round(y), tag: tag || '', dead: !!dead });
+  const now = Date.now();
+  if (_lastClickXY && Math.abs(x - _lastClickXY.x) < 24 && Math.abs(y - _lastClickXY.y) < 24 && now - _lastClickAt < 800) _rageClicks++;
+  if (dead) _deadClicks++;
+  _lastClickAt = now; _lastClickXY = { x, y };
+}
+
+// Build a compact structural snapshot of the current viewport (no pixels).
+function buildSnapshot() {
+  try {
+    const vw = window.innerWidth || 0, vh = window.innerHeight || 0;
+    const doc = document.documentElement;
+    const scrollMax = (doc.scrollHeight - doc.clientHeight) || 1;
+    const scrollPct = Math.max(0, Math.min(100, Math.round((doc.scrollTop / scrollMax) * 100)));
+    const els = [];
+    const nodes = document.querySelectorAll('button,a,[role="button"],input,select,textarea,[data-track],h1,h2');
+    for (let i = 0; i < nodes.length && els.length < 40; i++) {
+      const el = nodes[i];
+      const r = el.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) continue;
+      const visible = r.top < vh && r.bottom > 0;
+      els.push({
+        tag: el.tagName, label: (el.innerText || el.getAttribute?.('aria-label') || el.getAttribute?.('name') || '').slice(0, 40),
+        x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height),
+        above_fold: r.top < vh, visible,
+      });
+    }
+    return {
+      path: _currentPage, viewport: { w: vw, h: vh }, scroll_pct: scrollPct,
+      clicks: _clickPoints.slice(), elements: els, dead_clicks: _deadClicks, rage_clicks: _rageClicks,
+      ts: new Date().toISOString(),
+    };
+  } catch { return null; }
+}
+
 export async function initSessionCapture() {
   if (_captureInited || !_userId) return;
   _captureInited = true;
   try {
     const res = await base44.functions.invoke('sessionCaptureIngest', { action: 'check', session_id: _sessionId });
-    if (!res?.data?.capture) return;
-    const h2c = (typeof window !== 'undefined') ? window.html2canvas : null;
-    if (typeof h2c !== 'function') return; // no screenshot lib bundled → plumbing ready, no cost incurred
-    let shots = 0;
-    const grab = async () => {
-      if (shots >= 6 || document.hidden) return;
-      try {
-        const canvas = await h2c(document.body, { scale: 0.4, logging: false, useCORS: true });
-        const image = canvas.toDataURL('image/webp', 0.5);
-        const r = await base44.functions.invoke('sessionCaptureIngest', { action: 'frame', session_id: _sessionId, image, path: _currentPage });
-        shots++;
-        if (!r?.data?.capture) shots = 999; // server said stop
-      } catch { /* best-effort */ }
+    if (!res?.data?.capture) return; // not in the sample → nothing captured
+    let sent = 0;
+    const grab = () => {
+      if (sent >= 6 || document.hidden) return;
+      const snap = buildSnapshot();
+      if (!snap) return;
+      base44.functions.invoke('sessionCaptureIngest', { action: 'snapshot', session_id: _sessionId, snapshot: snap })
+        .then((r) => { sent++; if (!r?.data?.capture) sent = 999; })
+        .catch(() => {});
     };
-    const iv = setInterval(() => { if (shots >= 6) { clearInterval(iv); return; } grab(); }, 20000);
-    window.addEventListener('beforeunload', () => clearInterval(iv));
+    // Capture during idle time only, so it never competes with rendering.
+    const iv = setInterval(() => { if (sent >= 6) { clearInterval(iv); return; } idle(grab); }, 20000);
+    window.addEventListener('beforeunload', () => { clearInterval(iv); });
   } catch { /* capture is always best-effort */ }
 }
 
@@ -185,43 +259,19 @@ function queueEvent(eventData) {
   if (_eventQueue.length >= 20) flushEvents();
 }
 
-async function flushEvents(sync = false) {
+async function flushEvents() {
   if (_eventQueue.length === 0 || !_userId) return;
   const batch = [..._eventQueue];
   _eventQueue = [];
 
-  // Use sendBeacon for sync flushes (page unload), otherwise normal async
-  if (sync && navigator.sendBeacon) {
-    // Best-effort — sendBeacon can't use SDK, so just drop on unload (events already in queue will be sent next session)
-    return;
-  }
-
+  // ONE coalesced request: telemetryIngest persists the journey rows AND the statistical aggregate
+  // server-side, so the client no longer makes two calls per flush. Fully server-gated (flag/opt-out/
+  // sample); a failure re-queues so nothing is lost. (Unload/background use flushBeacon instead.)
   try {
-    await base44.entities.UserJourneyEvent.bulkCreate(batch);
+    await base44.functions.invoke('telemetryIngest', { session_id: _sessionId, journey: batch });
   } catch {
-    // Silently fail — tracking should never break the app
-    _eventQueue = [...batch, ..._eventQueue]; // re-queue
+    _eventQueue = [...batch, ..._eventQueue]; // re-queue — tracking never breaks the app
   }
-
-  // Also feed the statistical telemetry layer (telemetryIngest) so the self-learning loop gets
-  // funnel/scroll/drop-off aggregates. Fire-and-forget + fully server-gated (flag + opt-out); a
-  // failure here never affects the primary journey log above.
-  try {
-    base44.functions.invoke('telemetryIngest', { session_id: _sessionId, events: mapToTelemetry(batch) }).catch(() => {});
-  } catch { /* never breaks the app */ }
-}
-
-// Map the internal journey-event shape to the compact telemetry event the backend expects.
-const _TELEMETRY_TYPES = new Set(['page_view','click','scroll','search','view_item','add_to_cart','begin_checkout','purchase','survey_start','survey_complete','drop_off','rage_click','form_error']);
-function mapToTelemetry(batch) {
-  return batch.map((e) => ({
-    type: _TELEMETRY_TYPES.has(e.event_type) ? e.event_type : 'custom',
-    path: e.page || _currentPage || '',
-    target: e.element_id || (e.metadata && e.metadata.tag) || '',
-    value: e.time_on_page_seconds,
-    scroll_pct: e.scroll_pct,
-    meta: e.metadata && typeof e.metadata === 'object' ? { tag: e.metadata.tag } : undefined,
-  }));
 }
 
 export function mapPageToFeature(pageName) {

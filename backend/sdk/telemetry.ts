@@ -71,8 +71,33 @@ export async function telemetryEnabled(user: any, jurisdiction?: string | null):
   return !!on;
 }
 
-/** Store a scrubbed, bounded batch of events as one compact InteractionEvent row. Returns count kept. */
+// Session-consistent [0,1) hash so a session is fully in or out of the telemetry sample (no partial
+// sessions, which would bias the stats).
+function sessionUnit(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return ((h >>> 0) % 1000000) / 1000000;
+}
+
+// Map the frontend "journey event" shape ({event_type,page,element_id,metadata,scroll_pct}) to the
+// compact telemetry event the aggregator expects. Lets the client send ONE payload that serves both the
+// journey log and the statistical layer (coalesced write).
+export function mapJourneyToEvents(batch: any[]): RawEvent[] {
+  return (Array.isArray(batch) ? batch : []).map((e) => ({
+    type: e?.event_type,
+    path: e?.page,
+    target: e?.element_id || (e?.metadata && e.metadata.tag) || "",
+    value: e?.time_on_page_seconds,
+    scroll_pct: e?.scroll_pct,
+    meta: e?.metadata && typeof e.metadata === "object" ? { tag: e.metadata.tag } : undefined,
+  }));
+}
+
+/** Store a scrubbed, bounded batch of events as one compact InteractionEvent row. Returns count kept.
+ *  Honors TELEMETRY_SAMPLE_PCT (session-consistent) so the overhead monitor can throttle volume. */
 export async function recordEvents(userId: string, sessionId: string, events: RawEvent[]): Promise<number> {
+  const samplePct = await getNumber("TELEMETRY_SAMPLE_PCT", 1).catch(() => 1);
+  if (samplePct < 1 && sessionUnit(String(sessionId || userId)) >= Math.max(0, samplePct)) return 0;
   const cap = Math.max(1, await getNumber("TELEMETRY_MAX_EVENTS_PER_BATCH", 60));
   const clean = (Array.isArray(events) ? events : []).slice(0, cap).map(scrubEvent);
   if (!clean.length) return 0;

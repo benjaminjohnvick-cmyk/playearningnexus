@@ -47,6 +47,33 @@ function decodeImage(dataUrl: string): { bytes: Uint8Array; contentType: string 
   } catch { return null; }
 }
 
+/** Store one sampled STRUCTURAL snapshot (viewport, scroll depth, clicks, element boxes — no pixels).
+ *  Cheap and bucket-free: it's just a small bounded row. Enforces the per-session frame cap. This is the
+ *  default capture path — near-zero client + server + storage cost, no image ever produced or uploaded. */
+export async function storeSnapshot(userId: string, sessionId: string, snapshot: any): Promise<boolean> {
+  const maxShots = Math.max(1, await getNumber("SESSION_CAPTURE_MAX_SHOTS_PER_SESSION", 6));
+  const existing = await db.filter("UXHeatmapSnapshot", { session_id: sessionId }, "-at", maxShots + 1).catch(() => []) as any[];
+  if ((existing?.length || 0) >= maxShots) return false;
+
+  // Bound the payload so a client can't inflate storage.
+  const s = snapshot && typeof snapshot === "object" ? snapshot : {};
+  const clicks = Array.isArray(s.clicks) ? s.clicks.slice(0, 60).map((c: any) => ({ x: Number(c.x) || 0, y: Number(c.y) || 0, tag: String(c.tag || "").slice(0, 20), dead: !!c.dead })) : [];
+  const elements = Array.isArray(s.elements) ? s.elements.slice(0, 40).map((e: any) => ({
+    tag: String(e.tag || "").slice(0, 20), label: String(e.label || "").slice(0, 40),
+    x: Number(e.x) || 0, y: Number(e.y) || 0, w: Number(e.w) || 0, h: Number(e.h) || 0,
+    above_fold: !!e.above_fold, visible: !!e.visible,
+  })) : [];
+  await db.create("UXHeatmapSnapshot", {
+    user_id: userId, session_id: String(sessionId).slice(0, 80),
+    path: String(s.path || "").slice(0, 200),
+    viewport: s.viewport && typeof s.viewport === "object" ? { w: Number(s.viewport.w) || 0, h: Number(s.viewport.h) || 0 } : null,
+    scroll_pct: Math.max(0, Math.min(100, Number(s.scroll_pct) || 0)),
+    clicks, elements, dead_clicks: Number(s.dead_clicks) || 0, rage_clicks: Number(s.rage_clicks) || 0,
+    analyzed: false, at: new Date().toISOString(),
+  }, userId).catch(() => null);
+  return true;
+}
+
 /** Store one sampled frame to the bucket + a SessionCaptureFrame metadata row. Enforces the per-session
  *  frame cap. Returns the stored url (or null when the bucket is unconfigured / cap hit). */
 export async function storeShot(userId: string, sessionId: string, dataUrl: string, path?: string): Promise<string | null> {

@@ -43,10 +43,29 @@ export async function initOta() {
   } catch { /* OTA is best-effort; never block the app */ }
 }
 
-/** Ask the plugin to check for a newer bundle now (e.g. on app resume/login). Applied on next open. */
+// Skip downloads on a metered/cellular connection when possible, so OTA never eats a user's mobile
+// data. Uses @capacitor/network if present; if it isn't, we allow the download (Capgo also supports
+// its own metered guard in config). Capgo ships DELTA updates (only changed files) by default, so a
+// typical update is tens of KB even on wifi.
+async function onAllowedNetwork() {
+  try {
+    const mod = await import(/* @vite-ignore */ '@capacitor/network').catch(() => null);
+    const Network = mod?.Network;
+    if (!Network) return true; // can't tell → allow (bundles are small/delta)
+    const s = await Network.getStatus();
+    if (!s?.connected) return false;
+    // Prefer wifi/ethernet; allow cellular only if not flagged metered.
+    if (s.connectionType === 'wifi' || s.connectionType === 'ethernet' || s.connectionType === 'unknown') return true;
+    return false; // cellular → wait for wifi
+  } catch { return true; }
+}
+
+/** Ask the plugin to check for a newer bundle now (e.g. on app resume/login). Applied on next open.
+ *  Respects the metered-network guard. */
 export async function checkForOtaUpdate() {
   if (!Capacitor?.isNativePlatform?.()) return;
   const Updater = await loadUpdater();
   if (!Updater) return;
+  if (!(await onAllowedNetwork())) return; // on cellular → defer to wifi
   try { await Updater.getLatest?.(); } catch { /* best-effort */ }
 }

@@ -82,7 +82,18 @@ export interface LiveExperiment {
   stats?: Record<string, unknown>;
 }
 
+// Global KILL SWITCH. When ON, all NEW assignment, exposure, ticking, and creation stop instantly —
+// experiments are paused without deleting them. Already-promoted global changes stay (they're plain
+// settings); segment-kept changes still apply (they were decided). Set the `experiments_paused` flag or
+// the LIVE_EXPERIMENTS_PAUSED setting to pause everything with one flip; unset to resume.
+export async function experimentsPaused(): Promise<boolean> {
+  const flag = await isEnabled("experiments_paused").catch(() => false);
+  if (flag) return true;
+  return await getBool("LIVE_EXPERIMENTS_PAUSED", false).catch(() => false);
+}
+
 export async function liveEnabled(jurisdiction?: string | null): Promise<boolean> {
+  if (await experimentsPaused()) return false;
   const flag = await isEnabled("live_experiments", jurisdiction).catch(() => true);
   const setting = await getBool("OPTIMIZER_LIVE_TEST", true).catch(() => true);
   return flag && setting;
@@ -106,6 +117,7 @@ export async function createLiveExperiment(input: {
     { metric: "complaint", max_regression_pct: 20 },
     { metric: "drop_off", max_regression_pct: 25 },
   ];
+  invalidateExperimentCache();
   return await db.create("LiveExperiment", {
     key: input.key, type: input.type ?? "setting",
     control_value: input.control_value, variant_value: input.variant_value,
@@ -132,15 +144,31 @@ export function matchesSegment(exp: any, segment?: string | null): boolean {
 }
 
 /** Segment-kept experiments: promoted experiments that carry a segment. Their winning value is applied
- *  to matching users at request time (NOT flipped globally) — this is the per-user "kept change" layer. */
+ *  to matching users at request time (NOT flipped globally) — this is the per-user "kept change" layer.
+ *  Cached ~20s (invalidated on promote/revert). */
 export async function segmentKeptExperiments(): Promise<any[]> {
+  if (_keptCache && Date.now() - _keptCache.at < CACHE_TTL_MS) return _keptCache.rows;
   const rows = await db.filter("LiveExperiment", { status: "promoted" }, "-decided_at", 300).catch(() => []) as any[];
-  return rows.filter((e) => !!e.segment);
+  const kept = rows.filter((e) => !!e.segment);
+  _keptCache = { at: Date.now(), rows: kept };
+  return kept;
 }
 
-/** All running experiments (cached briefly by the caller if needed). */
+// Short in-process caches so the request-time applier (every login/resume) and the tick don't re-query
+// the experiment set constantly. Invalidated on any create/promote/revert. Per-process + TTL, so a
+// multi-instance deploy is at most CACHE_TTL_MS stale — fine for slowly-changing experiment sets.
+const CACHE_TTL_MS = 20_000;
+let _runCache: { at: number; rows: any[] } | null = null;
+let _keptCache: { at: number; rows: any[] } | null = null;
+export function invalidateExperimentCache() { _runCache = null; _keptCache = null; }
+
+/** All running experiments (cached ~20s; call invalidateExperimentCache() after a state change). */
 export async function runningExperiments(): Promise<any[]> {
-  return await db.filter("LiveExperiment", { status: "running" }, "-started_at", 200).catch(() => []) as any[];
+  if (await experimentsPaused()) return []; // kill switch: no assignment/exposure while paused
+  if (_runCache && Date.now() - _runCache.at < CACHE_TTL_MS) return _runCache.rows;
+  const rows = await db.filter("LiveExperiment", { status: "running" }, "-started_at", 200).catch(() => []) as any[];
+  _runCache = { at: Date.now(), rows };
+  return rows;
 }
 
 /** Sticky per-user assignment. Quiet-swap: an existing assignment is NEVER changed mid-experiment; a
@@ -201,11 +229,29 @@ export async function resolveVariantOverrides(user: any, sessionId?: string, seg
   return out;
 }
 
+// Incremental per-experiment, per-variant counters kept ON the LiveExperiment doc so the monitor reads
+// arm totals in O(1) instead of scanning thousands of LiveMetricEvent rows every tick. CAS-guarded with
+// a small retry (counts_version) so concurrent increments don't clobber each other; a lost race at most
+// drops one increment, which is negligible against the large samples decisions are made on.
+async function bumpExperimentCount(expId: string, variant: string, metric: string, value = 1): Promise<void> {
+  const arm = variant === "variant" ? "variant" : "control";
+  for (let i = 0; i < 4; i++) {
+    const exp = await db.get("LiveExperiment", expId).catch(() => null) as any;
+    if (!exp) return;
+    const counts = (exp.counts && typeof exp.counts === "object") ? { control: { ...(exp.counts.control || {}) }, variant: { ...(exp.counts.variant || {}) } } : { control: {}, variant: {} };
+    (counts as any)[arm][metric] = (Number((counts as any)[arm][metric]) || 0) + (Number(value) || 1);
+    const ver = String(Number(exp.counts_version) || 0);
+    const ok = await db.updateIf("LiveExperiment", expId, { counts, counts_version: Number(ver) + 1 }, { field: "counts_version", equals: ver }).catch(() => false);
+    if (ok) return;
+  }
+}
+
 async function markExposed(exp: any, userId: string, variant: string) {
   const rows = await db.filter("LiveAssignment", { experiment_id: exp.id, user_id: userId }, "-assigned_at", 1).catch(() => []) as any[];
   const a = rows[0];
   if (!a || a.exposed) return;
   await db.update("LiveAssignment", a.id, { exposed: true, exposed_at: nowISO() }).catch(() => null);
+  await bumpExperimentCount(exp.id, variant, "exposure", 1);
   await db.create("LiveMetricEvent", { experiment_id: exp.id, user_id: userId, variant, metric: "exposure", value: 1, at: nowISO() }, ACTOR).catch(() => null);
 }
 
@@ -220,15 +266,27 @@ export async function recordMetricForUser(userId: string, metric: string, value 
     const rows = await db.filter("LiveAssignment", { experiment_id: exp.id, user_id: userId }, "-assigned_at", 1).catch(() => []) as any[];
     const a = rows[0];
     if (!a) continue;
-    await db.create("LiveMetricEvent", { experiment_id: exp.id, user_id: userId, variant: a.variant, metric: String(metric).slice(0, 40), value: Number(value) || 1, at: nowISO() }, ACTOR).catch(() => null);
+    const m = String(metric).slice(0, 40);
+    await bumpExperimentCount(exp.id, a.variant, m, Number(value) || 1);
+    await db.create("LiveMetricEvent", { experiment_id: exp.id, user_id: userId, variant: a.variant, metric: m, value: Number(value) || 1, at: nowISO() }, ACTOR).catch(() => null);
     n++;
   }
   return n;
 }
 
 // ---- measurement + real-time control ------------------------------------------------------------
-async function armCounts(expId: string, metric: string): Promise<{ control: number; variant: number }> {
-  const rows = await db.filter("LiveMetricEvent", { experiment_id: expId, metric }, "-at", 20000).catch(() => []) as any[];
+// Read arm totals from the O(1) incremental counters on the experiment doc. Falls back to a bounded
+// LiveMetricEvent scan only when counters are absent (e.g. an experiment created before counters, or a
+// counter that never initialized) — so old data still measures, but the hot path never scans.
+function countsFrom(exp: any, metric: string): { control: number; variant: number } | null {
+  const c = exp?.counts;
+  if (!c || typeof c !== "object") return null;
+  return { control: Number(c.control?.[metric]) || 0, variant: Number(c.variant?.[metric]) || 0 };
+}
+async function armCounts(exp: any, metric: string): Promise<{ control: number; variant: number }> {
+  const fast = countsFrom(exp, metric);
+  if (fast) return fast;
+  const rows = await db.filter("LiveMetricEvent", { experiment_id: exp.id, metric }, "-at", 20000).catch(() => []) as any[];
   let c = 0, v = 0;
   for (const r of rows) { if (r.variant === "variant") v += Number(r.value) || 1; else c += Number(r.value) || 1; }
   return { control: c, variant: v };
@@ -236,13 +294,13 @@ async function armCounts(expId: string, metric: string): Promise<{ control: numb
 
 /** Measure an experiment: objective test + guardrail deltas, using exposures as the denominator. */
 export async function measureExperiment(exp: any): Promise<{ test: TestResult; guardrails: Array<{ metric: string; control_rate: number; variant_rate: number; regression_pct: number; breach: boolean }>; exposures: { control: number; variant: number } }> {
-  const exposures = await armCounts(exp.id, "exposure");
-  const obj = await armCounts(exp.id, exp.objective_metric || "purchase");
+  const exposures = await armCounts(exp, "exposure");
+  const obj = await armCounts(exp, exp.objective_metric || "purchase");
   const test = compareArms(obj.control, exposures.control, obj.variant, exposures.variant);
 
   const guardrails: Array<{ metric: string; control_rate: number; variant_rate: number; regression_pct: number; breach: boolean }> = [];
   for (const g of (Array.isArray(exp.guardrail_metrics) ? exp.guardrail_metrics : [])) {
-    const gc = await armCounts(exp.id, g.metric);
+    const gc = await armCounts(exp, g.metric);
     const rc = exposures.control > 0 ? gc.control / exposures.control : 0;
     const rv = exposures.variant > 0 ? gc.variant / exposures.variant : 0;
     // Regression = variant is WORSE (higher refund/complaint/drop-off) than control, in %.
@@ -289,6 +347,7 @@ export async function promoteExperiment(exp: any, reason: string): Promise<void>
     status: "promoted", decided_at: now, decision: `promoted${segmented ? " (segment-kept)" : " (site-wide)"}: ${reason}`,
     variant_share: 1, canary_idx: (exp.canary_caps || [1]).length - 1,
   }).catch(() => null);
+  invalidateExperimentCache();
   await db.create("AdminAuditLog", { actor_email: ACTOR, action_type: segmented ? "live_experiment_promote_segment" : "live_experiment_promote_global", target: exp.key, details: { from: exp.control_value, to: exp.variant_value, segment: exp.segment || null, reason }, timestamp: now }, ACTOR).catch(() => null);
   await db.create("OptimizationOutcome", { key: exp.key, primary_metric: exp.objective_metric, applied_at: now, verdict: "win", auto: true, live_experiment_id: exp.id, segment: exp.segment || null }, ACTOR).catch(() => null);
 }
@@ -297,6 +356,7 @@ export async function promoteExperiment(exp: any, reason: string): Promise<void>
 export async function revertExperiment(exp: any, reason: string, status: "reverted" | "halted" = "reverted"): Promise<void> {
   const now = nowISO();
   await db.update("LiveExperiment", exp.id, { status, decided_at: now, decision: `${status}: ${reason}`, variant_share: 0 }).catch(() => null);
+  invalidateExperimentCache();
   await db.create("AdminAuditLog", { actor_email: ACTOR, action_type: `live_experiment_${status}`, target: exp.key, details: { reason }, timestamp: now }, ACTOR).catch(() => null);
 }
 

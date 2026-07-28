@@ -1,5 +1,31 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-28 — Performance & cost optimization pass (keeps every feature, removes cost + risk)
+
+See `PERFORMANCE-AND-COST-OPTIMIZATION.md`. No features removed; each concern became a bounded lever.
+
+- **Incremental counters**: live-experiment monitor reads per-variant counters on the experiment doc
+  (CAS-guarded) in O(1) instead of scanning up to 20k `LiveMetricEvent` rows per tick. Scan kept as
+  fallback for pre-counter data.
+- **Cheap heatmap capture replaces pixel screenshots**: `html2canvas` → tiny structural snapshot
+  (viewport, scroll depth, click coords, dead/rage clicks, element boxes; ~1 KB, no image/bucket). New
+  `storeSnapshot` + `UXHeatmapSnapshot`; `sessionCaptureAnalyzeBatch` rewritten to **rule-based** analysis
+  (dead-click/rage/low-scroll/below-fold CTA), optional single LLM summary only under spend headroom.
+- **Coalesced + idle telemetry**: one `telemetryIngest` call now writes both journey rows + aggregate
+  (was two client writes); flush on `requestIdleCallback`; unload/background via `fetch({keepalive})` +
+  `sendBeacon` fallback; `TELEMETRY_SAMPLE_PCT` session-consistent down-sampling.
+- **Caching + fewer writes**: `runningExperiments`/`segmentKeptExperiments` cached ~20s (invalidated on
+  create/promote/revert); `UserVariantState` snapshot written only when changed (fingerprint).
+- **Delta/wifi OTA**: `capacitor.config` delta + periodic check; `otaUpdate.js` wifi/metered gate via
+  `@capacitor/network` (guarded).
+- **Kill switch**: `experiments_paused` flag / `LIVE_EXPERIMENTS_PAUSED` setting halts all live
+  experimentation with one flip (kept/promoted changes stay).
+- **Overhead monitor** (`learningOverheadMonitor`, hourly): watches telemetry/metric/snapshot volume + AI
+  spend and auto-throttles within bounds (lowers sample rates over `OVERHEAD_MAX_EVENTS_PER_DAY`; pauses
+  experiments at `OVERHEAD_AI_SPEND_PAUSE_PCT` of the AI cap). `OverheadReport` + audit.
+
+
+
 ## 2026-07-28 — Personalized (segment) learning + segment→site-wide graduation + login/logout lifecycle + OTA live updates
 
 Option (b): AI changes are tested per user-segment first, kept per-user when they win, and graduated
