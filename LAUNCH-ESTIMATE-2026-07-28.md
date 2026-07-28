@@ -1,118 +1,147 @@
-# Launch Estimate — Full Launch (2026-07-28)
+# GamerGain — Launch Cost Estimate
 
-A fresh one-page estimate for a complete launch — web PWA + Android + iOS + load test — reflecting the
-current codebase (marketplace, AI catalog, serverless-GPU images, i18n, data/AI systems). Targets, not
-guarantees; the kit removes rework, which is what causes the high end.
+**Prepared 2026-07-28 · Brand-new estimate · Figures are planning targets, not quotes**
 
-## Development hours (one-time, at $75/hr)
-| Phase | Hours | Notes |
+This estimate covers a complete launch of GamerGain / PlayEarning Nexus — the web PWA plus native
+Android and iOS apps, with a load test held in reserve. It reflects the platform as it stands today:
+the AI-generated product catalog, the Facebook-Marketplace-style marketplace, serverless-GPU catalog
+imagery, country-by-country localization (currency, language, and flag), welcome rewards, the Daily
+Boost perk, and Affirm buy-now-pay-later for real goods. The headline point is that the newer
+capabilities ship prebuilt and switched off by default, so they add almost nothing to what it costs to
+get live.
+
+---
+
+## One-time development
+
+Development is billed at $75/hour. The launch kit exists specifically to remove rework — the thing that
+otherwise drives the high end — by scripting the deploy, validation, and test steps a developer would
+otherwise perform by hand.
+
+| Work item | Hours | Note |
 |---|---:|---|
-| Accounts & API keys (owner) | 0 billable | `deploy-kit/API-KEYS-WORKSHEET.md` |
-| Deploy backend + Postgres + scheduler (Railway single-service) | 6–8 | auto-migrate, inline scheduler |
-| Pre-deploy validation | 1–2 | `deploy-kit/validate.sh` |
-| Deploy frontend (served by backend) | 2–3 | single origin |
-| Configure AI/catalog (budget worksheet) | 1–2 | env only, no code |
-| Payments sandbox→live (only if enabling card at launch) | 0–8 | optional; card off by default |
-| Survey/earn loop test | 4–6 | |
-| QA pass | 7–9 | `QA-TEST-PLAN.md` |
-| Android submission (signed .aab) | 10–13 | `deploy-kit/ANDROID-SUBMISSION-KIT.md` |
-| iOS submission (cloud CI, no Mac) | 5–9 | `deploy-kit/IOS-NO-MAC-KIT.md` |
-| **Total** | **~36–52 h** | **≈ $2,700–$3,900** |
+| Accounts & API keys | 0 billable | Owner-completed from the keys worksheet |
+| Deploy backend + Postgres + scheduler | 6–8 | Single service, auto-migrating, inline scheduler |
+| Pre-deploy validation | 1–2 | Scripted (`validate.sh`) |
+| Deploy frontend (same origin) | 2–3 | Served by the backend |
+| Configure AI / catalog | 1–2 | Environment only — no code, features prebuilt |
+| Card payments sandbox → live | 0–8 | Optional; card is off by default |
+| Survey / earn-loop test | 4–6 | End-to-end earning path |
+| QA pass | 7–9 | Against the QA test plan |
+| Android submission (signed .aab) | 10–13 | Android submission kit |
+| iOS submission (cloud CI, no Mac needed) | 5–9 | iOS-without-a-Mac kit |
+| **Total** | **~36–52 hours** | **≈ $2,700–$3,900** |
 
-Card payments off at launch keeps you near the low end (~36–40 h, ~$2,700–$3,000). The AI/catalog
-features add **~1–2 h** (config only) because they're prebuilt and off-by-default.
+Keeping card payments off at launch holds you near the low end — roughly 36–40 hours, or about
+$2,700–$3,000. The AI, catalog, and marketplace features add only one to two hours of configuration
+because they are already built and default to off.
 
-## Runtime cost (monthly, ongoing)
+---
+
+## Ongoing runtime (monthly)
+
 | Item | Cost |
 |---|---|
-| Hosting (Railway, single instance) | ~$10–30/mo |
-| AI images (one-time, all countries) | ~$9–15 once (Titan) |
-| LLM text (catalog seed + assistant + optimization) | capped; ~$5–40/mo depending on use |
-| Geo-IP + exchange rates | free tier |
-| Domain / stores | $12–15/yr domain · Apple $99/yr · Play $25 once |
-| **Month-1 realistic total** | **~$25–100** (hard-capped by `AI_DAILY_SPEND_CAP_USD`) |
+| Hosting (single instance to start) | ~$10–30/mo |
+| Catalog images (one-time, all countries) | ~$9–15 once |
+| LLM text — catalog seed, assistant, optimization | Capped; ~$5–40/mo by usage |
+| Geo-IP + exchange rates | Free tier |
+| Domain and store fees | Domain $12–15/yr · Apple $99/yr · Play $25 once |
+| **Realistic month one** | **~$25–100**, hard-capped by the daily AI spend limit |
 
-## Load test
-Deferred until traffic warrants it. First pass: k6/Artillery from one box vs staging (near-free). Full
-AWS run: spot instances, spin-up/tear-down same day (hours-long spend, not standing). The scale toggles
-tell you the one knob to flip — no speculative over-provisioning. Plan: `LOAD-TEST-PLAN.md`.
+---
 
-## Budget risks (watch these)
-1. **App Store rejection round** for earn-money apps — mitigate with demo login + "not gambling" framing
-   (`STORE-LISTING-COPY.md` review notes).
-2. **Enabling card/cash-out** adds payment-processor + compliance hours — deliberately deferred.
-3. **Turning subcategory tile images on** adds ~$9 one-time — off by default.
+## Year-one, all-in
 
-## Bottom line
-Full PWA + Android + iOS launch: **~$2,700–$3,900 dev**, **~$25–100 month-1 runtime**, load test
-deferred and cheap. The new AI/catalog/marketplace capabilities are included at essentially no added
-launch cost because they ship prebuilt and off-by-default.
+"Everything operational" means development plus a full year of actually running the platform. Two honest
+scenarios:
 
-## All-in with EVERYTHING operational (year 1) — and the shoestring lever
-"Everything operational and running" means dev + a year of actually running it. Counting that:
-
-| Bucket | Full (PWA+Android+iOS) | Shoestring (PWA+Android, iOS as fast-follow) |
+| Bucket | Full (PWA + Android + iOS) | Shoestring (PWA + Android; iOS as fast-follow) |
 |---|---:|---:|
-| Dev (one-time) | $2,700–$3,900 | **$2,000–$2,700** (drop the 5–9 iOS hours) |
+| Development (one-time) | $2,700–$3,900 | **$2,000–$2,700** |
 | One-time fees | Play $25 + images ~$15 | Play $25 + images $0–15 |
 | Apple Developer | $99/yr | **$0** (deferred) |
 | Domain | ~$15/yr | ~$15/yr (or free subdomain) |
-| Hosting (yr 1) | ~$120–360 | ~$120–180 (hobby tier + trial credit) |
-| LLM (yr 1, capped) | ~$60–480 | ~$60–180 (`AI_DAILY_SPEND_CAP_USD` low) |
-| **Year-1 all-in** | **~$3,900–$4,900** | **~$2,300–$3,100** |
+| Hosting (year 1) | ~$120–360 | ~$120–180 |
+| LLM (year 1, capped) | ~$60–480 | ~$60–180 |
+| **Year-one all-in** | **~$3,900–$4,900** | **~$2,300–$3,100** |
 
-So the full all-in *does* run a bit over the original figure — **because of first-year operating cost,
-not dev** (dev is unchanged). The lever that lands everything-operational back at ~$3,000-and-change:
+Development cost is identical across both — the difference is first-year operating cost, not build cost.
 
-**Launch web PWA + Android now; add the native iOS app as a fast-follow.** Why it works and why it's
-safe:
-- Removes the ~5–9 iOS dev hours (~$375–$675) **and** the $99/yr Apple fee **and** the biggest budget
-  risk (App Store rejection rounds for earn-money apps).
-- **iPhone users are NOT locked out** — the PWA installs and runs on iOS Safari, so everyone can use the
-  site day one; they just don't get the App Store listing yet.
-- It's **reversible with no rework**: the app is a Capacitor wrapper and the iOS CI config already
-  exists (`deploy-kit/IOS-NO-MAC-KIT.md`), so iOS is a later *flip* (~$375–$675 + $99/yr) once revenue
-  covers it — not a rebuild.
+---
 
-Stack these to stay near the floor: keep **card/cash-out off** (no processor fees), **Affirm off** until
-approved ($0 fixed), **images at the $10 budget posture** (or text-only at $0), **`AI_DAILY_SPEND_CAP_USD`
-low** (~$5–10/mo), **one-country + small catalog** at launch, and a **hobby hosting tier + trial credit**.
-Everything stays fully functional and running — just scoped to web + Android at launch — for
-**~$2,300–$3,100 all-in year one**, inside your original ~$3,000-and-change.
+## The lever that lands "everything operational" near $3,000
 
-## Keeping EVERYTHING on (web + Android + iOS, all features) at ~$3,000
-Yes, achievable — at the low end, using coding + free-tier levers instead of cutting scope:
+Launch the web PWA and Android now, and add the native iOS app as a fast-follow once revenue covers it.
+This removes the 5–9 iOS development hours (~$375–$675), the $99/yr Apple fee, and the single biggest
+budget risk — App Store rejection rounds, which are common for money-earning apps. Crucially, iPhone
+users are **not** locked out: the PWA installs and runs on iOS Safari, so everyone can use GamerGain on
+day one. Because the app is a Capacitor wrapper and the iOS CI config already exists, adding iOS later is
+a flip, not a rebuild.
 
-**Hosting choice: AWS paid tier with auto-scaling** (see `deploy-kit/AWS-AUTOSCALING-DEPLOY.md`). This is
-a deliberate reliability/scale choice that costs more than a free tier, so it lifts year-one above the
-~$3,000 shoestring target — that trade is intentional.
+Stacking the other levers keeps you at the floor: card and cash-out off (no processor fees), Affirm off
+until merchant approval ($0 fixed), images at the ~$10 posture or text-only at $0, the daily AI spend cap
+set low, and a single launch country with a small starting catalog. Everything stays fully functional —
+just scoped to web + Android at launch — for roughly **$2,300–$3,100 all-in in year one**, inside the
+original ~$3,000-and-change target.
+
+---
+
+## Keeping all three platforms and every feature on — with AWS auto-scaling
+
+If you want web, Android, and iOS all live with every feature on and AWS paid-tier auto-scaling for
+reliability, that is achievable at the low end using automation and free-tier levers rather than cutting
+scope. Auto-scaling infrastructure is a deliberate reliability choice that costs more than a hobby tier,
+so it lifts the year-one figure above the shoestring number — that trade is intentional.
 
 | Bucket | Cost with levers | The lever |
 |---|---:|---|
-| Dev (one-time) | $2,000–$2,600 | Prebuilt features ($0) + automated deploy/QA: `launch.sh`, `e2e-smoke.mjs`, `validate.sh` collapse the deploy + test phases so the developer runs commands, not hours |
-| Hosting — **AWS auto-scaling** (yr 1) | **$900–1,740** | ECS Fargate + ALB + RDS floor ~$75–145/mo; trim to ~$40–70/mo with App Runner + single-AZ RDS + Redis/SQS off until the load test needs them |
-| LLM (yr 1) | $60–300 | `AI_DAILY_SPEND_CAP_USD`, small-tier models, paced jobs |
-| Images | $0–15 | text-only launch ($0) or $10 Titan (Bedrock) posture |
+| Development (one-time) | $2,000–$2,600 | Prebuilt features ($0) + scripted deploy/QA collapse phases into commands |
+| Hosting — AWS auto-scaling (year 1) | $900–1,740 | Fargate + ALB + RDS floor ~$75–145/mo; trim to ~$40–70/mo with App Runner, single-AZ RDS, and Redis/SQS left off until the load test needs them |
+| LLM (year 1) | $60–300 | Daily spend cap, small-tier models, paced jobs |
+| Images | $0–15 | Text-only launch ($0) or ~$10 image posture |
 | Play (one-time) | $25 | — |
-| Apple Developer | $99/yr | unavoidable for a native iOS app |
+| Apple Developer | $99/yr | Unavoidable for a native iOS app |
 | Domain | $12–15 | — |
-| **Year-1 all-in** | **≈ $3,100–$4,800** | everything ON, all three platforms, AWS auto-scaling |
+| **Year-one all-in** | **≈ $3,100–$4,800** | Everything on, all three platforms, AWS auto-scaling |
 
-With AWS auto-scaling, the honest year-one all-in is **~$3,100–$4,800** (vs ~$2,300–$3,000 on a free
-hosting tier). The difference is almost entirely the auto-scaling infra floor. If you want to pull it
-back toward $3,000 while keeping AWS: start with **App Runner** (auto-scales, no ALB), **single-AZ RDS**,
-and leave **Redis + SQS off** (they're env toggles) until the load test proves you need them — that
-trims the hosting floor to ~$40–70/mo (~$480–840/yr) and lands year-one near **~$2,900–$3,600**.
+The honest all-in here is about **$3,100–$4,800**, versus ~$2,300–$3,000 on a free hosting tier — the gap
+is almost entirely the auto-scaling infrastructure floor. To pull it back toward $3,000 while staying on
+AWS, start with App Runner (auto-scales, no load balancer), single-AZ RDS, and Redis and SQS switched off
+until a load test proves you need them. That trims hosting to roughly $40–70/mo and lands year-one near
+**$2,900–$3,600**.
 
-Two honest caveats so the number holds:
-- **The wildcard is an iOS App Store rejection round** (common for earn-money apps) — each round adds
-  dev hours. It's mitigated (demo login + "merit, not gambling" framing in `STORE-LISTING-COPY.md`), but
-  it's the one thing that can push past $3,000. Budget a small contingency for it.
-- **Cash-out stays OFF** — not to save money, but for **legal** reasons (real-money withdrawal triggers
-  money-transmission licensing, which is a separate, expensive track). Everything else — marketplace,
-  catalog, AI, welcome rewards, Daily Boost, Affirm, card payments — can be on. This is a compliance
-  guardrail, not a budget cut.
+---
 
-Hard floor you can't code away: **~$139** (Apple $99 + Play $25 + domain ~$15). Everything above that is
-dev hours (cut by automation) and usage (capped + free-tier), so the plan lands **around $3,000 with
-everything on** — with the iOS-review contingency as the only real risk to the number.
+## Load test
+
+Deferred until traffic warrants it, so it adds nothing to the launch number. The first pass runs
+k6 or Artillery from a single box against staging, which is nearly free. A full-scale run uses spot
+instances spun up and torn down the same day — an hours-long spend, not a standing cost. The scale
+toggles identify the one knob to turn, so there is no speculative over-provisioning.
+
+---
+
+## Risks to the number
+
+The main wildcard is an **iOS App Store rejection round**, which is common for earn-money apps and adds
+development hours each time it happens. It is mitigated with a demo login and "merit, not gambling"
+store framing, but it is the one thing that can push past $3,000, so budget a small contingency.
+
+**Cash-out stays off** — not to save money, but for legal reasons: real-money withdrawal triggers
+money-transmission licensing, a separate and expensive track. Everything else — marketplace, catalog,
+AI, welcome rewards, Daily Boost, Affirm, and card payments — can be on. This is a compliance guardrail,
+not a budget cut.
+
+---
+
+## Bottom line
+
+A full PWA + Android + iOS launch runs roughly **$2,700–$3,900 in development** with **~$25–100 in
+month-one runtime**, and the load test stays deferred and cheap. Year-one all-in lands at about
+**$2,300–$3,100 on the shoestring path**, **~$3,100–$4,800 with all three platforms on AWS
+auto-scaling**, or **near $3,000 with everything on** using the automation and free-tier levers. The
+hard floor you cannot code away is about **$139** — Apple $99, Play $25, and a domain around $15 — with
+the iOS-review contingency as the only real risk to the number. The AI, catalog, and marketplace
+capabilities are included at essentially no added launch cost because they ship prebuilt and off by
+default.

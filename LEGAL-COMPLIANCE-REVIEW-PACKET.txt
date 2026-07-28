@@ -1,0 +1,178 @@
+====================================================================================================
+GAMERGAIN / PLAYEARNING NEXUS — LEGAL & COMPLIANCE REVIEW PACKET (FOR COUNSEL)
+Prepared 2026-07-28. Freshly written; supersedes any earlier packet. Not legal advice — this is a
+plain-language briefing for the reviewing attorney. Please read alongside the accompanying documents
+(Terms of Service, Privacy Policy, Refund Policy, Marketplace Seller Terms, Cookie & Tracking Notice,
+Subprocessors, Privacy Labels / Data Safety, and the Compliance & Current-State summary).
+====================================================================================================
+
+1. PURPOSE OF THIS PACKET
+-------------------------
+GamerGain is preparing to launch a play-to-earn web and mobile platform. This packet summarizes how the
+product works today and flags the areas where we want your review and sign-off before launch. We have
+designed the product conservatively and enforced the main risk controls in code (not just policy);
+where a control is a legal judgment rather than an engineering one, we have left it OFF by default and
+called it out below.
+
+2. WHAT THE PRODUCT IS (PLAIN LANGUAGE)
+---------------------------------------
+Members complete surveys, offers, and activities and earn "points." Points are a closed-loop, on-
+platform unit: within a given market, one point equals one cent of that market's local currency for the
+purpose of pricing items inside the app. Points are spent inside the platform — in a store and a
+Facebook-Marketplace-style marketplace. Real-money withdrawal ("cash-out") is NOT enabled. Card
+charging is OFF by default. The platform uses AI to generate an original product catalog, localize the
+experience by country, personalize recommendations, and improve itself under human oversight.
+
+3. THE MONEY MODEL — WHY WE BELIEVE IT IS LOWER-RISK, AND WHAT TO CONFIRM
+------------------------------------------------------------------------
+(a) Closed loop. Points are earned and spent inside the platform and are not cashable. In its default
+    posture the platform does not transmit money to users. This is enforced in code: cash-out is a
+    gated feature, off by default.
+(b) Not a stored-value / money-transmission instrument (our position). Because points cannot be
+    withdrawn for cash and are a revocable license to use a feature, we take the position that the
+    default product is not money transmission or stored value. WE NEED YOUR CONFIRMATION on this,
+    per state (US) and per country, especially if/when cash-out is enabled.
+(c) Local-currency pricing. Amounts shown to users are converted to their local currency; points track
+    local cents.
+(d) Card payments. When enabled, card charges run through a third-party processor and a disclosed
+    markup applies. A card order is not fulfilled and funds are not released until payment is captured.
+    PLEASE ADVISE on processor onboarding, surcharge/markup disclosure rules, and any licensing.
+(e) Guarded settings. Minimum age, tax thresholds, caps, points cashability, and affiliate structure
+    sit behind hard code bounds and are excluded from the AI optimizer.
+
+QUESTIONS FOR COUNSEL (Money):
+  - Does the closed-loop points model avoid money-transmitter licensing in our launch states/countries?
+  - What triggers, if any, would convert points into a regulated instrument?
+  - Requirements before enabling cash-out (licensing, KYC, escheatment/unclaimed-property, tax)?
+
+4. PROMOTIONAL VALUE & ADVERTISING CLAIMS (FTC — PLEASE REVIEW CLOSELY)
+----------------------------------------------------------------------
+We advertise, on the landing page, in the welcome email, and in-app: "up to $2,000 in first-year value,"
+which includes "up to $1,460 in welcome rewards." Key facts:
+  - Welcome rewards are NON-CASHABLE promotional credit that covers up to a set share per order
+    (default 20%), expire 12 months after signup, and apply to platform-catalog/store items only.
+  - The $2,000 figure is the sum of a substantiation table (welcome rewards + premium features + a daily
+    "free app time" perk + retailer cash-back + contest entries + referral bonuses). Each line is a
+    real, accessible benefit.
+  - Every surface shows the figure with "up to" and a disclosure that actual value depends on activity
+    and that welcome rewards are non-cashable and expire.
+  - We DO NOT make guaranteed-earnings claims; an "earnings projections" UI flag is OFF by default to
+    avoid FTC earnings-claim exposure. Marketing says "earn $3+/day" as a general statement — PLEASE
+    ADVISE whether this needs an earnings-claim disclaimer / typical-results substantiation.
+
+QUESTIONS FOR COUNSEL (Advertising):
+  - Is the "up to $X value" presentation + disclosure sufficient under FTC guidance on "free"/"value"?
+  - Does "earn $3+/day" require a typical-results disclosure and substantiation file?
+  - Any state-specific advertising rules for money-earning apps?
+
+5. THE MARKETPLACE
+------------------
+Three listing types coexist:
+  - Platform catalog: ORIGINAL products offered by GamerGain, fulfilled by our AI-managed order flow.
+  - Member listings: users list/resell their own items (relisting shows NO personal information);
+    the member seller ships; funds/points release after delivery via an AI-managed escrow flow.
+  - Affiliate listings & "find the real thing" search: outbound links to real products sold and
+    fulfilled by third-party retailers (Amazon, Google Shopping, eBay, each country's top retailer).
+    Where a link is an affiliate link, we disclose it and may earn a commission.
+Prohibited/regulated items (weapons, drugs, counterfeit, etc.) are blocked from listings. Buyers pay
+with points or card (+markup) or, for real shippable goods, finance with Affirm (Section 7).
+
+IMPORTANT IP POSITION: We DO NOT scrape or copy any retailer's catalog, images, or descriptions. The
+platform catalog is original (original titles, descriptions, and AI-generated images). Real branded
+goods enter only through a retailer's OFFICIAL affiliate API/links using our authorized credentials.
+
+QUESTIONS FOR COUNSEL (Marketplace):
+  - Marketplace operator liability, buyer/seller dispute handling, and prohibited-item obligations.
+  - Affiliate disclosure adequacy; any marketplace facilitator sales-tax obligations.
+  - Confirmation that the original-catalog + authorized-affiliate approach avoids IP/deceptive-ad risk.
+
+6. AI, DATA COLLECTION & PRIVACY
+--------------------------------
+The platform collects behavioral/interaction data (clicks, navigation, survey-answer timing used for
+quality/fraud), account and transaction data, and approximate location from IP (to set country,
+currency, language, and flag). AI is used to generate catalog content and images, personalize, power an
+assistant, A/B-test proposed changes before release, and optimize non-sensitive settings; material
+money/compliance decisions remain under human oversight. Users can OPT OUT of behavioral recording,
+DOWNLOAD their data, and DELETE their account (which anonymizes the profile and erases behavioral data,
+subject to legally required retention). A subprocessor list is included. Cookie/tracking notice included.
+
+QUESTIONS FOR COUNSEL (Privacy):
+  - GDPR / UK GDPR / CCPA-CPRA and other regional compliance of the Privacy Policy and practices.
+  - Whether any automated processing requires additional notice/rights handling.
+  - Data-transfer mechanism, DPA templates with subprocessors, and any DPO/representative requirement.
+  - EU/UK cookie-consent flow adequacy for the geo-IP and behavioral analytics.
+
+7. AFFIRM BUY-NOW-PAY-LATER (REAL GOODS ONLY)
+---------------------------------------------
+For real, shippable products only, users may choose Affirm at checkout. Affirm underwrites each buyer
+and owns default risk; the platform is paid upfront. Code hard-blocks financing of points, store
+credit, gift cards, or any "play" value. Off by default until Affirm merchant approval + keys are set.
+
+QUESTIONS FOR COUNSEL (BNPL):
+  - Any merchant-side disclosures/obligations when offering third-party BNPL.
+  - Confirmation that restricting BNPL to real goods (never points) is the correct boundary.
+
+8. DAILY BOOST (ADVERTISER-FUNDED PERK)
+---------------------------------------
+"Earn $4 in offers today → 5 minutes of free app time (in-app purchases covered up to a cap)." Funded by
+the advertiser revenue from those offers (designed net-neutral). Applies within our own ecosystem, not
+third-party app-store purchases.
+
+QUESTIONS FOR COUNSEL: any promotional/consideration issues; interaction with platform (Apple/Google)
+in-app-purchase rules.
+
+9. AGE, MINORS, SWEEPSTAKES, REFERRALS, TAX
+-------------------------------------------
+  - Age: 18+ hard floor enforced in code; not directed to children; no knowing collection under 18.
+  - Sweepstakes/contests/jackpots: exist as features; any prize promotion is subject to its own posted
+    rules and to registration/bonding where applicable. PLEASE ADVISE per jurisdiction; a free-entry
+    (AMOE) path exists.
+  - Referrals: single-tier by default (multi-level referrals OFF) to avoid pyramid/chain-referral risk.
+    PLEASE CONFIRM the referral mechanics and any FTC/state MLM exposure.
+  - Tax: reporting thresholds and any backup-withholding rate are configured in guarded settings and
+    become relevant if cash-out is enabled. PLEASE ADVISE on 1099/W-9 collection and thresholds.
+
+10. INTELLECTUAL PROPERTY / DMCA
+--------------------------------
+Original platform content; notice-and-takedown + counter-notice handling supported; a designated agent
+contact must be set. PLEASE ADVISE on DMCA agent registration and marketplace IP-complaint process.
+
+11. WHAT IS OFF BY DEFAULT (COMPLIANCE GUARDRAILS — NOT COST DECISIONS)
+----------------------------------------------------------------------
+Cash-out; card charging; multi-level referrals; SMS marketing; store-credit purchase; peer-to-peer
+transfers; guaranteed-earnings UI. Each is a single flag that stays OFF until the corresponding legal/
+operational prerequisite is met. Behavioral-recording opt-out, data export, and account deletion are
+available to every user. Age 18+, prohibited-item blocking, and disclosed affiliate links are always on.
+
+12. THE SPECIFIC SIGN-OFFS WE ARE ASKING FOR
+--------------------------------------------
+  [ ] Governing law, venue, and dispute-resolution/arbitration/class-waiver terms for the Terms of
+      Service (currently placeholders).
+  [ ] Money model: money-transmission / stored-value analysis per launch jurisdiction, and the
+      prerequisites before enabling cash-out.
+  [ ] Advertising: "up to $X value" and "earn $3+/day" claims, disclosures, and substantiation.
+  [ ] Privacy: GDPR/UK GDPR/CCPA-CPRA review; DPAs; cookie consent; automated-processing notices.
+  [ ] Sweepstakes/contests: per-jurisdiction legality, registration/bonding, AMOE.
+  [ ] Referrals: confirm single-tier structure avoids MLM/pyramid exposure.
+  [ ] Tax: reporting thresholds, W-9/1099 collection, and backup withholding.
+  [ ] Marketplace: operator liability, prohibited items, affiliate disclosure, facilitator tax.
+  [ ] BNPL: merchant disclosures; real-goods-only boundary.
+  [ ] IP/DMCA: designated agent; original-content + authorized-affiliate approach.
+
+13. DOCUMENTS INCLUDED IN THIS PACKET (SEE THE ACCOMPANYING FILES)
+-----------------------------------------------------------------
+  - Terms of Service
+  - Privacy Policy
+  - Refund Policy
+  - Marketplace Seller Terms
+  - Cookie & Tracking Notice
+  - Subprocessors
+  - Privacy Labels / Data Safety (app-store questionnaires)
+  - Compliance & Current-State summary
+  - (Business/marketing context) Store Listing Copy, Welcome Rewards & Value Stack, Marketplace/Catalog
+    Build reference
+
+All of the above are plain-language templates prepared for your review. Every bracketed placeholder
+(governing law, contact emails, business address, DMCA agent, payment/processor specifics) must be
+completed with counsel before launch. Nothing in this packet is legal advice.
+====================================================================================================
