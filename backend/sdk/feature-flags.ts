@@ -15,7 +15,7 @@ export type FlagName =
   | "premium_ppc" | "card_charging" | "referrals" | "multi_level_referrals"
   | "jackpots" | "social_posting" | "sms_marketing" | "email_marketing"
   | "order_fulfillment" | "store_credit_purchase" | "p2p_transfers"
-  | "cash_out" | "earnings_projections" | "session_recording";
+  | "cash_out" | "earnings_projections" | "session_recording" | "affirm_bnpl";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -34,6 +34,7 @@ const DEFAULTS: Record<FlagName, boolean> = {
   cash_out: false,               // OFF for closed-loop points
   earnings_projections: false,   // OFF — no guaranteed-earnings UI (FTC earnings-claims risk)
   session_recording: true,       // behavioral analytics kill-switch (disclosed in privacy policy)
+  affirm_bnpl: false,            // OFF until Affirm merchant keys are set; REAL shippable goods only, never points
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];
