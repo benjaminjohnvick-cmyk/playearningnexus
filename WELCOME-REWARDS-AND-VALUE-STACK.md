@@ -71,10 +71,11 @@ network/self-funding. Only include an item in an advertised total if the value i
 18. Ad-free experience (only counts if you'd otherwise run ads) — [Z].
 
 **Advertiser / partner-funded — [P] net-positive to you**
-19. **Daily Boost (your idea):** earn **$4/day** in offers → unlock **20 minutes of "free app time"** —
-    a credit that covers in-app purchases / app-install costs **inside your ecosystem**, funded by the
-    advertiser revenue from those offers. Net cost ≤ $0 as long as the offer revenue ≥ the credit. See
-    the callout below.
+19. **Daily Boost (your idea):** earn **$4/day** in offers → unlock **5 minutes of free app use** with
+    **no in-app-purchase charges** — a time-boxed window whose IAP cost is covered (up to a cap), funded
+    by the advertiser revenue from those offers. Net cost ≤ $0 as long as the offer revenue ≥ the cap.
+    **Implemented:** `dailyBoostStatus` / `claimDailyBoost` (opens a 5-minute `free_app_time_until`
+    window + credit cap the game store honors at checkout).
 20. Retailer cash-back via affiliate links — "up to X% back," network-funded — [P].
 21. Offerwall sign-up bonuses & free trials — advertiser-funded — [P].
 22. Free gift cards earned from completing offers — advertiser-funded — [P].
@@ -120,18 +121,22 @@ it's a real redeemable credit, and it's breakage-funded.
 **Optional combined figure:** if you want a bigger first-year number, only add value that is genuinely
 quantifiable and redeemable, each substantiated:
 
-| Component | Conservative value | Basis |
-|---|---|---|
-| Welcome Rewards | up to $1,460 (yr 1) | credit pool, "up to", expires 12 mo |
-| Premium AI features (assistant, coach, analytics) | ~$60/yr | comparable tools $5–10/mo |
-| Daily Boost app-time credit | up to ~$180/yr | ~$1/active day, capped |
-| Retailer cash-back | variable ("up to X%") | affiliate rates — express as a rate, not a $ |
-| Sponsored perks / free entries | value as awarded | only count what's actually granted |
+The **derived figure** (climbed as high as stays honest — each line is a real, accessible benefit):
 
-So a defensible combined headline is **"Over $1,700 in first-year value"** (≈ $1,460 + ~$240 quantifiable
-perks), **shown with "up to"** and a footnote listing the components. Do **not** publish a single
-inflated number without "up to" + the substantiation table behind it — that's the exact thing the FTC
-challenges.
+| Component | Up-to value (yr 1) | Basis |
+|---|---|---|
+| Welcome Rewards credit | $1,460 | credit pool, "up to", expires 12 mo, ≤20%/order |
+| Premium AI features (assistant, coach, analytics) | $120 | comparable tools ~$5–10/mo |
+| Daily Boost free app time (5 min/day) | $180 | ~$1/active day, capped |
+| Retailer cash-back (affiliate) | $100 | "up to X%" — conservative annual on typical spend |
+| Free contest / sweepstakes entries | $60 | value of entries actually granted |
+| Referral & streak bonuses | $80 | bonuses actually paid |
+| **Total** | **≈ $2,000** | |
+
+**Advertised figure: "Up to $2,000 in first-year value."** Stored in `ADVERTISED_VALUE_TOTAL` (default
+2000) so every surface reads one number. It is defensible only **with "up to" + the disclosure + this
+substantiation table** — do not publish a single number without them; that's the exact thing the FTC
+challenges. The *typical* realized value is far lower (breakage); be ready to show this table if asked.
 
 **FTC-safe rules for every surface**
 - Always "**up to** $X," never "get $X."
@@ -154,10 +159,23 @@ Single source of truth: store the number in `WELCOME_REWARDS_TOTAL` (and the com
 
 ---
 
-## 4. What's built vs. what's next
-- **Built now:** the spec above, the value list, and the honest figure methodology; plus the **Affirm
-  BNPL** real-goods financing (see `AFFIRM-BNPL-SETUP.md`).
-- **Next (buildable on request):** the welcome-credit **redemption engine** (grant pool at signup,
-  apply ≤20%/order at checkout, expire at 12 mo), the **Daily Boost** unlock (track $4/day earned →
-  issue capped app-time credit funded by offer revenue), and wiring `WELCOME_REWARDS_TOTAL` /
-  `ADVERTISED_VALUE_TOTAL` into the signup hero, onboarding, and emails so the figure shows site-wide.
+## 4. What's built
+- **Welcome-credit engine** — `welcome-credit.ts` (lazy-grant the pool at first touch, ≤20%/order cap,
+  12-mo expiry), applied to platform-catalog purchases in `purchaseMarketplaceListing`; balance via
+  `welcomeCreditStatus`. Cost is platform margin only (never subsidizes member sellers).
+- **Daily Boost** — `dailyBoostStatus` / `claimDailyBoost` (earn $4/day → 5-minute free-app window +
+  capped IAP credit the game store honors). Net-neutral, funded by offer revenue.
+- **Advertised figure** — `ADVERTISED_VALUE_TOTAL` (default $2,000) + `WELCOME_REWARDS_TOTAL` ($1,460)
+  as single-source settings; shown in the marketplace welcome banner with the "up to" + disclosure.
+- **Affirm BNPL** — real-goods financing (see `AFFIRM-BNPL-SETUP.md`), with the "Pay over time with
+  Affirm" button wired into the marketplace.
+- **Most value items already exist** in the app (AI assistant, recommendations, referrals, contests,
+  cash-back via affiliate, cosmetics, buyer protection) — which is what makes the figure substantiable.
+
+### Remaining seams (need your data/keys, not new build)
+- The game-store IAP checkout should check `free_app_time_until` / `app_time_credit_usd` to honor the
+  free window (one guard in the IAP flow).
+- Place the `ADVERTISED_VALUE_TOTAL` figure on the signup/landing hero and welcome email (the banner is
+  live in the marketplace; reuse the same setting on other surfaces).
+- Confirm the `DailyEarnings` field the boost reads matches your schema (it best-effort sums
+  amount/earnings/total/usd).

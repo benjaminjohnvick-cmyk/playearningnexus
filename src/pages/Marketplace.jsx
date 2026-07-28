@@ -54,6 +54,15 @@ export default function Marketplace() {
   const [catFilter, setCatFilter] = useState('all');
   // "Find the real thing" aggregated internet search modal.
   const [realSearch, setRealSearch] = useState({ open: false, listing: null, query: '', sort: 'relevance', minPrice: '', maxPrice: '', engines: [], loading: false, disclosure: '' });
+  // Welcome rewards balance + advertised value figure.
+  const [welcome, setWelcome] = useState(null);
+  // Affirm BNPL checkout (real-goods only).
+  const [affirm, setAffirm] = useState({ open: false, listing: null, name: '', address1: '', city: '', state: '', zipcode: '', loading: false });
+
+  useEffect(() => {
+    base44.functions.invoke('welcomeCreditStatus', {})
+      .then((r) => setWelcome(r.data || null)).catch(() => {});
+  }, []);
 
   // Source presentation: label + badge tint. Affiliate listings are clearly marked per FTC.
   function sourceMeta(l) {
@@ -190,6 +199,44 @@ export default function Marketplace() {
     finally { setBusy(''); }
   }
 
+  // ---- Affirm BNPL (real, shippable goods only) ----
+  function loadAffirm(publicKey) {
+    return new Promise((resolve, reject) => {
+      if (window.affirm) return resolve(window.affirm);
+      window._affirm_config = { public_api_key: publicKey };
+      const s = document.createElement('script');
+      s.src = 'https://cdn1.affirm.com/js/v2/affirm.js';
+      s.async = true;
+      s.onload = () => resolve(window.affirm);
+      s.onerror = () => reject(new Error('Affirm failed to load'));
+      document.head.appendChild(s);
+    });
+  }
+  async function submitAffirm() {
+    const { listing, name, address1, city, state, zipcode } = affirm;
+    if (!address1 || !city || !zipcode) { toast.error('Enter a shipping address.'); return; }
+    setAffirm((a) => ({ ...a, loading: true }));
+    try {
+      const cfg = await base44.functions.invoke('affirmCheckoutConfig', {
+        listing_id: listing.id, shipping: { name, address1, city, state, zipcode, country: 'USA' },
+      });
+      if (cfg.data?.blocked || !cfg.data?.checkout) { toast.error(cfg.data?.message || cfg.data?.error || 'Financing unavailable'); setAffirm((a) => ({ ...a, loading: false })); return; }
+      const aff = await loadAffirm(cfg.data.checkout.merchant.public_api_key);
+      aff.checkout(cfg.data.checkout);
+      aff.checkout.open({
+        onFail: () => { toast.error('Affirm checkout was cancelled.'); setAffirm((a) => ({ ...a, loading: false })); },
+        onSuccess: async (res) => {
+          try {
+            const conf = await base44.functions.invoke('affirmConfirm', { listing_id: listing.id, checkout_token: res.checkout_token, shipping_address: { name, address1, city, state, zipcode } });
+            if (conf.data?.success) { toast.success('Financed with Affirm — your order is being fulfilled.'); setAffirm({ open: false, listing: null, name: '', address1: '', city: '', state: '', zipcode: '', loading: false }); await load(); }
+            else toast.error(conf.data?.error || 'Financing could not be completed.');
+          } catch (e) { toast.error(e?.data?.error || e.message || 'Financing failed'); }
+          finally { setAffirm((a) => ({ ...a, loading: false })); }
+        },
+      });
+    } catch (e) { toast.error(e?.data?.error || e.message || 'Financing failed'); setAffirm((a) => ({ ...a, loading: false })); }
+  }
+
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -197,6 +244,19 @@ export default function Marketplace() {
         <Button size="sm" onClick={() => setShowSell((v) => !v)}><Plus className="w-4 h-4 mr-1" /> Sell an item</Button>
       </div>
       <p className="text-sm text-zinc-500 mb-4">Buy from other members with points or card. Sellers ship their own items; funds release after delivery.</p>
+
+      {/* Welcome rewards banner (advertised value figure + this user's remaining credit). */}
+      {welcome && (welcome.advertised_value_usd > 0 || welcome.remaining_usd > 0) && (
+        <div className="mb-4 rounded-lg bg-gradient-to-r from-red-600 to-rose-500 text-white p-3 flex items-center justify-between flex-wrap gap-2">
+          <div className="text-sm font-semibold">
+            🎁 Up to ${Number(welcome.advertised_value_usd).toLocaleString()} in first-year value
+            {welcome.remaining_usd > 0 && !welcome.expired && (
+              <span className="font-normal"> · you have <b>${Number(welcome.remaining_usd).toLocaleString()}</b> in welcome rewards to spend (covers up to {Math.round((welcome.max_pct || 0.2) * 100)}% per order)</span>
+            )}
+          </div>
+          <span className="text-[11px] opacity-80">Non-cashable promotional credit; expires 12 months after signup. Terms apply.</span>
+        </div>
+      )}
 
       {showSell && (
         <Card className="mb-6">
@@ -293,6 +353,14 @@ export default function Marketplace() {
                       </Button>
                     )}
                   </div>
+                )}
+                {/* Finance a real, shippable item with Affirm (never points/affiliate). Shows only when
+                    Affirm is enabled server-side; the config call gates eligibility. */}
+                {l.source !== 'affiliate' && l.price_usd > 0 && (
+                  <Button size="sm" variant="outline" className="w-full mt-2 text-xs"
+                    onClick={() => setAffirm({ open: true, listing: l, name: '', address1: '', city: '', state: '', zipcode: '', loading: false })}>
+                    <CreditCard className="w-3 h-3 mr-1" /> Pay over time with Affirm
+                  </Button>
                 )}
                 {l.source !== 'affiliate' && (
                   <Button size="sm" variant="ghost" className="w-full mt-2 text-xs" onClick={() => openRealSearch(l)}>
@@ -395,6 +463,34 @@ export default function Marketplace() {
         </div>
         );
       })()}
+
+      {/* Affirm financing — collect shipping, then open Affirm.js (real shippable goods only). */}
+      {affirm.open && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setAffirm((a) => ({ ...a, open: false }))}>
+          <Card className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-1">
+                <div className="font-semibold flex items-center gap-2"><CreditCard className="w-4 h-4" /> Pay over time with Affirm</div>
+                <button className="text-zinc-400 text-xl leading-none" onClick={() => setAffirm((a) => ({ ...a, open: false }))}>×</button>
+              </div>
+              <div className="text-xs text-zinc-500 mb-3 truncate">{affirm.listing?.title} · {affirm.listing ? formatPrice(affirm.listing.price_usd) : ''}</div>
+              <div className="grid grid-cols-1 gap-2">
+                <Input placeholder="Full name" value={affirm.name} onChange={(e) => setAffirm((a) => ({ ...a, name: e.target.value }))} />
+                <Input placeholder="Address" value={affirm.address1} onChange={(e) => setAffirm((a) => ({ ...a, address1: e.target.value }))} />
+                <div className="grid grid-cols-3 gap-2">
+                  <Input placeholder="City" value={affirm.city} onChange={(e) => setAffirm((a) => ({ ...a, city: e.target.value }))} />
+                  <Input placeholder="State" value={affirm.state} onChange={(e) => setAffirm((a) => ({ ...a, state: e.target.value }))} />
+                  <Input placeholder="ZIP" value={affirm.zipcode} onChange={(e) => setAffirm((a) => ({ ...a, zipcode: e.target.value }))} />
+                </div>
+                <Button size="sm" disabled={affirm.loading} onClick={submitAffirm}>
+                  {affirm.loading ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <CreditCard className="w-4 h-4 mr-1" />} Continue with Affirm
+                </Button>
+                <div className="text-[11px] text-zinc-400">Affirm decides your rate and terms. Financing is for real, shippable products only — never points or credit.</div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

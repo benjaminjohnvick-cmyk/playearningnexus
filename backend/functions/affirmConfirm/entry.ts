@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
+import { getNumber } from "../../sdk/settings.ts";
 import { db } from "../../sdk/db.ts";
 import { PLATFORM_SELLER_ID } from "../../sdk/catalog.ts";
 
@@ -25,9 +26,20 @@ export default __handler(async (req) => {
     const listing = await base44.asServiceRole.entities.MarketplaceListing.filter({ id: listing_id }).then((r: any) => r[0]);
     if (!listing) return Response.json({ error: "Listing not found" }, { status: 404 });
     if (listing.status !== "active") return Response.json({ error: `Listing is ${listing.status}` }, { status: 409 });
-    if (listing.source === "affiliate" || (Number(listing.price_usd) || 0) <= 0) {
+
+    // REAL-GOODS GUARD (re-enforced here, not just at config time): block affiliate, no-USD, and any
+    // points/credit/digital item. Without this, a token minted for a real item could be confirmed
+    // against a points/credit listing.
+    const base = Number(listing.price_usd) || 0;
+    const cat = String(listing.category || "").toLowerCase();
+    const isDigitalOrCredit = ["points", "store credit", "credit", "gift card", "virtual currency", "coins"].some((k) => cat.includes(k)) || listing.item_type === "points" || listing.digital === true;
+    if (listing.source === "affiliate" || base <= 0 || isDigitalOrCredit) {
       return Response.json({ error: "This item can't be financed." }, { status: 400 });
     }
+    // Expected total MUST match what affirmCheckoutConfig built (base × (1+markup)), so a cheap token
+    // can't be replayed against an expensive listing.
+    const markup = await getNumber("STORE_MARKUP", 0.10);
+    const expectedCents = Math.round(base * (1 + markup) * 100);
 
     const apiBase = Deno.env.get("AFFIRM_API_BASE") || (Deno.env.get("AFFIRM_ENV") === "live" ? "https://api.affirm.com" : "https://sandbox.affirm.com");
     const auth = "Basic " + btoa(`${pub}:${priv}`);
@@ -42,6 +54,13 @@ export default __handler(async (req) => {
       return Response.json({ error: "Affirm authorization failed", detail: authJson?.message || authRes.status }, { status: 402 });
     }
     const chargeId = authJson.id;
+    // Verify the financed amount matches this listing's expected total (±1¢) BEFORE capturing. If it
+    // doesn't, void the auth — this closes the "confirm a $10 token against a $1000 item" hole.
+    const authedCents = Number(authJson.amount) || 0;
+    if (Math.abs(authedCents - expectedCents) > 1) {
+      await fetch(`${apiBase}/api/v2/charges/${chargeId}/void`, { method: "POST", headers: { authorization: auth } }).catch(() => null);
+      return Response.json({ error: "Financing amount didn't match this item. No charge was made." }, { status: 400 });
+    }
 
     // 2. Claim the listing atomically BEFORE capturing (so we don't capture a lost race). If we lose,
     //    void the authorization so the buyer isn't on the hook.
@@ -67,12 +86,23 @@ export default __handler(async (req) => {
     const amountUsd = (Number(capJson?.amount ?? authJson?.amount) || 0) / 100;
 
     const isPlatform = (listing.source === "platform_catalog") || listing.seller_id === PLATFORM_SELLER_ID;
-    const order = await base44.asServiceRole.entities.Order.create({
-      user_id: user.id, seller_id: listing.seller_id, listing_id: listing.id, item_name: listing.title,
-      amount: amountUsd, payment_method: "affirm", payment_captured: true, affirm_charge_id: chargeId,
-      fulfillment_type: isPlatform ? "platform_ai" : "seller_ship", source: listing.source || "user",
-      shipping_address: shipping_address || null, status: "awaiting_shipment", created_at: new Date().toISOString(),
-    });
+    // Money is already captured. If the order write fails, DON'T 500 into the void — record the paid
+    // charge so it can be reconciled/fulfilled, and tell the client it's paid.
+    let order: any = null;
+    try {
+      order = await base44.asServiceRole.entities.Order.create({
+        user_id: user.id, seller_id: listing.seller_id, listing_id: listing.id, item_name: listing.title,
+        amount: amountUsd, payment_method: "affirm", payment_captured: true, affirm_charge_id: chargeId,
+        fulfillment_type: isPlatform ? "platform_ai" : "seller_ship", source: listing.source || "user",
+        shipping_address: shipping_address || null, status: "awaiting_shipment", created_at: new Date().toISOString(),
+      });
+    } catch (_e) {
+      await base44.asServiceRole.entities.Notification.create({
+        user_id: user.id, type: "marketplace_purchase",
+        title: "🛍️ Payment received", message: `We captured your Affirm payment for "${listing.title}" (ref ${chargeId}). Your order is being finalized.`, is_read: false,
+      }).catch(() => null);
+      return Response.json({ success: true, payment_captured: true, order_pending: true, charge_id: chargeId, amount_usd: amountUsd });
+    }
 
     await base44.asServiceRole.entities.Notification.create({
       user_id: user.id, type: "marketplace_purchase",

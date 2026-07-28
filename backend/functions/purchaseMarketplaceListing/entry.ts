@@ -4,6 +4,7 @@ import { getNumber } from "../../sdk/settings.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { db } from "../../sdk/db.ts";
 import { PLATFORM_SELLER_ID } from "../../sdk/catalog.ts";
+import { welcomeDiscountFor, redeemWelcomeCredit } from "../../sdk/welcome-credit.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -54,12 +55,25 @@ export default __handler(async (req) => {
     }
 
     // Pre-flight the payment path (no charge yet) so we don't claim a listing we can't pay for.
-    let charged = { method: payment_method, points: 0, usd: 0, markup: 0 };
-    let pointsPrice = 0;
+    let charged = { method: payment_method, points: 0, usd: 0, markup: 0, welcome_discount_usd: 0 };
+    let pointsPrice = 0;          // list price in points
+    let effectivePoints = 0;      // what the buyer actually pays after any welcome discount
+    let welcomeDiscountUsd = 0;   // platform-catalog only; funded by platform margin
     if (payment_method === "points") {
       pointsPrice = Number(listing.price_points) || 0;
       if (pointsPrice <= 0) return Response.json({ error: "This item isn't available for points" }, { status: 400 });
-      if ((Number(user.points) || 0) < pointsPrice) return Response.json({ error: "Insufficient points", required: pointsPrice, balance: Number(user.points) || 0 }, { status: 402 });
+      effectivePoints = pointsPrice;
+      // Welcome rewards: apply ONLY to platform-catalog items (platform is the seller, so the discount
+      // comes off platform margin — never shorts a member seller). The pool is in USD, but price_points
+      // is in LOCAL-currency cents, so cap the discount on the item's TRUE USD value and convert back to
+      // points via points-per-USD (= fx×100). This keeps the $1,460 pool denominated correctly in USD.
+      const usd = Number(listing.price_usd) || 0;
+      if (isPlatform && usd > 0) {
+        welcomeDiscountUsd = await welcomeDiscountFor(user.id, usd);
+        const pointsPerUsd = pointsPrice / usd;
+        effectivePoints = Math.max(0, pointsPrice - Math.round(welcomeDiscountUsd * pointsPerUsd));
+      }
+      if ((Number(user.points) || 0) < effectivePoints) return Response.json({ error: "Insufficient points", required: effectivePoints, balance: Number(user.points) || 0 }, { status: 402 });
     } else {
       if (!(await isEnabled("card_charging"))) {
         return Response.json({ blocked: true, reason: "card_payments_disabled", message: "Card payments aren't enabled yet. Use points, or contact support." }, { status: 403 });
@@ -82,18 +96,24 @@ export default __handler(async (req) => {
     // Now charge (we own the claim). On points: re-read the buyer for a fresh balance.
     if (payment_method === "points") {
       const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || user;
-      if ((Number(fresh.points) || 0) < pointsPrice) {
+      if ((Number(fresh.points) || 0) < effectivePoints) {
         // Buyer spent their points elsewhere between pre-flight and claim → release the listing.
         await db.updateIf("MarketplaceListing", listing.id, { status: "active", sold_to: null }, { field: "status", equals: "sold" }).catch(() => null);
-        return Response.json({ error: "Insufficient points", required: pointsPrice }, { status: 402 });
+        return Response.json({ error: "Insufficient points", required: effectivePoints }, { status: 402 });
       }
-      await base44.asServiceRole.entities.User.update(user.id, { points: (Number(fresh.points) || 0) - pointsPrice });
+      await base44.asServiceRole.entities.User.update(user.id, { points: (Number(fresh.points) || 0) - effectivePoints });
       // Credit the seller only when there's a real member seller. Platform-catalog points are platform
-      // revenue (closed-loop), so there's no user to credit.
+      // revenue (closed-loop), so there's no user to credit. Seller gets FULL list price; the welcome
+      // discount is absorbed by the platform (and only applies to platform items anyway).
       if (!isPlatform && seller) {
         await base44.asServiceRole.entities.User.update(seller.id, { points: (Number(seller.points) || 0) + pointsPrice });
       }
-      charged.points = pointsPrice;
+      // Deduct the used welcome credit from the buyer's pool (platform items only).
+      if (welcomeDiscountUsd > 0) {
+        await redeemWelcomeCredit(user.id, welcomeDiscountUsd);
+        charged.welcome_discount_usd = welcomeDiscountUsd;
+      }
+      charged.points = effectivePoints;
     }
 
     // Points are captured above (real closed-loop debit). CARD is NOT captured in this handler — the
