@@ -15,8 +15,9 @@ export default __handler(async (req) => {
   if (denied) return denied;
   try {
     const b = await req.json().catch(() => ({}));
-    const nodesPerSub = Math.min(60, Math.max(5, Math.floor(Number(b?.nodes_per_sub) || 30)));
-    const perRunSubs = Math.max(1, Math.floor(Number(b?.per_run_subs) || 12));
+    // 905 subcategories × 24 browse nodes ≈ 21,700 — clears the 20,000 target. Tunable per call.
+    const nodesPerSub = Math.min(80, Math.max(5, Math.floor(Number(b?.nodes_per_sub) || 24)));
+    const perRunSubs = Math.max(1, Math.floor(Number(b?.per_run_subs) || 40));
 
     // Build the (category, subcategory) work list, optionally scoped to one category.
     const cats = b?.category ? TAXONOMY.filter((t) => t.name.toLowerCase() === String(b.category).toLowerCase()) : TAXONOMY;

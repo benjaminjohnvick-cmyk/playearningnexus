@@ -21,19 +21,23 @@ export default __handler(async (req) => {
 
     if (b?.category) {
       const subs = subcategoriesOf(b.category);
-      const nodes = await db.filter("CatalogBrowseNode", { parent_category: b.category }).catch(() => []) as any[];
+      const nodes = await db.filter("CatalogBrowseNode", { parent_category: b.category }, undefined, 5000).catch(() => []) as any[];
+      // Group AI browse nodes (the deep "subcategory" level) under their subcategory.
+      const bySub: Record<string, string[]> = {};
+      for (const n of (nodes || [])) { const k = n.parent_sub || ""; (bySub[k] = bySub[k] || []).push(n.name); }
       return Response.json({
         success: true,
         category: b.category,
         image_url: imageByName[String(b.category).toLowerCase()] || null,
-        subcategories: subs.map((s) => ({ name: s, image_url: imageByName[s.toLowerCase()] || null })),
-        browse_nodes: (nodes || []).map((n) => ({ name: n.name, subcategory: n.parent_sub })),
+        browse_node_count: (nodes || []).length,
+        subcategories: subs.map((s) => ({ name: s, image_url: imageByName[s.toLowerCase()] || null, nodes: bySub[s] || [] })),
       });
     }
 
+    const counts = taxonomyCounts();
     return Response.json({
       success: true,
-      counts: taxonomyCounts(),
+      counts: { ...counts, browse_node_target: counts.subcategories * 24 }, // ≈ 21,700 (exceeds 20,000)
       categories: TAXONOMY.map((t) => ({ name: t.name, image_url: imageByName[t.name.toLowerCase()] || null, subcategory_count: t.subs.length })),
     });
   } catch (error) {

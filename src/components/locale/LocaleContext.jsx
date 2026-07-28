@@ -104,6 +104,32 @@ function detectBrowserLanguage() {
   return SUPPORTED_LANGUAGES.find(l => l.code === code)?.code || 'en';
 }
 
+function detectBrowserCountry() {
+  try {
+    const l = navigator.language || navigator.languages?.[0] || '';
+    return (l.split('-')[1] || '').toUpperCase();
+  } catch { return ''; }
+}
+
+// Compact country → currency / language maps, used to auto-set locale from the user's detected country.
+const COUNTRY_TO_CURRENCY = {
+  US: 'USD', CA: 'CAD', MX: 'MXN', BR: 'BRL', AR: 'ARS', CO: 'COP', CL: 'CLP', PE: 'PEN', UY: 'UYU',
+  DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR', PT: 'EUR', IE: 'EUR', GR: 'EUR', FI: 'EUR',
+  AT: 'EUR', BE: 'EUR', GB: 'GBP', CH: 'CHF', SE: 'SEK', NO: 'NOK', DK: 'DKK', PL: 'PLN', CZ: 'CZK',
+  HU: 'HUF', RO: 'RON', UA: 'UAH', RU: 'RUB', TR: 'TRY', SA: 'SAR', AE: 'AED', IL: 'ILS', QA: 'QAR',
+  ZA: 'ZAR', EG: 'EGP', NG: 'NGN', KE: 'KES', JP: 'JPY', CN: 'CNY', KR: 'KRW', IN: 'INR', TW: 'TWD',
+  HK: 'HKD', SG: 'SGD', MY: 'MYR', TH: 'THB', ID: 'IDR', PH: 'PHP', VN: 'VND', PK: 'PKR', BD: 'BDT',
+  LK: 'LKR', NP: 'NPR', KZ: 'KZT', AU: 'AUD', NZ: 'NZD',
+};
+const COUNTRY_TO_LANG = {
+  US: 'en', CA: 'en', GB: 'en', AU: 'en', IE: 'en', NZ: 'en', ZA: 'en', SG: 'en', PH: 'en', NG: 'en',
+  MX: 'es', AR: 'es', CO: 'es', CL: 'es', PE: 'es', ES: 'es', BR: 'pt', PT: 'pt', DE: 'de', AT: 'de',
+  CH: 'de', FR: 'fr', BE: 'fr', IT: 'it', NL: 'nl', GR: 'el', FI: 'fi', SE: 'sv', NO: 'no', DK: 'da',
+  PL: 'pl', CZ: 'cs', HU: 'hu', RO: 'ro', UA: 'uk', RU: 'ru', TR: 'tr', SA: 'ar', AE: 'ar', EG: 'ar',
+  IL: 'he', JP: 'ja', CN: 'zh', TW: 'zh', HK: 'zh', KR: 'ko', IN: 'hi', TH: 'th', ID: 'id', VN: 'vi',
+  MY: 'ms',
+};
+
 export function LocaleProvider({ children }) {
   const [language, setLanguageState] = useState(() => {
     return localStorage.getItem('gg_language') || detectBrowserLanguage();
@@ -112,7 +138,35 @@ export function LocaleProvider({ children }) {
     return localStorage.getItem('gg_currency') || 'USD';
   });
   const [exchangeRates, setExchangeRates] = useState({ USD: 1 });
+  const [country, setCountryState] = useState(() => localStorage.getItem('gg_country') || detectBrowserCountry());
   const translationCache = useRef({});
+
+  // Detect the user's actual country by geo-IP so the flag/locale follow where they physically are
+  // (browser locale can be wrong when travelling). Cached 24h; falls back to the browser locale.
+  useEffect(() => {
+    const cached = localStorage.getItem('gg_country');
+    const cachedTime = localStorage.getItem('gg_country_time');
+    if (cached && cachedTime && Date.now() - parseInt(cachedTime) < 86400000) { setCountryState(cached); return; }
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(data => {
+        const cc = (data.country_code || data.country || '').toUpperCase();
+        if (!cc || cc.length !== 2) return;
+        setCountryState(cc);
+        localStorage.setItem('gg_country', cc);
+        localStorage.setItem('gg_country_time', Date.now().toString());
+        // Auto-set currency/language from the country, but never override a choice the user made.
+        if (!localStorage.getItem('gg_currency') && COUNTRY_TO_CURRENCY[cc]) setCurrency(COUNTRY_TO_CURRENCY[cc]);
+        if (!localStorage.getItem('gg_language') && COUNTRY_TO_LANG[cc]) setLanguage(COUNTRY_TO_LANG[cc]);
+      })
+      .catch(() => { const cc = detectBrowserCountry(); if (cc) setCountryState(cc); });
+  }, []);
+
+  const setCountry = useCallback((cc) => {
+    const c = (cc || '').toUpperCase();
+    setCountryState(c);
+    if (c) { localStorage.setItem('gg_country', c); localStorage.setItem('gg_country_time', Date.now().toString()); }
+  }, []);
 
   useEffect(() => {
     const cached = localStorage.getItem('gg_exchange_rates');
@@ -188,6 +242,8 @@ export function LocaleProvider({ children }) {
       setLanguage,
       currency,
       setCurrency,
+      country,
+      setCountry,
       formatCurrency,
       formatPrice: formatCurrency, // alias: converts a USD amount to the selected currency
       translate,

@@ -40,18 +40,8 @@ const REAL_SEARCH_LABEL = {
   ms: 'Cari produk sebenar',
 };
 
-// Best-effort country from the browser locale (e.g. "en-US" → "US").
-function detectCountry() {
-  try {
-    const l = navigator.language || (navigator.languages && navigator.languages[0]) || '';
-    const parts = l.split('-');
-    return parts[1] ? parts[1].toUpperCase() : '';
-  } catch { return ''; }
-}
-
 export default function Marketplace() {
-  const { formatPrice, language } = useLocale();
-  const country = detectCountry();
+  const { formatPrice, language, country } = useLocale();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSell, setShowSell] = useState(false);

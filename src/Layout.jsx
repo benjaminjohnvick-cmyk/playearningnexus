@@ -41,7 +41,7 @@ import SupportChatButton from '@/components/support/SupportChatButton';
 import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 import MegaContestButton from '@/components/referral/MegaContestButton';
-import { LocaleProvider } from '@/components/locale/LocaleContext';
+import { LocaleProvider, useLocale } from '@/components/locale/LocaleContext';
 import CustomerFeedbackSurvey from '@/components/feedback/CustomerFeedbackSurvey';
 import { initTracker, setPage, trackEvent } from '@/lib/uxTracker';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
@@ -69,13 +69,11 @@ const WishlistDailyNotifier = lazy(() => import('@/components/wishlist/WishlistD
 const PriceDropAlertBadge = lazy(() => import('@/components/wishlist/PriceDropAlertBadge'));
 const WishlistAutoAddNotifier = lazy(() => import('@/components/wishlist/WishlistAutoAddNotifier'));
 
-// Country banner: a thin site-wide strip showing the flag of the country the site is being used in.
+// Country banner: a thin site-wide strip showing the flag of the country the user is in. The country
+// comes from LocaleContext, which geo-detects it (IP-based) and updates automatically.
 function CountryBanner() {
-  let cc = '';
-  try {
-    const l = navigator.language || (navigator.languages && navigator.languages[0]) || '';
-    cc = (l.split('-')[1] || '').toUpperCase();
-  } catch { cc = ''; }
+  const { country } = useLocale();
+  const cc = (country || '').toUpperCase();
   if (!cc || cc.length !== 2) return null;
   // Country code → flag emoji (regional indicator symbols).
   const flag = String.fromCodePoint(...[...cc].map((c) => 0x1f1e6 + (c.charCodeAt(0) - 65)));

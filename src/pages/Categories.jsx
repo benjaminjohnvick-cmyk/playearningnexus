@@ -13,7 +13,8 @@ export default function Categories() {
   const [loading, setLoading] = useState(true);
   const [cats, setCats] = useState([]);
   const [counts, setCounts] = useState(null);
-  const [active, setActive] = useState(null);        // { name, subcategories:[], image_url }
+  const [active, setActive] = useState(null);        // { name, subcategories:[{name,nodes:[]}], image_url }
+  const [activeSub, setActiveSub] = useState(null);  // a selected subcategory { name, nodes:[] }
   const [activeLoading, setActiveLoading] = useState(false);
   const [search, setSearch] = useState({ open: false, query: '', engines: [], loading: false, disclosure: '' });
 
@@ -31,10 +32,11 @@ export default function Categories() {
 
   async function openCategory(name) {
     setActiveLoading(true);
+    setActiveSub(null);
     setActive({ name, subcategories: [], image_url: null });
     try {
       const res = await base44.functions.invoke('getTaxonomy', { category: name });
-      setActive({ name, subcategories: res.data?.subcategories || [], image_url: res.data?.image_url || null });
+      setActive({ name, subcategories: res.data?.subcategories || [], image_url: res.data?.image_url || null, browse_node_count: res.data?.browse_node_count || 0 });
     } catch (e) { toast.error(e?.data?.error || 'Could not load subcategories'); }
     finally { setActiveLoading(false); }
   }
@@ -55,7 +57,7 @@ export default function Categories() {
         <LayoutGrid className="w-6 h-6" /><h1 className="text-2xl font-bold">Shop by Category</h1>
       </div>
       {counts && (
-        <p className="text-sm text-zinc-500 mb-4">{counts.categories} departments · {counts.subcategories.toLocaleString()} subcategories — pick a category, then find the real product.</p>
+        <p className="text-sm text-zinc-500 mb-4">{counts.categories} departments · {counts.subcategories.toLocaleString()} subcategories · up to {(counts.browse_node_target || 0).toLocaleString()} browse nodes — pick a category, then find the real product.</p>
       )}
 
       {loading ? (
@@ -77,24 +79,47 @@ export default function Categories() {
         </div>
       ) : (
         <div>
-          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <Button size="sm" variant="ghost" onClick={() => setActive(null)}><ChevronLeft className="w-4 h-4 mr-1" /> All categories</Button>
-            <Button size="sm" onClick={() => runSearch(active.name)}>
-              <Search className="w-4 h-4 mr-1" /> Find the real thing across all of {active.name}
-            </Button>
-          </div>
-          <h2 className="text-lg font-semibold mb-2">{active.name}</h2>
-          {activeLoading ? (
-            <div className="p-4 flex items-center gap-2 text-zinc-500"><Loader2 className="w-4 h-4 animate-spin" /> Loading…</div>
+          {!activeSub ? (
+            <>
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <Button size="sm" variant="ghost" onClick={() => setActive(null)}><ChevronLeft className="w-4 h-4 mr-1" /> All categories</Button>
+                <Button size="sm" onClick={() => runSearch(active.name)}>
+                  <Search className="w-4 h-4 mr-1" /> Find the real thing across all of {active.name}
+                </Button>
+              </div>
+              <h2 className="text-lg font-semibold mb-2">{active.name}</h2>
+              {activeLoading ? (
+                <div className="p-4 flex items-center gap-2 text-zinc-500"><Loader2 className="w-4 h-4 animate-spin" /> Loading…</div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {active.subcategories.map((s) => (
+                    <button key={s.name}
+                      onClick={() => (s.nodes && s.nodes.length ? setActiveSub(s) : runSearch(s.name))}
+                      className="px-3 py-1.5 rounded-full border text-sm hover:bg-red-50 hover:border-red-300 transition">
+                      {s.name}{s.nodes && s.nodes.length ? <span className="text-zinc-400 ml-1">({s.nodes.length})</span> : null}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {active.subcategories.map((s) => (
-                <button key={s.name} onClick={() => runSearch(s.name)}
-                  className="px-3 py-1.5 rounded-full border text-sm hover:bg-red-50 hover:border-red-300 transition">
-                  {s.name}
-                </button>
-              ))}
-            </div>
+            <>
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <Button size="sm" variant="ghost" onClick={() => setActiveSub(null)}><ChevronLeft className="w-4 h-4 mr-1" /> {active.name}</Button>
+                <Button size="sm" onClick={() => runSearch(activeSub.name)}>
+                  <Search className="w-4 h-4 mr-1" /> Find the real thing across all {activeSub.name}
+                </Button>
+              </div>
+              <h2 className="text-lg font-semibold mb-2">{activeSub.name}</h2>
+              <div className="flex flex-wrap gap-2">
+                {activeSub.nodes.map((n) => (
+                  <button key={n} onClick={() => runSearch(n)}
+                    className="px-3 py-1.5 rounded-full border text-sm hover:bg-red-50 hover:border-red-300 transition">
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}
