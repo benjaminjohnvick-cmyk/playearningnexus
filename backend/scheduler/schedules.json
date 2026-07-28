@@ -166,6 +166,12 @@
       "cron": "30 7 * * *",
       "function": "selfLearningCycle",
       "_comment": "Master self-improvement pass: collect+analyze telemetry/capture/KYC -> refresh site model -> propose small, statistically-backed changes -> A/B test with a customer survey -> deploy winners. Money/compliance stays human-gated."
+    },
+    {
+      "name": "live-experiment-tick-10m",
+      "cron": "*/10 * * * *",
+      "function": "liveExperimentTick",
+      "_comment": "Real-time monitor for live A/B holdouts: measure -> circuit breaker -> bandit traffic-shift -> canary ramp -> promote-if-significant / expire-if-inconclusive. No-downtime config flips."
     }
   ]
 }

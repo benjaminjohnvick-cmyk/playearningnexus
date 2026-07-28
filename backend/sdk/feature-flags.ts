@@ -16,7 +16,8 @@ export type FlagName =
   | "jackpots" | "social_posting" | "sms_marketing" | "email_marketing"
   | "order_fulfillment" | "store_credit_purchase" | "p2p_transfers"
   | "cash_out" | "earnings_projections" | "session_recording" | "affirm_bnpl"
-  | "site_telemetry" | "session_screenshots" | "self_learning" | "kyc_survey";
+  | "site_telemetry" | "session_screenshots" | "self_learning" | "kyc_survey"
+  | "live_experiments";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -40,6 +41,7 @@ const DEFAULTS: Record<FlagName, boolean> = {
   session_screenshots: false,    // full-fidelity screenshot/session-replay capture — OFF by default; SAMPLED + capped when on
   self_learning: true,           // autonomous collect→analyze→experiment→deploy loop (non-sensitive only; money/compliance human-gated)
   kyc_survey: true,              // mandatory Know-Your-Customer first survey after first login
+  live_experiments: true,        // 24h live A/B holdouts with bandit traffic-shift + guardrail circuit breaker; non-sensitive only, money/compliance stays human-gated
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];

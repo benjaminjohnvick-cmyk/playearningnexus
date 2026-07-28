@@ -1,5 +1,30 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-28 — Live experimentation: 24h test → promote-if-better, bandit, circuit breaker, canary, per-user quiet-swap
+
+Added a live-experiment layer so AI-proposed changes are tested on real traffic and promoted only if the
+data agrees — with no downtime (see `LIVE-EXPERIMENTATION.md`). Built on the existing optimizer +
+settings/flags; money/compliance stays human-gated.
+
+- **Engine** (`backend/sdk/live-experiments.ts`): a change is a config value read at request time, so
+  promote/revert is a flip (no downtime). Deterministic **sticky per-user assignment** with **quiet-swap**
+  (users only bucketed at a session boundary / while inactive). **Two-proportion significance test** +
+  normal-approx posterior. **Thompson-style bandit** traffic-shift. **Guardrail circuit breaker** (instant
+  halt on refund/complaint/drop-off regression). **Canary ramp** 5→25→50→100%. Promotion via `setSetting`
+  (setting/flag) or a `UIVARIANT_*` row (UI). Opt-out honored.
+- **Functions**: `liveExperimentCreate`, `liveVariants` (request-time applier + exposure),
+  `recordVariantMetric` (outcome/guardrail), `liveExperimentTick` (scheduled real-time monitor:
+  measure→breaker→bandit→canary→promote/expire), `liveExperimentPromote` (manual), `liveExperimentStatus`
+  (dashboard). Scheduled `liveExperimentTick` every 10 min.
+- **Optimizer wiring** (`optimizer.ts`): non-sensitive proposals now route to a live holdout; sensitive/
+  price stay on the human-approval path. Flag `live_experiments` + `OPTIMIZER_LIVE_TEST`/
+  `LIVE_TEST_WINDOW_HOURS`/`LIVE_TEST_START_SHARE` settings.
+- **Frontend**: `src/lib/liveVariants.js` (fetch-once-per-session applier + `reportMetric`) and
+  `VariantProvider`/`useVariant`. `Marketplace.jsx` wired as the reference adoption (buy-CTA variant +
+  `purchase`/`click_through` reporting). No new paid deps; monitor is cheap aggregate math under the AI cap.
+
+
+
 ## 2026-07-28 — KYC survey, catalog first-view chatbot, telemetry + sampled capture, self-learning loop
 
 Added the AI data + self-learning package, all default-safe and built on the existing engines

@@ -16,8 +16,19 @@ import { db } from "./db.ts";
 import { getDef, getNumber, setSetting } from "./settings.ts";
 import { Core } from "./integrations.ts";
 import { requireExperiment, createExperimentForProposal } from "./experiments.ts";
+import { createLiveExperiment, liveEnabled } from "./live-experiments.ts";
 
 const ACTOR = "ai-optimizer";
+
+// Map an aggregate optimizer objective to the per-user event a live A/B counts as a "success".
+function liveObjectiveFor(objective: string): string {
+  const o = (objective || "").toLowerCase();
+  if (o.includes("purchase") || o.includes("order") || o.includes("revenue") || o.includes("conversion")) return "purchase";
+  if (o.includes("cart")) return "add_to_cart";
+  if (o.includes("click") || o.includes("ctr")) return "click_through";
+  if (o.includes("checkout")) return "begin_checkout";
+  return "purchase";
+}
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 const clamp = (n: number, lo?: number, hi?: number) =>
   Math.min(hi ?? Infinity, Math.max(lo ?? -Infinity, n));
@@ -217,7 +228,7 @@ export async function proposeChange(o: Optimizable, snap: Snapshot): Promise<Pro
 }
 
 // ---- 3. APPLY or QUEUE ---------------------------------------------------------------------------
-export interface ApplyResult { key: string; status: "auto_applied" | "pending" | "experiment"; from: number; to: number; recommendation_id?: string; experiment_id?: string }
+export interface ApplyResult { key: string; status: "auto_applied" | "pending" | "experiment" | "live_experiment"; from: number; to: number; recommendation_id?: string; experiment_id?: string }
 
 /** Change-gating: unless disabled, EVERY proposed change is first tested with customers as an A/B
  *  experiment (mockup + survey) and only applied once customers favor it (see experiments.ts).
@@ -226,6 +237,20 @@ export interface ApplyResult { key: string; status: "auto_applied" | "pending" |
 export async function applyOrQueue(p: Proposal, snap: Snapshot): Promise<ApplyResult> {
   if (COMPLIANCE_DENYLIST.has(p.key)) throw new Error(`Refusing to optimize compliance/guardrail setting ${p.key}`);
   const def = getDef(p.key)!;
+  const priceLike = !!byKey[p.key]?.priceLike;
+
+  // Preferred path: a NON-SENSITIVE change is deployed as a LIVE A/B holdout on a small slice of real
+  // traffic and only promoted if the live data shows a significant uptick with no guardrail regression
+  // (bandit traffic-shift + circuit breaker + canary ramp, all no-downtime). Money/compliance-sensitive
+  // changes never enter this — they fall through to the human-gated recommendation path below.
+  if (!def.sensitive && !priceLike && await liveEnabled().catch(() => false)) {
+    const exp = await createLiveExperiment({
+      key: p.key, type: "setting", control_value: p.current, variant_value: p.proposed,
+      objective_metric: liveObjectiveFor(p.objective), rationale: p.rationale,
+    }).catch(() => null);
+    if (exp) return { key: p.key, status: "live_experiment", from: p.current, to: p.proposed, experiment_id: (exp as any).id };
+    // If live creation failed, fall through to the survey/apply paths below.
+  }
 
   // Test with customers before launching, per the change-gating policy.
   if (await requireExperiment()) {

@@ -8,6 +8,8 @@ import { ShoppingBag, Plus, Loader2, Coins, CreditCard, ExternalLink, Search } f
 import { toast } from 'sonner';
 import { useLocale } from '@/components/locale/LocaleContext';
 import CatalogWelcomeChat from '@/components/marketplace/CatalogWelcomeChat';
+import { useVariant } from '@/components/experiments/VariantProvider';
+import { reportMetric } from '@/lib/liveVariants';
 
 // Marketplace — Facebook-Marketplace-style listings. Three sources coexist: original platform catalog
 // (AI-generated, AI-fulfilled), authorized affiliate products (retailer fulfills via affiliate link),
@@ -43,6 +45,10 @@ const REAL_SEARCH_LABEL = {
 
 export default function Marketplace() {
   const { formatPrice, language, country } = useLocale();
+  // Reference live-experiment adoption: the buy CTA label. When an experiment named 'marketplace_buy_cta'
+  // is running and this user is in the 'variant' arm, the label changes; otherwise it's the control.
+  // Promotion/rollback happen server-side as a config flip — this component just ships both branches.
+  const buyCta = useVariant('marketplace_buy_cta', 'control');
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSell, setShowSell] = useState(false);
@@ -194,8 +200,9 @@ export default function Marketplace() {
       if (res.data?.affiliate && res.data?.redirect_url) {
         window.open(res.data.redirect_url, '_blank', 'noopener,noreferrer');
         toast.info('Opening the retailer to complete your purchase.');
+        reportMetric('click_through');   // live-experiment outcome signal
       } else if (res.data?.blocked) toast.error(res.data.message || 'Payment method unavailable');
-      else { toast.success(res.data?.charged ? 'Purchased! Your order is being fulfilled.' : 'Purchased!'); await load(); }
+      else { toast.success(res.data?.charged ? 'Purchased! Your order is being fulfilled.' : 'Purchased!'); reportMetric('purchase'); await load(); }
     } catch (e) { toast.error(e?.data?.error || e.message || 'Purchase failed'); }
     finally { setBusy(''); }
   }
@@ -351,7 +358,7 @@ export default function Marketplace() {
                     )}
                     {l.price_usd > 0 && (
                       <Button size="sm" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
-                        <CreditCard className="w-4 h-4 mr-1" /> {formatPrice(l.price_usd)}
+                        <CreditCard className="w-4 h-4 mr-1" /> {buyCta === 'variant' ? `Buy · ${formatPrice(l.price_usd)}` : formatPrice(l.price_usd)}
                       </Button>
                     )}
                   </div>

@@ -148,6 +148,11 @@ export const REGISTRY: SettingDef[] = [
   { key: "SESSION_CAPTURE_BATCH_SIZE", label: "Session-capture analysis batch size", category: "AI & Agents", type: "number", default: "20", min: 1, max: 200, help: "How many sampled sessions the scheduled analyzer reviews per run, paced under the budget." },
   { key: "SELF_LEARNING_MIN_SAMPLE", label: "Self-learning minimum sample size", category: "AI & Agents", type: "number", default: "30", min: 1, help: "A statistic must be backed by at least this many data points before it becomes an actionable signal or a proposed change. Enforces 'small, iterative, statistically-correlated' changes." },
 
+  // 9d. Live experimentation (24h test → promote-if-better, bandit, circuit breaker, canary)
+  { key: "OPTIMIZER_LIVE_TEST", label: "Live-test AI changes on real traffic", category: "AI & Agents", type: "boolean", default: "1", help: "ON = a non-sensitive AI-proposed change is deployed as a LIVE A/B holdout on a small, growing slice of traffic and only promoted if the live data shows a statistically significant uptick with no guardrail regression. Promotion is a config flip (no downtime); revert is one flip. Money/compliance changes never enter this — they stay human-gated. Also honors the live_experiments flag." },
+  { key: "LIVE_TEST_WINDOW_HOURS", label: "Live-test window (hours)", category: "AI & Agents", type: "number", default: "24", min: 1, help: "How long a live experiment runs before it must decide. A clear significant winner/loser can stop early; ambiguous tests expire to control at the window." },
+  { key: "LIVE_TEST_START_SHARE", label: "Live-test starting traffic share", category: "AI & Agents", type: "number", default: "0.1", unit: "×", min: 0.01, max: 1, help: "Fraction of eligible users first exposed to the variant. The bandit grows this toward the canary cap while the variant wins, or shrinks it while it loses." },
+
   // 10. Compliance & legal (numeric/string; the on/off kill-switches live in complianceFlags)
   { key: "TERMS_VERSION", label: "Terms version (bump to force re-consent)", category: "Compliance & Legal", type: "string", default: "2026-07-01", sensitive: true },
   { key: "AD_DISCLOSURE_TAG", label: "FTC ad-disclosure tag", category: "Compliance & Legal", type: "string", default: "#ad" },

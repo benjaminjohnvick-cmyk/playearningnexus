@@ -45,6 +45,8 @@ import { LocaleProvider, useLocale } from '@/components/locale/LocaleContext';
 import CustomerFeedbackSurvey from '@/components/feedback/CustomerFeedbackSurvey';
 import { initTracker, setPage, trackEvent, initSessionCapture } from '@/lib/uxTracker';
 import KYCSurveyGate from '@/components/onboarding/KYCSurveyGate';
+import { VariantProvider } from '@/components/experiments/VariantProvider';
+import { initLiveVariants } from '@/lib/liveVariants';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
 import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications';
 import { useSurveyMatchNotifications } from '@/hooks/useSurveyMatchNotifications';
@@ -111,7 +113,7 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     if (user) {
-      if (!user.tracking_opt_out) { initTracker(user.id); initSessionCapture(); } // behavioral analytics + sampled session capture; opt-out honored (disclosed in privacy policy)
+      if (!user.tracking_opt_out) { initTracker(user.id); initSessionCapture(); initLiveVariants(); } // behavioral analytics + sampled session capture + live-experiment variant assignment; opt-out honored (disclosed in privacy policy)
       if (!sessionStorage.getItem('ppc_popup_shown_v2')) {
         sessionStorage.setItem('ppc_popup_shown_v2', '1');
         setShowPPCPopup(true);
@@ -461,7 +463,7 @@ export default function Layout({ children, currentPageName }) {
         }
 
          {/* Main Content */}
-         <main id="main-content" tabIndex={-1}>{children}</main>
+         <main id="main-content" tabIndex={-1}><VariantProvider>{children}</VariantProvider></main>
 
          {/* Global AI Daily Goal Sidebar — only on Dashboard, deferred */}
          {isAuthenticated && user && currentPageName === 'UserDashboard' && mountSideEffects &&
