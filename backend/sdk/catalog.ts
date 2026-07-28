@@ -156,32 +156,61 @@ export function buildSearchLink(country: string, query: string): { url: string; 
 // Per-country currency, display language, and flag. Used to localize catalog listings so points equal
 // one cent in the LOCAL currency, the button speaks the local language, and the image carries the flag.
 export const COUNTRY_CURRENCY: Record<string, string> = {
-  US: "USD", CA: "CAD", GB: "GBP", AU: "AUD", IE: "EUR", NZ: "NZD", DE: "EUR", AT: "EUR", CH: "CHF",
-  FR: "EUR", BE: "EUR", IT: "EUR", ES: "EUR", NL: "EUR", PT: "EUR", GR: "EUR", FI: "EUR",
-  JP: "JPY", IN: "INR", MX: "MXN", AR: "ARS", CO: "COP", CL: "CLP", BR: "BRL", KR: "KRW", CN: "CNY",
-  RU: "RUB", SE: "SEK", NO: "NOK", DK: "DKK", PL: "PLN", TR: "TRY", SA: "SAR", AE: "AED", EG: "EGP",
-  ZA: "ZAR", SG: "SGD", TH: "THB", ID: "IDR", PH: "PHP", VN: "VND", MY: "MYR", NG: "NGN",
+  // North America
+  US: "USD", CA: "CAD", MX: "MXN",
+  // Central & South America
+  BR: "BRL", AR: "ARS", CO: "COP", CL: "CLP", PE: "PEN", EC: "USD", UY: "UYU", PY: "PYG", BO: "BOB",
+  VE: "VES", CR: "CRC", PA: "USD", GT: "GTQ", DO: "DOP",
+  // Eurozone
+  DE: "EUR", FR: "EUR", IT: "EUR", ES: "EUR", NL: "EUR", PT: "EUR", IE: "EUR", GR: "EUR", FI: "EUR",
+  AT: "EUR", BE: "EUR", LU: "EUR", SK: "EUR", SI: "EUR", LT: "EUR", LV: "EUR", EE: "EUR", HR: "EUR",
+  MT: "EUR", CY: "EUR",
+  // Rest of Europe
+  GB: "GBP", CH: "CHF", SE: "SEK", NO: "NOK", DK: "DKK", PL: "PLN", CZ: "CZK", HU: "HUF", RO: "RON",
+  BG: "BGN", UA: "UAH", RU: "RUB", RS: "RSD", IS: "ISK", TR: "TRY",
+  // Middle East
+  SA: "SAR", AE: "AED", IL: "ILS", QA: "QAR", KW: "KWD", BH: "BHD", OM: "OMR", JO: "JOD", LB: "LBP",
+  // Africa
+  ZA: "ZAR", EG: "EGP", NG: "NGN", KE: "KES", GH: "GHS", MA: "MAD", DZ: "DZD", TN: "TND",
+  // Asia
+  JP: "JPY", CN: "CNY", KR: "KRW", IN: "INR", TW: "TWD", HK: "HKD", SG: "SGD", MY: "MYR", TH: "THB",
+  ID: "IDR", PH: "PHP", VN: "VND", PK: "PKR", BD: "BDT", LK: "LKR", NP: "NPR", KZ: "KZT",
+  // Oceania
+  AU: "AUD", NZ: "NZD",
 };
 // Static USD→currency fallback rates (a live rate feed can override; this keeps seeding deterministic).
 const FX_FALLBACK: Record<string, number> = {
-  USD: 1, CAD: 1.36, GBP: 0.79, AUD: 1.53, NZD: 1.65, EUR: 0.92, CHF: 0.88, JPY: 149, INR: 83,
-  MXN: 17.1, ARS: 900, COP: 4000, CLP: 950, BRL: 4.97, KRW: 1325, CNY: 7.2, RUB: 92, SEK: 10.5,
-  NOK: 10.7, DKK: 6.9, PLN: 4.0, TRY: 32, SAR: 3.75, AED: 3.67, EGP: 48, ZAR: 18.5, SGD: 1.35,
-  THB: 36, IDR: 16000, PHP: 58, VND: 25000, MYR: 4.7, NGN: 1500,
+  USD: 1, CAD: 1.36, MXN: 17.1, BRL: 4.97, ARS: 900, COP: 4000, CLP: 950, PEN: 3.75, UYU: 40,
+  PYG: 7500, BOB: 6.9, VES: 36, CRC: 520, GTQ: 7.8, DOP: 59, EUR: 0.92, GBP: 0.79, CHF: 0.88,
+  SEK: 10.5, NOK: 10.7, DKK: 6.9, PLN: 4.0, CZK: 23, HUF: 360, RON: 4.6, BGN: 1.8, UAH: 40, RUB: 92,
+  RSD: 108, ISK: 138, TRY: 32, SAR: 3.75, AED: 3.67, ILS: 3.7, QAR: 3.64, KWD: 0.31, BHD: 0.38,
+  OMR: 0.385, JOD: 0.71, LBP: 89500, ZAR: 18.5, EGP: 48, NGN: 1500, KES: 130, GHS: 15, MAD: 10,
+  DZD: 134, TND: 3.1, JPY: 149, CNY: 7.2, KRW: 1325, INR: 83, TWD: 32, HKD: 7.8, SGD: 1.35, MYR: 4.7,
+  THB: 36, IDR: 16000, PHP: 58, VND: 25000, PKR: 278, BDT: 110, LKR: 300, NPR: 133, KZT: 470,
+  AUD: 1.53, NZD: 1.65,
 };
 export const COUNTRY_LANGUAGE: Record<string, string> = {
-  US: "en", CA: "en", GB: "en", AU: "en", IE: "en", NZ: "en", ZA: "en", SG: "en", PH: "en", NG: "en",
-  DE: "de", AT: "de", CH: "de", FR: "fr", BE: "fr", IT: "it", ES: "es", MX: "es", AR: "es", CO: "es",
-  CL: "es", NL: "nl", PT: "pt", BR: "pt", GR: "el", FI: "fi", JP: "ja", IN: "hi", KR: "ko", CN: "zh",
-  RU: "ru", SE: "sv", NO: "no", DK: "da", PL: "pl", TR: "tr", SA: "ar", AE: "ar", EG: "ar", TH: "th",
-  ID: "id", VN: "vi", MY: "ms",
+  US: "en", CA: "en", MX: "es", BR: "pt", AR: "es", CO: "es", CL: "es", PE: "es", EC: "es", UY: "es",
+  PY: "es", BO: "es", VE: "es", CR: "es", PA: "es", GT: "es", DO: "es", DE: "de", FR: "fr", IT: "it",
+  ES: "es", NL: "nl", PT: "pt", IE: "en", GR: "el", FI: "fi", AT: "de", BE: "fr", LU: "fr", SK: "sk",
+  SI: "sl", LT: "lt", LV: "lv", EE: "et", HR: "hr", MT: "en", CY: "el", GB: "en", CH: "de", SE: "sv",
+  NO: "no", DK: "da", PL: "pl", CZ: "cs", HU: "hu", RO: "ro", BG: "bg", UA: "uk", RU: "ru", RS: "sr",
+  IS: "is", TR: "tr", SA: "ar", AE: "ar", IL: "he", QA: "ar", KW: "ar", BH: "ar", OM: "ar", JO: "ar",
+  LB: "ar", ZA: "en", EG: "ar", NG: "en", KE: "sw", GH: "en", MA: "ar", DZ: "ar", TN: "ar", JP: "ja",
+  CN: "zh", KR: "ko", IN: "hi", TW: "zh", HK: "zh", SG: "en", MY: "ms", TH: "th", ID: "id", PH: "en",
+  VN: "vi", PK: "ur", BD: "bn", LK: "si", NP: "ne", KZ: "ru", AU: "en", NZ: "en",
 };
 export const COUNTRY_FLAG: Record<string, string> = {
-  US: "🇺🇸", CA: "🇨🇦", GB: "🇬🇧", AU: "🇦🇺", IE: "🇮🇪", NZ: "🇳🇿", DE: "🇩🇪", AT: "🇦🇹", CH: "🇨🇭",
-  FR: "🇫🇷", BE: "🇧🇪", IT: "🇮🇹", ES: "🇪🇸", NL: "🇳🇱", PT: "🇵🇹", GR: "🇬🇷", FI: "🇫🇮", JP: "🇯🇵",
-  IN: "🇮🇳", MX: "🇲🇽", AR: "🇦🇷", CO: "🇨🇴", CL: "🇨🇱", BR: "🇧🇷", KR: "🇰🇷", CN: "🇨🇳", RU: "🇷🇺",
-  SE: "🇸🇪", NO: "🇳🇴", DK: "🇩🇰", PL: "🇵🇱", TR: "🇹🇷", SA: "🇸🇦", AE: "🇦🇪", EG: "🇪🇬", ZA: "🇿🇦",
-  SG: "🇸🇬", TH: "🇹🇭", ID: "🇮🇩", PH: "🇵🇭", VN: "🇻🇳", MY: "🇲🇾", NG: "🇳🇬",
+  US: "🇺🇸", CA: "🇨🇦", MX: "🇲🇽", BR: "🇧🇷", AR: "🇦🇷", CO: "🇨🇴", CL: "🇨🇱", PE: "🇵🇪", EC: "🇪🇨",
+  UY: "🇺🇾", PY: "🇵🇾", BO: "🇧🇴", VE: "🇻🇪", CR: "🇨🇷", PA: "🇵🇦", GT: "🇬🇹", DO: "🇩🇴", DE: "🇩🇪",
+  FR: "🇫🇷", IT: "🇮🇹", ES: "🇪🇸", NL: "🇳🇱", PT: "🇵🇹", IE: "🇮🇪", GR: "🇬🇷", FI: "🇫🇮", AT: "🇦🇹",
+  BE: "🇧🇪", LU: "🇱🇺", SK: "🇸🇰", SI: "🇸🇮", LT: "🇱🇹", LV: "🇱🇻", EE: "🇪🇪", HR: "🇭🇷", MT: "🇲🇹",
+  CY: "🇨🇾", GB: "🇬🇧", CH: "🇨🇭", SE: "🇸🇪", NO: "🇳🇴", DK: "🇩🇰", PL: "🇵🇱", CZ: "🇨🇿", HU: "🇭🇺",
+  RO: "🇷🇴", BG: "🇧🇬", UA: "🇺🇦", RU: "🇷🇺", RS: "🇷🇸", IS: "🇮🇸", TR: "🇹🇷", SA: "🇸🇦", AE: "🇦🇪",
+  IL: "🇮🇱", QA: "🇶🇦", KW: "🇰🇼", BH: "🇧🇭", OM: "🇴🇲", JO: "🇯🇴", LB: "🇱🇧", ZA: "🇿🇦", EG: "🇪🇬",
+  NG: "🇳🇬", KE: "🇰🇪", GH: "🇬🇭", MA: "🇲🇦", DZ: "🇩🇿", TN: "🇹🇳", JP: "🇯🇵", CN: "🇨🇳", KR: "🇰🇷",
+  IN: "🇮🇳", TW: "🇹🇼", HK: "🇭🇰", SG: "🇸🇬", MY: "🇲🇾", TH: "🇹🇭", ID: "🇮🇩", PH: "🇵🇭", VN: "🇻🇳",
+  PK: "🇵🇰", BD: "🇧🇩", LK: "🇱🇰", NP: "🇳🇵", KZ: "🇰🇿", AU: "🇦🇺", NZ: "🇳🇿",
 };
 
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;

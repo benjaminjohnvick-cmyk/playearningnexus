@@ -64,6 +64,38 @@ export const CURRENCIES = [
   { code: 'VND', symbol: '₫', name: 'Vietnamese Dong' },
   { code: 'MYR', symbol: 'RM', name: 'Malaysian Ringgit' },
   { code: 'NGN', symbol: '₦', name: 'Nigerian Naira' },
+  { code: 'PEN', symbol: 'S/', name: 'Peruvian Sol' },
+  { code: 'UYU', symbol: '$U', name: 'Uruguayan Peso' },
+  { code: 'PYG', symbol: '₲', name: 'Paraguayan Guaraní' },
+  { code: 'BOB', symbol: 'Bs', name: 'Bolivian Boliviano' },
+  { code: 'CRC', symbol: '₡', name: 'Costa Rican Colón' },
+  { code: 'GTQ', symbol: 'Q', name: 'Guatemalan Quetzal' },
+  { code: 'DOP', symbol: 'RD$', name: 'Dominican Peso' },
+  { code: 'CZK', symbol: 'Kč', name: 'Czech Koruna' },
+  { code: 'HUF', symbol: 'Ft', name: 'Hungarian Forint' },
+  { code: 'RON', symbol: 'lei', name: 'Romanian Leu' },
+  { code: 'BGN', symbol: 'лв', name: 'Bulgarian Lev' },
+  { code: 'UAH', symbol: '₴', name: 'Ukrainian Hryvnia' },
+  { code: 'RSD', symbol: 'дин', name: 'Serbian Dinar' },
+  { code: 'ISK', symbol: 'kr', name: 'Icelandic Króna' },
+  { code: 'QAR', symbol: 'ر.ق', name: 'Qatari Riyal' },
+  { code: 'KWD', symbol: 'د.ك', name: 'Kuwaiti Dinar' },
+  { code: 'BHD', symbol: '.د.ب', name: 'Bahraini Dinar' },
+  { code: 'OMR', symbol: 'ر.ع.', name: 'Omani Rial' },
+  { code: 'JOD', symbol: 'د.ا', name: 'Jordanian Dinar' },
+  { code: 'LBP', symbol: 'ل.ل', name: 'Lebanese Pound' },
+  { code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling' },
+  { code: 'GHS', symbol: '₵', name: 'Ghanaian Cedi' },
+  { code: 'MAD', symbol: 'د.م.', name: 'Moroccan Dirham' },
+  { code: 'DZD', symbol: 'د.ج', name: 'Algerian Dinar' },
+  { code: 'TND', symbol: 'د.ت', name: 'Tunisian Dinar' },
+  { code: 'TWD', symbol: 'NT$', name: 'New Taiwan Dollar' },
+  { code: 'HKD', symbol: 'HK$', name: 'Hong Kong Dollar' },
+  { code: 'PKR', symbol: '₨', name: 'Pakistani Rupee' },
+  { code: 'BDT', symbol: '৳', name: 'Bangladeshi Taka' },
+  { code: 'LKR', symbol: 'Rs', name: 'Sri Lankan Rupee' },
+  { code: 'NPR', symbol: 'रू', name: 'Nepalese Rupee' },
+  { code: 'KZT', symbol: '₸', name: 'Kazakhstani Tenge' },
 ];
 
 function detectBrowserLanguage() {
@@ -103,7 +135,11 @@ export function LocaleProvider({ children }) {
           USD: 1, EUR: 0.92, GBP: 0.79, JPY: 149, CNY: 7.2, CAD: 1.36, AUD: 1.53, NZD: 1.65, CHF: 0.88,
           INR: 83, BRL: 4.97, MXN: 17.1, ARS: 900, COP: 4000, CLP: 950, KRW: 1325, RUB: 92, SEK: 10.5,
           NOK: 10.7, DKK: 6.9, PLN: 4.0, TRY: 32, SAR: 3.75, AED: 3.67, EGP: 48, ZAR: 18.5, SGD: 1.35,
-          THB: 36, IDR: 16000, PHP: 58, VND: 25000, MYR: 4.7, NGN: 1500,
+          THB: 36, IDR: 16000, PHP: 58, VND: 25000, MYR: 4.7, NGN: 1500, PEN: 3.75, UYU: 40, PYG: 7500,
+          BOB: 6.9, CRC: 520, GTQ: 7.8, DOP: 59, CZK: 23, HUF: 360, RON: 4.6, BGN: 1.8, UAH: 40,
+          RSD: 108, ISK: 138, QAR: 3.64, KWD: 0.31, BHD: 0.38, OMR: 0.385, JOD: 0.71, LBP: 89500,
+          KES: 130, GHS: 15, MAD: 10, DZD: 134, TND: 3.1, TWD: 32, HKD: 7.8, PKR: 278, BDT: 110,
+          LKR: 300, NPR: 133, KZT: 470,
         });
       });
   }, []);
@@ -123,7 +159,7 @@ export function LocaleProvider({ children }) {
     const converted = (usdAmount || 0) * rate;
     const curr = CURRENCIES.find(c => c.code === currency) || CURRENCIES[0];
     // Zero-decimal currencies: show whole units.
-    if (['JPY', 'KRW', 'VND', 'IDR', 'CLP', 'COP', 'ARS'].includes(currency)) {
+    if (['JPY', 'KRW', 'VND', 'IDR', 'CLP', 'COP', 'ARS', 'PYG', 'ISK', 'LBP', 'HUF'].includes(currency)) {
       return `${curr.symbol}${Math.round(converted).toLocaleString()}`;
     }
     return `${curr.symbol}${converted.toFixed(2)}`;
