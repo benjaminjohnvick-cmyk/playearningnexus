@@ -12,8 +12,34 @@ import { useLocale } from '@/components/locale/LocaleContext';
 // (AI-generated, AI-fulfilled), authorized affiliate products (retailer fulfills via affiliate link),
 // and member listings. Buy with points (closed-loop) or by card (adds the platform markup). Prices
 // render in the user's currency; sellers/platform fulfill via the AI fulfillment lifecycle.
+// "Find the real thing" button, localized. Keyed by language code; falls back to English.
+const REAL_SEARCH_LABEL = {
+  en: 'Now go find the real thing',
+  es: 'Busca el producto real',
+  fr: 'Trouvez le vrai produit',
+  de: 'Finde das echte Produkt',
+  it: 'Trova il prodotto vero',
+  pt: 'Encontre o produto real',
+  ja: '本物を探す',
+  ko: '실제 제품 찾기',
+  hi: 'असली उत्पाद खोजें',
+  nl: 'Vind het echte product',
+  zh: '去找真实商品',
+  ar: 'ابحث عن المنتج الحقيقي',
+};
+
+// Best-effort country from the browser locale (e.g. "en-US" → "US").
+function detectCountry() {
+  try {
+    const l = navigator.language || (navigator.languages && navigator.languages[0]) || '';
+    const parts = l.split('-');
+    return parts[1] ? parts[1].toUpperCase() : '';
+  } catch { return ''; }
+}
+
 export default function Marketplace() {
-  const { formatPrice } = useLocale();
+  const { formatPrice, language } = useLocale();
+  const country = detectCountry();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSell, setShowSell] = useState(false);
@@ -72,8 +98,20 @@ export default function Marketplace() {
   async function load() {
     setLoading(true);
     try {
-      const data = await base44.entities.MarketplaceListing.filter({ status: 'active' }, '-created_at', 200).catch(() => []);
-      setListings(data || []);
+      // Prefer the shopper's own country's catalog (localized price + flag). Also pull member listings
+      // (no country) so they always appear. Fall back to everything active if the country has none yet.
+      let data = [];
+      if (country) {
+        const [local, member] = await Promise.all([
+          base44.entities.MarketplaceListing.filter({ status: 'active', country }, '-created_at', 200).catch(() => []),
+          base44.entities.MarketplaceListing.filter({ status: 'active', source: 'user' }, '-created_at', 100).catch(() => []),
+        ]);
+        data = [...(local || []), ...(member || [])];
+      }
+      if (!data.length) data = await base44.entities.MarketplaceListing.filter({ status: 'active' }, '-created_at', 200).catch(() => []);
+      // De-dupe by id (local + member can overlap).
+      const seen = new Set();
+      setListings((data || []).filter((l) => (l.id && !seen.has(l.id)) ? seen.add(l.id) : false));
     } finally { setLoading(false); }
   }
   useEffect(() => { load(); }, []);
@@ -102,6 +140,12 @@ export default function Marketplace() {
   const categories = React.useMemo(() => ['all', ...Array.from(new Set(listings.map((l) => l.category).filter(Boolean)))], [listings]);
   const visible = React.useMemo(() => {
     let arr = listings.slice();
+    // Show the shopper's own country's catalog when we have it (each country carries its flag + local
+    // pricing); otherwise fall back to everything active. Member listings (no country) always show.
+    if (country) {
+      const local = arr.filter((l) => !l.country || l.country === country);
+      if (local.some((l) => l.country === country)) arr = local;
+    }
     if (q.trim()) { const t = q.toLowerCase(); arr = arr.filter((l) => (l.title || '').toLowerCase().includes(t) || (l.description || '').toLowerCase().includes(t)); }
     if (catFilter !== 'all') arr = arr.filter((l) => l.category === catFilter);
     const price = (l) => (l.price_usd != null ? l.price_usd : (l.price_points || 0) / 100);
@@ -109,7 +153,7 @@ export default function Marketplace() {
     else if (sortBy === 'price_desc') arr.sort((a, b) => price(b) - price(a));
     else arr.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)); // newest
     return arr;
-  }, [listings, q, catFilter, sortBy]);
+  }, [listings, q, catFilter, sortBy, country]);
 
   // "Now go find the real thing" — opens an aggregated, sortable search across Amazon, Google Shopping
   // and eBay so real listings from across the internet come up. Sort + price range are honored per
@@ -213,11 +257,15 @@ export default function Marketplace() {
             <Card key={l.id} className="overflow-hidden">
               <div className="relative">
                 {(l.image_url || l.images?.[0]) && <img src={l.image_url || l.images[0]} alt={l.title} className="w-full h-40 object-cover" />}
-                {/* Points price overlaid on the image (1 point = 1¢, closed-loop). */}
+                {/* Points price overlaid on the image (1 point = 1¢ in the local currency, closed-loop). */}
                 {l.price_points > 0 && (
                   <span className="absolute top-2 left-2 bg-black/70 text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
                     <Coins className="w-3 h-3" /> {Number(l.price_points).toLocaleString()} pts
                   </span>
+                )}
+                {/* Country flag overlaid on the shared base image (one image, flag per country). */}
+                {l.country_flag && (
+                  <span className="absolute top-2 right-2 text-xl drop-shadow" title={l.country}>{l.country_flag}</span>
                 )}
               </div>
               <CardContent className="p-3">
@@ -250,7 +298,7 @@ export default function Marketplace() {
                 )}
                 {l.source !== 'affiliate' && (
                   <Button size="sm" variant="ghost" className="w-full mt-2 text-xs" onClick={() => openRealSearch(l)}>
-                    <Search className="w-3 h-3 mr-1" /> Now go find the real thing
+                    <Search className="w-3 h-3 mr-1" /> {REAL_SEARCH_LABEL[l.language || language] || REAL_SEARCH_LABEL.en}
                   </Button>
                 )}
               </CardContent>
@@ -330,6 +378,7 @@ export default function Marketplace() {
                           <Coins className="w-3 h-3" /> {Number(l.price_points).toLocaleString()}
                         </span>
                       )}
+                      {l.country_flag && <span className="absolute top-1 right-1 text-base drop-shadow">{l.country_flag}</span>}
                     </div>
                     <CardContent className="p-2">
                       <div className="text-xs font-medium truncate">{l.title}</div>

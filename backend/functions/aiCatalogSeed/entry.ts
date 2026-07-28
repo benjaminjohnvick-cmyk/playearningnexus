@@ -1,22 +1,21 @@
 import { __handler } from "../../sdk/runtime.ts";
 import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
-import { createClientFromRequest } from "../../sdk/mod.ts";
 import { getNumber, snapString } from "../../sdk/settings.ts";
-import { generateSeedListings, providersForCountry, PLATFORM_SELLER_ID } from "../../sdk/catalog.ts";
+import { ensureTemplateListings, cloneTemplatesToCountry, providersForCountry } from "../../sdk/catalog.ts";
 
-// aiCatalogSeed (INTERNAL/ADMIN, scheduled) — populates the marketplace catalog FIRST, per country,
-// with Amazon-breadth category coverage. For every launched country (CATALOG_COUNTRIES, or a
-// `countries`/`country` override) it walks every catalog category and tops each up toward its share
-// of CATALOG_LISTINGS_PER_COUNTRY with ORIGINAL AI listings + original images. It ONLY creates NEW
-// listings — existing ones (and their images) are never regenerated, so product images spin up exactly
-// once per item. It also reports which AUTHORIZED affiliate providers are live per country. Nothing
-// here scrapes or copies any retailer.
-//   Body (optional): { country?, countries?[], count?, category?, per_run_cap? }
+// aiCatalogSeed (INTERNAL/ADMIN, scheduled) — populates the marketplace catalog, per country, with
+// Amazon-breadth categories, using the TEMPLATE-ONCE + CLONE-PER-COUNTRY model:
+//   1. Build a country-agnostic TEMPLATE set of ORIGINAL products spread across every category. Product
+//      images are generated exactly ONCE here (the "original set").
+//   2. For every launched country (CATALOG_COUNTRIES, or a `countries`/`country` override), CLONE the
+//      templates into that country — reusing the SAME base image (a country flag is overlaid at display
+//      time) and localizing price so points equal one cent in the LOCAL currency.
+// Images are never regenerated per country, so all images spin up one time. Nothing scrapes any
+// retailer. Body (optional): { country?, countries?[], category?, per_run_image_cap? }
 export default __handler(async (req) => {
   const denied = await requireInternalOrAdmin(req);
   if (denied) return denied;
   try {
-    const base44 = createClientFromRequest(req);
     const body = await req.json().catch(() => ({}));
 
     // Countries: explicit override → CATALOG_COUNTRIES → "US".
@@ -27,55 +26,30 @@ export default __handler(async (req) => {
     countries = [...new Set(countries.map((c) => String(c || "").trim().toUpperCase()).filter(Boolean))];
     if (!countries.length) countries = ["US"];
 
-    // Categories: a single override, else the full Amazon-breadth list.
     const categories = body?.category
       ? [String(body.category)]
       : snapString("CATALOG_CATEGORIES", "General").split(",").map((s) => s.trim()).filter(Boolean);
 
     const target = Math.max(0, Math.floor(await getNumber("CATALOG_LISTINGS_PER_COUNTRY", 320)));
-    const perCategoryTarget = categories.length ? Math.max(1, Math.ceil(target / categories.length)) : target;
-    // Safety cap on how many NEW listings a single run creates (images are generated for these).
-    const perRunCap = Math.max(0, Math.floor(Number(body?.per_run_cap) || 60));
+    const perCategoryTemplates = categories.length ? Math.max(1, Math.ceil(target / categories.length)) : target;
 
-    const results: any[] = [];
-    let createdThisRun = 0;
-
-    for (const country of countries) {
-      // Pull this country's active platform listings once, then bucket by category (avoids N queries).
-      const existing = await base44.asServiceRole.entities.MarketplaceListing.filter({
-        seller_id: PLATFORM_SELLER_ID, country, status: "active",
-      }).catch(() => []);
-      const byCat: Record<string, number> = {};
-      for (const l of (Array.isArray(existing) ? existing : [])) {
-        const c = (l.category || "General").toString();
-        byCat[c] = (byCat[c] || 0) + 1;
-      }
-
-      let createdForCountry = 0;
-      for (const category of categories) {
-        if (perRunCap && createdThisRun >= perRunCap) break; // run budget exhausted; next run continues
-        const have = byCat[category] || 0;
-        let deficit = body?.count ? Math.max(0, Math.floor(Number(body.count))) : Math.max(0, perCategoryTarget - have);
-        if (perRunCap) deficit = Math.min(deficit, perRunCap - createdThisRun);
-        if (deficit <= 0) continue;
-        // Only creates NEW listings — existing items and their images are left untouched (images once).
-        const createdIds = await generateSeedListings(country, deficit, category).catch(() => []);
-        createdForCountry += createdIds.length;
-        createdThisRun += createdIds.length;
-      }
-
-      const providers = providersForCountry(country).map((p) => p.label);
-      results.push({
-        country,
-        existing: Array.isArray(existing) ? existing.length : 0,
-        target,
-        categories: categories.length,
-        created: createdForCountry,
-        affiliate_providers_live: providers,
-      });
+    // 1. Ensure the TEMPLATE set exists (images generated once, capped per run so a single run is bounded).
+    const imageCap = Math.max(0, Math.floor(Number(body?.per_run_image_cap) || 40));
+    let templatesCreated = 0;
+    for (const category of categories) {
+      if (imageCap && templatesCreated >= imageCap) break; // remaining categories fill on the next run
+      const made = await ensureTemplateListings(perCategoryTemplates, category).catch(() => 0);
+      templatesCreated += made;
     }
 
-    return Response.json({ success: true, created_this_run: createdThisRun, seeded: results });
+    // 2. Clone templates into each country (no image generation — reuses base images + flag + local price).
+    const seeded: any[] = [];
+    for (const country of countries) {
+      const cloned = await cloneTemplatesToCountry(country).catch(() => 0);
+      seeded.push({ country, cloned, affiliate_providers_live: providersForCountry(country).map((p) => p.label) });
+    }
+
+    return Response.json({ success: true, templates_created_this_run: templatesCreated, template_categories: categories.length, seeded });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

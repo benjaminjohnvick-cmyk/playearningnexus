@@ -153,7 +153,36 @@ export function buildSearchLink(country: string, query: string): { url: string; 
   return { url: google.url, affiliate: false, retailer: "shopping search" };
 }
 
+// Per-country currency, display language, and flag. Used to localize catalog listings so points equal
+// one cent in the LOCAL currency, the button speaks the local language, and the image carries the flag.
+export const COUNTRY_CURRENCY: Record<string, string> = {
+  US: "USD", CA: "CAD", GB: "GBP", AU: "AUD", DE: "EUR", FR: "EUR", IT: "EUR", ES: "EUR", NL: "EUR",
+  JP: "JPY", IN: "INR", MX: "MXN", BR: "BRL", KR: "KRW",
+};
+// Static USD→currency fallback rates (a live rate feed can override; this keeps seeding deterministic).
+const FX_FALLBACK: Record<string, number> = {
+  USD: 1, CAD: 1.36, GBP: 0.79, AUD: 1.53, EUR: 0.92, JPY: 149, INR: 83, MXN: 17.1, BRL: 4.97, KRW: 1325,
+};
+export const COUNTRY_LANGUAGE: Record<string, string> = {
+  US: "en", CA: "en", GB: "en", AU: "en", DE: "de", FR: "fr", IT: "it", ES: "es", NL: "nl",
+  JP: "ja", IN: "hi", MX: "es", BR: "pt", KR: "ko",
+};
+export const COUNTRY_FLAG: Record<string, string> = {
+  US: "🇺🇸", CA: "🇨🇦", GB: "🇬🇧", AU: "🇦🇺", DE: "🇩🇪", FR: "🇫🇷", IT: "🇮🇹", ES: "🇪🇸", NL: "🇳🇱",
+  JP: "🇯🇵", IN: "🇮🇳", MX: "🇲🇽", BR: "🇧🇷", KR: "🇰🇷",
+};
+
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
+
+/** Convert a base USD price to a country's local currency and points. Points = one cent in the LOCAL
+ *  currency (price_local × 100), per the closed-loop rule applied per country. */
+export function localPricing(country: string, usd: number): { currency: string; price_local: number; price_points: number; fx_rate: number } {
+  const c = (country || "US").toUpperCase();
+  const currency = COUNTRY_CURRENCY[c] || "USD";
+  const rate = FX_FALLBACK[currency] || 1;
+  const price_local = round2((Number(usd) || 0) * rate);
+  return { currency, price_local, price_points: Math.round(price_local * 100), fx_rate: rate };
+}
 
 /** Generate ORIGINAL seed listings for a country's marketplace using the LLM. These are original
  *  product concepts + copy (not copied from any retailer), sold by the platform and fulfilled by the
@@ -220,4 +249,116 @@ export async function generateSeedListings(country: string, count = 12, category
     if ((listing as any)?.id) created.push((listing as any).id);
   }
   return created;
+}
+
+// ── Template-once + clone-per-country model ────────────────────────────────────────────────────────
+// Product images are generated exactly ONCE, for a country-agnostic TEMPLATE set (the "original set").
+// Every country's catalog then CLONES those templates — reusing the same base image (a country flag is
+// overlaid at display time) and localizing price so points equal one cent in the local currency. This
+// is the cheap "spin up images one time, reuse per country with a flag" design.
+
+const TEMPLATE_COUNTRY = "GLOBAL";
+
+/** Ensure the template set has `count` original products in `category`, generating images ONCE for any
+ *  new ones. Templates are stored with country=GLOBAL and status="template" so they never appear in a
+ *  shopper's marketplace. Returns the number of new templates created. */
+export async function ensureTemplateListings(count: number, category?: string): Promise<number> {
+  const existing = await db.filter("MarketplaceListing", { seller_id: PLATFORM_SELLER_ID, status: "template", category: category || "general" }).catch(() => []) as any[];
+  const deficit = Math.max(0, count - (existing?.length || 0));
+  if (deficit <= 0) return 0;
+
+  // Reuse generateSeedListings' original-product generation, but we must write TEMPLATE rows. Simplest:
+  // generate originals + images here (mirrors generateSeedListings) and store as templates.
+  let items: any[] = [];
+  if (Deno.env.get("ANTHROPIC_API_KEY") || Deno.env.get("OPENAI_API_KEY")) {
+    try {
+      const out = await Core.InvokeLLM({
+        prompt:
+          `Generate ${deficit} ORIGINAL marketplace product listings` + (category ? ` in the "${category}" category` : "") +
+          `. Each must be an original product concept with original title and description — do NOT copy any real ` +
+          `brand's or retailer's listing, images, or text. Give a realistic USD price. Titles under 70 chars. ` +
+          `Return an array of {title, description, category, price_usd}.`,
+        response_json_schema: { type: "object", properties: { products: { type: "array", items: { type: "object", properties: { title: { type: "string" }, description: { type: "string" }, category: { type: "string" }, price_usd: { type: "number" } }, required: ["title", "price_usd"] } } }, required: ["products"] },
+      }) as any;
+      items = Array.isArray(out?.products) ? out.products : [];
+    } catch { items = []; }
+  }
+  if (!items.length) {
+    items = Array.from({ length: Math.min(deficit, 6) }, (_, i) => ({
+      title: `GamerGain ${category || "Essentials"} ${(existing?.length || 0) + i + 1}`, description: "Original platform-catalog product.",
+      category: category || "general", price_usd: 9.99 + i * 5,
+    }));
+  }
+  const finalItems = items.slice(0, deficit).filter((it) => round2(Number(it.price_usd) || 0) > 0);
+  const images = await generateProductImages(
+    finalItems.map((it) => ({ title: String(it.title || "Product"), description: String(it.description || ""), category: it.category || category || "general" })),
+  ).catch(() => finalItems.map(() => null));
+
+  let made = 0;
+  for (let i = 0; i < finalItems.length; i++) {
+    const it = finalItems[i];
+    const usd = round2(Number(it.price_usd) || 0);
+    const imageUrl = images[i] || null;
+    const t = await db.create("MarketplaceListing", {
+      seller_id: PLATFORM_SELLER_ID, seller_name: "GamerGain Catalog",
+      title: String(it.title || "Product").slice(0, 120),
+      description: String(it.description || "").slice(0, 2000),
+      category: it.category || category || "general",
+      condition: "new",
+      price_usd: usd,
+      price_points: Math.round(usd * 100),
+      country: TEMPLATE_COUNTRY,
+      source: "platform_catalog",
+      is_template: true,
+      ai_generated: true,
+      base_image_url: imageUrl,
+      image_url: imageUrl,
+      images: imageUrl ? [imageUrl] : [],
+      status: "template",
+      created_at: new Date().toISOString(),
+    }, PLATFORM_SELLER_ID).catch(() => null);
+    if ((t as any)?.id) made++;
+  }
+  return made;
+}
+
+/** Clone every template not yet present in `country` into an ACTIVE country listing. Reuses the
+ *  template's base image (no image generation), overlays the country flag (display-time), and localizes
+ *  price so points = one cent in the local currency. Returns the number of new country listings. */
+export async function cloneTemplatesToCountry(country: string, cap = 500): Promise<number> {
+  const c = (country || "US").toUpperCase();
+  const templates = await db.filter("MarketplaceListing", { seller_id: PLATFORM_SELLER_ID, status: "template" }).catch(() => []) as any[];
+  if (!templates?.length) return 0;
+  const already = await db.filter("MarketplaceListing", { seller_id: PLATFORM_SELLER_ID, country: c, source: "platform_catalog", status: "active" }).catch(() => []) as any[];
+  const doneTemplateIds = new Set((already || []).map((l) => l.template_id).filter(Boolean));
+  const flag = COUNTRY_FLAG[c] || "";
+  const lang = COUNTRY_LANGUAGE[c] || "en";
+
+  let made = 0;
+  for (const t of templates) {
+    if (made >= cap) break;
+    if (doneTemplateIds.has(t.id)) continue;
+    const px = localPricing(c, Number(t.price_usd) || 0);
+    const listing = await db.create("MarketplaceListing", {
+      seller_id: PLATFORM_SELLER_ID, seller_name: "GamerGain Catalog",
+      title: t.title, description: t.description, category: t.category, condition: "new",
+      price_usd: Number(t.price_usd) || 0,       // base USD retained (card processor / conversion)
+      price_local: px.price_local,
+      currency: px.currency,
+      price_points: px.price_points,             // 1 point = 1 cent in the LOCAL currency
+      country: c,
+      country_flag: flag,
+      language: lang,
+      source: "platform_catalog",
+      template_id: t.id,
+      ai_generated: true,
+      base_image_url: t.base_image_url || t.image_url || null,  // the ORIGINAL image, shared across countries
+      image_url: t.base_image_url || t.image_url || null,
+      images: t.images || (t.image_url ? [t.image_url] : []),
+      status: "active",
+      created_at: new Date().toISOString(),
+    }, PLATFORM_SELLER_ID).catch(() => null);
+    if ((listing as any)?.id) made++;
+  }
+  return made;
 }
