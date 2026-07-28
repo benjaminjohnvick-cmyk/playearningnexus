@@ -118,6 +118,12 @@ export default function Home() {
   // Use the shared cached user from AuthContext — no extra API call
   const { user } = useAuth();
 
+  // Advertised promotional value figure (public, single source of truth).
+  const [promo, setPromo] = useState(null);
+  useEffect(() => {
+    base44.functions.invoke('promoValue', {}).then((r) => setPromo(r.data || null)).catch(() => {});
+  }, []);
+
   // Track referral link clicks — only fires if ?ref= param is present
   useEffect(() => {
     const refCode = new URLSearchParams(window.location.search).get('ref');
@@ -155,6 +161,16 @@ export default function Home() {
               <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-tight">
                 Play Games.<br />Earn Real Money.
               </h1>
+              {promo?.advertised_value_usd > 0 && (
+                <div className="mb-3">
+                  <span className="inline-block bg-yellow-400 text-purple-900 font-extrabold text-sm px-3 py-1.5 rounded-full">
+                    🎁 Join free — up to ${Number(promo.advertised_value_usd).toLocaleString()} in first-year value
+                  </span>
+                  <div className="text-white/60 text-[11px] mt-1">
+                    Includes up to ${Number(promo.welcome_rewards_usd || 0).toLocaleString()} in welcome rewards (non-cashable promotional credit; expires 12 months after signup; covers up to {Math.round((promo.welcome_max_pct || 0.2) * 100)}% per order). "Up to" value; actual value depends on activity. Terms apply.
+                  </div>
+                </div>
+              )}
               <p className="text-white/80 text-sm mb-4">
                 Complete surveys, earn $3+/day, build your game library. 60+ new games per year. 50/50 revenue share.
               </p>
