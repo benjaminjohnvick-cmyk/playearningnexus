@@ -81,6 +81,7 @@ import InAppStore from './pages/InAppStore';
 import IntegrationSettings from './pages/IntegrationSettings';
 import Leaderboard from './pages/Leaderboard';
 import WeeklyLeaderboard from './pages/WeeklyLeaderboard';
+import Categories from './pages/Categories';
 import Marketplace from './pages/Marketplace';
 import MonetizationHub from './pages/MonetizationHub';
 import MoneyTransfer from './pages/MoneyTransfer';
@@ -148,6 +149,7 @@ export const PAGES = {
     "IntegrationSettings": IntegrationSettings,
     "Leaderboard": Leaderboard,
     "WeeklyLeaderboard": WeeklyLeaderboard,
+    "Categories": Categories,
     "Marketplace": Marketplace,
     "MonetizationHub": MonetizationHub,
     "MoneyTransfer": MoneyTransfer,

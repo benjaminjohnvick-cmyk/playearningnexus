@@ -2,6 +2,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
 import { getNumber, snapString } from "../../sdk/settings.ts";
 import { ensureTemplateListings, cloneTemplatesToCountry, providersForCountry } from "../../sdk/catalog.ts";
+import { allSubcategories } from "../../sdk/taxonomy.ts";
 
 // aiCatalogSeed (INTERNAL/ADMIN, scheduled) — populates the marketplace catalog, per country, with
 // Amazon-breadth categories, using the TEMPLATE-ONCE + CLONE-PER-COUNTRY model:
@@ -26,9 +27,13 @@ export default __handler(async (req) => {
     countries = [...new Set(countries.map((c) => String(c || "").trim().toUpperCase()).filter(Boolean))];
     if (!countries.length) countries = ["US"];
 
+    // Span the full taxonomy's subcategories by default (905+); a body.category or the CATALOG_CATEGORIES
+    // setting can override/narrow.
     const categories = body?.category
       ? [String(body.category)]
-      : snapString("CATALOG_CATEGORIES", "General").split(",").map((s) => s.trim()).filter(Boolean);
+      : (snapString("CATALOG_CATEGORY_SOURCE", "taxonomy") === "settings"
+          ? snapString("CATALOG_CATEGORIES", "General").split(",").map((s) => s.trim()).filter(Boolean)
+          : allSubcategories());
 
     const target = Math.max(0, Math.floor(await getNumber("CATALOG_LISTINGS_PER_COUNTRY", 320)));
     const perCategoryTemplates = categories.length ? Math.max(1, Math.ceil(target / categories.length)) : target;

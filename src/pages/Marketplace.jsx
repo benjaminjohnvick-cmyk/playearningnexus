@@ -275,10 +275,6 @@ export default function Marketplace() {
                     <Coins className="w-3 h-3" /> {Number(l.price_points).toLocaleString()} pts
                   </span>
                 )}
-                {/* Country flag overlaid on the shared base image (one image, flag per country). */}
-                {l.country_flag && (
-                  <span className="absolute top-2 right-2 text-xl drop-shadow" title={l.country}>{l.country_flag}</span>
-                )}
               </div>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between gap-2">
@@ -390,7 +386,6 @@ export default function Marketplace() {
                           <Coins className="w-3 h-3" /> {Number(l.price_points).toLocaleString()}
                         </span>
                       )}
-                      {l.country_flag && <span className="absolute top-1 right-1 text-base drop-shadow">{l.country_flag}</span>}
                     </div>
                     <CardContent className="p-2">
                       <div className="text-xs font-medium truncate">{l.title}</div>

@@ -33,6 +33,7 @@ import {
   ShieldCheck,
   Gamepad2,
   Megaphone,
+  LayoutGrid,
   Store } from
 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
@@ -67,6 +68,26 @@ const AIPersonalizedDailyGoal = lazy(() => import('@/components/dashboard/AIPers
 const WishlistDailyNotifier = lazy(() => import('@/components/wishlist/WishlistDailyNotifier'));
 const PriceDropAlertBadge = lazy(() => import('@/components/wishlist/PriceDropAlertBadge'));
 const WishlistAutoAddNotifier = lazy(() => import('@/components/wishlist/WishlistAutoAddNotifier'));
+
+// Country banner: a thin site-wide strip showing the flag of the country the site is being used in.
+function CountryBanner() {
+  let cc = '';
+  try {
+    const l = navigator.language || (navigator.languages && navigator.languages[0]) || '';
+    cc = (l.split('-')[1] || '').toUpperCase();
+  } catch { cc = ''; }
+  if (!cc || cc.length !== 2) return null;
+  // Country code → flag emoji (regional indicator symbols).
+  const flag = String.fromCodePoint(...[...cc].map((c) => 0x1f1e6 + (c.charCodeAt(0) - 65)));
+  let name = cc;
+  try { name = new Intl.DisplayNames(['en'], { type: 'region' }).of(cc) || cc; } catch { /* keep code */ }
+  return (
+    <div className="w-full bg-red-600 text-white text-sm text-center py-1 flex items-center justify-center gap-2">
+      <span className="text-lg leading-none">{flag}</span>
+      <span>Shopping in {name}</span>
+    </div>
+  );
+}
 
 export default function Layout({ children, currentPageName }) {
   // Use AuthContext — avoids a duplicate base44.auth.me() call on every page mount
@@ -170,6 +191,7 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Home', icon: Home, path: 'Home' },
   { name: 'Game Store', icon: ShoppingCart, path: 'InAppGameStore' },
   { name: 'Marketplace', icon: Store, path: 'Marketplace', requireAuth: true },
+  { name: 'Categories', icon: LayoutGrid, path: 'Categories', requireAuth: true },
   { name: 'Surveys', icon: DollarSign, path: 'Surveys', requireAuth: true },
   { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },
   { name: 'Creators', icon: Users, path: 'CreatorMarketplace' },
@@ -262,6 +284,9 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Accessibility: skip to main content (WCAG 2.4.1 Bypass Blocks) */}
         <a href="#main-content" className="skip-link">Skip to main content</a>
+
+        {/* Country banner — shows the flag of the country the site is being used in (site-wide). */}
+        <CountryBanner />
 
         {/* Header - Only show on Home page */}
         {currentPageName === 'Home' && <header

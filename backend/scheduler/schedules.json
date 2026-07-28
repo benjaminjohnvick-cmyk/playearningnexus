@@ -13,6 +13,18 @@
       "_comment": "Populates/tops-up the marketplace catalog for every country in CATALOG_COUNTRIES with original AI listings + images."
     },
     {
+      "name": "daily-category-images",
+      "cron": "50 9 * * *",
+      "function": "aiCategoryImages",
+      "_comment": "Spins up original category/subcategory tile images on the serverless GPU, once each (bounded per run)."
+    },
+    {
+      "name": "daily-browse-node-expand",
+      "cron": "10 10 * * *",
+      "function": "aiBrowseNodeExpand",
+      "_comment": "AI-expands the taxonomy's 3rd level (browse nodes) a few subcategories per run, exceeding Amazon's node count over time."
+    },
+    {
       "name": "daily-ecosystem-engine",
       "cron": "15 9 * * *",
       "function": "autonomousEcosystemEngine"
