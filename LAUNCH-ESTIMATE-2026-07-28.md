@@ -83,16 +83,26 @@ Everything stays fully functional and running — just scoped to web + Android a
 ## Keeping EVERYTHING on (web + Android + iOS, all features) at ~$3,000
 Yes, achievable — at the low end, using coding + free-tier levers instead of cutting scope:
 
+**Hosting choice: AWS paid tier with auto-scaling** (see `deploy-kit/AWS-AUTOSCALING-DEPLOY.md`). This is
+a deliberate reliability/scale choice that costs more than a free tier, so it lifts year-one above the
+~$3,000 shoestring target — that trade is intentional.
+
 | Bucket | Cost with levers | The lever |
 |---|---:|---|
 | Dev (one-time) | $2,000–$2,600 | Prebuilt features ($0) + automated deploy/QA: `launch.sh`, `e2e-smoke.mjs`, `validate.sh` collapse the deploy + test phases so the developer runs commands, not hours |
-| Hosting (yr 1) | **$0–120** | `deploy-kit/render.yaml` free web tier + free persistent Postgres (Neon/Supabase) — single-service, auto-migrate, inline scheduler |
-| LLM (yr 1) | $60–120 | `AI_DAILY_SPEND_CAP_USD=8`, small-tier models, paced jobs |
-| Images | $0–15 | text-only launch ($0) or $10 Titan posture |
+| Hosting — **AWS auto-scaling** (yr 1) | **$900–1,740** | ECS Fargate + ALB + RDS floor ~$75–145/mo; trim to ~$40–70/mo with App Runner + single-AZ RDS + Redis/SQS off until the load test needs them |
+| LLM (yr 1) | $60–300 | `AI_DAILY_SPEND_CAP_USD`, small-tier models, paced jobs |
+| Images | $0–15 | text-only launch ($0) or $10 Titan (Bedrock) posture |
 | Play (one-time) | $25 | — |
 | Apple Developer | $99/yr | unavoidable for a native iOS app |
-| Domain | $0–15 | free subdomain, or ~$12–15 |
-| **Year-1 all-in** | **≈ $2,300–$3,000** | everything ON, all three platforms |
+| Domain | $12–15 | — |
+| **Year-1 all-in** | **≈ $3,100–$4,800** | everything ON, all three platforms, AWS auto-scaling |
+
+With AWS auto-scaling, the honest year-one all-in is **~$3,100–$4,800** (vs ~$2,300–$3,000 on a free
+hosting tier). The difference is almost entirely the auto-scaling infra floor. If you want to pull it
+back toward $3,000 while keeping AWS: start with **App Runner** (auto-scales, no ALB), **single-AZ RDS**,
+and leave **Redis + SQS off** (they're env toggles) until the load test proves you need them — that
+trims the hosting floor to ~$40–70/mo (~$480–840/yr) and lands year-one near **~$2,900–$3,600**.
 
 Two honest caveats so the number holds:
 - **The wildcard is an iOS App Store rejection round** (common for earn-money apps) — each round adds
