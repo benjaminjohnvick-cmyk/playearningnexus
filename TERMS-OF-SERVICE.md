@@ -1,59 +1,124 @@
-# PlayEarning Nexus — Terms of Service (TEMPLATE)
+# Terms of Service
 
-> ⚠️ Template for review. Replace every [BRACKET] and have a lawyer review before launch. This is not legal advice.
+**Effective date: July 28, 2026** · Version 2026-07-28
 
-**Effective date:** [EFFECTIVE DATE] · **Operator:** [COMPANY LEGAL NAME] · **Contact:** [support@yourdomain.com] · **Governing law:** [STATE/COUNTRY]
+These Terms of Service ("Terms") are a binding agreement between you and GamerGain ("GamerGain,"
+"we," "us"). They govern your access to and use of the GamerGain website, progressive web app, and
+mobile applications (together, the "Service"). By creating an account or using the Service, you agree to
+these Terms. If you do not agree, do not use the Service.
 
-## 1. Acceptance
-By using the app you agree to these Terms and our Privacy Policy.
+> This document is a plain-language template describing how the Service operates today. It is not legal
+> advice. Have qualified counsel review it against the laws of every jurisdiction in which you operate
+> before you rely on it.
 
-## 2. Eligibility
-You must be **18+** (or age of majority) and able to contract. Void where prohibited.
+## 1. Eligibility
+You must be at least **18 years old** to use the Service. The Service involves earning and spending
+value and is not directed to children. By using the Service you represent that you are 18 or older, can
+form a binding contract, and are not barred from using the Service under applicable law.
 
-## 3. The service
-Surveys, games, referrals, skill contests, and rewards. Features and reward rates may change.
+## 2. Accounts
+You are responsible for the accuracy of your registration information and for all activity under your
+account. Keep your credentials confidential. Notify us promptly of any unauthorized use. One person may
+hold one account unless we expressly permit otherwise; duplicate or fraudulent accounts may be
+suspended.
 
-## 4. Accounts
-One account per person; accurate info; you're responsible for your credentials.
+## 3. Points and the closed-loop economy
+The Service uses **points**, an on-platform unit of value. Within a given market, **1 point equals one
+cent of that market's local currency** for the purpose of pricing items inside the Service. Points:
+- are earned by completing eligible activities (such as surveys, offers, and other tasks) subject to
+  daily earning limits and anti-fraud review;
+- can be spent inside the Service (for example, in the store and marketplace and on perks);
+- have **no cash value outside the Service** and are **not redeemable for cash** unless and until we
+  expressly enable a cash-out feature, which is subject to identity, tax, and regulatory requirements;
+- may be adjusted, withheld, or reversed where we reasonably determine they were earned through fraud,
+  error, abuse, or violation of these Terms.
+Points are a limited, revocable license to use a feature of the Service; they are not your property,
+bank deposit, stored-value instrument, or security.
 
-## 5. Earnings, rewards & payouts
-Earnings accrue from **verified** eligible activity; we may withhold/reverse rewards from fraud or violations. Payouts are subject to minimum thresholds, verification, and third-party processors (Stripe, PayPal, etc.). **No earnings are guaranteed.** You are responsible for taxes; we may issue 1099s and request tax info. Some balances are closed-loop platform credits.
+## 4. Earning activities and third-party offers
+Some earning activities are provided by third parties (for example, survey and offer providers). Your
+completion of those activities is also subject to the third party's rules, and rewards may be withheld
+if the third party reports the activity as incomplete, duplicated, or fraudulent. We do not control and
+are not responsible for third-party content or determinations.
 
-## 6. Referral program
-Rewards for qualifying referrals. You must disclose paid/affiliate relationships (e.g., "#ad") per FTC rules. Fraudulent/self/undisclosed referrals are prohibited.
+## 5. Marketplace
+The Service includes a marketplace with three kinds of listings:
+- **Platform catalog** — original products offered by GamerGain and handled through our AI-managed order
+  process;
+- **Member listings** — items listed by other users, who are responsible for shipping and for the
+  accuracy of their listings;
+- **Affiliate listings and product search** — links to real products sold and fulfilled by third-party
+  retailers. Where a link is an affiliate link, we may earn a commission; such links are disclosed.
+You may buy eligible items with points or, where enabled, by card (a platform markup may apply to card
+purchases). For member listings, the seller ships the item and the transaction runs through our
+AI-managed fulfillment process. You may not list prohibited or regulated items (including weapons,
+drugs, counterfeit goods, and other items we or the law prohibit). We may remove listings and cancel
+orders that violate these Terms or applicable law.
 
-## 7. Contests & prize pools
-Determined by **skill**, not chance. Entry fees (where applicable) are disclosed; contests are void where prohibited; official rules and regional restrictions apply.
+## 6. Payments
+Where card payments are enabled, they are processed by a third-party payment processor; you authorize
+the applicable charge, including any disclosed markup. We do not store full card numbers. You are
+responsible for any taxes associated with your transactions except where we are required to collect
+them.
 
-## 8. Shared wallet groups
-Members pool **closed-loop credits** toward shared goals with owner approval. Not a bank account, money transmission, or investment product.
+## 7. Acceptable use
+You agree not to: violate any law; commit fraud or manipulate earning, referral, or contest mechanics;
+use bots, scripts, or automated means to interact with the Service except as expressly permitted;
+interfere with or attempt to breach the security of the Service; infringe others' intellectual property
+or privacy; upload unlawful, harmful, or infringing content; or misrepresent your identity or country.
 
-## 9. Prohibited conduct
-No fraud, bots, multi-accounting, self-referral, fake responses, reward manipulation, or security circumvention.
+## 8. Content and intellectual property
+The Service, including its original catalog listings, generated images, taxonomy, text, and software,
+is owned by GamerGain or its licensors and is protected by intellectual-property laws. We grant you a
+limited, revocable, non-exclusive, non-transferable license to use the Service for its intended
+purpose. Content you submit remains yours, but you grant us a license to host, display, and use it to
+operate and improve the Service.
 
-## 10. Payments & third parties
-Handled by processors under their own terms; we aren't liable for their outages/decisions. Social integrations follow those platforms' terms.
+## 9. AI features and automated decisioning
+The Service uses artificial intelligence to generate catalog content and imagery, personalize
+recommendations, power an assistant, test changes before release, and optimize non-sensitive settings.
+Automated systems help operate the Service, but material decisions affecting money, compliance, and
+safety remain subject to human oversight and guardrails.
 
-## 11. IP & user content
-Platform/software owned by us/licensors. You keep rights to your content but license us to operate the service. AI features provided as-is.
+## 10. Data
+Your use of the Service is subject to our Privacy Policy, which explains what we collect (including
+behavioral data used to improve the Service) and the controls available to you, including opting out of
+behavioral recording, exporting your data, and deleting your account.
 
-## 12. Disclaimers
-Service provided "AS IS" / "AS AVAILABLE"; no warranty of uptime or earnings.
+## 11. Prohibited and regulated jurisdictions; sweepstakes/contests
+Certain features may be unavailable in certain jurisdictions. Any contests, sweepstakes, or prize
+promotions are void where prohibited and are subject to their own posted rules and to registration or
+bonding requirements where applicable.
 
-## 13. Limitation of liability
-No indirect/incidental/consequential damages; total liability limited to amounts you paid us in the prior 12 months.
+## 12. Suspension and termination
+We may suspend or terminate your access at any time for violation of these Terms, suspected fraud, or
+to comply with law or protect the Service and its users. You may stop using the Service and delete your
+account at any time. Points and access do not survive termination except as required by law.
 
-## 14. Indemnification
-You indemnify us for claims arising from your use or violations.
+## 13. Disclaimers
+The Service is provided "as is" and "as available" without warranties of any kind, to the fullest
+extent permitted by law. We do not warrant that the Service will be uninterrupted, error-free, or
+secure, or that any particular amount of points, earnings, or results can be achieved.
 
-## 15. Termination
-Either party may end use; we may suspend/terminate for violations or legal compliance. Some clauses survive.
+## 14. Limitation of liability
+To the fullest extent permitted by law, GamerGain will not be liable for indirect, incidental, special,
+consequential, or punitive damages, or for lost profits or lost points, arising from your use of the
+Service. Our total liability for any claim relating to the Service will not exceed the greater of the
+amount you paid us in the twelve months before the claim or USD 100.
 
-## 16. Governing law & disputes
-Governed by [STATE/COUNTRY]. [Insert arbitration / class-waiver clause per counsel.]
+## 15. Indemnification
+You agree to indemnify and hold GamerGain harmless from claims and expenses arising out of your use of
+the Service, your content, or your violation of these Terms or applicable law.
 
-## 17. Changes
-Continued use after changes = acceptance.
+## 16. Changes
+We may update these Terms. When we do, we will update the effective date and, for material changes, take
+reasonable steps to notify you (which may include requiring re-acceptance). Continued use after changes
+take effect constitutes acceptance.
+
+## 17. Governing law and disputes
+These Terms are governed by the laws of the jurisdiction in which GamerGain is established, without
+regard to conflict-of-laws rules. The specific governing law, venue, and any arbitration or class-action
+terms must be finalized with counsel and inserted here before launch.
 
 ## 18. Contact
-[COMPANY LEGAL NAME], [support@yourdomain.com].
+Questions about these Terms: **[insert support email]**.

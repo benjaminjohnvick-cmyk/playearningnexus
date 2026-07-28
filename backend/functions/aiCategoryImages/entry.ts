@@ -2,6 +2,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
 import { TAXONOMY, allSubcategories } from "../../sdk/taxonomy.ts";
 import { generateProductImageUrl } from "../../sdk/image-gen.ts";
+import { snapBool } from "../../sdk/settings.ts";
 import { db } from "../../sdk/db.ts";
 
 // aiCategoryImages (INTERNAL/ADMIN, scheduled) — spins up ORIGINAL category tile images on the
@@ -14,7 +15,9 @@ export default __handler(async (req) => {
   if (denied) return denied;
   try {
     const b = await req.json().catch(() => ({}));
-    const includeSubs = b?.include_subcategories !== false; // default true
+    // Budget posture: default to TOP-LEVEL tiles only (CATALOG_SUBCATEGORY_IMAGES off). A request body
+    // can still force subcategory tiles on/off.
+    const includeSubs = b?.include_subcategories != null ? !!b.include_subcategories : snapBool("CATALOG_SUBCATEGORY_IMAGES", false);
     const cap = Math.max(1, Math.floor(Number(b?.per_run_cap) || 30));
 
     const existing = await db.filter("CatalogCategory", {}).catch(() => []) as any[];
