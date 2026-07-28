@@ -67,6 +67,33 @@ export interface SearchOpts { sort?: SortKey; minPrice?: number; maxPrice?: numb
 
 interface SearchEngine { key: string; label: string; url: string; affiliate: boolean; }
 
+// Each country's largest general online retailer, as a shopper-facing SEARCH link (never scraping —
+// just a link to that retailer's own search results for the query). Lets "find the real thing" reflect
+// the local top retailer per country, as requested.
+const COUNTRY_TOP_RETAILER: Record<string, { label: string; url: (q: string) => string }> = {
+  US: { label: "Walmart",        url: (q) => `https://www.walmart.com/search?q=${q}` },
+  CA: { label: "Amazon.ca",      url: (q) => `https://www.amazon.ca/s?k=${q}` },
+  GB: { label: "Argos",          url: (q) => `https://www.argos.co.uk/search/${q}/` },
+  DE: { label: "Otto",           url: (q) => `https://www.otto.de/suche/${q}/` },
+  FR: { label: "Cdiscount",      url: (q) => `https://www.cdiscount.com/search/10/${q}.html` },
+  IT: { label: "Amazon.it",      url: (q) => `https://www.amazon.it/s?k=${q}` },
+  ES: { label: "Amazon.es",      url: (q) => `https://www.amazon.es/s?k=${q}` },
+  JP: { label: "Rakuten",        url: (q) => `https://search.rakuten.co.jp/search/mall/${q}/` },
+  IN: { label: "Flipkart",       url: (q) => `https://www.flipkart.com/search?q=${q}` },
+  AU: { label: "eBay AU",        url: (q) => `https://www.ebay.com.au/sch/i.html?_nkw=${q}` },
+  MX: { label: "Mercado Libre",  url: (q) => `https://listado.mercadolibre.com.mx/${q}` },
+  BR: { label: "Mercado Livre",  url: (q) => `https://lista.mercadolivre.com.br/${q}` },
+  KR: { label: "Coupang",        url: (q) => `https://www.coupang.com/np/search?q=${q}` },
+  NL: { label: "Bol.com",        url: (q) => `https://www.bol.com/nl/nl/s/?searchtext=${q}` },
+};
+
+export function topRetailerForCountry(country: string, query: string): SearchEngine | null {
+  const c = (country || "US").toUpperCase();
+  const r = COUNTRY_TOP_RETAILER[c];
+  if (!r) return null;
+  return { key: "local_top", label: r.label, url: r.url(encodeURIComponent((query || "").trim().slice(0, 150))), affiliate: false };
+}
+
 // Google Shopping sort tokens (tbs=mr:1,<...>).
 const GOOGLE_SORT: Record<SortKey, string> = { relevance: "", price_asc: "price:1,ppr_min:0", price_desc: "", rating: "", newest: "" };
 // eBay _sop sort codes.
@@ -109,6 +136,10 @@ export function buildSearchLinks(country: string, query: string, opts: SearchOpt
   if (opts.minPrice) ebayUrl += `&_udlo=${Math.max(0, opts.minPrice)}`;
   if (opts.maxPrice) ebayUrl += `&_udhi=${Math.max(0, opts.maxPrice)}`;
   engines.push({ key: "ebay", label: "eBay", url: ebayUrl, affiliate: false });
+
+  // The country's largest local retailer (if we have one that isn't already Amazon in that market).
+  const local = topRetailerForCountry(c, raw);
+  if (local && local.label !== "Amazon" && !local.label.startsWith("Amazon.")) engines.push(local);
 
   return { affiliate: amazonAffiliate, engines };
 }
