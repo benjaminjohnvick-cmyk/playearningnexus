@@ -1,5 +1,58 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-29 — AI Live Oversight: all-AI-on with user-vote promotion + optional human gate
+
+The autonomous-AI control layer. See `AI-LIVE-OVERSIGHT.md`.
+
+- **All AI on by default.** Every AI engine runs from the get-go (`kyc_survey_ai_autopublish` → ON).
+- **Per-user consent → statistical approval → global.** Each non-sensitive AI change is put to real
+  users as a yes/no; only changes with a high statistical approval bar (min votes + min yes-rate +
+  Wilson 95% lower-bound) are promoted. `OPTIMIZER_REQUIRE_EXPERIMENT` on; `evaluateExperiments` + the
+  vote prompt (already mounted) drive it.
+- **AI self-review by default; human review optional.** With `AI_GLOBAL_HUMAN_GATE` OFF (default), the
+  AI reviews the user-approved change (`aiReviewPromotion`) and promotes it site-wide. Flip the gate ON
+  to route promotions to a once-per-24h, one-hour peak-time human window (`aiGlobalReview` /
+  `aiGlobalDecide`).
+- **Global STOP button + live feed + corrections that teach.** New `backend/sdk/ai-control.ts`:
+  `ai_paused` kill switch (halts optimizer pass, self-learning, autopublish), `logAiAction`/
+  `recentAiActivity` live feed, `recordCorrection` (writes AICorrection + weighted OptimizationSignal +
+  AgentLearningMemory so the AI learns from human fixes). New `AILiveOversight.jsx` admin page.
+- Compliance/guardrail settings stay excluded via the optimizer `COMPLIANCE_DENYLIST`.
+- New settings (`AI_GLOBAL_HUMAN_GATE`, `CHANGE_GLOBAL_MIN_APPROVAL`, `CHANGE_GLOBAL_MIN_SAMPLE`,
+  `PEAK_REVIEW_HOUR_UTC`, `PEAK_REVIEW_WINDOW_HOURS`); new entities `AIActivityLog`, `AICorrection`;
+  3+2 functions registered.
+
+## 2026-07-29 — Editable KYC survey (AI- and human-adjustable) + self-learning chatbot memory
+
+See `KYC-SURVEY-EDITABLE.md` and `AI-CHATBOT-MEMORY.md`.
+
+- **KYC survey is now stored & editable** (`KycSurveyConfig`), not hardcoded. Human admin editor
+  (`KYCSurveyAdmin.jsx` + `kycSurveyAdminGet`/`kycSurveyAdminSave`) and AI adjustment
+  (`kycSurveyAISuggest` analyzes real answer distributions → proposal; `kycSurveyProposalDecide`
+  approve/reject; `kyc_survey_ai_autopublish` for live AI edits). `validateSurvey` guards every edit.
+- **Per-user chatbot memory** (`AssistantMemory`): the catalog assistant remembers each member's
+  conversations, distills durable preferences to their individual file, and grounds greetings/replies in
+  it — learning and self-improving per user (`backend/sdk/assistant-memory.ts`).
+
+## 2026-07-29 — Marketplace as post-login hub + App Store in Digital Products + onboarding redirect
+
+- **App Store** (the in-app game/app store) is reachable inside **Digital Products** as a **"Digital
+  Gaming" subcategory** that opens the existing store page unchanged (no code moved). Nav "Game Store"
+  renamed **"App Store."**
+- **Marketplace is the post-login hub.** After login, first-time members complete the KYC survey then are
+  redirected to the Marketplace; returning members go straight there (logic in `KYCSurveyGate`).
+- Marketplace **"buy or browse" intro** wired to the KYC-grounded AI shopping assistant.
+
+## 2026-07-29 — Backend schema audit: 17 missing entity tables added (launch-blocker fix)
+
+The store is table-per-entity, provisioned from `schema.sql`. A full audit found 17 entities used by
+this session's features with **no table** (would fail at runtime): `Household`, `Layaway`,
+`LiveExperiment`, `LiveAssignment`, `LiveMetricEvent`, `InteractionEvent`, `PointsBoostLedger`,
+`SessionCaptureFrame`, `SessionClose`, `UXHeatmapSnapshot`, `UserVariantState`, `AssistantMemory`,
+`KycSurveyConfig`, `AIActivityLog`, `AICorrection`, `KYCResponse`, `CatalogBrowseNode`, `CatalogCategory`,
+`OverheadReport`, `UXFinding`. All added to `schema.sql` + `entities.json` (idempotent
+`CREATE TABLE IF NOT EXISTS`); re-run audit reports zero missing. Run the migrate step on deploy.
+
 ## 2026-07-29 — Family & Teens accounts + store sort + one-click Buy now
 
 Storefront + account-structure additions. See `HOUSEHOLD-TEEN-ACCOUNTS.md` and
