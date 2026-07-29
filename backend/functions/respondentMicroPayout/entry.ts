@@ -4,6 +4,7 @@ import { isPartnerPayout } from "../../sdk/payout-policy.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
+import { db } from "../../sdk/db.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
@@ -49,6 +50,12 @@ export default __handler(async (req) => {
       return Response.json({ error: 'Response or survey not found' }, { status: 404 });
     }
 
+    // IDEMPOTENCY: if this response was already paid, do NOT pay again (blocks retries / double-fires
+    // that would otherwise double-credit the respondent and double-drain the survey wallet).
+    if (Number(response.payout_to_user) > 0) {
+      return Response.json({ success: false, already_paid: true, payout: Number(response.payout_to_user) });
+    }
+
     // Gate: must not be blocked by fraud detection
     if (response.is_blocked) {
       return Response.json({ success: false, reason: 'Response blocked by fraud detection', payout: 0 });
@@ -85,12 +92,22 @@ export default __handler(async (req) => {
     const respondent = users[0];
     if (!respondent) return Response.json({ error: 'Respondent not found' }, { status: 404 });
 
-    // 1. Credit platform balance (always instant)
-    const newBalance = (respondent.current_balance || 0) + payoutAmount;
-    await base44.asServiceRole.entities.User.update(respondent_user_id, {
-      current_balance: newBalance,
-      total_earnings: (respondent.total_earnings || 0) + payoutAmount,
-    });
+    // 1. Credit platform balance ATOMICALLY (compare-and-set + retry) so concurrent credits can't lose a write.
+    let newBalance = Number(respondent.current_balance) || 0;
+    let credited = false;
+    for (let i = 0; i < 5 && !credited; i++) {
+      const fresh = (await base44.asServiceRole.entities.User.filter({ id: respondent_user_id }))[0] || respondent;
+      const bal = Number(fresh.current_balance) || 0;
+      newBalance = Math.round((bal + payoutAmount) * 100) / 100;
+      const ok = await db.updateIf("User", respondent_user_id,
+        { current_balance: newBalance, total_earnings: Math.round(((Number(fresh.total_earnings) || 0) + payoutAmount) * 100) / 100 },
+        { field: "current_balance", equals: String(bal) }).catch(() => null);
+      if (ok) credited = true;
+    }
+    if (!credited) return Response.json({ success: false, reason: 'Please retry — balance is being updated.' }, { status: 409 });
+
+    // Mark the response paid immediately after the credit so a retry hits the idempotency guard above.
+    await base44.asServiceRole.entities.PPCSurveyResponse.update(response_id, { payout_to_user: payoutAmount, payout_status: 'paid' }).catch(() => null);
 
     // 1b. Record into DailyEarnings so the per-user daily earnings cap accumulates across payouts.
     const earnDay = new Date().toISOString().slice(0, 10);

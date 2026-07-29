@@ -3,6 +3,8 @@ import { __handler } from "../../sdk/runtime.ts";
 import { isPartnerPayout } from "../../sdk/payout-policy.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
+import { postLedgerEntry } from "../../sdk/ledger.ts";
+import { db } from "../../sdk/db.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
@@ -30,7 +32,7 @@ async function sendPayPalPayout(token, recipientEmail, amount, note, senderItemI
     },
     body: JSON.stringify({
       sender_batch_header: {
-        sender_batch_id: `gamergain_${senderItemId}_${Date.now()}`,
+        sender_batch_id: `gamergain_${senderItemId}`, // caller passes a stable, unique senderItemId
         email_subject: 'GamerGain Reward Payout!',
         email_message: note,
       },
@@ -96,11 +98,17 @@ export default __handler(async (req) => {
         // Tax: backup withholding when no W-9 is on file — send net, set aside `withheld`.
         const wh = applyBackupWithholding(pending, u);
 
-        // Send via PayPal
+        // IDEMPOTENCY / anti-double-pay: atomically CLAIM this user's pending earnings (set to 0,
+        // conditioned on the exact value we read) BEFORE sending. If a concurrent run already claimed it,
+        // updateIf returns null and we skip — so two overlapping runs can't both pay the same balance.
+        const claimed = await db.updateIf("User", u.id, { pending_earnings: 0 }, { field: "pending_earnings", equals: String(pending) }).catch(() => null);
+        if (!claimed) continue;
+
+        // Send via PayPal (stable per-user/day sender id so a retry dedupes at PayPal).
         const paypalResult = await sendPayPalPayout(
           token, pref.paypal_email, wh.net,
           `GamerGain referral earnings payout of $${wh.net.toFixed(2)}`,
-          `ref_${u.id}_${Date.now()}`
+          `ref_${u.id}_${new Date().toISOString().slice(0, 10)}`
         );
 
         const success = paypalResult.batch_header?.batch_status !== 'DENIED';
@@ -120,9 +128,18 @@ export default __handler(async (req) => {
           payout_type: 'referral_commission',
         });
 
+        if (!success) {
+          // Payment failed — RESTORE the claimed pending earnings so it can be retried, no money lost.
+          await base44.asServiceRole.auth.updateUser(u.id, { pending_earnings: pending }).catch(() => null);
+        }
+
         if (success) {
-          // Zero out pending earnings
-          await base44.asServiceRole.auth.updateUser(u.id, { pending_earnings: 0 });
+          // Immutable money-movement audit entry (feeds 1099 totals).
+          await postLedgerEntry({
+            user_id: u.id, type: 'referral_payout', amount: -Math.abs(pending), currency: 'USD',
+            ref: payoutId, idempotency_key: `processRewardPayout:ref:${u.id}:${new Date().toISOString().slice(0, 10)}`,
+            meta: { method: 'paypal' },
+          }).catch(() => null);
 
           // Notify user
           await base44.asServiceRole.entities.Notification.create({
