@@ -82,6 +82,7 @@ export const COMPLIANCE_DENYLIST = new Set<string>([
   // accrual, and the 1:1 capacity ratio are legal/compliance-shaped and human-owned; never auto-tuned.
   "LOYALTY_PROGRAM_DISCOUNT_PCT", "LOYALTY_ANNUAL_VALUE_CAP_USD", "LOYALTY_DAILY_POOL_ACCRUAL_USD",
   "LOYALTY_DAILY_SURVEY_REQUIREMENT_USD", "LOYALTY_CAPACITY_PER_BUSINESS", "LOYALTY_TERM_DAYS",
+  "LOYALTY_BENEFIT_BUDGET_FRACTION", "LOYALTY_TARGET_PREMIUM_FRACTION", "LOYALTY_EXTRA_POOL_USD",
 ]);
 
 // Every safe, consumer-backed numeric setting the engine optimizes. Money/price knobs are

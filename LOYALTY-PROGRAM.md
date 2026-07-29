@@ -12,31 +12,36 @@ they're never auto-tuned.
 Keep both and this stays a loyalty program (like miles / card points / Starbucks stars), not money
 transmission or stored value. The engine (`backend/sdk/loyalty.ts`) enforces this by construction.
 
-## The value model
+## The two-tier value model
 
-- The headline benefit is a **10% member discount taken off the BASE price** of eligible first-party
-  purchases. The **platform absorbs it** — it is affordable because each matched advertiser now pays the
-  **$6,000** grid price (up from $5,000), far more than 10% of a normal year of that member's purchases.
-  The discount comes off the **base price only**; your **store markup is charged and kept separately, so
-  store margin is never reduced.** (`recordLoyaltyDiscount()`)
-- 10% applies to **all** eligible purchases, up to a **per-member annual backstop cap** — a back-end
-  number the user never sees (`LOYALTY_ANNUAL_VALUE_CAP_USD`) that ensures a single heavy buyer can never
-  draw more discount than the advertiser payment backing them. When reached, the discount stops for the
-  term. `loyaltyStatus` returns only booleans (`discount_active`) — never the cap or the cumulative figure.
-- **Affordability math:** at 10% off the base, a member would have to buy **$60,000** of goods in a year
-  before the discount ($6,000) equaled the advertiser's payment — and you still keep your markup and the
-  survey/ad revenue on top. So it's comfortably funded; the cap is just a safety rail.
-- To be **eligible to use the discount on a purchase**, that day the member must have completed the
-  daily PPC-survey requirement (`LOYALTY_DAILY_SURVEY_REQUIREMENT_USD`, default **$8** of surveys), hold
-  an active **social-post consent** (posts carry a clear **#ad** disclosure), and have agreed to the
-  **one-year term**. (`eligibleForDiscount()` gates the discount on all of this.)
-- **1:1 capacity:** rewarded members are matched to signed-up advertiser businesses
-  (`LOYALTY_CAPACITY_PER_BUSINESS`, default 1). There are never more rewarded members than businesses
-  funding them — which is exactly what guarantees every discount is backed by real advertiser revenue.
-  Enrollment past capacity is waitlisted. (`hasLoyaltyCapacity()`)
-- **Term + renewal:** a one-year term requiring ≥ `LOYALTY_REQUIRED_DAYS_PER_WEEK` (default 5) active
-  days/week. Nothing auto-renews — after a full year the member is **asked to sign up again**
-  (`renewal_due`). A missed day never creates debt or penalty; it just doesn't count that day.
+- **Non-premium users (~95%)** pay the normal **10%-marked-up** price (mostly by card). That markup is
+  the platform's margin on them. They're not in the loyalty program and get no points-back.
+- **Premium / loyalty members (~5%)** pay the same price but get **10% back in points (store credit)**
+  on every purchase — effectively the markup handed back — **funded by their matched advertiser's $6,000
+  grid payment.** The **markup stays on the sale and is kept**, so the points-back does *not* reduce
+  store margin; it's a separate, advertiser-funded credit granted after the sale (`recordLoyaltyDiscount()`
+  → credited to `current_balance`). The points-back is capped at a back-end **annual** value
+  (`LOYALTY_ANNUAL_VALUE_CAP_USD`, $1,460) that **resets each program year**; `loyaltyStatus` returns only
+  booleans (`cashback_active`) — never the cap or cumulative usage.
+- **Affordability:** a premium member would have to buy $60,000/year before their 10% points-back ($6,000)
+  equaled the advertiser payment backing them — and most never approach the $1,460 cap, so real cost per
+  member is far lower. The advertiser fee covers it with large headroom; the cap is a safety rail.
+
+## Scaling — the eight levers (why it works past 1:1)
+
+1/7 — **Capacity is a dynamic governor, not 1:1** (`computeLoyaltyCapacity`): premium slots =
+`pooled_revenue × budget_fraction ÷ $1,460`. It grows automatically as revenue grows and is worst-case
+solvent (each member reserved the full annual cap). 2/6 — **Pooled, diversified funding**
+(`pooledAnnualRevenueUsd`): advertiser grid fees **+ `LOYALTY_EXTRA_POOL_USD`** (annualized affiliate + ad
++ membership revenue), so no single business or stream is load-bearing. 4 — **Each member's benefit is
+capped** ($1,460/yr) far below the ~$6,000 their participation attracts → self-funding with margin. 5 —
+**Tiered** premium vs non-premium, governed toward `LOYALTY_TARGET_PREMIUM_FRACTION` (5%). 8 —
+**Indefinite membership**: runs year-to-year as long as the daily requirements are met; the annual mark is
+a **re-consent reminder** (`reconsent_due`), not a hard stop, and the $1,460 cap resets each year.
+- To be **eligible for points-back on a purchase**, that day the member must have completed the daily
+  PPC-survey requirement (`LOYALTY_DAILY_SURVEY_REQUIREMENT_USD`, default **$8** of surveys), hold an
+  active **social-post consent** (posts carry a clear **#ad** disclosure), and have their annual re-consent
+  current. (`eligibleForDiscount()` gates it.)
 - **Ongoing posting until a $12,000 return:** the member keeps posting their consented #ad content until
   the matched business has received **$12,000** in fulfilled orders (2× the $6,000 grid —
   `PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD`), after which the ongoing-posting obligation ends.
@@ -44,16 +49,15 @@ transmission or stored value. The engine (`backend/sdk/loyalty.ts`) enforces thi
 ## Cheapest-price search + the 10% (`productBestPrice`)
 
 When a shopper picks an exact product, `productBestPrice` scores every offer we can price by **all-in
-landed cost** (item + tax + shipping − existing discounts) and returns the cheapest, then applies the 10%
-**by source**: a **real discount** on a first-party winner (platform-absorbed), or **10% back as loyalty
-credit** on an external retailer (we can't change another store's checkout, so it's an honest
-credit-back, never a fake lower price). Honest scope: it prices our first-party listings plus any
-external offers a connected shopping/price feed passes in (`external_offers`); it does not crawl the whole
-internet, and it returns shopping-discovery links so the shopper can compare externally. Scorer lives in
-`backend/sdk/pricing.ts`.
+landed cost** (item + tax + shipping − existing discounts) and returns the cheapest. The 10% is delivered
+as **loyalty points-back after purchase — on whichever option wins, first-party or external** — because
+the sticker price is never lowered (we can't change another store's checkout, and the markup stays for
+everyone). Honest scope: it prices our first-party listings plus any external offers a connected
+shopping/price feed passes in (`external_offers`); it does not crawl the whole internet, and it returns
+shopping-discovery links so the shopper can compare externally. Scorer lives in `backend/sdk/pricing.ts`.
 - **Partial redemption:** members choose how many points to put toward an item and pay the rest by card;
-  the member discount applies on top; everything is purchased on your site (closed-loop). The discount is
-  scoped to **first-party (platform) items** so member-seller payouts stay whole.
+  points-back applies on top; everything is purchased on your site (closed-loop). Points-back is scoped to
+  **first-party (platform) items** so member-seller payouts stay whole.
 
 ## The eleven value levers (all config, same generated-revenue funding)
 
@@ -73,8 +77,9 @@ as bespoke loyalty logic instead of riding the existing systems.
 
 ## What got added (files)
 
-- `backend/sdk/loyalty.ts` — the engine (consents, 1:1 capacity, base-price discount quote, platform-
-  absorbed discount accounting + annual backstop cap, perks, renewal). All money moves are atomic CAS.
+- `backend/sdk/loyalty.ts` — the engine (consents, dynamic capacity governor, 10% points-back quote,
+  advertiser-funded annual points-back cap with yearly reset, indefinite membership + re-consent, perks).
+  All money moves are atomic CAS.
 - `backend/sdk/pricing.ts` — all-in landed-cost scorer (`rankOffers`/`cheapestOffer`), + `productBestPrice`.
 - `backend/functions/loyaltyEnroll` — join (requires the two consents + an open 1:1 slot).
 - `backend/functions/loyaltyStatus` — member view (booleans only; hides the cap + pool figures).

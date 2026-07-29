@@ -16,15 +16,14 @@ export default __handler(async (req) => {
     const today = utcDay();
     const members = await db.filter("PremiumPPCMembership", { loyalty_enrolled: true }, "-created_date", 100000).catch(() => []) as Record<string, unknown>[];
 
-    let counted = 0, alreadyToday = 0, notEligible = 0, renewals = 0, completed = 0;
+    let counted = 0, alreadyToday = 0, notEligible = 0, renewals = 0;
     for (const m of members) {
       if (m.status === "ended") continue;
-      // Flag renewal at term end (asked to re-enroll; nothing auto-renews).
+      // Annual re-consent reminder (membership is indefinite; this does NOT end it).
       if (renewalDue(m) && m.renewal_due !== true) {
         await db.update("PremiumPPCMembership", String(m.id), { renewal_due: true }).catch(() => null);
         renewals++;
       }
-      if (m.program_complete === true) { completed++; continue; }
       if (m.last_active_tally_day === today) { alreadyToday++; continue; }    // idempotent per day
       if (!dailyRequirementMet(m, today)) { notEligible++; continue; }        // must do today's surveys
 
@@ -36,7 +35,7 @@ export default __handler(async (req) => {
       counted++;
     }
 
-    return Response.json({ ok: true, day: today, members: members.length, active_days_counted: counted, already_today: alreadyToday, not_eligible: notEligible, renewals_flagged: renewals, completed });
+    return Response.json({ ok: true, day: today, members: members.length, active_days_counted: counted, already_today: alreadyToday, not_eligible: notEligible, reconsent_flagged: renewals });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

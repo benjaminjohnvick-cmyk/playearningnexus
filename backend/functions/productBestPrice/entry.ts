@@ -88,7 +88,7 @@ export default __handler(async (req) => {
       discovery_links: discovery,      // shopping links to find/bring back external offers to score
       note: external.length === 0
         ? "Ranked by all-in landed cost across your first-party options. Connect a shopping/price feed (or pass external_offers) to also score live external retailers; use the discovery links to compare now."
-        : "Ranked by all-in landed cost (item + tax + shipping − existing discounts). Your 10% is applied as a real discount on first-party items and as loyalty credit-back on external retailers.",
+        : "Ranked by all-in landed cost (item + tax + shipping − existing discounts). Your 10% comes back as loyalty points-back after purchase (the sticker price is unchanged), on whichever option wins.",
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

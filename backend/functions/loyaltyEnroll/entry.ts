@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { db } from "../../sdk/db.ts";
-import { hasLoyaltyCapacity, loyaltyTermDays, loyaltyPerks } from "../../sdk/loyalty.ts";
+import { hasLoyaltyCapacity, loyaltyPerks } from "../../sdk/loyalty.ts";
 
 // loyaltyEnroll — join the retail loyalty & rewards program.
 // Requires: the two consents (social posting with #ad disclosure, and the one-year term agreement),
@@ -38,33 +38,33 @@ export default __handler(async (req) => {
     }
 
     const now = new Date();
-    const termEnd = new Date(now.getTime() + loyaltyTermDays() * 86400000).toISOString();
 
     // Reuse (or create) the member's PremiumPPCMembership record; store loyalty state on it (JSONB).
+    // Membership is INDEFINITE — no hard term end. The annual mark is a re-consent reminder; the $1,460
+    // points-back cap resets each program year (tracked from cap_year_start).
     const existing = (await db.filter("PremiumPPCMembership", { user_id: user.id }, "-created_date", 1).catch(() => []) as Record<string, unknown>[])[0];
     const patch = {
       user_id: user.id,
       status: "active",
       loyalty_enrolled: true,
       social_consent_at: now.toISOString(),
-      annual_agreement_at: now.toISOString(),
-      term_start: now.toISOString(),
-      term_end: termEnd,
+      annual_agreement_at: now.toISOString(),         // resets the annual re-consent clock
+      enrolled_at: existing?.enrolled_at ?? now.toISOString(),
       commitment_start: existing?.commitment_start ?? now.toISOString(),
-      discount_used_usd: Number(existing?.discount_used_usd) || 0,
-      program_complete: false,
+      cap_year_start: existing?.cap_year_start ?? now.toISOString(),
+      rewardback_used_usd: Number(existing?.rewardback_used_usd) || 0,
       renewal_due: false,
     };
     if (existing?.id) await db.update("PremiumPPCMembership", String(existing.id), patch).catch(() => null);
     else await db.create("PremiumPPCMembership", patch, user.id).catch(() => null);
 
-    await db.create("LoyaltyLedger", { user_id: user.id, type: "enroll", amount_usd: 0, meta: { term_end: termEnd }, at: now.toISOString() }).catch(() => null);
+    await db.create("LoyaltyLedger", { user_id: user.id, type: "enroll", amount_usd: 0, meta: { indefinite: true }, at: now.toISOString() }).catch(() => null);
 
     return Response.json({
       enrolled: true,
-      term_end: termEnd,
+      indefinite: true,
       perks: loyaltyPerks({ loyalty_enrolled: true }),
-      message: "You're in. Complete your daily surveys to unlock your member discount and perks.",
+      message: "You're in — and you can stay in year to year as long as you keep up your daily surveys. Complete today's to start earning points back.",
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

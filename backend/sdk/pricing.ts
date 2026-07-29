@@ -7,9 +7,10 @@
 //
 // LANDED COST = item price + tax + shipping − any pre-existing discount. Lowest landed cost wins.
 //
-// THE 10% MEMBER BENEFIT: for a FIRST-PARTY winner we can give a real 10% off (the platform absorbs it,
-// per the loyalty program). For an EXTERNAL winner we CANNOT change another retailer's checkout, so the
-// 10% is delivered as loyalty credit-back after purchase (labeled honestly), never as a fake lower price.
+// THE 10% MEMBER BENEFIT is delivered as loyalty POINTS-BACK (store credit) after purchase — for BOTH
+// first-party and external winners — because the store markup stays on the price for everyone (that's
+// how non-premium users are the margin). So the benefit never lowers the sticker; it's an
+// advertiser-funded credit for premium members. Ranking is therefore by true landed cost alone.
 
 export interface Offer {
   source: "first_party" | "external";
@@ -25,10 +26,9 @@ export interface Offer {
 }
 
 export interface ScoredOffer extends Offer {
-  landed_usd: number;             // all-in cost the shopper actually pays
-  member_discount_usd: number;    // real 10% off (first-party only)
-  member_creditback_usd: number;  // 10% delivered as loyalty credit after purchase (external only)
-  effective_usd: number;          // landed − real discount (what they pay now)
+  landed_usd: number;             // all-in cost the shopper actually pays (this is also what they pay now)
+  member_creditback_usd: number;  // 10% delivered as loyalty points-back after purchase (any source)
+  effective_usd: number;          // = landed_usd (points-back is a reward, not a lower price)
   best: boolean;
 }
 
@@ -43,26 +43,20 @@ export function landedCost(o: Offer): number {
   return r2(Math.max(0, price + tax + ship - disc));
 }
 
-/** Score + rank offers by landed cost (cheapest first), applying the member 10% correctly by source:
- *  a REAL discount for first-party (platform-absorbed), a credit-back for external. `memberPct` is the
- *  member's discount rate (0 when the shopper isn't an eligible member — then benefits are 0). */
+/** Score + rank offers by landed cost (cheapest first). The member 10% is surfaced as points-back for
+ *  any source (it doesn't lower the price, since the markup stays), so ranking is by landed cost alone.
+ *  `memberPct` is the member's points-back rate (0 when the shopper isn't an eligible member). */
 export function rankOffers(offers: Offer[], memberPct = 0): ScoredOffer[] {
   const pct = Math.min(1, Math.max(0, Number(memberPct) || 0));
   const scored: ScoredOffer[] = (offers || []).map((o) => {
     const landed = landedCost(o);
-    const firstParty = o.source === "first_party";
-    // 10% off applies to the ITEM price (the base), not tax/shipping.
-    const benefit = r2(Math.max(0, Number(o.item_price_usd) || 0) * pct);
-    const realDiscount = firstParty ? benefit : 0;
-    const creditBack = firstParty ? 0 : benefit;
+    // 10% back applies to the ITEM price (the base), not tax/shipping — as points, never a price cut.
+    const creditBack = r2(Math.max(0, Number(o.item_price_usd) || 0) * pct);
     return {
       ...o,
       landed_usd: landed,
-      member_discount_usd: realDiscount,
       member_creditback_usd: creditBack,
-      // Rank by the TRUE out-of-pocket: landed minus any real discount. Credit-back is a reward, not a
-      // lower price, so it does NOT reduce what they pay now (but we surface it).
-      effective_usd: r2(Math.max(0, landed - realDiscount)),
+      effective_usd: landed,   // points-back is a reward, not a lower price
       best: false,
     };
   });

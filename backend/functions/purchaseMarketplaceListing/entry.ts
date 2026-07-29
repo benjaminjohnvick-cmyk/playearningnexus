@@ -8,6 +8,7 @@ import { welcomeDiscountFor, redeemWelcomeCredit } from "../../sdk/welcome-credi
 import { purchaseGate } from "../../sdk/household.ts";
 import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
 import { quoteDiscount, recordLoyaltyDiscount } from "../../sdk/loyalty.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -60,12 +61,13 @@ export default __handler(async (req) => {
     // Pre-flight the payment path (no charge yet) so we don't claim a listing we can't pay for.
     let charged = { method: payment_method, points: 0, usd: 0, markup: 0, welcome_discount_usd: 0, loyalty_discount_usd: 0 };
 
-    // LOYALTY MEMBER DISCOUNT — 10% off the BASE price, PLATFORM-ABSORBED (funded by the matched
-    // advertiser's grid payment, not the store markup — so store margin is untouched). Applies to
-    // first-party (platform) items so member-seller payouts stay whole. quoteDiscount() returns 0
-    // unless the member completed today's steps and is under the back-end annual backstop cap. Recorded
-    // only after a successful sale (mirrors the welcome-credit redeem-on-commit pattern).
-    let loyaltyDiscountUsd = 0;
+    // LOYALTY POINTS-BACK — premium (loyalty) members get 10% of the BASE price back as store credit
+    // AFTER a captured sale. The MARKUP STAYS on the price for everyone (that's the non-premium margin),
+    // so this does NOT reduce what anyone pays; it's a separate, ADVERTISER-FUNDED credit for premium
+    // members, capped at the back-end annual value ($1,460/yr, resets yearly). quoteDiscount() returns 0
+    // unless the member is premium, completed today's steps, and has headroom left this year. Applies to
+    // first-party (platform) items so member-seller payouts stay whole.
+    let loyaltyDiscountUsd = 0;   // the points-back USD the member will receive
     let loyaltyMemberId: string | null = null;
     if (isPlatform && (await isEnabled("loyalty_program"))) {
       const mem = ((await db.filter("PremiumPPCMembership", { user_id: user.id }, "-created_date", 1).catch(() => [])) as Record<string, unknown>[])[0] || null;
@@ -96,10 +98,8 @@ export default __handler(async (req) => {
         const pointsPerUsd = basePoints / usd;
         effectivePoints = Math.max(0, grossPoints - Math.round(welcomeDiscountUsd * pointsPerUsd));
       }
-      // Member discount (pool-funded) reduces the points charged too, converted at the item's USD rate.
-      if (loyaltyDiscountUsd > 0 && usd > 0) {
-        effectivePoints = Math.max(0, effectivePoints - Math.round(loyaltyDiscountUsd * (basePoints / usd)));
-      }
+      // NOTE: points-back does NOT reduce the points charged — the markup stays for everyone; premium
+      // members receive the 10% as store credit after the sale (below).
       charged.markup = Math.round(basePoints * markup);   // markup recorded (in points)
       if ((Number(user.points) || 0) < effectivePoints) return Response.json({ error: "Insufficient points", required: effectivePoints, balance: Number(user.points) || 0 }, { status: 402 });
     } else {
@@ -118,9 +118,8 @@ export default __handler(async (req) => {
         if (await getBool("PROMO_FUNDED_BY_MARKUP", true)) wd = Math.min(wd, base * markup);
       }
       charged.usd = Math.round(Math.max(base, gross - wd) * 100) / 100;
-      // Member discount (pool-funded) comes off the card charge too. Funded from the member's pool at
-      // capture — never below 0, and never touching the store margin.
-      if (loyaltyDiscountUsd > 0) charged.usd = Math.round(Math.max(0, charged.usd - loyaltyDiscountUsd) * 100) / 100;
+      // NOTE: points-back does NOT come off the card charge — the markup stays; premium members receive
+      // the 10% as store credit after the sale (below), funded by the advertiser, not the store margin.
       charged.markup = Math.round(base * markup * 100) / 100;
       charged.welcome_discount_usd = Math.round(wd * 100) / 100;
       // NOTE: card capture is external; welcomeDiscountUsd stays 0 here so the promo pool isn't redeemed
@@ -262,10 +261,12 @@ export default __handler(async (req) => {
         points: Number(charged.points) || 0, listingId: listing.id, source,
         category: listing.category || null, paymentMethod: payment_method,
       }).catch(() => {});
-      // Record the platform-absorbed member discount now that the sale is captured (points path):
-      // advances the back-end annual backstop cap and writes the audit ledger. Store margin untouched.
+      // Grant the premium member their 10% POINTS-BACK now that the sale is captured: record it against
+      // the annual cap (atomic) and CREDIT that amount to the member's closed-loop store credit. Only the
+      // amount within the remaining annual headroom is granted+credited. Advertiser-funded; margin intact.
       if (loyaltyDiscountUsd > 0 && loyaltyMemberId) {
         const granted = await recordLoyaltyDiscount(loyaltyMemberId, user.id, loyaltyDiscountUsd, String((order as any)?.id || listing.id)).catch(() => 0);
+        if (granted > 0) await adjustUserBalance(user.id, granted, { field: "current_balance" }).catch(() => null);
         charged.loyalty_discount_usd = granted;
       }
     }
