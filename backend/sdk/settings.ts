@@ -249,6 +249,11 @@ export const REGISTRY: SettingDef[] = [
   { key: "LOYALTY_FIRST_ORDER_PERK_USD", label: "First-order perk", category: "Loyalty & Rewards", type: "number", default: "5", unit: "$", min: 0 },
   { key: "LOYALTY_WELCOME_BONUS_USD", label: "Welcome bonus (vested)", category: "Loyalty & Rewards", type: "number", default: "25", unit: "$", min: 0 },
   { key: "LOYALTY_FREE_SHIPPING", label: "Member free shipping", category: "Loyalty & Rewards", type: "boolean", default: "1" },
+  // Upfront affiliate grant (premium opt-in): take rewards up front, released as 2× real commission vests.
+  { key: "LOYALTY_UPFRONT_ENABLED", label: "Offer the upfront-affiliate option", category: "Loyalty & Rewards", type: "boolean", default: "1", help: "Premium members can opt to take their reward value up front, enrolled as an affiliate; it releases incrementally as they generate real affiliate commission. Vesting, not a loan — no clawback." },
+  { key: "LOYALTY_UPFRONT_GRANT_USD", label: "Upfront grant amount", category: "Loyalty & Rewards", type: "number", default: "1460", unit: "$", min: 0, help: "How much reward value is escrowed up front (defaults to the annual cap).", sensitive: true },
+  { key: "LOYALTY_UPFRONT_MULTIPLE", label: "Commission multiple to fully release", category: "Loyalty & Rewards", type: "number", default: "2", unit: "×", min: 1, help: "Real affiliate commission the member must generate to release the full grant (2× = double the value, keeping the platform margin-positive).", sensitive: true },
+  { key: "LOYALTY_UPFRONT_MILESTONES", label: "Release milestones", category: "Loyalty & Rewards", type: "number", default: "4", unit: "steps", min: 1, help: "Number of incremental release steps toward the 2× target (4 = 25% released at each quarter)." },
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

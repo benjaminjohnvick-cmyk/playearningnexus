@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
+import { recordAffiliateProgress } from "../../sdk/loyalty.ts";
 
 // Automates: affiliate sale commission processing, streamer tip payouts, game voting tally,
 // survey schedule execution, PPCSession closure/rewards, growth heatmap data collection,
@@ -27,16 +28,30 @@ export default __handler(async (req) => {
         ).catch(() => null);
         if (!claimed) continue; // another run already processed this sale
 
-        // Credit affiliate user atomically (compare-and-set).
-        const newBal = await adjustUserBalance(sale.affiliate_user_id, commission).catch(() => null);
-        if (newBal != null) {
+        // If this affiliate is on the UPFRONT plan, their commission funds the vesting of their escrowed
+        // grant (the platform keeps the commission; their reward is the released grant) — so DON'T also
+        // credit it to their balance. recordAffiliateProgress returns null for a normal affiliate.
+        const vested = await recordAffiliateProgress(sale.affiliate_user_id, commission).catch(() => null);
+        if (vested) {
           await base44.asServiceRole.entities.Transaction.create({
             user_id: sale.affiliate_user_id,
             amount: commission,
-            transaction_type: 'revenue_share',
+            transaction_type: 'affiliate_vesting',
             status: 'completed',
-            notes: `Affiliate commission for sale ${sale.id}`
+            notes: `Commission $${commission} advanced upfront vesting (released $${vested.released_now})`
           }).catch(() => null);
+        } else {
+          // Normal affiliate: credit their commission atomically (compare-and-set).
+          const newBal = await adjustUserBalance(sale.affiliate_user_id, commission).catch(() => null);
+          if (newBal != null) {
+            await base44.asServiceRole.entities.Transaction.create({
+              user_id: sale.affiliate_user_id,
+              amount: commission,
+              transaction_type: 'revenue_share',
+              status: 'completed',
+              notes: `Affiliate commission for sale ${sale.id}`
+            }).catch(() => null);
+          }
         }
         commissions++;
       }

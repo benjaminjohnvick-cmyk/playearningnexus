@@ -16,13 +16,32 @@ transmission or stored value. The engine (`backend/sdk/loyalty.ts`) enforces thi
 
 - **Non-premium users (~95%)** pay the normal **10%-marked-up** price (mostly by card). That markup is
   the platform's margin on them. They're not in the loyalty program and get no points-back.
-- **Premium / loyalty members (~5%)** pay the same price but get **10% back in points (store credit)**
-  on every purchase — effectively the markup handed back — **funded by their matched advertiser's $6,000
-  grid payment.** The **markup stays on the sale and is kept**, so the points-back does *not* reduce
-  store margin; it's a separate, advertiser-funded credit granted after the sale (`recordLoyaltyDiscount()`
-  → credited to `current_balance`). The points-back is capped at a back-end **annual** value
+- **Premium / loyalty members (~5%)** pay **NO markup** at all, and *also* get **10% back in points
+  (store credit)** on every purchase — **funded by their matched advertiser's $6,000 grid payment**, not
+  by store margin. Premium purchases are a pure advertiser/affiliate-funded tier (no commerce margin from
+  them by design; the non-premium markup is the commerce engine). The points-back is granted after the
+  sale (`recordLoyaltyDiscount()` → `current_balance`), capped at a back-end **annual** value
   (`LOYALTY_ANNUAL_VALUE_CAP_USD`, $1,460) that **resets each program year**; `loyaltyStatus` returns only
   booleans (`cashback_active`) — never the cap or cumulative usage.
+
+## Optional: take rewards UP FRONT (premium opt-in, affiliate vesting)
+
+A premium member may opt to take their reward value **up front** instead of earning 10% at a time. On
+opt-in (`loyaltyUpfrontEnroll`) they're enrolled as an **affiliate** and the grant (`LOYALTY_UPFRONT_GRANT_USD`,
+default $1,460) is **escrowed**, then **released to spendable store credit incrementally** as they generate
+real affiliate **commission worth a multiple of the grant** (`LOYALTY_UPFRONT_MULTIPLE`, default **2×**),
+in steps (`LOYALTY_UPFRONT_MILESTONES`, default 4 = 25% per quarter of the target). Engine:
+`enrollUpfront()` + `recordAffiliateProgress()` (wired into the affiliate-commission engine, atomic).
+
+Design choices, as agreed:
+- **Incremental release** — 25% of the grant releases at each quarter of the 2× commission target.
+- **2× measured in real commission that reaches the platform** — the member's affiliate commission funds
+  the platform (which keeps it); their reward is the released grant, so the platform is always ahead.
+- **No clawback** — released credit is theirs to keep; nothing is ever owed. If they stop, the unreleased
+  remainder simply doesn't release. It is **logged as reclaimed liability in the ledger, never credited to
+  the owner** — crediting the house its own scrip adds no value and would muddy the clean vesting posture.
+- **Vesting, not a loan** — the whole structure is "unlock what you earn," which is what keeps it low-risk.
+  Affiliate tasks are sales/promotion (with #ad disclosure), never mandatory recruitment (pyramid risk).
 - **Affordability:** a premium member would have to buy $60,000/year before their 10% points-back ($6,000)
   equaled the advertiser payment backing them — and most never approach the $1,460 cap, so real cost per
   member is far lower. The advertiser fee covers it with large headroom; the cap is a safety rail.

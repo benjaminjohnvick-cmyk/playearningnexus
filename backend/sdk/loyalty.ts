@@ -30,6 +30,7 @@
 import { snapNumber } from "./settings.ts";
 import { db } from "./db.ts";
 import { round2, utcDay, gridAnnualPrice } from "./premium-ppc.ts";
+import { adjustUserBalance } from "./balance.ts";
 
 // ── Config knobs (money/cap knobs are on the optimizer denylist) ──────────────────────────────────
 export const loyaltyDiscountPct = () => Math.min(1, Math.max(0, snapNumber("LOYALTY_PROGRAM_DISCOUNT_PCT", 0.10)));
@@ -179,6 +180,93 @@ async function ledger(memberId: string, userId: unknown, type: string, amountUsd
     membership_id: memberId, user_id: userId ?? null, type, amount_usd: round2(amountUsd),
     meta, at: new Date().toISOString(),
   }).catch(() => null);
+}
+
+// ── UPFRONT AFFILIATE GRANT (premium opt-in) ──────────────────────────────────────────────────────
+// A premium member may opt to take their reward value UP FRONT instead of earning it 10%-at-a-time.
+// On opt-in they're enrolled as an AFFILIATE and the grant goes into an escrow the member can see; it
+// is RELEASED to spendable store credit INCREMENTALLY (by milestone) as the member generates real
+// affiliate COMMISSION worth a MULTIPLE (default 2×) of the grant. This is a VESTING structure, not a
+// loan: there is NO clawback of what's released, nothing is ever owed, and if the member stops the
+// unreleased remainder simply never releases (recorded as reclaimed liability in the ledger — never
+// credited to the owner, which would only be the house's own scrip and would muddy the clean posture).
+export const loyaltyUpfrontEnabled = () => snapNumber("LOYALTY_UPFRONT_ENABLED", 1) !== 0;
+export const loyaltyUpfrontGrantUsd = () => round2(snapNumber("LOYALTY_UPFRONT_GRANT_USD", loyaltyAnnualValueCap()));
+export const loyaltyUpfrontMultiple = () => Math.max(1, snapNumber("LOYALTY_UPFRONT_MULTIPLE", 2));
+export const loyaltyUpfrontMilestones = () => Math.max(1, Math.round(snapNumber("LOYALTY_UPFRONT_MILESTONES", 4)));
+
+/** Member-facing view of the upfront vesting (their own grant, so amounts ARE shown to them). */
+export function upfrontStatus(member: Record<string, unknown> | null | undefined) {
+  const grant = round2(Number(member?.upfront_grant_usd) || 0);
+  const released = round2(Number(member?.upfront_released_usd) || 0);
+  const commission = round2(Number(member?.upfront_commission_usd) || 0);
+  const target = round2(Number(member?.upfront_target_usd) || grant * loyaltyUpfrontMultiple());
+  const progress = target > 0 ? Math.min(1, commission / target) : 0;
+  return {
+    active: member?.upfront_mode === true, grant, released,
+    pending: round2(Math.max(0, grant - released)), commission_generated: commission, target,
+    progress: Math.round(progress * 1000) / 1000, complete: grant > 0 && released >= grant,
+  };
+}
+
+/** Premium opt-in: escrow the grant and set the 2× real-commission target. One-time; returns the plan. */
+export async function enrollUpfront(memberId: string, userId: string): Promise<{ grant: number; target: number } | null> {
+  if (!memberId) return null;
+  const grant = loyaltyUpfrontGrantUsd();
+  const target = round2(grant * loyaltyUpfrontMultiple());
+  await db.update("PremiumPPCMembership", memberId, {
+    upfront_mode: true, affiliate_enrolled: true,
+    upfront_grant_usd: grant, upfront_target_usd: target,
+    upfront_commission_usd: 0, upfront_released_usd: 0,
+    upfront_started_at: new Date().toISOString(),
+  }).catch(() => null);
+  await ledger(memberId, userId, "upfront_grant_escrow", grant, { target, note: "escrowed; releases as 2x commission vests" });
+  return { grant, target };
+}
+
+/** Attribute new affiliate COMMISSION to a member and RELEASE any newly-vested chunk of their upfront
+ *  grant to spendable store credit (milestone-incremental). Atomic; no clawback. Call this wherever the
+ *  platform records a real affiliate commission the member drove. */
+export async function recordAffiliateProgress(userId: string, commissionUsd: number): Promise<{ released_now: number; total_released: number; progress: number } | null> {
+  const add = round2(Math.max(0, Number(commissionUsd) || 0));
+  if (!userId || add <= 0) return null;
+  const rows = await db.filter("PremiumPPCMembership", { user_id: userId }, "-created_date", 1).catch(() => []) as Record<string, unknown>[];
+  const m = rows[0];
+  if (!m || m.upfront_mode !== true) return null;
+  const memberId = String(m.id);
+
+  // 1) Atomically add the commission to the running total.
+  let commission: number | null = null;
+  for (let i = 0; i < 6 && commission == null; i++) {
+    const cur = await db.get("PremiumPPCMembership", memberId).catch(() => null) as Record<string, unknown> | null;
+    if (!cur) return null;
+    const c = round2(Number(cur.upfront_commission_usd) || 0);
+    const nc = round2(c + add);
+    const ok = await db.updateIf("PremiumPPCMembership", memberId, { upfront_commission_usd: nc }, { field: "upfront_commission_usd", equals: String(c) }).catch(() => null);
+    if (ok) commission = nc;
+  }
+  if (commission == null) return null;
+
+  // 2) Release any newly-vested milestone chunk (grant × completed-milestone fraction of the 2× target).
+  const milestones = loyaltyUpfrontMilestones();
+  for (let i = 0; i < 6; i++) {
+    const cur = await db.get("PremiumPPCMembership", memberId).catch(() => null) as Record<string, unknown> | null;
+    if (!cur) return null;
+    const grant = round2(Number(cur.upfront_grant_usd) || 0);
+    const target = round2(Number(cur.upfront_target_usd) || grant * loyaltyUpfrontMultiple());
+    const released = round2(Number(cur.upfront_released_usd) || 0);
+    const progress = target > 0 ? Math.min(1, commission / target) : 0;
+    const vestedTarget = round2(grant * (Math.floor(progress * milestones) / milestones));
+    const toRelease = round2(Math.max(0, vestedTarget - released));
+    if (toRelease <= 0) return { released_now: 0, total_released: released, progress: Math.round(progress * 1000) / 1000 };
+    const ok = await db.updateIf("PremiumPPCMembership", memberId, { upfront_released_usd: round2(released + toRelease) }, { field: "upfront_released_usd", equals: String(released) }).catch(() => null);
+    if (ok) {
+      await adjustUserBalance(userId, toRelease, { field: "current_balance" }).catch(() => null);
+      await ledger(memberId, userId, "upfront_release", toRelease, { commission, progress: Math.round(progress * 1000) / 1000 });
+      return { released_now: toRelease, total_released: round2(released + toRelease), progress: Math.round(progress * 1000) / 1000 };
+    }
+  }
+  return null;
 }
 
 // ── The eleven value perks (config-driven descriptor) ─────────────────────────────────────────────

@@ -61,18 +61,21 @@ export default __handler(async (req) => {
     // Pre-flight the payment path (no charge yet) so we don't claim a listing we can't pay for.
     let charged = { method: payment_method, points: 0, usd: 0, markup: 0, welcome_discount_usd: 0, loyalty_discount_usd: 0 };
 
-    // LOYALTY POINTS-BACK — premium (loyalty) members get 10% of the BASE price back as store credit
-    // AFTER a captured sale. The MARKUP STAYS on the price for everyone (that's the non-premium margin),
-    // so this does NOT reduce what anyone pays; it's a separate, ADVERTISER-FUNDED credit for premium
-    // members, capped at the back-end annual value ($1,460/yr, resets yearly). quoteDiscount() returns 0
-    // unless the member is premium, completed today's steps, and has headroom left this year. Applies to
-    // first-party (platform) items so member-seller payouts stay whole.
+    // LOYALTY / PREMIUM pricing. Load the member once. PREMIUM (loyalty) members get NO markup on their
+    // purchases (only non-premium pay the markup — that's the platform's commerce margin), AND they get
+    // 10% of the BASE price back as store credit AFTER a captured sale (advertiser-funded, capped at the
+    // back-end $1,460/yr). quoteDiscount() returns 0 unless the member is premium, did today's steps, and
+    // has headroom left this year. Points-back applies to first-party items so member-seller payouts stay whole.
+    const loyaltyOn = await isEnabled("loyalty_program");
+    const member = loyaltyOn
+      ? (((await db.filter("PremiumPPCMembership", { user_id: user.id }, "-created_date", 1).catch(() => [])) as Record<string, unknown>[])[0] || null)
+      : null;
+    const isPremium = !!member?.loyalty_enrolled;   // premium = enrolled loyalty member
     let loyaltyDiscountUsd = 0;   // the points-back USD the member will receive
     let loyaltyMemberId: string | null = null;
-    if (isPlatform && (await isEnabled("loyalty_program"))) {
-      const mem = ((await db.filter("PremiumPPCMembership", { user_id: user.id }, "-created_date", 1).catch(() => [])) as Record<string, unknown>[])[0] || null;
-      const q = quoteDiscount(mem, Number(listing.price_usd) || 0);
-      if (q > 0 && mem?.id) { loyaltyDiscountUsd = q; loyaltyMemberId = String(mem.id); }
+    if (isPlatform && loyaltyOn) {
+      const q = quoteDiscount(member, Number(listing.price_usd) || 0);
+      if (q > 0 && member?.id) { loyaltyDiscountUsd = q; loyaltyMemberId = String(member.id); }
     }
     let pointsPrice = 0;          // list price in points
     let effectivePoints = 0;      // what the buyer actually pays after any welcome discount
@@ -81,9 +84,9 @@ export default __handler(async (req) => {
       const basePoints = Number(listing.price_points) || 0;
       if (basePoints <= 0) return Response.json({ error: "This item isn't available for points" }, { status: 400 });
       pointsPrice = basePoints;   // list price — what a member seller is credited (unchanged by the markup)
-      // Apply the SAME markup to points/survey purchases as to card, so the platform earns margin on
-      // every sale regardless of payment method.
-      const markup = await getNumber("STORE_MARKUP", 0.10);
+      // Markup applies to NON-premium buyers only (the platform's commerce margin). PREMIUM members pay
+      // NO markup — their reward is the 10% points-back instead, funded by advertisers.
+      const markup = isPremium ? 0 : await getNumber("STORE_MARKUP", 0.10);
       const grossPoints = Math.round(basePoints * (1 + markup));
       effectivePoints = grossPoints;
       // Welcome rewards: apply ONLY to platform-catalog items (platform is the seller). The pool is in
@@ -108,7 +111,8 @@ export default __handler(async (req) => {
       }
       const base = Number(listing.price_usd) || 0;
       if (base <= 0) return Response.json({ error: "This item isn't available for card purchase" }, { status: 400 });
-      const markup = await getNumber("STORE_MARKUP", 0.10);
+      // Premium members pay NO markup (reward is the 10% points-back); non-premium pay the markup.
+      const markup = isPremium ? 0 : await getNumber("STORE_MARKUP", 0.10);
       const gross = base * (1 + markup);
       // Welcome credit applies to card too (platform items), FUNDED BY the markup and capped so the
       // charge never drops below the base price — always margin-positive.
