@@ -4,9 +4,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Download, CreditCard, Coins, Clock, Loader2, Search, AlertTriangle, Cloud } from 'lucide-react';
+import { Download, CreditCard, Coins, Clock, Loader2, Search, AlertTriangle, Cloud, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocale } from '@/components/locale/LocaleContext';
+import { SORT_OPTIONS, applySort } from '@/lib/storeSort';
 
 // DigitalStore — the "Digital Products" section: intangible goods delivered ONLINE INSTANTLY (no
 // shipping, no local pickup). Same parity + constraints as the physical store — search/sort, localized
@@ -50,9 +51,7 @@ export default function DigitalStore() {
     let arr = (listings || []).filter((l) =>
       l.fulfillment_mode === 'digital' || l.product_type === 'digital' || digitalSet.has(String(l.category || '').toLowerCase()));
     if (q.trim()) { const s = q.toLowerCase(); arr = arr.filter((l) => `${l.title} ${l.category || ''}`.toLowerCase().includes(s)); }
-    if (sort === 'price_asc') arr = [...arr].sort((a, b) => (a.price_usd || 0) - (b.price_usd || 0));
-    if (sort === 'price_desc') arr = [...arr].sort((a, b) => (b.price_usd || 0) - (a.price_usd || 0));
-    return arr;
+    return applySort(arr, sort);
   }, [listings, digitalSet, q, sort]);
 
   async function buy(listing, method, acknowledged) {
@@ -65,6 +64,20 @@ export default function DigitalStore() {
       toast.success(method === 'card' ? 'Purchased! Your download/access is ready.' : 'Purchased with points! Your download/access is ready.');
       await load(); loadCfg();
     } catch (e) { toast.error(e?.data?.error || e.message || 'Purchase failed'); }
+    finally { setBusy(''); setWarn(null); }
+  }
+
+  // One-click "Buy now" — logs the order immediately (card on file or not) via oneClickPurchase.
+  async function buyNow(listing, acknowledged) {
+    setBusy(listing.id + 'now');
+    try {
+      const r = await base44.functions.invoke('oneClickPurchase', { listing_id: listing.id, acknowledged_over_limit: !!acknowledged });
+      if (r.data?.affordability_warning) { setWarn({ listing, oneClick: true, ...r.data }); return; }
+      if (r.data?.error) { toast.error(r.data.error); return; }
+      if (r.data?.needs_card) toast.info(r.data.message || 'Order saved — add a card to complete it.');
+      else toast.success(r.data?.message || 'Order placed!');
+      await load(); loadCfg();
+    } catch (e) { toast.error(e?.data?.error || e.message || 'Could not place the order.'); }
     finally { setBusy(''); setWarn(null); }
   }
 
@@ -127,11 +140,12 @@ export default function DigitalStore() {
 
       <div className="mb-4 flex items-center justify-between gap-2">
         <span className="text-xs text-gray-500">{shown.length} product{shown.length === 1 ? '' : 's'}{q.trim() ? ` for “${q.trim()}”` : ''}</span>
-        <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
-          <option value="relevance">Relevance</option>
-          <option value="price_asc">Price: low to high</option>
-          <option value="price_desc">Price: high to low</option>
-        </select>
+        <label className="flex items-center gap-1.5 text-sm text-gray-600">
+          <span className="font-medium">Sort by:</span>
+          <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
+            {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </label>
       </div>
 
       {layaways.filter((l) => l.status === 'open').length > 0 && (
@@ -161,7 +175,12 @@ export default function DigitalStore() {
                 <div className="mt-1 flex items-center gap-1 text-[11px] text-indigo-600"><Download className="h-3 w-3" /> Instant online delivery</div>
                 <div className="mt-2 space-y-1.5">
                   {l.price_usd > 0 && (
-                    <Button size="sm" className="w-full" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
+                    <Button size="sm" className="w-full bg-amber-500 hover:bg-amber-600 text-white" disabled={busy === l.id + 'now'} onClick={() => buyNow(l)}>
+                      <Zap className="mr-1 h-4 w-4" /> Buy now
+                    </Button>
+                  )}
+                  {l.price_usd > 0 && (
+                    <Button size="sm" variant="outline" className="w-full" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
                       <CreditCard className="mr-1 h-4 w-4" /> {formatPrice(l.price_usd * (1 + markupPct / 100))}
                       <span className="ml-1 text-[10px] opacity-75">card</span>
                     </Button>
@@ -190,7 +209,7 @@ export default function DigitalStore() {
             <p className="text-sm text-gray-700">{warn.message}</p>
             <div className="mt-4 flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setWarn(null)}>Go back</Button>
-              <Button className="flex-1" onClick={() => buy(warn.listing, warn.method, true)}>Proceed anyway</Button>
+              <Button className="flex-1" onClick={() => warn.oneClick ? buyNow(warn.listing, true) : buy(warn.listing, warn.method, true)}>Proceed anyway</Button>
             </div>
           </div>
         </div>

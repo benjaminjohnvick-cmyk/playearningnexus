@@ -4,9 +4,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Truck, Store, CreditCard, Coins, Clock, Landmark, Loader2, Search, AlertTriangle, ShoppingBag } from 'lucide-react';
+import { Truck, Store, CreditCard, Coins, Clock, Landmark, Loader2, Search, AlertTriangle, ShoppingBag, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocale } from '@/components/locale/LocaleContext';
+import { SORT_OPTIONS, applySort } from '@/lib/storeSort';
 
 // PhysicalStore — the "Buy Physical Items" section. Two ways to get an item: (1) buy online & have it
 // shipped, or (2) buy locally & pick it up. Full marketplace parity: search, sort, localized pricing +
@@ -59,9 +60,7 @@ export default function PhysicalStore() {
       const s = q.toLowerCase();
       arr = arr.filter((l) => `${l.title} ${l.category || ''}`.toLowerCase().includes(s));
     }
-    if (sort === 'price_asc') arr = [...arr].sort((a, b) => (a.price_usd || 0) - (b.price_usd || 0));
-    if (sort === 'price_desc') arr = [...arr].sort((a, b) => (b.price_usd || 0) - (a.price_usd || 0));
-    return arr;
+    return applySort(arr, sort);
   }, [listings, mode, q, sort]);
 
   async function buy(listing, method, acknowledged) {
@@ -76,6 +75,20 @@ export default function PhysicalStore() {
       toast.success(method === 'card' ? 'Purchased! Your order is being processed.' : 'Purchased with points!');
       await load(); loadCfg();
     } catch (e) { toast.error(e?.data?.error || e.message || 'Purchase failed'); }
+    finally { setBusy(''); setWarn(null); }
+  }
+
+  // One-click "Buy now" — logs the order immediately (card on file or not) via oneClickPurchase.
+  async function buyNow(listing, acknowledged) {
+    setBusy(listing.id + 'now');
+    try {
+      const r = await base44.functions.invoke('oneClickPurchase', { listing_id: listing.id, acknowledged_over_limit: !!acknowledged });
+      if (r.data?.affordability_warning) { setWarn({ listing, oneClick: true, ...r.data }); return; }
+      if (r.data?.error) { toast.error(r.data.error); return; }
+      if (r.data?.needs_card) toast.info(r.data.message || 'Order saved — add a card to complete it.');
+      else toast.success(r.data?.message || 'Order placed!');
+      await load(); loadCfg();
+    } catch (e) { toast.error(e?.data?.error || e.message || 'Could not place the order.'); }
     finally { setBusy(''); setWarn(null); }
   }
 
@@ -146,11 +159,12 @@ export default function PhysicalStore() {
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
           <Input className="pl-8" placeholder="Search physical items…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
-        <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
-          <option value="relevance">Relevance</option>
-          <option value="price_asc">Price: low to high</option>
-          <option value="price_desc">Price: high to low</option>
-        </select>
+        <label className="flex items-center gap-1.5 text-sm text-gray-600">
+          <span className="font-medium">Sort by:</span>
+          <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
+            {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </label>
       </div>
 
       {/* Layaways in progress */}
@@ -181,9 +195,15 @@ export default function PhysicalStore() {
                 {l.category && <Badge variant="secondary" className="mt-1 text-[10px]">{l.category}</Badge>}
                 {mode === 'pickup' && l.pickup_location && <div className="mt-1 flex items-center gap-1 text-[11px] text-emerald-700"><Store className="h-3 w-3" />{l.pickup_location}</div>}
                 <div className="mt-2 space-y-1.5">
-                  {/* Primary: credit card (+markup) */}
+                  {/* One-click Buy now */}
                   {l.price_usd > 0 && (
-                    <Button size="sm" className="w-full" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
+                    <Button size="sm" className="w-full bg-amber-500 hover:bg-amber-600 text-white" disabled={busy === l.id + 'now'} onClick={() => buyNow(l)}>
+                      <Zap className="mr-1 h-4 w-4" /> Buy now
+                    </Button>
+                  )}
+                  {/* Credit card (+markup) */}
+                  {l.price_usd > 0 && (
+                    <Button size="sm" variant="outline" className="w-full" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
                       <CreditCard className="mr-1 h-4 w-4" /> {formatPrice(l.price_usd * (1 + markupPct / 100))}
                       <span className="ml-1 text-[10px] opacity-75">card</span>
                     </Button>
@@ -222,7 +242,7 @@ export default function PhysicalStore() {
             <p className="text-sm text-gray-700">{warn.message}</p>
             <div className="mt-4 flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setWarn(null)}>Go back</Button>
-              <Button className="flex-1" onClick={() => buy(warn.listing, warn.method, true)}>Proceed anyway</Button>
+              <Button className="flex-1" onClick={() => warn.oneClick ? buyNow(warn.listing, true) : buy(warn.listing, warn.method, true)}>Proceed anyway</Button>
             </div>
           </div>
         </div>
