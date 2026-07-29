@@ -19,7 +19,7 @@ export default __handler(async (req) => {
     // Lazy DEFAULT check for up-front members: spent-out AND behind the survey pace → lock out of the
     // program (until a new slot opens; re-enrollment then requires lockout mode). Nothing is charged or
     // clawed back — the granted points stay banked in their balance.
-    if (member && member.upfront_grant && member.status === "active" && isDefaulted(user as Record<string, unknown>, member)) {
+    if (member && member.upfront_grant && (member.status === "active" || member.status === "ceiling_reached") && isDefaulted(user as Record<string, unknown>, member)) {
       await base44.asServiceRole.entities.PremiumPPCMembership.update(String(member.id), { status: "locked_out", defaulted: true, defaulted_at: new Date().toISOString() }).catch(() => null);
       await db.remove("PremiumEnrollClaim", `pec_${user.id}`).catch(() => null);
       await base44.asServiceRole.entities.Notification.create({

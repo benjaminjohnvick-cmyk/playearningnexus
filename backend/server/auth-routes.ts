@@ -84,7 +84,11 @@ export async function authRoutes(req: Request, pathname: string): Promise<Respon
     // AGE / IDENTITY VERIFICATION IS SERVER-ONLY. A client must never be able to mark itself 18+ or
     // change its DOB to pass the age gate — that's set at signup or by a server-side verification
     // path, never here. This closes the self-grant-18+ tamper vector.
-    for (const f of ["age_verified_18plus", "needs_age_verification", "age_attestation_at", "date_of_birth"]) {
+    // jurisdiction/state are ALSO server-only: every compliance gate reads user.jurisdiction ?? user.state
+    // (jackpot/tournament/sweepstakes eligibility, prize-registration thresholds, cash-out). If a client
+    // could PATCH these it would defeat all jurisdiction gating (move itself out of a blocked/threshold
+    // state). Set them at signup / by server-side KYC, never here.
+    for (const f of ["age_verified_18plus", "needs_age_verification", "age_attestation_at", "date_of_birth", "jurisdiction", "state"]) {
       if (f in patch) {
         delete patch[f];
         try { await db.create("AppLog", { source: "security", event: "blocked_client_age_write", field: f, user_id: payload.sub, at: new Date().toISOString() }); } catch { /* non-fatal */ }

@@ -46,6 +46,19 @@ export default __handler(async (req) => {
       });
     }
 
+    // IDEMPOTENCY: earnings, tier progress, and referral commission are credited ONCE per (user, tier,
+    // day). A later same-day submission only updates the session record above (accumulating minutes/
+    // questions) and the survey-commitment tracking below — it never re-credits. This blocks replaying
+    // the same session to inflate balance / complete tiers early / repeat referral payouts.
+    const firstToday = existingSessions.length === 0;
+    if (!firstToday) {
+      try {
+        const { markSurveyDay, surveyMinutesPerDay } = await import("../../sdk/premium-ppc.ts");
+        if (goalMet || Number(minutesCompleted) >= surveyMinutesPerDay()) await markSurveyDay(user.id, Number(minutesCompleted));
+      } catch { /* best-effort */ }
+      return Response.json({ success: true, already_recorded_today: true, session_id: session.id, goal_met: goalMet });
+    }
+
     // 50/50 revenue split: user gets half, then 10% platform fee on their share
     const userShare = earnings * 0.50;
     const feeAmount = userShare * 0.10;

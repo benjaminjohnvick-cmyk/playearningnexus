@@ -155,16 +155,20 @@ export async function markSurveyDay(userId: string, minutesToday?: number): Prom
   { survey_days: number; credited: number; sessions_today: number; already: boolean } | null
 > {
   const rows = await db.filter("PremiumPPCMembership", { user_id: userId }, "-created_date", 5).catch(() => []) as Record<string, unknown>[];
-  const m = rows.find((x) => x.status === "active" && x.upfront_grant) || null;
+  // Accept "ceiling_reached" too: an up-front member's balance is pre-granted, so the daily reconcile can
+  // flip them to ceiling_reached on day one. Gating survey crediting on "active" alone would silently stop
+  // all survey-commitment tracking (and lockout) for exactly the members who took the grant.
+  const m = rows.find((x) => (x.status === "active" || x.status === "ceiling_reached") && x.upfront_grant) || null;
   if (!m) return null;
   const base = surveyMinutesPerDay();
   const today = utcDay();
   const plan = makeupPlan(m);
   const minutes = Number(minutesToday);
   const sessionsByMinutes = Number.isFinite(minutes) && minutes > 0 ? Math.max(1, Math.floor(minutes / base)) : 1;
-  // Total sessions to stand credited for today = what they've already been credited + what today's minutes
-  // cover, capped at the day's allowance (today + make-up owed).
-  const targetToday = Math.min(plan.sessions_today, plan.sessions_done_today + sessionsByMinutes);
+  // Total sessions to stand credited for today. `minutesToday` is CUMULATIVE for the day, so the sessions
+  // it covers already include any credited earlier today — take the max (not the sum) to avoid
+  // double-counting cumulative minutes on top of sessions_done_today. Capped at the day's allowance.
+  const targetToday = Math.min(plan.sessions_today, Math.max(plan.sessions_done_today, sessionsByMinutes));
   const newCredit = Math.max(0, targetToday - plan.sessions_done_today);
   if (newCredit <= 0) {
     return { survey_days: plan.done, credited: 0, sessions_today: plan.sessions_today, already: true };

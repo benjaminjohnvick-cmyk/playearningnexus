@@ -74,6 +74,10 @@ export default __handler(async (req) => {
     const cents = Math.max(1, await getNumber("POINT_VALUE_CENTS", 1));
     const grantPoints = Math.round(ceilingUsd * (100 / cents)); // $1,460 → 146,000 pts at 1¢/pt
     const lockoutEnabled = priorDefault || consent.lockout_mode === true;
+    // ANTI-DOUBLE-GRANT: the up-front $1,460 is a once-per-user grant. If this user ever received an
+    // up-front grant before (e.g. defaulted then re-enrolled), do NOT grant it again — re-enrollment
+    // restores program access, not a second pile of points.
+    const alreadyGranted = upfront && (existing || []).some((m: Record<string, unknown>) => m.upfront_grant === true && (Number(m.grant_points) || 0) > 0);
 
     const membership = await base44.asServiceRole.entities.PremiumPPCMembership.create({
       user_id: user.id,
@@ -85,9 +89,10 @@ export default __handler(async (req) => {
       annual_earn_ceiling: ceilingUsd,
       daily_earn_cap: DAILY_EARN_CAP,
       upfront_grant: upfront,
-      grant_points: upfront ? grantPoints : 0,
-      grant_usd: upfront ? ceilingUsd : 0,
-      points_earned_total: upfront ? grantPoints : WELCOME_BONUS,
+      grant_points: (upfront && !alreadyGranted) ? grantPoints : 0,
+      grant_usd: (upfront && !alreadyGranted) ? ceilingUsd : 0,
+      regranted: alreadyGranted || false,
+      points_earned_total: upfront ? (alreadyGranted ? 0 : grantPoints) : WELCOME_BONUS,
       commitment_start: now,
       survey_requirement_days: surveyCommitmentDays(),
       survey_days: 0,
@@ -104,9 +109,9 @@ export default __handler(async (req) => {
       enrolled_at: now,
     });
 
-    // Credit the member's balance: the FULL up-front grant (banked, non-cashable), or — in the safer
-    // earn-as-you-go mode — just the welcome bonus. Nothing here is ever repaid or clawed back.
-    const creditPoints = upfront ? grantPoints : WELCOME_BONUS;
+    // Credit the member's balance: the FULL up-front grant (banked, non-cashable) — ONLY if they haven't
+    // had it before — or, in the safer earn-as-you-go mode, just the welcome bonus. Never repaid/clawed back.
+    const creditPoints = upfront ? (alreadyGranted ? 0 : grantPoints) : WELCOME_BONUS;
     if (creditPoints > 0) {
       const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || user;
       const bal = Math.round((Number(fresh.current_balance ?? 0) + creditPoints) * 100) / 100;

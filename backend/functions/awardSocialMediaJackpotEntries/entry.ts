@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
+import { featureAllowed } from "../../sdk/jurisdiction.ts";
 
 export default __handler(async (req) => {
   try {
@@ -18,9 +19,18 @@ export default __handler(async (req) => {
     }
 
     const { platform } = await req.json();
-    
+
     if (!platform) {
       return Response.json({ error: 'Missing platform' }, { status: 400 });
+    }
+
+    // Sweepstakes eligibility gate (mirrors awardReferralJackpotEntries / processWeeklyJackpot): only
+    // 18+ verified users in jurisdictions where prize competitions aren't blocked accrue jackpot entries.
+    if (user.age_verified_18plus !== true) {
+      return Response.json({ success: false, skipped: 'age_unverified', entriesAwarded: 0 });
+    }
+    if (!featureAllowed('jackpots', user.jurisdiction ?? user.state ?? null)) {
+      return Response.json({ success: false, skipped: 'feature_blocked_in_jurisdiction', entriesAwarded: 0 });
     }
 
     // Award jackpot entries based on platform

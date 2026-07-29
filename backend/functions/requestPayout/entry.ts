@@ -6,6 +6,7 @@ import { getNumber } from "../../sdk/settings.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
 import { gate } from "../../sdk/oversight.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
+import { db } from "../../sdk/db.ts";
 
 export default __handler(async (req) => {
   try {
@@ -40,15 +41,20 @@ export default __handler(async (req) => {
     if (!payment_method) return Response.json({ error: 'Missing payment method' }, { status: 400 });
 
     // Check available balance (earnings minus already-reserved pending payouts).
-    const availableBalance = user.total_earnings - (user.pending_payouts || 0);
-    if (availableBalance < amount) {
-      return Response.json({ error: 'Insufficient balance' }, { status: 400 });
+    // Reserve the funds ATOMICALLY (compare-and-set with retry) so two concurrent/repeat requests can't
+    // both pass the same balance check and double-spend. Re-reads pending_payouts inside the loop and only
+    // commits if it hasn't changed since the read (updateIf), re-checking available balance each attempt.
+    let reserved: number | null = null;
+    for (let i = 0; i < 6; i++) {
+      const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || user;
+      const pending = Number(fresh.pending_payouts) || 0;
+      const available = (Number(fresh.total_earnings) || 0) - pending;
+      if (available < amount) return Response.json({ error: 'Insufficient balance' }, { status: 400 });
+      const next = Math.round((pending + Number(amount)) * 100) / 100;
+      const ok = await db.updateIf("User", user.id, { pending_payouts: next }, { field: "pending_payouts", equals: String(pending) }).catch(() => null);
+      if (ok) { reserved = next; break; }
     }
-
-    // Reserve the funds immediately so a second (concurrent/repeat) request can't pass the same
-    // balance check and double-spend. Best-effort without a DB transaction; re-reads current value.
-    const reserved = (user.pending_payouts || 0) + Number(amount);
-    await base44.asServiceRole.entities.User.update(user.id, { pending_payouts: reserved });
+    if (reserved === null) return Response.json({ error: 'Please retry — your balance is being updated.' }, { status: 409 });
 
     // Get trust score
     const trustScores = await base44.asServiceRole.entities.RespondentTrustScore.filter({ user_id: user.id });

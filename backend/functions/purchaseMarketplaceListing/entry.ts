@@ -6,6 +6,7 @@ import { db } from "../../sdk/db.ts";
 import { PLATFORM_SELLER_ID, isDigitalCategory } from "../../sdk/catalog.ts";
 import { welcomeDiscountFor, redeemWelcomeCredit } from "../../sdk/welcome-credit.ts";
 import { purchaseGate } from "../../sdk/household.ts";
+import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -232,6 +233,15 @@ export default __handler(async (req) => {
       status: orderStatus,
       created_at: new Date().toISOString(),
     });
+
+    // Make a captured purchase visible to the AI / self-learning layer (durable signal + funnel event).
+    if (paidNow) {
+      await recordPurchaseSignal({
+        userId: user.id, valueUsd: Number(charged.usd) || Math.round((Number(charged.points) || 0)) / 100,
+        points: Number(charged.points) || 0, listingId: listing.id, source,
+        category: listing.category || null, paymentMethod: payment_method,
+      }).catch(() => {});
+    }
 
     // Notify the buyer always; notify a member seller only once payment is captured.
     await base44.asServiceRole.entities.Notification.create({

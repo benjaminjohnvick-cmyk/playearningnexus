@@ -3,6 +3,8 @@ import { __handler } from "../../sdk/runtime.ts";
 import { isBusinessAccount, applyMarkup, STORE_MARKUP } from "../../sdk/payout-policy.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { blockedOrderReason } from "../../sdk/catalog-policy.ts";
+import { db } from "../../sdk/db.ts";
+import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
 
 // Server-authoritative store order (product OR online service → pay → AI fulfillment).
 //
@@ -52,19 +54,29 @@ export default __handler(async (req) => {
     const charge = round2(rawPrice * (1 + markupRate));
     const markupApplied = round2(charge - rawPrice);
 
-    // Deduct the right balance on the server (authoritative).
+    // Deduct the right balance on the server (authoritative), ATOMICALLY (compare-and-set with retry) so
+    // two concurrent orders can't both pass the same balance check and double-spend.
     let newBalance: number | undefined;
     let newRefundBalance: number | undefined;
+    async function atomicDebit(field: string, needed: number): Promise<{ ok: boolean; next?: number; cur?: number; contended?: boolean }> {
+      for (let i = 0; i < 6; i++) {
+        const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || {};
+        const cur = Number((fresh as Record<string, unknown>)[field] ?? 0);
+        if (cur < needed) return { ok: false, cur };
+        const next = round2(cur - needed);
+        const done = await db.updateIf("User", user.id, { [field]: next }, { field, equals: String(cur) }).catch(() => null);
+        if (done) return { ok: true, next };
+      }
+      return { ok: false, contended: true };
+    }
     if (payment_method === "survey_balance") {
-      const balance = Number(user.current_balance ?? 0);
-      if (balance < charge) return Response.json({ error: "Insufficient store credit", required: charge, balance }, { status: 402 });
-      newBalance = round2(balance - charge);
-      await base44.asServiceRole.entities.User.update(user.id, { current_balance: newBalance });
+      const r = await atomicDebit("current_balance", charge);
+      if (!r.ok) return Response.json({ error: r.contended ? "Please retry — balance is being updated." : "Insufficient store credit", required: charge, balance: r.cur }, { status: r.contended ? 409 : 402 });
+      newBalance = r.next;
     } else if (payment_method === "refund_credit") {
-      const rb = Number(user.refund_credit_balance ?? 0);
-      if (rb < charge) return Response.json({ error: "Insufficient refund credit", required: charge, refund_balance: rb }, { status: 402 });
-      newRefundBalance = round2(rb - charge);
-      await base44.asServiceRole.entities.User.update(user.id, { refund_credit_balance: newRefundBalance });
+      const r = await atomicDebit("refund_credit_balance", charge);
+      if (!r.ok) return Response.json({ error: r.contended ? "Please retry — balance is being updated." : "Insufficient refund credit", required: charge, refund_balance: r.cur }, { status: r.contended ? 409 : 402 });
+      newRefundBalance = r.next;
     }
     // credit_card path: captured client-side (paypal_order_id) — nothing to deduct here.
 
@@ -93,18 +105,16 @@ export default __handler(async (req) => {
         : "Regular user — 10% platform markup applied.",
     });
 
-    // Doubling tracker: if this order is for a specific advertiser's product/service, count it toward
-    // that advertiser's "$10,000 in orders" doubling target (which gates their free social credits).
-    const advId = product.advertiser_user_id || product.owner_user_id;
-    if (advId) {
-      const rows = await base44.asServiceRole.entities.User.filter({ id: advId });
-      const advUser = (rows || [])[0];
-      if (advUser) {
-        await base44.asServiceRole.entities.User.update(advId, {
-          ppc_orders_value_delivered: round2(Number(advUser.ppc_orders_value_delivered ?? 0) + rawPrice),
-        }).catch(() => null);
-      }
-    }
+    // NOTE: advertiser "doubling" attribution is intentionally NOT done here. It is credited once, at
+    // fund-release, in autoOrderFulfillmentAndFundsRelease (creditAdvertiserOrder) — pay-for-performance
+    // on delivered value. Crediting here too would DOUBLE-count every order toward the doubling target.
+
+    // Make this purchase visible to the AI / self-learning layer (durable OptimizationSignal +
+    // InteractionEvent) so the platform has data on what members buy. Best-effort.
+    await recordPurchaseSignal({
+      userId: user.id, valueUsd: charge, source: product.source || "store",
+      category: product.category || product.product_category || null, paymentMethod: payment_method,
+    }).catch(() => {});
 
     // Fire the autonomous AI fulfillment pipeline (ships physical; delivers services digitally).
     base44.asServiceRole.functions.invoke("aiOrderFulfillment", { order_id: order.id }).catch(() => {});
