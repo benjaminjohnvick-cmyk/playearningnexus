@@ -132,9 +132,8 @@ export default function AILiveOversight() {
           </div>
           <p className="mb-3 text-xs text-gray-500">
             <Clock className="mr-1 inline h-3.5 w-3.5" />
-            The once-a-day human check runs at {String(review.peak_hour_utc).padStart(2, '0')}:00 UTC for {review.window_hours}h.
-            {!review.window_open && review.next_open_iso ? ` Next: ${new Date(review.next_open_iso).toLocaleString()}.` : ' You can promote changes now.'}
-            {' '}Only changes users approved with high statistical confidence appear here.
+            Human review is <b>optional</b> — by default the AI reviews and promotes user-approved changes itself, and they show in the live feed below. Turn on <code>AI_GLOBAL_HUMAN_GATE</code> in Platform Settings to route promotions here instead, for the once-a-day check at {String(review.peak_hour_utc).padStart(2, '0')}:00 UTC ({review.window_hours}h).
+            {review.window_open ? ' Window is open — you can promote now.' : (review.next_open_iso ? ` Next window: ${new Date(review.next_open_iso).toLocaleString()}.` : '')}
           </p>
           {(review.eligible || []).length === 0 ? (
             <div className="rounded-lg bg-gray-50 py-6 text-center text-sm text-gray-400">No changes waiting for global promotion.</div>

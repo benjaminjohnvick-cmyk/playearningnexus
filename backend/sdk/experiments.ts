@@ -10,6 +10,27 @@
 import { db } from "./db.ts";
 import { getBool, getNumber, getDef, setSetting } from "./settings.ts";
 import { Core } from "./integrations.ts";
+import { logAiAction } from "./ai-control.ts";
+
+// The AI's OWN review before it promotes a user-approved change site-wide (used when the optional human
+// gate is off). It sanity-checks the result and defaults to APPROVE — the statistical bar already passed;
+// this just lets the AI hold something that looks unreliable/risky. No LLM key → statistical approval stands.
+async function aiReviewPromotion(e: Record<string, unknown>): Promise<{ approve: boolean; reason: string }> {
+  const hasLLM = !!(Deno.env.get("ANTHROPIC_API_KEY") || Deno.env.get("OPENAI_API_KEY"));
+  if (!hasLLM) return { approve: true, reason: "no LLM — statistical approval stands" };
+  try {
+    const out = await Core.InvokeLLM({
+      prompt:
+        `A setting change "${e.key}" from ${e.control_value} to ${e.variant_value} passed user testing ` +
+        `(${Math.round((Number(e.favor_pct) || 0) * 100)}% approval across ${e.sample} votes, statistical floor ` +
+        `${Math.round((Number(e.wilson_lower) || 0) * 100)}%). Rationale: ${e.rationale}. As a cautious reviewer, ` +
+        `should it be promoted site-wide? Approve unless it looks risky, self-contradictory, or the sample seems unreliable.`,
+      response_json_schema: { type: "object", properties: { approve: { type: "boolean" }, reason: { type: "string" } }, required: ["approve"] },
+    });
+    const p = typeof out === "string" ? JSON.parse(out) : out as any;
+    return { approve: p?.approve !== false, reason: String(p?.reason || "") };
+  } catch { return { approve: true, reason: "review error — statistical approval stands" }; }
+}
 
 // Wilson score lower bound (95%) — a change only "goes global" if we're statistically confident the
 // true approval rate clears the bar, not just because a small favorable sample got lucky.
@@ -165,15 +186,31 @@ export async function evaluateExperiments(minResponses = 5, maxAgeHours = 72): P
       out.push({ key: e.key, status: "eligible_for_global", favor_pct: favorPct, wilson, responses: responses.length });
       continue;
     }
-    if (pass) await applyPassedExperiment(e, favorPct); // human gate off → auto-global
-    status = pass ? "passed_applied"
+    // Human gate off (default): the AI conducts its OWN review, then promotes if it approves.
+    let aiApproved = false, aiReason = "";
+    if (pass) {
+      const e2 = { ...e, favor_pct: favorPct, wilson_lower: wilson, sample: responses.length };
+      const review = await aiReviewPromotion(e2);
+      aiApproved = review.approve; aiReason = review.reason;
+      if (aiApproved) await applyPassedExperiment(e, favorPct);
+      await logAiAction({
+        agent: "ai_reviewer", action: "global_review", target: String(e.key), setting_key: String(e.key),
+        from: e.control_value, to: e.variant_value, status: aiApproved ? "applied" : "queued",
+        summary: aiApproved
+          ? `AI reviewed and promoted ${e.key} site-wide (${Math.round(favorPct * 100)}% user approval, ${responses.length} votes)`
+          : `AI held ${e.key} from going global — ${aiReason}`,
+        detail: { favor_pct: favorPct, wilson, sample: responses.length, reason: aiReason },
+      }).catch(() => null);
+    }
+    status = (pass && aiApproved) ? "passed_applied"
+      : (pass && !aiApproved) ? "ai_held"
       : responses.length === 0 ? "expired_no_data"
       : responses.length < minSample ? "inconclusive"
       : "failed";
     await db.update("OptimizationExperiment", String(e.id), {
-      status, favor_pct: Math.round(favorPct * 100) / 100, wilson_lower: Math.round(wilson * 100) / 100, sample: responses.length, evaluated_at: now,
+      status, favor_pct: Math.round(favorPct * 100) / 100, wilson_lower: Math.round(wilson * 100) / 100, sample: responses.length, evaluated_at: now, ai_review_reason: aiReason || null,
     }).catch(() => null);
-    out.push({ key: e.key, status: pass ? "applied" : "not_applied", favor_pct: favorPct, responses: responses.length });
+    out.push({ key: e.key, status: (pass && aiApproved) ? "applied" : "not_applied", favor_pct: favorPct, responses: responses.length });
   }
   return out;
 }
