@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Loader2, Gift, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
@@ -12,12 +14,33 @@ export default function KYCSurveyGate() {
   const [state, setState] = useState(null);   // { survey, required, reward_usd }
   const [answers, setAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
+
+  // Send the member to the Marketplace hub — ONCE per browser session, so they can move around freely
+  // afterwards. Used both for returning members (on login) and first-timers (right after they finish KYC).
+  const goToMarketplace = useCallback(() => {
+    try { sessionStorage.setItem('gg_sent_to_marketplace', '1'); } catch { /* ignore */ }
+    navigate(createPageUrl('Marketplace'));
+  }, [navigate]);
 
   useEffect(() => {
     base44.functions.invoke('kycSurveyGet', {})
-      .then((r) => { if (r?.data?.required) setState(r.data); })
+      .then((r) => {
+        if (r?.data?.required) {
+          // First-time member: show the mandatory survey. The redirect happens after they submit it.
+          setState(r.data);
+        } else {
+          // Returning member (KYC already done, or the flag is off): send them straight to the
+          // Marketplace on login. Only from the post-login landing (Home/root) so deep links aren't hijacked.
+          let sent = false;
+          try { sent = sessionStorage.getItem('gg_sent_to_marketplace') === '1'; } catch { /* ignore */ }
+          const p = (window.location.pathname || '').toLowerCase();
+          const onLanding = p === '/' || p === '' || p.endsWith('/home');
+          if (!sent && onLanding) goToMarketplace();
+        }
+      })
       .catch(() => {});
-  }, []);
+  }, [goToMarketplace]);
 
   const setAnswer = useCallback((qid, value) => setAnswers((a) => ({ ...a, [qid]: value })), []);
   const toggleMulti = useCallback((qid, opt) => setAnswers((a) => {
@@ -42,6 +65,8 @@ export default function KYCSurveyGate() {
       if (r?.data?.success) {
         toast.success(r.data.message || 'Thanks! Your catalog is now personalized.');
         setState(null);
+        // First-time onboarding done → take them to the Marketplace hub.
+        goToMarketplace();
       } else {
         toast.error(r?.data?.error || 'Could not save — please try again.');
       }
