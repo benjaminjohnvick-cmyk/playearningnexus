@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { creditAdvertiserOrder } from "../../sdk/premium-ppc.ts";
 
 export default __handler(async (req) => {
   try {
@@ -35,6 +36,9 @@ export default __handler(async (req) => {
           funds_released: true,
           funds_released_date: new Date().toISOString()
         });
+        // Attribute the order toward a matched PPC advertiser's "doubling" total (drives when their free
+        // advertising stops). No-op unless the seller is an active PPC advertiser.
+        await creditAdvertiserOrder(order.seller_id, Number(order.amount ?? order.total_usd ?? 0)).catch(() => null);
         released++;
       }
     }

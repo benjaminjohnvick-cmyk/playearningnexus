@@ -20,6 +20,7 @@
 // NOT legal advice or a compliance sign-off.
 
 import { snapNumber } from "./settings.ts";
+import { db } from "./db.ts";
 export const PPC_GRID_ANNUAL_PRICE = Number(Deno.env.get("PPC_GRID_ANNUAL_PRICE") ?? "5000");
 
 // The most a matched user can EARN in point value over the year ($1,460). This is an EARNING
@@ -106,6 +107,29 @@ export function isSpentOut(user: Record<string, unknown> | null | undefined, mem
 export function isDefaulted(user: Record<string, unknown> | null | undefined, member: Record<string, unknown> | null | undefined, nowMs = Date.now()): boolean {
   if (!member || !member.upfront_grant) return false;
   return isSpentOut(user, member) && commitmentPace(member, nowMs).behind;
+}
+
+/** Mark that a member met their survey requirement TODAY (idempotent per UTC day). Callable server-side
+ *  from the survey-completion flow. Returns the new count, or null if not in an active up-front term. */
+export async function markSurveyDay(userId: string): Promise<{ survey_days: number; already: boolean } | null> {
+  const rows = await db.filter("PremiumPPCMembership", { user_id: userId }, "-created_date", 5).catch(() => []) as Record<string, unknown>[];
+  const m = rows.find((x) => x.status === "active" && x.upfront_grant) || null;
+  if (!m) return null;
+  const today = utcDay();
+  if (m.last_survey_day === today) return { survey_days: Number(m.survey_days) || 0, already: true };
+  const next = (Number(m.survey_days) || 0) + 1;
+  await db.update("PremiumPPCMembership", String(m.id), { survey_days: next, last_survey_day: today }).catch(() => null);
+  return { survey_days: next, already: false };
+}
+
+/** Attribute a delivered order's value toward a matched advertiser's "doubling" total (drives when their
+ *  free advertising stops). Only counts when the seller is an active PPC advertiser. Best-effort. */
+export async function creditAdvertiserOrder(sellerId: string, amountUsd: number): Promise<void> {
+  if (!sellerId || !(Number(amountUsd) > 0)) return;
+  const seller = await db.get("User", sellerId).catch(() => null) as Record<string, unknown> | null;
+  if (!seller || !seller.ppc_grid_active) return;
+  const cur = Number(seller.ppc_orders_value_delivered) || 0;
+  await db.update("User", sellerId, { ppc_orders_value_delivered: round2(cur + Number(amountUsd)) }).catch(() => null);
 }
 
 /** UTC calendar day (YYYY-MM-DD) for "was the user active today" checks. */

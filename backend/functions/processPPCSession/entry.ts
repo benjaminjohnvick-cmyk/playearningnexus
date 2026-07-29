@@ -66,6 +66,12 @@ export default __handler(async (req) => {
     const currentBalance = user.current_balance || 0;
     await base44.auth.updateMe({ current_balance: currentBalance + netAmount });
 
+    // Premium up-front members: if they met today's survey quota, count it toward the year's commitment.
+    try {
+      const { markSurveyDay, surveyMinutesPerDay } = await import("../../sdk/premium-ppc.ts");
+      if (goalMet || Number(minutesCompleted) >= surveyMinutesPerDay()) await markSurveyDay(user.id);
+    } catch { /* premium commitment tracking is best-effort */ }
+
     // Update PPCUserTier record
     const tierRecords = await base44.asServiceRole.entities.PPCUserTier.filter({ user_id: user.id });
     if (tierRecords.length > 0) {

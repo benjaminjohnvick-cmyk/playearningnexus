@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import ProductSearchBar from '@/components/store/ProductSearchBar';
 import PremiumPPCEnrollButton from '@/components/premium/PremiumPPCEnrollButton';
 import PremiumAdQueue from '@/components/premium/PremiumAdQueue';
+import PremiumLockoutMode from '@/components/premium/PremiumLockoutMode';
 import ProductSearchResults from '@/components/store/ProductSearchResults';
 import TierInfoModal from '@/components/ppc/TierInfoModal';
 import SurveyPublisherForm from '@/components/ppc/SurveyPublisherForm';
@@ -98,6 +99,10 @@ export default function PPCMarketplace() {
         {/* One-click PPC survey-advance enrollment (clickwrap consent + explanation). Renders only when
             the up-front offer is live and the member isn't already enrolled. */}
         <PremiumPPCEnrollButton />
+
+        {/* Daily lockout-mode reminder for up-front members (set a time; stay on survey pace).
+            Renders only for up-front survey members. */}
+        <PremiumLockoutMode />
 
         {/* AI-generated ads awaiting the member's OK (one-tap post or copy & paste). Renders only when
             the member has queued ads. */}

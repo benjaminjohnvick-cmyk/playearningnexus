@@ -115,6 +115,12 @@
       "function": "premiumPPCDailyReconcile"
     },
     {
+      "name": "daily-premium-ppc-autoadvertise",
+      "cron": "30 10 * * *",
+      "function": "premiumPPCAutoAdvertise",
+      "_comment": "AI writes+queues #ad-disclosed social posts for each paying PPC advertiser (until they've doubled their $ in orders) on consenting survey-members' connected accounts, plus a daily post for the platform's own business. Respects the social_posting kill switch; defaults posts to pending_approval."
+    },
+    {
       "name": "daily-membership-fee",
       "cron": "30 8 * * *",
       "function": "membershipDailyFee"
