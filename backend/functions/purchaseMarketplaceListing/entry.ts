@@ -5,6 +5,7 @@ import { isEnabled } from "../../sdk/feature-flags.ts";
 import { db } from "../../sdk/db.ts";
 import { PLATFORM_SELLER_ID, isDigitalCategory } from "../../sdk/catalog.ts";
 import { welcomeDiscountFor, redeemWelcomeCredit } from "../../sdk/welcome-credit.ts";
+import { purchaseGate } from "../../sdk/household.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -121,6 +122,36 @@ export default __handler(async (req) => {
         limit_usd: affordLimit,
         message: `This order is $${orderTotalUsd.toFixed(2)} — more than the ~$${affordLimit.toLocaleString()} a member can reasonably earn or pay back in a year. You can still proceed, or choose a lower-cost option, financing (Affirm), or layaway.`,
       });
+    }
+
+    // Teen/household gate: if the buyer is a teen whose order needs an adult's sign-off, log a
+    // pending_approval order and STOP here — no claim, no charge (points or card). The adult approves in
+    // Family & Teens, which then completes the purchase. Adults / non-members skip this entirely.
+    const gate = purchaseGate(user, orderTotalUsd);
+    if (gate.requiresApproval) {
+      const pending = await base44.asServiceRole.entities.Order.create({
+        user_id: user.id, seller_id: listing.seller_id, listing_id: listing.id, item_name: listing.title,
+        amount: payment_method === "card" ? charged.usd || orderTotalUsd : null,
+        points_spent: payment_method === "points" ? effectivePoints : null,
+        payment_method, payment_captured: false, needs_approval: true, approver_id: gate.holder_id,
+        household_id: gate.household_id || null, source, status: "pending_approval",
+        created_at: new Date().toISOString(),
+      }).catch(() => null);
+      if (gate.holder_id) {
+        await base44.asServiceRole.entities.Notification.create({
+          user_id: gate.holder_id, type: "household_approval_request",
+          title: "👨‍👩‍👧 Approval needed",
+          message: `${user.full_name || user.email || "A teen in your household"} wants to order "${listing.title}". Review it in Family & Teens.`,
+          is_read: false,
+        }).catch(() => null);
+      }
+      await base44.asServiceRole.entities.Notification.create({
+        user_id: user.id, type: "marketplace_purchase",
+        title: "⏳ Sent for approval",
+        message: `Your order for "${listing.title}" was sent to your household adult to approve. Nothing is charged or reserved until they say yes.`, is_read: false,
+      }).catch(() => null);
+      return Response.json({ success: true, needs_approval: true, order_id: (pending as any)?.id || null,
+        message: "Sent to your household adult for approval. You'll be notified when they respond." });
     }
 
     // Atomically CLAIM the listing (active → sold). If another buyer won the race, we bail before

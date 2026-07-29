@@ -5,6 +5,7 @@ import { isEnabled } from "../../sdk/feature-flags.ts";
 import { db } from "../../sdk/db.ts";
 import { PLATFORM_SELLER_ID, isDigitalCategory } from "../../sdk/catalog.ts";
 import { welcomeDiscountFor } from "../../sdk/welcome-credit.ts";
+import { purchaseGate } from "../../sdk/household.ts";
 
 // oneClickPurchase (authenticated) — Amazon-style "Buy now". It LOGS the order immediately in an
 // awaiting_payment state, so the user's intent is captured in one click, and:
@@ -57,15 +58,43 @@ export default __handler(async (req) => {
     const isDigital = listing.product_type === "digital" || listing.fulfillment_mode === "digital" || isDigitalCategory(listing.category);
     const fulfillment_type = isDigital ? "digital_delivery" : listing.fulfillment_mode === "pickup" ? "local_pickup" : (isPlatform ? "platform_ai" : "seller_ship");
 
-    // Log the order immediately — awaiting_payment, NOT captured, NOT claiming the listing.
+    // Teen/household gate: a teen member's order routes to the adult holder for approval (unless it's
+    // at/under the teen's per-order auto-approve limit). Adults/non-members are never gated.
+    const gate = purchaseGate(user, gross);
+
+    // Log the order immediately — NOT captured, NOT claiming the listing. Teen orders that need sign-off
+    // open as pending_approval; everyone else opens as awaiting_payment.
     const order = await base44.asServiceRole.entities.Order.create({
       user_id: user.id, seller_id: listing.seller_id, listing_id: listing.id, item_name: listing.title,
       amount: total, payment_method: "card", payment_captured: false, one_click: true,
-      needs_card: !hasCard, ready_to_charge: hasCard && charging,
+      needs_card: !hasCard, ready_to_charge: hasCard && charging && !gate.requiresApproval,
+      needs_approval: gate.requiresApproval, approver_id: gate.requiresApproval ? gate.holder_id : null,
+      household_id: gate.household_id || null,
       markup_applied: Math.round(base * markup * 100) / 100, welcome_discount_usd: Math.round(wd * 100) / 100,
-      fulfillment_type, source: listing.source || "user", status: "awaiting_payment",
+      fulfillment_type, source: listing.source || "user",
+      status: gate.requiresApproval ? "pending_approval" : "awaiting_payment",
       created_at: new Date().toISOString(),
     }).catch(() => null);
+
+    if (gate.requiresApproval && gate.holder_id) {
+      await base44.asServiceRole.entities.Notification.create({
+        user_id: gate.holder_id, type: "household_approval_request",
+        title: "👨‍👩‍👧 Approval needed",
+        message: `${user.full_name || user.email || "A teen in your household"} wants to order "${listing.title}" ($${total.toFixed(2)}). Review it in Family & Teens.`,
+        is_read: false,
+      }).catch(() => null);
+      await base44.asServiceRole.entities.Notification.create({
+        user_id: user.id, type: "one_click_order",
+        title: "⏳ Sent for approval",
+        message: `Your order for "${listing.title}" ($${total.toFixed(2)}) was sent to your household adult to approve. Nothing is charged until they say yes.`,
+        is_read: false,
+      }).catch(() => null);
+      return Response.json({
+        ok: true, order_id: (order as any)?.id || null, total_usd: total,
+        needs_approval: true,
+        message: `Sent to your household adult for approval ($${total.toFixed(2)}). You'll be notified when they respond.`,
+      });
+    }
 
     await base44.asServiceRole.entities.Notification.create({
       user_id: user.id, type: "one_click_order",

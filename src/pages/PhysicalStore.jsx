@@ -25,6 +25,7 @@ export default function PhysicalStore() {
   const [sort, setSort] = useState('relevance');
   const [busy, setBusy] = useState('');
   const [warn, setWarn] = useState(null);            // { listing, method }
+  const [confirmBuy, setConfirmBuy] = useState(null); // one-click: order logged, ask to complete
   const [layaways, setLayaways] = useState([]);
   const [payback, setPayback] = useState(null);
 
@@ -85,11 +86,20 @@ export default function PhysicalStore() {
       const r = await base44.functions.invoke('oneClickPurchase', { listing_id: listing.id, acknowledged_over_limit: !!acknowledged });
       if (r.data?.affordability_warning) { setWarn({ listing, oneClick: true, ...r.data }); return; }
       if (r.data?.error) { toast.error(r.data.error); return; }
-      if (r.data?.needs_card) toast.info(r.data.message || 'Order saved — add a card to complete it.');
-      else toast.success(r.data?.message || 'Order placed!');
+      // The order is LOGGED, not purchased — ask the user if they want to complete it.
+      setConfirmBuy({ listing, ...r.data });
       await load(); loadCfg();
     } catch (e) { toast.error(e?.data?.error || e.message || 'Could not place the order.'); }
     finally { setBusy(''); setWarn(null); }
+  }
+
+  // User answered the "complete this purchase?" prompt. Nothing is charged until a card is on file
+  // and card charging is live; this records their intent to finish.
+  function completeBuy() {
+    const c = confirmBuy; setConfirmBuy(null);
+    if (!c) return;
+    if (c.needs_card) toast.info('Add your card to finish — your order stays saved until then, and nothing is charged.');
+    else toast.success('Great — we’ll charge your card on file to complete this order.');
   }
 
   async function startLayaway(listing) {
@@ -231,6 +241,25 @@ export default function PhysicalStore() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* One-click: order logged, ask to complete */}
+      {confirmBuy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="mb-2 flex items-center gap-2 text-amber-600"><Zap className="h-5 w-5" /><span className="font-bold">Order logged — complete your purchase?</span></div>
+            <p className="text-sm text-gray-700">
+              Your order for “{confirmBuy.listing.title}” ({formatPrice(confirmBuy.total_usd)}) is saved, but <b>nothing has been charged yet</b>.{' '}
+              {confirmBuy.needs_card
+                ? 'To complete it you’ll need to add a card — it won’t ship until then.'
+                : 'Would you like to complete it now using your card on file?'}
+            </p>
+            <div className="mt-4 flex gap-2">
+              <Button variant="outline" className="flex-1" onClick={() => setConfirmBuy(null)}>Keep it saved</Button>
+              <Button className="flex-1" onClick={completeBuy}>{confirmBuy.needs_card ? 'Add card & complete' : 'Yes, complete purchase'}</Button>
+            </div>
+          </div>
         </div>
       )}
 

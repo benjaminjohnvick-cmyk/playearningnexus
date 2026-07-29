@@ -193,6 +193,8 @@ export const REGISTRY: SettingDef[] = [
   { key: "TAX_BACKUP_WITHHOLDING_RATE", label: "Backup withholding rate", category: "Compliance & Legal", type: "number", default: "0.24", unit: "×", sensitive: true, min: 0, max: 1 },
   { key: "MIN_AGE", label: "Minimum age", category: "Compliance & Legal", type: "number", default: "18", unit: "years", sensitive: true, min: 18, max: 120, help: "Hard floor of 18 — a money-earning app is 18+ (COPPA / minor-contract). Cannot be set lower." },
   { key: "SWEEPSTAKES_REG_THRESHOLD", label: "Prize size that triggers registration review", category: "Compliance & Legal", type: "number", default: "5000", unit: "$", sensitive: true },
+  { key: "HOUSEHOLD_MAX_MEMBERS", label: "Max members per household", category: "Compliance & Legal", type: "number", default: "6", min: 2, max: 12, help: "Adults + teens under one account holder (Amazon Household allows ~2 adults + 4 teens)." },
+  { key: "HOUSEHOLD_TEEN_MIN_AGE", label: "Teen account minimum age", category: "Compliance & Legal", type: "number", default: "13", unit: "years", sensitive: true, min: 13, max: 17, help: "Teens are 13–17. Teen enrollment ALSO requires the teen_accounts flag (OFF until counsel sign-off)." },
 
   // 11. Messaging & marketing
   { key: "EMAIL_FROM", label: "Email 'from' address", category: "Messaging & Marketing", type: "string", default: "no-reply@yourdomain.com" },
