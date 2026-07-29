@@ -112,3 +112,31 @@ so it adds **$0 to the launch estimate**, exactly like the Claude switch and sca
   in month one** depending on catalog size and whether images are on, and it can never exceed your
   `AI_DAILY_SPEND_CAP_USD`.
 - **Load test:** an hours-long spot-instance spend, deferred until traffic warrants it.
+
+---
+
+## 6. 2026-07-29 update — everything ON by default, still ≤ $3,900
+
+Reframe of the "$0 added" levers for the latest scope. Earlier features were shipped env-gated and
+*off* by default; the AI/product features are now **on by default** (the launch config is the defaults),
+so they are both **live at launch** and **$0 to the estimate** — a developer sets keys and deploys, they
+do not build or enable features.
+
+**New levers (all pre-built, on-by-default, no code to write at launch):**
+1. **Everything-on env template** — `backend/.env.example` is the launch config: PPC up-front grant,
+   AI advertising, make-up, and all AI loops are ON with sane defaults. Copy → add keys → deploy.
+2. **Self-scheduling** — the daily AI auto-advertiser is already registered in
+   `backend/scheduler/schedules.json`; `SCHEDULER_INLINE=1` runs it in the one service. No cron wiring.
+3. **AI advertising rides the existing AI-learning loop** — outcomes feed the same `OptimizationSignal` /
+   `AgentLearningMemory` primitives; no new tables, no new pipeline to stand up.
+4. **Social posting needs no dev integration to launch** — the member-approval + prefill/share/copy paths
+   work with zero platform API keys; full auto-post is a later per-platform toggle, not launch dev.
+5. **Compliance backstops are default-safe** — daily earn cap, payout-reservation release, and the
+   jackpot jurisdiction/age gate are wired and inert until an admin sets a number; $0 dev, $0 risk added.
+6. **The two global cost brakes are env numbers** — `AI_DAILY_SPEND_CAP_USD` and `DAILY_EARN_CAP_USD`
+   cap runtime with one value each; the AI literally cannot overspend the cap.
+
+**The number, restated (2026-07-29):** full PWA + Android + iOS lands **~34–52 h (~$2,550–$3,900)** with
+the kit + automation — **under $3,900** — because the entire new feature set is pre-built and on-by-default.
+The one budget risk remains an Apple review rejection round (keep the review clean). Runtime is unchanged:
+hosting ~$10–30/mo, AI capped by `AI_DAILY_SPEND_CAP_USD` (launchable at ~$0).

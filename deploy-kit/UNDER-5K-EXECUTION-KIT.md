@@ -81,3 +81,40 @@ New scripts/flags now in the kit and codebase — they replace hand-work, loweri
   (`IMAGE_PROVIDER`), and **dormant scale knobs** (`REDIS_URL`, `DATABASE_REPLICA_URL`,
   `QUEUE_DRIVER=sqs`). All off by default and pre-built, so they add **$0** to the estimate — the
   developer sets one env var, not a day of integration work.
+
+---
+
+## Everything ON from day one (2026-07-29) — turnkey defaults, $0 added
+
+Everything the app does is **on by default** — the launch config *is* the defaults, not a checklist of
+switches to flip. `backend/.env.example` is the everything-on template: copy it, add your keys, deploy.
+No feature-enablement hours.
+
+**ON out of the box** (see `backend/sdk/feature-flags.ts`): premium PPC + the UP-FRONT grant, AI social
+advertising + its self-learning loop, one-tap posting, survey make-up, the self-learning/optimizer loop,
+live experiments + personalization, KYC survey, points boost, physical + digital store, layaway, jackpots,
+email — and the global AI switch is **live** (`ai_paused=false`; a human can hit stop + correct any time
+via the Live Oversight feed).
+
+**OFF on purpose** — being off is a launch *enabler*, not missing work: `card_charging`, `cash_out`,
+`store_credit_purchase`, `p2p_transfers` (closed-loop / money-transmission), `multi_level_referrals`
+(single-tier only), `sms_marketing` (TCPA), `earnings_projections` (FTC), `affirm_bnpl` (until merchant
+keys), `teen_accounts` (parental-consent + counsel). Each is one flag flip once its processor/legal
+prerequisite is met — never a rebuild.
+
+## The number holds — target ≤ $3,900
+
+The whole 2026-07-29 feature set (PPC up-front model, AI advertising + learning, one-tap posting, survey
+make-up, lockout mode, compliance backstops) shipped **pre-built, on-by-default, and self-scheduled** (the
+daily auto-advertiser is already in `backend/scheduler/schedules.json`). By the kit's own rule — *pre-built
++ toggle = the developer sets a variable, not builds a feature* — it adds **$0** to the launch estimate.
+The developer's job is unchanged: deploy, smoke-test, submit.
+
+| Path | Dev hours (kit + automation) | Cost @ $75/hr |
+|---|---:|---:|
+| PWA + Android | ~28–38 h | ~$2,100–$2,850 |
+| Full launch (+ iOS via cloud CI) | ~34–52 h | **~$2,550–$3,900** |
+
+The only thing that can push past $3,900 is an **Apple review rejection round** — keep the review clean
+(demo login via `REVIEWER_DEMO=1`, merit-not-gambling framing). AI runtime is separately capped by
+`AI_DAILY_SPEND_CAP_USD` and can launch at ~$0, so turning everything on does not move the monthly bill.
