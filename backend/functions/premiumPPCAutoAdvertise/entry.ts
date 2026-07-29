@@ -4,7 +4,7 @@ import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
 import { db } from "../../sdk/db.ts";
 import { Core } from "../../sdk/integrations.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
-import { getNumber } from "../../sdk/settings.ts";
+import { getNumber, getBool, getString } from "../../sdk/settings.ts";
 import { withAdDisclosure } from "../../sdk/disclosure.ts";
 import { hasDoubled, socialPostingOrderTarget } from "../../sdk/premium-ppc.ts";
 
@@ -27,6 +27,8 @@ export default __handler(async (req) => {
     const maxPostsPerRun = Math.max(1, await getNumber("PREMIUM_ADS_MAX_POSTS_PER_RUN", 200));
     const maxUsersPerAdvertiser = Math.max(1, await getNumber("PREMIUM_ADS_USERS_PER_ADVERTISER", 25));
     const target = socialPostingOrderTarget();
+    // ToS/spam guardrail: queue for member approval by default (never silent-auto by default).
+    const postStatus = (await getBool("PREMIUM_ADS_REQUIRE_APPROVAL", true)) ? "pending_approval" : "scheduled";
 
     // Paying advertisers still under the doubling cap.
     const advertisers = (await base44.asServiceRole.entities.User.filter({ ppc_grid_active: true }, "-created_date", 2000).catch(() => []) as any[])
@@ -62,7 +64,7 @@ export default __handler(async (req) => {
         if (conn.user_id === adv.id) continue;                     // don't post the advertiser's own ad to themselves
         await base44.asServiceRole.entities.SocialMediaPost.create({
           user_id: conn.user_id, platform: conn.platform, content,
-          status: "scheduled", auto_posted: true, post_type: "premium_ppc_ad",
+          status: postStatus, auto_posted: true, post_type: "premium_ppc_ad",
           ppc_advertiser_id: adv.id, disclosed: true, created_at: new Date().toISOString(),
         }).catch(() => null);
         posts++; usedForThisAdv++;
@@ -70,7 +72,32 @@ export default __handler(async (req) => {
       perAdvertiser[adv.id] = usedForThisAdv;
     }
 
-    return Response.json({ success: true, advertisers: advertisers.length, consenting_members: optedIds.size, posts_queued: posts, per_advertiser: perAdvertiser, doubling_target_usd: target });
+    // ALSO post a daily ad for YOUR OWN business to every consenting member's connected accounts.
+    let ownPosts = 0;
+    if (await getBool("PREMIUM_OWN_AD_ENABLED", true)) {
+      const bizName = await getString("PREMIUM_OWN_AD_BUSINESS", "GamerGain");
+      let ownCopy = await getString("PREMIUM_OWN_AD_TEXT", "");
+      if (!ownCopy && hasLLM) {
+        try {
+          const out = await Core.InvokeLLM({ prompt: `Write ONE short, upbeat social post (max 220 chars, 1-2 emojis) promoting "${bizName}". No hashtags — a disclosure is appended automatically.` }) as string;
+          if (typeof out === "string" && out.trim()) ownCopy = out.trim().slice(0, 240);
+        } catch { /* fall through to template */ }
+      }
+      if (!ownCopy) ownCopy = `Discover ${bizName} — earn, play, and shop, all in one place.`;
+      const ownContent = withAdDisclosure(ownCopy);
+      const conns = await base44.asServiceRole.entities.SocialMediaConnection.filter({}, "-created_date", 5000).catch(() => []) as any[];
+      for (const conn of conns) {
+        if (ownPosts >= maxPostsPerRun) break;
+        if (!optedIds.has(conn.user_id)) continue;
+        await base44.asServiceRole.entities.SocialMediaPost.create({
+          user_id: conn.user_id, platform: conn.platform, content: ownContent,
+          status: postStatus, auto_posted: true, post_type: "platform_own_ad", disclosed: true, created_at: new Date().toISOString(),
+        }).catch(() => null);
+        ownPosts++;
+      }
+    }
+
+    return Response.json({ success: true, advertisers: advertisers.length, consenting_members: optedIds.size, posts_queued: posts, own_business_posts: ownPosts, per_advertiser: perAdvertiser, doubling_target_usd: target, post_status: postStatus });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

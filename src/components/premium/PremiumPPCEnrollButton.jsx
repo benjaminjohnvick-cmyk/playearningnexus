@@ -3,8 +3,10 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Sparkles, Info, Check, X, ShieldCheck } from 'lucide-react';
+import { Loader2, Sparkles, Info, Check, X, ShieldCheck, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 // PremiumPPCEnrollButton — a ONE-CLICK enroll button for the PPC survey advance, plus a "What does this
 // mean?" explanation. Legal/ethical by design: this is clickwrap consent — the agreement (survey
@@ -60,8 +62,17 @@ export default function PremiumPPCEnrollButton() {
   if (status?.enrolled) {
     return (
       <Card className="border-emerald-200 bg-emerald-50">
-        <CardContent className="p-4 text-sm text-emerald-800 flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5" /> You're enrolled in the PPC survey program.
+        <CardContent className="p-4">
+          <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-emerald-800">
+            <ShieldCheck className="h-5 w-5" /> You're enrolled in the PPC survey program.
+          </div>
+          <p className="mb-3 text-xs text-emerald-700">
+            Next step: connect your social accounts so the labeled #ad posts can run there. You connect each
+            one securely (you log in and approve) — we can't and don't scan or access accounts you haven't linked.
+          </p>
+          <Link to={createPageUrl('SocialMediaSetup')}>
+            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700"><Link2 className="mr-1 h-4 w-4" /> Connect your social accounts</Button>
+          </Link>
         </CardContent>
       </Card>
     );
