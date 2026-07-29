@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { allowedEarn } from "../../sdk/earn-cap.ts";
 
 export default __handler(async (req) => {
   try {
@@ -48,7 +49,11 @@ export default __handler(async (req) => {
     // 50/50 revenue split: user gets half, then 10% platform fee on their share
     const userShare = earnings * 0.50;
     const feeAmount = userShare * 0.10;
-    const netAmount = userShare - feeAmount;
+    const rawNet = userShare - feeAmount;
+    // Per-user daily earnings backstop (DAILY_EARN_CAP_USD; 0 = no cap → no change). Clamp the credited
+    // amount to what the user may still earn today, accumulated across all earning paths via DailyEarnings.
+    const earnAllow = await allowedEarn(base44, user.id, rawNet);
+    const netAmount = earnAllow.allowed;
 
     await base44.asServiceRole.entities.PPCTransaction.create({
       user_id: user.id,
@@ -65,6 +70,21 @@ export default __handler(async (req) => {
     // Update user balance
     const currentBalance = user.current_balance || 0;
     await base44.auth.updateMe({ current_balance: currentBalance + netAmount });
+
+    // Record into DailyEarnings so the per-user daily cap accumulates across every earning path.
+    if (netAmount > 0) {
+      const earnDay = new Date().toISOString().slice(0, 10);
+      const deRows = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id: user.id, date: earnDay }).catch(() => []);
+      if ((deRows || []).length) {
+        await base44.asServiceRole.entities.DailyEarnings.update(deRows[0].id, {
+          total_earned: (deRows[0].total_earned || 0) + netAmount,
+        }).catch(() => null);
+      } else {
+        await base44.asServiceRole.entities.DailyEarnings.create({
+          user_id: user.id, date: earnDay, total_earned: netAmount,
+        }).catch(() => null);
+      }
+    }
 
     // Premium up-front members: if they met today's survey quota, count it toward the year's commitment.
     try {
@@ -142,6 +162,8 @@ export default __handler(async (req) => {
       net_amount: netAmount,
       fee_amount: feeAmount,
       goal_met: goalMet,
+      earnings_capped: earnAllow.capped,
+      daily_cap: earnAllow.cap || 0,
       session_id: session.id
     });
   } catch (error) {

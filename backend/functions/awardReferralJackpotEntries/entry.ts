@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
+import { featureAllowed } from "../../sdk/jurisdiction.ts";
 
 export default __handler(async (req) => {
   try {
@@ -27,6 +28,21 @@ export default __handler(async (req) => {
     const config = CONFIG[trigger_type];
     if (!config) {
       return Response.json({ error: 'Invalid trigger_type' }, { status: 400 });
+    }
+
+    // Sweepstakes eligibility gate (mirrors processWeeklyJackpot's payout gate, applied at ENTRY):
+    // only award jackpot entries to 18+ verified users in jurisdictions where prize competitions
+    // aren't blocked. Skipping an entry never errors the referral flow — it just doesn't enter the draw.
+    const referrer = (await base44.asServiceRole.entities.User.filter({ id: referrer_user_id }))[0] || null;
+    if (!referrer) {
+      return Response.json({ success: false, skipped: 'referrer_not_found' });
+    }
+    if (referrer.age_verified_18plus !== true) {
+      return Response.json({ success: false, skipped: 'age_unverified', entries_awarded: 0 });
+    }
+    const referrerJuris = referrer.jurisdiction ?? referrer.state ?? null;
+    if (!featureAllowed('jackpots', referrerJuris)) {
+      return Response.json({ success: false, skipped: 'feature_blocked_in_jurisdiction', entries_awarded: 0 });
     }
 
     // Award jackpot entries by creating a ReferralMilestone record

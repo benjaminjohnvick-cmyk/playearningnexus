@@ -72,16 +72,20 @@ export default __handler(async (req) => {
           subject: '💸 Payout Approved!',
           body: `Great news! Your payout of $${pr.amount} has been approved and will arrive via ${pr.method || 'PayPal'} within 1-3 business days.`
         });
-      } else if (pr.status === 'rejected') {
-        // Release the reserved hold — the money never left, so restore it to available balance.
+      } else if (pr.status === 'rejected' || pr.status === 'failed' || pr.status === 'cancelled') {
+        // Release the reserved hold — the money never left (rejected/failed/cancelled), so restore it
+        // to available balance. Idempotency-guarded so a re-fired update event can't release twice.
         if (!pr.reservation_released) {
           await releaseReservation(base44, pr.user_id, Number(pr.amount) || 0).catch(() => null);
           await base44.asServiceRole.entities.PayoutRequest.update(pr.id, { reservation_released: true }).catch(() => null);
         }
+        const reason = pr.status === 'rejected'
+          ? `Reason: ${pr.rejection_reason || 'Policy violation'}. Please contact support if you believe this is an error.`
+          : `The payment didn't go through, so the funds have been returned to your available balance. You can request it again.`;
         await base44.integrations.Core.SendEmail({
           to: user.email,
-          subject: '❌ Payout Request Rejected',
-          body: `Your payout request of $${pr.amount} was rejected. Reason: ${pr.rejection_reason || 'Policy violation'}. Please contact support if you believe this is an error.`
+          subject: pr.status === 'rejected' ? '❌ Payout Request Rejected' : '↩️ Payout Returned to Your Balance',
+          body: `Your payout request of $${pr.amount} was ${pr.status}. ${reason}`
         });
       } else if (pr.status === 'completed') {
         await base44.asServiceRole.entities.Notification.create({
