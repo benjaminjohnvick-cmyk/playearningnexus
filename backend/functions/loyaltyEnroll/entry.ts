@@ -51,7 +51,6 @@ export default __handler(async (req) => {
       term_start: now.toISOString(),
       term_end: termEnd,
       commitment_start: existing?.commitment_start ?? now.toISOString(),
-      reward_pool_usd: Number(existing?.reward_pool_usd) || 0,
       discount_used_usd: Number(existing?.discount_used_usd) || 0,
       program_complete: false,
       renewal_due: false,

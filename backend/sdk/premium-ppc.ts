@@ -1,7 +1,8 @@
 // Premium PPC — closed-loop POINTS engine (shared config + helpers).
 //
 // MODEL (per matched advertiser⇄user pair) — NO-PENALTY / EARN-AS-YOU-GO:
-//   • An advertiser pays PPC_GRID_ANNUAL_PRICE (default $5,000) for a year of PPC AdGrid.
+//   • An advertiser pays PPC_GRID_ANNUAL_PRICE (default $6,000) for a year of PPC AdGrid. This funds the
+//     matched member's benefits (incl. the 10% member discount, which the platform absorbs from this).
 //   • Premium PPC users are matched 1:1 to advertisers (N advertisers ⇒ at most N premium users).
 //   • A matched user EARNS points by staying active — up to DAILY_EARN_CAP ($4) of point value per
 //     active day, capped at ANNUAL_POINTS_CEILING ($1,460) for the year.
@@ -21,7 +22,7 @@
 
 import { snapNumber } from "./settings.ts";
 import { db } from "./db.ts";
-export const PPC_GRID_ANNUAL_PRICE = Number(Deno.env.get("PPC_GRID_ANNUAL_PRICE") ?? "5000");
+export const PPC_GRID_ANNUAL_PRICE = Number(Deno.env.get("PPC_GRID_ANNUAL_PRICE") ?? "6000");
 
 // The most a matched user can EARN in point value over the year ($1,460). This is an EARNING
 // CEILING — not a fee, not an advance, not a debt. (Env kept back-compatible with the old name.)
@@ -73,7 +74,9 @@ export const surveyPaceGraceDays = () => Math.max(0, snapNum("PREMIUM_SURVEY_GRA
 export const spentOutThresholdPct = () => Math.min(1, Math.max(0, snapNum("PREMIUM_SPENT_OUT_PCT", 0.05)));
 /** Order value at which a matched advertiser's free social posting stops — i.e. they've DOUBLED their
  *  $5,000 (default $10,000). After this, their earnings are points spendable on anything via the site. */
-export const socialPostingOrderTarget = () => round2(snapNum("PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD", 10000));
+// The member keeps posting (their consented #ad social posts) until the matched business has received
+// this much in fulfilled orders — i.e. DOUBLED the $6,000 grid = a $12,000 return for the business.
+export const socialPostingOrderTarget = () => round2(snapNum("PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD", 12000));
 /** Advertised value of the free AI social advertising a paying advertiser receives (default $10,000). */
 export const businessAdCreditUsd = () => round2(snapNum("PREMIUM_BUSINESS_AD_CREDIT_USD", 10000));
 /** Convert a USD figure to its point equivalent at 1¢/point (advertise $ values; deliver points). */

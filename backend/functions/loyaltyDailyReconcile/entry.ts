@@ -2,13 +2,13 @@ import { __handler } from "../../sdk/runtime.ts";
 import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
 import { db } from "../../sdk/db.ts";
 import { utcDay } from "../../sdk/premium-ppc.ts";
-import { accruePool, dailyRequirementMet, renewalDue, loyaltyDailyPoolAccrualUsd } from "../../sdk/loyalty.ts";
+import { dailyRequirementMet, renewalDue } from "../../sdk/loyalty.ts";
 
-// loyaltyDailyReconcile (INTERNAL/ADMIN, scheduled daily) — for each enrolled member who completed the
-// day's PPC-survey requirement, accrue the platform's cut of the revenue they generated into their
-// discount pool (idempotent per day, capped at the back-end annual value). Records the active day
-// toward the 5-day/week term, and flags renewal when the one-year term is complete. NEVER clawbacks:
-// a missed day just doesn't accrue — no debt, no penalty.
+// loyaltyDailyReconcile (INTERNAL/ADMIN, scheduled daily) — tracks each enrolled member's active-day
+// tally toward the 5-day/week term (for members who completed the day's PPC-survey requirement) and
+// flags renewal when the one-year term is complete. The 10% discount is PLATFORM-ABSORBED (funded by
+// the advertiser's grid payment) and accounted at checkout, so there is no per-day pool to accrue here.
+// NEVER clawbacks: a missed day just doesn't count toward the week — no debt, no penalty.
 export default __handler(async (req) => {
   const denied = await requireInternalOrAdmin(req);
   if (denied) return denied;
@@ -16,7 +16,7 @@ export default __handler(async (req) => {
     const today = utcDay();
     const members = await db.filter("PremiumPPCMembership", { loyalty_enrolled: true }, "-created_date", 100000).catch(() => []) as Record<string, unknown>[];
 
-    let accrued = 0, alreadyToday = 0, notEligible = 0, renewals = 0, completed = 0;
+    let counted = 0, alreadyToday = 0, notEligible = 0, renewals = 0, completed = 0;
     for (const m of members) {
       if (m.status === "ended") continue;
       // Flag renewal at term end (asked to re-enroll; nothing auto-renews).
@@ -25,20 +25,18 @@ export default __handler(async (req) => {
         renewals++;
       }
       if (m.program_complete === true) { completed++; continue; }
-      if (m.last_pool_accrual_day === today) { alreadyToday++; continue; }   // idempotent per day
+      if (m.last_active_tally_day === today) { alreadyToday++; continue; }    // idempotent per day
       if (!dailyRequirementMet(m, today)) { notEligible++; continue; }        // must do today's surveys
 
-      // Mark the accrual day + the weekly active-day tally FIRST (idempotency), then accrue atomically.
+      // Record the active day toward the 5-day/week tally (idempotent per day).
       const weekKey = today.slice(0, 4) + "-W" + isoWeek(today);
       const weekMap = (m.weekly_active_days && typeof m.weekly_active_days === "object") ? { ...(m.weekly_active_days as Record<string, number>) } : {};
       weekMap[weekKey] = (Number(weekMap[weekKey]) || 0) + 1;
-      await db.update("PremiumPPCMembership", String(m.id), { last_pool_accrual_day: today, weekly_active_days: weekMap }).catch(() => null);
-
-      const res = await accruePool(String(m.id), loyaltyDailyPoolAccrualUsd()).catch(() => null);
-      if (res != null) accrued++;
+      await db.update("PremiumPPCMembership", String(m.id), { last_active_tally_day: today, weekly_active_days: weekMap }).catch(() => null);
+      counted++;
     }
 
-    return Response.json({ ok: true, day: today, members: members.length, accrued, already_today: alreadyToday, not_eligible: notEligible, renewals_flagged: renewals, completed });
+    return Response.json({ ok: true, day: today, members: members.length, active_days_counted: counted, already_today: alreadyToday, not_eligible: notEligible, renewals_flagged: renewals, completed });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

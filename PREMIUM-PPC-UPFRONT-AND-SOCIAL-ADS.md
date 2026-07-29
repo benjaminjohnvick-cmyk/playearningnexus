@@ -6,14 +6,14 @@ now stands in code. **Not legal advice** — the flagged items require counsel s
 
 ## 1. What it is, in one paragraph
 
-A paying business buys a year of "PPC AdGrid" placement for a flat fee (default **$5,000**,
+A paying business buys a year of "PPC AdGrid" placement for a flat fee (default **$6,000**,
 `PPC_GRID_ANNUAL_PRICE`). For every advertiser that pays, exactly one survey-member seat opens (a strict
 **1:1 match** — N advertisers means at most N premium members). A matched member receives, **up front**,
 the full annual value of **146,000 points = $1,460** in closed-loop, non-cashable store credit, in
 exchange for committing to complete roughly **8 minutes of surveys per day for a year** (fulfillable
 flexibly, with catch-up). The business, in return, receives **$10,000 in free perks and $10,000 of AI
 social-advertising value**, and keeps getting advertised for free until it has **doubled its investment**
-(received **$10,000 in fulfilled orders**). Everything is denominated in points that are spendable
+(received **$12,000 in fulfilled orders**). Everything is denominated in points that are spendable
 through the site at any store — advertised in real dollars, delivered as points at **1¢/point**.
 
 ## 2. The member side — the up-front grant
@@ -62,7 +62,7 @@ is, and — for defaulted/re-enrolled members — disallows turning it off).
   advertised in dollars, delivered as value through the platform.
 - **Free until doubled.** A paying advertiser keeps getting free AI social advertising until their
   fulfilled-order value reaches the **doubling target** (`PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD`,
-  default $10,000 = 2× the $5,000 grid price). Order value is attributed automatically as orders are
+  default $12,000 = 2× the $6,000 grid price). Order value is attributed automatically as orders are
   delivered and funds released (`creditAdvertiserOrder` in the fund-release loop of
   `autoOrderFulfillmentAndFundsRelease`). After doubling, free posting stops; any further earnings are
   points spendable on anything via the site.
@@ -99,7 +99,7 @@ The design deliberately removes the classic regulated triggers: **no money advan
 | `PREMIUM_SURVEY_GRACE_DAYS` | 7 | Slack before "behind pace." |
 | `PREMIUM_SPENT_OUT_PCT` | 0.05 | Balance fraction that counts as "spent out." |
 | `PREMIUM_BUSINESS_AD_CREDIT_USD` | 10000 | Advertised free social-ad value to the business. |
-| `PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD` | 10000 | Order value at which free posting stops (doubling). |
+| `PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD` | 12000 | Order value at which free posting stops (doubling). |
 
 ## 7. Code map
 

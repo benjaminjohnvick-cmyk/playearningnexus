@@ -44,7 +44,7 @@ export const REGISTRY: SettingDef[] = [
   { key: "WISHLIST_REFERRAL_CREDIT", label: "Wishlist referral credit", category: "Economy & Payouts", type: "number", default: "2", unit: "$", min: 0, help: "Fixed credit awarded per wishlist-share referral conversion." },
 
   // 2. Premium PPC network
-  { key: "PPC_GRID_ANNUAL_PRICE", label: "PPC AdGrid annual price", category: "Premium PPC", type: "number", default: "5000", unit: "$" },
+  { key: "PPC_GRID_ANNUAL_PRICE", label: "PPC AdGrid annual price", category: "Premium PPC", type: "number", default: "6000", unit: "$", help: "What an advertiser pays for a year of PPC AdGrid. Funds the matched member's benefits, including the platform-absorbed 10% member discount." },
   { key: "PREMIUM_ANNUAL_POINTS_CEILING", label: "Annual points-earn ceiling (per matched user)", category: "Premium PPC", type: "number", default: "1460", unit: "$" },
   { key: "PREMIUM_DAILY_EARN_CAP", label: "Base per-active-day earn cap", category: "Premium PPC", type: "number", default: "4", unit: "$" },
   { key: "PREMIUM_WELCOME_BONUS", label: "Welcome bonus at enrollment", category: "Premium PPC", type: "number", default: "25", unit: "$" },
@@ -59,7 +59,7 @@ export const REGISTRY: SettingDef[] = [
   { key: "PREMIUM_SURVEY_MINUTES_PER_DAY", label: "Survey minutes per day", category: "Premium PPC", type: "number", default: "8", unit: "min" },
   { key: "PREMIUM_SURVEY_GRACE_DAYS", label: "Survey pace grace window", category: "Premium PPC", type: "number", default: "7", unit: "days", help: "How many survey-days a member may fall behind the expected pace before counting as 'behind'." },
   { key: "PREMIUM_SPENT_OUT_PCT", label: "\"Spent-out\" threshold", category: "Premium PPC", type: "number", default: "0.05", unit: "×", min: 0, max: 1, help: "A member is 'spent-out' when balance ≤ this fraction of their grant. Spent-out AND behind → locked out." },
-  { key: "PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD", label: "Advertiser free social posting until $ orders", category: "Premium PPC", type: "number", default: "10000", unit: "$", help: "Matched advertisers get free AI social advertising until they've received this much in fulfilled orders — i.e. DOUBLED their $5,000 (default $10,000). After that, earnings are points spendable on anything through the site." },
+  { key: "PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD", label: "Member posts until business reaches $ in orders", category: "Premium PPC", type: "number", default: "12000", unit: "$", help: "The member keeps posting their consented #ad social content until the matched business has received this much in fulfilled orders — i.e. DOUBLED the $6,000 grid = a $12,000 return for the business. After that, the ongoing-posting obligation ends." },
   { key: "PREMIUM_BUSINESS_AD_CREDIT_USD", label: "Advertiser free social-ad credit (advertised value)", category: "Premium PPC", type: "number", default: "10000", unit: "$", help: "The advertised value of the free AI social advertising a paying advertiser receives (delivered as posts on consenting members' social accounts, not cash)." },
   { key: "PREMIUM_ADS_MAX_POSTS_PER_RUN", label: "Max social ad posts per run", category: "Premium PPC", type: "number", default: "200", help: "Cap on how many ad posts the auto-advertiser queues in one run (cadence/spam guardrail)." },
   { key: "PREMIUM_ADS_USERS_PER_ADVERTISER", label: "Max members per advertiser per run", category: "Premium PPC", type: "number", default: "25" },

@@ -7,7 +7,7 @@ import { PLATFORM_SELLER_ID, isDigitalCategory } from "../../sdk/catalog.ts";
 import { welcomeDiscountFor, redeemWelcomeCredit } from "../../sdk/welcome-credit.ts";
 import { purchaseGate } from "../../sdk/household.ts";
 import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
-import { quoteDiscount, fundDiscountFromPool } from "../../sdk/loyalty.ts";
+import { quoteDiscount, recordLoyaltyDiscount } from "../../sdk/loyalty.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -60,12 +60,11 @@ export default __handler(async (req) => {
     // Pre-flight the payment path (no charge yet) so we don't claim a listing we can't pay for.
     let charged = { method: payment_method, points: 0, usd: 0, markup: 0, welcome_discount_usd: 0, loyalty_discount_usd: 0 };
 
-    // LOYALTY MEMBER DISCOUNT — priced here, POOL-FUNDED on commit. Applies to first-party (platform)
-    // items so member-seller payouts stay whole. The discount is funded from the member's own
-    // generated-revenue pool (see sdk/loyalty.ts), NOT from the store markup — so store margin is
-    // untouched. quoteDiscount() returns 0 unless the member completed today's steps and has pool
-    // headroom under the back-end annual cap. The pool is decremented only after a successful sale
-    // (mirrors the welcome-credit redeem-on-commit pattern).
+    // LOYALTY MEMBER DISCOUNT — 10% off the BASE price, PLATFORM-ABSORBED (funded by the matched
+    // advertiser's grid payment, not the store markup — so store margin is untouched). Applies to
+    // first-party (platform) items so member-seller payouts stay whole. quoteDiscount() returns 0
+    // unless the member completed today's steps and is under the back-end annual backstop cap. Recorded
+    // only after a successful sale (mirrors the welcome-credit redeem-on-commit pattern).
     let loyaltyDiscountUsd = 0;
     let loyaltyMemberId: string | null = null;
     if (isPlatform && (await isEnabled("loyalty_program"))) {
@@ -263,11 +262,11 @@ export default __handler(async (req) => {
         points: Number(charged.points) || 0, listingId: listing.id, source,
         category: listing.category || null, paymentMethod: payment_method,
       }).catch(() => {});
-      // Redeem the member discount from the POOL now that the sale is captured (points path). Funds only
-      // what the pool holds (never store margin), advances the back-end cap, and writes the audit ledger.
+      // Record the platform-absorbed member discount now that the sale is captured (points path):
+      // advances the back-end annual backstop cap and writes the audit ledger. Store margin untouched.
       if (loyaltyDiscountUsd > 0 && loyaltyMemberId) {
-        const funded = await fundDiscountFromPool(loyaltyMemberId, user.id, loyaltyDiscountUsd, String((order as any)?.id || listing.id)).catch(() => 0);
-        charged.loyalty_discount_usd = funded;
+        const granted = await recordLoyaltyDiscount(loyaltyMemberId, user.id, loyaltyDiscountUsd, String((order as any)?.id || listing.id)).catch(() => 0);
+        charged.loyalty_discount_usd = granted;
       }
     }
 

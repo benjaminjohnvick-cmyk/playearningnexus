@@ -85,78 +85,59 @@ export function dailyRequirementMet(member: Record<string, unknown> | null | und
   return member.last_survey_day === today && (Number(member.sessions_credited_today) || 0) >= 1;
 }
 
-// ── Pool balance + cap (the back-end value the user never sees) ───────────────────────────────────
-export function poolBalanceUsd(member: Record<string, unknown> | null | undefined): number {
-  return round2(Number(member?.reward_pool_usd) || 0);
-}
+// ── Discount cap (the back-end value the user never sees) ─────────────────────────────────────────
+// FUNDING MODEL: the platform ABSORBS the 10% discount (off the BASE price). It is affordable because
+// each matched advertiser pays the grid price ($6,000) — far more than 10% of a normal year of that
+// member's purchases. The per-member annual value cap is a SAFETY BACKSTOP so a single heavy buyer can
+// never draw more discount than the advertiser payment backing them; it is a back-end number the user
+// never sees. (10% off applies to ALL eligible first-party purchases up to that cap.)
 export function discountUsedUsd(member: Record<string, unknown> | null | undefined): number {
   return round2(Number(member?.discount_used_usd) || 0);
 }
-/** Remaining headroom under the $1,460 term cap (counts pool already accrued + discount already given). */
+/** Remaining discount headroom under the per-member annual cap (backstop). */
 export function remainingCapUsd(member: Record<string, unknown> | null | undefined): number {
-  const used = discountUsedUsd(member) + poolBalanceUsd(member);
-  return round2(Math.max(0, loyaltyAnnualValueCap() - used));
+  return round2(Math.max(0, loyaltyAnnualValueCap() - discountUsedUsd(member)));
 }
 
-/** Eligible to USE the member discount on a purchase right now? (all steps done + funds available). */
+/** Eligible to USE the member discount on a purchase right now? All daily steps done, consents in
+ *  place, within term, and still under the annual backstop cap. */
 export function eligibleForDiscount(member: Record<string, unknown> | null | undefined, nowMs = Date.now()): boolean {
   if (!consentsComplete(member) || !withinTerm(member, nowMs)) return false;
-  if (member?.program_complete === true) return false;              // hit the term cap
+  if (member?.program_complete === true) return false;              // hit the annual backstop cap
   if (!dailyRequirementMet(member)) return false;                  // must do today's steps first
-  return poolBalanceUsd(member) > 0;                               // discount is pool-funded only
+  return remainingCapUsd(member) > 0;
 }
 
-/** Discount for a given eligible subtotal: 10% of subtotal, but never more than the member's pool
- *  balance and never more than the remaining term cap. This is what keeps the discount funded by the
- *  member's own generated revenue and the store margin untouched. */
-export function quoteDiscount(member: Record<string, unknown> | null | undefined, subtotalUsd: number): number {
+/** Discount for a given eligible BASE price: 10% of the base, capped only by the remaining annual
+ *  backstop. The platform absorbs this (funded by the advertiser's grid payment); it is taken off the
+ *  BASE price, and the store markup is charged/kept separately, so store margin is never reduced. */
+export function quoteDiscount(member: Record<string, unknown> | null | undefined, basePriceUsd: number): number {
   if (!eligibleForDiscount(member)) return 0;
-  const pct = round2(Math.max(0, Number(subtotalUsd) || 0) * loyaltyDiscountPct());
-  const capped = Math.min(pct, poolBalanceUsd(member), remainingCapUsd(member));
-  return round2(Math.max(0, capped));
+  const pct = round2(Math.max(0, Number(basePriceUsd) || 0) * loyaltyDiscountPct());
+  return round2(Math.max(0, Math.min(pct, remainingCapUsd(member))));
 }
 
-// ── Atomic pool moves ────────────────────────────────────────────────────────────────────────────
-/** Accrue the day's platform cut into the member's pool, never exceeding the term cap. Atomic CAS. */
-export async function accruePool(memberId: string, addUsd: number): Promise<number | null> {
-  const add = round2(Math.max(0, Number(addUsd) || 0));
-  if (!memberId || add <= 0) return null;
-  for (let i = 0; i < 6; i++) {
-    const m = await db.get("PremiumPPCMembership", memberId).catch(() => null) as Record<string, unknown> | null;
-    if (!m) return null;
-    const pool = poolBalanceUsd(m);
-    const room = remainingCapUsd(m);
-    const inc = round2(Math.min(add, room));
-    if (inc <= 0) {
-      // cap reached — stop the program for the term (back-end only).
-      await db.updateIf("PremiumPPCMembership", memberId, { program_complete: true }, { field: "program_complete", equals: String(m.program_complete ?? false) }).catch(() => null);
-      return pool;
-    }
-    const next = round2(pool + inc);
-    const ok = await db.updateIf("PremiumPPCMembership", memberId, { reward_pool_usd: next }, { field: "reward_pool_usd", equals: String(pool) }).catch(() => null);
-    if (ok) { await ledger(memberId, m.user_id, "accrual", inc, { source: "generated_revenue_cut" }); return next; }
-  }
-  return null;
-}
-
-/** Spend `amount` of the pool to fund a purchase discount. Atomic CAS + cap tracking + audit. Returns
- *  the amount actually funded (0 if it couldn't be committed). Store margin is untouched — this draws
- *  ONLY from the member's generated-revenue pool. */
-export async function fundDiscountFromPool(memberId: string, userId: string, amountUsd: number, ref: string): Promise<number> {
+// ── Atomic discount accounting (platform-absorbed) ────────────────────────────────────────────────
+/** Record a discount the platform just granted on a captured sale: atomically add it to the member's
+ *  cumulative discount, flip the program to complete when the annual backstop cap is reached, and write
+ *  the audit ledger. Returns the amount actually recorded (capped at the remaining headroom). */
+export async function recordLoyaltyDiscount(memberId: string, userId: string, amountUsd: number, ref: string): Promise<number> {
   const want = round2(Math.max(0, Number(amountUsd) || 0));
   if (!memberId || want <= 0) return 0;
   for (let i = 0; i < 6; i++) {
     const m = await db.get("PremiumPPCMembership", memberId).catch(() => null) as Record<string, unknown> | null;
     if (!m) return 0;
-    const pool = poolBalanceUsd(m);
-    const spend = round2(Math.min(want, pool));
-    if (spend <= 0) return 0;
     const used = discountUsedUsd(m);
-    const complete = round2(used + spend) >= loyaltyAnnualValueCap();
-    const patch: Record<string, unknown> = { reward_pool_usd: round2(pool - spend), discount_used_usd: round2(used + spend) };
+    const grant = round2(Math.min(want, round2(Math.max(0, loyaltyAnnualValueCap() - used))));
+    if (grant <= 0) {
+      await db.updateIf("PremiumPPCMembership", memberId, { program_complete: true }, { field: "program_complete", equals: String(m.program_complete ?? false) }).catch(() => null);
+      return 0;
+    }
+    const complete = round2(used + grant) >= loyaltyAnnualValueCap();
+    const patch: Record<string, unknown> = { discount_used_usd: round2(used + grant) };
     if (complete) patch.program_complete = true;
-    const ok = await db.updateIf("PremiumPPCMembership", memberId, patch, { field: "reward_pool_usd", equals: String(pool) }).catch(() => null);
-    if (ok) { await ledger(memberId, userId, "discount", spend, { ref }); return spend; }
+    const ok = await db.updateIf("PremiumPPCMembership", memberId, patch, { field: "discount_used_usd", equals: String(used) }).catch(() => null);
+    if (ok) { await ledger(memberId, userId, "discount", grant, { ref, absorbed_by: "platform_advertiser_funded" }); return grant; }
   }
   return 0;
 }
