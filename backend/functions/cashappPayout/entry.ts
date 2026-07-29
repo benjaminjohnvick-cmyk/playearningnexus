@@ -4,6 +4,8 @@ import { gate } from "../../sdk/oversight.ts";
 import { isPartnerPayout } from "../../sdk/payout-policy.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
+import { postLedgerEntry } from "../../sdk/ledger.ts";
+import { db } from "../../sdk/db.ts";
 import Stripe from 'npm:stripe@14.25.0';
 
 // CashApp Cash Card is a Visa debit card.
@@ -28,7 +30,7 @@ export default __handler(async (req) => {
     const { payoutId, cardToken, amount, currency = 'usd', payout_type } = body;
 
     // --- Closed-loop policy: no cash out to regular users; business partners only ---
-    if (!isPartnerPayout({ role: user?.role, payout_type })) {
+    if (!isPartnerPayout({ role: user?.role, payout_type }, { trustType: false })) {
       return Response.json({
         blocked: true, closed_loop: true, cash_sent: false,
         message: 'Closed-loop platform: user earnings remain as on-site credit (redeemable for perks) and are not paid out as cash. Only business-partner revenue shares are paid via Cash App.',
@@ -50,6 +52,11 @@ export default __handler(async (req) => {
     const wh = applyBackupWithholding(Number(amount), user);
     const amountCents = Math.round(wh.net * 100);
 
+    // IDEMPOTENCY: claim the payout (pending → processing) before moving any money; a retry bails. The
+    // Stripe calls below also each carry an idempotencyKey keyed on payoutId, so a retry can't double-pay.
+    const claimed = await db.updateIf("Payout", String(payoutId), { status: "processing", claimed_at: new Date().toISOString() }, { field: "status", equals: "pending" }).catch(() => null);
+    if (!claimed) return Response.json({ error: "This payout is already processing or completed.", already: true }, { status: 409 });
+
     // Create or retrieve a Stripe Connected Account for this user
     let stripeAccountId = user.stripe_account_id;
 
@@ -67,20 +74,20 @@ export default __handler(async (req) => {
       await base44.auth.updateMe({ stripe_account_id: stripeAccountId });
     }
 
-    // Fund the connected account via a transfer from platform
+    // Fund the connected account via a transfer from platform (idempotent on payoutId).
     const transfer = await stripe.transfers.create({
       amount: amountCents,
       currency,
       destination: stripeAccountId,
       description: `GamerGain CashApp payout for user ${user.id}`,
-    });
+    }, { idempotencyKey: `gg-transfer-${payoutId}` });
 
     // Attach the Cash Card token as an external account on the connected account
     const externalAccount = await stripe.accounts.createExternalAccount(stripeAccountId, {
       external_account: cardToken,
     });
 
-    // Issue Instant Payout to the Cash Card
+    // Issue Instant Payout to the Cash Card (idempotent on payoutId — a retry returns the same payout).
     const payout = await stripe.payouts.create(
       {
         amount: amountCents,
@@ -90,7 +97,7 @@ export default __handler(async (req) => {
         description: 'GamerGain CashApp Instant Payout',
         metadata: { payout_id: payoutId, user_id: user.id },
       },
-      { stripeAccount: stripeAccountId }
+      { stripeAccount: stripeAccountId, idempotencyKey: `gg-payout-${payoutId}` }
     );
 
     await base44.asServiceRole.entities.Payout.update(payoutId, {
@@ -101,6 +108,13 @@ export default __handler(async (req) => {
       withholding_rate: wh.rate,
     });
 
+    // Compliance: immutable money-movement audit entry (feeds 1099 totals in tax.ts).
+    await postLedgerEntry({
+      user_id: user.id, type: 'payout_cashapp', amount: -Math.abs(Number(amount) || 0), currency: 'USD',
+      ref: payout.id, idempotency_key: `cashappPayout:${payoutId}`,
+      meta: { payout_type: payout_type ?? null },
+    }).catch(() => null);
+
     await base44.asServiceRole.entities.Notification.create({
       user_id: user.id,
       type: 'purchase_complete',
@@ -108,10 +122,11 @@ export default __handler(async (req) => {
       message: `Your $${wh.net.toFixed(2)} has been sent to your Cash Card via Stripe Instant Payout.${wh.withheld > 0 ? ` ($${wh.withheld.toFixed(2)} withheld — submit your W-9 to receive the full amount.)` : ''} Arrives within 30 minutes. ID: ${payout.id}`,
       status: 'unread',
       delivery_method: ['in_app'],
-    });
+    }).catch(() => null);
 
     return Response.json({ success: true, payout_id: payout.id, status: 'processing', arrival: '~30 minutes' });
   } catch (error) {
+    try { const b = await req.clone().json().catch(() => ({})); if (b?.payoutId) await db.update("Payout", String(b.payoutId), { status: "pending" }).catch(() => null); } catch { /* */ }
     return Response.json({ error: error.message }, { status: 500 });
   }
 });

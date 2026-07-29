@@ -23,7 +23,7 @@ export default __handler(async (req) => {
     // Closed-loop eligibility: cash only for business partners (shared policy)
     const { amount, payment_method, payment_details, payout_type } = await req.json();
 
-    if (!isPartnerPayout({ role: user?.role, payout_type })) {
+    if (!isPartnerPayout({ role: user?.role, payout_type }, { trustType: false })) {
       return Response.json({
         blocked: true, closed_loop: true,
         message: 'Closed-loop platform: user earnings remain as on-site store credit and cannot be cashed out. Only business-partner revenue shares are paid in cash.',

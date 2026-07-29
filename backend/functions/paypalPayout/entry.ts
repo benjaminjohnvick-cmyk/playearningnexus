@@ -5,6 +5,7 @@ import { isPartnerPayout } from "../../sdk/payout-policy.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
+import { db } from "../../sdk/db.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
@@ -34,7 +35,7 @@ export default __handler(async (req) => {
     const { payoutId, recipientEmail, amount, currency = 'USD', payout_type } = body;
 
     // --- Closed-loop policy: no cash out to regular users; business partners only ---
-    if (!isPartnerPayout({ role: user?.role, payout_type })) {
+    if (!isPartnerPayout({ role: user?.role, payout_type }, { trustType: false })) {
       return Response.json({
         blocked: true, closed_loop: true, cash_sent: false,
         message: 'Closed-loop platform: user earnings remain as on-site credit (redeemable for perks) and are not paid out as cash. Only business-partner revenue shares are paid via PayPal.',
@@ -79,9 +80,15 @@ export default __handler(async (req) => {
     // Tax: backup withholding when no W-9 is on file — send net, set aside `withheld`.
     const wh = applyBackupWithholding(Number(amount), user);
 
+    // IDEMPOTENCY: atomically claim the payout (pending → processing) before sending. A retry or a
+    // concurrent double-submit finds status != "pending" and bails, so we never send twice.
+    const claimed = await db.updateIf("Payout", String(payoutId), { status: "processing", claimed_at: new Date().toISOString() }, { field: "status", equals: "pending" }).catch(() => null);
+    if (!claimed) return Response.json({ error: "This payout is already processing or completed.", already: true }, { status: 409 });
+
     const accessToken = await getPayPalAccessToken();
 
-    const batchId = `GG_${payoutId}_${Date.now()}`;
+    // STABLE batch id (no Date.now()): PayPal dedupes on sender_batch_id, so even a retry can't double-pay.
+    const batchId = `GG_${payoutId}`;
 
     const payload = {
       sender_batch_header: {
@@ -148,7 +155,7 @@ export default __handler(async (req) => {
       message: `Your $${wh.net.toFixed(2)} PayPal payout is on its way to ${recipientEmail}.${wh.withheld > 0 ? ` ($${wh.withheld.toFixed(2)} withheld — submit your W-9 to receive the full amount.)` : ''} Batch ID: ${batchPayoutId}`,
       status: 'unread',
       delivery_method: ['in_app'],
-    });
+    }).catch(() => null);
 
     return Response.json({
       success: true,
@@ -156,6 +163,9 @@ export default __handler(async (req) => {
       status: 'processing',
     });
   } catch (error) {
+    // If we claimed the payout but the send threw before confirmation, revert to "pending" so it can be
+    // retried. Safe because the stable sender_batch_id makes PayPal reject any duplicate on retry.
+    try { const b = await req.clone().json().catch(() => ({})); if (b?.payoutId) await db.update("Payout", String(b.payoutId), { status: "pending" }).catch(() => null); } catch { /* */ }
     return Response.json({ error: error.message }, { status: 500 });
   }
 });

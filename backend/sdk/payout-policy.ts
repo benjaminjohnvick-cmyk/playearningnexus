@@ -15,11 +15,23 @@ const roles = new Set(policy.partnerRoles.map((r) => r.toLowerCase()));
 const types = new Set(policy.partnerPayoutTypes.map((t) => t.toLowerCase()));
 
 /** True only for business-partner payouts (which may go out as cash). Everything else is a
- *  user earning and must stay as on-site credit. */
-export function isPartnerPayout(input: { role?: string | null; payout_type?: string | null }): boolean {
+ *  user earning and must stay as on-site credit.
+ *
+ *  SECURITY: `payout_type` can be client-supplied on the direct user-facing rails, and a partner
+ *  payout_type would otherwise let a regular user slip past the wall. So the type-based path is only
+ *  honored when the CALLER trusts the type (server-initiated flows that set payout_type themselves).
+ *  Pass `{ trustType: false }` from any rail where payout_type comes from the request body — then a
+ *  server-verified PARTNER ROLE is required for cash. This matters most when cash_out is ON, where this
+ *  function is the sole wall between a user and cash. */
+export function isPartnerPayout(
+  input: { role?: string | null; payout_type?: string | null },
+  opts: { trustType?: boolean } = {},
+): boolean {
   const role = (input.role ?? "").toLowerCase();
   const type = (input.payout_type ?? "").toLowerCase();
-  return roles.has(role) || types.has(type);
+  if (roles.has(role)) return true;                       // server-verified partner role — always ok
+  if (opts.trustType !== false && types.has(type)) return true; // trusted server-set payout_type
+  return false;                                           // client-supplied type alone can't grant cash
 }
 
 // --- Business vs regular account (single source of truth) ----------------------

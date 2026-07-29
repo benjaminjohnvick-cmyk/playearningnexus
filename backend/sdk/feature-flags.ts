@@ -35,7 +35,11 @@ const DEFAULTS: Record<FlagName, boolean> = {
   order_fulfillment: true,
   store_credit_purchase: false,  // OFF — points must be EARNED, not purchased (money-transmission risk)
   p2p_transfers: false,          // OFF — no user-to-user value movement (money-transmission risk)
-  cash_out: false,               // OFF for closed-loop points
+  cash_out: true,                // ON: partner cash payouts live from launch. Regular users stay CLOSED-LOOP
+                                 // (blocked at every rail by isPartnerPayout, which now requires a verified
+                                 // partner ROLE). Admin can flip OFF as an emergency brake on ALL cash.
+                                 // Prereqs: PayPal Payouts / Stripe Connect merchant accounts + partner
+                                 // W-9/1099. Confirm partner revenue-share payouts with counsel.
   earnings_projections: false,   // OFF — no guaranteed-earnings UI (FTC earnings-claims risk)
   session_recording: true,       // behavioral analytics kill-switch (disclosed in privacy policy)
   affirm_bnpl: false,            // OFF until Affirm merchant keys are set; REAL shippable goods only, never points

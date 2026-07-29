@@ -13,7 +13,7 @@ export function backupWithholdingRate(): number { return snapNumber("TAX_BACKUP_
 
 // MoneyLedgerEntry types that count as reportable payments to a person.
 export const REPORTABLE_PAYOUT_TYPES = [
-  "payout_paypal", "payout_request", "withdrawal_request",
+  "payout_paypal", "payout_venmo", "payout_cashapp", "payout_request", "withdrawal_request",
   "creator_payout", "affiliate_payout", "referral_payout",
 ];
 
