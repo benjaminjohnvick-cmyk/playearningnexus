@@ -261,9 +261,17 @@ export async function applyOrQueue(p: Proposal, snap: Snapshot): Promise<ApplyRe
   const def = getDef(p.key)!;
   const priceLike = !!byKey[p.key]?.priceLike;
 
-  // Preferred path: a NON-SENSITIVE change is deployed as a LIVE A/B holdout on a small slice of real
-  // traffic and only promoted if the live data shows a significant uptick with no guardrail regression
-  // (bandit traffic-shift + circuit breaker + canary ramp, all no-downtime). Money/compliance-sensitive
+  // INDIVIDUAL CONSENT FIRST: every change is put to real users as a yes/no ("does this work for you?")
+  // before it can go anywhere site-wide. Only changes with a high degree of statistical approval across
+  // users become eligible for the daily human review that promotes them globally (evaluateExperiments +
+  // the global-review window). This is the default path (OPTIMIZER_REQUIRE_EXPERIMENT on).
+  if (await requireExperiment()) {
+    const exp = await createExperimentForProposal(p, snap).catch(() => null);
+    return { key: p.key, status: "experiment", from: p.current, to: p.proposed, experiment_id: (exp as any)?.id };
+  }
+
+  // Fallback (only if per-user consent is turned OFF): a NON-SENSITIVE change is deployed as a LIVE A/B
+  // holdout on a small traffic slice with bandit shift + circuit breaker. Money/compliance-sensitive
   // changes never enter this — they fall through to the human-gated recommendation path below.
   if (!def.sensitive && !priceLike && await liveEnabled().catch(() => false)) {
     const segment = await targetSegment().catch(() => null);
@@ -272,13 +280,7 @@ export async function applyOrQueue(p: Proposal, snap: Snapshot): Promise<ApplyRe
       objective_metric: liveObjectiveFor(p.objective), rationale: p.rationale, segment,
     }).catch(() => null);
     if (exp) return { key: p.key, status: "live_experiment", from: p.current, to: p.proposed, experiment_id: (exp as any).id };
-    // If live creation failed, fall through to the survey/apply paths below.
-  }
-
-  // Test with customers before launching, per the change-gating policy.
-  if (await requireExperiment()) {
-    const exp = await createExperimentForProposal(p, snap).catch(() => null);
-    return { key: p.key, status: "experiment", from: p.current, to: p.proposed, experiment_id: (exp as any)?.id };
+    // If live creation failed, fall through to the apply paths below.
   }
   const o = byKey[p.key];
   const mustApprove = !!def.sensitive || !!o?.priceLike;

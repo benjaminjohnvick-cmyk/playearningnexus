@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Pause, Play, ShieldAlert, Wand2, Check } from 'lucide-react';
+import { Loader2, Pause, Play, ShieldAlert, Wand2, Check, X, Globe, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
 // AILiveOversight (admin) — watch what the AI is doing in real time, STOP it instantly, and push manual
@@ -28,17 +28,33 @@ export default function AILiveOversight() {
   const [correct, setCorrect] = useState(null);  // the activity row being corrected
   const [value, setValue] = useState('');
   const [note, setNote] = useState('');
+  const [review, setReview] = useState({ window_open: false, eligible: [], peak_hour_utc: 18, window_hours: 1, next_open_iso: null });
   const timer = useRef(null);
 
   const load = useCallback(async () => {
     try {
-      const r = await base44.functions.invoke('aiControlStatus', { limit: 80 });
-      if (r.data?.error) { toast.error(r.data.error); return; }
-      setPaused(!!r.data.paused);
-      setActivity(Array.isArray(r.data.activity) ? r.data.activity : []);
+      const [s, g] = await Promise.all([
+        base44.functions.invoke('aiControlStatus', { limit: 80 }),
+        base44.functions.invoke('aiGlobalReview', {}),
+      ]);
+      if (s.data?.error) { toast.error(s.data.error); return; }
+      setPaused(!!s.data.paused);
+      setActivity(Array.isArray(s.data.activity) ? s.data.activity : []);
+      if (g.data && !g.data.error) setReview(g.data);
     } catch { /* keep last */ }
     finally { setLoading(false); }
   }, []);
+
+  async function decideGlobal(id, action) {
+    setBusy('g' + id);
+    try {
+      const r = await base44.functions.invoke('aiGlobalDecide', { experiment_id: id, action });
+      if (r.data?.error) { toast.error(r.data.error); return; }
+      toast.success(action === 'apply' ? 'Change promoted site-wide.' : 'Change rejected.');
+      load();
+    } catch (e) { toast.error(e?.data?.error || 'Could not update.'); }
+    finally { setBusy(''); }
+  }
 
   useEffect(() => {
     load();
@@ -102,6 +118,44 @@ export default function AILiveOversight() {
             {busy === 'pause' ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : paused ? <Play className="mr-1 h-4 w-4" /> : <Pause className="mr-1 h-4 w-4" />}
             {paused ? 'Resume AI' : 'STOP AI'}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Daily global-review window: individually-approved changes waiting to go site-wide */}
+      <Card className={`mb-5 border-2 ${review.window_open ? 'border-blue-400' : 'border-gray-200'}`}>
+        <CardContent className="p-4">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex items-center gap-2 font-semibold"><Globe className="h-5 w-5 text-blue-600" /> Daily global review</div>
+            <Badge className={review.window_open ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}>
+              {review.window_open ? 'window OPEN' : 'window closed'}
+            </Badge>
+          </div>
+          <p className="mb-3 text-xs text-gray-500">
+            <Clock className="mr-1 inline h-3.5 w-3.5" />
+            The once-a-day human check runs at {String(review.peak_hour_utc).padStart(2, '0')}:00 UTC for {review.window_hours}h.
+            {!review.window_open && review.next_open_iso ? ` Next: ${new Date(review.next_open_iso).toLocaleString()}.` : ' You can promote changes now.'}
+            {' '}Only changes users approved with high statistical confidence appear here.
+          </p>
+          {(review.eligible || []).length === 0 ? (
+            <div className="rounded-lg bg-gray-50 py-6 text-center text-sm text-gray-400">No changes waiting for global promotion.</div>
+          ) : (
+            <div className="space-y-2">
+              {review.eligible.map((e) => (
+                <div key={e.id} className="rounded-xl border border-gray-200 p-3">
+                  <div className="text-sm font-medium">{e.key}: {String(e.from)} → {String(e.to)}</div>
+                  <div className="mb-2 text-xs text-gray-500">
+                    {Math.round((e.favor_pct || 0) * 100)}% approved · {e.sample} votes · {Math.round((e.wilson_lower || 0) * 100)}% statistical floor
+                    {e.rationale ? ` · ${e.rationale}` : ''}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" disabled={!review.window_open || busy === 'g' + e.id} onClick={() => decideGlobal(e.id, 'reject')}><X className="mr-1 h-4 w-4" /> Reject</Button>
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700" disabled={!review.window_open || busy === 'g' + e.id} onClick={() => decideGlobal(e.id, 'apply')}><Globe className="mr-1 h-4 w-4" /> Promote to global</Button>
+                  </div>
+                  {!review.window_open && <div className="mt-1 text-[11px] text-gray-400">Promotion is disabled until the daily window opens.</div>}
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 

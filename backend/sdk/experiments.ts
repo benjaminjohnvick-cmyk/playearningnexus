@@ -8,8 +8,55 @@
 // a pending admin recommendation. Losers are archived, never shipped.
 
 import { db } from "./db.ts";
-import { getBool, getDef, setSetting } from "./settings.ts";
+import { getBool, getNumber, getDef, setSetting } from "./settings.ts";
 import { Core } from "./integrations.ts";
+
+// Wilson score lower bound (95%) — a change only "goes global" if we're statistically confident the
+// true approval rate clears the bar, not just because a small favorable sample got lucky.
+export function wilsonLower(pos: number, n: number): number {
+  if (n <= 0) return 0;
+  const z = 1.96, p = pos / n;
+  const denom = 1 + (z * z) / n;
+  const center = p + (z * z) / (2 * n);
+  const margin = z * Math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n);
+  return Math.max(0, (center - margin) / denom);
+}
+
+// Daily global-review window: the human check that promotes changes site-wide happens ONCE PER 24h,
+// during a 1-hour peak-usage window (configurable). Outside it, eligible changes just wait.
+export async function globalReviewWindow(): Promise<{ open: boolean; peak_hour_utc: number; window_hours: number; next_open_iso: string }> {
+  const hour = Math.min(23, Math.max(0, await getNumber("PEAK_REVIEW_HOUR_UTC", 18)));
+  const win = Math.min(6, Math.max(1, await getNumber("PEAK_REVIEW_WINDOW_HOURS", 1)));
+  const now = new Date();
+  const h = now.getUTCHours();
+  const open = h >= hour && h < hour + win;
+  // Next opening (today if still upcoming, else tomorrow).
+  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), hour, 0, 0));
+  if (now.getTime() >= next.getTime()) next.setUTCDate(next.getUTCDate() + 1);
+  return { open, peak_hour_utc: hour, window_hours: win, next_open_iso: next.toISOString() };
+}
+
+/** Promote an eligible experiment's change SITE-WIDE (the actual global apply). Admin-gated caller. */
+export async function promoteExperimentGlobally(experimentId: string): Promise<boolean> {
+  const e = await db.get("OptimizationExperiment", experimentId).catch(() => null) as Record<string, unknown> | null;
+  if (!e) return false;
+  await applyPassedExperiment(e, Number(e.favor_pct) || 0);
+  await db.update("OptimizationExperiment", experimentId, { status: "passed_applied", global_applied_at: new Date().toISOString() }).catch(() => null);
+  return true;
+}
+
+/** Reject an eligible experiment (do NOT go global). */
+export async function rejectEligibleExperiment(experimentId: string): Promise<boolean> {
+  const e = await db.get("OptimizationExperiment", experimentId).catch(() => null);
+  if (!e) return false;
+  await db.update("OptimizationExperiment", experimentId, { status: "rejected_global", rejected_at: new Date().toISOString() }).catch(() => null);
+  return true;
+}
+
+/** Changes that cleared the individual-approval bar and are waiting for the daily human go/no-go. */
+export async function listEligibleForGlobal(): Promise<Record<string, unknown>[]> {
+  return await db.filter("OptimizationExperiment", { status: "eligible_for_global" }, "-eligible_at", 100).catch(() => []) as Record<string, unknown>[];
+}
 
 const ACTOR = "ai-optimizer";
 
@@ -88,26 +135,43 @@ async function applyPassedExperiment(e: Record<string, unknown>, favorPct: numbe
 /** Evaluate testing experiments with enough customer feedback (or old enough); apply winners. */
 export async function evaluateExperiments(minResponses = 5, maxAgeHours = 72): Promise<Array<Record<string, unknown>>> {
   const testing = await db.filter("OptimizationExperiment", { status: "testing" }, "-created_at", 300).catch(() => []);
+  // "High degree of statistical approval": require a real sample, a high favorable rate, AND a Wilson
+  // lower-bound above 0.5 so a small lucky sample can't promote a change. All admin-tunable.
+  const minSample = Math.max(minResponses, await getNumber("CHANGE_GLOBAL_MIN_SAMPLE", 20));
+  const minApproval = Math.min(1, Math.max(0.5, await getNumber("CHANGE_GLOBAL_MIN_APPROVAL", 0.7)));
+  const humanGate = await getBool("AI_GLOBAL_HUMAN_GATE", true);
   const out: Array<Record<string, unknown>> = [];
   for (const e of testing) {
     const responses: any[] = Array.isArray(e.responses) ? e.responses : [];
     const ageMs = Date.now() - new Date(String(e.created_at)).getTime();
-    if (responses.length < minResponses && ageMs < maxAgeHours * 3600000) continue;
+    if (responses.length < minSample && ageMs < maxAgeHours * 3600000) continue;
 
     const favorable = responses.filter((r) =>
       r?.prefers_variant === true || r?.answer === true || Number(r?.satisfaction) >= 4 || Number(r?.score) >= 4 || r?.sentiment === "positive").length;
     const favorPct = responses.length ? favorable / responses.length : 0;
-    // Require enough responses for a decision — never ship a change on a sample of one just because
-    // the experiment aged out. Too few responses at timeout → treated as inconclusive (not applied).
-    const pass = responses.length >= minResponses && favorPct >= 0.5;
+    const wilson = wilsonLower(favorable, responses.length);
+    // Individual-approval bar: enough voters, high yes-rate, and statistically confident (Wilson > 0.5).
+    const pass = responses.length >= minSample && favorPct >= minApproval && wilson >= 0.5;
 
-    if (pass) await applyPassedExperiment(e, favorPct);
-    const status = pass ? "passed_applied"
+    const now = new Date().toISOString();
+    let status: string;
+    if (pass && humanGate) {
+      // Passed the users' bar → wait for the daily 1-hour human review before going global.
+      status = "eligible_for_global";
+      await db.update("OptimizationExperiment", String(e.id), {
+        status, favor_pct: Math.round(favorPct * 100) / 100, wilson_lower: Math.round(wilson * 100) / 100,
+        sample: responses.length, eligible_at: now, evaluated_at: now,
+      }).catch(() => null);
+      out.push({ key: e.key, status: "eligible_for_global", favor_pct: favorPct, wilson, responses: responses.length });
+      continue;
+    }
+    if (pass) await applyPassedExperiment(e, favorPct); // human gate off → auto-global
+    status = pass ? "passed_applied"
       : responses.length === 0 ? "expired_no_data"
-      : responses.length < minResponses ? "inconclusive"
+      : responses.length < minSample ? "inconclusive"
       : "failed";
     await db.update("OptimizationExperiment", String(e.id), {
-      status, favor_pct: Math.round(favorPct * 100) / 100, evaluated_at: new Date().toISOString(),
+      status, favor_pct: Math.round(favorPct * 100) / 100, wilson_lower: Math.round(wilson * 100) / 100, sample: responses.length, evaluated_at: now,
     }).catch(() => null);
     out.push({ key: e.key, status: pass ? "applied" : "not_applied", favor_pct: favorPct, responses: responses.length });
   }

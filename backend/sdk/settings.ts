@@ -103,6 +103,11 @@ export const REGISTRY: SettingDef[] = [
   { key: "LEADERBOARD_RESET_DAYS", label: "Leaderboard reset cadence", category: "Gamification", type: "number", default: "7", unit: "days", min: 0, help: "Weekly board resets every N days (all-time kept; winners archived). 0 = disabled (leaderboardReset)." },
 
   // 9. AI & agents
+  { key: "AI_GLOBAL_HUMAN_GATE", label: "Require human approval before a change goes global", category: "AI & Agents", type: "boolean", default: "1", sensitive: true, help: "ON = a change that passes individual-user approval waits for the daily peak-time human review before going site-wide. OFF = auto-promote on statistical approval." },
+  { key: "CHANGE_GLOBAL_MIN_APPROVAL", label: "Min user approval to go global", category: "AI & Agents", type: "number", default: "0.7", unit: "×", min: 0.5, max: 1, help: "Share of individual users who must answer YES before a change is eligible to go site-wide (also requires statistical confidence)." },
+  { key: "CHANGE_GLOBAL_MIN_SAMPLE", label: "Min user votes to go global", category: "AI & Agents", type: "number", default: "20", min: 1, help: "Minimum number of individual yes/no votes before a change can be promoted." },
+  { key: "PEAK_REVIEW_HOUR_UTC", label: "Daily human review hour (UTC)", category: "AI & Agents", type: "number", default: "18", min: 0, max: 23, help: "The one-per-day, peak-usage hour when a human reviews and promotes eligible changes to global." },
+  { key: "PEAK_REVIEW_WINDOW_HOURS", label: "Human review window length", category: "AI & Agents", type: "number", default: "1", unit: "hours", min: 1, max: 6, help: "How long the daily global-review window stays open (default 1 hour)." },
   { key: "LLM_PROVIDER", label: "LLM provider", category: "AI & Agents", type: "select", options: ["openai", "anthropic"], default: "openai" },
   { key: "LLM_MODEL_DEFAULT", label: "OpenAI default model", category: "AI & Agents", type: "string", default: "gpt-4o-mini" },
   { key: "LLM_MODEL_LARGE", label: "OpenAI large model", category: "AI & Agents", type: "string", default: "gpt-4o" },
