@@ -21,7 +21,7 @@ ENVFILE="${1:-backend/.env}"
 TODO=()
 
 # ---- STEP 1: keys file -------------------------------------------------------
-say "STEP 1/6  Check your keys file ($ENVFILE)"
+say "STEP 1/7  Check your keys file ($ENVFILE)"
 if [ -f "$ENVFILE" ]; then
   set -a; . "$ENVFILE" 2>/dev/null || true; set +a
   ok "loaded $ENVFILE"
@@ -37,7 +37,7 @@ done
 [ -n "$MISSING" ] && { warn "still missing:$MISSING"; } || ok "core keys present"
 
 # ---- STEP 2: auto-generate secrets ------------------------------------------
-say "STEP 2/6  Auto-generate the secrets you can't get from a provider"
+say "STEP 2/7  Auto-generate the secrets you can't get from a provider"
 if [ -z "${AUTH_JWT_SECRET:-}" ] && command -v openssl >/dev/null 2>&1; then
   GEN=$(openssl rand -base64 48 | tr -d '\n'); printf '\nAUTH_JWT_SECRET=%s\n' "$GEN" >> "$ENVFILE"; ok "generated AUTH_JWT_SECRET (written to $ENVFILE)"
 else
@@ -48,7 +48,7 @@ if [ -z "${VAPID_PUBLIC_KEY:-}" ] && command -v npx >/dev/null 2>&1; then
 fi
 
 # ---- STEP 3: validate the build ---------------------------------------------
-say "STEP 3/6  Validate the build (the #1 thing that breaks deploys)"
+say "STEP 3/7  Validate the build (the #1 thing that breaks deploys)"
 if command -v npm >/dev/null 2>&1; then
   if npm install --ignore-scripts >/dev/null 2>&1 && npm run build >/dev/null 2>&1; then ok "frontend build is green — deployable"; else err "frontend build FAILED — run 'npm run build' to see why"; TODO+=("Fix the frontend build (npm run build) before deploying."); fi
 else warn "npm not found here — run this on a machine with Node installed"; fi
@@ -58,7 +58,7 @@ if command -v node >/dev/null 2>&1; then
 fi
 
 # ---- STEP 4: load the database schema ---------------------------------------
-say "STEP 4/6  Load the database schema"
+say "STEP 4/7  Load the database schema"
 if [ -n "${DATABASE_URL:-}" ] && command -v psql >/dev/null 2>&1; then
   if psql "$DATABASE_URL" -f backend/db/schema.sql >/dev/null 2>&1; then ok "schema loaded into your database"; else err "schema load failed — check DATABASE_URL"; TODO+=("Load backend/db/schema.sql into your database."); fi
 else
@@ -68,7 +68,7 @@ else
 fi
 
 # ---- STEP 5: smoke-test the backend (automated QA) --------------------------
-say "STEP 5/6  Smoke-test the backend (automated QA — replaces the manual click-through)"
+say "STEP 5/7  Smoke-test the backend (automated QA — replaces the manual click-through)"
 if [ -n "${BACKEND_URL:-}" ] && command -v curl >/dev/null 2>&1; then
   if curl -fsS "${BACKEND_URL%/}/health" >/dev/null 2>&1; then
     ok "backend /health responded OK at $BACKEND_URL"
@@ -90,8 +90,27 @@ else
   warn "set BACKEND_URL in $ENVFILE to auto-run the QA smoke once the backend is deployed"
 fi
 
-# ---- STEP 6: trigger the mobile app builds ----------------------------------
-say "STEP 6/6  Build the mobile apps (CI)"
+# ---- STEP 6: pre-warm & go-live readiness -----------------------------------
+say "STEP 6/7  Go-live pre-warm (everything ON + content populated before users)"
+if [ -n "${BACKEND_URL:-}" ] && command -v node >/dev/null 2>&1; then
+  if [ -n "${ADMIN_EMAIL:-}" ] && [ -n "${ADMIN_PASSWORD:-}" ]; then
+    say "     Running deploy-kit/go-live.mjs (verify flags ON, pre-warm catalog, smoke, GO/NO-GO)…"
+    if BACKEND_URL="$BACKEND_URL" ADMIN_EMAIL="$ADMIN_EMAIL" ADMIN_PASSWORD="$ADMIN_PASSWORD" node deploy-kit/go-live.mjs; then
+      ok "GO-LIVE: app is up, switched on, and pre-warmed with content"
+    else
+      warn "go-live reported items to resolve before opening to users (see above)"; TODO+=("Resolve the go-live blockers, then flip MAINTENANCE_MODE off.")
+    fi
+  else
+    warn "set ADMIN_EMAIL + ADMIN_PASSWORD in $ENVFILE to auto pre-warm the catalog and verify every flag is ON"
+    warn "or run manually:  BACKEND_URL=$BACKEND_URL ADMIN_EMAIL=… ADMIN_PASSWORD=… node deploy-kit/go-live.mjs"
+    TODO+=("Run deploy-kit/go-live.mjs to pre-warm content and confirm go-live readiness.")
+  fi
+else
+  warn "set BACKEND_URL (and admin creds) to run the go-live pre-warm once the backend is deployed"
+fi
+
+# ---- STEP 7: trigger the mobile app builds ----------------------------------
+say "STEP 7/7  Build the mobile apps (CI)"
 warn "The Android/iOS builds run in the cloud via the workflows already in your repo."
 warn "In GitHub → the ACTIONS tab → run 'Android Build & Play' and 'iOS Build & TestFlight'."
 warn "(They need your signing secrets set first — see ANDROID-SUBMISSION-KIT.md / IOS-NO-MAC-KIT.md.)"

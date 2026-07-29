@@ -86,6 +86,7 @@ Everything else is the developer following the kit — **~30–45 hours, ~$2,250
 - `bash deploy-kit/railway/railway-deploy.sh` — provision + deploy on Railway (backend serves frontend, schema auto-loads, scheduler inline)
 - `deno run -A backend/tools/seed-demo.ts` — seed demo data
 - `BACKEND_URL=… node deploy-kit/e2e-smoke.mjs` — one-command critical-path smoke test
+- `BACKEND_URL=… ADMIN_EMAIL=… ADMIN_PASSWORD=… node deploy-kit/go-live.mjs` — **the go-live gate**: verify every feature is ON, pre-warm the catalog so the site is full of content before the first user, smoke-test, and print GO / NO-GO (see `PRELAUNCH-GO-LIVE.md`)
 - `node backend/tools/validate-guardrails.mjs` && `node backend/tools/agent-smoke.mjs` — pre-launch agent checks
 - Mobile: push to the `android-release` / `ios-release` branch (CI builds + auto-bumps the build number); `fastlane` submits
 - App review: give reviewers the `/ReviewerLogin` URL (set `REVIEWER_DEMO=1`)

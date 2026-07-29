@@ -141,4 +141,32 @@ the kit + automation — **under $3,900** — because the entire new feature set
 The one budget risk remains an Apple review rejection round (keep the review clean). Runtime is unchanged:
 hosting ~$10–30/mo, AI capped by `AI_DAILY_SPEND_CAP_USD` (launchable at ~$0).
 
+## 7. 2026-07-29 — "everything ON + live before any users" as a kit step, and its real price impact
+
+Added `deploy-kit/go-live.mjs` + `PRELAUNCH-GO-LIVE.md` and wired it into `launch.sh` as Step 6/7. One
+command now: verifies every feature flag is ON, **pre-warms the catalog with real content so the site is
+populated before the first user**, runs the critical-path smoke, and prints a GO / NO-GO plus the only two
+owner flips left (payments-live, `MAINTENANCE_MODE` off). No new backend code — it orchestrates endpoints
+that already exist (`complianceFlags`, `aiCatalogSeed`, `e2e-smoke`).
+
+**How far it pushes the kit:** the web app can now go from "deployed" to "on, populated, self-verified,
+ready to open" in a single command. Combined with the everything-on `.env.example` and inline scheduler,
+the developer no longer hand-seeds content, hand-checks toggles, or manually QAs that the site is "alive."
+
+**Does it drop the price — honestly:** yes, but modestly, and only in one place. It trims **~2–4 developer
+hours (~$150–$300)** from Phases 3–4 (no manual seed, no manual toggle audit, no manual "is it populated?"
+pass) and — more valuable — it **de-risks rework**, which is the real budget-killer. It does **not** move
+the headline number much, because that number is set by things automation can't remove: owner account
+signups, the Railway provisioning clicks, Apple/Google **review wait**, and mobile submission (~15–22 h).
+So the full **PWA + Android + iOS** figure stays **~$2,250–$3,375** (or ~$3,900 with the load test).
+
+**Where it *can* drop the price a lot:** a **web-only soft launch** (defer the native apps). With go-live,
+a web launch is realistically a **one-evening job** — deploy (`railway-deploy.sh`), `go-live.mjs`, flip two
+switches — landing around **~$1,200–$1,800** in developer time instead of the full-stack figure. Add the
+native apps later when you want them; nothing about the web launch has to be redone.
+
+**Bottom line:** everything-on + live-before-users is now a real, one-command kit step that simplifies setup
+and shaves a few hundred dollars off the web phase; the floor on the *full* (web+mobile) launch is held up
+by store review and owner tasks, not by anything left in the code.
+
 <!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
