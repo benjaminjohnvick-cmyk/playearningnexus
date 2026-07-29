@@ -2,6 +2,19 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
 import { getNumber } from "../../sdk/settings.ts";
+import { featureAllowed, prizeNeedsRegistration, minAgeFor } from "../../sdk/jurisdiction.ts";
+
+// Compute a user's age from a date-of-birth field, if present. Returns null when unknown.
+function ageFromDob(dob?: string | null): number | null {
+  if (!dob) return null;
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getUTCFullYear() - d.getUTCFullYear();
+  const m = now.getUTCMonth() - d.getUTCMonth();
+  if (m < 0 || (m === 0 && now.getUTCDate() < d.getUTCDate())) age--;
+  return age;
+}
 
 export default __handler(async (req) => {
   try {
@@ -50,6 +63,7 @@ export default __handler(async (req) => {
     };
 
     const distributions = [];
+    const heldForJurisdiction: Array<{ user_id: string; prize: number; reason: string }> = [];
 
     // Award prizes to top 3
     for (let i = 0; i < Math.min(3, sorted.length); i++) {
@@ -58,14 +72,33 @@ export default __handler(async (req) => {
       const prize = prizeDistribution[placement] || 0;
 
       if (prize > 0) {
+        // Award to user balance (also the source of the jurisdiction/age context)
+        const userRecord = await base44.asServiceRole.entities.User.filter({ id: participant.user_id }).then(r => r[0]);
+
+        // Jurisdiction + age gate at payout (mirrors processWeeklyJackpot): don't pay where prize
+        // competitions are blocked, hold prizes at/above the state's sweepstakes-registration
+        // threshold for manual review, and never pay a participant under the jurisdiction's min age.
+        const juris = userRecord?.jurisdiction ?? userRecord?.state ?? null;
+        const age = ageFromDob(userRecord?.date_of_birth ?? userRecord?.dob);
+        if (!featureAllowed("jackpots", juris)) {
+          heldForJurisdiction.push({ user_id: participant.user_id, prize, reason: "feature_blocked_in_jurisdiction" });
+          continue;
+        }
+        if (age != null && age < minAgeFor(juris)) {
+          heldForJurisdiction.push({ user_id: participant.user_id, prize, reason: "under_minimum_age" });
+          continue;
+        }
+        if (prizeNeedsRegistration(prize, juris)) {
+          heldForJurisdiction.push({ user_id: participant.user_id, prize, reason: "prize_registration_threshold" });
+          continue;
+        }
+
         // Update participant
         await base44.asServiceRole.entities.TournamentParticipant.update(participant.id, {
           prize_awarded: prize,
           final_placement: placement,
         });
 
-        // Award to user balance
-        const userRecord = await base44.asServiceRole.entities.User.filter({ id: participant.user_id }).then(r => r[0]);
         if (userRecord) {
           await base44.asServiceRole.entities.User.update(userRecord.id, {
             total_earnings: (userRecord.total_earnings || 0) + prize,
@@ -101,6 +134,7 @@ export default __handler(async (req) => {
       tournament_id,
       total_distributed: distributions.reduce((sum, d) => sum + d.prize, 0),
       distributions,
+      held_for_jurisdiction: heldForJurisdiction,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 // The full PPC ad grid — mirrors GoogleAdsOverlay BUSINESS_ADS
 const BUSINESS_ADS = [
@@ -39,7 +40,8 @@ async function generatePostContent(base44, platform, postNum) {
     prompt: promptFn(BUSINESS_ADS, postNum),
   });
 
-  return typeof result === 'string' ? result : (result?.text || result?.content || JSON.stringify(result));
+  const raw = typeof result === 'string' ? result : (result?.text || result?.content || JSON.stringify(result));
+  return withAdDisclosure(raw); // FTC: every auto-posted promotional caption carries a sponsorship disclosure
 }
 
 async function postToSocialPlatform(connection, content) {

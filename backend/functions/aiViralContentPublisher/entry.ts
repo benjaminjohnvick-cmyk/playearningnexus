@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 export default __handler(async (req) => {
   try {
@@ -72,7 +73,7 @@ Respond in JSON:
     await base44.asServiceRole.entities.SocialMediaPost.create({
       developer_id: 'platform',
       platform: 'twitter',
-      content: content.tweet?.text || '',
+      content: withAdDisclosure(content.tweet?.text || ''), // FTC: promotional post carries a sponsorship disclosure
       hashtags: content.tweet?.hashtags || [],
       status: 'draft',
       post_type: 'promotional',

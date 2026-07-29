@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 // Post 2 GamerGain ads across all 7 social channels twice daily
 export default __handler(async (req) => {
@@ -39,7 +40,7 @@ Refer friends → They complete surveys → You earn commissions. Top earners ma
           await base44.asServiceRole.entities.SocialMediaPost.create({
             user_id: user.id,
             platform,
-            content: ad.content,
+            content: withAdDisclosure(ad.content), // FTC: promotional posts carry a clear sponsorship disclosure
             status: 'published',
             posted_at: new Date().toISOString(),
             auto_posted: true,

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 export default __handler(async (req) => {
   try {
@@ -63,7 +64,7 @@ Format output as JSON with "captions" array.`,
           await base44.asServiceRole.entities.SocialMediaPost.create({
             user_id: topUser.id,
             platform,
-            content: `🎮 [AI Generated] ${captionToPost}\n\n🔗 Join GamerGain: https://gamergain.app?ref=${topUser.id}`,
+            content: withAdDisclosure(`🎮 ${captionToPost}\n\n🔗 Join GamerGain: https://gamergain.app?ref=${topUser.id}`),
             status: 'published',
             posted_at: new Date().toISOString(),
             auto_posted: true,

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 // Auto-post mosaic grid to social media twice daily
 export default __handler(async (req) => {
@@ -33,7 +34,7 @@ Auto-added to your wishlist upon unlock! 🛍️
         const post = await base44.asServiceRole.entities.SocialMediaPost.create({
           user_id: conn.user_id,
           platform: conn.platform,
-          content: shareContent,
+          content: withAdDisclosure(shareContent), // FTC: promotional post carries a sponsorship disclosure
           status: 'published',
           posted_at: new Date().toISOString(),
           auto_posted: true,

@@ -75,6 +75,21 @@ Deno.serve({ port: PORT }, async (req) => {
     if (res) { for (const [k, v] of Object.entries(CORS)) res.headers.set(k, v); return res; }
   }
 
+  // Maintenance mode: when ON, only admins may reach data / function / integration / AGENT routes.
+  // Auth, health, static, and OPTIONS stay open so the login page and status still load. This is
+  // checked BEFORE the /agents dispatch below so the agent runtime (which spends on LLM calls)
+  // is blocked during maintenance just like every other money/data path.
+  if (
+    url.pathname.startsWith("/entities/") || url.pathname.startsWith("/functions/") ||
+    url.pathname.startsWith("/integrations/") || url.pathname.startsWith("/agents/") ||
+    url.pathname === "/agents"
+  ) {
+    await primeSettings().catch(() => {});
+    if (snapBool("MAINTENANCE_MODE", false) && !(await requesterIsAdmin(req))) {
+      return Response.json({ error: "maintenance", message: "GamerGain is briefly down for maintenance. Please check back soon." }, { status: 503, headers: CORS });
+    }
+  }
+
   // Agent runtime: GET /agents (list), POST /agents/:name { message, context }
   if (url.pathname === "/agents" && req.method === "GET") {
     return Response.json({ agents: listAgents() }, { headers: CORS });
@@ -87,15 +102,6 @@ Deno.serve({ port: PORT }, async (req) => {
       return Response.json(out, { headers: CORS });
     } catch (e) {
       return Response.json({ error: (e as Error).message }, { status: 500, headers: CORS });
-    }
-  }
-
-  // Maintenance mode: when ON, only admins may reach data / function / integration routes. Auth,
-  // health, static, and OPTIONS stay open so the login page and status still load.
-  if (url.pathname.startsWith("/entities/") || url.pathname.startsWith("/functions/") || url.pathname.startsWith("/integrations/")) {
-    await primeSettings().catch(() => {});
-    if (snapBool("MAINTENANCE_MODE", false) && !(await requesterIsAdmin(req))) {
-      return Response.json({ error: "maintenance", message: "GamerGain is briefly down for maintenance. Please check back soon." }, { status: 503, headers: CORS });
     }
   }
 
