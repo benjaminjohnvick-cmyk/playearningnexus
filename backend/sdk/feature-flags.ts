@@ -18,7 +18,8 @@ export type FlagName =
   | "cash_out" | "earnings_projections" | "session_recording" | "affirm_bnpl"
   | "site_telemetry" | "session_screenshots" | "self_learning" | "kyc_survey"
   | "live_experiments" | "personalized_learning" | "experiments_paused" | "ux_heatmap"
-  | "points_boost" | "physical_store" | "local_pickup" | "layaway" | "purchase_payback";
+  | "points_boost" | "physical_store" | "local_pickup" | "layaway" | "purchase_payback"
+  | "digital_store";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -51,6 +52,7 @@ const DEFAULTS: Record<FlagName, boolean> = {
   local_pickup: true,            // local-pickup fulfillment option for physical items
   layaway: true,                 // reserve & pay-down (with points/surveys) BEFORE delivery — the legal "work it off" path (no credit extended)
   purchase_payback: true,        // "earn-back" progress TRACKER: shows cash spent vs points earned back. Factual tracker, NOT a loan and NOT a guarantee (framed "depends on your activity")
+  digital_store: true,           // Digital Products section — online instant delivery only (no pickup); Affirm BNPL excluded (real shippable goods only)
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];

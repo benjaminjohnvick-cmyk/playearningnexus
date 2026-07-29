@@ -38,10 +38,12 @@ export default __handler(async (req) => {
       images: Array.isArray(b.images) ? b.images.slice(0, 10) : [],
       location: b.location || null,
       shipping_info: b.shipping_info || null,
-      // Physical Items: how the buyer receives it. "ship" (default) or "pickup" (local pickup) — a
-      // pickup listing carries a pickup_location shown to the buyer.
-      fulfillment_mode: b.fulfillment_mode === "pickup" ? "pickup" : "ship",
-      pickup_location: b.fulfillment_mode === "pickup" ? String(b.pickup_location || b.location || "").slice(0, 200) : null,
+      // Product delivery. Digital = instant online delivery (no shipping/pickup). Physical = ship
+      // (default) or pickup (local pickup, with a pickup_location shown to the buyer).
+      product_type: b.product_type === "digital" ? "digital" : "physical",
+      fulfillment_mode: b.product_type === "digital" ? "digital" : (b.fulfillment_mode === "pickup" ? "pickup" : "ship"),
+      pickup_location: (b.product_type !== "digital" && b.fulfillment_mode === "pickup") ? String(b.pickup_location || b.location || "").slice(0, 200) : null,
+      digital_delivery: b.product_type === "digital" ? String(b.digital_delivery || "").slice(0, 2000) : null,
       status: "active",
       created_at: new Date().toISOString(),
     });

@@ -193,6 +193,7 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Game Store', icon: ShoppingCart, path: 'InAppGameStore' },
   { name: 'Marketplace', icon: Store, path: 'Marketplace', requireAuth: true },
   { name: 'Physical Store', icon: ShoppingCart, path: 'PhysicalStore', requireAuth: true },
+  { name: 'Digital Store', icon: LayoutGrid, path: 'DigitalStore', requireAuth: true },
   { name: 'Categories', icon: LayoutGrid, path: 'Categories', requireAuth: true },
   { name: 'Surveys', icon: DollarSign, path: 'Surveys', requireAuth: true },
   { name: 'Dashboard', icon: LayoutDashboard, path: 'UserDashboard', requireAuth: true },

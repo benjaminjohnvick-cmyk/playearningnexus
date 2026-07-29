@@ -21,6 +21,22 @@ import { generateProductImages } from "./image-gen.ts";
 
 export const PLATFORM_SELLER_ID = "platform_catalog";
 
+// Digital Products — intangible goods delivered online (no shipping / no local pickup). A listing is
+// "digital" when its department OR category is one of these. Kept in sync with the "Digital Products"
+// department in taxonomy.ts. Used to route these into the Digital store, keep them OUT of the Physical
+// store, and mark their fulfillment as instant online delivery.
+export const DIGITAL_DEPARTMENT = "Digital Products";
+export const DIGITAL_CATEGORIES: string[] = [
+  "Digital Products", "Software", "Mobile Apps", "PC Game Keys", "Console Game Keys", "In-Game Items",
+  "eBooks", "Audiobooks", "Online Courses", "Website Templates", "Graphic Templates", "Stock Photos",
+  "Stock Video", "Fonts", "Music & Sound Effects", "Printables", "Digital Art", "Software Licenses",
+  "Plugins & Extensions", "Digital Magazines", "Design Assets",
+];
+const _digitalSet = new Set(DIGITAL_CATEGORIES.map((c) => c.toLowerCase()));
+export function isDigitalCategory(category?: string | null): boolean {
+  return !!category && _digitalSet.has(String(category).toLowerCase());
+}
+
 // Registry of authorized affiliate providers. A provider is only usable when its credentials are set
 // (env), and it MUST fetch via the retailer's official API — never by scraping. Ships empty of live
 // providers; wire your authorized Associate/affiliate credentials to enable one.

@@ -3,6 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { getNumber, getString } from "../../sdk/settings.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { ensureWelcomeCredit } from "../../sdk/welcome-credit.ts";
+import { DIGITAL_CATEGORIES } from "../../sdk/catalog.ts";
 
 // physicalStoreConfig (authenticated) — everything the Physical Items store needs to render: which
 // payment options are available, the card markup, the affordability threshold, the user's remaining
@@ -41,6 +42,9 @@ export default __handler(async (req) => {
       affordability_limit_usd: affordLimit,
       pickup_note: pickupNote,
       welcome_credit_usd: Math.round((welcome.remaining_usd || 0) * 100) / 100,
+      // Category separation: the Digital store shows ONLY these; the Physical store EXCLUDES them.
+      digital_categories: DIGITAL_CATEGORIES,
+      digital_store: await isEnabled("digital_store").catch(() => true),
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

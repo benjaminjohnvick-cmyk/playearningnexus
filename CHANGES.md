@@ -1,5 +1,20 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-28 — Digital Products store (online-only, no BNPL/pickup)
+
+A Digital Products section mirroring the physical store for online-delivered goods. See `DIGITAL-STORE.md`.
+
+- "Digital Products" taxonomy department → serverless-GPU category tiles like every other category.
+- `catalog.ts`: `DIGITAL_DEPARTMENT` + `DIGITAL_CATEGORIES` + `isDigitalCategory()`; `physicalStoreConfig`
+  now returns `digital_categories` so the Digital store shows only these and the Physical store excludes them.
+- `purchaseMarketplaceListing`: digital orders deliver instantly (`delivered` / `digital_delivery`).
+  `createMarketplaceListing` accepts `product_type: "digital"`.
+- `DigitalStore.jsx`: online-delivery only (no pickup), payment = card (+markup) / points / layaway +
+  promo credit + affordability + earn-back tracker; **no Affirm BNPL** (real shippable goods only).
+- Flag `digital_store`; nav entry + Marketplace banner (physical + digital side by side).
+
+
+
 ## 2026-07-28 — Buy Physical Items section (ship/pickup) + payment options + earn-back tracker + layaway
 
 New marketplace section for tangible goods with full parity, serverless-GPU tiles, and the legal,

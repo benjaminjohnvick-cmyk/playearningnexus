@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { getNumber, getBool } from "../../sdk/settings.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { db } from "../../sdk/db.ts";
-import { PLATFORM_SELLER_ID } from "../../sdk/catalog.ts";
+import { PLATFORM_SELLER_ID, isDigitalCategory } from "../../sdk/catalog.ts";
 import { welcomeDiscountFor, redeemWelcomeCredit } from "../../sdk/welcome-credit.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
@@ -158,8 +158,16 @@ export default __handler(async (req) => {
     // fulfillment or seller funds-release until payment is confirmed. This prevents a "sold + funds
     // released but never paid" giveaway if card_charging is switched on before capture is wired.
     const paidNow = payment_method === "points";
-    const orderStatus = paidNow ? "awaiting_shipment" : "awaiting_payment";
-    const fulfillment_type = listing.fulfillment_mode === "pickup" ? "local_pickup" : (isPlatform ? "platform_ai" : "seller_ship");
+    // Digital goods deliver online INSTANTLY (no shipping, no pickup) once paid; physical goods await
+    // shipment/pickup. A card order still waits for capture before anything is delivered.
+    const isDigital = listing.product_type === "digital" || listing.fulfillment_mode === "digital" || isDigitalCategory(listing.category);
+    const orderStatus = !paidNow ? "awaiting_payment"
+      : isDigital ? "delivered"
+      : listing.fulfillment_mode === "pickup" ? "awaiting_pickup"
+      : "awaiting_shipment";
+    const fulfillment_type = isDigital ? "digital_delivery"
+      : listing.fulfillment_mode === "pickup" ? "local_pickup"
+      : (isPlatform ? "platform_ai" : "seller_ship");
     const order = await base44.asServiceRole.entities.Order.create({
       user_id: user.id,
       seller_id: listing.seller_id,
