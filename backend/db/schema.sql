@@ -3033,3 +3033,55 @@ CREATE TABLE IF NOT EXISTS "UserVariantState" (
 );
 CREATE INDEX IF NOT EXISTS "UserVariantState_data_gin" ON "UserVariantState" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "UserVariantState_created" ON "UserVariantState" (created_date DESC);
+
+-- ── Catalog taxonomy, KYC responses, and learning/UX analysis entities (audit fix) ──
+
+CREATE TABLE IF NOT EXISTS "CatalogBrowseNode" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "CatalogBrowseNode_data_gin" ON "CatalogBrowseNode" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "CatalogBrowseNode_created" ON "CatalogBrowseNode" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "CatalogCategory" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "CatalogCategory_data_gin" ON "CatalogCategory" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "CatalogCategory_created" ON "CatalogCategory" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "KYCResponse" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "KYCResponse_data_gin" ON "KYCResponse" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "KYCResponse_created" ON "KYCResponse" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "OverheadReport" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "OverheadReport_data_gin" ON "OverheadReport" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "OverheadReport_created" ON "OverheadReport" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "UXFinding" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "UXFinding_data_gin" ON "UXFinding" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "UXFinding_created" ON "UXFinding" (created_date DESC);

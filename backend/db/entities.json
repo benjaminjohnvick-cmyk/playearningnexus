@@ -267,5 +267,8 @@
 "SessionCaptureFrame",
 "SessionClose",
 "UXHeatmapSnapshot",
-"UserVariantState"
+"UserVariantState",
+"KYCResponse",
+"OverheadReport",
+"UXFinding"
 ]
