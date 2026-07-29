@@ -7,6 +7,7 @@ import { PLATFORM_SELLER_ID, isDigitalCategory } from "../../sdk/catalog.ts";
 import { welcomeDiscountFor, redeemWelcomeCredit } from "../../sdk/welcome-credit.ts";
 import { purchaseGate } from "../../sdk/household.ts";
 import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
+import { quoteDiscount, fundDiscountFromPool } from "../../sdk/loyalty.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -57,7 +58,21 @@ export default __handler(async (req) => {
     }
 
     // Pre-flight the payment path (no charge yet) so we don't claim a listing we can't pay for.
-    let charged = { method: payment_method, points: 0, usd: 0, markup: 0, welcome_discount_usd: 0 };
+    let charged = { method: payment_method, points: 0, usd: 0, markup: 0, welcome_discount_usd: 0, loyalty_discount_usd: 0 };
+
+    // LOYALTY MEMBER DISCOUNT — priced here, POOL-FUNDED on commit. Applies to first-party (platform)
+    // items so member-seller payouts stay whole. The discount is funded from the member's own
+    // generated-revenue pool (see sdk/loyalty.ts), NOT from the store markup — so store margin is
+    // untouched. quoteDiscount() returns 0 unless the member completed today's steps and has pool
+    // headroom under the back-end annual cap. The pool is decremented only after a successful sale
+    // (mirrors the welcome-credit redeem-on-commit pattern).
+    let loyaltyDiscountUsd = 0;
+    let loyaltyMemberId: string | null = null;
+    if (isPlatform && (await isEnabled("loyalty_program"))) {
+      const mem = ((await db.filter("PremiumPPCMembership", { user_id: user.id }, "-created_date", 1).catch(() => [])) as Record<string, unknown>[])[0] || null;
+      const q = quoteDiscount(mem, Number(listing.price_usd) || 0);
+      if (q > 0 && mem?.id) { loyaltyDiscountUsd = q; loyaltyMemberId = String(mem.id); }
+    }
     let pointsPrice = 0;          // list price in points
     let effectivePoints = 0;      // what the buyer actually pays after any welcome discount
     let welcomeDiscountUsd = 0;   // platform-catalog only; funded by platform margin
@@ -82,6 +97,10 @@ export default __handler(async (req) => {
         const pointsPerUsd = basePoints / usd;
         effectivePoints = Math.max(0, grossPoints - Math.round(welcomeDiscountUsd * pointsPerUsd));
       }
+      // Member discount (pool-funded) reduces the points charged too, converted at the item's USD rate.
+      if (loyaltyDiscountUsd > 0 && usd > 0) {
+        effectivePoints = Math.max(0, effectivePoints - Math.round(loyaltyDiscountUsd * (basePoints / usd)));
+      }
       charged.markup = Math.round(basePoints * markup);   // markup recorded (in points)
       if ((Number(user.points) || 0) < effectivePoints) return Response.json({ error: "Insufficient points", required: effectivePoints, balance: Number(user.points) || 0 }, { status: 402 });
     } else {
@@ -100,6 +119,9 @@ export default __handler(async (req) => {
         if (await getBool("PROMO_FUNDED_BY_MARKUP", true)) wd = Math.min(wd, base * markup);
       }
       charged.usd = Math.round(Math.max(base, gross - wd) * 100) / 100;
+      // Member discount (pool-funded) comes off the card charge too. Funded from the member's pool at
+      // capture — never below 0, and never touching the store margin.
+      if (loyaltyDiscountUsd > 0) charged.usd = Math.round(Math.max(0, charged.usd - loyaltyDiscountUsd) * 100) / 100;
       charged.markup = Math.round(base * markup * 100) / 100;
       charged.welcome_discount_usd = Math.round(wd * 100) / 100;
       // NOTE: card capture is external; welcomeDiscountUsd stays 0 here so the promo pool isn't redeemed
@@ -241,6 +263,12 @@ export default __handler(async (req) => {
         points: Number(charged.points) || 0, listingId: listing.id, source,
         category: listing.category || null, paymentMethod: payment_method,
       }).catch(() => {});
+      // Redeem the member discount from the POOL now that the sale is captured (points path). Funds only
+      // what the pool holds (never store margin), advances the back-end cap, and writes the audit ledger.
+      if (loyaltyDiscountUsd > 0 && loyaltyMemberId) {
+        const funded = await fundDiscountFromPool(loyaltyMemberId, user.id, loyaltyDiscountUsd, String((order as any)?.id || listing.id)).catch(() => 0);
+        charged.loyalty_discount_usd = funded;
+      }
     }
 
     // Notify the buyer always; notify a member seller only once payment is captured.

@@ -78,6 +78,10 @@ export const COMPLIANCE_DENYLIST = new Set<string>([
   // Points Boost COST GOVERNORS — the ceiling + caps are admin-owned and never auto-tuned, so the
   // feature's cost stays hard-bounded even as the optimizer tunes the rate knobs for engagement.
   "BOOST_MAX_PCT", "BOOST_DAILY_CAP_USD", "BOOST_LIFETIME_CAP_USD",
+  // Loyalty program money/cap governors — the discount %, the back-end annual value cap, the funding
+  // accrual, and the 1:1 capacity ratio are legal/compliance-shaped and human-owned; never auto-tuned.
+  "LOYALTY_PROGRAM_DISCOUNT_PCT", "LOYALTY_ANNUAL_VALUE_CAP_USD", "LOYALTY_DAILY_POOL_ACCRUAL_USD",
+  "LOYALTY_DAILY_SURVEY_REQUIREMENT_USD", "LOYALTY_CAPACITY_PER_BUSINESS", "LOYALTY_TERM_DAYS",
 ]);
 
 // Every safe, consumer-backed numeric setting the engine optimizes. Money/price knobs are

@@ -196,6 +196,11 @@
       "cron": "45 8 * * *",
       "function": "autoPointsBoostCredit",
       "_comment": "Daily 'harvest': auto-credits each user's accrued Points Boost growth (non-cashable, capped per BOOST_DAILY/LIFETIME_CAP_USD, breakage-funded)."
+    },
+    {
+      "name": "loyalty-daily-reconcile",
+      "cron": "30 8 * * *",
+      "function": "loyaltyDailyReconcile"
     }
   ]
 }

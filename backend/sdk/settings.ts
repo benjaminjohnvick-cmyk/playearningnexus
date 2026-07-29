@@ -229,6 +229,22 @@ export const REGISTRY: SettingDef[] = [
   // 17. Developer / creator marketplace
   { key: "DEVELOPER_REVENUE_SHARE", label: "Developer revenue share", category: "Marketplace", type: "number", default: "0.5", unit: "×", help: "Developer's cut of app revenue. 0.5 = the current 50/50 split.", sensitive: true, min: 0, max: 1 },
   { key: "CREATOR_PLATFORM_FEE", label: "Creator platform fee (tips)", category: "Marketplace", type: "number", default: "0", unit: "×", min: 0, max: 1, help: "Share of each streamer tip the platform keeps. 0 = creator gets 100% (autoCreatorEconomyEngine).", sensitive: true },
+
+  // 18. Loyalty & Rewards program (retail-loyalty reframe). The member DISCOUNT is funded from the
+  // platform's cut of the revenue the member generated — NOT from store margin — and is capped at a
+  // back-end annual value the user never sees. Money/cap knobs are on the optimizer denylist.
+  { key: "LOYALTY_PROGRAM_DISCOUNT_PCT", label: "Member discount", category: "Loyalty & Rewards", type: "number", default: "0.10", unit: "×", min: 0, max: 1, help: "Discount for eligible members, funded by their generated-revenue pool (store margin untouched).", sensitive: true },
+  { key: "LOYALTY_ANNUAL_VALUE_CAP_USD", label: "Annual value cap (back-end, hidden from user)", category: "Loyalty & Rewards", type: "number", default: "1460", unit: "$", min: 0, help: "Total discount value a member can receive per term (~$4/day × 365). When reached, the discount stops for the term. Never shown to the user.", sensitive: true },
+  { key: "LOYALTY_DAILY_SURVEY_REQUIREMENT_USD", label: "Daily PPC-survey requirement", category: "Loyalty & Rewards", type: "number", default: "8", unit: "$", min: 0, help: "Survey work a member must complete each day to be eligible that day." },
+  { key: "LOYALTY_DAILY_POOL_ACCRUAL_USD", label: "Daily pool accrual (platform cut)", category: "Loyalty & Rewards", type: "number", default: "4", unit: "$", min: 0, help: "Platform's cut of the day's generated revenue that funds the member's discount pool.", sensitive: true },
+  { key: "LOYALTY_REQUIRED_DAYS_PER_WEEK", label: "Required active days per week", category: "Loyalty & Rewards", type: "number", default: "5", unit: "days", min: 1, max: 7 },
+  { key: "LOYALTY_TERM_DAYS", label: "Program term", category: "Loyalty & Rewards", type: "number", default: "365", unit: "days", min: 1 },
+  { key: "LOYALTY_CAPACITY_PER_BUSINESS", label: "Rewarded members per business (1:1)", category: "Loyalty & Rewards", type: "number", default: "1", unit: "×", min: 0, help: "At most this many rewarded members per signed-up advertiser business. 1 = strict 1:1." },
+  { key: "LOYALTY_EARN_MULTIPLIER", label: "Active-member earn multiplier", category: "Loyalty & Rewards", type: "number", default: "1.25", unit: "×", min: 1 },
+  { key: "LOYALTY_REBATE_PCT", label: "Points rebate on purchases", category: "Loyalty & Rewards", type: "number", default: "0.02", unit: "×", min: 0, max: 1 },
+  { key: "LOYALTY_FIRST_ORDER_PERK_USD", label: "First-order perk", category: "Loyalty & Rewards", type: "number", default: "5", unit: "$", min: 0 },
+  { key: "LOYALTY_WELCOME_BONUS_USD", label: "Welcome bonus (vested)", category: "Loyalty & Rewards", type: "number", default: "25", unit: "$", min: 0 },
+  { key: "LOYALTY_FREE_SHIPPING", label: "Member free shipping", category: "Loyalty & Rewards", type: "boolean", default: "1" },
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

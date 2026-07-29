@@ -260,6 +260,7 @@
   "Household",
   "InteractionEvent",
   "Layaway",
+  "LoyaltyLedger",
   "LiveAssignment",
   "LiveExperiment",
   "LiveMetricEvent",
