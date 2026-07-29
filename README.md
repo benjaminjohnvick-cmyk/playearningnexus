@@ -3,6 +3,21 @@
 A play-to-earn platform (surveys, games, referrals, rewards). **Self-hosted** — this app no longer
 uses Base44; it runs on its own React frontend + a Deno backend + PostgreSQL.
 
+## 🚀 One-click deploy (no terminal)
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new?template=https://github.com/benjaminjohnvick-cmyk/playearningnexus)
+
+Click the button, sign in to Railway, and it imports this repo. Then, in the new project:
+**(1)** add a **PostgreSQL** database (Railway → *+ New* → *Database* → *PostgreSQL*),
+**(2)** on the backend service set **Root Directory = `backend`** (it auto-reads `backend/railway.json`), and
+**(3)** paste your keys as service **Variables** — the easiest way to get them is the **setup wizard**:
+open `deploy-kit/wizard/index.html` (double-click the file), fill in the blanks, and it generates your
+env for copy-paste. Full walkthrough (and the automatic push-to-deploy pipeline): see
+**`deploy-kit/CONTINUOUS-DEPLOYMENT-AND-ONE-CLICK.md`**.
+
+Everything ships **on by default** — no feature-enablement steps. The only switches that stay off are the
+legally-gated ones (card charging, cash-out, etc.), which you enable later once their prerequisites are met.
+
 ## Architecture
 - **Frontend:** React + Vite PWA (208 pages). Talks to the backend over HTTP via `src/api/base44Client.js`.
 - **Backend:** self-hosted **Deno** service in `/backend` — 526 HTTP function routes, 239 Postgres

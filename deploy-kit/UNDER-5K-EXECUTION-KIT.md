@@ -160,3 +160,22 @@ via `REVIEWER_DEMO=1`, merit-not-gambling framing). Owner account signups and op
 separate from dev hours; AI runtime stays capped by `AI_DAILY_SPEND_CAP_USD` and can launch at ~$0.
 
 <!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
+
+---
+
+## Automatic + one-click + no-terminal (2026-07-29)
+
+The kit now runs itself and works without a coding agent — see
+**`deploy-kit/CONTINUOUS-DEPLOYMENT-AND-ONE-CLICK.md`**:
+
+- **Continuous deployment** — `.github/workflows/deploy.yml`: every push to `main` validates, deploys the
+  backend to Railway, and runs the automated QA smoke. One-time: add a `RAILWAY_TOKEN` secret. Until then
+  it validates and skips deploy gracefully (never hard-fails).
+- **One-click deploy** — a **Deploy on Railway** button in the README + `backend/railway.json`. A non-coder
+  clicks it, adds a Postgres database, sets Root Directory = `backend`, and pastes their keys.
+- **No-terminal wizard** — `deploy-kit/wizard/index.html` (double-click to open, 100% in-browser, sends
+  nothing anywhere): paste keys → Generate → get a ready `.env` with the launch defaults pre-filled.
+- **Phone apps** build in the cloud on push to `android-release` / `ios-release` (or one click in Actions).
+
+The irreducible human steps stay human for everyone: creating accounts, entering your own card/keys,
+accepting terms, and passing Apple/Google review.

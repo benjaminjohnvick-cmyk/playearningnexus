@@ -1,0 +1,96 @@
+# Continuous Deployment — GamerGain / PlayEarning Nexus
+#
+# WHAT IT DOES (automatically, on every push to main):
+#   1. VALIDATE  — builds the frontend and runs the full pre-deploy audit (entities↔schema,
+#                  scheduler↔functions, manifest). Fails fast if anything drifted.
+#   2. DEPLOY    — deploys the backend to Railway (only if you've added a RAILWAY_TOKEN secret).
+#   3. SMOKE     — runs the automated QA pass against the live backend (only if BACKEND_URL is set).
+#
+# ONE-TIME HUMAN SETUP (all in GitHub → Settings → Secrets and variables → Actions):
+#   • Secret  RAILWAY_TOKEN   — a Railway project/account token (Railway → account → Tokens).
+#   • Variable RAILWAY_SERVICE — your backend service name (optional; defaults to "backend").
+#   • Variable BACKEND_URL     — your deployed backend URL (optional; enables the post-deploy smoke test).
+# Without these, the workflow still runs VALIDATE and simply SKIPS deploy/smoke with a notice — it never
+# hard-fails for someone who hasn't wired the secrets yet. Nothing here can charge a card or touch money.
+
+name: Deploy (CI/CD)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.js'
+      - '.github/workflows/deploy.yml'
+      - 'deploy-kit/validate.sh'
+      - 'deploy-kit/e2e-smoke.mjs'
+  workflow_dispatch:   # also runnable by one click from the Actions tab
+
+jobs:
+  validate:
+    name: Validate build + audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install + build + full pre-deploy audit
+        run: bash deploy-kit/validate.sh
+
+  deploy-backend:
+    name: Deploy backend to Railway
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for Railway token
+        id: guard
+        run: |
+          if [ -n "${{ secrets.RAILWAY_TOKEN }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Auto-deploy skipped::Add a RAILWAY_TOKEN secret (Settings → Secrets → Actions) to enable one-push deploys. Validation still ran."
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.ready == 'true'
+        with:
+          node-version: '20'
+      - name: Install Railway CLI + deploy
+        if: steps.guard.outputs.ready == 'true'
+        working-directory: backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SERVICE: ${{ vars.RAILWAY_SERVICE }}
+        run: |
+          npm install -g @railway/cli
+          railway up --service "${RAILWAY_SERVICE:-backend}" --ci
+
+  smoke:
+    name: Automated QA smoke (live)
+    needs: deploy-backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for BACKEND_URL
+        id: guard
+        run: |
+          if [ -n "${{ vars.BACKEND_URL }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Smoke skipped::Set a BACKEND_URL variable (Settings → Variables → Actions) to run the live QA smoke after deploy."
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.ready == 'true'
+        with:
+          node-version: '20'
+      - name: Run automated QA pass against the live backend
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+        run: node deploy-kit/e2e-smoke.mjs

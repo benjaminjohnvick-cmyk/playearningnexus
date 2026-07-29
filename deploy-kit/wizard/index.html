@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GamerGain — Launch Setup Wizard</title>
+<style>
+  :root { --bg:#0f1420; --card:#171d2b; --ink:#e8ecf4; --muted:#98a2b7; --line:#283044; --accent:#7c5cff; --ok:#31c48d; --warn:#f0b429; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); }
+  .wrap { max-width:820px; margin:0 auto; padding:28px 18px 80px; }
+  h1 { font-size:26px; margin:6px 0 4px; }
+  h2 { font-size:17px; margin:26px 0 10px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  p.sub { color:var(--muted); margin:0 0 8px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin:14px 0; }
+  label { display:block; font-weight:600; margin:12px 0 4px; font-size:14px; }
+  .hint { color:var(--muted); font-weight:400; font-size:12.5px; }
+  input,select,textarea { width:100%; background:#0c1120; color:var(--ink); border:1px solid var(--line); border-radius:9px; padding:10px 12px; font:14px monospace; }
+  textarea { min-height:230px; white-space:pre; }
+  .row { display:flex; gap:10px; align-items:center; }
+  .row input { flex:1; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:9px; padding:10px 15px; font-weight:600; cursor:pointer; }
+  button.ghost { background:#222a3d; color:var(--ink); border:1px solid var(--line); }
+  button:active { transform:translateY(1px); }
+  .pill { display:inline-block; font-size:11.5px; padding:2px 8px; border-radius:999px; background:#222a3d; color:var(--muted); border:1px solid var(--line); }
+  .ok { color:var(--ok); } .warn { color:var(--warn); }
+  a { color:#9db4ff; }
+  ol.steps li { margin:8px 0; }
+  .banner { background:#1b2440; border:1px solid var(--line); border-radius:10px; padding:10px 12px; color:var(--muted); font-size:13px; }
+  code { background:#0c1120; border:1px solid var(--line); border-radius:5px; padding:1px 5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>GamerGain — Launch Setup Wizard</h1>
+  <p class="sub">Paste your keys, click <b>Generate</b>, and get a ready-to-use config — no terminal, no editing files by hand. <span class="pill">Runs 100% in your browser</span></p>
+  <div class="banner" style="margin-top:10px">
+    🔒 <b>Privacy:</b> nothing you type here is sent anywhere. Everything happens on this page, in your browser.
+    Your keys only ever go into the file you download. Close the tab and it's all gone.
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:6px;border:0">1 · Core</h2>
+    <label>Auth secret <span class="hint">— a long random string that signs logins. Click generate; you never type this.</span></label>
+    <div class="row">
+      <input id="AUTH_JWT_SECRET" placeholder="click Generate →" />
+      <button class="ghost" onclick="genSecret()">Generate</button>
+    </div>
+    <label>Database URL <span class="hint">— leave blank if deploying on Railway; Railway fills this in for you automatically when you add a PostgreSQL database.</span></label>
+    <input id="DATABASE_URL" placeholder="(auto on Railway — leave blank)" />
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:6px;border:0">2 · AI provider <span class="hint">(powers the catalog, chatbot, and all agents)</span></h2>
+    <label>Which AI brain?</label>
+    <select id="LLM_PROVIDER" onchange="toggleProvider()">
+      <option value="openai">OpenAI (GPT)</option>
+      <option value="anthropic">Anthropic (Claude)</option>
+    </select>
+    <div id="openaiBox">
+      <label>OpenAI API key <span class="hint">— from platform.openai.com → API keys</span></label>
+      <input id="OPENAI_API_KEY" placeholder="sk-..." />
+    </div>
+    <div id="anthropicBox" style="display:none">
+      <label>Anthropic API key <span class="hint">— from console.anthropic.com</span></label>
+      <input id="ANTHROPIC_API_KEY" placeholder="sk-ant-..." />
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:6px;border:0">3 · Email <span class="hint">(sign-ups, notifications)</span></h2>
+    <label>SendGrid API key <span class="hint">— from app.sendgrid.com → Settings → API Keys</span></label>
+    <input id="SENDGRID_API_KEY" placeholder="SG...." />
+    <label>Send-from address <span class="hint">— e.g. no-reply@yourdomain.com</span></label>
+    <input id="EMAIL_FROM" placeholder="no-reply@yourdomain.com" />
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:6px;border:0">4 · Spending guard <span class="hint">(optional but recommended)</span></h2>
+    <label>AI daily spend cap (USD) <span class="hint">— the AI literally cannot spend more than this per day. 0 = no cap.</span></label>
+    <input id="AI_DAILY_SPEND_CAP_USD" value="0" />
+  </div>
+
+  <div class="card">
+    <div class="row" style="gap:12px">
+      <button onclick="generate()">⬇ Generate my config</button>
+      <button class="ghost" onclick="copyEnv()">Copy to clipboard</button>
+      <span id="status" class="hint"></span>
+    </div>
+    <label style="margin-top:14px">Your config (this is your <code>.env</code> / Railway Variables) <span class="hint">— everything else is pre-set to the launch defaults; you only needed the keys above.</span></label>
+    <textarea id="out" spellcheck="false" placeholder="Click Generate to build your config…"></textarea>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:6px;border:0">5 · What to do with it (the click-path)</h2>
+    <ol class="steps">
+      <li><b>Deploy the backend:</b> click the <b>Deploy on Railway</b> button in the repo's README. Add a <b>PostgreSQL</b> database, set the backend service's <b>Root Directory = <code>backend</code></b>, then paste the config above into the service's <b>Variables</b>. Railway builds and starts it for you.</li>
+      <li><b>Turn on auto-deploy:</b> in GitHub → <b>Settings → Secrets and variables → Actions</b>, add a secret <code>RAILWAY_TOKEN</code> (from Railway → account → Tokens). After that, <b>every push to <code>main</code> deploys automatically</b> and runs the QA check.</li>
+      <li><b>Build the phone apps:</b> in GitHub → <b>Actions</b>, run <b>Android Build &amp; Play</b> / <b>iOS Build &amp; TestFlight</b> (or push to the <code>android-release</code> / <code>ios-release</code> branch). Add the signing secrets listed at the top of each workflow first.</li>
+      <li><b>Submit to the stores</b> and pass review. This is the one part no tool can do for you.</li>
+    </ol>
+    <p class="hint">Full details: <code>deploy-kit/CONTINUOUS-DEPLOYMENT-AND-ONE-CLICK.md</code>.</p>
+  </div>
+</div>
+
+<script>
+function b64(bytes){ let s=''; for(const b of bytes) s+=String.fromCharCode(b); return btoa(s).replace(/[+/=]/g,c=>({'+':'A','/':'B','=':''}[c])); }
+function genSecret(){
+  const a=new Uint8Array(48); crypto.getRandomValues(a);
+  document.getElementById('AUTH_JWT_SECRET').value = b64(a);
+}
+function toggleProvider(){
+  const p=document.getElementById('LLM_PROVIDER').value;
+  document.getElementById('openaiBox').style.display   = p==='openai'    ? '' : 'none';
+  document.getElementById('anthropicBox').style.display = p==='anthropic' ? '' : 'none';
+}
+function val(id){ const el=document.getElementById(id); return el ? el.value.trim() : ''; }
+function line(k,v){ return v!=='' ? k+'='+v+'\n' : ''; }
+
+function generate(){
+  const provider = val('LLM_PROVIDER');
+  let env = '';
+  env += '# ---- Generated by the GamerGain setup wizard ----\n';
+  env += '# Paste these into Railway service Variables (or save as backend/.env). Keys you left blank\n';
+  env += '# fall back to safe defaults or a Railway-provided value (DATABASE_URL).\n\n';
+  env += '# Core\n';
+  env += 'PORT=8000\n';
+  env += line('DATABASE_URL', val('DATABASE_URL'));
+  env += line('AUTH_JWT_SECRET', val('AUTH_JWT_SECRET') || '(click Generate above!)');
+  env += 'AUTO_MIGRATE=1\n';           // load schema on boot
+  env += 'SCHEDULER_INLINE=1\n\n';     // run the cron scheduler in the same service
+  env += '# AI provider\n';
+  env += 'LLM_PROVIDER='+provider+'\n';
+  if(provider==='openai')    env += line('OPENAI_API_KEY', val('OPENAI_API_KEY'));
+  if(provider==='anthropic') env += line('ANTHROPIC_API_KEY', val('ANTHROPIC_API_KEY'));
+  env += '\n# Email\n';
+  env += line('SENDGRID_API_KEY', val('SENDGRID_API_KEY'));
+  env += line('EMAIL_FROM', val('EMAIL_FROM'));
+  env += '\n# Spending guard\n';
+  env += 'AI_DAILY_SPEND_CAP_USD='+(val('AI_DAILY_SPEND_CAP_USD')||'0')+'\n\n';
+  env += '# Premium PPC — everything ON by default (the launch config). No changes needed to go live.\n';
+  env += 'PREMIUM_UPFRONT_GRANT=1\n';
+  env += 'PPC_GRID_ANNUAL_PRICE=5000\n';
+  env += 'PREMIUM_ANNUAL_POINTS_CEILING=1460\n';
+  env += 'PREMIUM_SURVEY_MINUTES_PER_DAY=8\n';
+  env += 'PREMIUM_ADS_REQUIRE_APPROVAL=1\n';
+  env += '\n# Legally-gated switches stay OFF until their prerequisites are met (do NOT flip without counsel):\n';
+  env += '# FLAG_CARD_CHARGING=0  FLAG_CASH_OUT=0  FLAG_MULTI_LEVEL_REFERRALS=0  FLAG_SMS_MARKETING=0\n';
+  document.getElementById('out').value = env;
+  const missing = [];
+  if(!val('AUTH_JWT_SECRET')) missing.push('Auth secret (click Generate)');
+  if(provider==='openai' && !val('OPENAI_API_KEY')) missing.push('OpenAI key');
+  if(provider==='anthropic' && !val('ANTHROPIC_API_KEY')) missing.push('Anthropic key');
+  const s=document.getElementById('status');
+  if(missing.length){ s.innerHTML='<span class="warn">Config built — still missing: '+missing.join(', ')+'</span>'; }
+  else { s.innerHTML='<span class="ok">✓ Config ready — download or copy it.</span>'; downloadEnv(); }
+}
+function downloadEnv(){
+  const blob=new Blob([document.getElementById('out').value],{type:'text/plain'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='.env'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function copyEnv(){
+  const t=document.getElementById('out'); if(!t.value){ generate(); }
+  navigator.clipboard.writeText(t.value).then(()=>{ document.getElementById('status').innerHTML='<span class="ok">✓ Copied.</span>'; })
+    .catch(()=>{ t.select(); document.getElementById('status').innerHTML='<span class="warn">Select-all + copy manually.</span>'; });
+}
+toggleProvider();
+</script>
+</body>
+</html>
