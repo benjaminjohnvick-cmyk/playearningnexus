@@ -562,3 +562,5 @@ A  base44/agents/weekly_referral_campaign_agent.jsonc
 M  base44/functions/submitFeatureVote/entry.ts  (now also credits pending referral rewards)
 (src/App.jsx and FloatingNavSidebar.jsx updated again for the referral page)
 ```
+
+<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->

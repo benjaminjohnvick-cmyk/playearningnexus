@@ -90,3 +90,5 @@ advertiser needs reach ──> premiumPPCAutoAdvertise (daily)
   member revoking consent must stop future queueing.
 
 _The learning loop makes the ads **better**, not **cleared**. None of the above is solved by code._
+
+<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->

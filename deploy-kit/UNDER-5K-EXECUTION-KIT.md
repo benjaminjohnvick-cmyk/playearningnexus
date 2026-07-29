@@ -158,3 +158,5 @@ developer bill for a full PWA + Android + iOS launch lands around $1,050–$1,80
 The one thing that can still add hours is an **Apple review rejection round** (keep it clean: demo login
 via `REVIEWER_DEMO=1`, merit-not-gambling framing). Owner account signups and optional legal review are
 separate from dev hours; AI runtime stays capped by `AI_DAILY_SPEND_CAP_USD` and can launch at ~$0.
+
+<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->

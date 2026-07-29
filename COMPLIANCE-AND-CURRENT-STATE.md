@@ -125,3 +125,5 @@ Age 18+ floor; points non-cashable until deliberately enabled; card charging off
 legal are ready; prohibited-item blocking in the marketplace; compliance keys excluded from AI
 optimization; disclosed affiliate links; behavioral-recording opt-out, data export, and account
 deletion available to every user.
+
+<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->

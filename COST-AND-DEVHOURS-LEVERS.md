@@ -140,3 +140,5 @@ do not build or enable features.
 the kit + automation — **under $3,900** — because the entire new feature set is pre-built and on-by-default.
 The one budget risk remains an Apple review rejection round (keep the review clean). Runtime is unchanged:
 hosting ~$10–30/mo, AI capped by `AI_DAILY_SPEND_CAP_USD` (launchable at ~$0).
+
+<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->

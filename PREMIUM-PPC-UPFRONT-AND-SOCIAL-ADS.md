@@ -111,3 +111,5 @@ The design deliberately removes the classic regulated triggers: **no money advan
 - `premiumPPCSetLockoutTime` / `PremiumLockoutMode.jsx` — lockout mode.
 - `premiumPPCOffer` — real-dollar offer surface with the points disclaimer.
 - Scheduler: `daily-premium-ppc-reconcile` (08:00 UTC), `daily-premium-ppc-autoadvertise` (10:30 UTC).
+
+<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->

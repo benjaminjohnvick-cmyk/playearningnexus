@@ -59,3 +59,5 @@ ad-learning loop.
 - `src/components/premium/PremiumAdQueue.jsx` — one-tap post/share/copy + confirm.
 - `backend/functions/socialMediaOAuthHandler`, `SocialMediaSetup.jsx` — account connection.
 - `backend/sdk/disclosure.ts` — `withAdDisclosure()`.
+
+<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
