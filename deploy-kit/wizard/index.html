@@ -8,164 +8,246 @@
   :root { --bg:#0f1420; --card:#171d2b; --ink:#e8ecf4; --muted:#98a2b7; --line:#283044; --accent:#7c5cff; --ok:#31c48d; --warn:#f0b429; }
   * { box-sizing:border-box; }
   body { margin:0; font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); }
-  .wrap { max-width:820px; margin:0 auto; padding:28px 18px 80px; }
-  h1 { font-size:26px; margin:6px 0 4px; }
-  h2 { font-size:17px; margin:26px 0 10px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  .wrap { max-width:860px; margin:0 auto; padding:24px 18px 90px; }
+  h1 { font-size:26px; margin:6px 0 2px; }
   p.sub { color:var(--muted); margin:0 0 8px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin:14px 0; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:0; margin:14px 0; overflow:hidden; }
+  .head { display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer; user-select:none; }
+  .head:hover { background:#1b2233; }
+  .num { flex:0 0 30px; height:30px; border-radius:50%; background:#222a3d; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
+  .num.done { background:var(--ok); border-color:var(--ok); color:#04220f; }
+  .htitle { flex:1; font-size:16px; font-weight:700; }
+  .htitle small { display:block; color:var(--muted); font-weight:400; font-size:12.5px; }
+  .chev { color:var(--muted); transition:transform .15s; }
+  .card.open .chev { transform:rotate(90deg); }
+  .body { display:none; padding:4px 16px 18px; border-top:1px solid var(--line); }
+  .card.open .body { display:block; }
   label { display:block; font-weight:600; margin:12px 0 4px; font-size:14px; }
   .hint { color:var(--muted); font-weight:400; font-size:12.5px; }
-  input,select,textarea { width:100%; background:#0c1120; color:var(--ink); border:1px solid var(--line); border-radius:9px; padding:10px 12px; font:14px monospace; }
-  textarea { min-height:230px; white-space:pre; }
-  .row { display:flex; gap:10px; align-items:center; }
-  .row input { flex:1; }
-  button { background:var(--accent); color:#fff; border:0; border-radius:9px; padding:10px 15px; font-weight:600; cursor:pointer; }
+  input,select,textarea { width:100%; background:#0c1120; color:var(--ink); border:1px solid var(--line); border-radius:9px; padding:10px 12px; font:13.5px monospace; }
+  textarea { min-height:120px; white-space:pre; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .row input { flex:1; min-width:180px; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:9px; padding:9px 14px; font-weight:600; cursor:pointer; font-size:13.5px; }
   button.ghost { background:#222a3d; color:var(--ink); border:1px solid var(--line); }
+  button.done { background:var(--ok); color:#04220f; }
   button:active { transform:translateY(1px); }
-  .pill { display:inline-block; font-size:11.5px; padding:2px 8px; border-radius:999px; background:#222a3d; color:var(--muted); border:1px solid var(--line); }
+  .cmd { position:relative; background:#0c1120; border:1px solid var(--line); border-radius:9px; padding:11px 44px 11px 12px; font:13px monospace; white-space:pre-wrap; word-break:break-word; margin:8px 0; }
+  .cmd button { position:absolute; top:7px; right:7px; padding:5px 9px; font-size:12px; }
+  .pill { display:inline-block; font-size:11.5px; padding:2px 8px; border-radius:999px; background:#222a3d; color:var(--muted); border:1px solid var(--line); margin-left:6px; }
   .ok { color:var(--ok); } .warn { color:var(--warn); }
   a { color:#9db4ff; }
-  ol.steps li { margin:8px 0; }
-  .banner { background:#1b2440; border:1px solid var(--line); border-radius:10px; padding:10px 12px; color:var(--muted); font-size:13px; }
+  ul.check { list-style:none; padding:0; margin:8px 0; }
+  ul.check li { margin:6px 0; display:flex; gap:9px; align-items:flex-start; }
+  ul.check input { width:auto; margin-top:3px; flex:0 0 auto; }
+  .banner { background:#1b2440; border:1px solid var(--line); border-radius:10px; padding:10px 12px; color:var(--muted); font-size:13px; margin:10px 0; }
   code { background:#0c1120; border:1px solid var(--line); border-radius:5px; padding:1px 5px; }
+  .bar { position:sticky; top:0; z-index:5; background:var(--bg); padding:10px 0 8px; }
+  .track { height:9px; background:#222a3d; border-radius:999px; overflow:hidden; }
+  .fill { height:100%; width:0; background:linear-gradient(90deg,#7c5cff,#31c48d); transition:width .25s; }
+  .barlbl { display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); margin-bottom:5px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>GamerGain — Launch Setup Wizard</h1>
-  <p class="sub">Paste your keys, click <b>Generate</b>, and get a ready-to-use config — no terminal, no editing files by hand. <span class="pill">Runs 100% in your browser</span></p>
-  <div class="banner" style="margin-top:10px">
-    🔒 <b>Privacy:</b> nothing you type here is sent anywhere. Everything happens on this page, in your browser.
-    Your keys only ever go into the file you download. Close the tab and it's all gone.
+  <p class="sub">Click through the whole execution kit. Everything is <b>ON by default</b>; this wizard prefills your config, hands you every command copy-paste ready, and tracks your progress to launch. It runs 100% in your browser and sends nothing anywhere.</p>
+
+  <div class="bar">
+    <div class="barlbl"><span id="barText">0 of 7 steps done</span><span id="barPct">0%</span></div>
+    <div class="track"><div class="fill" id="fill"></div></div>
   </div>
 
-  <div class="card">
-    <h2 style="margin-top:6px;border:0">1 · Core</h2>
-    <label>Auth secret <span class="hint">— a long random string that signs logins. Click generate; you never type this.</span></label>
-    <div class="row">
-      <input id="AUTH_JWT_SECRET" placeholder="click Generate →" />
-      <button class="ghost" onclick="genSecret()">Generate</button>
-    </div>
-    <label>Database URL <span class="hint">— leave blank if deploying on Railway; Railway fills this in for you automatically when you add a PostgreSQL database.</span></label>
-    <input id="DATABASE_URL" placeholder="(auto on Railway — leave blank)" />
-  </div>
+  <div class="banner">⚠️ A web page can't run programs on your computer, so for the few command steps you'll paste one line into a terminal (the wizard gives you each line + a Copy button). Everything else — configs, secrets, listing copy, reviewer notes — is generated and prefilled here.</div>
 
-  <div class="card">
-    <h2 style="margin-top:6px;border:0">2 · AI provider <span class="hint">(powers the catalog, chatbot, and all agents)</span></h2>
-    <label>Which AI brain?</label>
-    <select id="LLM_PROVIDER" onchange="toggleProvider()">
-      <option value="openai">OpenAI (GPT)</option>
-      <option value="anthropic">Anthropic (Claude)</option>
-    </select>
-    <div id="openaiBox">
-      <label>OpenAI API key <span class="hint">— from platform.openai.com → API keys</span></label>
-      <input id="OPENAI_API_KEY" placeholder="sk-..." />
-    </div>
-    <div id="anthropicBox" style="display:none">
-      <label>Anthropic API key <span class="hint">— from console.anthropic.com</span></label>
-      <input id="ANTHROPIC_API_KEY" placeholder="sk-ant-..." />
+  <!-- STEP 0 -->
+  <div class="card" data-step="0">
+    <div class="head" onclick="toggle(0)"><div class="num" id="num0">0</div><div class="htitle">Create accounts &amp; get keys <small>Owner-only · not billable dev time</small></div><div class="chev">▶</div></div>
+    <div class="body">
+      <p class="hint">Sign up for each and copy the key/value into Step 1. Optional ones can be left blank at launch.</p>
+      <ul class="check">
+        <li><input type="checkbox"><span><b>Railway</b> (hosting + Postgres) — <a href="https://railway.app" target="_blank" rel="noopener">railway.app</a></span></li>
+        <li><input type="checkbox"><span><b>OpenAI</b> or <b>Anthropic</b> (AI brain) — <a href="https://platform.openai.com" target="_blank" rel="noopener">platform.openai.com</a> / <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></span></li>
+        <li><input type="checkbox"><span><b>SendGrid</b> (email) — <a href="https://sendgrid.com" target="_blank" rel="noopener">sendgrid.com</a></span></li>
+        <li><input type="checkbox"><span><b>Stripe</b> + <b>PayPal</b> <span class="pill">optional at launch — closed-loop needs none</span></span></li>
+        <li><input type="checkbox"><span><b>BitLabs</b> (surveys) <span class="pill">optional</span></span></li>
+        <li><input type="checkbox"><span><b>Apple Developer</b> ($99/yr) + <b>Google Play</b> ($25) <span class="pill">for the apps</span></span></li>
+        <li><input type="checkbox"><span>A <b>domain</b> for your app</span></li>
+      </ul>
+      <button class="ghost" onclick="markDone(0)">Mark this step done</button>
     </div>
   </div>
 
-  <div class="card">
-    <h2 style="margin-top:6px;border:0">3 · Email <span class="hint">(sign-ups, notifications)</span></h2>
-    <label>SendGrid API key <span class="hint">— from app.sendgrid.com → Settings → API Keys</span></label>
-    <input id="SENDGRID_API_KEY" placeholder="SG...." />
-    <label>Send-from address <span class="hint">— e.g. no-reply@yourdomain.com</span></label>
-    <input id="EMAIL_FROM" placeholder="no-reply@yourdomain.com" />
-  </div>
-
-  <div class="card">
-    <h2 style="margin-top:6px;border:0">4 · Spending guard <span class="hint">(optional but recommended)</span></h2>
-    <label>AI daily spend cap (USD) <span class="hint">— the AI literally cannot spend more than this per day. 0 = no cap.</span></label>
-    <input id="AI_DAILY_SPEND_CAP_USD" value="0" />
-  </div>
-
-  <div class="card">
-    <div class="row" style="gap:12px">
-      <button onclick="generate()">⬇ Generate my config</button>
-      <button class="ghost" onclick="copyEnv()">Copy to clipboard</button>
-      <span id="status" class="hint"></span>
+  <!-- STEP 1 -->
+  <div class="card" data-step="1">
+    <div class="head" onclick="toggle(1)"><div class="num" id="num1">1</div><div class="htitle">Keys → generate your <code>.env</code> <small>Everything-on launch config, prefilled</small></div><div class="chev">▶</div></div>
+    <div class="body">
+      <label>Auth secret <span class="hint">(random — click Generate)</span></label>
+      <div class="row"><input id="AUTH_JWT_SECRET" placeholder="click Generate →" /><button class="ghost" onclick="genSecret()">Generate</button></div>
+      <label>DATABASE_URL <span class="hint">(leave blank — Railway provides it)</span></label>
+      <input id="DATABASE_URL" placeholder="(auto on Railway — leave blank)" />
+      <label>AI provider</label>
+      <select id="LLM_PROVIDER" onchange="toggleProvider()"><option value="openai">OpenAI</option><option value="anthropic">Anthropic (Claude)</option></select>
+      <div id="openaiBox"><label>OPENAI_API_KEY</label><input id="OPENAI_API_KEY" placeholder="sk-..." /></div>
+      <div id="anthropicBox" style="display:none"><label>ANTHROPIC_API_KEY</label><input id="ANTHROPIC_API_KEY" placeholder="sk-ant-..." /></div>
+      <label>SENDGRID_API_KEY</label><input id="SENDGRID_API_KEY" placeholder="SG...." />
+      <label>EMAIL_FROM</label><input id="EMAIL_FROM" placeholder="no-reply@yourdomain.com" />
+      <div class="row" style="gap:18px">
+        <div style="flex:1"><label>ADMIN_EMAIL <span class="hint">(your admin login — lets go-live pre-warm content)</span></label><input id="ADMIN_EMAIL" placeholder="you@yourdomain.com" /></div>
+        <div style="flex:1"><label>ADMIN_PASSWORD</label><input id="ADMIN_PASSWORD" placeholder="a strong password" /></div>
+      </div>
+      <label>AI_DAILY_SPEND_CAP_USD <span class="hint">(0 = no cap; set a number to hard-cap AI spend)</span></label><input id="AI_DAILY_SPEND_CAP_USD" value="0" />
+      <div class="banner">These launch flags are added automatically so everything runs on one service, on-by-default, and app-review-ready: <code>SCHEDULER_INLINE=1</code>, <code>AUTO_MIGRATE=1</code>, <code>FRONTEND_DIR=./public</code>, <code>REVIEWER_DEMO=1</code>.</div>
+      <div class="row"><button onclick="generate()">Generate .env</button><button class="ghost" onclick="copyEnv()">Copy</button><button class="ghost" onclick="downloadEnv()">Download .env</button><span id="status" class="hint"></span></div>
+      <textarea id="out" spellcheck="false" placeholder="Click Generate to build your config…"></textarea>
+      <button class="ghost" onclick="markDone(1)">Mark this step done</button>
     </div>
-    <label style="margin-top:14px">Your config (this is your <code>.env</code> / Railway Variables) <span class="hint">— everything else is pre-set to the launch defaults; you only needed the keys above.</span></label>
-    <textarea id="out" spellcheck="false" placeholder="Click Generate to build your config…"></textarea>
   </div>
 
-  <div class="card">
-    <h2 style="margin-top:6px;border:0">5 · What to do with it (the click-path)</h2>
-    <ol class="steps">
-      <li><b>Deploy the backend:</b> click the <b>Deploy on Railway</b> button in the repo's README. Add a <b>PostgreSQL</b> database, set the backend service's <b>Root Directory = <code>backend</code></b>, then paste the config above into the service's <b>Variables</b>. Railway builds and starts it for you.</li>
-      <li><b>Turn on auto-deploy:</b> in GitHub → <b>Settings → Secrets and variables → Actions</b>, add a secret <code>RAILWAY_TOKEN</code> (from Railway → account → Tokens). After that, <b>every push to <code>main</code> deploys automatically</b> and runs the QA check.</li>
-      <li><b>Build the phone apps:</b> in GitHub → <b>Actions</b>, run <b>Android Build &amp; Play</b> / <b>iOS Build &amp; TestFlight</b> (or push to the <code>android-release</code> / <code>ios-release</code> branch). Add the signing secrets listed at the top of each workflow first.</li>
-      <li><b>Submit to the stores</b> and pass review. This is the one part no tool can do for you.</li>
-    </ol>
-    <p class="hint">Full details: <code>deploy-kit/CONTINUOUS-DEPLOYMENT-AND-ONE-CLICK.md</code>.</p>
+  <!-- STEP 2 -->
+  <div class="card" data-step="2">
+    <div class="head" onclick="toggle(2)"><div class="num" id="num2">2</div><div class="htitle">Deploy (web) <small>One command: deploy → turn on → pre-warm → smoke</small></div><div class="chev">▶</div></div>
+    <div class="body">
+      <p class="hint">Save your <code>.env</code> to <code>backend/.env</code> first. Then one-time install the Railway CLI and log in:</p>
+      <div class="cmd">npm i -g @railway/cli &amp;&amp; railway login<button class="ghost" onclick="cp(this)">Copy</button></div>
+      <p class="hint">Then the one-command web launch — it deploys, verifies every feature is ON, fills the catalog with content, and smoke-tests:</p>
+      <div class="cmd">bash deploy-kit/web-launch.sh<button class="ghost" onclick="cp(this)">Copy</button></div>
+      <div class="banner">No terminal? Use the <b>Deploy on Railway</b> button in the repo README: add a Postgres database, set Root Directory = <code>backend</code>, paste your <code>.env</code> values. Same result.</div>
+      <button class="ghost" onclick="markDone(2)">Mark this step done</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card" data-step="3">
+    <div class="head" onclick="toggle(3)"><div class="num" id="num3">3</div><div class="htitle">Go-live check <small>Everything ON + content live + GO/NO-GO</small></div><div class="chev">▶</div></div>
+    <div class="body">
+      <p class="hint"><code>web-launch.sh</code> already runs this. To run it on its own against your live URL:</p>
+      <div class="cmd" id="golivecmd">BACKEND_URL=&lt;your-url&gt; ADMIN_EMAIL=&lt;you&gt; ADMIN_PASSWORD=&lt;pw&gt; node deploy-kit/go-live.mjs<button class="ghost" onclick="cp(this)">Copy</button></div>
+      <p class="hint">It prints <b>GO</b> when the app is up, every flag is ON, and the store is already populated — or the exact items to fix.</p>
+      <button class="ghost" onclick="fillGoLive()">Prefill this with my values from Step 1</button>
+      <div style="height:8px"></div>
+      <button class="ghost" onclick="markDone(3)">Mark this step done</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="card" data-step="4">
+    <div class="head" onclick="toggle(4)"><div class="num" id="num4">4</div><div class="htitle">Mobile signing <small>One command → keystore + paste-ready CI secrets</small></div><div class="chev">▶</div></div>
+    <div class="body">
+      <div class="cmd">bash deploy-kit/mobile/setup-signing.sh<button class="ghost" onclick="cp(this)">Copy</button></div>
+      <p class="hint">It generates the Android keystore and writes <code>ci-secrets.local.txt</code>. Paste each line into <b>GitHub → Settings → Secrets and variables → Actions</b>. The secret names it fills / asks for:</p>
+      <div class="cmd">ANDROID_KEYSTORE_BASE64
+ANDROID_KEYSTORE_PASSWORD
+ANDROID_KEY_ALIAS
+ANDROID_KEY_PASSWORD
+PLAY_SERVICE_ACCOUNT_JSON   (from Play Console → API access)
+APPSTORE_API_KEY_ID
+APPSTORE_API_ISSUER_ID
+APPSTORE_API_KEY_P8         (contents of the .p8 from App Store Connect)<button class="ghost" onclick="cp(this)">Copy</button></div>
+      <button class="ghost" onclick="markDone(4)">Mark this step done</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="card" data-step="5">
+    <div class="head" onclick="toggle(5)"><div class="num" id="num5">5</div><div class="htitle">Build &amp; submit the apps <small>Cloud CI (no Mac) + prefilled listing &amp; review notes</small></div><div class="chev">▶</div></div>
+    <div class="body">
+      <p class="hint">Push to the release branches (or run the jobs in GitHub → Actions). CI signs and uploads via fastlane — Android to Play, iOS to TestFlight.</p>
+      <div class="cmd">git push origin main:android-release<button class="ghost" onclick="cp(this)">Copy</button></div>
+      <div class="cmd">git push origin main:ios-release<button class="ghost" onclick="cp(this)">Copy</button></div>
+      <label>Store listing copy <span class="hint">(prefilled — paste into Play/App Store)</span></label>
+      <div class="cmd">GamerGain — Play &amp; Earn Rewards
+
+Earn real on-site rewards by completing quick surveys and skill-based activities, then spend your credit in the in-app store. Merit-based, never chance — no wager, no purchase required. 18+.
+
+• Quick surveys &amp; skill activities that earn store credit
+• A full in-app store to spend what you earn
+• Daily goals, streaks, and referral rewards
+• Closed-loop &amp; transparent — you always see what you earn<button class="ghost" onclick="cp(this)">Copy</button></div>
+      <label>Reviewer notes <span class="hint">(prefilled — paste into the review-notes field; wins a clean first-pass)</span></label>
+      <div class="cmd">Demo account (no signup): open the app, tap "Reviewer / Demo Login" on the sign-in screen. It loads a pre-populated account (sample earnings, a survey, store items, notifications) so every screen has real content.
+
+What it is: a rewards app. Users earn on-site store credit via surveys and merit/skill activities, then spend it in an on-site store. Merit-based, NOT gambling — no stake, no random-outcome prize, no purchase required to earn. Core economy is closed-loop (earnings are store credit); cash payout is OFF at launch and, when enabled, is limited to vetted business partners. Users must be 18+. No IDFA / third-party ad tracking.<button class="ghost" onclick="cp(this)">Copy</button></div>
+      <div class="banner">Full checklist + extra answers (data-safety, "in-app currency" response): <code>deploy-kit/REVIEWER-NOTES.md</code>. A clean first-pass review is the one thing that protects the launch floor — these notes are written to get it.</div>
+      <button class="ghost" onclick="markDone(5)">Mark this step done</button>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="card" data-step="6">
+    <div class="head" onclick="toggle(6)"><div class="num" id="num6">6</div><div class="htitle">Open the doors <small>Two flips — you decide</small></div><div class="chev">▶</div></div>
+    <div class="body">
+      <ul class="check">
+        <li><input type="checkbox"><span><b>Payments live</b> <span class="pill">optional</span> — set Stripe/PayPal live keys. Closed-loop needs none of this; leave <code>card_charging</code> / <code>cash_out</code> OFF until a merchant account + counsel are ready.</span></li>
+        <li><input type="checkbox"><span><b>Open the site</b> — turn <code>MAINTENANCE_MODE</code> OFF in the admin panel so the public can sign up.</span></li>
+      </ul>
+      <div class="banner ok">That's launch. Everything is on, the site is full of content, and the doors are open. 🎉</div>
+      <button class="ghost" onclick="markDone(6)">Mark this step done</button>
+    </div>
   </div>
 </div>
 
 <script>
+const TOTAL = 7;
+const doneSet = new Set();
+function toggle(i){ document.querySelector('.card[data-step="'+i+'"]').classList.toggle('open'); }
+function openStep(i){ const c=document.querySelector('.card[data-step="'+i+'"]'); if(c && !c.classList.contains('open')) c.classList.add('open'); }
+function markDone(i){
+  doneSet.add(i);
+  document.getElementById('num'+i).classList.add('done');
+  document.getElementById('num'+i).textContent='✓';
+  // collapse this one, open the next undone
+  document.querySelector('.card[data-step="'+i+'"]').classList.remove('open');
+  for(let n=0;n<TOTAL;n++){ if(!doneSet.has(n)){ openStep(n); break; } }
+  updateBar();
+}
+function updateBar(){
+  const d=doneSet.size, pct=Math.round(d/TOTAL*100);
+  document.getElementById('fill').style.width=pct+'%';
+  document.getElementById('barPct').textContent=pct+'%';
+  document.getElementById('barText').textContent=d+' of '+TOTAL+' steps done';
+}
+async function cp(btn){
+  const box=btn.parentNode.cloneNode(true);
+  const b=box.querySelector('button'); if(b) b.remove();
+  try{ await navigator.clipboard.writeText(box.textContent.trim()); const t=btn.textContent; btn.textContent='Copied'; btn.classList.add('done'); setTimeout(()=>{btn.textContent=t; btn.classList.remove('done');},1200);}catch(e){ btn.textContent='Ctrl+C'; }
+}
+// ---- Step 1: .env generation ----
 function b64(bytes){ let s=''; for(const b of bytes) s+=String.fromCharCode(b); return btoa(s).replace(/[+/=]/g,c=>({'+':'A','/':'B','=':''}[c])); }
-function genSecret(){
-  const a=new Uint8Array(48); crypto.getRandomValues(a);
-  document.getElementById('AUTH_JWT_SECRET').value = b64(a);
-}
-function toggleProvider(){
-  const p=document.getElementById('LLM_PROVIDER').value;
-  document.getElementById('openaiBox').style.display   = p==='openai'    ? '' : 'none';
-  document.getElementById('anthropicBox').style.display = p==='anthropic' ? '' : 'none';
-}
-function val(id){ const el=document.getElementById(id); return el ? el.value.trim() : ''; }
-function line(k,v){ return v!=='' ? k+'='+v+'\n' : ''; }
-
+function genSecret(){ const a=new Uint8Array(36); crypto.getRandomValues(a); document.getElementById('AUTH_JWT_SECRET').value=b64(a); }
+function toggleProvider(){ const p=document.getElementById('LLM_PROVIDER').value; document.getElementById('openaiBox').style.display=p==='openai'?'block':'none'; document.getElementById('anthropicBox').style.display=p==='anthropic'?'block':'none'; }
+function val(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+function line(k,v){ return v!==''?k+'='+v+'\n':''; }
 function generate(){
-  const provider = val('LLM_PROVIDER');
-  let env = '';
-  env += '# ---- Generated by the GamerGain setup wizard ----\n';
-  env += '# Paste these into Railway service Variables (or save as backend/.env). Keys you left blank\n';
-  env += '# fall back to safe defaults or a Railway-provided value (DATABASE_URL).\n\n';
-  env += '# Core\n';
-  env += 'PORT=8000\n';
-  env += line('DATABASE_URL', val('DATABASE_URL'));
-  env += line('AUTH_JWT_SECRET', val('AUTH_JWT_SECRET') || '(click Generate above!)');
-  env += 'AUTO_MIGRATE=1\n';           // load schema on boot
-  env += 'SCHEDULER_INLINE=1\n\n';     // run the cron scheduler in the same service
-  env += '# AI provider\n';
-  env += 'LLM_PROVIDER='+provider+'\n';
-  if(provider==='openai')    env += line('OPENAI_API_KEY', val('OPENAI_API_KEY'));
-  if(provider==='anthropic') env += line('ANTHROPIC_API_KEY', val('ANTHROPIC_API_KEY'));
-  env += '\n# Email\n';
-  env += line('SENDGRID_API_KEY', val('SENDGRID_API_KEY'));
-  env += line('EMAIL_FROM', val('EMAIL_FROM'));
-  env += '\n# Spending guard\n';
-  env += 'AI_DAILY_SPEND_CAP_USD='+(val('AI_DAILY_SPEND_CAP_USD')||'0')+'\n\n';
-  env += '# Premium PPC — everything ON by default (the launch config). No changes needed to go live.\n';
-  env += 'PREMIUM_UPFRONT_GRANT=1\n';
-  env += 'PPC_GRID_ANNUAL_PRICE=5000\n';
-  env += 'PREMIUM_ANNUAL_POINTS_CEILING=1460\n';
-  env += 'PREMIUM_SURVEY_MINUTES_PER_DAY=8\n';
-  env += 'PREMIUM_ADS_REQUIRE_APPROVAL=1\n';
-  env += '\n# Legally-gated switches stay OFF until their prerequisites are met (do NOT flip without counsel):\n';
-  env += '# FLAG_CARD_CHARGING=0  FLAG_CASH_OUT=0  FLAG_MULTI_LEVEL_REFERRALS=0  FLAG_SMS_MARKETING=0\n';
-  document.getElementById('out').value = env;
-  const missing = [];
-  if(!val('AUTH_JWT_SECRET')) missing.push('Auth secret (click Generate)');
-  if(provider==='openai' && !val('OPENAI_API_KEY')) missing.push('OpenAI key');
-  if(provider==='anthropic' && !val('ANTHROPIC_API_KEY')) missing.push('Anthropic key');
-  const s=document.getElementById('status');
-  if(missing.length){ s.innerHTML='<span class="warn">Config built — still missing: '+missing.join(', ')+'</span>'; }
-  else { s.innerHTML='<span class="ok">✓ Config ready — download or copy it.</span>'; downloadEnv(); }
+  let e='';
+  e+='# GamerGain launch config — generated by the setup wizard\n';
+  e+=line('AUTH_JWT_SECRET', val('AUTH_JWT_SECRET'));
+  e+=line('DATABASE_URL', val('DATABASE_URL'));
+  e+=line('LLM_PROVIDER', val('LLM_PROVIDER'));
+  e+=line('OPENAI_API_KEY', val('OPENAI_API_KEY'));
+  e+=line('ANTHROPIC_API_KEY', val('ANTHROPIC_API_KEY'));
+  e+=line('SENDGRID_API_KEY', val('SENDGRID_API_KEY'));
+  e+=line('EMAIL_FROM', val('EMAIL_FROM'));
+  e+=line('ADMIN_EMAIL', val('ADMIN_EMAIL'));
+  e+=line('ADMIN_PASSWORD', val('ADMIN_PASSWORD'));
+  e+=line('AI_DAILY_SPEND_CAP_USD', val('AI_DAILY_SPEND_CAP_USD') || '0');
+  e+='\n# Launch flags (everything on, one service, review-ready)\n';
+  e+='SCHEDULER_INLINE=1\nAUTO_MIGRATE=1\nFRONTEND_DIR=./public\nREVIEWER_DEMO=1\n';
+  document.getElementById('out').value=e;
+  document.getElementById('status').textContent='Built. Save this as backend/.env';
 }
-function downloadEnv(){
-  const blob=new Blob([document.getElementById('out').value],{type:'text/plain'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='.env'; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+function downloadEnv(){ const t=document.getElementById('out').value||''; const b=new Blob([t],{type:'text/plain'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='.env'; a.click(); URL.revokeObjectURL(u); }
+async function copyEnv(){ try{ await navigator.clipboard.writeText(document.getElementById('out').value||''); document.getElementById('status').textContent='Copied.'; }catch(e){ document.getElementById('status').textContent='Select the box and Ctrl+C.'; } }
+function fillGoLive(){
+  const url='<your-url>';
+  const em=val('ADMIN_EMAIL')||'<you>';
+  const pw=val('ADMIN_PASSWORD')||'<pw>';
+  const node=document.getElementById('golivecmd');
+  const btn=node.querySelector('button');
+  node.childNodes[0].nodeValue='BACKEND_URL='+url+' ADMIN_EMAIL='+em+' ADMIN_PASSWORD='+pw+' node deploy-kit/go-live.mjs';
 }
-function copyEnv(){
-  const t=document.getElementById('out'); if(!t.value){ generate(); }
-  navigator.clipboard.writeText(t.value).then(()=>{ document.getElementById('status').innerHTML='<span class="ok">✓ Copied.</span>'; })
-    .catch(()=>{ t.select(); document.getElementById('status').innerHTML='<span class="warn">Select-all + copy manually.</span>'; });
-}
-toggleProvider();
+// open the first step on load
+openStep(0); updateBar();
 </script>
 </body>
 </html>

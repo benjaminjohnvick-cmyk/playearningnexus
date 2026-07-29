@@ -197,8 +197,12 @@ The kit now runs itself and works without a coding agent — see
   it validates and skips deploy gracefully (never hard-fails).
 - **One-click deploy** — a **Deploy on Railway** button in the README + `backend/railway.json`. A non-coder
   clicks it, adds a Postgres database, sets Root Directory = `backend`, and pastes their keys.
-- **No-terminal wizard** — `deploy-kit/wizard/index.html` (double-click to open, 100% in-browser, sends
-  nothing anywhere): paste keys → Generate → get a ready `.env` with the launch defaults pre-filled.
+- **No-terminal wizard — now walks the WHOLE kit** — `deploy-kit/wizard/index.html` (double-click to open,
+  100% in-browser, sends nothing anywhere) is a 7-step click-through of the entire execution kit with a
+  progress bar: (0) accounts checklist → (1) keys → generate the everything-on `.env` → (2) deploy
+  (`web-launch.sh` or the Railway button) → (3) go-live check → (4) mobile signing → (5) build &amp; submit
+  with **prefilled store-listing copy + reviewer notes** → (6) open the doors. Every command has a Copy
+  button and every section that can be is prefilled, so the only typing left is your own keys.
 - **Phone apps** build in the cloud on push to `android-release` / `ios-release` (or one click in Actions).
 
 The irreducible human steps stay human for everyone: creating accounts, entering your own card/keys,
