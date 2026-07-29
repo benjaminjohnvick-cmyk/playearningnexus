@@ -164,6 +164,20 @@ export const REGISTRY: SettingDef[] = [
   { key: "OVERHEAD_MAX_EVENTS_PER_DAY", label: "Telemetry volume ceiling / day", category: "AI & Agents", type: "number", default: "0", min: 0, help: "If more than this many interaction-event batches are stored in a day, the overhead monitor lowers TELEMETRY_SAMPLE_PCT and SESSION_CAPTURE_SAMPLE_PCT to throttle. 0 = no ceiling (don't auto-throttle volume)." },
   { key: "OVERHEAD_AI_SPEND_PAUSE_PCT", label: "Pause experiments at AI-spend fraction", category: "AI & Agents", type: "number", default: "0.9", unit: "×", min: 0, max: 1, help: "If today's AI spend reaches this fraction of AI_DAILY_SPEND_CAP_USD, the overhead monitor pauses live experiments for the day so the learning system never crowds out user-facing AI. 0/1 with no cap set = disabled." },
 
+  // 13. Points Boost (closed-loop "your points grow while you hold them" — non-cashable, breakage-funded)
+  // Rate knobs are AI-tunable within these bounds; the USD CAPS below are the real cost governors and are
+  // NOT auto-tuned, so the feature can optimize its feel while its cost stays hard-capped at ~$0 marginal.
+  { key: "BOOST_BASE_RATE", label: "Boost base rate", category: "Points Boost", type: "number", default: "0.5", unit: "%", min: 0, max: 20, help: "Baseline annualized Boost % everyone gets on their points balance. Non-cashable bonus; cost bounded by the caps below." },
+  { key: "BOOST_STREAK_RATE", label: "Boost per streak day", category: "Points Boost", type: "number", default: "0.3", unit: "%", min: 0, max: 5, help: "Extra Boost % per day of active streak." },
+  { key: "BOOST_STREAK_CAP", label: "Boost streak cap", category: "Points Boost", type: "number", default: "4", unit: "%", min: 0, max: 20, help: "Max Boost % the streak factor can add." },
+  { key: "BOOST_HOLD_RATE_PER_DAY", label: "Boost per day held (tenure)", category: "Points Boost", type: "number", default: "0.02", unit: "%", min: 0, max: 1, help: "Extra Boost % per day of account tenure — rewards holding." },
+  { key: "BOOST_HOLD_CAP", label: "Boost tenure cap", category: "Points Boost", type: "number", default: "3", unit: "%", min: 0, max: 20, help: "Max Boost % the tenure factor can add." },
+  { key: "BOOST_VAULT_BONUS_PCT", label: "Boost Vault bonus", category: "Points Boost", type: "number", default: "2", unit: "%", min: 0, max: 10, help: "Extra Boost % while the user has vaulted (locked) points." },
+  { key: "BOOST_MAX_PCT", label: "Boost maximum %", category: "Points Boost", type: "number", default: "10", unit: "%", min: 0, max: 50, sensitive: true, help: "Hard ceiling on any user's total Boost %. Admin-owned." },
+  { key: "BOOST_DAILY_CAP_USD", label: "Boost daily cap ($)", category: "Points Boost", type: "number", default: "0.25", unit: "$", min: 0, sensitive: true, help: "COST GOVERNOR. Max non-cashable value a user can harvest per day. Keep small — this bounds the whole feature's cost. Admin-owned; not auto-tuned." },
+  { key: "BOOST_LIFETIME_CAP_USD", label: "Boost lifetime cap ($)", category: "Points Boost", type: "number", default: "50", unit: "$", min: 0, sensitive: true, help: "COST GOVERNOR. Max non-cashable value a user can ever harvest from Boost. Admin-owned; not auto-tuned." },
+  { key: "BOOST_AUTO_CREDIT", label: "Auto-harvest Boost daily", category: "Points Boost", type: "boolean", default: "1", help: "ON = the daily job credits each user's accrued Boost automatically (they don't have to click Harvest)." },
+
   // 10. Compliance & legal (numeric/string; the on/off kill-switches live in complianceFlags)
   { key: "TERMS_VERSION", label: "Terms version (bump to force re-consent)", category: "Compliance & Legal", type: "string", default: "2026-07-01", sensitive: true },
   { key: "AD_DISCLOSURE_TAG", label: "FTC ad-disclosure tag", category: "Compliance & Legal", type: "string", default: "#ad" },

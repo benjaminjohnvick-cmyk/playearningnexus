@@ -184,6 +184,12 @@
       "cron": "25 * * * *",
       "function": "learningOverheadMonitor",
       "_comment": "Watches the self-learning system's own footprint (telemetry/metric/snapshot volume + AI spend) and auto-throttles within bounds so measurement never becomes the cost."
+    },
+    {
+      "name": "points-boost-daily-harvest",
+      "cron": "45 8 * * *",
+      "function": "autoPointsBoostCredit",
+      "_comment": "Daily 'harvest': auto-credits each user's accrued Points Boost growth (non-cashable, capped per BOOST_DAILY/LIFETIME_CAP_USD, breakage-funded)."
     }
   ]
 }

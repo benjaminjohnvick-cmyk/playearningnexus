@@ -17,7 +17,8 @@ export type FlagName =
   | "order_fulfillment" | "store_credit_purchase" | "p2p_transfers"
   | "cash_out" | "earnings_projections" | "session_recording" | "affirm_bnpl"
   | "site_telemetry" | "session_screenshots" | "self_learning" | "kyc_survey"
-  | "live_experiments" | "personalized_learning" | "experiments_paused" | "ux_heatmap";
+  | "live_experiments" | "personalized_learning" | "experiments_paused" | "ux_heatmap"
+  | "points_boost";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -45,6 +46,7 @@ const DEFAULTS: Record<FlagName, boolean> = {
   personalized_learning: true,   // per-user segment-kept changes applied at login + segment→site-wide graduation (option b); aggregate significance keeps it statistically valid
   experiments_paused: false,     // KILL SWITCH — flip ON to instantly halt all live experiment assignment/exposure/ticking/creation (kept & promoted changes stay); flip OFF to resume
   ux_heatmap: true,              // cheap STRUCTURAL capture (no pixels, ~1 KB, rule-based analysis) — ON from launch so the design-optimization loop actually runs at ~$0; pixel screenshots stay behind session_screenshots
+  points_boost: true,            // closed-loop "your points grow while you hold them" — non-cashable bonus points, hard-capped by BOOST_DAILY/LIFETIME_CAP_USD (breakage-funded, ~$0)
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];

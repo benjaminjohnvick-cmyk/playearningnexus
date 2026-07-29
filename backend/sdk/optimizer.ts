@@ -74,6 +74,9 @@ export const COMPLIANCE_DENYLIST = new Set<string>([
   "AFFILIATE_ONGOING_RATE_BRONZE", "AFFILIATE_ONGOING_RATE_SILVER", "AFFILIATE_ONGOING_RATE_GOLD",
   "AFFILIATE_ONGOING_RATE_PLATINUM", "AFFILIATE_BOUNTY_BRONZE", "AFFILIATE_BOUNTY_SILVER",
   "AFFILIATE_BOUNTY_GOLD", "AFFILIATE_BOUNTY_PLATINUM",
+  // Points Boost COST GOVERNORS — the ceiling + caps are admin-owned and never auto-tuned, so the
+  // feature's cost stays hard-bounded even as the optimizer tunes the rate knobs for engagement.
+  "BOOST_MAX_PCT", "BOOST_DAILY_CAP_USD", "BOOST_LIFETIME_CAP_USD",
 ]);
 
 // Every safe, consumer-backed numeric setting the engine optimizes. Money/price knobs are
@@ -95,6 +98,13 @@ export const OPTIMIZABLE: Optimizable[] = [
   { key: "XP_PER_LEVEL", objective: "engagement_rate", goal: "max", step: 10 },
   { key: "LEADERBOARD_RESET_DAYS", objective: "engagement_rate", goal: "max", step: 1 },
   { key: "STREAK_DAILY_REWARD", objective: "engagement_rate", goal: "max", priceLike: true, step: 0.05 },
+  // Points Boost rate knobs — AI-tuned + live-A/B-tested for engagement. Safe to auto-tune because the
+  // real cost is bounded by the USD caps (BOOST_DAILY_CAP_USD / BOOST_LIFETIME_CAP_USD), which are
+  // sensitive/admin-owned and NOT in this list — so the optimizer can raise the "feel" freely while the
+  // spend ceiling never moves. These flow through the same live-holdout + guardrail pipeline.
+  { key: "BOOST_BASE_RATE", objective: "engagement_rate", goal: "max", step: 0.1 },
+  { key: "BOOST_STREAK_RATE", objective: "engagement_rate", goal: "max", step: 0.05 },
+  { key: "BOOST_VAULT_BONUS_PCT", objective: "engagement_rate", goal: "max", step: 0.25 },
 ].filter((o) => !COMPLIANCE_DENYLIST.has(o.key));
 
 const byKey = Object.fromEntries(OPTIMIZABLE.map((o) => [o.key, o]));

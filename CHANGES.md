@@ -1,5 +1,26 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-28 — Points Boost: closed-loop "your points grow while you hold them" (non-cashable, breakage-funded, self-tuning)
+
+The legal, $0-marginal version of "value goes up → capture the difference as more points." Not crypto,
+not an investment — a loyalty mechanic keyed to the user's own behavior. See `POINTS-BOOST.md`.
+
+- **Engine** (`backend/sdk/points-boost.ts`): personal Boost % from streak + tenure + vault (capped at
+  `BOOST_MAX_PCT`); balance accrues bonus points; `harvestBoost` credits accrued growth as non-cashable
+  points (spendable on-platform only, tagged `boost_promo_points`); `setVault` locks points for a higher
+  Boost (reversible, no lock-up risk).
+- **Functions**: `pointsBoostStatus`, `pointsBoostHarvest`, `pointsBoostVault`, `autoPointsBoostCredit`
+  (scheduled daily auto-harvest). Flag `points_boost`; `PointsBoostLedger` + non-cashable `Transaction`.
+- **UI**: `PointsBoostCard.jsx` — live animated ticker (boosted value grows in real time), factor chips,
+  Harvest + Vault buttons; mounted on the dashboard.
+- **Cost governors**: `BOOST_DAILY_CAP_USD` + `BOOST_LIFETIME_CAP_USD` hard-cap the whole feature's cost
+  (breakage-funded ≈ $0); they're on the `COMPLIANCE_DENYLIST` so the AI can never raise them.
+- **Self-tuning**: rate knobs (`BOOST_BASE_RATE`, `BOOST_STREAK_RATE`, `BOOST_VAULT_BONUS_PCT`) added to
+  optimizer `OPTIMIZABLE` → auto-tuned + live-A/B-tested for engagement through the existing segment
+  holdout → significance → guardrail → promote pipeline; `boost_harvest` metric reported.
+
+
+
 ## 2026-07-28 — Performance & cost optimization pass (keeps every feature, removes cost + risk)
 
 See `PERFORMANCE-AND-COST-OPTIMIZATION.md`. No features removed; each concern became a bounded lever.
