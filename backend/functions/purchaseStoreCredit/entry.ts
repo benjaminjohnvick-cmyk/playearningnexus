@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 
 // Buy store credit with a card (regular users). This is 1:1 — NO markup at top-up.
 // The single 10% platform fee is charged ONCE later, when the user buys an item
@@ -25,11 +26,20 @@ export default __handler(async (req) => {
     if (amount > 2000) return Response.json({ error: "Max top-up is $2000 per transaction" }, { status: 400 });
     if (!paymentRef) return Response.json({ error: "Missing card payment reference" }, { status: 400 });
 
+    // IDEMPOTENCY: the same captured payment reference must credit at most once. If a Transaction for
+    // this reference already exists, this is a replay (double-submit / retry) — don't credit again.
+    const prior = await base44.asServiceRole.entities.Transaction.filter({
+      type: "store_credit_purchase", payment_reference: paymentRef,
+    }).catch(() => []);
+    if (Array.isArray(prior) && prior.length > 0) {
+      return Response.json({ ok: true, already_credited: true, credited: 0, message: "This payment was already credited." });
+    }
+
     // The card was captured client-side via PayPal/Stripe. (For extra assurance you can verify
     // the captured order server-side against the provider here before crediting.)
-    const balance = Number(user.current_balance ?? 0);
-    const newBalance = Math.round((balance + amount) * 100) / 100;
-    await base44.asServiceRole.entities.User.update(user.id, { current_balance: newBalance });
+    // Atomic compare-and-set credit so concurrent submits can't stack up a double credit.
+    const newBalance = await adjustUserBalance(user.id, amount, { field: "current_balance" });
+    if (newBalance == null) return Response.json({ error: "Balance is being updated — please retry." }, { status: 409 });
 
     try {
       await base44.asServiceRole.entities.Transaction.create({

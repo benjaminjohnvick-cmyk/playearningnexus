@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 export default __handler(async (req) => {
   try {
@@ -81,7 +82,7 @@ Rules:
           user_id: user.id,
           platform: script.platform,
           title: script.topic,
-          content: script.script,
+          content: withAdDisclosure(script.script || ''), // FTC: promotional post carries a sponsorship disclosure
           hashtags: script.hashtags?.join(' '),
           cta: script.cta,
           status: 'scheduled',

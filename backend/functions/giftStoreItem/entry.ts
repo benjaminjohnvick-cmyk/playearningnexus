@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { isBusinessAccount, applyMarkup, STORE_MARKUP } from "../../sdk/payout-policy.ts";
 import { getNumber } from "../../sdk/settings.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 import { blockedOrderReason } from "../../sdk/catalog-policy.ts";
 
 // giftStoreItem — buy a catalog product/service and have it delivered to ANOTHER user.
@@ -44,14 +45,18 @@ export default __handler(async (req) => {
     const charge = round2(rawPrice * (1 + markupRate));
 
     // Deduct from the GIVER only (their own funds; no value moves to the recipient's balance).
+    // Atomic compare-and-set debit — a null result means insufficient funds or contention, and we
+    // must NOT create the gift order if the giver was never charged.
     if (payment_method === "survey_balance") {
       const bal = Number(giver.current_balance ?? 0);
       if (bal < charge) return Response.json({ error: "Insufficient store credit", required: charge, balance: bal }, { status: 402 });
-      await base44.asServiceRole.entities.User.update(giver.id, { current_balance: round2(bal - charge) });
+      const ok = await adjustUserBalance(giver.id, -charge, { field: "current_balance" });
+      if (ok == null) return Response.json({ error: "Insufficient store credit or balance is being updated — please retry.", required: charge }, { status: 402 });
     } else if (payment_method === "refund_credit") {
       const rb = Number(giver.refund_credit_balance ?? 0);
       if (rb < charge) return Response.json({ error: "Insufficient refund credit", required: charge, refund_balance: rb }, { status: 402 });
-      await base44.asServiceRole.entities.User.update(giver.id, { refund_credit_balance: round2(rb - charge) });
+      const ok = await adjustUserBalance(giver.id, -charge, { field: "refund_credit_balance" });
+      if (ok == null) return Response.json({ error: "Insufficient refund credit or balance is being updated — please retry.", required: charge }, { status: 402 });
     }
 
     // The order is fulfilled to the RECIPIENT — they get the item, not credit.

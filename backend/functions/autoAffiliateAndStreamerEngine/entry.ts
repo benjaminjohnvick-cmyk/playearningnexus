@@ -1,5 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { db } from "../../sdk/db.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 
 // Automates: affiliate sale commission processing, streamer tip payouts, game voting tally,
 // survey schedule execution, PPCSession closure/rewards, growth heatmap data collection,
@@ -16,26 +18,26 @@ export default __handler(async (req) => {
     for (const sale of pendingAffiliateSales) {
       const commission = (sale.sale_amount || 0) * (sale.commission_rate || 0.1);
       if (commission > 0 && sale.affiliate_user_id) {
-        // Credit affiliate user
-        const affiliateUser = await base44.asServiceRole.entities.User.filter({ id: sale.affiliate_user_id });
-        if (affiliateUser.length > 0) {
-          const currentBalance = affiliateUser[0].current_balance || 0;
-          await base44.asServiceRole.entities.User.update(sale.affiliate_user_id, {
-            current_balance: currentBalance + commission
-          });
+        // CLAIM the sale first (atomic false→true) so a concurrent run can't also process it and
+        // double-pay the commission. Only the run that wins the claim credits the affiliate.
+        const claimed = await db.updateIf(
+          "AffiliateSale", sale.id,
+          { commission_processed: true, commission_amount: commission, commission_processed_at: now },
+          { field: "commission_processed", equals: "false" },
+        ).catch(() => null);
+        if (!claimed) continue; // another run already processed this sale
+
+        // Credit affiliate user atomically (compare-and-set).
+        const newBal = await adjustUserBalance(sale.affiliate_user_id, commission).catch(() => null);
+        if (newBal != null) {
           await base44.asServiceRole.entities.Transaction.create({
             user_id: sale.affiliate_user_id,
             amount: commission,
             transaction_type: 'revenue_share',
             status: 'completed',
             notes: `Affiliate commission for sale ${sale.id}`
-          });
+          }).catch(() => null);
         }
-        await base44.asServiceRole.entities.AffiliateSale.update(sale.id, {
-          commission_processed: true,
-          commission_amount: commission,
-          commission_processed_at: now
-        });
         commissions++;
       }
     }

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
 // Hourly: launch scheduled MarketingCampaigns and EmailMarketingFlows
 export default __handler(async (req) => {
@@ -37,7 +38,7 @@ export default __handler(async (req) => {
           await base44.asServiceRole.entities.SocialMediaPost.create({
             developer_id: campaign.created_by || 'system',
             platform,
-            content: campaign.content || `🎮 ${campaign.name} — Join GamerGain and start earning today!`,
+            content: withAdDisclosure(campaign.content || `🎮 ${campaign.name} — Join GamerGain and start earning today!`), // FTC: promotional post carries a sponsorship disclosure
             hashtags: ['GamerGain', 'EarnWhileYouPlay', 'GameRewards'],
             scheduled_date: now.toISOString(),
             status: 'scheduled',

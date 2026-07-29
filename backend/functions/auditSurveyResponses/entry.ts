@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 
 /**
  * Audit Survey Responses
@@ -122,13 +123,9 @@ For each flagged response return its id and detected issues. Only flag responses
         fraud_reasons: [...(response.fraud_reasons || []), `Rejected by business client: ${reject_reason || 'Quality issue'}`]
       });
 
-      // Deduct payout if one was issued
+      // Deduct payout if one was issued (atomic compare-and-set; floor at 0 for the clawback).
       if (response.payout_to_user && response.payout_to_user > 0) {
-        const respUser = await base44.asServiceRole.entities.User.filter({ id: response.user_id }).catch(() => []);
-        if (respUser[0]) {
-          const newBal = Math.max(0, (respUser[0].current_balance || 0) - response.payout_to_user);
-          await base44.asServiceRole.entities.User.update(response.user_id, { current_balance: newBal }).catch(() => {});
-        }
+        await adjustUserBalance(response.user_id, -Number(response.payout_to_user), { floorZero: true }).catch(() => null);
       }
 
       // Create SurveyDispute for the respondent (so they can appeal)

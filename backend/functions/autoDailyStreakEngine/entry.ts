@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 
 // Daily: update streaks, send reminders for at-risk streaks, pay the daily streak reward
 export default __handler(async (req) => {
@@ -80,16 +81,14 @@ export default __handler(async (req) => {
         if (streak.reward_paid_date === today) continue; // already paid today
         const { allowed } = await allowedEarn(base44, streak.user_id, streakReward);
         if (allowed <= 0) continue;
-        const user = (await base44.asServiceRole.entities.User.filter({ id: streak.user_id }))[0];
-        if (!user) continue;
-        await base44.asServiceRole.entities.User.update(streak.user_id, {
-          current_balance: (user.current_balance || 0) + allowed,
-          total_earnings: (user.total_earnings || 0) + allowed,
-        });
+        // Mark the streak paid FIRST so a re-entrant pass sees it and won't re-credit, then move the
+        // money with atomic compare-and-set on each field (no read-modify-write double-credit race).
+        await base44.asServiceRole.entities.Streak.update(streak.id, { reward_paid_date: today });
+        await adjustUserBalance(streak.user_id, allowed).catch(() => null);
+        await adjustUserBalance(streak.user_id, allowed, { field: "total_earnings" }).catch(() => null);
         const de = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id: streak.user_id, date: today });
         if (de.length) await base44.asServiceRole.entities.DailyEarnings.update(de[0].id, { total_earned: (de[0].total_earned || 0) + allowed });
         else await base44.asServiceRole.entities.DailyEarnings.create({ user_id: streak.user_id, date: today, total_earned: allowed });
-        await base44.asServiceRole.entities.Streak.update(streak.id, { reward_paid_date: today });
         streakRewardsPaid++;
       }
     }

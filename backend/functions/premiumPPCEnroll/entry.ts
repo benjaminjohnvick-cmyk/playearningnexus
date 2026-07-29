@@ -4,6 +4,7 @@ import { annualEarnCeiling, DAILY_EARN_CAP, PPC_GRID_ANNUAL_PRICE, upfrontGrantE
 import { WELCOME_BONUS } from "../../sdk/premium-boost.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { db } from "../../sdk/db.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 
 // premiumPPCEnroll — a user joins the (free) Premium PPC program.
 //
@@ -113,10 +114,11 @@ export default __handler(async (req) => {
     // had it before — or, in the safer earn-as-you-go mode, just the welcome bonus. Never repaid/clawed back.
     const creditPoints = upfront ? (alreadyGranted ? 0 : grantPoints) : WELCOME_BONUS;
     if (creditPoints > 0) {
-      const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || user;
-      const bal = Math.round((Number(fresh.current_balance ?? 0) + creditPoints) * 100) / 100;
-      const promo = Math.round((Number(fresh.boost_promo_points ?? 0) + creditPoints) * 100) / 100; // non-cashable marker
-      await base44.asServiceRole.entities.User.update(user.id, { current_balance: bal, boost_promo_points: promo, ...(upfront ? { ppc_social_ads_opt_in: true } : {}) }).catch(() => null);
+      // Atomic compare-and-set on each money field (balance + non-cashable promo marker) so a
+      // concurrent/duplicate enroll can't double-grant the up-front points.
+      await adjustUserBalance(user.id, creditPoints, { field: "current_balance" }).catch(() => null);
+      await adjustUserBalance(user.id, creditPoints, { field: "boost_promo_points" }).catch(() => null);
+      if (upfront) await base44.asServiceRole.entities.User.update(user.id, { ppc_social_ads_opt_in: true }).catch(() => null);
       await base44.asServiceRole.entities.Transaction.create({
         user_id: user.id, type: upfront ? "premium_upfront_grant" : "premium_welcome_bonus",
         amount_points: creditPoints, cashable: false,

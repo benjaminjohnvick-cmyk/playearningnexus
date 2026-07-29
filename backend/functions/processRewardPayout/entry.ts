@@ -5,6 +5,20 @@ import { isEnabled } from "../../sdk/feature-flags.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
 import { db } from "../../sdk/db.ts";
+import { featureAllowed, prizeNeedsRegistration, minAgeFor } from "../../sdk/jurisdiction.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
+
+// Age from a DOB field, if present (null when unknown → don't block on unknown age).
+function ageFromDob(dob) {
+  if (!dob) return null;
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getUTCFullYear() - d.getUTCFullYear();
+  const m = now.getUTCMonth() - d.getUTCMonth();
+  if (m < 0 || (m === 0 && now.getUTCDate() < d.getUTCDate())) age--;
+  return age;
+}
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
@@ -226,6 +240,21 @@ export default __handler(async (req) => {
       const winner = allUsers.find(u => u.id === winner_user_id);
       if (!winner) return Response.json({ error: 'Winner not found' }, { status: 404 });
 
+      // Jurisdiction + age gate at payout (mirrors processWeeklyJackpot / distributeTournamentPrizes):
+      // don't award a contest prize where prize competitions are blocked, to an under-age winner, or at/
+      // above the state's sweepstakes-registration threshold — hold those for manual review instead.
+      const juris = winner.jurisdiction ?? winner.state ?? null;
+      const winnerAge = ageFromDob(winner.date_of_birth ?? winner.dob);
+      if (!featureAllowed('jackpots', juris)) {
+        return Response.json({ ok: false, held: true, reason: 'feature_blocked_in_jurisdiction', amount: prize_amount });
+      }
+      if (winnerAge != null && winnerAge < minAgeFor(juris)) {
+        return Response.json({ ok: false, held: true, reason: 'under_minimum_age', amount: prize_amount });
+      }
+      if (prizeNeedsRegistration(Number(prize_amount) || 0, juris)) {
+        return Response.json({ ok: false, held: true, reason: 'prize_registration_threshold', amount: prize_amount });
+      }
+
       const prefs = await base44.asServiceRole.entities.PayoutPreference.filter({ user_id: winner_user_id });
       const pref = prefs[0];
 
@@ -233,11 +262,10 @@ export default __handler(async (req) => {
       // prize as on-site credit rather than sending cash.
       const winnerCashOk = cashOutOn && isPartnerPayout({ role: winner.role, payout_type: 'contest_win' });
       if (!winnerCashOk || !pref || pref.payout_method !== 'paypal' || !pref.paypal_email) {
-        // Credit to balance instead if not cash-eligible or no PayPal configured
-        await base44.asServiceRole.auth.updateUser(winner_user_id, {
-          pending_earnings: (winner.pending_earnings || 0) + prize_amount,
-          total_earnings: (winner.total_earnings || 0) + prize_amount,
-        });
+        // Credit to balance instead if not cash-eligible or no PayPal configured. Atomic compare-and-set
+        // per field so a duplicate contest-payout call can't double-credit the winner.
+        await adjustUserBalance(winner_user_id, Number(prize_amount) || 0, { field: "pending_earnings" }).catch(() => null);
+        await adjustUserBalance(winner_user_id, Number(prize_amount) || 0, { field: "total_earnings" }).catch(() => null);
         await base44.asServiceRole.entities.Notification.create({
           user_id: winner_user_id,
           type: 'referral_earnings',

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { featureAllowed } from "../../sdk/jurisdiction.ts";
 
 // Auto-generates a display name from email when user has no full_name set
 export default __handler(async (req) => {
@@ -75,10 +76,14 @@ export default __handler(async (req) => {
       });
     }
 
-    // Award initial jackpot entries
-    await base44.asServiceRole.entities.User.update(userId, {
-      total_jackpot_entries: (user.total_jackpot_entries || 0) + 275,
-    });
+    // Award initial jackpot entries — only where prize competitions are allowed for the user's
+    // jurisdiction. (Payout is separately gated at distribution; this avoids granting entries that
+    // could never legally pay out.)
+    if (featureAllowed('jackpots', user.jurisdiction ?? user.state ?? null)) {
+      await base44.asServiceRole.entities.User.update(userId, {
+        total_jackpot_entries: (user.total_jackpot_entries || 0) + 275,
+      });
+    }
 
     return Response.json({ success: true, updates });
   } catch (error) {

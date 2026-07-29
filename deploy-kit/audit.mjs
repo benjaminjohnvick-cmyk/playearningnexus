@@ -153,8 +153,11 @@ for (const f of fnFiles) {
   }
 
   // (b) external cash DISBURSEMENT rail (payouts/transfers — money OUT) with no cash_out kill-switch.
-  //     Payment INTAKE (PaymentIntent/charges — money IN) is intentionally not flagged.
-  const cashRail = c.match(/(api\.paypal\.com\/v1\/payments\/payouts|paypal[^\n]*payouts|stripe\.(payouts|transfers)\.create|\/v1\/payouts\b)/i);
+  //     Payment INTAKE (PaymentIntent/charges — money IN) is intentionally not flagged. Match only a
+  //     REAL disbursement CALL — the PayPal payout path or a Stripe payout/transfer .create — not
+  //     read-only listing (stripe.payouts.list), reconciliation, or the words "payouts" in prose/email
+  //     (the old loose `paypal[^\n]*payouts` matched across escaped \n inside string literals).
+  const cashRail = c.match(/(\/v1\/payments\/payouts|stripe\.(payouts|transfers)\.create)/);
   if (cashRail && !/isEnabled\(\s*['"]cash_out['"]/.test(c)) {
     warn(f, lineOf(c, cashRail.index), `external cash disbursement (payout/transfer) with no isEnabled('cash_out') kill-switch. Review.`);
   }
@@ -178,6 +181,9 @@ for (const f of backendTs) {
   if (f.includes('sdk/integrations.ts') || f.includes('agents-runtime/')) continue; // integrations.ts IS the metered path
   const c = read(path.join(ROOT, f));
   if (c == null) continue;
+  // A direct provider call is fine if it goes through the shared meter (checks AI_DAILY_SPEND_CAP_USD
+  // before + records estimated spend after). Skip files that use those meter helpers.
+  if (/assertAiSpendUnderCap|recordAiTokenSpend|recordAiUsdSpend|aiSpendCapReached/.test(c)) continue;
   const m = c.match(/(api\.openai\.com|api\.anthropic\.com)/);
   if (m) warn(f, lineOf(c, m.index), `direct LLM API call that bypasses the AI_DAILY_SPEND_CAP_USD meter in InvokeLLM. Route through integrations.ts. Review.`);
 }

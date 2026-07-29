@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 
 export default __handler(async (req) => {
   try {
@@ -80,9 +81,8 @@ export default __handler(async (req) => {
       status: 'completed'
     });
 
-    // Update user balance
-    const currentBalance = user.current_balance || 0;
-    await base44.auth.updateMe({ current_balance: currentBalance + netAmount });
+    // Update user balance — atomic compare-and-set so a double-submitted session can't double-credit.
+    await adjustUserBalance(user.id, netAmount, { field: "current_balance" }).catch(() => null);
 
     // Record into DailyEarnings so the per-user daily cap accumulates across every earning path.
     if (netAmount > 0) {
@@ -152,14 +152,8 @@ export default __handler(async (req) => {
           status: 'completed'
         });
 
-        // Credit referrer balance
-        const referrerUser = await base44.asServiceRole.entities.User.filter({ id: referral.referrer_user_id });
-        if (referrerUser.length > 0) {
-          const ru = referrerUser[0];
-          await base44.asServiceRole.entities.User.update(ru.id, {
-            current_balance: (ru.current_balance || 0) + commission
-          });
-        }
+        // Credit referrer balance atomically (compare-and-set) so concurrent sessions can't race.
+        await adjustUserBalance(referral.referrer_user_id, commission, { field: "current_balance" }).catch(() => null);
 
         if (referrerRecords.length > 0) {
           await base44.asServiceRole.entities.PPCUserTier.update(referrerRecords[0].id, {

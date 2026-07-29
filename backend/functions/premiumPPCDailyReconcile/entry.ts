@@ -4,6 +4,7 @@ import {
   annualEarnCeiling, BUSINESS_REFUND_PER_DAY, hasDoubled, round2, SOCIAL_CREDIT_PER_DAY, utcDay,
 } from "../../sdk/premium-ppc.ts";
 import { dailyBoostCap, LAPSE_AFTER_DAYS, streakMultiplier } from "../../sdk/premium-boost.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 
 // premiumPPCDailyReconcile — runs once/day (scheduler, service token). NO-PENALTY model with legal
 // engagement boosts:
@@ -80,9 +81,7 @@ export default __handler(async (req) => {
       const boost = round2(Math.min(cap * streakMultiplier(newStreak), remaining));
 
       if (boost > 0) {
-        const urows = await base44.asServiceRole.entities.User.filter({ id: m.user_id });
-        const bal = round2(Number((urows || [])[0]?.current_balance ?? 0));
-        await base44.asServiceRole.entities.User.update(m.user_id, { current_balance: round2(bal + boost) }).catch(() => null);
+        await adjustUserBalance(m.user_id, boost, { field: "current_balance" }).catch(() => null);
       }
 
       // Advertiser pay-for-performance on active days (until they've doubled their investment).
@@ -92,10 +91,9 @@ export default __handler(async (req) => {
       const refund = round2(BUSINESS_REFUND_PER_DAY);
       const social = doubled ? 0 : round2(SOCIAL_CREDIT_PER_DAY);
       if (m.advertiser_user_id) {
-        await base44.asServiceRole.entities.User.update(m.advertiser_user_id, {
-          refund_credit_balance: round2(Number(adv.refund_credit_balance ?? 0) + refund),
-          social_marketing_credit_balance: round2(Number(adv.social_marketing_credit_balance ?? 0) + social),
-        }).catch(() => null);
+        // Atomic compare-and-set per field so concurrent reconciles can't double-credit the advertiser.
+        await adjustUserBalance(m.advertiser_user_id, refund, { field: "refund_credit_balance" }).catch(() => null);
+        if (social > 0) await adjustUserBalance(m.advertiser_user_id, social, { field: "social_marketing_credit_balance" }).catch(() => null);
       }
 
       const newPoints = round2(priorPoints + boost);

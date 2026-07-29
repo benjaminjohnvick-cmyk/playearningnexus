@@ -6,6 +6,7 @@ import {
 } from "../../sdk/membership.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
 import { recordConsent } from "../../sdk/consent-ledger.ts";
 import { CURRENT_TERMS_VERSION } from "../../sdk/terms.ts";
 
@@ -74,11 +75,10 @@ export default __handler(async (req) => {
         continue;
       }
 
-      const balance = round2(Number(u.current_balance ?? 0));
-      const newBalance = round2(Math.max(0, balance - fee)); // never below zero from the fee
-      await base44.asServiceRole.entities.User.update(u.id, {
-        current_balance: newBalance, last_membership_fee_date: today,
-      }).catch(() => null);
+      // Mark the day FIRST (idempotency: a re-entrant pass skips this user), then debit the fee with an
+      // atomic compare-and-set, flooring at 0 so the fee can never push the balance negative.
+      await base44.asServiceRole.entities.User.update(u.id, { last_membership_fee_date: today }).catch(() => null);
+      await adjustUserBalance(u.id, -fee, { floorZero: true }).catch(() => null);
 
       await postLedgerEntry({
         user_id: u.id, type: "membership_fee", amount: -fee, currency: "USD",

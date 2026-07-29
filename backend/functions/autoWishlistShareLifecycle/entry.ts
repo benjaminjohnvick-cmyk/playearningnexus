@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { featureAllowed } from "../../sdk/jurisdiction.ts";
 
 export default __handler(async (req) => {
   try {
@@ -10,8 +11,14 @@ export default __handler(async (req) => {
 
     for (const share of shares) {
       const conversions = share.conversions || 0;
-      const jackpotEntries = Math.floor(conversions * 2); // 2 entries per conversion
       const wishlistCredit = conversions * 5; // $5 credit per conversion
+
+      // Jackpot entries only where prize competitions are allowed for the sharer's jurisdiction;
+      // elsewhere they still earn wishlist credit but no sweepstakes entries (payout is gated too).
+      let sharer = null;
+      try { sharer = share.user_id ? await base44.asServiceRole.entities.User.get(share.user_id) : null; } catch { /* ignore */ }
+      const jackpotAllowed = featureAllowed('jackpots', sharer?.jurisdiction ?? sharer?.state ?? null);
+      const jackpotEntries = jackpotAllowed ? Math.floor(conversions * 2) : 0; // 2 entries per conversion
 
       // Auto-pause shares with 0 clicks after 30 days
       const createdDate = new Date(share.created_date);
