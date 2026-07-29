@@ -6,6 +6,7 @@ import { isEnabled } from "../../sdk/feature-flags.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
 import { db } from "../../sdk/db.ts";
+import { emitEvent } from "../../sdk/events.ts";
 
 // Venmo is owned by PayPal. PayPal Payouts API sends directly to Venmo-linked email or phone.
 // This is fully automated — money arrives in the recipient's Venmo balance instantly.
@@ -112,6 +113,7 @@ export default __handler(async (req) => {
     if (!ppRes.ok) {
       const errMsg = ppData.message || ppData.name || `Venmo payout error ${ppRes.status}`;
       await base44.asServiceRole.entities.Payout.update(payoutId, { status: 'failed', error_message: errMsg });
+      await emitEvent("payout.failed", { payout_id: payoutId, rail: "venmo", error: errMsg }, { source: "venmoPayout" }).catch(() => null);
       return Response.json({ error: errMsg }, { status: 400 });
     }
 
@@ -141,6 +143,11 @@ export default __handler(async (req) => {
       status: 'unread',
       delivery_method: ['in_app'],
     }).catch(() => null);
+
+    await emitEvent("payout.executed", {
+      payout_id: payoutId, rail: "venmo", batch_id: batchPayoutId,
+      amount: Number(amount) || 0, net: wh.net, payout_type: payout_type ?? null,
+    }, { source: "venmoPayout" }).catch(() => null);
 
     return Response.json({ success: true, batch_id: batchPayoutId, status: 'processing' });
   } catch (error) {

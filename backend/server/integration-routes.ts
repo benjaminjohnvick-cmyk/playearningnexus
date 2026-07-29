@@ -1,6 +1,6 @@
 // Integration passthrough for the FRONTEND: POST /integrations/:name
 // Covers InvokeLLM, SendEmail, GenerateImage, GenerateSpeech, UploadFile.
-import { Core } from "../sdk/integrations.ts";
+import { Core, assertAiSpendUnderCap, recordAiUsdSpend } from "../sdk/integrations.ts";
 
 export async function integrationRoutes(req: Request, pathname: string): Promise<Response> {
   const m = pathname.match(/^\/integrations\/([A-Za-z]+)$/);
@@ -25,11 +25,21 @@ export async function integrationRoutes(req: Request, pathname: string): Promise
 async function generateSpeech(args: { text?: string; voice?: string }): Promise<Response> {
   const key = Deno.env.get("OPENAI_API_KEY");
   if (!key) return Response.json({ error: "OPENAI_API_KEY not set" }, { status: 500 });
+  // Honor the SAME global AI_DAILY_SPEND_CAP_USD brake as InvokeLLM — TTS is a paid AI call too, so it
+  // must refuse once the daily ceiling is hit instead of spending past it.
+  try { assertAiSpendUnderCap(); } catch (e) { return Response.json({ error: (e as Error).message }, { status: 429 }); }
+  const input = args.text ?? "";
   const r = await fetch("https://api.openai.com/v1/audio/speech", {
     method: "POST",
     headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
-    body: JSON.stringify({ model: Deno.env.get("TTS_MODEL") ?? "tts-1", voice: args.voice ?? "alloy", input: args.text ?? "" }),
+    body: JSON.stringify({ model: Deno.env.get("TTS_MODEL") ?? "tts-1", voice: args.voice ?? "alloy", input }),
   });
+  // Record estimated spend on the same per-day meter (OpenAI TTS is priced per character; tts-1 ≈
+  // $0.015 / 1K chars — overridable via TTS_USD_PER_1K_CHARS).
+  try {
+    const per1k = Number(Deno.env.get("TTS_USD_PER_1K_CHARS")) || 0.015;
+    recordAiUsdSpend((input.length / 1000) * per1k);
+  } catch { /* best-effort */ }
   const buf = new Uint8Array(await r.arrayBuffer());
   const b64 = btoa(String.fromCharCode(...buf));
   return Response.json({ url: `data:audio/mpeg;base64,${b64}` });

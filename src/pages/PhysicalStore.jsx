@@ -73,7 +73,12 @@ export default function PhysicalStore() {
       if (r.data?.affordability_warning) { setWarn({ listing, method, ...r.data }); return; }
       if (r.data?.blocked) { toast.error(r.data.message || 'That payment option isn\'t available.'); return; }
       if (r.data?.affiliate && r.data?.redirect_url) { window.open(r.data.redirect_url, '_blank', 'noopener,noreferrer'); return; }
-      toast.success(method === 'card' ? 'Purchased! Your order is being processed.' : 'Purchased with points!');
+      // Household teen flow: nothing is charged until an adult approves.
+      if (r.data?.needs_approval) { toast.info(r.data.message || 'Sent to your household adult to approve — nothing is charged until they say yes.'); setWarn(null); await load(); loadCfg(); return; }
+      // A CARD order isn't captured here (payment_captured=false → awaiting payment). Only points
+      // purchases are captured now; don't claim "Purchased!" on a card order that's still awaiting payment.
+      if (r.data?.success && r.data?.payment_captured) toast.success('Purchased! Your order is being processed.');
+      else toast.info('Order placed — it’ll be processed once your card payment completes.');
       setWarn(null);   // close the affordability modal after a confirmed "proceed anyway"
       await load(); loadCfg();
     } catch (e) { toast.error(e?.data?.error || e.message || 'Purchase failed'); }

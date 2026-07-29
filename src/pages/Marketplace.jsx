@@ -227,7 +227,13 @@ export default function Marketplace() {
         toast.info('Opening the retailer to complete your purchase.');
         reportMetric('click_through');   // live-experiment outcome signal
       } else if (res.data?.blocked) toast.error(res.data.message || 'Payment method unavailable');
-      else { toast.success(res.data?.charged ? 'Purchased! Your order is being fulfilled.' : 'Purchased!'); setWarn(null); reportMetric('purchase'); await load(); }
+      // Household teen flow: the order needs an adult's approval — nothing was charged or reserved.
+      else if (res.data?.needs_approval) { toast.info(res.data.message || 'Sent to your household adult to approve — nothing is charged until they say yes.'); setWarn(null); await load(); }
+      // A CARD order is not captured in this handler (payment_captured=false → awaiting payment). Only
+      // call it "Purchased" and fire the purchase signal when payment_captured is truly true.
+      else if (res.data?.success && res.data?.payment_captured) { toast.success('Purchased! Your order is being fulfilled.'); setWarn(null); reportMetric('purchase'); await load(); }
+      else if (res.data?.success) { toast.info('Order placed — it’ll be fulfilled once your card payment completes.'); setWarn(null); await load(); }
+      else toast.error(res.data?.error || 'Purchase failed');
     } catch (e) { toast.error(e?.data?.error || e.message || 'Purchase failed'); }
     finally { setBusy(''); }
   }

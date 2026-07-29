@@ -10,6 +10,15 @@ import { gate, needsApproval, SENSITIVE_ENTITIES } from "../sdk/oversight.ts";
 import { capsFor, costOf, logUsage, resolveModel, spentTodayUsd } from "./guardrails.ts";
 import { gatherEvidence } from "../sdk/survey-evidence.ts";
 import { recallLessons, recordOutcome } from "./learning.ts";
+import { aiSpendCapReached, recordAiTokenSpend } from "../sdk/integrations.ts";
+import { aiPaused } from "../sdk/ai-control.ts";
+
+// Normalize a provider usage object to total (input+output) tokens for the GLOBAL spend meter.
+function totalTokens(usage: unknown): number {
+  const u = (usage ?? {}) as Record<string, number>;
+  return (Number(u.prompt_tokens) || 0) + (Number(u.completion_tokens) || 0) +
+         (Number(u.input_tokens) || 0) + (Number(u.output_tokens) || 0);
+}
 
 type AgentDef = { description: string; instructions: string; model: string | null; tools: { entity: string; ops: string[] }[] };
 const registry: Record<string, AgentDef> = JSON.parse(await Deno.readTextFile(new URL("./agents.json", import.meta.url)));
@@ -182,6 +191,15 @@ export async function runAgent(name: string, message: string, context?: unknown)
   // translates it to the Claude equivalent when LLM_PROVIDER=anthropic. Metering uses
   // the same active model so the daily USD caps stay accurate on whichever provider.
   const model = providerModel(resolveModel(name, def));
+  // GLOBAL AI kill-switch + spend cap (same brakes InvokeLLM honors). The agent runtime talks to the
+  // provider directly, so it must check these itself or it would bypass the platform-wide ceiling.
+  if (await aiPaused().catch(() => false)) {
+    return { reply: "(Paused: AI is globally stopped by an admin (ai_paused). Resume to run agents.)", steps: [], blocked: true, cost_usd: 0, model };
+  }
+  if (aiSpendCapReached()) {
+    return { reply: "(Paused: the global AI daily spend cap (AI_DAILY_SPEND_CAP_USD) has been reached. Raise it or wait for the next UTC day.)", steps: [], blocked: true, cost_usd: 0, model };
+  }
+
   const caps = capsFor(name);
   const spentBefore = await spentTodayUsd(name);
   if (spentBefore >= caps.dailyUsdCap) {
@@ -214,6 +232,11 @@ export async function runAgent(name: string, message: string, context?: unknown)
     const stepCost = costOf(model, turn.usage);
     runCost += stepCost;
     await logUsage(name, model, turn.usage, stepCost);
+    // Feed the GLOBAL per-day meter too, and stop if the platform-wide cap is now reached.
+    recordAiTokenSpend(totalTokens(turn.usage));
+    if (aiSpendCapReached()) {
+      return { reply: `(Stopped mid-run: the global AI daily spend cap (AI_DAILY_SPEND_CAP_USD) was reached.)`, steps, blocked: true, cost_usd: runCost, model };
+    }
     if (spentBefore + runCost >= caps.dailyUsdCap || runCost >= caps.perRunUsdCap) {
       return {
         reply: `(Stopped mid-run: ${name} hit a cost cap (run $${runCost.toFixed(4)} / day $${(spentBefore + runCost).toFixed(4)}). Adjust caps in agent-guardrails.json.)`,

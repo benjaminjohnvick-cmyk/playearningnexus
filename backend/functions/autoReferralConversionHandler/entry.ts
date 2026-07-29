@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { emitEvent } from "../../sdk/events.ts";
 
 export default __handler(async (req) => {
   const base44 = createClientFromRequest(req);
@@ -48,6 +49,14 @@ export default __handler(async (req) => {
         points_earned: 100,
         metadata: { referred_user_id: referral.referred_user_id }
       });
+
+      // Emit the grounded outcome event so attributeOutcomes can confirm the referral-growth agent's
+      // learning against a REAL conversion (referral.converted is in its OUTCOME_MAP).
+      await emitEvent("referral.converted", {
+        referral_id: referral.id,
+        referrer_user_id: referral.referrer_user_id,
+        referred_user_id: referral.referred_user_id,
+      }, { source: "autoReferralConversionHandler" }).catch(() => null);
     }
 
     return Response.json({ ok: true });

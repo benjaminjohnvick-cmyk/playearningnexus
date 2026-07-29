@@ -6,6 +6,7 @@ import { isEnabled } from "../../sdk/feature-flags.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
 import { db } from "../../sdk/db.ts";
+import { emitEvent } from "../../sdk/events.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
@@ -125,6 +126,8 @@ export default __handler(async (req) => {
         status: 'failed',
         error_message: errMsg,
       });
+      // Grounded outcome event for attributeOutcomes (payout.failed → auto_payout_agent, success:false).
+      await emitEvent("payout.failed", { payout_id: payoutId, rail: "paypal", error: errMsg }, { source: "paypalPayout" }).catch(() => null);
       return Response.json({ error: errMsg }, { status: 400 });
     }
 
@@ -156,6 +159,12 @@ export default __handler(async (req) => {
       status: 'unread',
       delivery_method: ['in_app'],
     }).catch(() => null);
+
+    // Grounded outcome event for attributeOutcomes (payout.executed → auto_payout_agent, success:true).
+    await emitEvent("payout.executed", {
+      payout_id: payoutId, rail: "paypal", batch_id: batchPayoutId,
+      amount: Number(amount) || 0, net: wh.net, payout_type: payout_type ?? null,
+    }, { source: "paypalPayout" }).catch(() => null);
 
     return Response.json({
       success: true,

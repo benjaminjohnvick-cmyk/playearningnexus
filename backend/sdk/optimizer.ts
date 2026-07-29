@@ -181,6 +181,50 @@ export async function collectSignals(days = 14): Promise<Snapshot> {
   snap.pricing_feedback_count = recentPf.length;
   snap.pricing_feedback_avg_acceptable = prices.length ? round2(prices.reduce((a, b) => a + b, 0) / prices.length) : 0;
 
+  // Referrals — growth-loop coverage (volume + verified conversions). Gives the AI visibility into
+  // the referral engine, not just store/survey activity, so recommendations are grounded on it too.
+  const refs = await db.filter("Referral", {}, "-created_date", 5000).catch(() => []);
+  const recentRefs = refs.filter((r: any) => (r.created_date ?? r.created_at) >= since);
+  const convertedRefs = recentRefs.filter((r: any) => ["converted", "completed", "active"].includes(r.status));
+  snap.referral_volume = recentRefs.length;
+  snap.referral_conversions = convertedRefs.length;
+  snap.referral_conversion_rate = recentRefs.length ? round2(convertedRefs.length / recentRefs.length) : 0;
+  snap.referral_revenue = round2(convertedRefs.reduce((s: number, r: any) => s + (Number(r.commission_earned) || 0) + (Number(r.ppc_bitlabs_earnings) || 0), 0));
+
+  // Payouts — cash-disbursement health (executed vs. failed). Lets the AI observe payout throughput
+  // and failure rate as an operational signal (never a knob it can tune — payouts are guardrailed).
+  const payouts = await db.filter("Payout", {}, "-created_date", 5000).catch(() => []);
+  const recentPayouts = payouts.filter((p: any) => (p.created_date ?? p.created_at) >= since);
+  const paidOut = recentPayouts.filter((p: any) => ["completed", "processed", "paid", "sent"].includes(p.status));
+  const failedOut = recentPayouts.filter((p: any) => ["failed", "error", "rejected"].includes(p.status));
+  snap.payout_count = recentPayouts.length;
+  snap.payout_executed = paidOut.length;
+  snap.payout_failed = failedOut.length;
+  snap.payout_failure_rate = recentPayouts.length ? round2(failedOut.length / recentPayouts.length) : 0;
+  snap.payout_volume_usd = round2(paidOut.reduce((s: number, p: any) => s + (Number(p.amount) || 0), 0));
+
+  // Marketplace listings — supply-side liquidity signal (active listings the store can sell/gift).
+  const listings = await db.filter("MarketplaceListing", {}, "-created_date", 3000).catch(() => []);
+  snap.marketplace_listings_active = listings.filter((l: any) => l.status === "active" || l.is_active === true).length;
+  snap.marketplace_listings_total = listings.length;
+
+  // Games catalog — content supply the economy depends on (published games available to play/unlock).
+  const games = await db.filter("Game", {}, "-created_date", 5000).catch(() => []);
+  snap.games_total = games.length;
+  snap.games_published = games.filter((g: any) => g.status === "published" || g.status === "featured" || g.status === "approved").length;
+
+  // Layaway — deferred-purchase demand (open plans + captured value), a store-conversion signal.
+  const layaways = await db.filter("Layaway", {}, "-created_date", 3000).catch(() => []);
+  const recentLayaway = layaways.filter((l: any) => (l.created_date ?? l.created_at) >= since);
+  snap.layaway_open = recentLayaway.filter((l: any) => l.status === "active" || l.status === "open" || l.status === "in_progress").length;
+  snap.layaway_paid_usd = round2(recentLayaway.reduce((s: number, l: any) => s + (Number(l.amount_paid) || 0), 0));
+
+  // Points Boost ledger — real spend/engagement of the boost feature (drives the boost rate knobs).
+  const boost = await db.filter("PointsBoostLedger", {}, "-created_date", 5000).catch(() => []);
+  const recentBoost = boost.filter((b: any) => (b.created_date ?? b.created_at) >= since);
+  snap.boost_events = recentBoost.length;
+  snap.boost_usd = round2(recentBoost.reduce((s: number, b: any) => s + (Number(b.usd_value ?? b.cost_usd ?? b.amount) || 0), 0));
+
   // Persist each metric as a signal row for trend history.
   const collectedAt = new Date().toISOString();
   for (const [metric, value] of Object.entries(snap)) {

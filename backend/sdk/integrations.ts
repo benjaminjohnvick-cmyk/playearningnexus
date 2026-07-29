@@ -50,6 +50,30 @@ function estimateLlmCostUsd(totalTokens: number): number {
 }
 /** Current estimated AI spend today (for status endpoints). */
 export function aiDailySpendUsd(): number { return Math.round(aiSpendToday() * 100) / 100; }
+
+// ---- Shared meter for LLM callers OUTSIDE InvokeLLM (agent runtime, TTS, any direct provider call) --
+// These let every direct-to-provider path honor the SAME global AI_DAILY_SPEND_CAP_USD brake and feed
+// the same per-day accumulator, instead of each one silently bypassing the cap.
+
+/** Throw if today's estimated AI spend has already reached the cap (0 = no cap). Call BEFORE a
+ *  direct provider request so agent-runtime / TTS refuse once the daily ceiling is hit. */
+export function assertAiSpendUnderCap(): void {
+  const cap = snapNumber("AI_DAILY_SPEND_CAP_USD", 0);
+  if (cap > 0 && aiSpendToday() >= cap) {
+    throw new Error(`AI daily spend cap reached ($${cap}). Raise AI_DAILY_SPEND_CAP_USD or wait until tomorrow.`);
+  }
+}
+/** True when the cap is set and already reached (non-throwing variant). */
+export function aiSpendCapReached(): boolean {
+  const cap = snapNumber("AI_DAILY_SPEND_CAP_USD", 0);
+  return cap > 0 && aiSpendToday() >= cap;
+}
+/** Record estimated spend for a direct provider call, by total (input+output) tokens. */
+export function recordAiTokenSpend(totalTokens: number): void {
+  try { addAiSpend(estimateLlmCostUsd(totalTokens)); } catch { /* best-effort */ }
+}
+/** Record a flat USD cost for a call we can't token-estimate (e.g. TTS characters). */
+export function recordAiUsdSpend(usd: number): void { addAiSpend(usd); }
 const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
 const ANTHROPIC_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 

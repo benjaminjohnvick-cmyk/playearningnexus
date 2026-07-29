@@ -64,7 +64,12 @@ export default function DigitalStore() {
       if (r.data?.affordability_warning) { setWarn({ listing, method, ...r.data }); return; }
       if (r.data?.blocked) { toast.error(r.data.message || 'That payment option isn\'t available.'); return; }
       if (r.data?.affiliate && r.data?.redirect_url) { window.open(r.data.redirect_url, '_blank', 'noopener,noreferrer'); return; }
-      toast.success(method === 'card' ? 'Purchased! Your download/access is ready.' : 'Purchased with points! Your download/access is ready.');
+      // Household teen flow: nothing is charged until an adult approves.
+      if (r.data?.needs_approval) { toast.info(r.data.message || 'Sent to your household adult to approve — nothing is charged until they say yes.'); setWarn(null); await load(); loadCfg(); return; }
+      // Digital goods deliver instantly ONLY once payment is captured (points path). A card order is
+      // awaiting_payment here, so access is NOT ready yet — don't tell the user it is.
+      if (r.data?.success && r.data?.payment_captured) toast.success('Purchased! Your download/access is ready.');
+      else toast.info('Order placed — your download/access unlocks once your card payment completes.');
       setWarn(null);   // close the affordability modal after a confirmed "proceed anyway"
       await load(); loadCfg();
     } catch (e) { toast.error(e?.data?.error || e.message || 'Purchase failed'); }

@@ -6,6 +6,7 @@ import { isEnabled } from "../../sdk/feature-flags.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
 import { db } from "../../sdk/db.ts";
+import { emitEvent } from "../../sdk/events.ts";
 import Stripe from 'npm:stripe@14.25.0';
 
 // CashApp Cash Card is a Visa debit card.
@@ -124,9 +125,15 @@ export default __handler(async (req) => {
       delivery_method: ['in_app'],
     }).catch(() => null);
 
+    await emitEvent("payout.executed", {
+      payout_id: payoutId, rail: "cashapp", transaction_id: payout.id,
+      amount: Number(amount) || 0, net: wh.net, payout_type: payout_type ?? null,
+    }, { source: "cashappPayout" }).catch(() => null);
+
     return Response.json({ success: true, payout_id: payout.id, status: 'processing', arrival: '~30 minutes' });
   } catch (error) {
     try { const b = await req.clone().json().catch(() => ({})); if (b?.payoutId) await db.update("Payout", String(b.payoutId), { status: "pending" }).catch(() => null); } catch { /* */ }
+    await emitEvent("payout.failed", { rail: "cashapp", error: (error as Error).message }, { source: "cashappPayout" }).catch(() => null);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
