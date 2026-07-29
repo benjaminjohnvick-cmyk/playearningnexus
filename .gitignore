@@ -52,3 +52,6 @@ GamerGain-FULL-CODEBASE-*.txt
 
 # sandbox walkthrough artifacts (screenshots + report)
 deploy-kit/e2e/artifacts/
+
+# CI signing secrets produced by deploy-kit/mobile/setup-signing.sh (never commit)
+deploy-kit/mobile/ci-secrets*

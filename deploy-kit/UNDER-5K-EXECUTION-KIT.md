@@ -159,6 +159,30 @@ The one thing that can still add hours is an **Apple review rejection round** (k
 via `REVIEWER_DEMO=1`, merit-not-gambling framing). Owner account signups and optional legal review are
 separate from dev hours; AI runtime stays capped by `AI_DAILY_SPEND_CAP_USD` and can launch at ~$0.
 
+---
+
+## The $1,050 floor — everything ON, full launch, one-command path (2026-07-29)
+
+The "honest floor" above is now a concrete, scripted plan: **`deploy-kit/FLOOR-PLAN-1050.md`** itemizes a
+full PWA + Android + iOS launch — **with every feature ON and the site pre-populated with content** — at
+**~14 h ($1,050)** on a clean run. New automation added to make the low end the realistic case:
+
+- **`deploy-kit/web-launch.sh`** — ONE command: deploy the single service (Railway) → `go-live.mjs`
+  (verify every flag ON + pre-warm the catalog so the store is full before the first user + smoke) →
+  print the two owner flips. Collapses the deploy/QA/pre-warm phases to minutes.
+- **`deploy-kit/go-live.mjs`** + **`PRELAUNCH-GO-LIVE.md`** — the go-live gate (flags ON, content live,
+  smoke, GO/NO-GO).
+- **`deploy-kit/mobile/setup-signing.sh`** — ONE command generates the Android keystore and writes the
+  exact paste-ready CI secret values; turns the fiddliest mobile step from hours of discovery into minutes.
+- **`deploy-kit/REVIEWER-NOTES.md`** — pre-written Apple/Google reviewer notes + demo login +
+  merit-not-gambling framing, so submission is paste-and-go and the review is set up to pass **first try**
+  (a clean first pass is what actually protects the floor).
+
+**Everything ON costs $0 extra** — the launch config *is* the defaults (`backend/.env.example`), so there
+are no feature-enablement hours; `go-live` just turns the already-built, already-on system live and full.
+The only thing that can push past the floor is an **Apple review rejection round** — which the reviewer
+notes + demo login are designed to prevent. Web-only (defer the apps) is lower still (~$750–$1,200).
+
 <!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
 
 ---

@@ -87,6 +87,9 @@ Everything else is the developer following the kit — **~30–45 hours, ~$2,250
 - `deno run -A backend/tools/seed-demo.ts` — seed demo data
 - `BACKEND_URL=… node deploy-kit/e2e-smoke.mjs` — one-command critical-path smoke test
 - `BACKEND_URL=… ADMIN_EMAIL=… ADMIN_PASSWORD=… node deploy-kit/go-live.mjs` — **the go-live gate**: verify every feature is ON, pre-warm the catalog so the site is full of content before the first user, smoke-test, and print GO / NO-GO (see `PRELAUNCH-GO-LIVE.md`)
+- `bash deploy-kit/web-launch.sh` — **the one-command WEB launch** (deploy → go-live → open): the cheapest path to live; add the apps later with no rework
+- `bash deploy-kit/mobile/setup-signing.sh` — generate the Android keystore + write the exact paste-ready CI secrets in one step
+- **The floor plan:** `deploy-kit/FLOOR-PLAN-1050.md` — full launch, everything ON, ~$1,050 on a clean run; `deploy-kit/REVIEWER-NOTES.md` — pre-written store-review answers
 - `node backend/tools/validate-guardrails.mjs` && `node backend/tools/agent-smoke.mjs` — pre-launch agent checks
 - Mobile: push to the `android-release` / `ios-release` branch (CI builds + auto-bumps the build number); `fastlane` submits
 - App review: give reviewers the `/ReviewerLogin` URL (set `REVIEWER_DEMO=1`)
