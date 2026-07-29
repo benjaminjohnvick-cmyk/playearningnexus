@@ -56,6 +56,11 @@ export default __handler(async (req) => {
     if (upfront && priorDefault && consent.lockout_mode !== true) {
       return Response.json({ error: "Re-enrollment requires agreeing to lockout mode (a daily in-app survey window at a time you choose), because a previous term wasn't completed.", requires_lockout_mode: true }, { status: 409 });
     }
+    // Getting the up-front advance REQUIRES consenting to let us run AI-created ads for our PPC
+    // advertisers on the member's own social accounts (with #ad disclosure). No consent → no advance.
+    if (upfront && consent.social_ads !== true) {
+      return Response.json({ error: "To receive the up-front points, you must agree to let us post AI-created advertiser ads (clearly labeled #ad) to your connected social accounts.", requires_social_ads_consent: true }, { status: 400 });
+    }
 
     // SINGLE-FLIGHT GUARD (up-front only, where a double grant would be $1,460): a deterministic-id claim
     // so a double-click can't create two memberships and grant the points twice. Removed on default so a
@@ -74,7 +79,8 @@ export default __handler(async (req) => {
       user_id: user.id,
       advertiser_user_id: openAdvertiser.id,
       payment_method_id: paymentMethodId, // optional; never charged for missed days
-      consent: { accepted: true, terms_version: consent.terms_version, lockout_mode: lockoutEnabled, at: now, ip },
+      consent: { accepted: true, terms_version: consent.terms_version, lockout_mode: lockoutEnabled, social_ads: upfront ? true : consent.social_ads === true, at: now, ip },
+      social_ad_consent: upfront ? true : consent.social_ads === true,
       grid_price: PPC_GRID_ANNUAL_PRICE,
       annual_earn_ceiling: ceilingUsd,
       daily_earn_cap: DAILY_EARN_CAP,
@@ -105,7 +111,7 @@ export default __handler(async (req) => {
       const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || user;
       const bal = Math.round((Number(fresh.current_balance ?? 0) + creditPoints) * 100) / 100;
       const promo = Math.round((Number(fresh.boost_promo_points ?? 0) + creditPoints) * 100) / 100; // non-cashable marker
-      await base44.asServiceRole.entities.User.update(user.id, { current_balance: bal, boost_promo_points: promo }).catch(() => null);
+      await base44.asServiceRole.entities.User.update(user.id, { current_balance: bal, boost_promo_points: promo, ...(upfront ? { ppc_social_ads_opt_in: true } : {}) }).catch(() => null);
       await base44.asServiceRole.entities.Transaction.create({
         user_id: user.id, type: upfront ? "premium_upfront_grant" : "premium_welcome_bonus",
         amount_points: creditPoints, cashable: false,

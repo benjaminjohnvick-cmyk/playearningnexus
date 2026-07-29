@@ -70,8 +70,13 @@ export const surveyCommitmentDays = () => Math.max(1, Math.round(snapNum("PREMIU
 export const surveyMinutesPerDay = () => Math.max(1, snapNum("PREMIUM_SURVEY_MINUTES_PER_DAY", 8));
 export const surveyPaceGraceDays = () => Math.max(0, snapNum("PREMIUM_SURVEY_GRACE_DAYS", 7));
 export const spentOutThresholdPct = () => Math.min(1, Math.max(0, snapNum("PREMIUM_SPENT_OUT_PCT", 0.05)));
-/** Order value at which a matched advertiser's free social posting stops (default $2,920). */
-export const socialPostingOrderTarget = () => round2(snapNum("PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD", 2920));
+/** Order value at which a matched advertiser's free social posting stops — i.e. they've DOUBLED their
+ *  $5,000 (default $10,000). After this, their earnings are points spendable on anything via the site. */
+export const socialPostingOrderTarget = () => round2(snapNum("PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD", 10000));
+/** Advertised value of the free AI social advertising a paying advertiser receives (default $10,000). */
+export const businessAdCreditUsd = () => round2(snapNum("PREMIUM_BUSINESS_AD_CREDIT_USD", 10000));
+/** Convert a USD figure to its point equivalent at 1¢/point (advertise $ values; deliver points). */
+export function usdToPoints(usd: number, cents = 1): number { return Math.round((Number(usd) || 0) * (100 / Math.max(1, cents))); }
 export function socialPostingActive(ordersValueDelivered?: number): boolean {
   return round2(ordersValueDelivered ?? 0) < socialPostingOrderTarget();
 }
