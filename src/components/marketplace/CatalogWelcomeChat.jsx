@@ -44,6 +44,14 @@ export default function CatalogWelcomeChat() {
     }
   }, [greet]);
 
+  // Let other parts of the marketplace open the assistant — e.g. the "What would you like to do?" intro
+  // when the member chooses "buy". Grounded in their KYC answers server-side, so it fits onboarding.
+  useEffect(() => {
+    const openIt = () => { setOpen(true); greet(); };
+    window.addEventListener('gg:open-catalog-chat', openIt);
+    return () => window.removeEventListener('gg:open-catalog-chat', openIt);
+  }, [greet]);
+
   useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [messages, busy]);
 
   async function send(text) {

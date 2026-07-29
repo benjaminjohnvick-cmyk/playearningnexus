@@ -68,6 +68,24 @@ export default function Marketplace() {
   const [welcome, setWelcome] = useState(null);
   // Affirm BNPL checkout (real-goods only).
   const [affirm, setAffirm] = useState({ open: false, listing: null, name: '', address1: '', city: '', state: '', zipcode: '', loading: false });
+  // "What would you like to do?" intro — the first thing a member sees on the Marketplace hub (after the
+  // KYC survey gate, which overlays on top). Shown once per browser session.
+  const [showIntent, setShowIntent] = useState(false);
+  useEffect(() => {
+    let seen = false;
+    try { seen = sessionStorage.getItem('gg_marketplace_intent') === '1'; } catch { /* ignore */ }
+    if (!seen) setShowIntent(true);
+  }, []);
+  const closeIntent = () => {
+    try { sessionStorage.setItem('gg_marketplace_intent', '1'); } catch { /* ignore */ }
+    setShowIntent(false);
+  };
+  const chooseBuy = () => {
+    closeIntent();
+    // Open the AI shopping assistant (grounded in KYC answers) and focus the catalog search.
+    try { window.dispatchEvent(new CustomEvent('gg:open-catalog-chat')); } catch { /* ignore */ }
+    setTimeout(() => { const el = document.getElementById('marketplace-search'); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.focus?.(); } }, 200);
+  };
 
   useEffect(() => {
     base44.functions.invoke('welcomeCreditStatus', {})
@@ -252,6 +270,30 @@ export default function Marketplace() {
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
       <CatalogWelcomeChat />
+
+      {/* "What would you like to do?" — buy or browse. Sits below the KYC gate (z-100) so onboarding
+          shows first; ties "buy" into the AI shopping assistant. */}
+      {showIntent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 text-center shadow-2xl">
+            <div className="mb-1 text-lg font-bold">Welcome to the Marketplace 👋</div>
+            <p className="mb-5 text-sm text-gray-600">What would you like to do today?</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <button onClick={chooseBuy} className="rounded-xl bg-gradient-to-r from-emerald-600 to-blue-600 p-4 text-white transition hover:opacity-95">
+                <div className="text-2xl">🛒</div>
+                <div className="mt-1 font-semibold">I want to buy</div>
+                <div className="text-xs text-white/85">Get shopping help from our AI assistant</div>
+              </button>
+              <button onClick={closeIntent} className="rounded-xl border border-gray-200 p-4 transition hover:border-indigo-300 hover:bg-indigo-50">
+                <div className="text-2xl">👀</div>
+                <div className="mt-1 font-semibold text-gray-800">Just looking around</div>
+                <div className="text-xs text-gray-500">Browse the catalog at your own pace</div>
+              </button>
+            </div>
+            <button onClick={closeIntent} className="mt-4 text-xs text-gray-400 hover:text-gray-600">Skip</button>
+          </div>
+        </div>
+      )}
       <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Link to={createPageUrl('PhysicalStore')} className="flex items-center justify-between rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 p-4 text-white hover:opacity-95">
           <div>
@@ -325,7 +367,7 @@ export default function Marketplace() {
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <div className="relative flex-1 min-w-[180px]">
             <Search className="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2 text-zinc-400" />
-            <Input className="pl-8" placeholder="Search listings…" value={q} onChange={(e) => setQ(e.target.value)} />
+            <Input id="marketplace-search" className="pl-8" placeholder="Search listings…" value={q} onChange={(e) => setQ(e.target.value)} />
           </div>
           <select className="border rounded-md h-9 px-2 text-sm bg-white" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
             <option value="newest">Newest</option>

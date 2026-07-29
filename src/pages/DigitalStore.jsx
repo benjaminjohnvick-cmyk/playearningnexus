@@ -4,8 +4,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Download, CreditCard, Coins, Clock, Loader2, Search, AlertTriangle, Cloud, Zap } from 'lucide-react';
+import { Download, CreditCard, Coins, Clock, Loader2, Search, AlertTriangle, Cloud, Zap, Gamepad2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { useLocale } from '@/components/locale/LocaleContext';
 import { SORT_OPTIONS, applySort } from '@/lib/storeSort';
 
@@ -117,6 +119,18 @@ export default function DigitalStore() {
     <div className="mx-auto max-w-6xl p-4 md:p-8">
       <div className="mb-1 flex items-center gap-2"><Cloud className="h-6 w-6" /><h1 className="text-2xl font-bold">Digital Products</h1></div>
       <p className="mb-4 text-sm text-gray-500 flex items-center gap-1"><Download className="h-3.5 w-3.5" /> Delivered online instantly — no shipping.</p>
+
+      {/* App Store entry point — the game/app store lives inside Digital Products. */}
+      <Link to={createPageUrl('InAppGameStore')} className="mb-4 flex items-center justify-between rounded-xl bg-gradient-to-r from-fuchsia-600 to-indigo-600 p-4 text-white hover:opacity-95">
+        <div className="flex items-center gap-3">
+          <Gamepad2 className="h-6 w-6" />
+          <div>
+            <div className="font-semibold">🎮 App Store — games & apps</div>
+            <div className="text-xs text-white/85">Browse and get games and apps · instant digital delivery</div>
+          </div>
+        </div>
+        <span className="text-sm font-semibold">Open →</span>
+      </Link>
 
       {/* Prominent product search — the first thing you see, with light placeholder text so it's obvious. */}
       <div className="mb-4">

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, DollarSign, Gamepad2, Users, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 import AIChatbot from "../components/home/AIChatbot";
@@ -117,6 +117,21 @@ function ExtraInfoDropdown({ user }) {
 export default function Home() {
   // Use the shared cached user from AuthContext — no extra API call
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // After a logged-in member has seen the homepage, send them to the Marketplace hub (their main
+  // buy/browse landing). Runs ONCE per browser session so they can still return to Home freely, and
+  // waits a beat so the homepage paints first. The KYC survey gate (global overlay) still shows on top
+  // until completed, so this fits the onboarding flow rather than skipping it.
+  useEffect(() => {
+    if (!user) return;
+    let sent = false;
+    try { sent = sessionStorage.getItem('gg_sent_to_marketplace') === '1'; } catch { /* ignore */ }
+    if (sent) return;
+    try { sessionStorage.setItem('gg_sent_to_marketplace', '1'); } catch { /* ignore */ }
+    const t = setTimeout(() => navigate(createPageUrl('Marketplace')), 900);
+    return () => clearTimeout(t);
+  }, [user, navigate]);
 
   // Advertised promotional value figure (public, single source of truth).
   const [promo, setPromo] = useState(null);
