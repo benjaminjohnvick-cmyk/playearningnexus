@@ -7,6 +7,8 @@ import { isEnabled } from "../../sdk/feature-flags.ts";
 import { getNumber, getBool, getString } from "../../sdk/settings.ts";
 import { withAdDisclosure } from "../../sdk/disclosure.ts";
 import { hasDoubled, socialPostingOrderTarget } from "../../sdk/premium-ppc.ts";
+import { aiPaused, logAiAction } from "../../sdk/ai-control.ts";
+import { adLearningInsights, prioritizeByLearning, AD_AGENT } from "../../sdk/ad-learning.ts";
 
 // premiumPPCAutoAdvertise (INTERNAL/ADMIN, scheduled) — the AI advertising engine for the PPC network.
 // For each PAYING advertiser that hasn't yet DOUBLED their investment (received ≥ $10k in orders), the
@@ -21,8 +23,20 @@ export default __handler(async (req) => {
     if (!(await isEnabled("social_posting").catch(() => true))) {
       return Response.json({ success: true, skipped: "social_posting flag off" });
     }
+    // Global AI kill switch: when a human has paused AI changes, the advertiser stands down too.
+    if (await aiPaused().catch(() => false)) {
+      return Response.json({ success: true, skipped: "ai_paused" });
+    }
     const base44 = createClientFromRequest(req);
     const hasLLM = !!(Deno.env.get("ANTHROPIC_API_KEY") || Deno.env.get("OPENAI_API_KEY"));
+
+    // Self-improvement: read recent ad outcomes back into this batch — which platforms members actually
+    // post to (targeting priority) and copy that got posted (exemplars for the model). Best-effort.
+    const insights = await adLearningInsights().catch(() => null);
+    const learnedExamples = (insights?.topExamples ?? []).slice(0, 4);
+    const exemplarBlock = learnedExamples.length
+      ? `\n\nMembers actually chose to post these recent ads — match their tone/length/appeal (do NOT copy them verbatim):\n${learnedExamples.map((e, i) => `${i + 1}. ${e}`).join("\n")}`
+      : "";
 
     const maxPostsPerRun = Math.max(1, await getNumber("PREMIUM_ADS_MAX_POSTS_PER_RUN", 200));
     const maxUsersPerAdvertiser = Math.max(1, await getNumber("PREMIUM_ADS_USERS_PER_ADVERTISER", 25));
@@ -47,15 +61,19 @@ export default __handler(async (req) => {
       if (hasLLM) {
         try {
           const out = await Core.InvokeLLM({
-            prompt: `Write ONE short, upbeat social post (max 240 chars, 1-2 emojis) advertising "${product}" to a general audience, ending with a soft call to action. No hashtags — a disclosure is appended automatically. Product/notes: ${String(adv.business_description || adv.product_notes || "").slice(0, 400)}`,
+            prompt: `Write ONE short, upbeat social post (max 240 chars, 1-2 emojis) advertising "${product}" to a general audience, ending with a soft call to action. No hashtags — a disclosure is appended automatically. Product/notes: ${String(adv.business_description || adv.product_notes || "").slice(0, 400)}${exemplarBlock}`,
           }) as string;
           if (typeof out === "string" && out.trim()) copy = out.trim().slice(0, 260);
         } catch { /* keep template */ }
       }
       const content = withAdDisclosure(copy);
 
-      // Queue it on consenting members' connected accounts.
-      const conns = await base44.asServiceRole.entities.SocialMediaConnection.filter({}, "-created_date", 5000).catch(() => []) as any[];
+      // Queue it on consenting members' connected accounts, serving learned best-performing platforms
+      // first so the per-run cap favors where members actually post.
+      const conns = prioritizeByLearning(
+        await base44.asServiceRole.entities.SocialMediaConnection.filter({}, "-created_date", 5000).catch(() => []) as any[],
+        insights?.rankedPlatforms ?? [],
+      );
       let usedForThisAdv = 0;
       for (const conn of conns) {
         if (posts >= maxPostsPerRun) break outer;
@@ -79,13 +97,16 @@ export default __handler(async (req) => {
       let ownCopy = await getString("PREMIUM_OWN_AD_TEXT", "");
       if (!ownCopy && hasLLM) {
         try {
-          const out = await Core.InvokeLLM({ prompt: `Write ONE short, upbeat social post (max 220 chars, 1-2 emojis) promoting "${bizName}". No hashtags — a disclosure is appended automatically.` }) as string;
+          const out = await Core.InvokeLLM({ prompt: `Write ONE short, upbeat social post (max 220 chars, 1-2 emojis) promoting "${bizName}". No hashtags — a disclosure is appended automatically.${exemplarBlock}` }) as string;
           if (typeof out === "string" && out.trim()) ownCopy = out.trim().slice(0, 240);
         } catch { /* fall through to template */ }
       }
       if (!ownCopy) ownCopy = `Discover ${bizName} — earn, play, and shop, all in one place.`;
       const ownContent = withAdDisclosure(ownCopy);
-      const conns = await base44.asServiceRole.entities.SocialMediaConnection.filter({}, "-created_date", 5000).catch(() => []) as any[];
+      const conns = prioritizeByLearning(
+        await base44.asServiceRole.entities.SocialMediaConnection.filter({}, "-created_date", 5000).catch(() => []) as any[],
+        insights?.rankedPlatforms ?? [],
+      );
       for (const conn of conns) {
         if (ownPosts >= maxPostsPerRun) break;
         if (!optedIds.has(conn.user_id)) continue;
@@ -97,7 +118,21 @@ export default __handler(async (req) => {
       }
     }
 
-    return Response.json({ success: true, advertisers: advertisers.length, consenting_members: optedIds.size, posts_queued: posts, own_business_posts: ownPosts, per_advertiser: perAdvertiser, doubling_target_usd: target, post_status: postStatus });
+    // Log this run to the live oversight feed so a human watching the AI sees the advertiser act, and
+    // so learningInsights can trend it alongside every other AI agent. Best-effort.
+    await logAiAction({
+      agent: AD_AGENT, action: "auto_advertise", target: "premium_ppc_ads",
+      status: postStatus === "pending_approval" ? "queued" : "applied", reversible: true,
+      summary: `AI advertiser queued ${posts} advertiser ad(s) + ${ownPosts} own ad(s) across ${optedIds.size} consenting member(s)` +
+        (insights?.rankedPlatforms?.length ? `; prioritized platforms: ${insights.rankedPlatforms.slice(0, 4).join(", ")}` : ""),
+      detail: {
+        advertisers: advertisers.length, posts_queued: posts, own_business_posts: ownPosts,
+        post_status: postStatus, learned_from_samples: insights?.sampled ?? 0,
+        platform_scores: insights?.platformScore ?? {}, used_exemplars: learnedExamples.length,
+      },
+    }).catch(() => null);
+
+    return Response.json({ success: true, advertisers: advertisers.length, consenting_members: optedIds.size, posts_queued: posts, own_business_posts: ownPosts, per_advertiser: perAdvertiser, doubling_target_usd: target, post_status: postStatus, learning: { sampled: insights?.sampled ?? 0, ranked_platforms: insights?.rankedPlatforms ?? [], used_exemplars: learnedExamples.length } });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

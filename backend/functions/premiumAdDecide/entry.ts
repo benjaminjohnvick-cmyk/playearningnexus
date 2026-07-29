@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
+import { recordAdOutcome } from "../../sdk/ad-learning.ts";
 
 // premiumAdDecide (authenticated) — the member acts on a queued ad post:
 //   • "auto_post": try to post it via the platform API (only works where the app has approved access);
@@ -26,12 +27,16 @@ export default __handler(async (req) => {
 
     if (action === "dismiss") {
       await db.update("SocialMediaPost", String(post_id), { status: "dismissed", dismissed_at: now }).catch(() => null);
+      // Learning: a skip is a negative signal the AI advertiser learns from (copy/platform mix).
+      await recordAdOutcome(post, "dismissed").catch(() => null);
       return Response.json({ ok: true, status: "dismissed" });
     }
 
     if (action === "posted") {
       // Member posted it themselves (copy & paste). Reliable + compliant.
       await db.update("SocialMediaPost", String(post_id), { status: "posted", posted_at: now, posted_by: "member_manual" }).catch(() => null);
+      // Learning: a hand-posted ad is a strong positive signal (this style/placement works).
+      await recordAdOutcome(post, "posted").catch(() => null);
       return Response.json({ ok: true, status: "posted", credited: true });
     }
 
@@ -40,6 +45,8 @@ export default __handler(async (req) => {
     const ok = !!(r?.data && !r.data.error);
     if (ok) {
       await db.update("SocialMediaPost", String(post_id), { status: "posted", posted_at: now, posted_by: "auto" }).catch(() => null);
+      // Learning: an auto-post on a connected account is the strongest positive signal.
+      await recordAdOutcome(post, "auto_posted").catch(() => null);
       return Response.json({ ok: true, status: "posted", auto_posted: true });
     }
     return Response.json({ ok: false, auto_posted: false, fallback_copy: true, message: "Auto-post isn't available for this account yet — copy the text and paste it into your app, then tap “I posted it.”" });
