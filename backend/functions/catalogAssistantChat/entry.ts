@@ -6,6 +6,7 @@ import { buildSiteContext } from "../../sdk/site-model.ts";
 import { Core } from "../../sdk/integrations.ts";
 import { db } from "../../sdk/db.ts";
 import { emitEvent } from "../../sdk/events.ts";
+import { memoryContext, hasMemory, recordTurn, learnFromConversation, shouldLearn, getMemory } from "../../sdk/assistant-memory.ts";
 
 // catalogAssistantChat (authenticated) — the AI shopping assistant that greets a member the FIRST time
 // they open the marketplace catalog. It opens by asking what they're interested in, but it is already
@@ -81,10 +82,18 @@ export default __handler(async (req) => {
 
       const chips = interests.slice(0, 6);
       const name = ((user as any).full_name || "").split(" ")[0] || "there";
+      // Remembered context from this member's past chats — so a returning member gets "welcome back"
+      // grounded in what we learned last time, not a cold open.
+      const [mem, returning] = await Promise.all([
+        memoryContext(user.id).catch(() => ""),
+        hasMemory(user.id).catch(() => false),
+      ]);
       let greeting =
-        interests.length
-          ? `Hi ${name}! Based on what you told us, I can help you find great ${interests.slice(0, 3).join(", ")} picks. What are you shopping for today?`
-          : `Hi ${name}! I'm your shopping assistant. What are you interested in today — tell me a category, a product, or an occasion and I'll pull the best matches.`;
+        returning
+          ? `Welcome back, ${name}! Want to pick up where we left off, or is there something new you're after today?`
+          : interests.length
+            ? `Hi ${name}! Based on what you told us, I can help you find great ${interests.slice(0, 3).join(", ")} picks. What are you shopping for today?`
+            : `Hi ${name}! I'm your shopping assistant. What are you interested in today — tell me a category, a product, or an occasion and I'll pull the best matches.`;
 
       if (hasLLM) {
         try {
@@ -92,15 +101,16 @@ export default __handler(async (req) => {
           const samples = await sampleListingsForInterests(interests, country, 6);
           const out = await Core.InvokeLLM({
             prompt:
-              `You are GamerGain's friendly catalog shopping assistant greeting a member the first time they open the store. ` +
-              `Greet them warmly by first name, reference their interests, and ASK what they're looking for today. One or two sentences, no lists.\n\n` +
-              `First name: ${name}\nTheir KYC preferences: ${kycText}\n${site}\n` +
+              `You are GamerGain's friendly catalog shopping assistant greeting a member as they open the store. ` +
+              `${returning ? "This is a RETURNING member — greet them like you remember them and reference what you know, then ask how you can help today." : "Greet them warmly by first name, reference their interests, and ASK what they're looking for today."} ` +
+              `One or two sentences, no lists.\n\n` +
+              `First name: ${name}\nTheir KYC preferences: ${kycText}\n${mem ? mem + "\n" : ""}${site}\n` +
               `${samples.length ? "A few live catalog items you can mention: " + JSON.stringify(samples) : ""}\n\nGreeting:`,
           }) as string;
           if (typeof out === "string" && out.trim()) greeting = out.trim();
         } catch { /* keep template greeting */ }
       }
-      return Response.json({ greeting, suggested_interests: chips, kyc_on_file: !!status.answers });
+      return Response.json({ greeting, suggested_interests: chips, kyc_on_file: !!status.answers, returning });
     }
 
     // ---- CHAT TURN ----
@@ -114,25 +124,37 @@ export default __handler(async (req) => {
       return Response.json({ reply: "I can help you find items in the store! Tell me a category or product and I'll point you to matches. (Live AI replies turn on once an AI key is configured.)" });
     }
 
-    const [profile, site, samples] = await Promise.all([
+    const [profile, site, samples, mem] = await Promise.all([
       compileProfile(base44, user.id).catch(() => ({})),
       buildSiteContext().catch(() => ""),
       sampleListingsForInterests(interests, country, 8),
+      memoryContext(user.id).catch(() => ""),   // durable, per-member memory from past chats
     ]);
     const convo = history.map((m: any) => `${m.role === "assistant" ? "Assistant" : "User"}: ${m.content}`).join("\n");
 
-    const reply = await Core.InvokeLLM({
+    const replyRaw = await Core.InvokeLLM({
       prompt:
         `You are GamerGain's catalog shopping assistant. Help the member find products in OUR store, tailored to them. ` +
-        `Be concise, warm, and genuinely useful; suggest categories and specific items when relevant; encourage exploring and ` +
-        `purchasing without being pushy; never make guaranteed-earnings claims. If nothing in the catalog fits, suggest the ` +
-        `closest categories or the neutral product search. Do not invent items that aren't plausible for our catalog.\n\n` +
-        `Member KYC preferences: ${kycText}\nMember profile: ${JSON.stringify(profile)}\n${site}\n` +
+        `Be concise, warm, and genuinely useful; use what you REMEMBER about this member to personalize; suggest categories ` +
+        `and specific items when relevant; encourage exploring and purchasing without being pushy; never make ` +
+        `guaranteed-earnings claims. If nothing in the catalog fits, suggest the closest categories or the neutral product ` +
+        `search. Do not invent items that aren't plausible for our catalog.\n\n` +
+        `Member KYC preferences: ${kycText}\nMember profile: ${JSON.stringify(profile)}\n` +
+        `${mem ? mem + "\n" : ""}${site}\n` +
         `${samples.length ? "Relevant live catalog items: " + JSON.stringify(samples) + "\n" : ""}` +
         `${convo ? "\nConversation so far:\n" + convo + "\n" : ""}\nUser: ${message}\nAssistant:`,
     }) as string;
+    const reply = typeof replyRaw === "string" && replyRaw.trim() ? replyRaw : "Happy to help — what are you shopping for?";
 
-    return Response.json({ reply: typeof reply === "string" ? reply : "Happy to help — what are you shopping for?" });
+    // Remember this exchange on the member's individual file, then periodically re-distill what we've
+    // learned about them so the assistant keeps improving per user. Best-effort — never blocks the reply.
+    try {
+      await recordTurn(user.id, message, reply);
+      const m = await getMemory(user.id).catch(() => null);
+      if (m && shouldLearn(m.turn_count || 0)) await learnFromConversation(user.id);
+    } catch { /* memory is best-effort */ }
+
+    return Response.json({ reply });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

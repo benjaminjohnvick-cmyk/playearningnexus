@@ -2910,3 +2910,126 @@ CREATE TABLE IF NOT EXISTS "MarketplaceListing" (
 );
 CREATE INDEX IF NOT EXISTS "MarketplaceListing_data_gin" ON "MarketplaceListing" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "MarketplaceListing_created" ON "MarketplaceListing" (created_date DESC);
+
+-- ── Entities added for self-hosted features (households, layaway, points-boost, live experiments,
+--    telemetry/session capture, personalization, and the self-learning catalog assistant memory) ──
+
+CREATE TABLE IF NOT EXISTS "AssistantMemory" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AssistantMemory_data_gin" ON "AssistantMemory" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AssistantMemory_created" ON "AssistantMemory" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "Household" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "Household_data_gin" ON "Household" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "Household_created" ON "Household" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "InteractionEvent" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "InteractionEvent_data_gin" ON "InteractionEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "InteractionEvent_created" ON "InteractionEvent" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "Layaway" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "Layaway_data_gin" ON "Layaway" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "Layaway_created" ON "Layaway" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "LiveAssignment" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "LiveAssignment_data_gin" ON "LiveAssignment" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "LiveAssignment_created" ON "LiveAssignment" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "LiveExperiment" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "LiveExperiment_data_gin" ON "LiveExperiment" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "LiveExperiment_created" ON "LiveExperiment" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "LiveMetricEvent" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "LiveMetricEvent_data_gin" ON "LiveMetricEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "LiveMetricEvent_created" ON "LiveMetricEvent" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "PointsBoostLedger" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PointsBoostLedger_data_gin" ON "PointsBoostLedger" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "PointsBoostLedger_created" ON "PointsBoostLedger" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "SessionCaptureFrame" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SessionCaptureFrame_data_gin" ON "SessionCaptureFrame" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SessionCaptureFrame_created" ON "SessionCaptureFrame" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "SessionClose" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SessionClose_data_gin" ON "SessionClose" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SessionClose_created" ON "SessionClose" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "UXHeatmapSnapshot" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "UXHeatmapSnapshot_data_gin" ON "UXHeatmapSnapshot" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "UXHeatmapSnapshot_created" ON "UXHeatmapSnapshot" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "UserVariantState" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "UserVariantState_data_gin" ON "UserVariantState" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "UserVariantState_created" ON "UserVariantState" (created_date DESC);
