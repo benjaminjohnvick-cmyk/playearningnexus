@@ -1,9 +1,45 @@
 # Compliance & Current State
 
-**Prepared: July 28, 2026.** A fresh statement of how GamerGain / PlayEarning Nexus works today and its
-posture on the issues that can be addressed in code. This document is written from scratch and does not
-carry over text from earlier compliance notes. It is not legal advice; have counsel review it against
-your jurisdictions before launch.
+**Prepared: July 28, 2026. Updated: July 29, 2026 (GamerGain 8).** A statement of how GamerGain /
+PlayEarning Nexus works today and its posture on the issues that can be addressed in code. It is not legal
+advice; have counsel review it against your jurisdictions before launch.
+
+---
+
+## Update 2026-07-29 — Premium PPC up-front model, AI advertising, and compliance backstops
+
+Since the July 28 statement, the Premium PPC network changed materially and three default-safe code
+backstops were added. Read this alongside the July 28 body below.
+
+**New Premium PPC model (up-front points grant).** Matched survey-members now receive the full year's
+value — **$1,460 as 146,000 closed-loop, non-cashable points** — **up front**, in exchange for a ~8-min/day
+survey commitment for a year. **Nothing is repaid or clawed back.** The only consequence of falling behind
+is a pause of PPC surveys (the member keeps all points; re-enrollment uses in-app lockout mode). This is a
+toggle (`PREMIUM_UPFRONT_GRANT`, default on) over the older earn-as-you-go path. Structurally it is
+designed to be **neither consumer credit nor a security** (no money advanced/collected, no repayment) and
+to **stay out of money transmission** (closed-loop, non-cashable). **Counsel must confirm** the up-front
+characterization, the real-dollar advertising with the points-at-1¢ disclaimer, and 1099 tax treatment.
+
+**AI social advertising on consenting members' accounts.** The AI writes `#ad`-disclosed ads for paying
+advertisers (free until they've doubled their spend) and a daily own-business post, queued to members who
+**OAuth-connected** accounts and **consented** at enrollment. Posts **default to member approval**
+(`PREMIUM_ADS_REQUIRE_APPROVAL`), never silent auto-posting; the master `social_posting` flag and the
+global `ai_paused` switch both halt it. The ad engine **learns** from member post/skip decisions through
+the platform's existing learning primitives (`OptimizationSignal` / `AgentLearningMemory`, agent
+`ppc_ad_ai`). **Counsel/platform review required** before this runs for real: each platform's API/
+automation terms (Meta/TikTok/X/LinkedIn) and FTC #ad adequacy.
+
+**Compliance backstops (default-safe; no user-facing change unless an admin sets them).**
+- `DAILY_EARN_CAP_USD` now enforced on the main PPC earning path (`processPPCSession` clamps earnings and
+  records `DailyEarnings` so the cap accumulates across all earning paths). Default 0 = no cap.
+- Payout reservations are released on `failed`/`cancelled` (previously only `rejected`), so funds that
+  never left are returned to a user's available balance.
+- `awardReferralJackpotEntries` now applies the jurisdiction + 18+ age gate at **entry**, mirroring the
+  jackpot **payout** gate (`processWeeklyJackpot`).
+- Confirmed already-wired: `AI_DAILY_SPEND_CAP_USD` (enforced in `InvokeLLM`) and `MAINTENANCE_MODE`
+  (enforced in the server request path).
+
+---
 
 ## 1. The product in one paragraph
 A play-to-earn web and mobile platform. Members complete surveys, offers, and activities to earn

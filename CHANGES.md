@@ -1,5 +1,41 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-29 — Premium PPC up-front model, AI advertising + learning, one-tap posting, compliance backstops
+
+**Premium PPC up-front model (points-value-only, closed-loop).** Enrollment grants the full $1,460
+(146,000 points) up front for a 1-year ~8-min/day survey commitment; 1:1 matched to $5,000 advertisers who
+get $10k perks + $10k social-ad credit and are advertised free until they've doubled ($10k in orders).
+Nothing is repaid or clawed back — falling behind only pauses surveys (keep-your-points lockout).
+Changed/new: `premiumPPCEnroll`, `premiumPPCStatus`, `premiumPPCSurveyDay`, `premiumPPCOffer`,
+`sdk/premium-ppc.ts`; survey-day hook in `processPPCSession`; order-attribution in
+`autoOrderFulfillmentAndFundsRelease`; scheduled `daily-premium-ppc-autoadvertise`. See
+PREMIUM-PPC-UPFRONT-AND-SOCIAL-ADS.md.
+
+**Lockout mode (in-app).** `premiumPPCSetLockoutTime` + `PremiumLockoutMode.jsx` — member-set daily
+in-app survey reminder; required to re-enroll after a default (in-app only).
+
+**AI advertising that learns and self-improves.** `premiumPPCAutoAdvertise` writes #ad-disclosed ads for
+each not-yet-doubled advertiser (plus a daily own-business post) to consenting members' connected accounts,
+defaulting to member approval. New `sdk/ad-learning.ts` turns every member decision into the same learning
+primitives the platform already uses (`OptimizationSignal` + `AgentLearningMemory`, agent `ppc_ad_ai`),
+feeding `learningInsights`/`learningDistill`/self-learning — no new tables. Reads signals back to
+prioritize platforms + feed exemplars; respects the global `ai_paused` switch; logs each run to the live
+oversight feed. See AI-ADVERTISING-AND-LEARNING.md.
+
+**One-tap posting.** `src/lib/socialCompose.js` + `PremiumAdQueue.jsx` — prefilled composer
+(X/Reddit/Telegram/WhatsApp), OS native share sheet (Instagram/TikTok/Facebook/LinkedIn), copy+open
+fallback. See SOCIAL-POSTING-ONE-TAP-AND-CONSENT.md.
+
+**Compliance backstops (default-safe).** `DAILY_EARN_CAP_USD` wired into `processPPCSession` (clamp via
+`allowedEarn` + record `DailyEarnings`); payout reservation released on `failed`/`cancelled` in
+`autoPayoutRequestLifecycle`; jurisdiction + 18+ gate added to `awardReferralJackpotEntries`. Confirmed
+`AI_DAILY_SPEND_CAP_USD` and `MAINTENANCE_MODE` already wired.
+
+**Still needs counsel:** up-front grant characterization, real-dollar ad claims + points disclaimer,
+social posting under each platform's API terms + FTC, 1099 tax treatment.
+
+---
+
 ## 2026-07-29 — AI Live Oversight: all-AI-on with user-vote promotion + optional human gate
 
 The autonomous-AI control layer. See `AI-LIVE-OVERSIGHT.md`.
