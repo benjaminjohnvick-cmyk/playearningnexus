@@ -3,17 +3,15 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Copy, Check, X, Send, Megaphone } from 'lucide-react';
+import { Loader2, Copy, Check, X, Send, Megaphone, ExternalLink, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { composeMode, prefillUrl, canNativeShare, openUrl, primaryActionLabel } from '@/lib/socialCompose';
 
-// PremiumAdQueue — the member reviews AI-generated, #ad-labeled ad posts and either one-tap posts them
-// (where auto-post is available) or copies the text to paste into their own social app, then marks it
-// posted. Copy-&-paste is the reliable, always-compliant path (the member posts to their own account).
-const PLATFORM_URL = {
-  twitter: 'https://twitter.com/compose/tweet', x: 'https://twitter.com/compose/tweet',
-  instagram: 'https://www.instagram.com/', facebook: 'https://www.facebook.com/',
-  tiktok: 'https://www.tiktok.com/upload', linkedin: 'https://www.linkedin.com/feed/',
-};
+// PremiumAdQueue — the member reviews AI-generated, #ad-labeled ad posts. The primary action gets them
+// as close to "just hit Post" as the platform allows: open the platform's OWN composer with the text
+// already filled in (X/Reddit/Telegram/WhatsApp), or trigger the OS share sheet (mobile), or — as a
+// universal fallback — copy the text and open the site to paste. A website can't type into another
+// site's box (browser security), so the member always taps Post/Share themselves — reliable + compliant.
 
 export default function PremiumAdQueue() {
   const [posts, setPosts] = useState([]);
@@ -30,13 +28,48 @@ export default function PremiumAdQueue() {
   }, []);
   useEffect(() => { load(); }, [load]);
 
+  // Copy the text to the clipboard as a safety net (so paste always works even in a prefilled composer).
+  async function copyToClipboard(text) {
+    try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
+  }
+
+  // Universal fallback: copy + open the platform site to paste.
   async function copyText(p) {
-    try {
-      await navigator.clipboard.writeText(p.content);
-      toast.success('Copied — paste it into your app, then tap “I posted it.”');
-      const url = PLATFORM_URL[String(p.platform).toLowerCase()];
-      if (url) window.open(url, '_blank', 'noopener,noreferrer');
-    } catch { toast.error('Could not copy — select the text and copy manually.'); }
+    const ok = await copyToClipboard(p.content);
+    toast[ok ? 'success' : 'error'](ok ? 'Copied — paste it into your app, then tap “I posted it.”' : 'Could not copy — select the text and copy manually.');
+    const url = openUrl(p.platform);
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  // Primary "send" action — gets the member as close to just hitting Post as the platform allows.
+  async function sendAd(p) {
+    const mode = composeMode(p.platform);
+
+    // PREFILL: open the platform's own composer with the ad already in the box. Also copy as a safety net.
+    if (mode === 'prefill') {
+      const url = prefillUrl(p.platform, p.content);
+      if (url) {
+        await copyToClipboard(p.content);
+        window.open(url, '_blank', 'noopener,noreferrer');
+        toast.success(`Opening ${p.platform} with your post ready — just hit Post, then tap “I posted it.”`);
+        return;
+      }
+    }
+
+    // SHARE: hand off to the OS native share sheet (mobile); the member picks the app, caption rides along.
+    if (mode === 'share' && canNativeShare()) {
+      try {
+        await navigator.share({ text: p.content });
+        toast.success('Shared — once it’s posted, tap “I posted it.”');
+        return;
+      } catch (e) {
+        if (e?.name === 'AbortError') return; // member cancelled the share sheet — no-op
+        // fall through to copy on any other failure
+      }
+    }
+
+    // COPY: universal fallback.
+    await copyText(p);
   }
 
   async function decide(p, action) {
@@ -58,7 +91,7 @@ export default function PremiumAdQueue() {
     <Card>
       <CardContent className="p-4">
         <div className="mb-1 flex items-center gap-2 font-semibold"><Megaphone className="h-5 w-5 text-indigo-600" /> Ads ready to post ({posts.length})</div>
-        <p className="mb-3 text-xs text-gray-500">AI wrote these for you (already labeled #ad). One-tap post where available, or copy and paste into your app — your call, your account.</p>
+        <p className="mb-3 text-xs text-gray-500">AI wrote these for you (already labeled #ad). Tap the button to open your app with the post ready — you just hit Post. Your call, your account.</p>
         <div className="space-y-3">
           {posts.map((p) => (
             <div key={p.id} className="rounded-xl border border-gray-200 p-3">
@@ -68,8 +101,15 @@ export default function PremiumAdQueue() {
               </div>
               <p className="whitespace-pre-wrap text-sm text-gray-800">{p.content}</p>
               <div className="mt-2 flex flex-wrap gap-2">
-                <Button size="sm" variant="outline" onClick={() => copyText(p)}><Copy className="mr-1 h-4 w-4" /> Copy &amp; open {p.platform}</Button>
-                <Button size="sm" disabled={busy === p.id + 'posted'} onClick={() => decide(p, 'posted')}><Check className="mr-1 h-4 w-4" /> I posted it</Button>
+                <Button size="sm" onClick={() => sendAd(p)}>
+                  {composeMode(p.platform) === 'share' && canNativeShare()
+                    ? <Share2 className="mr-1 h-4 w-4" />
+                    : composeMode(p.platform) === 'prefill'
+                      ? <ExternalLink className="mr-1 h-4 w-4" />
+                      : <Copy className="mr-1 h-4 w-4" />}
+                  {' '}{primaryActionLabel(p.platform)}
+                </Button>
+                <Button size="sm" variant="outline" disabled={busy === p.id + 'posted'} onClick={() => decide(p, 'posted')}><Check className="mr-1 h-4 w-4" /> I posted it</Button>
                 <Button size="sm" variant="ghost" disabled={busy === p.id + 'auto_post'} onClick={() => decide(p, 'auto_post')}><Send className="mr-1 h-4 w-4" /> Try auto-post</Button>
                 <Button size="sm" variant="ghost" className="text-gray-400" disabled={busy === p.id + 'dismiss'} onClick={() => decide(p, 'dismiss')}><X className="mr-1 h-4 w-4" /> Skip</Button>
               </div>
