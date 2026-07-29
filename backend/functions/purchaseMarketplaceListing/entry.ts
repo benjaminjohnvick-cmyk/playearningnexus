@@ -20,7 +20,7 @@ export default __handler(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { listing_id, payment_method, shipping_address } = await req.json().catch(() => ({}));
+    const { listing_id, payment_method, shipping_address, acknowledged_over_limit } = await req.json().catch(() => ({}));
 
     const listing = await base44.asServiceRole.entities.MarketplaceListing.filter({ id: listing_id }).then((r: any) => r[0]);
     if (!listing) return Response.json({ error: "Listing not found" }, { status: 404 });
@@ -86,6 +86,21 @@ export default __handler(async (req) => {
       // NOTE: actual card capture is handled by the payment processor path; here we record the order.
     }
 
+    // Affordability warning: if the total the buyer would owe exceeds the reasonable-annual-earnings
+    // threshold (default $1,460 — the same figure as the welcome-rewards ceiling), tell them it's more
+    // than they can realistically earn/pay back in a year. This is a WARNING, not a hard block: the
+    // client re-submits with acknowledged_over_limit:true to proceed.
+    const orderTotalUsd = payment_method === "card" ? charged.usd : (Number(listing.price_usd) || 0);
+    const affordLimit = await getNumber("PHYSICAL_AFFORDABILITY_LIMIT_USD", 1460);
+    if (affordLimit > 0 && orderTotalUsd > affordLimit && !acknowledged_over_limit) {
+      return Response.json({
+        affordability_warning: true,
+        total_usd: orderTotalUsd,
+        limit_usd: affordLimit,
+        message: `This order is $${orderTotalUsd.toFixed(2)} — more than the ~$${affordLimit.toLocaleString()} a member can reasonably earn or pay back in a year. You can still proceed, or choose a lower-cost option, financing (Affirm), or layaway.`,
+      });
+    }
+
     // Atomically CLAIM the listing (active → sold). If another buyer won the race, we bail before
     // charging — this closes the double-sell window.
     const claimed = await db.updateIf("MarketplaceListing", listing.id,
@@ -122,7 +137,7 @@ export default __handler(async (req) => {
     // released but never paid" giveaway if card_charging is switched on before capture is wired.
     const paidNow = payment_method === "points";
     const orderStatus = paidNow ? "awaiting_shipment" : "awaiting_payment";
-    const fulfillment_type = isPlatform ? "platform_ai" : "seller_ship";
+    const fulfillment_type = listing.fulfillment_mode === "pickup" ? "local_pickup" : (isPlatform ? "platform_ai" : "seller_ship");
     const order = await base44.asServiceRole.entities.Order.create({
       user_id: user.id,
       seller_id: listing.seller_id,

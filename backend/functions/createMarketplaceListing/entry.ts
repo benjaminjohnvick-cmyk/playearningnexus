@@ -38,6 +38,10 @@ export default __handler(async (req) => {
       images: Array.isArray(b.images) ? b.images.slice(0, 10) : [],
       location: b.location || null,
       shipping_info: b.shipping_info || null,
+      // Physical Items: how the buyer receives it. "ship" (default) or "pickup" (local pickup) — a
+      // pickup listing carries a pickup_location shown to the buyer.
+      fulfillment_mode: b.fulfillment_mode === "pickup" ? "pickup" : "ship",
+      pickup_location: b.fulfillment_mode === "pickup" ? String(b.pickup_location || b.location || "").slice(0, 200) : null,
       status: "active",
       created_at: new Date().toISOString(),
     });

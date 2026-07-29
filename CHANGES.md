@@ -1,5 +1,27 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-28 — Buy Physical Items section (ship/pickup) + payment options + earn-back tracker + layaway
+
+New marketplace section for tangible goods with full parity, serverless-GPU tiles, and the legal,
+non-lending versions of "buy now, work it off." See `PHYSICAL-STORE.md`.
+
+- **Section**: "Physical Items" taxonomy department (`taxonomy.ts`) → serverless-GPU category tiles like
+  every other category. `PhysicalStore.jsx` page (nav entry + Marketplace banner) with a **Ship vs Local
+  Pickup** chooser, search/sort, localized pricing + flag. `fulfillment_mode`/`pickup_location` on listings.
+- **Payment options**: credit card default (+10% markup), points/surveys-only, Affirm BNPL, and **Layaway**
+  (`layaway.ts`, `layawayStart`/`Contribute`/`Status`) — reserve & pay down with points BEFORE delivery
+  (no credit extended); required monthly capped at `LAYAWAY_MAX_MONTHLY_USD` ($90). Welcome credit applied
+  per existing rules.
+- **Affordability warning**: orders over `PHYSICAL_AFFORDABILITY_LIMIT_USD` ($1,460) warn the buyer before
+  they commit (warning, not a block; `purchaseMarketplaceListing` + acknowledgement).
+- **Purchase Payback tracker** (`purchasePaybackStatus`): the "negative balance" reframed after
+  clarification as a FACTUAL earn-back progress tracker (cash spent vs points earned back) — NOT a loan, no
+  money fronted, honest "depends on your activity" copy (no guaranteed payback).
+- Flags `physical_store`/`local_pickup`/`layaway`/`purchase_payback`; `physicalStoreConfig` endpoint;
+  functions registered.
+
+
+
 ## 2026-07-28 — Points Boost: closed-loop "your points grow while you hold them" (non-cashable, breakage-funded, self-tuning)
 
 The legal, $0-marginal version of "value goes up → capture the difference as more points." Not crypto,

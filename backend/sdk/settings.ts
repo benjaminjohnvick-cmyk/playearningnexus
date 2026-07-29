@@ -178,6 +178,11 @@ export const REGISTRY: SettingDef[] = [
   { key: "BOOST_LIFETIME_CAP_USD", label: "Boost lifetime cap ($)", category: "Points Boost", type: "number", default: "50", unit: "$", min: 0, sensitive: true, help: "COST GOVERNOR. Max non-cashable value a user can ever harvest from Boost. Admin-owned; not auto-tuned." },
   { key: "BOOST_AUTO_CREDIT", label: "Auto-harvest Boost daily", category: "Points Boost", type: "boolean", default: "1", help: "ON = the daily job credits each user's accrued Boost automatically (they don't have to click Harvest)." },
 
+  // 14. Physical Items store (ship / local pickup) + affordability warning
+  { key: "PHYSICAL_AFFORDABILITY_LIMIT_USD", label: "Affordability warning threshold ($)", category: "Marketplace", type: "number", default: "1460", unit: "$", min: 0, help: "If a physical-item order total exceeds this, the buyer is warned it's more than they can reasonably earn/pay back in a year (matches the welcome-rewards figure). A warning, not a hard block." },
+  { key: "PICKUP_RADIUS_NOTE", label: "Local pickup note", category: "Marketplace", type: "string", default: "Pickup items are listed by nearby sellers and local partners. Arrange pickup at the location shown on the listing.", help: "Shown on the Local Pickup tab." },
+  { key: "LAYAWAY_MAX_MONTHLY_USD", label: "Layaway max monthly ($)", category: "Marketplace", type: "number", default: "90", unit: "$", min: 1, help: "A layaway plan is spread over enough months that the required monthly payment never exceeds this (default $90). Buyers pay it down with earned points before the item ships — no credit is extended." },
+
   // 10. Compliance & legal (numeric/string; the on/off kill-switches live in complianceFlags)
   { key: "TERMS_VERSION", label: "Terms version (bump to force re-consent)", category: "Compliance & Legal", type: "string", default: "2026-07-01", sensitive: true },
   { key: "AD_DISCLOSURE_TAG", label: "FTC ad-disclosure tag", category: "Compliance & Legal", type: "string", default: "#ad" },

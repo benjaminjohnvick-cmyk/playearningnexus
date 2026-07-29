@@ -12,6 +12,11 @@
 export interface TopCategory { name: string; subs: string[]; }
 
 export const TAXONOMY: TopCategory[] = [
+  // Physical Items — a dedicated department for tangible goods the buyer receives, split by how they get
+  // it: shipped to them, or picked up locally. Listed first so it gets a serverless-GPU category tile
+  // (aiCategoryImages) exactly like every other department. The two fulfillment modes are subcategories
+  // so they get their own tiles too.
+  { name: "Physical Items", subs: ["Buy Online & Ship", "Local Pickup", "Electronics & Tech", "Home & Kitchen Goods", "Tools & Hardware", "Apparel & Footwear", "Health & Beauty", "Toys & Games", "Sports & Outdoors", "Automotive Parts"] },
   { name: "Electronics", subs: ["Headphones & Earbuds","Bluetooth Speakers","Home Audio","Portable Audio","Televisions","Streaming Devices","Home Theater Systems","Projectors","Soundbars","Turntables","Microphones","Amplifiers & Receivers","GPS & Navigation","Car Audio","Car Video","Dash Cams","Radar Detectors","Two-Way Radios","Digital Cameras","Mirrorless Cameras","DSLR Cameras","Action Cameras","Camera Lenses","Camera Tripods","Camera Flashes","Binoculars & Telescopes","Drones & Accessories","Wearable Technology","Smartwatches","Fitness Trackers","VR Headsets","eBook Readers","Batteries","Chargers & Power Banks","Surge Protectors","Cables & Adapters"] },
   { name: "Computers & Accessories", subs: ["Laptops","Gaming Laptops","2-in-1 Laptops","Desktops","All-in-One Computers","Mini PCs","Tablets","Monitors","Ultrawide Monitors","Keyboards","Mechanical Keyboards","Mice","Webcams","Docking Stations","USB Hubs","External Hard Drives","SSDs","Flash Drives","Memory Cards","RAM","CPUs","Graphics Cards","Motherboards","Power Supplies","PC Cases","CPU Coolers","Networking Routers","Mesh WiFi","Modems","Network Switches","Printers","Ink & Toner","Scanners","Laptop Bags","Laptop Stands"] },
   { name: "Cell Phones & Accessories", subs: ["Unlocked Phones","Smartphones","Basic Phones","Phone Cases","Screen Protectors","Phone Chargers","Wireless Chargers","Phone Mounts","PopSockets & Grips","Selfie Sticks","Phone Camera Lenses","Power Banks","SIM Cards","Smartwatch Bands","Bluetooth Headsets"] },

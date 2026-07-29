@@ -10,6 +10,8 @@ import { useLocale } from '@/components/locale/LocaleContext';
 import CatalogWelcomeChat from '@/components/marketplace/CatalogWelcomeChat';
 import { useVariant } from '@/components/experiments/VariantProvider';
 import { reportMetric } from '@/lib/liveVariants';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 // Marketplace — Facebook-Marketplace-style listings. Three sources coexist: original platform catalog
 // (AI-generated, AI-fulfilled), authorized affiliate products (retailer fulfills via affiliate link),
@@ -248,6 +250,13 @@ export default function Marketplace() {
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
       <CatalogWelcomeChat />
+      <Link to={createPageUrl('PhysicalStore')} className="mb-4 flex items-center justify-between rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 p-4 text-white hover:opacity-95">
+        <div>
+          <div className="font-semibold">🛍️ Buy Physical Items</div>
+          <div className="text-xs text-white/85">Ship to you or pick up locally · pay by card, points, Affirm, or layaway</div>
+        </div>
+        <span className="text-sm font-semibold">Shop →</span>
+      </Link>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2"><ShoppingBag className="w-6 h-6" /><h1 className="text-2xl font-bold">Marketplace</h1></div>
         <Button size="sm" onClick={() => setShowSell((v) => !v)}><Plus className="w-4 h-4 mr-1" /> Sell an item</Button>
