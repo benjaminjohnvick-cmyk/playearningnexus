@@ -51,6 +51,7 @@ export default function Marketplace() {
   // is running and this user is in the 'variant' arm, the label changes; otherwise it's the control.
   // Promotion/rollback happen server-side as a config flip — this component just ships both branches.
   const buyCta = useVariant('marketplace_buy_cta', 'control');
+  const [markupPct, setMarkupPct] = useState(0);   // the 10% markup applies to points purchases too — show the marked-up price
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSell, setShowSell] = useState(false);
@@ -135,6 +136,7 @@ export default function Marketplace() {
     } finally { setLoading(false); }
   }
   useEffect(() => { load(); }, []);
+  useEffect(() => { base44.functions.invoke('physicalStoreConfig', {}).then((r) => setMarkupPct(r.data?.markup_pct || 0)).catch(() => {}); }, []);
 
   async function createListing() {
     if (!form.title || (!form.price_points && !form.price_usd)) { toast.error('Add a title and at least one price.'); return; }
@@ -340,7 +342,7 @@ export default function Marketplace() {
                 {/* Points price overlaid on the image (1 point = 1¢ in the local currency, closed-loop). */}
                 {l.price_points > 0 && (
                   <span className="absolute top-2 left-2 bg-black/70 text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
-                    <Coins className="w-3 h-3" /> {Number(l.price_points).toLocaleString()} pts
+                    <Coins className="w-3 h-3" /> {Math.round(l.price_points * (1 + markupPct / 100)).toLocaleString()} pts
                   </span>
                 )}
               </div>
@@ -362,7 +364,7 @@ export default function Marketplace() {
                   <div className="flex gap-2">
                     {l.price_points > 0 && (
                       <Button size="sm" variant="outline" disabled={busy === l.id + 'points'} onClick={() => buy(l, 'points')}>
-                        <Coins className="w-4 h-4 mr-1" /> {Number(l.price_points).toLocaleString()} pts
+                        <Coins className="w-4 h-4 mr-1" /> {Math.round(l.price_points * (1 + markupPct / 100)).toLocaleString()} pts
                       </Button>
                     )}
                     {l.price_usd > 0 && (
@@ -459,7 +461,7 @@ export default function Marketplace() {
                       {(l.image_url || l.images?.[0]) && <img src={l.image_url || l.images[0]} alt={l.title} className="w-full h-28 object-cover" />}
                       {l.price_points > 0 && (
                         <span className="absolute top-1 left-1 bg-black/70 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex items-center gap-1">
-                          <Coins className="w-3 h-3" /> {Number(l.price_points).toLocaleString()}
+                          <Coins className="w-3 h-3" /> {Math.round(l.price_points * (1 + markupPct / 100)).toLocaleString()}
                         </span>
                       )}
                     </div>

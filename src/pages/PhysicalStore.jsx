@@ -189,7 +189,7 @@ export default function PhysicalStore() {
                   {/* Points / surveys only */}
                   {l.price_points > 0 && (
                     <Button size="sm" variant="outline" className="w-full" disabled={busy === l.id + 'points'} onClick={() => buy(l, 'points')}>
-                      <Coins className="mr-1 h-4 w-4" /> {Number(l.price_points).toLocaleString()} pts
+                      <Coins className="mr-1 h-4 w-4" /> {Math.round(l.price_points * (1 + markupPct / 100)).toLocaleString()} pts
                     </Button>
                   )}
                   {/* BNPL + Layaway */}

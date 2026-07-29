@@ -1,6 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { getNumber } from "../../sdk/settings.ts";
+import { getNumber, getBool } from "../../sdk/settings.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { db } from "../../sdk/db.ts";
 import { PLATFORM_SELLER_ID } from "../../sdk/catalog.ts";
@@ -60,19 +60,27 @@ export default __handler(async (req) => {
     let effectivePoints = 0;      // what the buyer actually pays after any welcome discount
     let welcomeDiscountUsd = 0;   // platform-catalog only; funded by platform margin
     if (payment_method === "points") {
-      pointsPrice = Number(listing.price_points) || 0;
-      if (pointsPrice <= 0) return Response.json({ error: "This item isn't available for points" }, { status: 400 });
-      effectivePoints = pointsPrice;
-      // Welcome rewards: apply ONLY to platform-catalog items (platform is the seller, so the discount
-      // comes off platform margin — never shorts a member seller). The pool is in USD, but price_points
-      // is in LOCAL-currency cents, so cap the discount on the item's TRUE USD value and convert back to
-      // points via points-per-USD (= fx×100). This keeps the $1,460 pool denominated correctly in USD.
+      const basePoints = Number(listing.price_points) || 0;
+      if (basePoints <= 0) return Response.json({ error: "This item isn't available for points" }, { status: 400 });
+      pointsPrice = basePoints;   // list price — what a member seller is credited (unchanged by the markup)
+      // Apply the SAME markup to points/survey purchases as to card, so the platform earns margin on
+      // every sale regardless of payment method.
+      const markup = await getNumber("STORE_MARKUP", 0.10);
+      const grossPoints = Math.round(basePoints * (1 + markup));
+      effectivePoints = grossPoints;
+      // Welcome rewards: apply ONLY to platform-catalog items (platform is the seller). The pool is in
+      // USD but price_points is LOCAL cents, so cap on the item's TRUE USD value and convert back.
       const usd = Number(listing.price_usd) || 0;
       if (isPlatform && usd > 0) {
-        welcomeDiscountUsd = await welcomeDiscountFor(user.id, usd);
-        const pointsPerUsd = pointsPrice / usd;
-        effectivePoints = Math.max(0, pointsPrice - Math.round(welcomeDiscountUsd * pointsPerUsd));
+        let wd = await welcomeDiscountFor(user.id, usd);
+        // Margin-positive: the MARKUP funds the welcome credit — cap the discount at the markup so the
+        // buyer's net never drops below the base list price (PROMO_FUNDED_BY_MARKUP, default on).
+        if (await getBool("PROMO_FUNDED_BY_MARKUP", true)) wd = Math.min(wd, usd * markup);
+        welcomeDiscountUsd = Math.round(wd * 100) / 100;
+        const pointsPerUsd = basePoints / usd;
+        effectivePoints = Math.max(0, grossPoints - Math.round(welcomeDiscountUsd * pointsPerUsd));
       }
+      charged.markup = Math.round(basePoints * markup);   // markup recorded (in points)
       if ((Number(user.points) || 0) < effectivePoints) return Response.json({ error: "Insufficient points", required: effectivePoints, balance: Number(user.points) || 0 }, { status: 402 });
     } else {
       if (!(await isEnabled("card_charging"))) {
@@ -81,16 +89,30 @@ export default __handler(async (req) => {
       const base = Number(listing.price_usd) || 0;
       if (base <= 0) return Response.json({ error: "This item isn't available for card purchase" }, { status: 400 });
       const markup = await getNumber("STORE_MARKUP", 0.10);
-      charged.usd = Math.round(base * (1 + markup) * 100) / 100;
+      const gross = base * (1 + markup);
+      // Welcome credit applies to card too (platform items), FUNDED BY the markup and capped so the
+      // charge never drops below the base price — always margin-positive.
+      let wd = 0;
+      if (isPlatform && base > 0) {
+        wd = await welcomeDiscountFor(user.id, base);
+        if (await getBool("PROMO_FUNDED_BY_MARKUP", true)) wd = Math.min(wd, base * markup);
+      }
+      charged.usd = Math.round(Math.max(base, gross - wd) * 100) / 100;
       charged.markup = Math.round(base * markup * 100) / 100;
-      // NOTE: actual card capture is handled by the payment processor path; here we record the order.
+      charged.welcome_discount_usd = Math.round(wd * 100) / 100;
+      // NOTE: card capture is external; welcomeDiscountUsd stays 0 here so the promo pool isn't redeemed
+      // before payment is confirmed (no premature/duplicate redemption). The pending discount rides on
+      // the order and is redeemed at capture.
     }
 
     // Affordability warning: if the total the buyer would owe exceeds the reasonable-annual-earnings
     // threshold (default $1,460 — the same figure as the welcome-rewards ceiling), tell them it's more
     // than they can realistically earn/pay back in a year. This is a WARNING, not a hard block: the
     // client re-submits with acknowledged_over_limit:true to proceed.
-    const orderTotalUsd = payment_method === "card" ? charged.usd : (Number(listing.price_usd) || 0);
+    // The MARKED-UP total (markup now applies to every payment method) drives the warning, so it and the
+    // earn-back tracker both reflect the real committed value.
+    const _mk = await getNumber("STORE_MARKUP", 0.10);
+    const orderTotalUsd = Math.round((Number(listing.price_usd) || 0) * (1 + _mk) * 100) / 100;
     const affordLimit = await getNumber("PHYSICAL_AFFORDABILITY_LIMIT_USD", 1460);
     if (affordLimit > 0 && orderTotalUsd > affordLimit && !acknowledged_over_limit) {
       return Response.json({
@@ -148,6 +170,7 @@ export default __handler(async (req) => {
       payment_method,
       payment_captured: paidNow,
       markup_applied: charged.markup || 0,
+      welcome_discount_usd: charged.welcome_discount_usd || 0,
       fulfillment_type,
       source,
       shipping_address: shipping_address || null,
