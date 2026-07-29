@@ -15,6 +15,14 @@ non-lending versions of "buy now, work it off."
 - `fulfillment_mode` ("ship" | "pickup") + `pickup_location` on listings (`createMarketplaceListing`);
   the store filters by mode and pickup orders route to `local_pickup` fulfillment.
 
+## Sort control + one-click Buy now
+
+The results carry an Amazon-style **sort dropdown** at the top (Featured, Price ↑/↓, Avg. Customer Review,
+Newest, Best Sellers) via the shared `src/lib/storeSort.js`, and a one-click **⚡ Buy now** button on each
+card that logs the order immediately (no charge, no listing claim) and then prompts the buyer to complete
+the purchase. See `STORE-SORT-AND-ONE-CLICK.md`. Teen buyers' orders route to their adult holder for
+approval before anything is reserved or charged (see `HOUSEHOLD-TEEN-ACCOUNTS.md`).
+
 ## Payment options (credit card is the primary default)
 
 1. **Credit card (default)** — real payment, +10% markup (`STORE_MARKUP`).

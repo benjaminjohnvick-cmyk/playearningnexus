@@ -1,5 +1,30 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-29 — Family & Teens accounts + store sort + one-click Buy now
+
+Storefront + account-structure additions. See `HOUSEHOLD-TEEN-ACCOUNTS.md` and
+`STORE-SORT-AND-ONE-CLICK.md`.
+
+- **Store sort control**: Amazon-style sort dropdown at the top of both stores' results (Featured, Price
+  Low→High, Price High→Low, Avg. Customer Review, Newest Arrivals, Best Sellers) via a shared
+  `src/lib/storeSort.js` (`SORT_OPTIONS` + `applySort`, graceful field fallbacks). Wired into
+  `PhysicalStore.jsx` and `DigitalStore.jsx`.
+- **One-click "⚡ Buy now"** (`oneClickPurchase`): logs the order immediately in `awaiting_payment`
+  (`payment_captured: false`) **without claiming the listing or charging**, then prompts the buyer to
+  complete the purchase. Nothing is charged until they confirm and a card is on file (`card_charging`
+  stays OFF until processor + legal). Reuses markup, markup-funded welcome credit, and the affordability
+  warning; never touches raw card numbers. Buttons + confirm modal added to both store pages.
+- **Family & Teens (household/approval) accounts**: new `backend/sdk/household.ts` + six functions
+  (`householdCreate`, `householdAddMember`, `householdStatus`, `householdSetLimit`, `householdDecideOrder`,
+  `householdRemoveMember`). An adult holder groups members; **teen (13–17) orders route to the adult to
+  approve**, or auto-approve under a per-order limit. `purchaseGate` wired into `oneClickPurchase` and
+  `purchaseMarketplaceListing` (teen orders open as `pending_approval`, no claim/charge). New
+  `src/pages/Household.jsx` + nav entry.
+- **Teen enrollment gated OFF**: new `teen_accounts` feature flag defaults **OFF** — adult members work
+  today; under-18 enrollment requires verifiable parental consent, minor-data handling, updated legal /
+  app-store docs, and counsel sign-off before the flag is turned on. New settings
+  `HOUSEHOLD_MAX_MEMBERS` (6), `HOUSEHOLD_TEEN_MIN_AGE` (13).
+
 ## 2026-07-28 — Digital Products store (online-only, no BNPL/pickup)
 
 A Digital Products section mirroring the physical store for online-delivered goods. See `DIGITAL-STORE.md`.

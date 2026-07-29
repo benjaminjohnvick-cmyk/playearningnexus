@@ -15,6 +15,14 @@ differences.
 - **Affordability warning** over `PHYSICAL_AFFORDABILITY_LIMIT_USD` ($1,460), and the **Purchase Payback**
   earn-back tracker.
 
+## Sort control + one-click Buy now
+
+Same as the physical store: an Amazon-style **sort dropdown** at the top of the results (Featured, Price
+↑/↓, Avg. Customer Review, Newest, Best Sellers) via the shared `src/lib/storeSort.js`, plus the one-click
+**⚡ Buy now** button that logs the order and then prompts to complete it (nothing charged until confirmed +
+card on file). See `STORE-SORT-AND-ONE-CLICK.md`. Teen orders route to the adult holder for approval (see
+`HOUSEHOLD-TEEN-ACCOUNTS.md`).
+
 ## Two deliberate differences
 
 - **Online delivery only** — there is no local-pickup option; a paid digital order is marked `delivered`
