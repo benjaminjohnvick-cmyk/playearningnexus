@@ -270,5 +270,6 @@
 "UserVariantState",
 "KYCResponse",
 "OverheadReport",
-"UXFinding"
+"UXFinding",
+"KycSurveyConfig"
 ]

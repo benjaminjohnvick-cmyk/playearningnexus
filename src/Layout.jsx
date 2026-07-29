@@ -34,6 +34,7 @@ import {
   Gamepad2,
   Megaphone,
   LayoutGrid,
+  Sparkles,
   Store } from
 'lucide-react';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
@@ -270,6 +271,7 @@ export default function Layout({ children, currentPageName }) {
   if (user?.role === 'admin') {
     navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
     navigation.push({ name: 'Platform Settings', icon: Settings, path: 'AdminSettings', requireAuth: true });
+    navigation.push({ name: 'KYC Survey Editor', icon: Sparkles, path: 'KYCSurveyAdmin', requireAuth: true });
     navigation.push({ name: 'AI Optimization', icon: Brain, path: 'AIOptimization', requireAuth: true });
     navigation.push({ name: 'Pricing Feedback', icon: DollarSign, path: 'AdminPricingFeedback', requireAuth: true });
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });

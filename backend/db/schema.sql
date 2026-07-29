@@ -3085,3 +3085,15 @@ CREATE TABLE IF NOT EXISTS "UXFinding" (
 );
 CREATE INDEX IF NOT EXISTS "UXFinding_data_gin" ON "UXFinding" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "UXFinding_created" ON "UXFinding" (created_date DESC);
+
+-- KycSurveyConfig: singleton holding the active (editable) KYC survey + any pending AI proposal
+CREATE TABLE IF NOT EXISTS "KycSurveyConfig" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "KycSurveyConfig_data_gin" ON "KycSurveyConfig" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "KycSurveyConfig_created" ON "KycSurveyConfig" (created_date DESC);
+

@@ -19,7 +19,7 @@ export type FlagName =
   | "site_telemetry" | "session_screenshots" | "self_learning" | "kyc_survey"
   | "live_experiments" | "personalized_learning" | "experiments_paused" | "ux_heatmap"
   | "points_boost" | "physical_store" | "local_pickup" | "layaway" | "purchase_payback"
-  | "digital_store" | "teen_accounts";
+  | "digital_store" | "teen_accounts" | "kyc_survey_ai_autopublish";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -54,6 +54,7 @@ const DEFAULTS: Record<FlagName, boolean> = {
   purchase_payback: true,        // "earn-back" progress TRACKER: shows cash spent vs points earned back. Factual tracker, NOT a loan and NOT a guarantee (framed "depends on your activity")
   digital_store: true,           // Digital Products section — online instant delivery only (no pickup); Affirm BNPL excluded (real shippable goods only)
   teen_accounts: false,          // OFF — admitting under-18 teens to this money-earning app needs verifiable parental consent, minor-data handling, updated legal docs + app-store rating, and counsel sign-off. Adult household members work regardless of this flag.
+  kyc_survey_ai_autopublish: false, // OFF — AI-proposed KYC-survey changes are STAGED for an admin to approve, not applied live. Flip ON only if you want AI edits to publish to members automatically.
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];

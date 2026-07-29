@@ -1,6 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { KYC_SURVEY, kycStatus } from "../../sdk/kyc.ts";
+import { getActiveSurvey, kycStatus } from "../../sdk/kyc.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 
 // kycSurveyGet (authenticated) — returns the Know-Your-Customer survey plus this user's status:
@@ -13,10 +13,10 @@ export default __handler(async (req) => {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const flagOn = await isEnabled("kyc_survey").catch(() => true);
-    const status = await kycStatus(user.id);
+    const [status, survey] = await Promise.all([kycStatus(user.id), getActiveSurvey()]);
 
     return Response.json({
-      survey: KYC_SURVEY,
+      survey,
       completed: status.completed,
       required: flagOn && status.required,
       reward_usd: status.reward_usd,
