@@ -58,6 +58,51 @@ export function round2(n: number): number {
   return Math.round((Number(n) || 0) * 100) / 100;
 }
 
+// ── UP-FRONT GRANT MODE (optional) ──────────────────────────────────────────────────────────────
+// When PREMIUM_UPFRONT_GRANT is on, enrollment grants the FULL annual ceiling ($1,460 in closed-loop,
+// non-cashable points) UP FRONT, banked in the member's balance, in exchange for a survey commitment
+// (≈8 min/day for a year, fulfillable flexibly). NOTHING is ever repaid or clawed back — the ONLY
+// consequence of falling behind is being locked out of the program (and needing lockout mode to
+// re-enroll). This REVERSES the default earn-as-you-go safety posture; the toggle preserves both.
+const snapNum = (k: string, d: number) => snapNumber(k, d);
+export const upfrontGrantEnabled = () => snapNum("PREMIUM_UPFRONT_GRANT", 1) !== 0;
+export const surveyCommitmentDays = () => Math.max(1, Math.round(snapNum("PREMIUM_SURVEY_COMMITMENT_DAYS", 365)));
+export const surveyMinutesPerDay = () => Math.max(1, snapNum("PREMIUM_SURVEY_MINUTES_PER_DAY", 8));
+export const surveyPaceGraceDays = () => Math.max(0, snapNum("PREMIUM_SURVEY_GRACE_DAYS", 7));
+export const spentOutThresholdPct = () => Math.min(1, Math.max(0, snapNum("PREMIUM_SPENT_OUT_PCT", 0.05)));
+/** Order value at which a matched advertiser's free social posting stops (default $2,920). */
+export const socialPostingOrderTarget = () => round2(snapNum("PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD", 2920));
+export function socialPostingActive(ordersValueDelivered?: number): boolean {
+  return round2(ordersValueDelivered ?? 0) < socialPostingOrderTarget();
+}
+
+/** Survey-commitment pace for an up-front member: expected vs. completed survey-days, and whether behind. */
+export function commitmentPace(member: Record<string, unknown> | null | undefined, nowMs = Date.now()): {
+  days_elapsed: number; requirement: number; expected: number; done: number; behind_by: number; behind: boolean; complete: boolean;
+} {
+  const startMs = member?.commitment_start ? new Date(String(member.commitment_start)).getTime() : nowMs;
+  const daysElapsed = Math.max(0, Math.floor((nowMs - startMs) / 86400000));
+  const requirement = surveyCommitmentDays();
+  const expected = Math.min(requirement, daysElapsed);
+  const done = Math.max(0, Number(member?.survey_days) || 0);
+  const behindBy = Math.max(0, expected - done);
+  return { days_elapsed: daysElapsed, requirement, expected, done, behind_by: behindBy, behind: behindBy > surveyPaceGraceDays(), complete: done >= requirement };
+}
+
+/** Has the member spent (near) all of their granted points? (Heuristic: balance ≤ pct × grant.) */
+export function isSpentOut(user: Record<string, unknown> | null | undefined, member: Record<string, unknown> | null | undefined): boolean {
+  const grant = Number(member?.grant_points) || 0;
+  if (grant <= 0) return false;
+  const bal = Number(user?.current_balance) || 0;
+  return bal <= grant * spentOutThresholdPct();
+}
+
+/** Default = spent-out AND behind on the survey pace → lock out (until a new slot opens). */
+export function isDefaulted(user: Record<string, unknown> | null | undefined, member: Record<string, unknown> | null | undefined, nowMs = Date.now()): boolean {
+  if (!member || !member.upfront_grant) return false;
+  return isSpentOut(user, member) && commitmentPace(member, nowMs).behind;
+}
+
 /** UTC calendar day (YYYY-MM-DD) for "was the user active today" checks. */
 export function utcDay(d: Date = new Date()): string {
   return d.toISOString().slice(0, 10);

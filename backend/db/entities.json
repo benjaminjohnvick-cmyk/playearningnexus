@@ -274,5 +274,6 @@
 "KycSurveyConfig",
 "AIActivityLog",
 "AICorrection",
-"KYCRewardGrant"
+"KYCRewardGrant",
+"PremiumEnrollClaim"
 ]

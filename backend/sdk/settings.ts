@@ -54,6 +54,12 @@ export const REGISTRY: SettingDef[] = [
   { key: "PREMIUM_STREAK_BONUS_CAP", label: "Streak bonus cap", category: "Premium PPC", type: "number", default: "0.5", unit: "×", help: "0.5 = +50% max." },
   { key: "PREMIUM_LAPSE_AFTER_DAYS", label: "Lapse to free after N inactive days", category: "Premium PPC", type: "number", default: "14", unit: "days" },
   { key: "PREMIUM_SOCIAL_CREDIT_PER_DAY", label: "Advertiser social credit / active day", category: "Premium PPC", type: "number", default: "32", unit: "$" },
+  { key: "PREMIUM_UPFRONT_GRANT", label: "Up-front grant mode (vs earn-as-you-go)", category: "Premium PPC", type: "boolean", default: "1", sensitive: true, help: "ON = grant the FULL annual ceiling (e.g. 146,000 pts / $1,460) up front at enrollment for a 1-year survey commitment; the only consequence of falling behind is lockout (never repayment/clawback). OFF = the safer earn-as-you-go model (nothing up front)." },
+  { key: "PREMIUM_SURVEY_COMMITMENT_DAYS", label: "Survey commitment length", category: "Premium PPC", type: "number", default: "365", unit: "days", help: "Total survey-days a member must complete (flexible/catch-up) to satisfy the commitment." },
+  { key: "PREMIUM_SURVEY_MINUTES_PER_DAY", label: "Survey minutes per day", category: "Premium PPC", type: "number", default: "8", unit: "min" },
+  { key: "PREMIUM_SURVEY_GRACE_DAYS", label: "Survey pace grace window", category: "Premium PPC", type: "number", default: "7", unit: "days", help: "How many survey-days a member may fall behind the expected pace before counting as 'behind'." },
+  { key: "PREMIUM_SPENT_OUT_PCT", label: "\"Spent-out\" threshold", category: "Premium PPC", type: "number", default: "0.05", unit: "×", min: 0, max: 1, help: "A member is 'spent-out' when balance ≤ this fraction of their grant. Spent-out AND behind → locked out." },
+  { key: "PREMIUM_SOCIAL_POSTING_ORDER_TARGET_USD", label: "Advertiser free social posting until $ orders", category: "Premium PPC", type: "number", default: "2920", unit: "$", help: "Matched advertisers get free social posting until they've received this much in fulfilled orders through the site." },
   { key: "PREMIUM_DOUBLING_MULTIPLE", label: "Doubling multiple (free social stops at N× grid)", category: "Premium PPC", type: "number", default: "2", unit: "×" },
   { key: "PREMIUM_BUSINESS_REFUND_PER_DAY", label: "Advertiser store-credit rebate / active day", category: "Premium PPC", type: "number", default: "0", unit: "$", help: "$0 keeps the full user offer AND ~$3,540 margin per $5,000 advertiser." },
 

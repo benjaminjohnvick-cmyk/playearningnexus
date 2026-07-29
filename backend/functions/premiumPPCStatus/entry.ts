@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { annualEarnCeiling, DAILY_EARN_CAP, round2 } from "../../sdk/premium-ppc.ts";
+import { annualEarnCeiling, DAILY_EARN_CAP, round2, commitmentPace, isDefaulted, surveyMinutesPerDay } from "../../sdk/premium-ppc.ts";
+import { db } from "../../sdk/db.ts";
 
 // premiumPPCStatus — membership + earn-as-you-go ledger for the UI, plus the 1:1 slot availability.
 //
@@ -13,7 +14,23 @@ export default __handler(async (req) => {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const members = await base44.asServiceRole.entities.PremiumPPCMembership.filter({ user_id: user.id });
-    const member = (members || []).find((m: Record<string, unknown>) => m.status === "active" || m.status === "ceiling_reached") ?? null;
+    let member = (members || []).find((m: Record<string, unknown>) => m.status === "active" || m.status === "ceiling_reached") ?? null;
+
+    // Lazy DEFAULT check for up-front members: spent-out AND behind the survey pace → lock out of the
+    // program (until a new slot opens; re-enrollment then requires lockout mode). Nothing is charged or
+    // clawed back — the granted points stay banked in their balance.
+    if (member && member.upfront_grant && member.status === "active" && isDefaulted(user as Record<string, unknown>, member)) {
+      await base44.asServiceRole.entities.PremiumPPCMembership.update(String(member.id), { status: "locked_out", defaulted: true, defaulted_at: new Date().toISOString() }).catch(() => null);
+      await db.remove("PremiumEnrollClaim", `pec_${user.id}`).catch(() => null);
+      await base44.asServiceRole.entities.Notification.create({
+        user_id: user.id, type: "premium_locked_out",
+        title: "⏸️ Premium PPC surveys paused",
+        message: "You've spent your points and fallen behind on the survey commitment, so PPC surveys are paused. You keep all your points. You can rejoin when a new advertiser slot opens — re-enrollment uses lockout mode to help you keep pace.",
+        is_read: false,
+      }).catch(() => null);
+      member = { ...member, status: "locked_out", defaulted: true };
+    }
+    const pace = member && member.upfront_grant ? commitmentPace(member) : null;
 
     // Daily engagement records (met/missed), most recent first.
     const days = member
@@ -33,7 +50,15 @@ export default __handler(async (req) => {
     return Response.json({
       enrolled: !!member,
       membership: member,
-      model: "no-penalty-points",
+      model: member?.upfront_grant ? "upfront-grant" : "no-penalty-points",
+      upfront_grant: !!member?.upfront_grant,
+      grant_points: round2(member?.grant_points ?? 0),
+      locked_out: member?.status === "locked_out",
+      defaulted: !!member?.defaulted,
+      lockout_mode_enabled: !!member?.lockout_mode_enabled,
+      lockout_time: member?.lockout_time ?? null,
+      survey_minutes_per_day: surveyMinutesPerDay(),
+      survey_pace: pace,   // { requirement, expected, done, behind_by, behind, complete } for up-front members
       daily_earn_cap: DAILY_EARN_CAP,
       annual_earn_ceiling: ceiling,
       points_earned: earned,

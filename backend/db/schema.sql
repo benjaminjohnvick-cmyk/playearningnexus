@@ -3130,3 +3130,14 @@ CREATE TABLE IF NOT EXISTS "KYCRewardGrant" (
 );
 CREATE INDEX IF NOT EXISTS "KYCRewardGrant_data_gin" ON "KYCRewardGrant" USING gin (data jsonb_path_ops);
 
+
+-- PremiumEnrollClaim: deterministic-id single-flight guard so a double-click can't double-grant the up-front points
+CREATE TABLE IF NOT EXISTS "PremiumEnrollClaim" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PremiumEnrollClaim_data_gin" ON "PremiumEnrollClaim" USING gin (data jsonb_path_ops);
+
