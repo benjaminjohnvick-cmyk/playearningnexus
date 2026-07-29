@@ -122,7 +122,8 @@ export async function createExperimentForProposal(
 
   return await db.create("OptimizationExperiment", {
     key: p.key, control_value: p.current, variant_value: p.proposed, rationale: p.rationale,
-    objective: p.objective, sensitive: !!def?.sensitive, mockup, survey_questions: questions,
+    objective: p.objective, objective_baseline: Number((snap as any)?.[p.objective]) || 0,
+    sensitive: !!def?.sensitive, mockup, survey_questions: questions,
     responses: [], response_count: 0, status: "testing", created_at: new Date().toISOString(),
   }, ACTOR) as Record<string, unknown>;
 }
@@ -149,7 +150,7 @@ async function applyPassedExperiment(e: Record<string, unknown>, favorPct: numbe
   }, ACTOR).catch(() => null);
   await db.create("OptimizationOutcome", {
     key: e.key, from_value: Number(e.control_value), to_value: Number(e.variant_value), primary_metric: e.objective,
-    before_value: 0, applied_at: now, verdict: "pending", auto: true, experiment_id: e.id,
+    before_value: Number(e.objective_baseline) || 0, applied_at: now, verdict: "pending", auto: true, experiment_id: e.id,
   }, ACTOR).catch(() => null);
 }
 

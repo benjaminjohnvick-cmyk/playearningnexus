@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,8 @@ export default function UserDashboard() {
   const [showSharePrompt, setShowSharePrompt] = useState(false);
   const [gameToShare, setGameToShare] = useState(null);
   const queryClient = useQueryClient();
+  const trialTimerRef = useRef(null);
+  useEffect(() => () => { if (trialTimerRef.current) clearTimeout(trialTimerRef.current); }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -134,8 +136,9 @@ export default function UserDashboard() {
       setTrialStartTime(Date.now());
       setShowTrialExpired(false);
       
-      // Set timer for 2 minutes
-      setTimeout(() => {
+      // Set timer for 2 minutes (clear any prior one so stacked installs don't fire stale dialogs)
+      if (trialTimerRef.current) clearTimeout(trialTimerRef.current);
+      trialTimerRef.current = setTimeout(() => {
         setShowTrialExpired(true);
       }, 120000); // 2 minutes
       
@@ -171,8 +174,8 @@ export default function UserDashboard() {
       });
     },
     onSuccess: (data, game) => {
-      queryClient.invalidateQueries(['my-library']);
-      queryClient.invalidateQueries(['featured-games']);
+      queryClient.invalidateQueries({ queryKey: ['my-library'] });
+      queryClient.invalidateQueries({ queryKey: ['featured-games'] });
       toast.success('2-minute trial started! Upgrade to premium for unlimited access.');
       setGameToShare(game);
       setShowSharePrompt(true);

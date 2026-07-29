@@ -51,8 +51,9 @@ export async function hasMemory(userId: string): Promise<boolean> {
   return !!(m && (m.summary || (m.turns && m.turns.length)));
 }
 
-/** Persist one exchange to the member's individual file. Always called (this is the "remember" step). */
-export async function recordTurn(userId: string, userMsg: string, assistantReply: string): Promise<void> {
+/** Persist one exchange to the member's individual file. Always called (this is the "remember" step).
+ *  Returns the member's new turn_count so the caller can decide whether to re-distill without refetching. */
+export async function recordTurn(userId: string, userMsg: string, assistantReply: string): Promise<number> {
   const now = new Date().toISOString();
   const pair = [
     { role: "user", content: String(userMsg ?? "").slice(0, 2000), at: now },
@@ -61,10 +62,12 @@ export async function recordTurn(userId: string, userMsg: string, assistantReply
   const existing = await getMemory(userId).catch(() => null);
   if (!existing) {
     await db.create(ENTITY, { user_id: userId, summary: "", learned: {}, turns: pair, turn_count: 1, updated_at: now }).catch(() => {});
-    return;
+    return 1;
   }
   const turns = [...(Array.isArray(existing.turns) ? existing.turns : []), ...pair].slice(-MAX_TURNS);
-  await db.update(ENTITY, existing.id as string, { turns, turn_count: (existing.turn_count || 0) + 1, updated_at: now }).catch(() => {});
+  const nextCount = (existing.turn_count || 0) + 1;
+  await db.update(ENTITY, existing.id as string, { turns, turn_count: nextCount, updated_at: now }).catch(() => {});
+  return nextCount;
 }
 
 /** Should we re-distill the durable summary this turn? (Every LEARN_EVERY turns.) */

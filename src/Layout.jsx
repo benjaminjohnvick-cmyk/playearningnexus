@@ -418,7 +418,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="md:hidden border-t bg-white">
               <div className="px-4 py-3 space-y-1">
                 {filteredNav.map((item) =>
-              <Link key={item.name} to={createPageUrl(item.path)} onClick={() => setIsMenuOpen(false)}>
+              <Link key={item.path} to={createPageUrl(item.path)} onClick={() => setIsMenuOpen(false)}>
                     <Button
                   variant={currentPageName === item.path ? "default" : "ghost"}
                   className={`w-full justify-start text-sm ${currentPageName === item.path ? "bg-gradient-to-r from-blue-600 to-blue-700" : ""}`}>

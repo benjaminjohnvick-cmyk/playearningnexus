@@ -6,7 +6,7 @@ import { buildSiteContext } from "../../sdk/site-model.ts";
 import { Core } from "../../sdk/integrations.ts";
 import { db } from "../../sdk/db.ts";
 import { emitEvent } from "../../sdk/events.ts";
-import { memoryContext, hasMemory, recordTurn, learnFromConversation, shouldLearn, getMemory } from "../../sdk/assistant-memory.ts";
+import { memoryContext, hasMemory, recordTurn, learnFromConversation, shouldLearn } from "../../sdk/assistant-memory.ts";
 
 // catalogAssistantChat (authenticated) — the AI shopping assistant that greets a member the FIRST time
 // they open the marketplace catalog. It opens by asking what they're interested in, but it is already
@@ -149,9 +149,8 @@ export default __handler(async (req) => {
     // Remember this exchange on the member's individual file, then periodically re-distill what we've
     // learned about them so the assistant keeps improving per user. Best-effort — never blocks the reply.
     try {
-      await recordTurn(user.id, message, reply);
-      const m = await getMemory(user.id).catch(() => null);
-      if (m && shouldLearn(m.turn_count || 0)) await learnFromConversation(user.id);
+      const turnCount = await recordTurn(user.id, message, reply);
+      if (shouldLearn(turnCount)) await learnFromConversation(user.id);
     } catch { /* memory is best-effort */ }
 
     return Response.json({ reply });

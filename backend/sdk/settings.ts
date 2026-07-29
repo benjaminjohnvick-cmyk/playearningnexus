@@ -108,6 +108,7 @@ export const REGISTRY: SettingDef[] = [
   { key: "CHANGE_GLOBAL_MIN_SAMPLE", label: "Min user votes to go global", category: "AI & Agents", type: "number", default: "20", min: 1, help: "Minimum number of individual yes/no votes before a change can be promoted." },
   { key: "PEAK_REVIEW_HOUR_UTC", label: "Daily human review hour (UTC)", category: "AI & Agents", type: "number", default: "18", min: 0, max: 23, help: "The one-per-day, peak-usage hour when a human reviews and promotes eligible changes to global." },
   { key: "PEAK_REVIEW_WINDOW_HOURS", label: "Human review window length", category: "AI & Agents", type: "number", default: "1", unit: "hours", min: 1, max: 6, help: "How long the daily global-review window stays open (default 1 hour)." },
+  { key: "OVERHEAD_PAUSED_EXPERIMENTS", label: "Overhead monitor paused experiments (internal marker)", category: "AI & Agents", type: "boolean", default: "0", sensitive: true, help: "Set by the overhead monitor when IT pauses live experiments for AI-spend, so it (and only it) can auto-resume them when spend recovers — without overriding an admin's manual kill switch." },
   { key: "LLM_PROVIDER", label: "LLM provider", category: "AI & Agents", type: "select", options: ["openai", "anthropic"], default: "openai" },
   { key: "LLM_MODEL_DEFAULT", label: "OpenAI default model", category: "AI & Agents", type: "string", default: "gpt-4o-mini" },
   { key: "LLM_MODEL_LARGE", label: "OpenAI large model", category: "AI & Agents", type: "string", default: "gpt-4o" },

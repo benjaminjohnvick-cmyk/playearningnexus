@@ -163,18 +163,34 @@ export default __handler(async (req) => {
 
     // Now charge (we own the claim). On points: re-read the buyer for a fresh balance.
     if (payment_method === "points") {
-      const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || user;
-      if ((Number(fresh.points) || 0) < effectivePoints) {
-        // Buyer spent their points elsewhere between pre-flight and claim → release the listing.
-        await db.updateIf("MarketplaceListing", listing.id, { status: "active", sold_to: null }, { field: "status", equals: "sold" }).catch(() => null);
-        return Response.json({ error: "Insufficient points", required: effectivePoints }, { status: 402 });
+      // ATOMIC debit (compare-and-set + retry) so two concurrent purchases can't both spend the same
+      // points balance. Plain read-modify-write would let both read the same balance and lose one debit.
+      let debited = false;
+      for (let attempt = 0; attempt < 5 && !debited; attempt++) {
+        const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || user;
+        const bal = Number(fresh.points) || 0;
+        if (bal < effectivePoints) {
+          // Buyer spent their points elsewhere between pre-flight and claim → release the listing.
+          await db.updateIf("MarketplaceListing", listing.id, { status: "active", sold_to: null }, { field: "status", equals: "sold" }).catch(() => null);
+          return Response.json({ error: "Insufficient points", required: effectivePoints }, { status: 402 });
+        }
+        const ok = await db.updateIf("User", user.id, { points: bal - effectivePoints }, { field: "points", equals: String(bal) }).catch(() => false);
+        if (ok) debited = true;
       }
-      await base44.asServiceRole.entities.User.update(user.id, { points: (Number(fresh.points) || 0) - effectivePoints });
+      if (!debited) {
+        await db.updateIf("MarketplaceListing", listing.id, { status: "active", sold_to: null }, { field: "status", equals: "sold" }).catch(() => null);
+        return Response.json({ error: "Couldn't complete the purchase — please try again." }, { status: 409 });
+      }
       // Credit the seller only when there's a real member seller. Platform-catalog points are platform
       // revenue (closed-loop), so there's no user to credit. Seller gets FULL list price; the welcome
-      // discount is absorbed by the platform (and only applies to platform items anyway).
+      // discount is absorbed by the platform (and only applies to platform items anyway). Atomic credit.
       if (!isPlatform && seller) {
-        await base44.asServiceRole.entities.User.update(seller.id, { points: (Number(seller.points) || 0) + pointsPrice });
+        for (let attempt = 0; attempt < 5; attempt++) {
+          const s = (await base44.asServiceRole.entities.User.filter({ id: seller.id }))[0] || seller;
+          const sb = Number(s.points) || 0;
+          const ok = await db.updateIf("User", seller.id, { points: sb + pointsPrice }, { field: "points", equals: String(sb) }).catch(() => false);
+          if (ok) break;
+        }
       }
       // Deduct the used welcome credit from the buyer's pool (platform items only).
       if (welcomeDiscountUsd > 0) {

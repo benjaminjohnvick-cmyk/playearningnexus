@@ -1,7 +1,7 @@
 import { __handler } from "../../sdk/runtime.ts";
 import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
 import { db } from "../../sdk/db.ts";
-import { getNumber, setSetting } from "../../sdk/settings.ts";
+import { getNumber, getBool, setSetting } from "../../sdk/settings.ts";
 import { aiDailySpendUsd } from "../../sdk/integrations.ts";
 
 // learningOverheadMonitor (INTERNAL/ADMIN, scheduled) — the safeguard that keeps the measurement/
@@ -52,7 +52,16 @@ export default __handler(async (req) => {
     const spend = aiDailySpendUsd();
     if (aiCap > 0 && pauseFrac > 0 && pauseFrac < 1 && spend >= aiCap * pauseFrac) {
       await setSetting("LIVE_EXPERIMENTS_PAUSED", 1, "overhead-monitor").catch(() => null);
+      await setSetting("OVERHEAD_PAUSED_EXPERIMENTS", 1, "overhead-monitor").catch(() => null); // marker: WE paused it
       actions.push(`AI spend $${spend} ≥ ${Math.round(pauseFrac * 100)}% of cap $${aiCap}: paused live experiments`);
+    } else if (aiCap > 0 && spend < aiCap * pauseFrac * 0.8) {
+      // Recovered (with hysteresis). Auto-resume ONLY if the monitor is what paused it — never override
+      // an admin's manual kill switch (which wouldn't have set the marker).
+      if (await getBool("OVERHEAD_PAUSED_EXPERIMENTS", false).catch(() => false)) {
+        await setSetting("LIVE_EXPERIMENTS_PAUSED", 0, "overhead-monitor").catch(() => null);
+        await setSetting("OVERHEAD_PAUSED_EXPERIMENTS", 0, "overhead-monitor").catch(() => null);
+        actions.push(`AI spend recovered to $${spend}: resumed live experiments`);
+      }
     }
 
     const report = { events, metrics, snaps, ai_spend_usd: spend, ai_cap_usd: aiCap, actions, at: now.toISOString() };

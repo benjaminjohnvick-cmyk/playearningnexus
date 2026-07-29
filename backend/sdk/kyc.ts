@@ -240,18 +240,26 @@ export async function saveKyc(userId: string, rawAnswers: unknown): Promise<{ ok
   const now = new Date().toISOString();
 
   let granted = 0;
-  if (firstTime && !user.kyc_reward_granted) {
+  if (firstTime) {
     const reward = Math.max(0, await getNumber("KYC_REWARD_USD", 5));
     if (reward > 0) {
-      // Ensure the welcome pool exists, then atomically top it up by the KYC reward (non-cashable).
-      await ensureWelcomeCredit(userId).catch(() => null);
-      for (let attempt = 0; attempt < 4; attempt++) {
-        const u = (await db.get("User", userId).catch(() => null)) as any;
-        if (!u) break;
-        const cur = Number(u.welcome_credit_usd) || 0;
-        const next = Math.round((cur + reward) * 100) / 100;
-        const ok = await db.updateIf("User", userId, { welcome_credit_usd: next }, { field: "welcome_credit_usd", equals: cur }).catch(() => false);
-        if (ok) { granted = reward; break; }
+      // Atomically CLAIM the one-time grant via a deterministic primary key. A second concurrent submit
+      // (double-click / retry) hits a duplicate-key error and does NOT grant again — this is what actually
+      // enforces "granted once", not the plain-read flag (which two concurrent requests can both pass).
+      let claimed = false;
+      try { await db.create("KYCRewardGrant", { id: `kycgrant_${userId}`, user_id: userId, reward_usd: reward, at: now }); claimed = true; }
+      catch { claimed = false; } // duplicate id → already granted
+      if (claimed) {
+        // Ensure the welcome pool exists, then atomically top it up by the KYC reward (non-cashable).
+        await ensureWelcomeCredit(userId).catch(() => null);
+        for (let attempt = 0; attempt < 5; attempt++) {
+          const u = (await db.get("User", userId).catch(() => null)) as any;
+          if (!u) break;
+          const cur = Number(u.welcome_credit_usd) || 0;
+          const next = Math.round((cur + reward) * 100) / 100;
+          const ok = await db.updateIf("User", userId, { welcome_credit_usd: next }, { field: "welcome_credit_usd", equals: String(cur) }).catch(() => false);
+          if (ok) { granted = reward; break; }
+        }
       }
     }
   }

@@ -67,13 +67,15 @@ async function computeBoostPct(user: any): Promise<{ pct: number; factors: Recor
   return { pct: round2(pct), factors: { base: round2(base), streak: round2(fStreak), tenure: round2(fHold), vault: round2(fVault) } };
 }
 
-/** Points that have accrued since the last harvest, capped by the daily cap × elapsed days. */
+/** Points that have accrued since the last harvest, paced to the daily cap PER ELAPSED DAY. Using the
+ *  actual elapsed-day fraction (not ceil) means harvesting more frequently can't out-earn the daily cap:
+ *  the sum of caps over sub-day harvests equals dailyCapPoints × total days elapsed. */
 function accruedPoints(balance: number, boostPct: number, sinceISO: string | null, dailyCapPoints: number): number {
   const since = sinceISO ? new Date(sinceISO).getTime() : Date.now();
   const days = Math.max(0, (Date.now() - since) / 86400000);
   const daily = balance * (boostPct / 100) / 365;
   const raw = daily * days;
-  const cap = dailyCapPoints * Math.max(1, Math.ceil(days));
+  const cap = dailyCapPoints * days;
   return Math.max(0, Math.min(raw, cap));
 }
 
@@ -137,14 +139,25 @@ export async function harvestBoost(userId: string): Promise<{ credited_points: n
   }
 
   const newBalance = round2(balance + credit);
-  await db.update("User", userId, {
+  const stamp = nowISO();
+  const patch = {
     current_balance: newBalance,
-    boost_last_harvest_at: nowISO(),
+    boost_last_harvest_at: stamp,
     boost_lifetime_points: lifetimeCredited + credit,
     // Non-cashable promotional flag: track how much of the balance is boost-origin so it can be excluded
     // from any future cash-out (cash-out stays OFF; this keeps the closed-loop guarantee explicit).
     boost_promo_points: (Number(user.boost_promo_points) || 0) + credit,
-  }).catch(() => null);
+  };
+  // Atomically CLAIM this harvest against the prior harvest stamp, so a double-click / concurrent daily
+  // job can't write duplicate credit + ledger + transaction rows. (First-ever harvest has no prior stamp
+  // to compare against — fall back to a plain write; the balance uses absolute values either way.)
+  let ok: unknown;
+  if (user.boost_last_harvest_at) {
+    ok = await db.updateIf("User", userId, patch, { field: "boost_last_harvest_at", equals: String(user.boost_last_harvest_at) }).catch(() => null);
+  } else {
+    ok = await db.update("User", userId, patch).catch(() => null);
+  }
+  if (!ok) return { credited_points: 0, balance_points: Math.round(balance) }; // another harvest won the race
 
   await db.create("PointsBoostLedger", {
     user_id: userId, credited_points: credit, boost_pct: pct, balance_at: Math.round(balance),

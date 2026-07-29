@@ -118,7 +118,7 @@ export default function KYCSurveyAdmin() {
       <Card className="mb-5">
         <CardContent className="p-4">
           <div className="mb-2 flex items-center gap-2 font-semibold"><Sparkles className="h-5 w-5 text-purple-600" /> Adjust with AI</div>
-          <p className="mb-2 text-xs text-gray-500">AI analyzes real answer patterns and proposes an improved survey. By default it’s staged for your approval.</p>
+          <p className="mb-2 text-xs text-gray-500">AI analyzes real answer patterns and proposes an improved survey. Whether it publishes live or is staged for your approval depends on the <code>kyc_survey_ai_autopublish</code> setting (on by default under the all-AI-on posture); pending proposals appear above when staging is on.</p>
           <div className="flex gap-2">
             <Input placeholder="Optional steer, e.g. “add a question about budget sensitivity”" value={guidance} onChange={(e) => setGuidance(e.target.value)} />
             <Button disabled={busy === 'ai'} onClick={askAI}>{busy === 'ai' ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1 h-4 w-4" />} Ask AI</Button>

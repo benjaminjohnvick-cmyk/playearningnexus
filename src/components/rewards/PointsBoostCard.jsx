@@ -80,7 +80,7 @@ export default function PointsBoostCard() {
             <span className="ml-1 text-base font-semibold text-white/80">pts</span>
           </div>
           <div className="mt-1 text-xs text-white/80">
-            {Math.floor(pending).toLocaleString()} growing now · {s.balance_points.toLocaleString()} base
+            {Math.floor(pending).toLocaleString()} growing now · {(s.balance_points || 0).toLocaleString()} base
           </div>
         </div>
 

@@ -57,18 +57,18 @@ export function initTracker(userId) {
   _pageStartTime = Date.now();
   try { if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('gg_session_id', _sessionId); } catch { /* ignore */ }
 
-  // Flush on tab close via sendBeacon (survives unload; SDK fetch does not).
-  window.addEventListener('beforeunload', () => { flushBeacon(); });
-  // Also flush when the tab is hidden (mobile/native background) — more reliable than unload.
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushBeacon(); });
-
   // Auto-flush every 15s, but run the actual send during idle time so it never competes with UI work.
   if (_flushTimer) clearInterval(_flushTimer);
   _flushTimer = setInterval(() => idle(() => flushEvents()), 15000);
 
-  // Global interaction capture — every meaningful click becomes data (bound once).
+  // Global interaction capture + unload/visibility flush — every meaningful click becomes data (bound
+  // once, so re-calling initTracker on a user-id change doesn't stack duplicate handlers/beacons).
   if (!_listenersBound && typeof document !== 'undefined') {
     _listenersBound = true;
+    // Flush on tab close via sendBeacon (survives unload; SDK fetch does not).
+    window.addEventListener('beforeunload', () => { flushBeacon(); });
+    // Also flush when the tab is hidden (mobile/native background) — more reliable than unload.
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushBeacon(); });
     document.addEventListener('click', (e) => {
       try {
         const interactive = e.target?.closest && e.target.closest('button,a,[role="button"],input,select,textarea,[data-track]');

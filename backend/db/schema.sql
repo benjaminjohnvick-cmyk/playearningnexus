@@ -3119,3 +3119,14 @@ CREATE TABLE IF NOT EXISTS "AICorrection" (
 );
 CREATE INDEX IF NOT EXISTS "AICorrection_data_gin" ON "AICorrection" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AICorrection_created" ON "AICorrection" (created_date DESC);
+
+-- KYCRewardGrant: deterministic-id claim record making the one-time KYC reward grant idempotent
+CREATE TABLE IF NOT EXISTS "KYCRewardGrant" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "KYCRewardGrant_data_gin" ON "KYCRewardGrant" USING gin (data jsonb_path_ops);
+

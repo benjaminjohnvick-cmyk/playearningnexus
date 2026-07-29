@@ -9,8 +9,9 @@ import { Core } from "../../sdk/integrations.ts";
 // kycSurveyAISuggest (ADMIN) — the AI proposes an IMPROVED KYC survey, grounded in the real distribution
 // of past answers (which questions actually discriminate, which options nobody picks, gaps to fill for
 // better personalization). By default the proposal is STAGED for a human to approve (kycSurveyProposalDecide);
-// if the `kyc_survey_ai_autopublish` flag is ON, it's applied live immediately. This is the "adjust the
-// KYC survey using AI" path, kept human-gated by default so AI never silently rewrites onboarding.
+// if the `kyc_survey_ai_autopublish` flag is ON (and the global AI kill switch is off), it's applied
+// live immediately. Under the all-AI-on posture that flag ships ON, so AI edits publish live and appear
+// in the AI Live Oversight feed; set it OFF to require the admin to approve each proposal instead.
 //   Body: { guidance? }   // optional admin steer, e.g. "add a question about budget sensitivity"
 export default __handler(async (req) => {
   try {

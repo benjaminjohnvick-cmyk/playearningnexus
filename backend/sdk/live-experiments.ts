@@ -267,6 +267,11 @@ export async function recordMetricForUser(userId: string, metric: string, value 
     const a = rows[0];
     if (!a) continue;
     const m = String(metric).slice(0, 40);
+    // WHITELIST metric names to this experiment's objective + guardrails + common outcomes, so a client
+    // can't inject arbitrary keys that grow the experiment doc's `counts` unbounded.
+    const allowed = new Set<string>(["purchase", "click_through", "exposure", String(exp.objective_metric || "purchase")]);
+    for (const g of (Array.isArray(exp.guardrail_metrics) ? exp.guardrail_metrics : [])) allowed.add(String(g?.metric));
+    if (!allowed.has(m)) continue;
     await bumpExperimentCount(exp.id, a.variant, m, Number(value) || 1);
     await db.create("LiveMetricEvent", { experiment_id: exp.id, user_id: userId, variant: a.variant, metric: m, value: Number(value) || 1, at: nowISO() }, ACTOR).catch(() => null);
     n++;

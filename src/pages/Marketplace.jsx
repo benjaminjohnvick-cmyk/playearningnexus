@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingBag, Plus, Loader2, Coins, CreditCard, ExternalLink, Search } from 'lucide-react';
+import { ShoppingBag, Plus, Loader2, Coins, CreditCard, ExternalLink, Search, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocale } from '@/components/locale/LocaleContext';
 import CatalogWelcomeChat from '@/components/marketplace/CatalogWelcomeChat';
@@ -68,6 +68,7 @@ export default function Marketplace() {
   const [welcome, setWelcome] = useState(null);
   // Affirm BNPL checkout (real-goods only).
   const [affirm, setAffirm] = useState({ open: false, listing: null, name: '', address1: '', city: '', state: '', zipcode: '', loading: false });
+  const [warn, setWarn] = useState(null);   // affordability warning { listing, method, message }
   // "What would you like to do?" intro — the first thing a member sees on the Marketplace hub (after the
   // KYC survey gate, which overlays on top). Shown once per browser session.
   const [showIntent, setShowIntent] = useState(false);
@@ -214,17 +215,19 @@ export default function Marketplace() {
     } catch (e) { toast.error(e?.data?.error || e.message || 'Search failed'); setRealSearch((s) => ({ ...s, loading: false })); }
   }
 
-  async function buy(listing, method) {
+  async function buy(listing, method, acknowledged) {
     setBusy(listing.id + method);
     try {
-      const res = await base44.functions.invoke('purchaseMarketplaceListing', { listing_id: listing.id, payment_method: method });
+      const res = await base44.functions.invoke('purchaseMarketplaceListing', { listing_id: listing.id, payment_method: method, acknowledged_over_limit: !!acknowledged });
+      // Over the affordability limit → warn first; NOTHING was charged and it's not a purchase.
+      if (res.data?.affordability_warning) { setWarn({ listing, method, ...res.data }); return; }
       // Affiliate listing → open the retailer link (they sell + fulfill); nothing charged here.
       if (res.data?.affiliate && res.data?.redirect_url) {
         window.open(res.data.redirect_url, '_blank', 'noopener,noreferrer');
         toast.info('Opening the retailer to complete your purchase.');
         reportMetric('click_through');   // live-experiment outcome signal
       } else if (res.data?.blocked) toast.error(res.data.message || 'Payment method unavailable');
-      else { toast.success(res.data?.charged ? 'Purchased! Your order is being fulfilled.' : 'Purchased!'); reportMetric('purchase'); await load(); }
+      else { toast.success(res.data?.charged ? 'Purchased! Your order is being fulfilled.' : 'Purchased!'); setWarn(null); reportMetric('purchase'); await load(); }
     } catch (e) { toast.error(e?.data?.error || e.message || 'Purchase failed'); }
     finally { setBusy(''); }
   }
@@ -270,6 +273,20 @@ export default function Marketplace() {
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
       <CatalogWelcomeChat />
+
+      {/* Affordability warning — shown before an over-limit order; nothing is charged until acknowledged. */}
+      {warn && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="mb-2 flex items-center gap-2 text-amber-600"><AlertTriangle className="h-5 w-5" /><span className="font-bold">Before you buy</span></div>
+            <p className="text-sm text-gray-700">{warn.message}</p>
+            <div className="mt-4 flex gap-2">
+              <Button variant="outline" className="flex-1" onClick={() => setWarn(null)}>Go back</Button>
+              <Button className="flex-1" onClick={() => buy(warn.listing, warn.method, true)}>Proceed anyway</Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* "What would you like to do?" — buy or browse. Sits below the KYC gate (z-100) so onboarding
           shows first; ties "buy" into the AI shopping assistant. */}

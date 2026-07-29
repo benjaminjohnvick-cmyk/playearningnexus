@@ -65,9 +65,10 @@ export default function DigitalStore() {
       if (r.data?.blocked) { toast.error(r.data.message || 'That payment option isn\'t available.'); return; }
       if (r.data?.affiliate && r.data?.redirect_url) { window.open(r.data.redirect_url, '_blank', 'noopener,noreferrer'); return; }
       toast.success(method === 'card' ? 'Purchased! Your download/access is ready.' : 'Purchased with points! Your download/access is ready.');
+      setWarn(null);   // close the affordability modal after a confirmed "proceed anyway"
       await load(); loadCfg();
     } catch (e) { toast.error(e?.data?.error || e.message || 'Purchase failed'); }
-    finally { setBusy(''); setWarn(null); }
+    finally { setBusy(''); }
   }
 
   // One-click "Buy now" — logs the order immediately (card on file or not) via oneClickPurchase.
@@ -78,10 +79,11 @@ export default function DigitalStore() {
       if (r.data?.affordability_warning) { setWarn({ listing, oneClick: true, ...r.data }); return; }
       if (r.data?.error) { toast.error(r.data.error); return; }
       // The order is LOGGED, not purchased — ask the user if they want to complete it.
+      setWarn(null);   // clear any affordability modal now that we've acknowledged/placed
       setConfirmBuy({ listing, ...r.data });
       await load(); loadCfg();
     } catch (e) { toast.error(e?.data?.error || e.message || 'Could not place the order.'); }
-    finally { setBusy(''); setWarn(null); }
+    finally { setBusy(''); }
   }
 
   // User answered the "complete this purchase?" prompt. Nothing is charged until a card is on file
