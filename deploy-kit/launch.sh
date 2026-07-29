@@ -63,12 +63,27 @@ else
   TODO+=("Load backend/db/schema.sql once, via your host's SQL console.")
 fi
 
-# ---- STEP 5: smoke-test the backend -----------------------------------------
-say "STEP 5/6  Smoke-test the backend"
+# ---- STEP 5: smoke-test the backend (automated QA) --------------------------
+say "STEP 5/6  Smoke-test the backend (automated QA — replaces the manual click-through)"
 if [ -n "${BACKEND_URL:-}" ] && command -v curl >/dev/null 2>&1; then
-  if curl -fsS "${BACKEND_URL%/}/health" >/dev/null 2>&1; then ok "backend /health responded OK at $BACKEND_URL"; else warn "backend not reachable at ${BACKEND_URL%/}/health yet — deploy it first (Step 3 of the step-by-step)"; fi
+  if curl -fsS "${BACKEND_URL%/}/health" >/dev/null 2>&1; then
+    ok "backend /health responded OK at $BACKEND_URL"
+    # Run the full critical-path + new-feature QA automatically (signup→survey→store→payout→PPC→ads→boost).
+    if command -v node >/dev/null 2>&1; then
+      say "     Running automated QA pass (deploy-kit/e2e-smoke.mjs)…"
+      if BACKEND_URL="$BACKEND_URL" SMOKE_STAMP="$(date +%s 2>/dev/null || echo run)" node deploy-kit/e2e-smoke.mjs; then
+        ok "automated QA pass GREEN — critical path + new features all responded"
+      else
+        err "automated QA found failing endpoints (see above) — fix before submitting to stores"; TODO+=("Fix the endpoints the QA smoke flagged, then re-run.")
+      fi
+    else
+      warn "node not found — run 'BACKEND_URL=$BACKEND_URL node deploy-kit/e2e-smoke.mjs' on a machine with Node"
+    fi
+  else
+    warn "backend not reachable at ${BACKEND_URL%/}/health yet — deploy it first (Step 3 of the step-by-step)"
+  fi
 else
-  warn "set BACKEND_URL in $ENVFILE to auto-test once the backend is deployed"
+  warn "set BACKEND_URL in $ENVFILE to auto-run the QA smoke once the backend is deployed"
 fi
 
 # ---- STEP 6: trigger the mobile app builds ----------------------------------

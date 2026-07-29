@@ -32,9 +32,38 @@ node -e '
   process.exit(miss ? 1 : 0);
 ' || FAIL=1
 
-say "4/4  Schema + seed present"
+say "4/7  Schema + seed present"
 [ -f backend/db/schema.sql ] && echo "   OK — schema.sql present ($(wc -l < backend/db/schema.sql) lines)" || { echo "   FAIL — schema.sql missing"; FAIL=1; }
 
+say "5/7  Every entity has a table (entities.json ↔ schema.sql)"
+node -e '
+  const fs=require("fs");
+  const ents=JSON.parse(fs.readFileSync("backend/db/entities.json","utf8"));
+  const sql=fs.readFileSync("backend/db/schema.sql","utf8");
+  const miss=ents.filter(e=>!new RegExp("CREATE TABLE IF NOT EXISTS\\s+\"?"+e+"\"?","i").test(sql));
+  if(miss.length){console.log("   FAIL — "+miss.length+" entities have no CREATE TABLE:",miss.slice(0,20).join(", "));process.exit(1);}
+  console.log("   OK — all "+ents.length+" entities have a table");
+' || FAIL=1
+
+say "6/7  Every scheduled job points at a real function"
+node -e '
+  const fs=require("fs");
+  const sch=JSON.parse(fs.readFileSync("backend/scheduler/schedules.json","utf8"));
+  const jobs=sch.jobs||[];
+  const miss=jobs.filter(j=>!fs.existsSync("backend/functions/"+j.function+"/entry.ts"));
+  if(miss.length){console.log("   FAIL — "+miss.length+" scheduled jobs have no function:",miss.map(j=>j.function).join(", "));process.exit(1);}
+  console.log("   OK — all "+jobs.length+" scheduled jobs resolve to a function");
+' || FAIL=1
+
+say "7/7  Manifest is valid JSON with no duplicates"
+node -e '
+  const fs=require("fs");
+  const m=JSON.parse(fs.readFileSync("backend/functions/_manifest.json","utf8"));
+  const dup=m.filter((x,i)=>m.indexOf(x)!==i);
+  if(dup.length){console.log("   FAIL — duplicate manifest entries:",[...new Set(dup)].join(", "));process.exit(1);}
+  console.log("   OK — manifest valid, "+m.length+" unique functions");
+' || FAIL=1
+
 echo
-if [ "$FAIL" = "0" ]; then echo -e "\033[1;32m✓ VALIDATION PASSED — safe to deploy.\033[0m"; else echo -e "\033[1;31m✗ VALIDATION FAILED — fix the items above first.\033[0m"; fi
+if [ "$FAIL" = "0" ]; then echo -e "\033[1;32m✓ VALIDATION PASSED — safe to deploy (build green, schema/entities/scheduler/manifest all consistent).\033[0m"; else echo -e "\033[1;31m✗ VALIDATION FAILED — fix the items above first.\033[0m"; fi
 exit $FAIL

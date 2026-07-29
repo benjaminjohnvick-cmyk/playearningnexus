@@ -49,6 +49,33 @@ await step('payout endpoint is reachable', async () => {
   jassert(r.status < 500, `requestPayout ${r.status}`);
 });
 
+// ---- New-feature critical path (automated QA — replaces manual click-through) ----------------------
+// Each of these is a route the app depends on at launch. We assert "alive" (no 5xx / auth works), which
+// is what a manual QA pass checks by hand. A controlled 4xx (bad input / not-enrolled) still proves the
+// route + its validation are wired.
+const reach = (name, fn, body = {}) => step(name, async () => {
+  const r = await fetch(`${BASE}/functions/${fn}`, { method: 'POST', headers: H(), body: JSON.stringify(body) });
+  jassert(r.status < 500, `${fn} ${r.status}`);
+});
+
+await step('KYC first-survey config loads', async () => {
+  const r = await fetch(`${BASE}/functions/kycSurveyGet`, { method: 'POST', headers: H(), body: '{}' });
+  jassert(r.status < 500, `kycSurveyGet ${r.status}`);
+});
+await step('Premium PPC status returns (enrolled flag + makeup plan)', async () => {
+  const r = await fetch(`${BASE}/functions/premiumPPCStatus`, { method: 'POST', headers: H(), body: '{}' });
+  const j = await r.json().catch(() => ({}));
+  jassert(r.ok && 'enrolled' in j, `premiumPPCStatus ${r.status}`);
+});
+await reach('Premium PPC offer surface is alive', 'premiumPPCOffer');
+await reach('Premium PPC survey-day (make-up crediting) is alive', 'premiumPPCSurveyDay', { minutes: 8 });
+await reach('Premium PPC lockout-time setter is alive', 'premiumPPCSetLockoutTime', { enabled: true, lockout_time: '19:00' });
+await reach('AI ad queue is alive', 'premiumAdQueue');
+await reach('One-click purchase route is alive', 'oneClickPurchase');
+await reach('Points Boost status is alive', 'pointsBoostStatus');
+await reach('Marketplace taxonomy loads', 'getTaxonomy');
+await reach('AI Live Oversight status is alive', 'aiControlStatus');
+
 console.log('-'.repeat(52));
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

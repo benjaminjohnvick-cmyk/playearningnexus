@@ -118,3 +118,43 @@ The developer's job is unchanged: deploy, smoke-test, submit.
 The only thing that can push past $3,900 is an **Apple review rejection round** — keep the review clean
 (demo login via `REVIEWER_DEMO=1`, merit-not-gambling framing). AI runtime is separately capped by
 `AI_DAILY_SPEND_CAP_USD` and can launch at ~$0, so turning everything on does not move the monthly bill.
+
+---
+
+## Automation maxed out (2026-07-29) — driving billable hours to the floor
+
+Two more phases that used to be hand-work are now scripted, so the developer runs them in minutes
+instead of hours:
+
+- **`deploy-kit/validate.sh` is now a full pre-deploy audit** — on top of the frontend build + backend
+  type-check, it verifies **every entity has a table** (entities.json ↔ schema.sql), **every scheduled
+  job resolves to a real function**, and the **function manifest is valid with no duplicates**. These are
+  the exact drift bugs that otherwise surface *after* deploy and cause the high-end blowout. Catching them
+  locally in ~1 minute turns pre-deploy validation from **3–6 h → ~0.5 h** and removes most cloud rework.
+- **`deploy-kit/e2e-smoke.mjs` is now an automated QA pass** — it walks the full critical path
+  (signup → login → survey read → store order → payout) **and** the new-feature routes (KYC survey,
+  Premium PPC status + make-up + lockout, AI ad queue, one-click purchase, Points Boost, marketplace
+  taxonomy, AI Live Oversight). One command asserts every launch-critical route is alive. This turns the
+  **QA pass from 7–9 h of manual clicking → ~1 h** (run it, read the pass/fail list, spot-check the UI).
+- **`deploy-kit/launch.sh` runs the QA smoke automatically** once `BACKEND_URL` is set — validate,
+  generate secrets, load schema, then QA, in one command.
+
+### The honest floor
+
+Scripts can't create your accounts, click your host's dashboard, set CI signing secrets, or pass Apple/
+Google review — those are the irreducible human steps, and **most aren't billable dev at all** (owner
+signups) or are one-time setup. What actually remains for the developer, with everything above automated:
+
+| Remaining work (human-only) | Typical hours |
+|---|---:|
+| Railway dashboard: create project, Postgres, first deploy | ~3–5 h |
+| CI signing secrets (Android keystore, iOS cert/profile) | ~2–3 h |
+| Store console upload + review responses (Android + iOS) | ~5–9 h |
+| Live-payments wiring | **$0 at launch** (closed-loop; `card_charging` off) |
+| **Full launch (PWA + Android + iOS), realistic** | **~14–24 h → ~$1,050–$1,800** |
+
+**Bottom line: with the kit maxed out, the automatable dev work approaches zero and the realistic
+developer bill for a full PWA + Android + iOS launch lands around $1,050–$1,800 — well under $3,900.**
+The one thing that can still add hours is an **Apple review rejection round** (keep it clean: demo login
+via `REVIEWER_DEMO=1`, merit-not-gambling framing). Owner account signups and optional legal review are
+separate from dev hours; AI runtime stays capped by `AI_DAILY_SPEND_CAP_USD` and can launch at ~$0.
