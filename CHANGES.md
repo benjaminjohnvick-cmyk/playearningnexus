@@ -1,5 +1,23 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-29 — Survey make-up, everything-on defaults, execution kit maxed out
+
+**Survey make-up.** Missed PPC survey days add one extra 8-min session to a later day; the app
+recalculates the daily catch-up target (today's + one per missed day) within a ≥1-year window from signup.
+`makeupPlan()` + `markSurveyDay(userId, minutes)` credit multiple sessions/day (idempotent, capped);
+`premiumPPCStatus.makeup` + `PremiumLockoutMode.jsx` surface it. No debt, no expiry inside the window.
+
+**Everything ON from day one.** `backend/.env.example` rewritten as the everything-on launch config for
+the current up-front + advertising + make-up model (removed the contradictory old charge vars). AI/product
+flags default ON; only legally-gated switches stay off.
+
+**Execution kit maxed out.** `deploy-kit/validate.sh` now does a full pre-deploy audit (entities↔schema,
+scheduler↔functions, manifest); `deploy-kit/e2e-smoke.mjs` is a full automated QA pass (critical path +
+new-feature routes); `launch.sh` runs it automatically. UNDER-5K-EXECUTION-KIT.md + COST-AND-DEVHOURS-
+LEVERS.md document the honest floor (realistic full-launch dev ≈ $1,050–$1,800).
+
+---
+
 ## 2026-07-29 — Premium PPC up-front model, AI advertising + learning, one-tap posting, compliance backstops
 
 **Premium PPC up-front model (points-value-only, closed-loop).** Enrollment grants the full $1,460
