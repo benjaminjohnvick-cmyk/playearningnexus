@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
+import { db } from "../../sdk/db.ts";
 
 // Server-authoritative user-to-user STORE-CREDIT transfer (closed-loop platform credit, not
 // cash). Both sides move on the server: debit sender, credit receiver, record the transfer.
@@ -28,22 +29,39 @@ export default __handler(async (req) => {
     if (amount <= 0) return Response.json({ error: "Invalid amount" }, { status: 400 });
     if (!receiverId || receiverId === sender.id) return Response.json({ error: "Invalid recipient" }, { status: 400 });
 
-    const senderBalance = Number(sender.current_balance ?? 0);
-    if (senderBalance < amount) return Response.json({ error: "Insufficient balance", required: amount, balance: senderBalance }, { status: 402 });
-
     const receiver = await base44.asServiceRole.entities.User.get(receiverId);
     if (!receiver) return Response.json({ error: "Recipient not found" }, { status: 404 });
 
-    // Move the credit on the server (both sides).
-    await base44.asServiceRole.entities.User.update(sender.id, { current_balance: Math.round((senderBalance - amount) * 100) / 100 });
-    await base44.asServiceRole.entities.User.update(receiverId, { current_balance: Math.round(((Number(receiver.current_balance ?? 0)) + amount) * 100) / 100 });
+    // ATOMIC sender debit (compare-and-set + retry) so concurrent transfers can't double-spend.
+    let debited = false;
+    for (let i = 0; i < 6 && !debited; i++) {
+      const fs = (await base44.asServiceRole.entities.User.filter({ id: sender.id }))[0] || sender;
+      const bal = Number(fs.current_balance) || 0;
+      if (bal < amount) return Response.json({ error: "Insufficient balance", required: amount, balance: bal }, { status: 402 });
+      const ok = await db.updateIf("User", sender.id, { current_balance: Math.round((bal - amount) * 100) / 100 }, { field: "current_balance", equals: String(bal) }).catch(() => null);
+      if (ok) debited = true;
+    }
+    if (!debited) return Response.json({ error: "Please retry — your balance is being updated." }, { status: 409 });
+
+    // ATOMIC receiver credit; if it fails, ROLL BACK the sender debit so credit never vanishes.
+    let credited = false;
+    for (let i = 0; i < 6 && !credited; i++) {
+      const fr = (await base44.asServiceRole.entities.User.filter({ id: receiverId }))[0] || receiver;
+      const rb = Number(fr.current_balance) || 0;
+      const ok = await db.updateIf("User", receiverId, { current_balance: Math.round((rb + amount) * 100) / 100 }, { field: "current_balance", equals: String(rb) }).catch(() => null);
+      if (ok) credited = true;
+    }
+    if (!credited) {
+      for (let i = 0; i < 6; i++) { const fs = (await base44.asServiceRole.entities.User.filter({ id: sender.id }))[0]; const bal = Number(fs?.current_balance) || 0; const ok = await db.updateIf("User", sender.id, { current_balance: Math.round((bal + amount) * 100) / 100 }, { field: "current_balance", equals: String(bal) }).catch(() => null); if (ok) break; }
+      return Response.json({ error: "Transfer failed — your balance was not changed." }, { status: 409 });
+    }
 
     await base44.asServiceRole.entities.MoneyTransfer.create({
       sender_user_id: sender.id, receiver_user_id: receiverId, receiver_email: receiver.email,
       amount, status: "completed", note, at: new Date().toISOString(),
     });
 
-    return Response.json({ ok: true, transferred: amount, new_balance: Math.round((senderBalance - amount) * 100) / 100 });
+    return Response.json({ ok: true, transferred: amount });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { db } from "../../sdk/db.ts";
 
 // Server-authoritative balance DEBIT.
 //
@@ -30,16 +31,27 @@ export default __handler(async (req) => {
       effectiveAmount = Math.round((amount - boostCovered) * 100) / 100;
     }
 
-    const balance = Number(user.current_balance ?? 0);
-    if (balance < effectiveAmount) return Response.json({ error: "Insufficient balance", required: effectiveAmount, balance }, { status: 402 });
-
-    const patch: Record<string, unknown> = { current_balance: Math.round((balance - effectiveAmount) * 100) / 100 };
-    if (boostCovered > 0) patch.app_time_credit_usd = Math.round(((Number(user.app_time_credit_usd) || 0) - boostCovered) * 100) / 100;
+    // Base patch (non-balance fields).
+    const basePatch: Record<string, unknown> = {};
+    if (boostCovered > 0) basePatch.app_time_credit_usd = Math.round(((Number(user.app_time_credit_usd) || 0) - boostCovered) * 100) / 100;
     if (body.grant_game_id) {
       const lib = Array.isArray(user.game_library) ? user.game_library : [];
-      patch.game_library = [...lib, body.grant_game_id];
+      basePatch.game_library = [...lib, body.grant_game_id];
     }
-    await base44.asServiceRole.entities.User.update(user.id, patch);
+
+    // ATOMIC debit (compare-and-set + retry): re-read the balance and only commit if it hasn't changed,
+    // so two concurrent debits can't both pass the funds check and double-spend.
+    let finalBalance = 0, done = false;
+    for (let i = 0; i < 6 && !done; i++) {
+      const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || user;
+      const bal = Number(fresh.current_balance) || 0;
+      if (bal < effectiveAmount) return Response.json({ error: "Insufficient balance", required: effectiveAmount, balance: bal }, { status: 402 });
+      finalBalance = Math.round((bal - effectiveAmount) * 100) / 100;
+      const ok = await db.updateIf("User", user.id, { ...basePatch, current_balance: finalBalance }, { field: "current_balance", equals: String(bal) }).catch(() => null);
+      if (ok) done = true;
+    }
+    if (!done) return Response.json({ error: "Please retry — balance is being updated." }, { status: 409 });
+    const patch = { current_balance: finalBalance };
 
     await base44.asServiceRole.entities.Transaction.create({
       user_id: user.id, type: "debit", reason, amount: effectiveAmount, boost_covered_usd: boostCovered || undefined,

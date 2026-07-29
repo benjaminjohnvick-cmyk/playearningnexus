@@ -1,11 +1,17 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
 
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (user?.role !== 'admin') return Response.json({ error: 'Admin only' }, { status: 403 });
+    // Respect the global cash kill-switch: even an admin batch can't disburse cash while cash_out is OFF.
+    // (This rail pays partner affiliates; it must still honor the same emergency brake as every other rail.)
+    if (!(await isEnabled('cash_out'))) {
+      return Response.json({ blocked: true, cash_out_disabled: true, message: 'Cash payouts are currently disabled (cash_out kill-switch).' }, { status: 403 });
+    }
 
     const { payout_month, test_mode } = await req.json();
     if (!payout_month) return Response.json({ error: 'Missing payout_month (YYYY-MM)' }, { status: 400 });

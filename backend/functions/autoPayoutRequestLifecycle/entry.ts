@@ -73,11 +73,13 @@ export default __handler(async (req) => {
           body: `Great news! Your payout of $${pr.amount} has been approved and will arrive via ${pr.method || 'PayPal'} within 1-3 business days.`
         });
       } else if (pr.status === 'rejected' || pr.status === 'failed' || pr.status === 'cancelled') {
-        // Release the reserved hold — the money never left (rejected/failed/cancelled), so restore it
-        // to available balance. Idempotency-guarded so a re-fired update event can't release twice.
-        if (!pr.reservation_released) {
-          await releaseReservation(base44, pr.user_id, Number(pr.amount) || 0).catch(() => null);
+        // Release the reserved hold — the money never left (rejected/failed/cancelled), so restore it to
+        // available balance. Re-read the CURRENT record (not the event payload, which can be stale or
+        // duplicated) and set the released flag BEFORE releasing, so a duplicate event can't double-release.
+        const cur = (await base44.asServiceRole.entities.PayoutRequest.filter({ id: pr.id }))[0];
+        if (cur && !cur.reservation_released) {
           await base44.asServiceRole.entities.PayoutRequest.update(pr.id, { reservation_released: true }).catch(() => null);
+          await releaseReservation(base44, pr.user_id, Number(pr.amount) || 0).catch(() => null);
         }
         const reason = pr.status === 'rejected'
           ? `Reason: ${pr.rejection_reason || 'Policy violation'}. Please contact support if you believe this is an error.`

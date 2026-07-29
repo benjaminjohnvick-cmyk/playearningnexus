@@ -48,10 +48,13 @@ export default __handler(async (req) => {
     });
 
     const totalAvailable = payouts.reduce((sum, p) => sum + (p.net_payout_amount || 0), 0);
-    const totalWithdrawn = await base44.asServiceRole.entities.WithdrawalRequest.filter({
-      developer_id: user.id,
-      status: 'completed'
-    }).then(reqs => reqs.reduce((sum, r) => sum + (r.amount || 0), 0));
+    // Count COMPLETED *and IN-FLIGHT* withdrawals against the balance — otherwise a developer could submit
+    // several withdrawals back-to-back and each would pass because none had completed yet (over-withdrawal).
+    const allWithdrawals = await base44.asServiceRole.entities.WithdrawalRequest.filter({ developer_id: user.id });
+    const COUNTS_AGAINST = new Set(['completed', 'pending', 'approved', 'processing', 'verified', 'pending_tax_form']);
+    const totalWithdrawn = (allWithdrawals || [])
+      .filter((r) => COUNTS_AGAINST.has(r.status))
+      .reduce((sum, r) => sum + (r.amount || 0), 0);
 
     const availableBalance = totalAvailable - totalWithdrawn;
 
