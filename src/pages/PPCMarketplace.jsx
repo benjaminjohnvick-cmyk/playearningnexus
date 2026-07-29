@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DollarSign, Zap, Trophy, TrendingUp, Info, Lock, CheckCircle2, Loader2, ShoppingBag, BarChart2, Search, Package, Sparkles } from "lucide-react";
 import { Link } from 'react-router-dom';
 import ProductSearchBar from '@/components/store/ProductSearchBar';
+import PremiumPPCEnrollButton from '@/components/premium/PremiumPPCEnrollButton';
 import ProductSearchResults from '@/components/store/ProductSearchResults';
 import TierInfoModal from '@/components/ppc/TierInfoModal';
 import SurveyPublisherForm from '@/components/ppc/SurveyPublisherForm';
@@ -92,6 +93,10 @@ export default function PPCMarketplace() {
             A three-tier Pay-Per-Click marketplace. Complete surveys, publish your own, and grow through tiers to unlock massive earning potential.
           </p>
         </div>
+
+        {/* One-click PPC survey-advance enrollment (clickwrap consent + explanation). Renders only when
+            the up-front offer is live and the member isn't already enrolled. */}
+        <PremiumPPCEnrollButton />
 
         {/* Status bar */}
         <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">

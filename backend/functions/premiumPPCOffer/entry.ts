@@ -1,6 +1,6 @@
 import { __handler } from "../../sdk/runtime.ts";
 import { createClientFromRequest } from "../../sdk/mod.ts";
-import { getNumber } from "../../sdk/settings.ts";
+import { getNumber, getString } from "../../sdk/settings.ts";
 import {
   annualEarnCeiling, gridAnnualPrice, businessAdCreditUsd, socialPostingOrderTarget, usdToPoints,
   upfrontGrantEnabled, surveyMinutesPerDay, surveyCommitmentDays,
@@ -27,8 +27,10 @@ export default __handler(async (req) => {
       `free advertising continues at no additional cost until they've received $${doubleUsd.toLocaleString()} ` +
       `in orders (double their investment); after that, earnings are points spendable on anything via the site.`;
 
+    const terms_version = await getString("TERMS_VERSION", "2026-07-01");
     return Response.json({
       upfront: upfrontGrantEnabled(),
+      terms_version,
       member: {
         headline_usd: userUsd,
         headline_points: usdToPoints(userUsd, cents),
