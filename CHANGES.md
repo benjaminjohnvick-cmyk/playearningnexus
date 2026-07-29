@@ -1,5 +1,21 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-29 — Automate the kit: continuous deployment, one-click Railway, no-terminal wizard
+
+The execution kit now runs itself and works without a coding agent. See
+`deploy-kit/CONTINUOUS-DEPLOYMENT-AND-ONE-CLICK.md`.
+
+- **Continuous deployment** — `.github/workflows/deploy.yml`: every push to `main` validates (build +
+  full pre-deploy audit), deploys the backend to Railway, and runs the automated QA smoke. Guarded on a
+  `RAILWAY_TOKEN` secret — validates and skips deploy gracefully until set (never hard-fails, no money paths).
+- **One-click deploy** — a "Deploy on Railway" button in the README + `backend/railway.json`.
+- **No-terminal wizard** — `deploy-kit/wizard/index.html`: 100% in-browser, sends nothing anywhere; paste
+  keys → Generate → ready `.env` with the launch defaults pre-filled.
+- Mobile builds already push-triggered (`android-release` / `ios-release`).
+- Human-only steps unchanged for everyone: account creation, keys/payment, terms, app-store review.
+
+---
+
 ## 2026-07-29 — Survey make-up, everything-on defaults, execution kit maxed out
 
 **Survey make-up.** Missed PPC survey days add one extra 8-min session to a later day; the app
