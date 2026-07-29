@@ -52,6 +52,10 @@ say "STEP 3/6  Validate the build (the #1 thing that breaks deploys)"
 if command -v npm >/dev/null 2>&1; then
   if npm install --ignore-scripts >/dev/null 2>&1 && npm run build >/dev/null 2>&1; then ok "frontend build is green — deployable"; else err "frontend build FAILED — run 'npm run build' to see why"; TODO+=("Fix the frontend build (npm run build) before deploying."); fi
 else warn "npm not found here — run this on a machine with Node installed"; fi
+# Automated code auditor: structural checks (fail) + guardrail lints (advisory).
+if command -v node >/dev/null 2>&1; then
+  if node deploy-kit/audit.mjs; then ok "code auditor: structural checks passed"; else err "code auditor found structural errors (see above)"; TODO+=("Fix the auditor's structural errors before deploying."); fi
+fi
 
 # ---- STEP 4: load the database schema ---------------------------------------
 say "STEP 4/6  Load the database schema"

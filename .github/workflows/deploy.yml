@@ -40,6 +40,10 @@ jobs:
           node-version: '20'
       - name: Install + build + full pre-deploy audit
         run: bash deploy-kit/validate.sh
+      - name: Automated code auditor (structural checks + guardrail lints)
+        run: node deploy-kit/audit.mjs
+        # Structural errors fail the build. Guardrail lints are advisory (printed for review).
+        # To also block on advisory warnings once clean, change to: node deploy-kit/audit.mjs --strict
 
   deploy-backend:
     name: Deploy backend to Railway

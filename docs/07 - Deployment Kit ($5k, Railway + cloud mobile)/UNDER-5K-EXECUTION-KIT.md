@@ -179,3 +179,15 @@ The kit now runs itself and works without a coding agent — see
 
 The irreducible human steps stay human for everyone: creating accounts, entering your own card/keys,
 accepting terms, and passing Apple/Google review.
+
+---
+
+## Automated code auditor (2026-07-29)
+
+`deploy-kit/audit.mjs` (+ `audit.sh`) is an always-on auditor — see **`deploy-kit/CODE-AUDITOR.md`**. It
+runs on every push (in `deploy.yml`) and in `launch.sh`: STRUCTURAL checks (brace/JSON balance,
+entities↔schema, scheduler↔functions, manifest) FAIL the build; GUARDRAIL LINTS (money atomicity, cash-out
+gate, FTC disclosure, LLM spend-cap bypass, sweepstakes age/jurisdiction gate) are advisory and printed for
+review. It FINDS every push and auto-fixes only safe formatting/lint (`audit.sh --fix`) — logic/money/
+compliance issues are surfaced, never silently rewritten. It is a regression net for the exact classes the
+full audit found; it does not (and no tool can) "guarantee zero errors."
