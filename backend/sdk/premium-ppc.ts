@@ -109,17 +109,71 @@ export function isDefaulted(user: Record<string, unknown> | null | undefined, me
   return isSpentOut(user, member) && commitmentPace(member, nowMs).behind;
 }
 
-/** Mark that a member met their survey requirement TODAY (idempotent per UTC day). Callable server-side
- *  from the survey-completion flow. Returns the new count, or null if not in an active up-front term. */
-export async function markSurveyDay(userId: string): Promise<{ survey_days: number; already: boolean } | null> {
+/** MAKE-UP PLAN — how many survey sessions (each = surveyMinutesPerDay, default 8 min) the member should
+ *  complete TODAY, INCLUDING catch-up for missed days. Rule: every missed day adds one make-up session to
+ *  a later day (an extra 8 minutes per day missed), and the member has the full commitment window (≥1 yr)
+ *  to make it up. Missing a day never creates a debt or expires the commitment inside the window — it just
+ *  moves that session's minutes to a day they choose. Recomputed every day from real progress.
+ *
+ *  `survey_days` counts COMPLETED sessions toward the requirement (365). `sessions_credited_today` is how
+ *  many of today's sessions have already been counted (so extra minutes catch up, idempotently). */
+export function makeupPlan(member: Record<string, unknown> | null | undefined, nowMs = Date.now()): {
+  requirement: number; days_elapsed: number; expected: number; done: number; done_excl_today: number;
+  missed_days: number; base_minutes: number; sessions_today: number; sessions_done_today: number;
+  remaining_sessions_today: number; required_minutes_today: number; makeup_window_end: string | null;
+  behind: boolean; complete: boolean;
+} {
+  const base = surveyMinutesPerDay();
+  const requirement = surveyCommitmentDays();
+  const startMs = member?.commitment_start ? new Date(String(member.commitment_start)).getTime() : nowMs;
+  const daysElapsed = Math.max(0, Math.floor((nowMs - startMs) / 86400000));
+  const expected = Math.min(requirement, daysElapsed);
+  const done = Math.max(0, Number(member?.survey_days) || 0);
+  const today = utcDay(new Date(nowMs));
+  const creditedToday = member?.last_survey_day === today ? Math.max(0, Number(member?.sessions_credited_today) || 0) : 0;
+  const doneExclToday = Math.max(0, done - creditedToday);
+  const missed = Math.max(0, expected - doneExclToday);
+  // Today's own session + one make-up session per missed day, never past the full requirement.
+  const sessionsToday = Math.max(0, Math.min(1 + missed, requirement - doneExclToday));
+  const remainingToday = Math.max(0, sessionsToday - creditedToday);
+  const windowDays = Math.max(requirement, 365);
+  const makeupEnd = member?.commitment_start ? new Date(startMs + windowDays * 86400000).toISOString() : null;
+  return {
+    requirement, days_elapsed: daysElapsed, expected, done, done_excl_today: doneExclToday,
+    missed_days: missed, base_minutes: base, sessions_today: sessionsToday, sessions_done_today: creditedToday,
+    remaining_sessions_today: remainingToday, required_minutes_today: remainingToday * base,
+    makeup_window_end: makeupEnd, behind: missed > surveyPaceGraceDays(), complete: done >= requirement,
+  };
+}
+
+/** Credit the member's survey progress for TODAY from the minutes they completed. Supports MAKE-UP:
+ *  completing extra minutes (16, 24, …) credits multiple sessions in one day to catch up missed days,
+ *  bounded by (1 + missed days) and by the full-year requirement. Idempotent within the day. Callable
+ *  server-side from the survey-completion flow. Returns the new totals, or null if not in an up-front term.
+ *  `minutesToday` is the member's cumulative survey minutes for today; omit to credit a single session. */
+export async function markSurveyDay(userId: string, minutesToday?: number): Promise<
+  { survey_days: number; credited: number; sessions_today: number; already: boolean } | null
+> {
   const rows = await db.filter("PremiumPPCMembership", { user_id: userId }, "-created_date", 5).catch(() => []) as Record<string, unknown>[];
   const m = rows.find((x) => x.status === "active" && x.upfront_grant) || null;
   if (!m) return null;
+  const base = surveyMinutesPerDay();
   const today = utcDay();
-  if (m.last_survey_day === today) return { survey_days: Number(m.survey_days) || 0, already: true };
-  const next = (Number(m.survey_days) || 0) + 1;
-  await db.update("PremiumPPCMembership", String(m.id), { survey_days: next, last_survey_day: today }).catch(() => null);
-  return { survey_days: next, already: false };
+  const plan = makeupPlan(m);
+  const minutes = Number(minutesToday);
+  const sessionsByMinutes = Number.isFinite(minutes) && minutes > 0 ? Math.max(1, Math.floor(minutes / base)) : 1;
+  // Total sessions to stand credited for today = what they've already been credited + what today's minutes
+  // cover, capped at the day's allowance (today + make-up owed).
+  const targetToday = Math.min(plan.sessions_today, plan.sessions_done_today + sessionsByMinutes);
+  const newCredit = Math.max(0, targetToday - plan.sessions_done_today);
+  if (newCredit <= 0) {
+    return { survey_days: plan.done, credited: 0, sessions_today: plan.sessions_today, already: true };
+  }
+  const nextDays = plan.done_excl_today + targetToday;
+  await db.update("PremiumPPCMembership", String(m.id), {
+    survey_days: nextDays, last_survey_day: today, sessions_credited_today: targetToday,
+  }).catch(() => null);
+  return { survey_days: nextDays, credited: newCredit, sessions_today: plan.sessions_today, already: false };
 }
 
 /** Attribute a delivered order's value toward a matched advertiser's "doubling" total (drives when their

@@ -89,7 +89,8 @@ export default __handler(async (req) => {
     // Premium up-front members: if they met today's survey quota, count it toward the year's commitment.
     try {
       const { markSurveyDay, surveyMinutesPerDay } = await import("../../sdk/premium-ppc.ts");
-      if (goalMet || Number(minutesCompleted) >= surveyMinutesPerDay()) await markSurveyDay(user.id);
+      // Pass today's cumulative minutes so extra minutes credit make-up sessions for missed days.
+      if (goalMet || Number(minutesCompleted) >= surveyMinutesPerDay()) await markSurveyDay(user.id, Number(minutesCompleted));
     } catch { /* premium commitment tracking is best-effort */ }
 
     // Update PPCUserTier record

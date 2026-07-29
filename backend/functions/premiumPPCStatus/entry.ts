@@ -1,6 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { annualEarnCeiling, DAILY_EARN_CAP, round2, commitmentPace, isDefaulted, surveyMinutesPerDay } from "../../sdk/premium-ppc.ts";
+import { annualEarnCeiling, DAILY_EARN_CAP, round2, commitmentPace, isDefaulted, surveyMinutesPerDay, makeupPlan } from "../../sdk/premium-ppc.ts";
 import { db } from "../../sdk/db.ts";
 
 // premiumPPCStatus — membership + earn-as-you-go ledger for the UI, plus the 1:1 slot availability.
@@ -31,6 +31,7 @@ export default __handler(async (req) => {
       member = { ...member, status: "locked_out", defaulted: true };
     }
     const pace = member && member.upfront_grant ? commitmentPace(member) : null;
+    const makeup = member && member.upfront_grant ? makeupPlan(member) : null;
 
     // Daily engagement records (met/missed), most recent first.
     const days = member
@@ -59,6 +60,8 @@ export default __handler(async (req) => {
       lockout_time: member?.lockout_time ?? null,
       survey_minutes_per_day: surveyMinutesPerDay(),
       survey_pace: pace,   // { requirement, expected, done, behind_by, behind, complete } for up-front members
+      // Make-up plan: how many sessions/minutes to complete TODAY to stay on track or catch up missed days.
+      makeup: makeup,      // { missed_days, sessions_today, remaining_sessions_today, required_minutes_today, makeup_window_end, ... }
       daily_earn_cap: DAILY_EARN_CAP,
       annual_earn_ceiling: ceiling,
       points_earned: earned,

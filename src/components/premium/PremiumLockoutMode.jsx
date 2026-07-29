@@ -51,9 +51,13 @@ export default function PremiumLockoutMode() {
   if (!status?.upfront_grant) return null;
 
   const pace = status.survey_pace;
+  const makeup = status.makeup;
   const mins = status.survey_minutes_per_day || 8;
   const behind = !!pace?.behind;
   const required = status.defaulted || status.locked_out; // re-enrollment condition — can't turn off
+  const sessionsToday = makeup?.remaining_sessions_today ?? 1;
+  const minutesToday = makeup?.required_minutes_today ?? mins;
+  const missedDays = makeup?.missed_days ?? 0;
 
   return (
     <Card className={behind ? 'border-2 border-amber-300' : ''}>
@@ -67,10 +71,19 @@ export default function PremiumLockoutMode() {
           you in-app at the time you pick — it doesn’t lock your phone, and nothing is ever charged.
         </p>
 
-        {behind && (
-          <div className="mb-3 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
-            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
-            <span>You’re {pace.behind_by} day{pace.behind_by === 1 ? '' : 's'} behind your survey pace. You can catch up any time — turning on a daily reminder helps.</span>
+        {/* Today's target — includes catch-up: one extra 8-min session per missed day. */}
+        {makeup && !makeup.complete && (
+          <div className={`mb-3 rounded-lg p-2 text-xs ${missedDays > 0 ? 'bg-amber-50 text-amber-800' : 'bg-emerald-50 text-emerald-800'}`}>
+            {sessionsToday > 0 ? (
+              <span>
+                <b>Today: complete {sessionsToday} session{sessionsToday === 1 ? '' : 's'} ({minutesToday} min).</b>{' '}
+                {missedDays > 0
+                  ? `That's your daily ${mins} min plus ${missedDays} make-up session${missedDays === 1 ? '' : 's'} for ${missedDays} missed day${missedDays === 1 ? '' : 's'}. Every missed day just adds one ${mins}-min session to a later day — you have the full year to make it up.`
+                  : `You're on track — just your daily ${mins} minutes.`}
+              </span>
+            ) : (
+              <span>✓ You're all caught up for today. Nice work.</span>
+            )}
           </div>
         )}
 

@@ -28,6 +28,14 @@ through the site at any store — advertised in real dollars, delivered as point
   agrees to the survey commitment (`PREMIUM_SURVEY_COMMITMENT_DAYS` = 365, `PREMIUM_SURVEY_MINUTES_PER_DAY`
   = 8, with `PREMIUM_SURVEY_GRACE_DAYS` = 7 of slack). Completing a day's quota counts one survey-day
   toward the year (idempotent per UTC day; wired into `processPPCSession` and `premiumPPCSurveyDay`).
+- **Missed days are made up, not lost.** Every missed day adds **one extra 8-minute session** to a later
+  day. Each day the app recalculates how many days were missed and shows exactly how many sessions to
+  complete today to catch up — e.g. after missing one day, today shows **2 sessions (16 min)**: today's
+  plus one make-up. Completing the extra minutes in a day credits multiple survey-days at once (bounded by
+  1 + missed days, and by the 365 total). The member has the **full commitment window (≥1 year)** from
+  signup to make up any missed session; missing a day never creates a debt or expires the commitment
+  inside the window. Backend: `makeupPlan()` + `markSurveyDay(userId, minutesToday)`; surfaced in
+  `premiumPPCStatus.makeup` and `PremiumLockoutMode.jsx`.
 - **Spent-out + behind = lockout, never a charge.** If a member spends (nearly) all their points
   (`PREMIUM_SPENT_OUT_PCT`, default 5%) **and** is behind pace beyond the grace window, PPC surveys are
   paused (`premiumPPCStatus` lazily flips the membership to `locked_out`). The member **keeps all their
