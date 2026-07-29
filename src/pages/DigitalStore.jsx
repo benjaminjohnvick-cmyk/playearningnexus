@@ -120,17 +120,22 @@ export default function DigitalStore() {
       <div className="mb-1 flex items-center gap-2"><Cloud className="h-6 w-6" /><h1 className="text-2xl font-bold">Digital Products</h1></div>
       <p className="mb-4 text-sm text-gray-500 flex items-center gap-1"><Download className="h-3.5 w-3.5" /> Delivered online instantly — no shipping.</p>
 
-      {/* App Store entry point — the game/app store lives inside Digital Products. */}
-      <Link to={createPageUrl('InAppGameStore')} className="mb-4 flex items-center justify-between rounded-xl bg-gradient-to-r from-fuchsia-600 to-indigo-600 p-4 text-white hover:opacity-95">
-        <div className="flex items-center gap-3">
-          <Gamepad2 className="h-6 w-6" />
-          <div>
-            <div className="font-semibold">🎮 App Store — games & apps</div>
-            <div className="text-xs text-white/85">Browse and get games and apps · instant digital delivery</div>
+      {/* "Digital Gaming" subcategory — the App Store (games & apps) presented as a subcategory of
+          Digital Products. This OPENS the existing App Store page unchanged (no code moved), so its
+          design/functionality/backend stay exactly as-is. */}
+      <div className="mb-4">
+        <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">Subcategory</div>
+        <Link to={createPageUrl('InAppGameStore')} className="flex items-center justify-between rounded-xl bg-gradient-to-r from-fuchsia-600 to-indigo-600 p-4 text-white hover:opacity-95">
+          <div className="flex items-center gap-3">
+            <Gamepad2 className="h-6 w-6" />
+            <div>
+              <div className="font-semibold">🎮 Digital Gaming</div>
+              <div className="text-xs text-white/85">Games & apps from the App Store · instant digital delivery</div>
+            </div>
           </div>
-        </div>
-        <span className="text-sm font-semibold">Open →</span>
-      </Link>
+          <span className="text-sm font-semibold">Open →</span>
+        </Link>
+      </div>
 
       {/* Prominent product search — the first thing you see, with light placeholder text so it's obvious. */}
       <div className="mb-4">
