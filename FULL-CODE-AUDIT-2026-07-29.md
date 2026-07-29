@@ -95,7 +95,45 @@ client-supplied counts (gameable) — make purchase/objective metrics server-aut
   only `awaiting_payment` and for teen orders that are `pending_approval`. Branch on
   `payment_captured` / `needs_approval`.
 
+## PASS 2 — COMPLETE (every "Remaining" item above is now done)
+
+Pass 2 was run to completion. The auditor now reports **0 advisory warnings** (structural checks pass).
+Commits `43b252e` (2A) → `74c59bb` (2G). What Pass 2 closed:
+
+- **Payout rails hardened + partner cash ON from launch (2A):** `isPartnerPayout` hardened so a
+  client-supplied `payout_type` can't self-elevate a regular user to cash; `cash_out` flag turned ON
+  (partners get cash, users stay closed-loop); every rail (paypal/venmo/cashapp/request/withdrawal)
+  atomically claims the payout (`db.updateIf`) with stable idempotency keys and reverts on pre-send error;
+  Venmo/Cash App added to tax-reportable types.
+- **Money atomicity everywhere (2B/2C/2G):** processRewardPayout, respondentMicroPayout, spendBalance,
+  transferCredit (with rollback), processWithdrawalRequest (in-flight balance), autoPayoutRequestLifecycle
+  (re-read before release), processMonthlyAffiliatePayouts (cash_out gate), plus the 9 remaining
+  non-atomic balance writes (auditSurveyResponses, autoAffiliateAndStreamerEngine [+ claim-first],
+  autoDailyStreakEngine, giftStoreItem, membershipDailyFee, purchaseStoreCredit [+ replay guard],
+  premiumPPCDailyReconcile, premiumPPCEnroll, processPPCSession) — all converted to the shared
+  `sdk/balance.ts` `adjustUserBalance()` compare-and-set helper.
+- **Compliance uniformity (2D/2G):** jurisdiction + 18+ + sweepstakes-registration gate added to
+  distributeTournamentPrizes and processRewardPayout (contest wins); jackpot-entry grants in
+  autoProfileSetup and autoWishlistShareLifecycle gated on jurisdiction; FTC `withAdDisclosure()` now wraps
+  every auto-posted promo (postGamerGainAds, aiContentGeneratorAndShare, aiViralContentPublisher,
+  mosaicAutoShareSocialMedia, automaticSocialPostingScheduler, autoMarketingCampaignLauncher,
+  growthContentEngine); `MAINTENANCE_MODE` now gates `/agents/*` before dispatch.
+- **AI data coverage (2E/2F):** `collectSignals()` now also reads Referral, Payout, MarketplaceListing,
+  Games, Layaway, and PointsBoostLedger; grounded `referral.converted` and `payout.executed/failed` events
+  are now emitted so `attributeOutcomes` confirms agent learning against real outcomes; `recordVariantMetric`
+  is server-authoritative (records an occurrence, ignores client-supplied magnitude → no bandit poisoning).
+- **Global AI spend brake (2E):** the agent runtime and TTS were talking to providers directly and
+  bypassing the meter — both now honor `AI_DAILY_SPEND_CAP_USD` + the `ai_paused` kill-switch via shared
+  `integrations.ts` helpers.
+- **Frontend correctness (2F):** Marketplace/PhysicalStore/DigitalStore now branch on
+  `payment_captured` / `needs_approval` — no false "Purchased!" on a card order still awaiting payment or a
+  teen order awaiting household approval.
+
+**Launch prerequisites for the partner-cash rails (unchanged, human-owned):** live PayPal/Stripe merchant
+accounts, partner W-9 / 1099 collection, and counsel sign-off on the jurisdictions you enable. `cash_out`
+is an admin kill-switch you can flip OFF at any time.
+
 ## Method note
 
-Fixes were made against the working copy (repo = source of truth), each verified for brace/JSON balance.
-This is a first high-priority fix pass; the Remaining list is real work for a follow-up, not a wishlist.
+Fixes were made against the working copy (repo = source of truth), each verified for brace/JSON balance and
+re-run through the automated auditor (`node deploy-kit/audit.mjs`) after every batch.
