@@ -49,3 +49,6 @@ base44/.app.jsonc
 snapshots/
 *-repo-backup-*.zip
 GamerGain-FULL-CODEBASE-*.txt
+
+# sandbox walkthrough artifacts (screenshots + report)
+deploy-kit/e2e/artifacts/

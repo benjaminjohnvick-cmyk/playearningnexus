@@ -191,3 +191,14 @@ gate, FTC disclosure, LLM spend-cap bypass, sweepstakes age/jurisdiction gate) a
 review. It FINDS every push and auto-fixes only safe formatting/lint (`audit.sh --fix`) — logic/money/
 compliance issues are surfaced, never silently rewritten. It is a regression net for the exact classes the
 full audit found; it does not (and no tool can) "guarantee zero errors."
+
+---
+
+## Sandbox walkthrough — functional error-catching (2026-07-29)
+
+`bash deploy-kit/sandbox-test.sh` spins up a throwaway sandbox of the whole site with mock data, then a
+headless browser logs in as the demo user and walks EVERY route (from `src/App.jsx`), catching broken
+pages, 500s, console/JS errors, and error-boundary crashes — screenshots + JSON report in
+`deploy-kit/e2e/artifacts/`. No AI needed; anyone can launch it. It FINDS issues; it does not auto-fix.
+The AI-driven upgrade (Claude walks the sandbox via the Chrome extension as each role and fixes what it
+finds) needs a live session + a reachable sandbox — see `SANDBOX-WALKTHROUGH.md`.

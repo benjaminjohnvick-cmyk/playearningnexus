@@ -57,3 +57,11 @@ one and CI flags it.
 Add a new check by appending a pattern to the GUARDRAIL LINTS section of `deploy-kit/audit.mjs` (one
 regex + a `warn(file, line, msg)`), or a new structural invariant to the STRUCTURAL section (which `fail()`s
 the build). Keep structural checks false-positive-free; keep pattern lints advisory.
+
+## Companion: functional / runtime error-catching
+
+The auditor above is STATIC (it reads the code). For RUNTIME functional errors — broken pages, 500s,
+crashed flows — see **`SANDBOX-WALKTHROUGH.md`**: `bash deploy-kit/sandbox-test.sh` spins up a mock-data
+sandbox and a headless browser walks every route as the demo user, catching what a person would hit. Same
+honest line: it FINDS (with screenshots + a report), it does not auto-fix. Together they cover static +
+runtime error-catching in the kit.
