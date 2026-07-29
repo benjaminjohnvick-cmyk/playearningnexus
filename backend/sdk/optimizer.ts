@@ -18,6 +18,7 @@ import { Core } from "./integrations.ts";
 import { requireExperiment, createExperimentForProposal } from "./experiments.ts";
 import { createLiveExperiment, liveEnabled } from "./live-experiments.ts";
 import { topBaseSegment } from "./personalization.ts";
+import { aiPaused, logAiAction } from "./ai-control.ts";
 
 const ACTOR = "ai-optimizer";
 
@@ -374,6 +375,10 @@ export interface OptimizeOptions { only?: string[]; measure?: boolean }
 /** Run a complete cycle: collect → (measure past outcomes) → recommend → apply/queue. Returns a
  *  report. `only` restricts to a subset of setting keys (e.g. just the pricing keys). */
 export async function runOptimizationPass(opts: OptimizeOptions = {}): Promise<Record<string, unknown>> {
+  // GLOBAL AI KILL SWITCH: if a human has hit stop, don't make any AI changes this pass.
+  if (await aiPaused().catch(() => false)) {
+    return { ran_at: new Date().toISOString(), skipped: "ai_paused", auto_applied: [], pending_approval: [], in_experiment: [] };
+  }
   const snap = await collectSignals();
   const measured = opts.measure === false ? [] : await measureOutcomes(snap);
   const targets = OPTIMIZABLE.filter((o) => !opts.only || opts.only.includes(o.key));
@@ -384,6 +389,13 @@ export async function runOptimizationPass(opts: OptimizeOptions = {}): Promise<R
     if (!p) continue;
     const r = await applyOrQueue(p, snap).catch(() => null);
     if (r) applied.push(r);
+    // Surface every AI action in the live oversight feed so a human can see it in real time.
+    if (r) await logAiAction({
+      agent: "optimizer", action: "setting_change", target: r.key, setting_key: r.key,
+      from: r.from, to: r.to, status: r.status,
+      summary: `Optimizer ${r.status === "auto_applied" ? "changed" : r.status === "pending" ? "proposed (needs approval)" : "is testing"} ${r.key}: ${r.from} → ${r.to}`,
+      detail: { recommendation_id: (r as any).recommendation_id, experiment_id: (r as any).experiment_id },
+    }).catch(() => null);
   }
   return {
     ran_at: new Date().toISOString(),

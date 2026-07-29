@@ -272,6 +272,7 @@ export default function Layout({ children, currentPageName }) {
     navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
     navigation.push({ name: 'Platform Settings', icon: Settings, path: 'AdminSettings', requireAuth: true });
     navigation.push({ name: 'KYC Survey Editor', icon: Sparkles, path: 'KYCSurveyAdmin', requireAuth: true });
+    navigation.push({ name: 'AI Live Oversight', icon: Brain, path: 'AILiveOversight', requireAuth: true });
     navigation.push({ name: 'AI Optimization', icon: Brain, path: 'AIOptimization', requireAuth: true });
     navigation.push({ name: 'Pricing Feedback', icon: DollarSign, path: 'AdminPricingFeedback', requireAuth: true });
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });

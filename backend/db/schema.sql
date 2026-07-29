@@ -3097,3 +3097,25 @@ CREATE TABLE IF NOT EXISTS "KycSurveyConfig" (
 CREATE INDEX IF NOT EXISTS "KycSurveyConfig_data_gin" ON "KycSurveyConfig" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "KycSurveyConfig_created" ON "KycSurveyConfig" (created_date DESC);
 
+
+-- AI live-oversight: activity feed + human corrections that feed back into learning
+
+CREATE TABLE IF NOT EXISTS "AIActivityLog" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AIActivityLog_data_gin" ON "AIActivityLog" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AIActivityLog_created" ON "AIActivityLog" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "AICorrection" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AICorrection_data_gin" ON "AICorrection" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AICorrection_created" ON "AICorrection" (created_date DESC);

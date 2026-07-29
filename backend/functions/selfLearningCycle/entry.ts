@@ -2,6 +2,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
+import { aiPaused } from "../../sdk/ai-control.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { aggregateStats } from "../../sdk/telemetry.ts";
 import { refreshSiteModel } from "../../sdk/site-model.ts";
@@ -32,6 +33,10 @@ export default __handler(async (req) => {
   try {
     if (!(await isEnabled("self_learning").catch(() => true))) {
       return Response.json({ success: true, skipped: "self_learning flag off" });
+    }
+    // GLOBAL AI KILL SWITCH — a human hit stop; don't run the self-improvement pass.
+    if (await aiPaused().catch(() => false)) {
+      return Response.json({ success: true, skipped: "ai_paused" });
     }
     const base44 = createClientFromRequest(req);
     const minSample = Math.max(1, await getNumber("SELF_LEARNING_MIN_SAMPLE", 30));

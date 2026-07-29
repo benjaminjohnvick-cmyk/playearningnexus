@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { getActiveSurvey, validateSurvey, saveProposal, saveActiveSurvey } from "../../sdk/kyc.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
+import { aiPaused, logAiAction } from "../../sdk/ai-control.ts";
 import { db } from "../../sdk/db.ts";
 import { Core } from "../../sdk/integrations.ts";
 
@@ -83,14 +84,17 @@ export default __handler(async (req) => {
     if (!v.ok || !v.survey) return Response.json({ error: `AI produced an invalid survey: ${v.error}` }, { status: 422 });
     const rationale = String(parsed?.rationale || "").slice(0, 2000);
 
-    const autopublish = await isEnabled("kyc_survey_ai_autopublish").catch(() => false);
+    // Autopublish only if the flag is on AND the global AI kill switch isn't engaged.
+    const autopublish = (await isEnabled("kyc_survey_ai_autopublish").catch(() => false)) && !(await aiPaused().catch(() => false));
     if (autopublish) {
       await saveActiveSurvey(v.survey, "ai", user.id);
       await db.create("AdminAuditLog", { actor_email: user.email, actor_id: user.id, action_type: "kyc_survey_ai_autopublish", target: "kyc_survey", details: { questions: v.survey.questions.length }, timestamp: new Date().toISOString() }, user.id).catch(() => null);
+      await logAiAction({ agent: "kyc_ai", action: "survey_publish", target: "kyc_survey", status: "applied", summary: `AI published a new KYC survey (${v.survey.questions.length} questions)`, detail: { rationale } }).catch(() => null);
       return Response.json({ ok: true, applied: true, survey: v.survey, rationale });
     }
 
     await saveProposal(v.survey, rationale, user.id);
+    await logAiAction({ agent: "kyc_ai", action: "survey_proposal", target: "kyc_survey", status: "queued", summary: `AI proposed a new KYC survey (${v.survey.questions.length} questions) — awaiting approval`, detail: { rationale } }).catch(() => null);
     return Response.json({ ok: true, applied: false, staged: true, survey: v.survey, rationale, responses_analyzed: n });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

@@ -271,5 +271,7 @@
 "KYCResponse",
 "OverheadReport",
 "UXFinding",
-"KycSurveyConfig"
+"KycSurveyConfig",
+"AIActivityLog",
+"AICorrection"
 ]
