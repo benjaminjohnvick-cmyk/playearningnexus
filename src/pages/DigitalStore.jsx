@@ -95,6 +95,21 @@ export default function DigitalStore() {
       <div className="mb-1 flex items-center gap-2"><Cloud className="h-6 w-6" /><h1 className="text-2xl font-bold">Digital Products</h1></div>
       <p className="mb-4 text-sm text-gray-500 flex items-center gap-1"><Download className="h-3.5 w-3.5" /> Delivered online instantly — no shipping.</p>
 
+      {/* Prominent product search — the first thing you see, with light placeholder text so it's obvious. */}
+      <div className="mb-4">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <Input
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search for products…"
+            aria-label="Search for digital products"
+            className="h-14 w-full rounded-full border-gray-300 bg-white pl-12 pr-4 text-base placeholder:text-gray-400 shadow-sm focus-visible:ring-2 focus-visible:ring-indigo-300"
+          />
+        </div>
+      </div>
+
       {payback && payback.spent_usd > 0 && (
         <Card className="mb-4 border-0 bg-gradient-to-r from-indigo-600 to-violet-600 text-white">
           <CardContent className="p-4">
@@ -110,11 +125,8 @@ export default function DigitalStore() {
 
       {cfg?.welcome_credit_usd > 0 && <div className="mb-3 text-sm text-purple-700">🎁 {formatPrice(cfg.welcome_credit_usd)} welcome credit applies automatically at checkout (up to the per-order cap).</div>}
 
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-          <Input className="pl-8" placeholder="Search digital products…" value={q} onChange={(e) => setQ(e.target.value)} />
-        </div>
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <span className="text-xs text-gray-500">{shown.length} product{shown.length === 1 ? '' : 's'}{q.trim() ? ` for “${q.trim()}”` : ''}</span>
         <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
           <option value="relevance">Relevance</option>
           <option value="price_asc">Price: low to high</option>
