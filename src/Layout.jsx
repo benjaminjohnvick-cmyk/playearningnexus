@@ -190,7 +190,7 @@ export default function Layout({ children, currentPageName }) {
 
   const navigation = [
   { name: 'Home', icon: Home, path: 'Home' },
-  { name: 'Game Store', icon: ShoppingCart, path: 'InAppGameStore' },
+  { name: 'App Store', icon: ShoppingCart, path: 'InAppGameStore' },
   { name: 'Marketplace', icon: Store, path: 'Marketplace', requireAuth: true },
   { name: 'Physical Store', icon: ShoppingCart, path: 'PhysicalStore', requireAuth: true },
   { name: 'Digital Store', icon: LayoutGrid, path: 'DigitalStore', requireAuth: true },
