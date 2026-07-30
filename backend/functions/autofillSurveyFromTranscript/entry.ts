@@ -46,6 +46,7 @@ export default __handler(async (req) => {
 
     const out = await InvokeLLM({
       prompt,
+      model: "gpt_5_mini",   // cheap tier — mapping a transcript to A/B/C/D is simple, structured work
       response_json_schema: {
         type: "object",
         properties: {

@@ -90,6 +90,7 @@ export async function assessValidity(
   try {
     const out = await InvokeLLM({
       prompt,
+      model: "gpt_5_mini",   // cheap tier — a genuine/on-topic yes-no judgement doesn't need the large model
       response_json_schema: {
         type: "object",
         properties: {
