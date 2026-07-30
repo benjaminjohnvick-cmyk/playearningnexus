@@ -14,5 +14,17 @@ export default defineConfig({
   },
   plugins: [
     react(),
-  ]
+  ],
+  build: {
+    rollupOptions: {
+      // Native-only Capacitor plugins that aren't installed for the web build. They're loaded via
+      // guarded dynamic import(...).catch(() => null) and only ever run on the native app shell, so
+      // marking them external lets the web bundle build without them present. On web these imports
+      // never execute (they're behind Capacitor.isNativePlatform()); on native the shell provides them.
+      external: [
+        '@capgo/capacitor-updater',
+        '@capacitor/network',
+      ],
+    },
+  },
 });
