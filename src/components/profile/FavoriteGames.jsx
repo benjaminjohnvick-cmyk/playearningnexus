@@ -107,7 +107,7 @@ export default function FavoriteGames({ userId, isOwnProfile }) {
             <Gamepad2 className="w-12 h-12 mx-auto mb-2 opacity-50" />
             <p>No favorite games selected</p>
             {isOwnProfile && (
-              <Link to={createPageUrl('GameStore')}>
+              <Link to={createPageUrl('Store')}>
                 <button className="mt-2 text-blue-600 hover:underline text-sm">
                   Browse Games →
                 </button>

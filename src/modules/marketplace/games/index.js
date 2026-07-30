@@ -10,7 +10,8 @@ export { default as Store } from "./Store.jsx";                        // the "A
 export { default as InAppGameStore } from "./InAppGameStore.jsx";
 export { default as InAppStore } from "./InAppStore.jsx";
 export { default as VirtualStore } from "./VirtualStore.jsx";
-export { default as GameStore } from "./GameStore.jsx";
+// GameStore retired — its exact UI now lives inside the App Store (Store.jsx) as GameStorePanel.
+// Original page backed up at code-backups/GameStore.original.jsx.
 export { default as GameDetail } from "./GameDetail.jsx";
 export { default as GameGuides } from "./GameGuides.jsx";
 export { default as GameVotingHub } from "./GameVotingHub.jsx";

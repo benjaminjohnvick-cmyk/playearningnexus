@@ -132,7 +132,7 @@ export default function GameDetail() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
       <div className="max-w-6xl mx-auto">
-        <Link to={createPageUrl('GameStore')}>
+        <Link to={createPageUrl('Store')}>
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Store

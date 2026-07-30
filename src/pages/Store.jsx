@@ -23,6 +23,7 @@ import { Dialog } from '@/components/ui/dialog';
 import GameAssistantWidget from '@/components/games/GameAssistantWidget';
 import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
 import AppStoreBrowse from '@/components/store/AppStoreBrowse';
+import GameStorePanel from '@/components/store/GameStorePanel';
 
 const GAME_CATEGORIES = ['all', 'puzzle', 'action', 'strategy', 'casual', 'rpg', 'simulation', 'sports', 'racing', 'adventure'];
 
@@ -133,6 +134,9 @@ export default function Store() {
       <div className="max-w-7xl mx-auto">
         {/* App Store: browse all app/game categories (GPU tiles) + subsections + search */}
         <AppStoreBrowse />
+        {/* Game Store (exact clone of the retired standalone Game Store page) — lives here inside the
+            App Store, combined with the GPU category tiles + search above. */}
+        <GameStorePanel />
         {/* Header */}
         <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
