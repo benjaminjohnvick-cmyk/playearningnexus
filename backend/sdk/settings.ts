@@ -298,7 +298,7 @@ const asBool = (v: string) => v === "1" || v.toLowerCase() === "true" || v.toLow
 export async function getNumber(key: string, fallback?: number): Promise<number> {
   const raw = await getRaw(key);
   const n = Number(raw);
-  return Number.isFinite(n) ? n : (fallback ?? Number(BY_KEY[key]?.default) || 0);
+  return Number.isFinite(n) ? n : (fallback ?? (Number(BY_KEY[key]?.default) || 0));
 }
 export async function getBool(key: string, fallback = false): Promise<boolean> {
   const raw = await getRaw(key);
@@ -372,7 +372,7 @@ function snapRaw(key: string): string {
 }
 export function snapNumber(key: string, fallback?: number): number {
   const n = Number(snapRaw(key));
-  return Number.isFinite(n) ? n : (fallback ?? Number(BY_KEY[key]?.default) || 0);
+  return Number.isFinite(n) ? n : (fallback ?? (Number(BY_KEY[key]?.default) || 0));
 }
 export function snapBool(key: string, fallback = false): boolean {
   const r = snapRaw(key); return r === "" ? fallback : (r === "1" || r.toLowerCase() === "true" || r.toLowerCase() === "yes");
