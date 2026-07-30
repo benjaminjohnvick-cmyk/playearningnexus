@@ -22,6 +22,7 @@ import ReviewSection from '@/components/reviews/ReviewSection';
 import { Dialog } from '@/components/ui/dialog';
 import GameAssistantWidget from '@/components/games/GameAssistantWidget';
 import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
+import AppStoreBrowse from '@/components/store/AppStoreBrowse';
 
 const GAME_CATEGORIES = ['all', 'puzzle', 'action', 'strategy', 'casual', 'rpg', 'simulation', 'sports', 'racing', 'adventure'];
 
@@ -130,6 +131,8 @@ export default function Store() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6">
       <div className="max-w-7xl mx-auto">
+        {/* App Store: browse all app/game categories (GPU tiles) + subsections + search */}
+        <AppStoreBrowse />
         {/* Header */}
         <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>

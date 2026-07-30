@@ -201,6 +201,11 @@
       "name": "loyalty-daily-reconcile",
       "cron": "30 8 * * *",
       "function": "loyaltyDailyReconcile"
+    },
+    {
+      "name": "ai-app-category-images",
+      "cron": "20 4 * * *",
+      "function": "aiAppCategoryImages"
     }
   ]
 }
