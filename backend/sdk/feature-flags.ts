@@ -20,7 +20,7 @@ export type FlagName =
   | "live_experiments" | "personalized_learning" | "experiments_paused" | "ux_heatmap"
   | "points_boost" | "physical_store" | "local_pickup" | "layaway" | "purchase_payback"
   | "digital_store" | "teen_accounts" | "kyc_survey_ai_autopublish" | "ai_paused"
-  | "loyalty_program";
+  | "loyalty_program" | "group_goals";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -62,6 +62,7 @@ const DEFAULTS: Record<FlagName, boolean> = {
   kyc_survey_ai_autopublish: true, // ON — all AI functionality runs from the get-go. AI adjustments (incl. KYC-survey edits) apply live; a human watches them in the AI Live Oversight feed and can STOP (ai_paused) then correct. Flip OFF to require per-change human approval instead.
   ai_paused: false,              // GLOBAL AI KILL SWITCH — OFF = all AI runs. Flip ON (the "stop" button) to instantly halt AI-driven changes (optimizer pass, self-learning, autonomous auto-apply). Human corrections still work while paused; flip OFF to resume.
   loyalty_program: true,         // Retail-loyalty rewards program: earned, non-cashable, closed-loop points + a 10% member discount FUNDED FROM the member's generated-revenue pool (store margin untouched), capped at a back-end annual value. 1:1 rewarded-members-to-advertisers. ON by default.
+  group_goals: true,             // Friends work toward a big-ticket item TOGETHER with NO shared wallet: each member keeps their own points, the platform sums individual progress, and at the shared milestone the PLATFORM funds a capped, non-cashable points reward each member claims for their OWN account (value flows platform→member only — loyalty-promo structure, not money transmission). ON by default.
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];

@@ -20,6 +20,7 @@ import StreamDiscovery from '../components/streaming/StreamDiscovery';
 import FriendsSystem from '../components/social/FriendsSystem';
 import EnhancedSocialFeed from '../components/social/EnhancedSocialFeed';
 import GameGroups from '../components/social/GameGroups';
+import GroupGoals from '../components/social/GroupGoals';
 import PointsBadgeSystem from '../components/gamification/PointsBadgeSystem';
 import AIChatSupport from '../components/support/AIChatSupport';
 import PersonalizedGameBundles from '../components/bundles/PersonalizedGameBundles';
@@ -413,7 +414,10 @@ export default function UserDashboard() {
             </div>
           </TabsContent>
           <TabsContent value="groups">
-            <GameGroups user={user} />
+            <div className="space-y-6">
+              <GroupGoals user={user} />
+              <GameGroups user={user} />
+            </div>
           </TabsContent>
         </Tabs>
 

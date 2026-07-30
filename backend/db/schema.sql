@@ -3148,3 +3148,23 @@ CREATE TABLE IF NOT EXISTS "LoyaltyLedger" (
   created_by   text,
   data         jsonb NOT NULL DEFAULT '{}'::jsonb
 );
+
+CREATE TABLE IF NOT EXISTS "GroupGoal" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GroupGoal_data_gin" ON "GroupGoal" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GroupGoal_created" ON "GroupGoal" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "GroupGoalReward" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GroupGoalReward_data_gin" ON "GroupGoalReward" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GroupGoalReward_created" ON "GroupGoalReward" (created_date DESC);
