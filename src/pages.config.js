@@ -97,6 +97,7 @@ import ReferralContest from './pages/ReferralContest';
 import ReferralDashboard from './pages/ReferralDashboard';
 import ReferralHub from './pages/ReferralHub';
 import ReferralTracking from './pages/ReferralTracking';
+import ServicesStore from './pages/ServicesStore';
 import Settings from './pages/Settings';
 import SocialMediaGenerator from './pages/SocialMediaGenerator';
 import StreamerAnalytics from './pages/StreamerAnalytics';
@@ -164,6 +165,7 @@ export const PAGES = {
     "ReferralDashboard": ReferralDashboard,
     "ReferralHub": ReferralHub,
     "ReferralTracking": ReferralTracking,
+    "ServicesStore": ServicesStore,
     "Settings": Settings,
     "SocialMediaGenerator": SocialMediaGenerator,
     "StreamerAnalytics": StreamerAnalytics,

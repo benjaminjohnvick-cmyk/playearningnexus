@@ -317,7 +317,7 @@ export default function Marketplace() {
           </div>
         </div>
       )}
-      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Link to={createPageUrl('PhysicalStore')} className="flex items-center justify-between rounded-xl bg-gradient-to-r from-blue-600 to-emerald-600 p-4 text-white hover:opacity-95">
           <div>
             <div className="font-semibold">🛍️ Buy Physical Items</div>
@@ -331,6 +331,13 @@ export default function Marketplace() {
             <div className="text-xs text-white/85">Instant online delivery · card, points, or layaway</div>
           </div>
           <span className="text-sm font-semibold">Shop →</span>
+        </Link>
+        <Link to={createPageUrl('ServicesStore')} className="flex items-center justify-between rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 p-4 text-white hover:opacity-95">
+          <div>
+            <div className="font-semibold">🧰 Services</div>
+            <div className="text-xs text-white/85">Tutoring, design, repairs & more · card, points, or layaway</div>
+          </div>
+          <span className="text-sm font-semibold">Browse →</span>
         </Link>
       </div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
