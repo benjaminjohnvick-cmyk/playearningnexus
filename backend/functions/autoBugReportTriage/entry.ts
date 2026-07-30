@@ -1,5 +1,14 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { classifyByKeywords } from "../../sdk/rules-first.ts";
+
+const BUG_CATEGORIES = {
+  payment: ["pay", "payment", "charge", "charged", "refund", "paypal", "card", "billing", "payout", "money", "withdraw"],
+  survey: ["survey", "question", "bitlabs", "ppc", "answer", "reward not"],
+  auth: ["login", "log in", "password", "sign in", "signup", "account", "verify", "2fa", "locked out"],
+  performance: ["slow", "lag", "freeze", "loading", "timeout", "crash", "crashes", "stuck", "hang"],
+  ui: ["button", "layout", "display", "screen", "page", "click", "scroll", "text", "image", "broken link"],
+};
 
 export default __handler(async (req) => {
   const base44 = createClientFromRequest(req);
@@ -11,6 +20,26 @@ export default __handler(async (req) => {
     if (!report?.id) return Response.json({ ok: true });
 
     if (event?.type === 'create') {
+      // RULES FIRST (free): classify obvious, NON-critical bugs by keyword and acknowledge with a template,
+      // skipping the AI. Critical or ambiguous reports still get the full AI triage (suggested fix etc.).
+      const text = `${report.title || ''} ${report.description || ''} ${report.page || ''}`;
+      const critical = /\b(can'?t pay|lost money|charged twice|payment failed|data ?loss|security|hacked|breach|crash(es|ed|ing)?|site (is )?down)\b/i.test(text);
+      const cls = classifyByKeywords(text, BUG_CATEGORIES);
+      if (!critical && cls.category && cls.confidence >= 0.5) {
+        await base44.asServiceRole.entities.BugReport.update(report.id, {
+          ai_category: cls.category, ai_severity: 'medium', status: 'open', triaged_via: 'rules',
+        }).catch(() => null);
+        if (report.user_id) {
+          await base44.asServiceRole.entities.Notification.create({
+            user_id: report.user_id, type: 'bug_report_received',
+            title: '🔧 Bug Report Acknowledged',
+            message: `Thanks for the report — we've logged it under "${cls.category}" and our team will take a look.`,
+            is_read: false,
+          }).catch(() => null);
+        }
+        return Response.json({ ok: true, via: 'rules', category: cls.category });
+      }
+
       // AI triage: classify severity, suggest fix, notify dev team
       const triage = await base44.integrations.Core.InvokeLLM({
         prompt: `Triage this bug report for GamerGain gaming platform:

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { moderateText } from "../../sdk/rules-first.ts";
 
 export default __handler(async (req) => {
   const base44 = createClientFromRequest(req);
@@ -11,7 +12,18 @@ export default __handler(async (req) => {
     if (!msg?.id || event?.type !== 'create') return Response.json({ ok: true });
     if (!msg.content || msg.content.length < 3) return Response.json({ ok: true });
 
-    // AI moderation check
+    // RULES FIRST (free): clearly-fine messages skip the AI entirely; clearly-bad ones are flagged
+    // without a model call. Only the ambiguous middle ('review') falls through to the AI below.
+    const pre = moderateText(msg.content);
+    if (pre.decision === 'allow') return Response.json({ ok: true, flagged: false, via: 'rules' });
+    if (pre.decision === 'block') {
+      await base44.asServiceRole.entities.ChatMessage.update(msg.id, {
+        is_flagged: true, flag_reason: pre.reason, is_visible: false,
+      }).catch(() => null);
+      return Response.json({ ok: true, flagged: true, via: 'rules', severity: pre.severity });
+    }
+
+    // AI moderation check (only reached for 'review')
     const result = await base44.integrations.Core.InvokeLLM({
       prompt: `Moderate this chat message for a gaming platform. Check for: spam, hate speech, explicit content, scams, personal info sharing.
 Message: "${msg.content}"

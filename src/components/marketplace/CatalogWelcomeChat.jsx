@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageCircle, X, Send, Loader2, Sparkles } from 'lucide-react';
+import VoiceInputHint from '@/components/common/VoiceInputHint';
 
 // CatalogWelcomeChat — the AI shopping assistant that greets a member the FIRST time they open the
 // marketplace catalog and asks what they're interested in. It's grounded server-side in the member's
@@ -112,17 +113,20 @@ export default function CatalogWelcomeChat() {
         )}
       </div>
 
-      <div className="flex items-center gap-2 border-t px-3 py-3">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
-          placeholder="What are you looking for?"
-          className="text-sm"
-        />
-        <Button size="icon" onClick={() => send()} disabled={busy || !input.trim()} className="bg-purple-600 hover:bg-purple-700">
-          <Send className="h-4 w-4" />
-        </Button>
+      <div className="border-t px-3 py-3">
+        <div className="flex items-center gap-2">
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
+            placeholder="What are you looking for?"
+            className="text-sm"
+          />
+          <Button size="icon" onClick={() => send()} disabled={busy || !input.trim()} className="bg-purple-600 hover:bg-purple-700">
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+        <VoiceInputHint className="mt-2" />
       </div>
     </div>
   );

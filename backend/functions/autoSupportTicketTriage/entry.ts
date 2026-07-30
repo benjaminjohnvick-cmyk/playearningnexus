@@ -1,5 +1,15 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { classifyByKeywords } from "../../sdk/rules-first.ts";
+
+// Free keyword routing for the obvious tickets; the AI is reserved for the ambiguous ones.
+const TICKET_CATEGORIES = {
+  billing: ["refund", "charge", "payment", "invoice", "paypal", "card", "subscription", "billed", "money", "payout", "withdraw"],
+  technical: ["error", "bug", "crash", "broken", "not working", "loading", "login", "password", "glitch", "freeze", "fails"],
+  feature_request: ["feature", "suggestion", "would like", "please add", "request", "idea", "wish"],
+  complaint: ["complaint", "unhappy", "terrible", "worst", "scam", "angry", "disappointed", "unfair"],
+};
+const TEAM_FOR = { billing: "billing", technical: "technical", feature_request: "product", complaint: "support", other: "support" };
 
 export default __handler(async (req) => {
   try {
@@ -21,6 +31,20 @@ export default __handler(async (req) => {
 
     for (const ticket of tickets) {
       try {
+        // RULES FIRST (free): route by an obvious keyword. Only unclear tickets fall back to the AI.
+        const cls = classifyByKeywords(`${ticket.subject || ''} ${ticket.description || ''}`, TICKET_CATEGORIES);
+        if (cls.category && cls.confidence >= 0.5) {
+          await base44.entities.SupportTicket.update(ticket.id, {
+            category: cls.category,
+            priority: cls.category === 'complaint' ? 'high' : 'medium',
+            assigned_team: TEAM_FOR[cls.category] || 'support',
+            status: 'assigned',
+          }).catch(() => null);
+          triaged++;
+          results.push({ ticket_id: ticket.id, category: cls.category, via: 'rules' });
+          continue;
+        }
+
         const analysis = await base44.integrations.Core.InvokeLLM({
           prompt: `Triage this support ticket and assign optimal category and priority.
 

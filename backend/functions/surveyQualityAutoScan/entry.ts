@@ -27,6 +27,31 @@ export default __handler(async (req) => {
       return Response.json({ success: true, message: 'No unscored responses to process', scanned: 0 });
     }
 
+    // POINT 4 — only BORDERLINE responses need the AI. The deterministic scorer (scoreSurveyResponse)
+    // already assigned quality_score; a clearly-high (≥70) or clearly-low (<40) score with no fraud signal
+    // is marked checked WITHOUT a model call. The AI is reserved for the ambiguous 40–69 band and anything
+    // carrying a fraud reason (or never deterministically scored).
+    const isBorderline = (r) => {
+      const s = r.quality_score;
+      if (s == null) return true;
+      if ((r.fraud_reasons || []).length) return true;
+      return s >= 40 && s < 70;
+    };
+    const clear = unscored.filter((r) => !isBorderline(r));
+    const borderline = unscored.filter(isBorderline);
+    let autoCleared = 0;
+    for (const r of clear) {
+      const s = Number(r.quality_score) || 0;
+      await base44.asServiceRole.entities.PPCSurveyResponse.update(r.id, {
+        auto_quality_checked: true,
+        quality_tier: s >= 70 ? 'high' : 'low',
+      }).catch(() => null);
+      autoCleared++;
+    }
+    if (borderline.length === 0) {
+      return Response.json({ success: true, message: 'All responses resolved by deterministic score', scanned: 0, auto_cleared: autoCleared });
+    }
+
     // Get approved quality-monitor learnings
     const memories = await base44.asServiceRole.entities.AgentLearningMemory.filter(
       { agent_name: 'survey_quality_monitor', admin_approved: true, is_active: true }
@@ -37,10 +62,10 @@ export default __handler(async (req) => {
     let flagged = 0;
     const summaryByScore = { high: 0, medium: 0, low: 0 };
 
-    // Process in batches of 20 to use LLM efficiently
+    // Process in batches of 20 to use LLM efficiently — only the BORDERLINE responses reach the AI.
     const batches = [];
-    for (let i = 0; i < unscored.length; i += 20) {
-      batches.push(unscored.slice(i, i + 20));
+    for (let i = 0; i < borderline.length; i += 20) {
+      batches.push(borderline.slice(i, i + 20));
     }
 
     for (const batch of batches.slice(0, 5)) { // max 5 batches = 100 responses per run

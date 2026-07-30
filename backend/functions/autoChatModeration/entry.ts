@@ -1,7 +1,8 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { moderateText } from "../../sdk/rules-first.ts";
 
-// Auto-moderates chat messages and forum posts using AI
+// Auto-moderates chat messages and forum posts — rules first (free), AI only for the ambiguous middle.
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -16,6 +17,16 @@ export default __handler(async (req) => {
 
     const content = message.content || message.message || '';
     if (!content || content.length < 3) return Response.json({ skipped: true });
+
+    // RULES FIRST (free): allow clearly-fine, delete clearly-bad, only 'review' reaches the AI.
+    const pre = moderateText(content);
+    if (pre.decision === 'allow') return Response.json({ ok: true, action: 'allow', via: 'rules' });
+    if (pre.decision === 'block') {
+      await base44.asServiceRole.entities.ChatMessage.update(messageId, {
+        is_moderated: true, moderation_action: 'delete', moderation_reason: pre.reason, is_visible: false,
+      }).catch(() => null);
+      return Response.json({ ok: true, action: 'delete', via: 'rules' });
+    }
 
     const { InvokeLLM } = base44.asServiceRole.integrations.Core;
 

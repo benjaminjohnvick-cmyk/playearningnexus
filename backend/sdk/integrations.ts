@@ -90,7 +90,10 @@ const MODEL_MAP: Record<string, string> = {
 const CLAUDE_MODEL_MAP: Record<string, string> = {
   gpt_5_mini: Deno.env.get("CLAUDE_MODEL_SMALL") ?? "claude-3-5-haiku-latest",
   gpt_5: Deno.env.get("CLAUDE_MODEL_LARGE") ?? "claude-3-5-sonnet-latest",
-  default: Deno.env.get("CLAUDE_MODEL_DEFAULT") ?? "claude-3-5-sonnet-latest",
+  // Cheap tier by DEFAULT (matches the OpenAI default, which is already gpt-4o-mini). The ~190 call
+  // sites that don't name a model do simple structured work and run cheap on both providers; sites that
+  // need real reasoning pass model:"gpt_5" explicitly. Owner can override globally via CLAUDE_MODEL_DEFAULT.
+  default: Deno.env.get("CLAUDE_MODEL_DEFAULT") ?? "claude-3-5-haiku-latest",
 };
 
 /** Resolve a Base44 alias (or raw model id) to a real model id for the active provider. */

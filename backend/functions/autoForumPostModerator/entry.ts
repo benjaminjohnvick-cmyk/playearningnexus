@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { moderateText } from "../../sdk/rules-first.ts";
 
 export default __handler(async (req) => {
   const base44 = createClientFromRequest(req);
@@ -10,6 +11,17 @@ export default __handler(async (req) => {
     if (event?.type !== 'create') return Response.json({ ok: true });
     const post = data;
     if (!post?.id || !post?.content) return Response.json({ ok: true });
+
+    // RULES FIRST (free): approve clearly-fine posts and remove clearly-bad ones without a model call.
+    const pre = moderateText(`${post.title || ''} ${post.content || ''}`);
+    if (pre.decision === 'allow') {
+      await base44.asServiceRole.entities.ForumPost.update(post.id, { status: 'approved', moderation_status: 'clean' }).catch(() => null);
+      return Response.json({ ok: true, action: 'approve', via: 'rules' });
+    }
+    if (pre.decision === 'block') {
+      await base44.asServiceRole.entities.ForumPost.update(post.id, { status: 'removed', moderation_status: 'removed', moderation_reason: pre.reason }).catch(() => null);
+      return Response.json({ ok: true, action: 'remove', via: 'rules' });
+    }
 
     const modResult = await base44.integrations.Core.InvokeLLM({
       prompt: `Moderate this gaming platform forum post:

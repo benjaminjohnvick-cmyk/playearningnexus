@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { cached } from "../../sdk/cache.ts";
 
 /**
  * Checks a respondent's IP address against IP quality/proxy detection APIs.
@@ -17,14 +18,18 @@ export default __handler(async (req) => {
     const reasons = [];
     let riskScore = 0;
 
-    // 1. Resolve IP geolocation & proxy/VPN detection via ipapi.co (free tier)
+    // 1. Resolve IP geolocation & proxy/VPN detection via ipapi.co (free tier).
+    //    CACHED by IP (24h) — the same IP is otherwise re-queried on every survey submission, which burns
+    //    the free-tier quota. A shared Redis (REDIS_URL) makes the cache cross-instance; otherwise in-memory.
     let ipData = null;
     if (ip_address && ip_address !== '127.0.0.1' && ip_address !== 'unknown') {
       try {
-        const ipRes = await fetch(`https://ipapi.co/${ip_address}/json/`, {
-          headers: { 'User-Agent': 'SurveyFraudChecker/1.0' }
+        ipData = await cached(`geoip:${ip_address}`, 86400, async () => {
+          const ipRes = await fetch(`https://ipapi.co/${ip_address}/json/`, {
+            headers: { 'User-Agent': 'SurveyFraudChecker/1.0' }
+          });
+          return ipRes.ok ? await ipRes.json() : null;
         });
-        if (ipRes.ok) ipData = await ipRes.json();
       } catch { /* skip if unavailable */ }
     }
 

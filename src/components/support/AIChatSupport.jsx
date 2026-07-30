@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MessageCircle, Send, X, Bot, User, Minimize2, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import VoiceInputHint from '@/components/common/VoiceInputHint';
 
 export default function AIChatSupport({ user }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -216,7 +217,8 @@ Provide helpful, concise answers. If the question requires account-specific acti
                         <Send className="w-4 h-4" />
                       </Button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <VoiceInputHint className="mt-2" />
+                    <p className="text-xs text-gray-500 mt-1">
                       For complex issues, email: support@gamergain.com
                     </p>
                   </div>
