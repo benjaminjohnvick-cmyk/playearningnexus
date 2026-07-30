@@ -4,18 +4,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Briefcase, Wrench, CreditCard, Coins, Clock, Loader2, Search, AlertTriangle, Zap, CalendarCheck } from 'lucide-react';
+import { Briefcase, Wrench, CreditCard, Coins, Clock, Loader2, Search, AlertTriangle, Zap, CalendarCheck, ChevronRight, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocale } from '@/components/locale/LocaleContext';
 import { SORT_OPTIONS, applySort } from '@/lib/storeSort';
 
 // ServicesStore — the "Services" section of the marketplace: intangible offerings fulfilled by the
 // provider (e.g. tutoring, design, coaching, repairs, consulting). It behaves EXACTLY like the Physical
-// and Digital sections — search/sort, localized pricing, promotional (welcome) credit, affordability
-// warning, layaway, and the Purchase-Payback tracker — with two deliberate differences vs. digital:
-// (1) delivery is "booked & fulfilled by the provider," not an instant download, and (2) NO Affirm BNPL
-// (financing is restricted to real shippable goods). Payment: Credit card (default, +markup) ·
-// Points/surveys-only · Layaway (pay it down first, then it unlocks). Marked-up points shown.
+// and Digital sections AND the App Store: serverless-GPU category tiles + subsections at the top, a
+// search bar, localized pricing, promotional (welcome) credit, affordability warning, layaway, and the
+// Purchase-Payback tracker. Two deliberate differences vs. digital: (1) delivery is "booked & fulfilled
+// by the provider," not an instant download, and (2) NO Affirm BNPL (financing is restricted to real
+// shippable goods). Payment: Credit card (default, +markup) · Points/surveys-only · Layaway.
 export default function ServicesStore() {
   const { formatPrice } = useLocale();
   const [cfg, setCfg] = useState(null);
@@ -28,6 +28,11 @@ export default function ServicesStore() {
   const [confirmBuy, setConfirmBuy] = useState(null);   // one-click: order logged, ask to complete
   const [layaways, setLayaways] = useState([]);
   const [payback, setPayback] = useState(null);
+  // GPU category-tile browse (mirrors the App Store): categories + subsections with serverless-GPU art,
+  // and a selected {category, subcategory} that narrows the listings below.
+  const [categories, setCategories] = useState([]);
+  const [openCat, setOpenCat] = useState(null);         // which tile is expanded to show subsections
+  const [sel, setSel] = useState(null);                 // active filter { category, subcategory }
 
   const loadCfg = useCallback(() => {
     base44.functions.invoke('physicalStoreConfig', {}).then((r) => setCfg(r.data || null)).catch(() => {});
@@ -45,18 +50,30 @@ export default function ServicesStore() {
 
   useEffect(() => { loadCfg(); }, [loadCfg]);
   useEffect(() => { load(); }, [load]);
+  // Load the serverless-GPU service category tiles (same source pattern as appStoreCategories).
+  useEffect(() => {
+    base44.functions.invoke('serviceStoreCategories', {})
+      .then((r) => setCategories(r.data?.categories || []))
+      .catch(() => setCategories([]));
+  }, []);
 
   const serviceSet = useMemo(() => new Set((cfg?.service_categories || []).map((c) => String(c).toLowerCase())), [cfg]);
   const markupPct = cfg?.markup_pct ?? 10;
 
   const shown = useMemo(() => {
+    // Base: only service listings (fulfillment mode / product type / a service category / "service").
     let arr = (listings || []).filter((l) =>
       l.fulfillment_mode === 'service' || l.product_type === 'service' ||
       serviceSet.has(String(l.category || '').toLowerCase()) ||
       String(l.category || '').toLowerCase().includes('service'));
+    // Category-tile filter: narrow to the chosen department / subsection when one is selected.
+    if (sel?.subcategory) { const s = sel.subcategory.toLowerCase(); arr = arr.filter((l) => `${l.category || ''} ${l.subcategory || ''} ${l.title || ''}`.toLowerCase().includes(s)); }
+    else if (sel?.category) { const s = sel.category.toLowerCase(); arr = arr.filter((l) => `${l.category || ''} ${l.subcategory || ''} ${l.title || ''}`.toLowerCase().includes(s)); }
     if (q.trim()) { const s = q.toLowerCase(); arr = arr.filter((l) => `${l.title} ${l.category || ''}`.toLowerCase().includes(s)); }
     return applySort(arr, sort);
-  }, [listings, serviceSet, q, sort]);
+  }, [listings, serviceSet, q, sort, sel]);
+
+  function clearFilter() { setSel(null); setOpenCat(null); }
 
   async function buy(listing, method, acknowledged) {
     setBusy(listing.id + method);
@@ -143,6 +160,59 @@ export default function ServicesStore() {
         </div>
       </div>
 
+      {/* Serverless-GPU category tiles + subsections (same browse experience as the App Store). */}
+      {categories.length > 0 && (
+        <div className="mb-6">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-semibold text-gray-700">Browse services by category</span>
+            {sel && (
+              <Button variant="outline" size="sm" onClick={clearFilter}><X className="mr-1 h-4 w-4" /> Clear filter</Button>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {categories.map((c) => {
+              const active = sel?.category === c.name;
+              return (
+                <button
+                  key={c.name}
+                  onClick={() => { setOpenCat(openCat === c.name ? null : c.name); setSel({ category: c.name, subcategory: null }); }}
+                  className={`text-left rounded-xl overflow-hidden border transition-all ${active || openCat === c.name ? 'border-emerald-500 ring-2 ring-emerald-200' : 'border-gray-200 hover:border-emerald-300'}`}
+                >
+                  <div className="h-20 bg-gradient-to-br from-emerald-400 to-teal-500 overflow-hidden">
+                    {c.image_url && <img src={c.image_url} alt={c.name} className="h-full w-full object-cover" loading="lazy" />}
+                  </div>
+                  <div className="flex items-center justify-between px-2 py-1.5">
+                    <span className="line-clamp-1 text-xs font-semibold text-gray-800">{c.name}</span>
+                    <ChevronRight className={`h-3.5 w-3.5 text-gray-400 transition-transform ${openCat === c.name ? 'rotate-90' : ''}`} />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Subsections of the expanded category */}
+          {openCat && (
+            <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <p className="mb-3 text-sm font-semibold text-gray-700">{openCat} — subsections</p>
+              <div className="flex flex-wrap gap-2">
+                {(categories.find((c) => c.name === openCat)?.subs || []).map((s) => {
+                  const active = sel?.subcategory === s.name;
+                  return (
+                    <button
+                      key={s.name}
+                      onClick={() => setSel({ category: openCat, subcategory: s.name })}
+                      className={`rounded-full border px-3 py-1.5 text-xs font-medium ${active ? 'border-emerald-500 bg-emerald-600 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-emerald-400 hover:text-emerald-600'}`}
+                    >
+                      {s.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {payback && payback.spent_usd > 0 && (
         <Card className="mb-4 border-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
           <CardContent className="p-4">
@@ -159,7 +229,7 @@ export default function ServicesStore() {
       {cfg?.welcome_credit_usd > 0 && <div className="mb-3 text-sm text-purple-700">🎁 {formatPrice(cfg.welcome_credit_usd)} welcome credit applies automatically at checkout (up to the per-order cap).</div>}
 
       <div className="mb-4 flex items-center justify-between gap-2">
-        <span className="text-xs text-gray-500">{shown.length} service{shown.length === 1 ? '' : 's'}{q.trim() ? ` for “${q.trim()}”` : ''}</span>
+        <span className="text-xs text-gray-500">{shown.length} service{shown.length === 1 ? '' : 's'}{sel?.subcategory ? ` in ${sel.subcategory}` : sel?.category ? ` in ${sel.category}` : ''}{q.trim() ? ` for “${q.trim()}”` : ''}</span>
         <label className="flex items-center gap-1.5 text-sm text-gray-600">
           <span className="font-medium">Sort by:</span>
           <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
@@ -183,7 +253,9 @@ export default function ServicesStore() {
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-gray-400" /></div>
       ) : shown.length === 0 ? (
-        <div className="py-12 text-center text-gray-500">No services listed yet — check back soon.</div>
+        <div className="py-12 text-center text-gray-500">
+          {sel ? 'No services in this category yet — try another or clear the filter.' : 'No services listed yet — check back soon.'}
+        </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
           {shown.map((l) => (

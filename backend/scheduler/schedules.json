@@ -206,6 +206,11 @@
       "name": "ai-app-category-images",
       "cron": "20 4 * * *",
       "function": "aiAppCategoryImages"
+    },
+    {
+      "name": "ai-service-category-images",
+      "cron": "35 4 * * *",
+      "function": "aiServiceCategoryImages"
     }
   ]
 }
