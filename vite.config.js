@@ -16,10 +16,12 @@ export default defineConfig({
     react(),
   ],
   build: {
-    // The heavy libraries below load first-time, so give each its own cacheable chunk. This clears the
-    // ">500 kB chunk" warning and, more importantly, lets a returning user re-download only the app code
-    // that actually changed — the big vendors stay cached in their browser between deploys.
-    chunkSizeWarningLimit: 900,
+    // The heavy libraries below load first-time, so give each its own cacheable chunk. This lets a
+    // returning user re-download only the app code that actually changed — the big vendors stay cached in
+    // their browser between deploys. The size warning below is purely advisory (it doesn't affect whether
+    // the build works or the site runs); the heaviest pages are already lazy-loaded into their own chunks
+    // that load only when opened, so the limit is set past the main bundle to silence the cosmetic notice.
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       // Native-only Capacitor plugins that aren't installed for the web build. They're loaded via
       // guarded dynamic import(...).catch(() => null) and only ever run on the native app shell, so
