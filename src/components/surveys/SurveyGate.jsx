@@ -25,15 +25,15 @@ export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 8, onGoToSu
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Store Locked</h2>
             <p className="text-gray-600 mb-6">
-              Earn <strong>$8 total with PPC ads</strong> to unlock games & purchases.
+              Complete <strong>$8 in surveys today</strong> to unlock games & purchases.
               <br />
-              <span className="text-sm text-gray-500">You keep $4 · GamerGain keeps $4 (50/50 split)</span>
+              <span className="text-sm text-gray-500">Earn points on every survey — Premium members earn cash back</span>
             </p>
 
             {/* Progress meter */}
             <div className="mb-6">
               <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>Today's PPC Earnings</span>
+                <span>Today's Surveys Completed</span>
                 <span className="font-bold">${earned.toFixed(2)} / $8.00</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
@@ -83,7 +83,7 @@ export default function SurveyGate({ todaysEarnings = 0, dailyGoal = 8, onGoToSu
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 text-lg"
             >
               <DollarSign className="w-5 h-5 mr-2" />
-              Earn with PPC Ads to Unlock
+              Take Surveys to Unlock
             </Button>
 
             <p className="text-xs text-gray-500 mt-3">

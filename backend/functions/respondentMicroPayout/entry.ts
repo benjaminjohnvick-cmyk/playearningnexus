@@ -4,6 +4,8 @@ import { isPartnerPayout } from "../../sdk/payout-policy.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
+import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
 import { db } from "../../sdk/db.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
@@ -78,48 +80,52 @@ export default __handler(async (req) => {
       return Response.json({ success: false, reason: 'No payout for this survey type', payout: 0 });
     }
 
-    // Revenue split — user receives this share (admin-adjustable; AI-optimized within bounds).
-    const rewardShare = await getNumber("SURVEY_REWARD_CONVERSION", 0.5);
-    let payoutAmount = Math.round(grossPayout * rewardShare * 100) / 100;
+    // TIERED SURVEY REWARD (matches BitLabs): premium → SURVEY_PREMIUM_CASHBACK_PCT cash back (0.24);
+    // non-premium → SURVEY_POINTS_PER_DOLLAR points/$ (12 pts/$, closed-loop). payoutAmount = the user's
+    // realized $ value (aliased so the rest of this function is unchanged).
+    const premium = await isPremiumUser(respondent_user_id);
+    const rw = await computeSurveyReward(premium, grossPayout);
+    let creditPoints = rw.points, creditCash = rw.cashUsd, payoutAmount = rw.realizedUsd;
 
     // Enforce the per-user daily earnings cap (DAILY_EARN_CAP_USD; 0 = no cap).
     const allowance = await allowedEarn(base44, respondent_user_id, payoutAmount);
-    if (allowance.capped) payoutAmount = allowance.allowed;
-    if (payoutAmount <= 0) return Response.json({ success: false, reason: 'Daily earnings cap reached', payout: 0, cap: allowance.cap });
+    if (allowance.capped) {
+      const scale = payoutAmount > 0 ? allowance.allowed / payoutAmount : 0;
+      creditPoints = Math.round(creditPoints * scale);
+      creditCash = Math.round(creditCash * scale * 100) / 100;
+      payoutAmount = allowance.allowed;
+    }
+    if (payoutAmount <= 0 && creditPoints <= 0) return Response.json({ success: false, reason: 'Daily earnings cap reached', payout: 0, cap: allowance.cap });
 
     // Load respondent user
     const users = await base44.asServiceRole.entities.User.filter({ id: respondent_user_id });
     const respondent = users[0];
     if (!respondent) return Response.json({ error: 'Respondent not found' }, { status: 404 });
 
-    // 1. Credit platform balance ATOMICALLY (compare-and-set + retry) so concurrent credits can't lose a write.
-    let newBalance = Number(respondent.current_balance) || 0;
-    let credited = false;
-    for (let i = 0; i < 5 && !credited; i++) {
-      const fresh = (await base44.asServiceRole.entities.User.filter({ id: respondent_user_id }))[0] || respondent;
-      const bal = Number(fresh.current_balance) || 0;
-      newBalance = Math.round((bal + payoutAmount) * 100) / 100;
-      const ok = await db.updateIf("User", respondent_user_id,
-        { current_balance: newBalance, total_earnings: Math.round(((Number(fresh.total_earnings) || 0) + payoutAmount) * 100) / 100 },
-        { field: "current_balance", equals: String(bal) }).catch(() => null);
-      if (ok) credited = true;
+    // 1. Credit the user ATOMICALLY: cash (premium) or points (non-premium) + lifetime realized value.
+    if (rw.isPremium && creditCash > 0) {
+      await adjustUserBalance(respondent_user_id, creditCash, { field: "current_balance" });
+    } else if (creditPoints > 0) {
+      await adjustUserBalance(respondent_user_id, creditPoints, { field: "points" });
     }
-    if (!credited) return Response.json({ success: false, reason: 'Please retry — balance is being updated.' }, { status: 409 });
+    await adjustUserBalance(respondent_user_id, payoutAmount, { field: "total_earnings" });
 
     // Mark the response paid immediately after the credit so a retry hits the idempotency guard above.
     await base44.asServiceRole.entities.PPCSurveyResponse.update(response_id, { payout_to_user: payoutAmount, payout_status: 'paid' }).catch(() => null);
 
-    // 1b. Record into DailyEarnings so the per-user daily earnings cap accumulates across payouts.
+    // 1b. Record into DailyEarnings: realized value (cap accumulation) + gross survey value (the $8/day
+    // store-unlock goal keys off gross, since the take-home is now 12%/24%, not 50%).
     const earnDay = new Date().toISOString().slice(0, 10);
     const deRows = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id: respondent_user_id, date: earnDay }).catch(() => []);
     if ((deRows || []).length) {
       await base44.asServiceRole.entities.DailyEarnings.update(deRows[0].id, {
         total_earned: (deRows[0].total_earned || 0) + payoutAmount,
+        survey_gross: (deRows[0].survey_gross || 0) + grossPayout,
         total_surveys_completed: (deRows[0].total_surveys_completed || 0) + 1,
       }).catch(() => null);
     } else {
       await base44.asServiceRole.entities.DailyEarnings.create({
-        user_id: respondent_user_id, date: earnDay, total_earned: payoutAmount, total_surveys_completed: 1,
+        user_id: respondent_user_id, date: earnDay, total_earned: payoutAmount, survey_gross: grossPayout, total_surveys_completed: 1,
       }).catch(() => null);
     }
 
@@ -149,6 +155,9 @@ export default __handler(async (req) => {
     //    Closed-loop policy: a regular respondent's earnings stay as on-site credit — cash only
     //    goes out for business-partner payouts, and only while the cash_out kill-switch is ON.
     let paypalResult = null;
+    // Current cash balance (re-read fresh) — only relevant to the partner cash-out branch below.
+    const freshRespondent = (await base44.asServiceRole.entities.User.filter({ id: respondent_user_id }))[0] || respondent;
+    const newBalance = Number(freshRespondent.current_balance) || 0;
     const payoutPrefs = await base44.asServiceRole.entities.PayoutPreference.filter({ user_id: respondent_user_id });
     const pref = payoutPrefs[0];
     const cashAllowed = isPartnerPayout({ role: respondent.role, payout_type: "survey_payout" })
@@ -177,8 +186,8 @@ export default __handler(async (req) => {
         });
         const ppData = await ppRes.json();
         if (ppRes.ok) {
-          // Zero out balance after PayPal payout
-          await base44.asServiceRole.entities.User.update(respondent_user_id, { current_balance: 0 });
+          // Zero out the paid-out balance ATOMICALLY (subtract exactly what was sent).
+          await adjustUserBalance(respondent_user_id, -newBalance, { field: "current_balance" });
           await base44.asServiceRole.entities.Payout.create({
             user_id: respondent_user_id,
             recipient_email: pref.paypal_email,

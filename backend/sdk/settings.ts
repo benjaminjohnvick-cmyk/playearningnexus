@@ -106,7 +106,10 @@ export const REGISTRY: SettingDef[] = [
   { key: "FEATURED_GAME_ROTATION_HOURS", label: "Featured-game rotation cadence", category: "Games & Contests", type: "number", default: "24", unit: "hours" },
 
   // 7. Surveys / offerwalls
-  { key: "SURVEY_REWARD_CONVERSION", label: "Survey reward conversion (provider→user)", category: "Surveys", type: "number", default: "0.5", unit: "×", help: "Share of survey revenue passed to the user (respondentMicroPayout). 0.5 = 50%.", min: 0, max: 1 },
+  { key: "SURVEY_REWARD_CONVERSION", label: "Survey reward conversion (provider→user)", category: "Surveys", type: "number", default: "0.5", unit: "×", help: "Legacy 50/50 split (superseded by the point/cash-back tiers below). Kept for older code paths.", min: 0, max: 1 },
+  { key: "SURVEY_POINTS_PER_DOLLAR", label: "Non-premium survey points per $", category: "Surveys", type: "number", default: "12", unit: "pts/$", help: "Points a NON-PREMIUM user earns per $1 of survey value (closed-loop points). 12 = 12% back.", min: 0 },
+  { key: "SURVEY_PREMIUM_CASHBACK_PCT", label: "Premium survey cash-back", category: "Surveys", type: "number", default: "0.24", unit: "×", help: "Cash-back fraction a PREMIUM (PPC) user earns per $1 of survey value. 0.24 = 24% cash back.", min: 0, max: 1 },
+  { key: "SURVEY_DAILY_GOAL_USD", label: "Daily survey goal (gross)", category: "Surveys", type: "number", default: "8", unit: "$", help: "Gross survey value a user must complete per day to unlock the store (≈5 BitLabs surveys).", min: 0 },
   { key: "SURVEY_CREATION_PRICE", label: "Survey creation price (business/creators)", category: "Surveys", type: "number", default: "0", unit: "$" },
   { key: "SURVEY_FRAUD_SPEEDER_SECONDS", label: "Fraud: min completion time", category: "Surveys", type: "number", default: "20", unit: "sec", help: "Completions faster than this are flagged." },
 

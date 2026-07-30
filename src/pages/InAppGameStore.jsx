@@ -190,7 +190,7 @@ export default function InAppGameStore() {
           {/* Surveys Tab */}
           <TabsContent value="surveys" className="space-y-6">
             <DailyEarningsMeter
-              todaysEarnings={dailyEarnings?.total_earned || 0}
+              todaysEarnings={dailyEarnings?.survey_gross || 0}
               dailyGoal={premiumMembership?.daily_goal || 3}
             />
             {premiumMembership && <LockoutModeEnforcer user={user} />}
@@ -199,9 +199,9 @@ export default function InAppGameStore() {
 
           {/* Games Tab */}
           <TabsContent value="games" className="space-y-6">
-            {!isSurveyGoalMet(dailyEarnings?.total_earned || 0) && user?.role !== 'admin' && !!user ? (
+            {!isSurveyGoalMet(dailyEarnings?.survey_gross || 0) && user?.role !== 'admin' && !!user ? (
               <SurveyGate
-                todaysEarnings={dailyEarnings?.total_earned || 0}
+                todaysEarnings={dailyEarnings?.survey_gross || 0}
                 dailyGoal={3}
                 onGoToSurveys={() => setActiveTab('surveys')}
               />

@@ -34,9 +34,10 @@ export default function BitLabsSurveys({ user, onEarningsUpdate }) {
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data?.type === 'survey_completed') {
-        const userEarnings = (event.data.reward || 0) / 2;
-        toast.success(`Survey completed! You earned $${userEarnings.toFixed(2)}`);
-        if (onEarningsUpdate) onEarningsUpdate(userEarnings);
+        // The exact reward (12 pts/$ points, or 24% cash for Premium) is credited server-side by the
+        // bitlabsPostback; show a generic confirmation and let the balance refresh reflect it.
+        toast.success('Survey completed! Your reward has been added to your account.');
+        if (onEarningsUpdate) onEarningsUpdate(event.data.reward || 0);
       }
       // BitLabs sends 'survey_screenout' or 'survey_disqualified' on DQ
       if (event.data?.type === 'survey_screenout' || event.data?.type === 'survey_disqualified') {
@@ -57,30 +58,31 @@ export default function BitLabsSurveys({ user, onEarningsUpdate }) {
             <div>
               <p className="font-semibold text-blue-900 mb-1">How Surveys Work</p>
               <p className="text-sm text-blue-800">
-                Complete surveys powered by BitLabs. Each survey has a <strong>50/50 revenue split</strong> — 
-                you keep <strong>50% of the survey value</strong>. Complete $6 worth to earn your $3 daily goal.
+                Complete surveys powered by BitLabs. You earn <strong>12 points for every $1</strong> of survey
+                value (points are catalog credit). <strong>Premium members earn 24% cash back</strong> instead.
+                Complete <strong>$8 of surveys a day</strong> to unlock the store.
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Earnings split visual */}
+      {/* Reward visual */}
       <div className="grid grid-cols-2 gap-4">
         <Card className="border-0 shadow-sm bg-gradient-to-br from-green-50 to-green-100">
           <CardContent className="p-4 text-center">
             <DollarSign className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-green-700">50%</p>
-            <p className="text-sm text-green-700 font-medium">Your Share</p>
-            <p className="text-xs text-gray-500 mt-1">Goes to your balance</p>
+            <p className="text-2xl font-bold text-green-700">12 pts / $1</p>
+            <p className="text-sm text-green-700 font-medium">Standard reward</p>
+            <p className="text-xs text-gray-500 mt-1">Points = catalog credit</p>
           </CardContent>
         </Card>
         <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-50 to-purple-100">
           <CardContent className="p-4 text-center">
             <DollarSign className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-purple-700">50%</p>
-            <p className="text-sm text-purple-700 font-medium">Platform Share</p>
-            <p className="text-xs text-gray-500 mt-1">Keeps site running</p>
+            <p className="text-2xl font-bold text-purple-700">24% cash</p>
+            <p className="text-sm text-purple-700 font-medium">Premium reward</p>
+            <p className="text-xs text-gray-500 mt-1">Cash back on every $1</p>
           </CardContent>
         </Card>
       </div>

@@ -2,6 +2,8 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
+import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
 
 // HMAC-SHA256 of the callback URL (signature param stripped), hex, constant-time compared.
 async function verifyHmac(url: URL, provided: string, secret: string): Promise<boolean> {
@@ -65,15 +67,32 @@ export default __handler(async (req) => {
       return new Response('OK', { status: 200 }); // Return OK to prevent retries
     }
 
-    // Revenue split (admin-adjustable; AI-optimized within bounds), then the daily earnings cap.
-    const rewardShare = await getNumber("SURVEY_REWARD_CONVERSION", 0.5);
-    let userEarnings = Math.round(reward * rewardShare * 100) / 100;
-    const allowance = await allowedEarn(base44, uid, userEarnings);
-    if (allowance.capped) userEarnings = allowance.allowed;
-    if (userEarnings <= 0) return Response.json({ ok: true, capped: true, reason: 'Daily earnings cap reached', cap: allowance.cap });
+    // TIERED SURVEY REWARD (replaces the old flat 50/50). The platform keeps the BitLabs CASH; the
+    // user's reward is POINTS (non-premium: 12 pts/$ — closed-loop, non-cashable) or CASH BACK
+    // (premium: 24% of $). No user-to-user movement; non-premium users never receive cash.
+    const gross = Math.max(0, Math.round(reward * 100) / 100);
+    const premium = await isPremiumUser(uid);
+    const rw = await computeSurveyReward(premium, gross);
+
+    // Daily earnings cap applies to the user's realized $ value; scale the reward down if capped.
+    let creditPoints = rw.points;
+    let creditCash = rw.cashUsd;
+    let realizedUsd = rw.realizedUsd;
+    const allowance = await allowedEarn(base44, uid, realizedUsd);
+    if (allowance.capped) {
+      const scale = realizedUsd > 0 ? allowance.allowed / realizedUsd : 0;
+      creditPoints = Math.round(creditPoints * scale);
+      creditCash = Math.round(creditCash * scale * 100) / 100;
+      realizedUsd = allowance.allowed;
+    }
+    if (realizedUsd <= 0 && creditPoints <= 0) {
+      return Response.json({ ok: true, capped: true, reason: 'Daily earnings cap reached', cap: allowance.cap });
+    }
     const today = new Date().toISOString().split('T')[0];
 
-    // Update or create DailyEarnings
+    // DailyEarnings: total_earned = the value the user actually received today ($, kept honest so
+    // "you earned $X" is never overstated); survey_gross = gross survey value done today (drives the
+    // $8/day store-unlock goal, since the user's take is now 12%/24%, not 50%).
     const dailyEarnings = await base44.asServiceRole.entities.DailyEarnings.filter({
       user_id: uid,
       date: today
@@ -82,31 +101,38 @@ export default __handler(async (req) => {
     if (dailyEarnings.length > 0) {
       const current = dailyEarnings[0];
       await base44.asServiceRole.entities.DailyEarnings.update(current.id, {
-        total_earned: (current.total_earned || 0) + userEarnings,
+        total_earned: (current.total_earned || 0) + realizedUsd,
+        survey_gross: (current.survey_gross || 0) + gross,
         total_surveys_completed: (current.total_surveys_completed || 0) + 1
       });
     } else {
       await base44.asServiceRole.entities.DailyEarnings.create({
         user_id: uid,
         date: today,
-        total_earned: userEarnings,
+        total_earned: realizedUsd,
+        survey_gross: gross,
         total_surveys_completed: 1
       });
     }
 
-    // Update user's total balance
-    await base44.asServiceRole.auth.updateUser(uid, {
-      current_balance: (user.current_balance || 0) + userEarnings,
-      total_earnings: (user.total_earnings || 0) + userEarnings
-    });
+    // Credit the user: points (non-premium) or cash back (premium). Atomic CAS. Platform keeps the pool.
+    if (rw.isPremium && creditCash > 0) {
+      await adjustUserBalance(uid, creditCash, { field: "current_balance" });
+    } else if (creditPoints > 0) {
+      await adjustUserBalance(uid, creditPoints, { field: "points" });
+    }
+    // Lifetime realized value (drives tiers/narratives) — the value the user actually received, in $.
+    await adjustUserBalance(uid, realizedUsd, { field: "total_earnings" });
 
-    // Create transaction record
+    const rewardLabel = rw.isPremium ? `$${creditCash.toFixed(2)} cash back` : `${creditPoints} points`;
+
+    // Create transaction record.
     await base44.asServiceRole.entities.Transaction.create({
       user_id: uid,
-      amount: userEarnings,
+      amount: realizedUsd,
       transaction_type: 'survey_completion',
       status: 'completed',
-      description: `Survey completed (your share of $${reward.toFixed(2)} reward)`,
+      description: `Survey completed — earned ${rewardLabel} on a $${gross.toFixed(2)} survey`,
       payment_intent_id: surveyId
     });
 
@@ -115,7 +141,7 @@ export default __handler(async (req) => {
       user_id: uid,
       type: 'points_earned',
       title: '✅ Survey Completed!',
-      message: `You earned $${userEarnings.toFixed(2)} from a survey. Keep going to reach your $3 daily goal!`,
+      message: `You earned ${rewardLabel} from a survey. Keep going to reach your $8/day survey goal!`,
       status: 'unread',
       delivery_method: ['in_app']
     });
