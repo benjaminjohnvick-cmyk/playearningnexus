@@ -132,13 +132,16 @@ export default function VerifiedSurveyRecorder({ survey, questions, user, startT
     setStep('transcribing');
     try {
       const blob = new Blob(chunksRef.current, { type: mimeType });
-      const b64 = blob.size ? await blobToBase64(blob) : '';
-      // Prefer the free on-device transcript. If the phone captured one, send it so the server skips paid
-      // Whisper and just stores the clip as evidence; otherwise send the audio for the Whisper fallback.
       const deviceTranscript = (deviceTranscriptRef.current || '').trim();
       if (!deviceTranscript && !blob.size) { toast.error('No audio captured — try again.'); setStep('ready'); return; }
+      // The recording is NEVER stored. When the phone already transcribed on-device, we don't even upload
+      // the audio — just the transcript. Only upload audio when we need the Whisper fallback (no device
+      // transcript), and the server transcribes it in memory and discards it.
+      const needWhisper = !deviceTranscript;
+      const b64 = (needWhisper && blob.size) ? await blobToBase64(blob) : '';
       const tr = await base44.functions.invoke('transcribeSurveyAudio', {
-        survey_id: survey.id, method, mime_type: mimeType, audio_base64: b64,
+        survey_id: survey.id, method, mime_type: mimeType,
+        audio_base64: b64 || undefined,
         client_transcript: deviceTranscript || undefined, duration_ms: elapsed * 1000,
       });
       if (!tr.data?.ok) {
@@ -210,7 +213,7 @@ export default function VerifiedSurveyRecorder({ survey, questions, user, startT
             Also record my camera for extra verification (optional)
           </label>
           <div className="mb-4 rounded-lg bg-gray-50 p-3 text-xs leading-relaxed text-gray-600">
-            {consent?.disclosure || 'This option records your voice (and camera, if you choose) to transcribe and verify your answers. Voice and facial data are biometric information, stored only as fraud-prevention evidence with a retention limit, never sold or shared with the advertiser. Recording is optional.'}
+            {consent?.disclosure || 'This option uses your microphone (and camera, if you choose) to transcribe and verify your answers. Your recording is transcribed on the spot and then discarded — we do not store the audio or video, only the text transcript and a validity score. Never sold or shared with the advertiser. Recording is optional.'}
           </div>
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={onCancel}><ArrowLeft className="mr-1 h-4 w-4" /> Tap to answer instead</Button>

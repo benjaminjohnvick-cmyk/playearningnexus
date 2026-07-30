@@ -72,6 +72,12 @@ description haven't changed. Cache keyed on those fields (ties into LLM-2/LLM-3)
 
 ---
 
+> **Update (2026-07-30):** the store catalog images are generated **once** and reused for the life of the
+> store, so image generation is a **one-time** cost, not recurring — the image levers below (cheaper
+> provider, 512² tiles, metering generation against the cap) have little ongoing impact and can be treated
+> as optional polish. Separately, verified-survey recordings are now **never stored** (transcribed in
+> memory, then discarded), so lever **STO-1 is resolved by design** — there is no media to purge.
+
 ## B. Image generation
 
 Category tiles and catalog images go through `GenerateImage` in `integrations.ts`. Dedup is mostly good
@@ -145,12 +151,11 @@ per-user TTL cache removes one User read per request across the whole API.
 
 ## D. Telemetry & storage growth (unbounded today)
 
-**STO-1 — Add the missing media-purge job (also a compliance fix).**
-Verified-survey recordings are written to S3 with a `retention_until`, but **nothing ever deletes them** —
-there is no S3 delete anywhere in the codebase and no purge cron. Biometric recordings accumulate forever:
-growing storage cost **and** a gap against the deletion promise in the consent disclosure. Add an S3 delete
-helper + a scheduled `purgeExpiredSurveyMedia` job that deletes objects whose `retention_until < now` and
-nulls `media_url`. This one is worth doing regardless of cost.
+**STO-1 — ✅ RESOLVED (2026-07-30): recordings are never stored.**
+The verified-survey flow no longer writes any raw voice/video to storage — it transcribes in memory and
+discards the audio, keeping only the non-biometric transcript + validity/fraud scores. So there is nothing
+to purge, zero recording-storage cost, and no gap against the deletion promise. (Superseded the earlier
+plan to add a retention/purge job.)
 
 **STO-2 — Actually prune telemetry / heatmap snapshots.**
 `pruneTelemetry()` exists in `sdk/telemetry.ts` but **no cron calls it**, and it only fetches 2000 rows and

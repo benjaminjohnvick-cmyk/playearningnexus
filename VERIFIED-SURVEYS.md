@@ -16,14 +16,15 @@ This is offered **only on the platform's own PPC surveys**, never on third-party
    Recording is always **optional** — the normal tap-to-answer flow stays available.
 2. **Record.** The browser records mic audio (and, if the respondent opts in, camera video) via
    `MediaRecorder`.
-3. **Transcribe (device-first, free).** The phone's built-in dictation (the browser Web Speech API)
-   transcribes the answer **on the device at no cost**. That transcript is sent to `transcribeSurveyAudio`,
-   which stores the audio clip as evidence (with consent, when `VERIFIED_SURVEY_STORE_MEDIA` is on) and
-   **skips paid Whisper entirely**. Only when the browser can't transcribe (e.g. older iOS Safari) does the
-   server fall back to OpenAI Whisper. Each stored recording notes its `transcription_source`
-   (`device` = free, `whisper` = paid fallback). Whisper spend is still metered against
-   `AI_DAILY_SPEND_CAP_USD`. Net effect: transcription cost drops toward zero for the majority of users on
-   supported browsers, with Whisper only as a safety net.
+3. **Transcribe (device-first, free) — and the recording is never kept.** The phone's built-in dictation
+   (the browser Web Speech API) transcribes the answer **on the device at no cost**; when it works, the
+   audio isn't even uploaded. Only when the browser can't transcribe (e.g. older iOS Safari) is the audio
+   sent to `transcribeSurveyAudio`, which runs OpenAI Whisper **in memory and then discards the audio**.
+   Either way, **the raw voice/video is never stored** — no S3 upload, no retention. We keep only a
+   non-biometric "verification receipt" (`VerifiedSurveyMedia`): the transcript, which consents were held,
+   the `transcription_source` (`device` = free / `whisper` = paid fallback), and the duration. Whisper spend
+   (fallback only) is metered against `AI_DAILY_SPEND_CAP_USD`. Net effect: transcription cost drops toward
+   zero on supported browsers, storage cost is zero, and no biometric recording is retained.
 4. **Autofill.** `autofillSurveyFromTranscript` uses the LLM to propose an answer for each question from
    the transcript — **suggestions only, never a submission**.
 5. **Confirm.** The respondent reviews each proposed answer and can change any of them.
@@ -42,10 +43,12 @@ defense-in-depth check so a mis-ordered client call can't pay an invalid verifie
 
 ## Compliance posture
 
-Voice/face recordings are **biometric data** and are handled accordingly: captured only behind explicit
-per-kind consent, stored solely as fraud-prevention evidence with a retention limit
-(`VERIFIED_SURVEY_MEDIA_RETENTION_DAYS`, default 365 days), **never sold** and **never shared with the
-survey's advertiser**, and always optional. The interaction/heatmap trace (structural, no pixels) is the
+Voice/face recordings are **biometric data**, so the strongest posture is to not keep them: the raw
+recording is **captured behind explicit per-kind consent, transcribed on the spot, and then discarded — it
+is never written to storage.** Only the derived, non-biometric transcript + validity/fraud scores are
+retained (as a `VerifiedSurveyMedia` "verification receipt"), **never sold** and **never shared with the
+survey's advertiser**, and recording is always optional. Because nothing biometric is stored, there is no
+retention window to manage and no media-purge job to run. The interaction/heatmap trace (structural, no pixels) is the
 same one the tap flow already ships and is the "screen/interaction capture" evidence — full-screen video
 shipping to advertisers was deliberately **not** built, as it adds biometric/IP risk without improving on
 the structural trace.
@@ -56,12 +59,13 @@ Feature flag `verified_surveys` — **on by default**. Voice transcription light
 is set; with no key the feature degrades gracefully (the consent/flag work, transcription returns
 "unavailable", and respondents simply use tap-to-answer).
 
-Settings (admin-tunable): `VERIFIED_SURVEY_MIN_VALIDITY` (50), `VERIFIED_SURVEY_STORE_MEDIA` (on),
-`VERIFIED_SURVEY_MEDIA_RETENTION_DAYS` (365), `VERIFIED_SURVEY_MAX_AUDIO_MB` (25), `WHISPER_MODEL`
-(`whisper-1`). Whisper spend is metered against the shared `AI_DAILY_SPEND_CAP_USD` brake.
+Settings (admin-tunable): `VERIFIED_SURVEY_MIN_VALIDITY` (50), `VERIFIED_SURVEY_MAX_AUDIO_MB` (25, a bound
+on the fallback Whisper upload only), `WHISPER_MODEL` (`whisper-1`). Whisper spend (fallback path) is
+metered against the shared `AI_DAILY_SPEND_CAP_USD` brake. There are no media-storage or retention settings
+because the recording is never stored.
 
 ## Requirements to go fully live
 
-Set `OPENAI_API_KEY` (transcription + autofill + validity). For stored recordings, configure S3
-(`S3_BUCKET` etc.); without S3, transcription still works and the response is just verified without a
-kept recording.
+Set `OPENAI_API_KEY` (powers the Whisper fallback transcription, the AI autofill, and the validity score;
+the device-first free path needs no key). **No S3 is needed** — the recording is transcribed in memory and
+discarded, so there is nothing to store.

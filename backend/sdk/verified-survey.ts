@@ -10,7 +10,7 @@
 // per-kind consent (see CONSENT_KINDS), stored with a retention limit, and never required — a respondent
 // can always fall back to the normal tap-to-answer survey. Consent is re-verified server-side at submit.
 
-import { snapNumber, snapBool, snapString } from "./settings.ts";
+import { snapNumber, snapString } from "./settings.ts";
 import { isEnabled } from "./feature-flags.ts";
 import { InvokeLLM } from "./integrations.ts";
 
@@ -34,17 +34,19 @@ export function consentsForMethod(method: string): string[] {
 }
 
 export const BIOMETRIC_DISCLOSURE =
-  "This survey option records your voice (and, if you choose video/screen, your camera or screen) so we " +
-  "can transcribe your spoken answers and verify the response is genuine. Voice and facial data are " +
-  "biometric information. We store the recording only as fraud-prevention evidence, delete it after the " +
-  "retention period, never sell it, and never share it with the survey's advertiser. Recording is " +
-  "optional — you can always answer by tapping instead. By continuing you consent to this capture.";
+  "This survey option uses your microphone (and camera, if you choose) so we can transcribe your spoken " +
+  "answers and verify the response is genuine. Your recording is transcribed and then immediately " +
+  "discarded — we do NOT store the audio or video. We keep only the text transcript and a validity score, " +
+  "never the biometric recording itself, and never share anything with the survey's advertiser. Recording " +
+  "is optional — you can always answer by tapping instead. By continuing you consent to this capture and " +
+  "on-the-spot transcription.";
 
 // ── Config knobs ─────────────────────────────────────────────────────────────────────────────────
+// DATA MINIMIZATION: the raw voice/video recording is NEVER stored. It is transcribed in memory and then
+// discarded; only the derived, non-biometric transcript + validity/fraud scores are retained. There is no
+// media-storage or retention knob because there is no stored media to retain or purge.
 export const verifiedSurveysEnabled = () => isEnabled("verified_surveys");
 export const verifiedMinValidity = () => Math.max(0, Math.min(100, snapNumber("VERIFIED_SURVEY_MIN_VALIDITY", 50)));
-export const verifiedStoreMedia = () => snapBool("VERIFIED_SURVEY_STORE_MEDIA", true);
-export const verifiedMediaRetentionDays = () => Math.max(1, Math.round(snapNumber("VERIFIED_SURVEY_MEDIA_RETENTION_DAYS", 365)));
 export const verifiedMaxAudioMb = () => Math.max(1, snapNumber("VERIFIED_SURVEY_MAX_AUDIO_MB", 25));
 export const whisperModel = () => snapString("WHISPER_MODEL", "whisper-1");
 

@@ -2,17 +2,18 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { hasConsented } from "../../sdk/consent-ledger.ts";
 import { transcribeAudio, base64ToBytes, transcriptionAvailable } from "../../sdk/transcription.ts";
-import { uploadBytes } from "../../sdk/aws/s3.ts";
 import {
-  CONSENT_KINDS, CONSENT_VERSION, consentsForMethod, verifiedSurveysEnabled,
-  verifiedStoreMedia, verifiedMediaRetentionDays, verifiedMaxAudioMb, whisperModel,
+  CONSENT_VERSION, consentsForMethod, verifiedSurveysEnabled, verifiedMaxAudioMb, whisperModel,
 } from "../../sdk/verified-survey.ts";
 
-// transcribeSurveyAudio — transcribe a respondent's spoken answer for a VERIFIED PPC survey, and (with
-// consent + when configured) store the recording as biometric fraud-prevention evidence with a retention
-// limit. Gated on: the verified_surveys flag AND the required biometric consent for the capture method.
-//   Body: { survey_id, method: "voice"|"video"|"screen", mime_type, audio_base64, duration_ms?, language? }
-//   →     { ok, transcript, media_id?, stored }
+// transcribeSurveyAudio — transcribe a respondent's spoken answer for a VERIFIED PPC survey.
+//
+// DATA MINIMIZATION: the raw voice/video is NEVER stored. If the phone transcribed on-device (free Web
+// Speech API) the audio isn't even uploaded; otherwise the audio is used ONLY to run Whisper in memory and
+// is then discarded. We keep a non-biometric "verification receipt" (VerifiedSurveyMedia) holding the
+// transcript, consent, source and duration — never the recording itself.
+//   Body: { survey_id, method, mime_type?, audio_base64?, client_transcript?, duration_ms?, language? }
+//   →     { ok, transcript, media_id?, source }
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -70,36 +71,26 @@ export default __handler(async (req) => {
       source = "whisper";
     }
 
-    // Store the recording as evidence (consented biometric data) with a retention deadline. This runs on
-    // BOTH paths — the free device path still keeps the audio clip as fraud evidence (just no Whisper bill).
-    let mediaId: string | null = null;
-    let stored = false;
-    if (verifiedStoreMedia() && bytes.length > 0) {
-      const ext = mime.includes("mp4") ? "mp4" : mime.includes("wav") ? "wav" : "webm";
-      const url = await uploadBytes(`verified-survey/${user.id}-${surveyId}.${ext}`, bytes, mime, "verified-survey").catch(() => null);
-      const retentionUntil = new Date(Date.now() + verifiedMediaRetentionDays() * 86400000).toISOString();
-      const media = await base44.asServiceRole.entities.VerifiedSurveyMedia.create({
-        user_id: user.id,
-        survey_id: surveyId,
-        method,
-        mime,
-        kind: method === "video" ? "video" : method === "screen" ? "screen" : "voice",
-        media_url: url,                                  // null if S3 not configured — transcript still returned
-        stored: !!url,
-        duration_ms: Number(body.duration_ms) || 0,
-        transcript: transcriptText,
-        transcription_source: source,                    // "device" (free) or "whisper" (paid fallback)
-        consent_kinds: required,
-        consent_version: CONSENT_VERSION,
-        retention_until: retentionUntil,
-        is_biometric: true,
-        created_at: new Date().toISOString(),
-      }).catch(() => null);
-      mediaId = media?.id || null;
-      stored = !!url;
-    }
+    // The raw audio/video is now DISCARDED — `bytes` goes out of scope with this request; nothing is
+    // uploaded anywhere. We keep only a non-biometric "verification receipt": the transcript, which consents
+    // were held, how it was transcribed, and the duration. No media_url, no stored recording, no retention.
+    const media = await base44.asServiceRole.entities.VerifiedSurveyMedia.create({
+      user_id: user.id,
+      survey_id: surveyId,
+      method,
+      kind: method === "video" ? "video" : method === "screen" ? "screen" : "voice",
+      media_url: null,                                   // intentionally never stored
+      raw_stored: false,                                 // data-minimization: recording discarded after transcription
+      duration_ms: Number(body.duration_ms) || 0,
+      transcript: transcriptText,
+      transcription_source: source,                      // "device" (free) or "whisper" (paid fallback)
+      consent_kinds: required,
+      consent_version: CONSENT_VERSION,
+      is_biometric: false,                               // only the transcript is kept — not biometric data
+      created_at: new Date().toISOString(),
+    }).catch(() => null);
 
-    return Response.json({ ok: true, transcript: transcriptText, media_id: mediaId, stored, source, model });
+    return Response.json({ ok: true, transcript: transcriptText, media_id: media?.id || null, stored: false, source, model });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }
