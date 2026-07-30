@@ -116,6 +116,7 @@ export const REGISTRY: SettingDef[] = [
   { key: "SURVEY_FRAUD_SPEEDER_SECONDS", label: "Fraud: min completion time", category: "Surveys", type: "number", default: "20", unit: "sec", help: "Completions faster than this are flagged." },
   { key: "VERIFIED_SURVEY_MIN_VALIDITY", label: "Verified survey: min AI validity", category: "Surveys", type: "number", default: "50", unit: "/100", help: "A voice/video response scored below this by the AI 'valid response' check is flagged & held (no payout) for review. Unscored (AI off) responses fall back to the normal quality/fraud gates.", min: 0, max: 100 },
   { key: "VERIFIED_SURVEY_MAX_AUDIO_MB", label: "Verified survey: max recording size", category: "Surveys", type: "number", default: "25", unit: "MB", min: 1, help: "Upper bound on a fallback (Whisper) audio upload. The raw recording is transcribed in memory and never stored." },
+  { key: "AUTOFILL_MATCH_MIN_CONFIDENCE", label: "Voice/text autofill: min rules confidence", category: "Surveys", type: "number", default: "0.5", unit: "0-1", help: "Answers the FREE rules matcher resolves at/above this confidence skip the AI entirely. Only lower-confidence questions fall back to the cheap-tier model. Higher = more AI (more accurate, costlier); lower = more free matches.", min: 0, max: 1 },
   { key: "WHISPER_MODEL", label: "Transcription model", category: "Surveys", type: "string", default: "whisper-1", help: "OpenAI transcription model for voice survey answers." },
 
   // 8. Gamification

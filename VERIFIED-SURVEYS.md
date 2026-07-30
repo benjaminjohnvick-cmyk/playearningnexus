@@ -1,9 +1,21 @@
 # Verified Surveys — voice/video answering for the platform's own PPC surveys
 
-Respondents can answer the platform's **own** PPC surveys by **speaking** their answers. The recording is
-transcribed, an AI maps the spoken words onto the survey's questions, the **respondent reviews and
-confirms** every answer, and only then is the response submitted. A recording plus an AI "valid response"
-score and the existing interaction/heatmap trace become fraud-prevention evidence that gates the payout.
+Respondents can answer the platform's **own** PPC surveys in their own words — either by **typing or
+dictating** (the cheapest, default path) or by **recording** their voice/video. Their words are mapped onto
+the survey's questions, the **respondent reviews and confirms** every answer, and only then is the response
+submitted. An AI "valid response" score plus the existing interaction/heatmap trace gate the payout.
+
+There are two entry points, both "verified":
+- **Type or speak (recommended, free).** A text box the respondent types into, or dictates into with their
+  phone keyboard's own mic (the OS transcribes for free — our app never touches audio, so this needs **no
+  biometric consent** and never uses Whisper). This is the default and the cheapest path.
+- **Record voice/video.** For stronger verification, the respondent may record; that path keeps the
+  biometric consent gate and the transcribe-then-discard behavior below.
+
+**Cost design — rules first, AI as a fallback.** Mapping the answer to A/B/C/D runs the **free** rules
+matcher (`answer-match.ts`) first; only the questions it can't confidently resolve are sent — in one
+batched cheap-tier call — to the LLM (`AUTOFILL_MATCH_MIN_CONFIDENCE`, default 0.5). On plain closed-choice
+surveys most answers cost **$0**; the cheap model is touched only for genuinely ambiguous ones.
 
 This is offered **only on the platform's own PPC surveys**, never on third-party offerwalls (e.g. BitLabs)
 — those can't be autofilled and doing so would break their terms.
@@ -25,8 +37,9 @@ This is offered **only on the platform's own PPC surveys**, never on third-party
    the `transcription_source` (`device` = free / `whisper` = paid fallback), and the duration. Whisper spend
    (fallback only) is metered against `AI_DAILY_SPEND_CAP_USD`. Net effect: transcription cost drops toward
    zero on supported browsers, storage cost is zero, and no biometric recording is retained.
-4. **Autofill.** `autofillSurveyFromTranscript` uses the LLM to propose an answer for each question from
-   the transcript — **suggestions only, never a submission**.
+4. **Autofill (rules-first).** `autofillSurveyFromTranscript` maps the text to each question — the free
+   rules matcher first, the cheap-tier LLM only for the low-confidence remainder — **suggestions only,
+   never a submission**.
 5. **Confirm.** The respondent reviews each proposed answer and can change any of them.
 6. **Submit.** `submitVerifiedSurveyResponse` re-checks consent server-side, creates the response
    (`is_verified: true`), runs the AI validity score inline, then the existing quality + fraud engines,

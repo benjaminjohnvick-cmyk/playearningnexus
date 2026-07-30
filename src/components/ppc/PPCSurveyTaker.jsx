@@ -10,13 +10,14 @@ import { ArrowLeft, CheckCircle2, DollarSign, Loader2, PiggyBank, Mic } from "lu
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import VerifiedSurveyRecorder from './VerifiedSurveyRecorder';
+import VerifiedSurveyTextAnswer from './VerifiedSurveyTextAnswer';
 
 export default function PPCSurveyTaker({ survey, user, onClose }) {
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [phase, setPhase] = useState('taking'); // taking | submitting | done
-  const [verifiedMode, setVerifiedMode] = useState(false); // opt-in voice/video answering
+  const [verifiedMode, setVerifiedMode] = useState(null); // null | 'text' | 'record'
   const [startTime] = useState(Date.now());
   const queryClient = useQueryClient();
 
@@ -227,8 +228,21 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
     );
   }
 
-  // Opt-in verified voice/video answering — replaces the tap flow with the recorder pipeline.
-  if (verifiedMode) {
+  // Opt-in verified answering — either type/dictate (free) or record voice/video.
+  if (verifiedMode === 'text') {
+    return (
+      <VerifiedSurveyTextAnswer
+        survey={survey}
+        questions={questions}
+        user={user}
+        startTime={startTime}
+        getFingerprint={getFingerprint}
+        onCancel={() => setVerifiedMode(null)}
+        onDone={() => { queryClient.invalidateQueries(['ppc-surveys-active']); setPhase('done'); }}
+      />
+    );
+  }
+  if (verifiedMode === 'record') {
     return (
       <VerifiedSurveyRecorder
         survey={survey}
@@ -236,7 +250,7 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
         user={user}
         startTime={startTime}
         getFingerprint={getFingerprint}
-        onCancel={() => setVerifiedMode(false)}
+        onCancel={() => setVerifiedMode(null)}
         onDone={() => { queryClient.invalidateQueries(['ppc-surveys-active']); setPhase('done'); }}
       />
     );
@@ -257,17 +271,28 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
         </div>
       </div>
 
-      {/* Opt-in: answer this survey by voice/video (verified) — offered before the first answer. */}
+      {/* Opt-in: answer this survey by typing/dictating or by voice recording (both verified). */}
       {currentQ === 0 && answers.length === 0 && (
-        <button
-          onClick={() => setVerifiedMode(true)}
-          className="flex w-full items-center justify-between rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-left transition hover:border-purple-400"
-        >
-          <span className="flex items-center gap-2 text-sm font-medium text-purple-800">
-            <Mic className="h-4 w-4" /> Answer by voice — verified (optional)
-          </span>
-          <span className="text-xs text-purple-500">speak your answers →</span>
-        </button>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <button
+            onClick={() => setVerifiedMode('text')}
+            className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-left transition hover:border-emerald-400"
+          >
+            <span className="flex items-center gap-2 text-sm font-medium text-emerald-800">
+              <Mic className="h-4 w-4" /> Type or speak your answers
+            </span>
+            <span className="text-xs text-emerald-500">→</span>
+          </button>
+          <button
+            onClick={() => setVerifiedMode('record')}
+            className="flex items-center justify-between rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-left transition hover:border-purple-400"
+          >
+            <span className="flex items-center gap-2 text-sm font-medium text-purple-800">
+              <Mic className="h-4 w-4" /> Record my voice (verified)
+            </span>
+            <span className="text-xs text-purple-500">→</span>
+          </button>
+        </div>
       )}
 
       <Card className="border-0 shadow-lg">

@@ -25,9 +25,12 @@ export type CaptureKind = keyof typeof CONSENT_KINDS;
 /** The consent version string — bump when the disclosure text changes so prior consents re-prompt. */
 export const CONSENT_VERSION = "1.0";
 
-/** Which consents a given capture method requires. Voice is the baseline; video adds facial biometric. */
+/** Which consents a given capture method requires. Voice is the baseline; video adds facial biometric.
+ *  "text" (type, or dictate via the phone keyboard's own mic) captures NO audio/video in our app — the OS
+ *  hands us finished text — so it is not biometric capture and needs no biometric consent. */
 export function consentsForMethod(method: string): string[] {
   const m = String(method || "voice").toLowerCase();
+  if (m === "text") return [];
   if (m === "video") return [CONSENT_KINDS.voice, CONSENT_KINDS.video];
   if (m === "screen") return [CONSENT_KINDS.voice, CONSENT_KINDS.screen];
   return [CONSENT_KINDS.voice];
