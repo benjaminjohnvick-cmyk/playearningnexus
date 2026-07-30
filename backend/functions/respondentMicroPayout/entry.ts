@@ -69,6 +69,18 @@ export default __handler(async (req) => {
       return Response.json({ success: false, reason: `Quality score too low (${qualityScore}/100)`, payout: 0 });
     }
 
+    // Gate (VERIFIED surveys): a voice/video response that was actually AI-scored must clear the validity
+    // threshold. Defense-in-depth so a mis-ordered client call can't pay an invalid verified response —
+    // submitVerifiedSurveyResponse already sets is_blocked on failure, this backs it up. Unscored (AI
+    // unavailable) responses fail OPEN and fall through to the normal quality/fraud gates above.
+    if (response.is_verified && response.validity_scored === true) {
+      const minValidity = 50; // mirrors VERIFIED_SURVEY_MIN_VALIDITY default; the block above is authoritative
+      const v = Number(response.validity_score);
+      if (Number.isFinite(v) && v < minValidity) {
+        return Response.json({ success: false, reason: `Verified response validity too low (${v}/100)`, payout: 0 });
+      }
+    }
+
     // Gate: survey wallet must have budget remaining
     if ((survey.budget_remaining || 0) <= 0) {
       return Response.json({ success: false, reason: 'Survey wallet exhausted', payout: 0 });
@@ -222,6 +234,6 @@ export default __handler(async (req) => {
     });
 
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ error: (error as Error).message }, { status: 500 });
   }
 });

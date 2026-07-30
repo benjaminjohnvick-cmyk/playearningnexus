@@ -114,6 +114,11 @@ export const REGISTRY: SettingDef[] = [
   { key: "PREMIUM_AUTOQUALIFY_WINDOW_DAYS", label: "Auto-qualify: lookback window", category: "Surveys", type: "number", default: "365", unit: "days", help: "Trailing window over which qualifying survey-days are counted for auto-qualification.", min: 1 },
   { key: "SURVEY_CREATION_PRICE", label: "Survey creation price (business/creators)", category: "Surveys", type: "number", default: "0", unit: "$" },
   { key: "SURVEY_FRAUD_SPEEDER_SECONDS", label: "Fraud: min completion time", category: "Surveys", type: "number", default: "20", unit: "sec", help: "Completions faster than this are flagged." },
+  { key: "VERIFIED_SURVEY_MIN_VALIDITY", label: "Verified survey: min AI validity", category: "Surveys", type: "number", default: "50", unit: "/100", help: "A voice/video response scored below this by the AI 'valid response' check is flagged & held (no payout) for review. Unscored (AI off) responses fall back to the normal quality/fraud gates.", min: 0, max: 100 },
+  { key: "VERIFIED_SURVEY_STORE_MEDIA", label: "Verified survey: store recordings as evidence", category: "Surveys", type: "boolean", default: "1", help: "Store the consented voice/video recording (biometric fraud-prevention evidence) to S3 with a retention limit. OFF = transcribe only, keep no recording." },
+  { key: "VERIFIED_SURVEY_MEDIA_RETENTION_DAYS", label: "Verified survey: recording retention", category: "Surveys", type: "number", default: "365", unit: "days", help: "How long a stored biometric recording is kept before it should be purged.", min: 1 },
+  { key: "VERIFIED_SURVEY_MAX_AUDIO_MB", label: "Verified survey: max recording size", category: "Surveys", type: "number", default: "25", unit: "MB", min: 1 },
+  { key: "WHISPER_MODEL", label: "Transcription model", category: "Surveys", type: "string", default: "whisper-1", help: "OpenAI transcription model for voice survey answers." },
 
   // 8. Gamification
   { key: "XP_PER_LEVEL", label: "XP per level (slope)", category: "Gamification", type: "number", default: "100", min: 1, help: "Level N needs XP_PER_LEVEL × N. Higher = slower leveling (awardUserXP)." },

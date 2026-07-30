@@ -859,5 +859,9 @@
   "GroupGoalReward": {
     "scope": "owner",
     "owner_field": "user_id"
+  },
+  "VerifiedSurveyMedia": {
+    "scope": "owner",
+    "owner_field": "user_id"
   }
 }

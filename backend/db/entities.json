@@ -273,6 +273,7 @@
   "UserSubscription",
   "UserSuggestion",
   "UserVariantState",
+  "VerifiedSurveyMedia",
   "VirtualCurrency",
   "WeeklyEvent",
   "WeeklyReferralCampaign",

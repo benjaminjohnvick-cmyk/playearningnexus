@@ -6,15 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, CheckCircle2, DollarSign, Loader2, PiggyBank } from "lucide-react";
+import { ArrowLeft, CheckCircle2, DollarSign, Loader2, PiggyBank, Mic } from "lucide-react";
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import VerifiedSurveyRecorder from './VerifiedSurveyRecorder';
 
 export default function PPCSurveyTaker({ survey, user, onClose }) {
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [phase, setPhase] = useState('taking'); // taking | submitting | done
+  const [verifiedMode, setVerifiedMode] = useState(false); // opt-in voice/video answering
   const [startTime] = useState(Date.now());
   const queryClient = useQueryClient();
 
@@ -225,6 +227,21 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
     );
   }
 
+  // Opt-in verified voice/video answering — replaces the tap flow with the recorder pipeline.
+  if (verifiedMode) {
+    return (
+      <VerifiedSurveyRecorder
+        survey={survey}
+        questions={questions}
+        user={user}
+        startTime={startTime}
+        getFingerprint={getFingerprint}
+        onCancel={() => setVerifiedMode(false)}
+        onDone={() => { queryClient.invalidateQueries(['ppc-surveys-active']); setPhase('done'); }}
+      />
+    );
+  }
+
   const q = questions[currentQ];
   const showLangBadge = usedLanguage !== 'en';
 
@@ -239,6 +256,19 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
           <Badge className="bg-purple-100 text-purple-700">{currentQ + 1} / {questions.length}</Badge>
         </div>
       </div>
+
+      {/* Opt-in: answer this survey by voice/video (verified) — offered before the first answer. */}
+      {currentQ === 0 && answers.length === 0 && (
+        <button
+          onClick={() => setVerifiedMode(true)}
+          className="flex w-full items-center justify-between rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-left transition hover:border-purple-400"
+        >
+          <span className="flex items-center gap-2 text-sm font-medium text-purple-800">
+            <Mic className="h-4 w-4" /> Answer by voice — verified (optional)
+          </span>
+          <span className="text-xs text-purple-500">speak your answers →</span>
+        </button>
+      )}
 
       <Card className="border-0 shadow-lg">
         <CardHeader>
