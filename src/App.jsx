@@ -46,7 +46,7 @@ const DeveloperRevenueAnalytics = lazy(() => import('./pages/DeveloperRevenueAna
 const AdvancedInsights = lazy(() => import('./pages/AdvancedInsights'));
 const UXHeatmapDashboard = lazy(() => import('./pages/UXHeatmapDashboard'));
 const ABTestingCenter = lazy(() => import('./pages/ABTestingCenter'));
-const GameVotingHub = lazy(() => import('./pages/GameVotingHub'));
+const GameVotingHub = lazy(() => import('@/modules/marketplace/games/GameVotingHub'));
 const DeveloperOnboarding = lazy(() => import('./pages/DeveloperOnboarding'));
 const DevEngagementAnalytics = lazy(() => import('./pages/DevEngagementAnalytics'));
 const DevFinancialDashboard = lazy(() => import('./pages/DevFinancialDashboard'));
@@ -82,7 +82,7 @@ const Signup = lazy(() => import('./pages/Signup'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AIContentHub = lazy(() => import('./pages/AIContentHub'));
-const Store = lazy(() => import('./pages/Store'));
+const Store = lazy(() => import('@/modules/marketplace/games/Store'));
 const AIAgentsSettings = lazy(() => import('./pages/AIAgentsSettings'));
 const ReferralCompetition = lazy(() => import('./pages/ReferralCompetition'));
 const PPCSurveyBuilder = lazy(() => import('./pages/PPCSurveyBuilder'));
@@ -171,7 +171,7 @@ const GameMonetizationDashboard = lazy(() => import('./pages/GameMonetizationDas
 const DeveloperEarningsDashboard = lazy(() => import('./pages/DeveloperEarningsDashboard'));
 const AffiliateMarketingPage = lazy(() => import('./pages/AffiliateMarketingPage'));
 const AIRevenueTracker = lazy(() => import('./pages/AIRevenueTracker'));
-const FeaturedGameDashboard = lazy(() => import('./pages/FeaturedGameDashboard'));
+const FeaturedGameDashboard = lazy(() => import('@/modules/marketplace/games/FeaturedGameDashboard'));
 const ThirdPartySellerMarketplace = lazy(() => import('./pages/ThirdPartySellerMarketplace'));
 const SocialMediaAdPoster = lazy(() => import('./pages/SocialMediaAdPoster'));
 const UpfrontEarningsPage = lazy(() => import('./pages/UpfrontEarningsPage'));
