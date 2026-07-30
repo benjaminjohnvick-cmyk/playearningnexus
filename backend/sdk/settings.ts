@@ -110,6 +110,8 @@ export const REGISTRY: SettingDef[] = [
   { key: "SURVEY_POINTS_PER_DOLLAR", label: "Non-premium survey points per $", category: "Surveys", type: "number", default: "12", unit: "pts/$", help: "Points a NON-PREMIUM user earns per $1 of survey value (closed-loop points). 12 = 12% back.", min: 0 },
   { key: "SURVEY_PREMIUM_CASHBACK_PCT", label: "Premium survey cash-back", category: "Surveys", type: "number", default: "0.24", unit: "×", help: "Cash-back fraction a PREMIUM (PPC) user earns per $1 of survey value. 0.24 = 24% cash back.", min: 0, max: 1 },
   { key: "SURVEY_DAILY_GOAL_USD", label: "Daily survey goal (gross)", category: "Surveys", type: "number", default: "8", unit: "$", help: "Gross survey value a user must complete per day to unlock the store (≈5 BitLabs surveys).", min: 0 },
+  { key: "PREMIUM_AUTOQUALIFY_DAYS", label: "Auto-qualify: qualifying survey-days", category: "Surveys", type: "number", default: "260", unit: "days", help: "Days that hit the daily survey goal (over the trailing year) needed to auto-qualify for one-tap Premium. 260 = 5 days/week × 52 weeks.", min: 1 },
+  { key: "PREMIUM_AUTOQUALIFY_WINDOW_DAYS", label: "Auto-qualify: lookback window", category: "Surveys", type: "number", default: "365", unit: "days", help: "Trailing window over which qualifying survey-days are counted for auto-qualification.", min: 1 },
   { key: "SURVEY_CREATION_PRICE", label: "Survey creation price (business/creators)", category: "Surveys", type: "number", default: "0", unit: "$" },
   { key: "SURVEY_FRAUD_SPEEDER_SECONDS", label: "Fraud: min completion time", category: "Surveys", type: "number", default: "20", unit: "sec", help: "Completions faster than this are flagged." },
 

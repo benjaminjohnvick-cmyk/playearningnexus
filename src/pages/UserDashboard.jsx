@@ -27,6 +27,7 @@ import EnhancedPointsSystem from '../components/gamification/EnhancedPointsSyste
 import PersonalizedRecommendations from '../components/ai/PersonalizedRecommendations';
 import AIPersonalizedRecommendations from '../components/ai/AIPersonalizedRecommendations';
 import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
+import PremiumEarnedBanner from '../components/premium/PremiumEarnedBanner';
 import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
 import DailyGoalProgress from '../components/gamification/DailyGoalProgress';
 import PayPalTransferButton from '../components/payout/PayPalTransferButton';
@@ -241,6 +242,7 @@ export default function UserDashboard() {
 
       <div className="max-w-7xl mx-auto">
         <PersonalizedGreeting />
+        <PremiumEarnedBanner user={user} />
         <WelcomeRewardsCard />
         <PointsBoostCard />
         {/* Header */}
