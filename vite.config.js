@@ -16,6 +16,10 @@ export default defineConfig({
     react(),
   ],
   build: {
+    // The heavy libraries below load first-time, so give each its own cacheable chunk. This clears the
+    // ">500 kB chunk" warning and, more importantly, lets a returning user re-download only the app code
+    // that actually changed — the big vendors stay cached in their browser between deploys.
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       // Native-only Capacitor plugins that aren't installed for the web build. They're loaded via
       // guarded dynamic import(...).catch(() => null) and only ever run on the native app shell, so
@@ -25,6 +29,23 @@ export default defineConfig({
         '@capgo/capacitor-updater',
         '@capacitor/network',
       ],
+      output: {
+        // Split the biggest dependencies into their own named chunks so no single file is huge and each
+        // can be cached independently. Everything not listed stays in the default vendor/app chunks.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (id.includes('/three/') || id.includes('/three-')) return 'vendor-three';
+          if (id.includes('/recharts/') || id.includes('/d3-') || id.includes('/victory-')) return 'vendor-charts';
+          if (id.includes('/leaflet') || id.includes('/react-leaflet')) return 'vendor-maps';
+          if (id.includes('/react-quill') || id.includes('/quill')) return 'vendor-editor';
+          if (id.includes('/jspdf') || id.includes('/html2canvas')) return 'vendor-pdf';
+          if (id.includes('/framer-motion')) return 'vendor-motion';
+          if (id.includes('/@radix-ui/')) return 'vendor-radix';
+          if (id.includes('/lucide-react/')) return 'vendor-icons';
+          if (id.includes('/react-dom/') || id.includes('/react/') || id.includes('/react-router')) return 'vendor-react';
+          return 'vendor';
+        },
+      },
     },
   },
 });
