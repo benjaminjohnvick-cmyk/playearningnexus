@@ -1,5 +1,37 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-07-30 — New features + platform-wide cost levers
+
+**Five features (all prebuilt, ON by default):**
+- **Tiered survey rewards** — non-premium earn 12 points per $1 of survey value; premium (PPC) earn 24%
+  cash back; the store unlocks at $8/day of gross survey value. BitLabs cash is kept by the platform.
+- **Services marketplace section** — full parity with the other sections + the App Store: serverless-GPU
+  category tiles, subsections, and search (`serviceStoreCategories`, `aiServiceCategoryImages`).
+- **Auto-qualify → one-tap Premium** — a user who completes the daily survey goal on enough days
+  (`PREMIUM_AUTOQUALIFY_DAYS`, default 260 = 5/wk × 52) is offered a consent-gated, one-tap upgrade
+  (`premiumEligibility`, `premiumAcceptOffer`, `PremiumEarnedBanner`).
+- **Group goals** — friends work toward a big-ticket item with NO shared wallet: each keeps their own
+  points, the platform sums individual progress and funds a capped reward at the shared milestone
+  (`createGroupGoal`/`joinGroupGoal`/`groupGoalStatus`/`claimGroupGoalReward`; `GroupGoal`,
+  `GroupGoalReward` entities). Compliant — value flows platform→member only.
+- **Verified surveys** — answer the platform's OWN PPC surveys by typing/dictating (free, phone keyboard
+  mic) or by voice recording. Free device transcription first, Whisper only as fallback; a free rules-first
+  matcher fills answers, the respondent confirms, an AI validity score + heatmap trace gate the payout.
+  **Recordings are transcribed then discarded — never stored** (biometric data minimization). Own PPC
+  surveys only, never BitLabs. (`verifiedSurveyConsent`, `transcribeSurveyAudio`,
+  `autofillSurveyFromTranscript`, `submitVerifiedSurveyResponse`; `VerifiedSurveyMedia` receipt entity.)
+
+**Cost levers applied across the platform (everything stays ON — pure efficiency):**
+- Cheap-model default (Claude aligned to Haiku, matching OpenAI's gpt-4o-mini; heavy sites opt up).
+- Rules-first moderation & triage (`sdk/rules-first.ts`) — chat/forum moderation + support/bug triage
+  resolve most cases free; AI only for the ambiguous middle.
+- Borderline-only AI quality scan (`surveyQualityAutoScan`) — deterministic score resolves clear cases.
+- Do-once translation cache (`translateText`) + geo-IP cache (`checkSurveyFraud`) via `sdk/cache.ts`.
+- Verified-survey recordings never stored (zero storage, compliance win).
+- Voice-input hint (`VoiceInputHint`) — free OS keyboard dictation surfaced on chat inputs.
+- Docs: `VERIFIED-SURVEYS.md`, `COST-LEVERS-CODEABLE.md`, `LAUNCH-ESTIMATE-2026-07-30.md`; updated
+  `UNDER-5K-EXECUTION-KIT.md`, `backend/.env.example`.
+
 ## 2026-07-29 — Automate the kit: continuous deployment, one-click Railway, no-terminal wizard
 
 The execution kit now runs itself and works without a coding agent. See
