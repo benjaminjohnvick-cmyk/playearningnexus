@@ -110,6 +110,16 @@ as bespoke loyalty logic instead of riding the existing systems.
 - Config in `settings.ts` (+ optimizer denylist), the `loyalty_program` feature flag (ON by default),
   and the `LoyaltyLedger` entity (audit trail).
 
+## Savings tracker (`loyaltySavings`) — factual, hands out nothing
+
+A mirror of realized activity: **net savings = survey earnings + points-back received − markup paid**,
+plus a **real-dollar figure** (`real_world_savings_usd`) and a **"% saved via surveys"**. For a
+non-premium user it starts negative (they paid the markup) and climbs toward **zero** as survey earnings
+offset it; for a premium user (no markup) it sits **positive** and grows with points-back + surveys. It
+grants nothing — it only displays value already earned. Kept strictly **backward-looking** (never "you'll
+earn"), which is the FTC-safe framing. Gated behind the `purchase_payback` admin toggle; a compact version
+(`real_world_savings_usd`, `net_savings_usd`, `percent_saved`) is also surfaced in `loyaltyStatus`.
+
 ## Honest compliance caveat
 
 This structure is about as low-risk as a rewards program gets, but "no lawyer at all" isn't something I

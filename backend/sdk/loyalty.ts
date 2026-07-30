@@ -269,6 +269,48 @@ export async function recordAffiliateProgress(userId: string, commissionUsd: num
   return null;
 }
 
+// ── Savings tracker (FACTUAL, realized — never a projection) ──────────────────────────────────────
+// A mirror of what already happened: value the user has ALREADY earned from surveys + points-back,
+// net of any markup they paid. It hands out NOTHING — it's a display of realized savings. Kept strictly
+// backward-looking (no "you'll earn"), which is the FTC-safe framing (earnings_projections stays OFF).
+//   • Non-premium: starts negative (they paid the markup) and climbs toward ZERO as survey earnings
+//     offset that markup.
+//   • Premium: no markup to offset, so it sits POSITIVE and grows with points-back + survey earnings.
+export async function computeLoyaltySavings(userId: string): Promise<Record<string, unknown> | null> {
+  if (!userId) return null;
+  const usdPerPoint = (snapNumber("POINT_VALUE_CENTS", 1) || 1) / 100;
+
+  // Realized survey earnings.
+  const responses = await db.filter("PPCSurveyResponse", { user_id: userId }, "-created_date", 5000).catch(() => []) as Record<string, unknown>[];
+  const surveyEarnedUsd = round2((responses || []).reduce((s, r) => s + (Number(r.payout_to_user) || 0), 0));
+
+  // Points-back the member has actually received (from our own ledger).
+  const back = await db.filter("LoyaltyLedger", { user_id: userId, type: "points_back" }, "-at", 5000).catch(() => []) as Record<string, unknown>[];
+  const pointsBackUsd = round2((back || []).reduce((s, l) => s + (Number(l.amount_usd) || 0), 0));
+
+  // Markup actually paid (non-premium). markup_applied is in POINTS for points orders, USD for card.
+  const orders = await db.filter("Order", { user_id: userId }, "-created_date", 5000).catch(() => []) as Record<string, unknown>[];
+  let markupPaidUsd = 0, spentUsd = 0;
+  for (const o of (orders || [])) {
+    const m = Number(o.markup_applied) || 0;
+    markupPaidUsd = round2(markupPaidUsd + (o.payment_method === "points" ? round2(m * usdPerPoint) : round2(m)));
+    const amtUsd = Number(o.amount) || (Number(o.points_spent) || 0) * usdPerPoint;
+    spentUsd = round2(spentUsd + (Number(amtUsd) || 0));
+  }
+
+  const realWorldSavingsUsd = round2(surveyEarnedUsd + pointsBackUsd);   // real dollars of value received
+  const netSavingsUsd = round2(realWorldSavingsUsd - markupPaidUsd);     // → 0 for non-premium, + for premium
+  const percentSaved = spentUsd > 0 ? Math.round((netSavingsUsd / spentUsd) * 1000) / 10 : 0;
+  return {
+    real_world_savings_usd: realWorldSavingsUsd,                        // the real-dollar figure
+    net_savings_usd: netSavingsUsd,
+    net_savings_points: Math.round(netSavingsUsd / (usdPerPoint || 0.01)),
+    percent_saved: percentSaved,                                        // "% saved via surveys" (one decimal)
+    breakdown: { survey_earned_usd: surveyEarnedUsd, points_back_usd: pointsBackUsd, markup_paid_usd: markupPaidUsd, total_spent_usd: spentUsd },
+    note: "Savings you've already realized from surveys and rewards — a factual tracker, not a projection or a payout.",
+  };
+}
+
 // ── The eleven value perks (config-driven descriptor) ─────────────────────────────────────────────
 export function loyaltyPerks(member?: Record<string, unknown> | null): Array<{ key: string; label: string; kind: string; value: unknown; active: boolean }> {
   const enrolled = !!member?.loyalty_enrolled;

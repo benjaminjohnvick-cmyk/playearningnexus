@@ -1,9 +1,10 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
+import { isEnabled } from "../../sdk/feature-flags.ts";
 import {
   consentsComplete, withinTerm, dailyRequirementMet, eligibleForDiscount, renewalDue,
-  loyaltyPerks, loyaltyDiscountPct,
+  loyaltyPerks, loyaltyDiscountPct, computeLoyaltySavings,
 } from "../../sdk/loyalty.ts";
 import { makeupPlan } from "../../sdk/premium-ppc.ts";
 
@@ -27,9 +28,17 @@ export default __handler(async (req) => {
     const cashbackActive = eligibleForDiscount(member);
     const reconsent = renewalDue(member);
 
+    // Factual savings tracker (compact) when the admin has it enabled.
+    let savings = null;
+    if (await isEnabled("purchase_payback")) {
+      const s = await computeLoyaltySavings(user.id);
+      if (s) savings = { real_world_savings_usd: s.real_world_savings_usd, net_savings_usd: s.net_savings_usd, percent_saved: s.percent_saved };
+    }
+
     return Response.json({
       enrolled: true,
       indefinite: true,
+      savings,
       // Member-facing booleans only — no dollar cap, no cumulative usage figure.
       cashback_active: cashbackActive,
       cashback_pct: loyaltyDiscountPct(),
