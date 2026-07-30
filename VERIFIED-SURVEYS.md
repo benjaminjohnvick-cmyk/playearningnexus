@@ -16,9 +16,14 @@ This is offered **only on the platform's own PPC surveys**, never on third-party
    Recording is always **optional** — the normal tap-to-answer flow stays available.
 2. **Record.** The browser records mic audio (and, if the respondent opts in, camera video) via
    `MediaRecorder`.
-3. **Transcribe.** The clip is sent to `transcribeSurveyAudio`, which runs OpenAI Whisper server-side and
-   (with consent, when `VERIFIED_SURVEY_STORE_MEDIA` is on) stores the recording to S3 as evidence with a
-   retention deadline (`VerifiedSurveyMedia`).
+3. **Transcribe (device-first, free).** The phone's built-in dictation (the browser Web Speech API)
+   transcribes the answer **on the device at no cost**. That transcript is sent to `transcribeSurveyAudio`,
+   which stores the audio clip as evidence (with consent, when `VERIFIED_SURVEY_STORE_MEDIA` is on) and
+   **skips paid Whisper entirely**. Only when the browser can't transcribe (e.g. older iOS Safari) does the
+   server fall back to OpenAI Whisper. Each stored recording notes its `transcription_source`
+   (`device` = free, `whisper` = paid fallback). Whisper spend is still metered against
+   `AI_DAILY_SPEND_CAP_USD`. Net effect: transcription cost drops toward zero for the majority of users on
+   supported browsers, with Whisper only as a safety net.
 4. **Autofill.** `autofillSurveyFromTranscript` uses the LLM to propose an answer for each question from
    the transcript — **suggestions only, never a submission**.
 5. **Confirm.** The respondent reviews each proposed answer and can change any of them.

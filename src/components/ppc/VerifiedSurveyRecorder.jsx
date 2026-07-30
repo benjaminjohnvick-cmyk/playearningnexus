@@ -32,6 +32,12 @@ export default function VerifiedSurveyRecorder({ survey, questions, user, startT
   const streamRef = useRef(null);
   const previewRef = useRef(null);
   const timerRef = useRef(null);
+  // On-device speech-to-text (free) — the phone's built-in dictation. When it works we skip paid Whisper
+  // and only keep the audio clip as evidence. Falls back to Whisper when the browser doesn't support it.
+  const recognitionRef = useRef(null);
+  const deviceTranscriptRef = useRef('');
+  const SpeechRecognition = (typeof window !== 'undefined') && (window.SpeechRecognition || window.webkitSpeechRecognition);
+  const [liveText, setLiveText] = useState('');
   const method = captureVideo ? 'video' : 'voice';
 
   const loadConsent = useCallback(async (m) => {
@@ -43,7 +49,7 @@ export default function VerifiedSurveyRecorder({ survey, questions, user, startT
   }, []);
 
   useEffect(() => { loadConsent(method); }, [loadConsent, method]);
-  useEffect(() => () => { stopTracks(); if (timerRef.current) clearInterval(timerRef.current); }, []);
+  useEffect(() => () => { stopTracks(); try { recognitionRef.current?.stop(); } catch { /* ignore */ } if (timerRef.current) clearInterval(timerRef.current); }, []);
 
   function stopTracks() {
     try { streamRef.current?.getTracks?.().forEach((t) => t.stop()); } catch { /* ignore */ }
@@ -72,6 +78,31 @@ export default function VerifiedSurveyRecorder({ survey, questions, user, startT
       rec.onstop = () => finishRecording(rec.mimeType || (captureVideo ? 'video/webm' : 'audio/webm'));
       mediaRecorderRef.current = rec;
       rec.start();
+
+      // Start the phone's free on-device dictation in parallel (best-effort). Accumulate final results.
+      deviceTranscriptRef.current = '';
+      setLiveText('');
+      if (SpeechRecognition) {
+        try {
+          const recog = new SpeechRecognition();
+          recog.continuous = true;
+          recog.interimResults = true;
+          recog.lang = (user?.preferred_language || user?.language || navigator.language || 'en-US');
+          recog.onresult = (e) => {
+            let interim = '';
+            for (let i = e.resultIndex; i < e.results.length; i++) {
+              const t = e.results[i][0]?.transcript || '';
+              if (e.results[i].isFinal) deviceTranscriptRef.current += (deviceTranscriptRef.current ? ' ' : '') + t.trim();
+              else interim += t;
+            }
+            setLiveText((deviceTranscriptRef.current + ' ' + interim).trim());
+          };
+          recog.onerror = () => { /* fall back to Whisper on stop */ };
+          recognitionRef.current = recog;
+          recog.start();
+        } catch { recognitionRef.current = null; }
+      }
+
       setStep('recording');
       setElapsed(0);
       timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000);
@@ -82,6 +113,8 @@ export default function VerifiedSurveyRecorder({ survey, questions, user, startT
 
   function stopRecording() {
     if (timerRef.current) clearInterval(timerRef.current);
+    try { recognitionRef.current?.stop(); } catch { /* ignore */ }
+    recognitionRef.current = null;
     try { mediaRecorderRef.current?.stop(); } catch { /* ignore */ }
   }
 
@@ -99,10 +132,14 @@ export default function VerifiedSurveyRecorder({ survey, questions, user, startT
     setStep('transcribing');
     try {
       const blob = new Blob(chunksRef.current, { type: mimeType });
-      if (!blob.size) { toast.error('No audio captured — try again.'); setStep('ready'); return; }
-      const b64 = await blobToBase64(blob);
+      const b64 = blob.size ? await blobToBase64(blob) : '';
+      // Prefer the free on-device transcript. If the phone captured one, send it so the server skips paid
+      // Whisper and just stores the clip as evidence; otherwise send the audio for the Whisper fallback.
+      const deviceTranscript = (deviceTranscriptRef.current || '').trim();
+      if (!deviceTranscript && !blob.size) { toast.error('No audio captured — try again.'); setStep('ready'); return; }
       const tr = await base44.functions.invoke('transcribeSurveyAudio', {
-        survey_id: survey.id, method, mime_type: mimeType, audio_base64: b64, duration_ms: elapsed * 1000,
+        survey_id: survey.id, method, mime_type: mimeType, audio_base64: b64,
+        client_transcript: deviceTranscript || undefined, duration_ms: elapsed * 1000,
       });
       if (!tr.data?.ok) {
         toast.error(tr.data?.message || 'Could not transcribe your recording. You can try again or answer by tapping.');
@@ -208,6 +245,12 @@ export default function VerifiedSurveyRecorder({ survey, questions, user, startT
                 <span className="font-mono text-lg">{String(Math.floor(elapsed / 60)).padStart(2, '0')}:{String(elapsed % 60).padStart(2, '0')}</span>
               </div>
               <Button className="bg-gray-800 hover:bg-gray-900" onClick={stopRecording}><Square className="mr-2 h-5 w-5" /> Stop & transcribe</Button>
+              {SpeechRecognition && (
+                <div className="mt-3">
+                  <Badge variant="secondary" className="text-[10px]">Transcribing free on your device</Badge>
+                  {liveText && <p className="mt-2 max-h-20 overflow-y-auto rounded-lg bg-gray-50 p-2 text-left text-xs italic text-gray-500">{liveText}</p>}
+                </div>
+              )}
             </div>
           )}
           <div className="mt-4"><Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button></div>

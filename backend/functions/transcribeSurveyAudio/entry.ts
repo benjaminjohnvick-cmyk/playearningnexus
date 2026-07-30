@@ -22,16 +22,23 @@ export default __handler(async (req) => {
     if (!(await verifiedSurveysEnabled())) {
       return Response.json({ blocked: true, message: "Verified surveys aren't available right now." }, { status: 403 });
     }
-    if (!transcriptionAvailable()) {
-      return Response.json({ ok: false, error: "transcription_unavailable", message: "Voice answering isn't switched on yet (transcription key not set)." }, { status: 503 });
-    }
 
     const body = await req.json().catch(() => ({}));
     const surveyId = String(body.survey_id || "");
     const method = String(body.method || "voice");
     const mime = String(body.mime_type || "audio/webm");
     const b64 = String(body.audio_base64 || "");
-    if (!surveyId || !b64) return Response.json({ error: "survey_id and audio_base64 are required" }, { status: 400 });
+    // COST LEVER: if the phone transcribed on-device (free Web Speech API), the client sends that
+    // transcript and we SKIP paid Whisper entirely — we only store the audio clip as evidence.
+    const clientTranscript = String(body.client_transcript || "").trim();
+    const useDevice = clientTranscript.length > 0;
+    if (!surveyId) return Response.json({ error: "survey_id is required" }, { status: 400 });
+    if (!b64 && !useDevice) return Response.json({ error: "audio_base64 or client_transcript is required" }, { status: 400 });
+
+    // Whisper is only needed for the FALLBACK path (no device transcript). Don't block the free path on it.
+    if (!useDevice && !transcriptionAvailable()) {
+      return Response.json({ ok: false, error: "transcription_unavailable", message: "Voice answering isn't switched on yet (transcription key not set) and your device couldn't transcribe — please answer by tapping." }, { status: 503 });
+    }
 
     // CONSENT GATE — every required biometric consent for this method must be present at the current version.
     const required = consentsForMethod(method);
@@ -41,19 +48,33 @@ export default __handler(async (req) => {
       }
     }
 
-    const bytes = base64ToBytes(b64);
+    // Decode audio if present (needed for the Whisper path, and to store evidence on either path).
+    const bytes = b64 ? base64ToBytes(b64) : new Uint8Array(0);
     const maxBytes = verifiedMaxAudioMb() * 1024 * 1024;
     if (bytes.length > maxBytes) {
       return Response.json({ error: "audio_too_large", max_mb: verifiedMaxAudioMb() }, { status: 413 });
     }
 
-    const result = await transcribeAudio(bytes, mime, { model: whisperModel(), language: body.language || undefined });
-    if (!result.ok) return Response.json({ ok: false, error: result.error }, { status: 502 });
+    // TRANSCRIBE: free device transcript when supplied, otherwise paid Whisper fallback.
+    let transcriptText: string;
+    let source: "device" | "whisper";
+    let model: string | undefined;
+    if (useDevice) {
+      transcriptText = clientTranscript.slice(0, 4000);
+      source = "device";
+    } else {
+      const result = await transcribeAudio(bytes, mime, { model: whisperModel(), language: body.language || undefined });
+      if (!result.ok) return Response.json({ ok: false, error: result.error }, { status: 502 });
+      transcriptText = result.text || "";
+      model = result.model;
+      source = "whisper";
+    }
 
-    // Store the recording as evidence (consented biometric data) with a retention deadline.
+    // Store the recording as evidence (consented biometric data) with a retention deadline. This runs on
+    // BOTH paths — the free device path still keeps the audio clip as fraud evidence (just no Whisper bill).
     let mediaId: string | null = null;
     let stored = false;
-    if (verifiedStoreMedia()) {
+    if (verifiedStoreMedia() && bytes.length > 0) {
       const ext = mime.includes("mp4") ? "mp4" : mime.includes("wav") ? "wav" : "webm";
       const url = await uploadBytes(`verified-survey/${user.id}-${surveyId}.${ext}`, bytes, mime, "verified-survey").catch(() => null);
       const retentionUntil = new Date(Date.now() + verifiedMediaRetentionDays() * 86400000).toISOString();
@@ -66,7 +87,8 @@ export default __handler(async (req) => {
         media_url: url,                                  // null if S3 not configured — transcript still returned
         stored: !!url,
         duration_ms: Number(body.duration_ms) || 0,
-        transcript: result.text,
+        transcript: transcriptText,
+        transcription_source: source,                    // "device" (free) or "whisper" (paid fallback)
         consent_kinds: required,
         consent_version: CONSENT_VERSION,
         retention_until: retentionUntil,
@@ -77,7 +99,7 @@ export default __handler(async (req) => {
       stored = !!url;
     }
 
-    return Response.json({ ok: true, transcript: result.text, media_id: mediaId, stored, model: result.model });
+    return Response.json({ ok: true, transcript: transcriptText, media_id: mediaId, stored, source, model });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }
