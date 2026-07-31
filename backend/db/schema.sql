@@ -3189,6 +3189,28 @@ CREATE TABLE IF NOT EXISTS "RevenueEvent" (
 CREATE INDEX IF NOT EXISTS "RevenueEvent_data_gin" ON "RevenueEvent" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "RevenueEvent_created" ON "RevenueEvent" (created_date DESC);
 
+-- Expense: recorded business expenses (marketing / infra / other) for the growth-budget engine.
+CREATE TABLE IF NOT EXISTS "Expense" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "Expense_data_gin" ON "Expense" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "Expense_created" ON "Expense" (created_date DESC);
+
+-- GrowthPlan: daily snapshots from growthBudgetAutoPlan (reserve, surplus, reinvest budget, projections).
+CREATE TABLE IF NOT EXISTS "GrowthPlan" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GrowthPlan_data_gin" ON "GrowthPlan" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GrowthPlan_created" ON "GrowthPlan" (created_date DESC);
+
 CREATE TABLE IF NOT EXISTS "BusinessAccount" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
   created_date timestamptz NOT NULL DEFAULT now(),

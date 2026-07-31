@@ -878,5 +878,11 @@
   "SponsoredPlacement": {
     "scope": "owner",
     "owner_field": "owner_user_id"
+  },
+  "Expense": {
+    "scope": "admin"
+  },
+  "GrowthPlan": {
+    "scope": "admin"
   }
 }

@@ -73,6 +73,7 @@ import GameAnalyticsDashboard from './pages/GameAnalyticsDashboard';
 import GameDetail from './pages/GameDetail';
 import GameGuides from './pages/GameGuides';
 import Gamification from './pages/Gamification';
+import GrowthEngine from './pages/GrowthEngine';
 import GuildDetails from './pages/GuildDetails';
 import Guilds from './pages/Guilds';
 import Home from './pages/Home';
@@ -142,6 +143,7 @@ export const PAGES = {
     "GameDetail": GameDetail,
     "GameGuides": GameGuides,
     "Gamification": Gamification,
+    "GrowthEngine": GrowthEngine,
     "GuildDetails": GuildDetails,
     "Guilds": Guilds,
     "Home": Home,

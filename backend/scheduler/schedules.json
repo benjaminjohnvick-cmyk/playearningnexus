@@ -211,6 +211,12 @@
       "name": "ai-service-category-images",
       "cron": "35 4 * * *",
       "function": "aiServiceCategoryImages"
+    },
+    {
+      "name": "daily-growth-budget-plan",
+      "cron": "20 8 * * *",
+      "function": "growthBudgetAutoPlan",
+      "_comment": "Computes the growth-budget plan, stores a GrowthPlan snapshot, and alerts if the redemption reserve is underfunded."
     }
   ]
 }
