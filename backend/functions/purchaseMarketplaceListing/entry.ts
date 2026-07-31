@@ -11,6 +11,7 @@ import { quoteDiscount, recordLoyaltyDiscount } from "../../sdk/loyalty.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
 import { recordRevenue, recordSubsidy, sellerCommissionPct, sellerCashbackPointsPct, marketplaceMarginSource, catalogWholesaleFraction, pointValueUsd, sellerCashbackRequiresActivation, curatorRewardPointsPct } from "../../sdk/revenue.ts";
 import { isSellerActivated } from "../../sdk/seller-activation.ts";
+import { maxPointsPerTransaction } from "../../sdk/redemption.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -112,6 +113,19 @@ export default __handler(async (req) => {
       // members receive the 10% as store credit after the sale (below).
       charged.markup = Math.round(basePoints * markup);   // markup recorded (in points)
       if ((Number(user.points) || 0) < effectivePoints) return Response.json({ error: "Insufficient points", required: effectivePoints, balance: Number(user.points) || 0 }, { status: 402 });
+      // Per-transaction spend cap: a user can spend at most 12% (non-premium) / 24% (premium) of their TOTAL
+      // points balance in a single purchase. Throttles spend velocity so the cash reserve is never drained.
+      const spendCap = maxPointsPerTransaction({ isPremium, userPoints: Number(user.points) || 0 });
+      if (effectivePoints > spendCap.points) {
+        return Response.json({
+          spend_cap_exceeded: true,
+          required: effectivePoints,
+          max_points_this_transaction: spendCap.points,
+          cap_pct: spendCap.capPct,
+          balance: Number(user.points) || 0,
+          message: `You can spend up to ${spendCap.points.toLocaleString()} points in a single purchase (${Math.round(spendCap.capPct * 100)}% of your balance). This item needs ${effectivePoints.toLocaleString()} — pick a lower-cost item, or earn more so your per-purchase limit rises.`,
+        }, { status: 409 });
+      }
     } else {
       if (!(await isEnabled("card_charging"))) {
         return Response.json({ blocked: true, reason: "card_payments_disabled", message: "Card payments aren't enabled yet. Use points, or contact support." }, { status: 403 });
