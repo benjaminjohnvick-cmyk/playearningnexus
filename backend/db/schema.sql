@@ -3178,3 +3178,43 @@ CREATE TABLE IF NOT EXISTS "VerifiedSurveyMedia" (
 );
 CREATE INDEX IF NOT EXISTS "VerifiedSurveyMedia_data_gin" ON "VerifiedSurveyMedia" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "VerifiedSurveyMedia_created" ON "VerifiedSurveyMedia" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "RevenueEvent" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "RevenueEvent_data_gin" ON "RevenueEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "RevenueEvent_created" ON "RevenueEvent" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "BusinessAccount" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "BusinessAccount_data_gin" ON "BusinessAccount" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "BusinessAccount_created" ON "BusinessAccount" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "BusinessSubscription" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "BusinessSubscription_data_gin" ON "BusinessSubscription" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "BusinessSubscription_created" ON "BusinessSubscription" (created_date DESC);
+
+CREATE TABLE IF NOT EXISTS "SponsoredPlacement" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SponsoredPlacement_data_gin" ON "SponsoredPlacement" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SponsoredPlacement_created" ON "SponsoredPlacement" (created_date DESC);

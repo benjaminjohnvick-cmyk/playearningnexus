@@ -863,5 +863,20 @@
   "VerifiedSurveyMedia": {
     "scope": "owner",
     "owner_field": "user_id"
+  },
+  "RevenueEvent": {
+    "scope": "admin"
+  },
+  "BusinessAccount": {
+    "scope": "owner",
+    "owner_field": "owner_user_id"
+  },
+  "BusinessSubscription": {
+    "scope": "owner",
+    "owner_field": "owner_user_id"
+  },
+  "SponsoredPlacement": {
+    "scope": "owner",
+    "owner_field": "owner_user_id"
   }
 }

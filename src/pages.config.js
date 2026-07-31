@@ -55,6 +55,7 @@ import AdminPricingFeedback from './pages/AdminPricingFeedback';
 import AdminUsers from './pages/AdminUsers';
 import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import BusinessDashboard from './pages/BusinessDashboard';
+import BusinessPortal from './pages/BusinessPortal';
 import CRMDashboard from './pages/CRMDashboard';
 import Challenges from './pages/Challenges';
 import ContactUs from './pages/ContactUs';
@@ -123,6 +124,7 @@ export const PAGES = {
     "AdminUsers": AdminUsers,
     "AffiliateMarketplace": AffiliateMarketplace,
     "BusinessDashboard": BusinessDashboard,
+    "BusinessPortal": BusinessPortal,
     "CRMDashboard": CRMDashboard,
     "Challenges": Challenges,
     "ContactUs": ContactUs,

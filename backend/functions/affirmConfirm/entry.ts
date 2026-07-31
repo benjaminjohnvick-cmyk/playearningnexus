@@ -117,6 +117,14 @@ export default __handler(async (req) => {
     const fulfillFn = isPlatform ? "aiOrderFulfillment" : "autoOrderFulfillmentAndFundsRelease";
     base44.asServiceRole.functions.invoke(fulfillFn, { order_id: (order as any).id }).catch(() => null);
 
+    // B18 — record the BNPL merchant fee the financing partner pays the platform (business-side revenue,
+    // never added to the customer's price). No-op until BNPL_MERCHANT_FEE_PCT is set.
+    try {
+      const { recordRevenue, bnplMerchantFeePct } = await import("../../sdk/revenue.ts");
+      const fee = amountUsd * bnplMerchantFeePct();
+      if (fee > 0) await recordRevenue({ type: "bnpl_merchant_fee", amount_usd: fee, user_id: user.id, ref: chargeId, meta: { listing_id: listing.id, order_amount_usd: amountUsd } });
+    } catch { /* revenue logging is best-effort */ }
+
     return Response.json({ success: true, order_id: (order as any).id, charge_id: chargeId, amount_usd: amountUsd });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
