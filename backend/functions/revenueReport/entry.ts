@@ -20,11 +20,12 @@ export default __handler(async (req) => {
 
     const rows = await base44.asServiceRole.entities.RevenueEvent.filter({}, "-created_date", 20000).catch(() => []) as Record<string, unknown>[];
     const byType: Record<string, number> = {};
-    let total = 0, customerPaid = 0;
+    let total = 0, subsidies = 0, customerPaid = 0;
     for (const r of (rows || [])) {
       const at = r.at ? new Date(String(r.at)).getTime() : (r.created_date ? new Date(String(r.created_date)).getTime() : 0);
       if (at && at < cutoffMs) continue;
       const amt = Number(r.amount_usd) || 0;
+      if (r.kind === "subsidy") { subsidies += amt; continue; }   // costs (perks) — tracked separately
       byType[String(r.type)] = Math.round(((byType[String(r.type)] || 0) + amt) * 100) / 100;
       total += amt;
       if (r.customer_paid === true) customerPaid += amt;   // should always be 0 — the invariant
@@ -39,12 +40,14 @@ export default __handler(async (req) => {
     return Response.json({
       window_days: days,
       by_type: byType,
-      recorded_total_usd: Math.round(total * 100) / 100,
+      recorded_revenue_usd: Math.round(total * 100) / 100,
+      subsidies_usd: Math.round(subsidies * 100) / 100,   // platform-funded perks (e.g. seller cash-back)
       breakage_estimate_usd: breakageUsd,
+      net_after_subsidies_usd: Math.round((total + breakageUsd - subsidies) * 100) / 100,
       grand_total_incl_breakage_usd: Math.round((total + breakageUsd) * 100) / 100,
       customer_paid_usd: Math.round(customerPaid * 100) / 100,   // invariant: expect 0 (no customer markup)
       invariant_ok: customerPaid === 0,
-      note: "All figures are business-side / structural revenue. customer_paid_usd must be 0 — customers are never charged a markup.",
+      note: "Revenue is business-side/structural; subsidies are platform-funded perks covered by breakage + the advertiser pool (see breakageReport). customer_paid_usd must be 0 — customers are never charged a markup.",
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

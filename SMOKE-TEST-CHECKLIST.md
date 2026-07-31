@@ -75,11 +75,17 @@ off. Nothing here spends real money (card charging is off).
 - [ ] **Buy sponsored placement** — only works once `SPONSORED_PLACEMENT_PRICE_USD` > 0 (otherwise it
       correctly says "not priced yet"). Set a price in admin, retry → placement + `RevenueEvent` created.
 - [ ] **Book an audience panel** — same: set `AUDIENCE_PANEL_PRICE_USD` > 0 first.
-- [ ] **Seller commission (A2):** as user A, buy user B's member listing with points → user B is credited
-      the list price **minus** `MARKETPLACE_SELLER_COMMISSION_PCT` (10%), and a `seller_commission`
-      `RevenueEvent` is written. (Set the pct to 0 to keep sellers whole.)
-- [ ] **Revenue report:** run `revenueReport` (admin) → totals by type appear, plus a breakage estimate, and
-      **`customer_paid_usd = 0`** with `invariant_ok: true` — proving no customer was charged a markup.
+- [ ] **Seller cash-back (default `cashback` mode):** as user A, buy user B's member listing with points →
+      user B is credited the **full list price + 10% cash-back points** (`SELLER_CASHBACK_POINTS_PCT`), the
+      buyer paid no markup, and a **subsidy** `RevenueEvent` (`kind: "subsidy"`) is written. (Switch
+      `MARKETPLACE_MARGIN_SOURCE` to `seller` for the commission mode, or `off` for neither.)
+- [ ] **Catalog spread:** buy a **platform-catalog** item with points → a `sourcing_margin` `RevenueEvent`
+      is written (face value − wholesale). Buyer paid the normal price, not a markup.
+- [ ] **Breakage report:** run `breakageReport` (admin) → shows outstanding vs redeemed points, the
+      recognized breakage, the subsidies, and `coverage.covered: true` (breakage + advertiser pool cover the
+      cash-back) → `seller_cashback_is_free: true`.
+- [ ] **Revenue report:** run `revenueReport` (admin) → `recorded_revenue_usd` and `subsidies_usd` are
+      separate, `net_after_subsidies_usd` shown, and **`customer_paid_usd = 0`** with `invariant_ok: true`.
 
 ## If something's off
 

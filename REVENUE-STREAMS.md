@@ -51,6 +51,34 @@ it).
 | B22 | **Shipping spread** | `recordRevenue({type:"shipping_margin"})`; negotiated rate below what's passed through. | Negotiate carrier rates; log the spread (keep it honest). |
 | B23 | **Audience panels / segments** | `createAudiencePanel` + `SponsoredPlacement(slot:"audience_panel")` + `AUDIENCE_PANEL_PRICE_USD`. | Set a price; deliver **aggregate, consented** insights only. |
 
+## The closed-loop margin model (seller keeps 100% + cash-back)
+
+The default marketplace mode is now **`cashback`** (`MARKETPLACE_MARGIN_SOURCE`): the member seller keeps
+**100%** of their sale **and** gets **10% back in non-cashable points** (`SELLER_CASHBACK_POINTS_PCT`), and
+the **buyer pays no markup**. The platform's 10% is not taken from anyone — it comes from the closed loop:
+
+1. **Seller cash-back (Suggestion 1)** — issued as closed-loop points (nearly free scrip). Recorded as a
+   **subsidy** (`recordSubsidy`, `kind:"subsidy"`), i.e. a cost, not revenue — so it never inflates the
+   revenue total.
+2. **Breakage is the real margin (Suggestion 2)** — `breakageReport` tracks outstanding vs redeemed points
+   and recognizes the unredeemed portion (`BREAKAGE_RECOGNITION_PCT`) as retained value. This is where the
+   "10%" actually lands: value of points that are never redeemed, paid by no one.
+3. **Catalog sourcing spread (Suggestion 3)** — when a platform-catalog item is bought with points, the
+   spread between the points' face value and the wholesale cost (`wholesale_cost_usd`, or
+   `CATALOG_WHOLESALE_FRACTION`) is booked as `sourcing_margin` revenue — funded by the cash the buyer
+   already earned.
+4. **Advertiser pool backstop (Suggestion 4)** — `breakageReport` proves breakage **+** the advertiser pool
+   (`pooledAnnualRevenueUsd`) **cover** the cash-back subsidies (`coverage()` → `seller_cashback_is_free`),
+   so the perk is genuinely funded, not magic.
+
+The one door kept shut: **no owner-side points→cash conversion.** Points stay non-cashable/closed-loop —
+that's the money-transmission shield. The platform's real money is the survey/advertiser cash and the
+breakage, which are already the platform's; it never needs to launder value back through points.
+
+Modes: set `MARKETPLACE_MARGIN_SOURCE` to `seller` (commission from the seller, A2) or `off` (seller keeps
+100%, no cash-back) if you prefer. `revenueReport` now splits `recorded_revenue_usd` from `subsidies_usd`
+and shows `net_after_subsidies_usd`.
+
 ## Compliance notes
 
 - **Never a customer markup** is the invariant — `revenueReport.customer_paid_usd` must stay `0`.

@@ -9,7 +9,7 @@ import { purchaseGate } from "../../sdk/household.ts";
 import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
 import { quoteDiscount, recordLoyaltyDiscount } from "../../sdk/loyalty.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
-import { recordRevenue, sellerCommissionPct, pointValueUsd } from "../../sdk/revenue.ts";
+import { recordRevenue, recordSubsidy, sellerCommissionPct, sellerCashbackPointsPct, marketplaceMarginSource, catalogWholesaleFraction, pointValueUsd } from "../../sdk/revenue.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -211,19 +211,43 @@ export default __handler(async (req) => {
       // revenue (closed-loop), so there's no user to credit. Seller gets FULL list price; the welcome
       // discount is absorbed by the platform (and only applies to platform items anyway). Atomic credit.
       if (!isPlatform && seller) {
-        // A2 — platform commission taken from the SELLER's proceeds (never the buyer). The seller nets the
-        // rest; the commission is booked to the RevenueEvent ledger. Set MARKETPLACE_SELLER_COMMISSION_PCT
-        // to 0 to keep sellers whole.
-        const commissionPoints = Math.round(pointsPrice * sellerCommissionPct());
-        const sellerNetPoints = Math.max(0, pointsPrice - commissionPoints);
+        // How the platform takes its marketplace margin (MARKETPLACE_MARGIN_SOURCE):
+        //   cashback (default) — seller keeps 100% AND gets cash-back points; the perk is a SUBSIDY funded
+        //                        by breakage + the advertiser pool (recorded, not charged to anyone).
+        //   seller             — commission taken from the seller's proceeds (A2), booked as revenue.
+        //   off                — seller keeps 100%, nothing added.
+        const mode = marketplaceMarginSource();
+        let sellerCreditPoints = pointsPrice;   // default: seller keeps the full list price
+        let commissionPoints = 0, cashbackPoints = 0;
+        if (mode === "seller") {
+          commissionPoints = Math.round(pointsPrice * sellerCommissionPct());
+          sellerCreditPoints = Math.max(0, pointsPrice - commissionPoints);
+        } else if (mode === "cashback") {
+          cashbackPoints = Math.round(pointsPrice * sellerCashbackPointsPct());
+          sellerCreditPoints = pointsPrice + cashbackPoints;   // 100% + cash-back
+        }
         for (let attempt = 0; attempt < 5; attempt++) {
           const s = (await base44.asServiceRole.entities.User.filter({ id: seller.id }))[0] || seller;
           const sb = Number(s.points) || 0;
-          const ok = await db.updateIf("User", seller.id, { points: sb + sellerNetPoints }, { field: "points", equals: String(sb) }).catch(() => false);
+          const ok = await db.updateIf("User", seller.id, { points: sb + sellerCreditPoints }, { field: "points", equals: String(sb) }).catch(() => false);
           if (ok) break;
         }
         if (commissionPoints > 0) {
           await recordRevenue({ type: "seller_commission", amount_usd: commissionPoints * pointValueUsd(), user_id: seller.id, ref: listing.id, meta: { listing_id: listing.id, commission_points: commissionPoints, pct: sellerCommissionPct() } }).catch(() => null);
+        }
+        if (cashbackPoints > 0) {
+          // Suggestion 1 — the cash-back is a platform-funded perk (a COST), covered by breakage + the pool.
+          await recordSubsidy({ type: "seller_commission", amount_usd: cashbackPoints * pointValueUsd(), user_id: seller.id, ref: listing.id, funded_by: "breakage+advertiser_pool", meta: { listing_id: listing.id, cashback_points: cashbackPoints, pct: sellerCashbackPointsPct(), note: "seller_cashback" } }).catch(() => null);
+        }
+      } else if (isPlatform) {
+        // Suggestion 3 — a platform-catalog item sold for points: record the SOURCING SPREAD (points face
+        // value − wholesale cost) as real margin. Funded by the cash the buyer already earned; the buyer
+        // paid no markup. Uses the listing's wholesale_cost_usd if set, else CATALOG_WHOLESALE_FRACTION.
+        const faceUsd = pointsPrice * pointValueUsd();
+        const wholesaleUsd = Number(listing.wholesale_cost_usd) || faceUsd * catalogWholesaleFraction();
+        const spread = Math.max(0, faceUsd - wholesaleUsd);
+        if (spread > 0) {
+          await recordRevenue({ type: "sourcing_margin", amount_usd: spread, ref: listing.id, meta: { listing_id: listing.id, face_usd: Math.round(faceUsd * 100) / 100, wholesale_usd: Math.round(wholesaleUsd * 100) / 100 } }).catch(() => null);
         }
       }
       // Deduct the used welcome credit from the buyer's pool (platform items only).

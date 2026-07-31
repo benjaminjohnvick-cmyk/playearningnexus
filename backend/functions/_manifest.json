@@ -357,6 +357,7 @@
  "batchDailyGoalGenerator",
  "batchGameRecommendations",
  "bitlabsPostback",
+ "breakageReport",
  "buildUserAIProfiles",
  "businessClientReengagementEngine",
  "businessSignup",

@@ -25,7 +25,7 @@ export type RevenueType =
   | "white_label" | "bnpl_merchant_fee" | "membership_fee" | "arbitrage_margin" | "shipping_margin"
   | "audience_panel" | "other";
 
-/** Record ONE non-customer revenue event into the unified ledger. Best-effort; never throws to caller. */
+/** Record ONE non-customer REVENUE event (real money in) into the unified ledger. */
 export async function recordRevenue(input: {
   type: RevenueType;
   amount_usd: number;
@@ -34,16 +34,37 @@ export async function recordRevenue(input: {
   ref?: string | null;
   meta?: Record<string, unknown>;
 }): Promise<string | null> {
+  return writeEvent("revenue", input);
+}
+
+/** Record a SUBSIDY (a perk the platform funds — e.g. seller cash-back points), so it's tracked as a COST
+ *  against breakage + the advertiser pool without inflating revenue. Same ledger, kind:"subsidy". */
+export async function recordSubsidy(input: {
+  type: RevenueType;
+  amount_usd: number;
+  business_id?: string | null;
+  user_id?: string | null;
+  ref?: string | null;
+  funded_by?: string;
+  meta?: Record<string, unknown>;
+}): Promise<string | null> {
+  return writeEvent("subsidy", { ...input, meta: { ...(input.meta ?? {}), funded_by: input.funded_by ?? "breakage+advertiser_pool" } });
+}
+
+async function writeEvent(kind: "revenue" | "subsidy", input: {
+  type: RevenueType; amount_usd: number; business_id?: string | null; user_id?: string | null; ref?: string | null; meta?: Record<string, unknown>;
+}): Promise<string | null> {
   const amount = round2(Math.max(0, Number(input.amount_usd) || 0));
   if (amount <= 0) return null;
   try {
     const row = await db.create("RevenueEvent", {
+      kind,                          // "revenue" (money in) or "subsidy" (platform-funded perk / cost)
       type: input.type,
       amount_usd: amount,
       business_id: input.business_id ?? null,
       user_id: input.user_id ?? null,
       ref: input.ref ?? null,
-      customer_paid: false,          // INVARIANT: nothing in this ledger is a markup charged to a customer
+      customer_paid: false,          // INVARIANT: nothing here is a markup charged to a customer
       meta: input.meta ?? {},
       at: new Date().toISOString(),
     });
@@ -56,6 +77,19 @@ export async function recordRevenue(input: {
 export const adgridFundsAllDiscounts = () => snapBool("ADGRID_FUNDS_ALL_DISCOUNTS", false);
 // A2 — marketplace platform commission, charged to the SELLER (out of their proceeds), never the buyer.
 export const sellerCommissionPct = () => Math.min(1, Math.max(0, snapNumber("MARKETPLACE_SELLER_COMMISSION_PCT", 0.10)));
+// Suggestion 1 — how the platform takes its marketplace margin:
+//   "cashback" (default) → seller keeps 100% AND gets cash-back points; margin funded by breakage + pool.
+//   "seller"             → platform commission taken from the seller's proceeds (A2).
+//   "off"                → seller keeps 100%, no cash-back, no commission.
+export const marketplaceMarginSource = () => {
+  const v = snapString("MARKETPLACE_MARGIN_SOURCE", "cashback").toLowerCase();
+  return v === "seller" || v === "off" ? v : "cashback";
+};
+// Cash-back points granted to the seller (they keep 100% of the sale AND get this back). Closed-loop scrip.
+export const sellerCashbackPointsPct = () => Math.min(1, Math.max(0, snapNumber("SELLER_CASHBACK_POINTS_PCT", 0.10)));
+// Suggestion 3 — default wholesale fraction for platform-catalog items when no explicit wholesale cost is
+// set (0.90 → wholesale ≈ 90% of face, so ~10% is the sourcing spread the platform keeps at redemption).
+export const catalogWholesaleFraction = () => Math.min(1, Math.max(0, snapNumber("CATALOG_WHOLESALE_FRACTION", 0.90)));
 // A3/B13 — sponsored placement / ad slot price (per placement period).
 export const sponsoredPlacementPriceUsd = () => round2(Math.max(0, snapNumber("SPONSORED_PLACEMENT_PRICE_USD", 0)));
 // A6 — business sign-up + one-time onboarding fee.
