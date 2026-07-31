@@ -10,6 +10,7 @@ import { useLocale } from '@/components/locale/LocaleContext';
 import CatalogWelcomeChat from '@/components/marketplace/CatalogWelcomeChat';
 import SellerDealBanner from '@/components/seller/SellerDealBanner';
 import MarketplaceSectionNav from '@/components/marketplace/MarketplaceSectionNav';
+import ApplyPointsAtCheckout from '@/components/marketplace/ApplyPointsAtCheckout';
 import AddToStorefrontButton from '@/components/seller/AddToStorefrontButton';
 import { useVariant } from '@/components/experiments/VariantProvider';
 import { reportMetric } from '@/lib/liveVariants';
@@ -473,12 +474,8 @@ export default function Marketplace() {
                         <CreditCard className="w-4 h-4 mr-1" /> {buyCta === 'variant' ? `Buy · ${formatPrice(l.price_usd)}` : formatPrice(l.price_usd)}
                       </Button>
                     )}
-                    {/* Pay by card AND apply your points (points funded by PayPal via AI fulfillment). */}
-                    {l.price_usd > 0 && l.price_points > 0 && (
-                      <Button size="sm" variant="secondary" disabled={busy === l.id + 'hybrid'} onClick={() => hybridBuy(l)} title="Pay by card and apply your points">
-                        <Coins className="w-4 h-4 mr-1" /> Card + points
-                      </Button>
-                    )}
+                    {/* Opt-in: the user taps to apply their points at checkout (funded by PayPal). Never auto. */}
+                    <ApplyPointsAtCheckout listing={l} onDone={load} />
                     {/* Resell a catalog product from your storefront — earn 10% back in points if it sells. */}
                     <AddToStorefrontButton listing={l} />
                   </div>

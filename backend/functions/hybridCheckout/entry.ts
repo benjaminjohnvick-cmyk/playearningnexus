@@ -7,6 +7,7 @@ import { pointValueUsd } from "../../sdk/revenue.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
 import { maxPointsPerTransaction } from "../../sdk/redemption.ts";
 import { recordMoneyFlow, netChargeAfterDiscount } from "../../sdk/paypal.ts";
+import { paypalConfigured, createOrder } from "../../sdk/paypal-api.ts";
 
 // hybridCheckout (authenticated) — pay by CREDIT CARD and (optionally) APPLY POINTS. The user's points cover
 // as much as the per-transaction spend cap allows (12% non-premium / 24% premium of their balance); the AI
@@ -23,7 +24,8 @@ export default __handler(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { listing_id, apply_points = true, shipping_address } = await req.json().catch(() => ({}));
+    // apply_points is OPT-IN — the user chooses it by tapping "Apply my points" at checkout. Default OFF.
+    const { listing_id, apply_points = false, shipping_address } = await req.json().catch(() => ({}));
     if (!listing_id) return Response.json({ error: "listing_id required" }, { status: 400 });
 
     const listing = await base44.asServiceRole.entities.MarketplaceListing.filter({ id: listing_id }).then((r: any) => r[0]);
@@ -81,8 +83,20 @@ export default __handler(async (req) => {
       created_at: new Date().toISOString(),
     });
 
+    // Card remainder → start a LIVE PayPal payment when connected; the client redirects to approve_url and
+    // then calls paypalCaptureCheckout, which captures, marks paid, and fires fulfillment. If PayPal isn't
+    // configured yet, the order simply waits (awaiting_payment) so nothing breaks pre-launch.
+    let approveUrl: string | null = null, paypalOrderId: string | null = null;
+    if (!paidNow && paypalConfigured()) {
+      try {
+        const pp = await createOrder({ amountUsd: cardNet, ref: String((order as any).id), description: listing.title || "GamerGain order" });
+        approveUrl = pp.approve_url; paypalOrderId = pp.id;
+        await db.update("Order", String((order as any).id), { paypal_order_id: pp.id, paypal_status: pp.status }).catch(() => null);
+      } catch { /* leave as awaiting_payment; client can retry via paypalCreateCheckout */ }
+    }
+
     // Kick AI fulfillment only when there's nothing left to capture on the card (points covered it). Card
-    // orders wait for the processor's capture webhook before fulfillment/funds release.
+    // orders wait for PayPal capture before fulfillment/funds release.
     if (paidNow) base44.asServiceRole.functions.invoke("aiOrderFulfillment", { order_id: (order as any).id }).catch(() => null);
 
     await base44.asServiceRole.entities.Notification.create({
@@ -102,6 +116,9 @@ export default __handler(async (req) => {
       points_usd: pointsUsd,
       card_charge_usd: cardNet,
       paid_in_full_by_points: paidNow,
+      paypal_order_id: paypalOrderId,
+      approve_url: approveUrl,                 // redirect the buyer here to pay the card remainder
+      paypal_configured: paypalConfigured(),
       message: pointsApplied > 0
         ? `You applied ${pointsApplied.toLocaleString()} points ($${pointsUsd.toFixed(2)}); your card covers the remaining $${cardNet.toFixed(2)}.`
         : `Your card covers $${cardNet.toFixed(2)}.`,
