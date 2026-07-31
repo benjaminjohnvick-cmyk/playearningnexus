@@ -29,6 +29,8 @@ import PersonalizedRecommendations from '../components/ai/PersonalizedRecommenda
 import AIPersonalizedRecommendations from '../components/ai/AIPersonalizedRecommendations';
 import DailyEarningsMeter from '../components/premium/DailyEarningsMeter';
 import PremiumEarnedBanner from '../components/premium/PremiumEarnedBanner';
+import SurveyCommitmentPrompt from '../components/surveys/SurveyCommitmentPrompt';
+import SurveyCommitmentPicker from '../components/surveys/SurveyCommitmentPicker';
 import LockoutModeEnforcer from '../components/premium/LockoutModeEnforcer';
 import DailyGoalProgress from '../components/gamification/DailyGoalProgress';
 import PayPalTransferButton from '../components/payout/PayPalTransferButton';
@@ -243,7 +245,9 @@ export default function UserDashboard() {
 
       <div className="max-w-7xl mx-auto">
         <PersonalizedGreeting />
+        <SurveyCommitmentPrompt />
         <PremiumEarnedBanner user={user} />
+        <SurveyCommitmentPicker />
         <WelcomeRewardsCard />
         <PointsBoostCard />
         {/* Header */}

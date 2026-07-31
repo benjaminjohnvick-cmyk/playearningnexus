@@ -217,6 +217,12 @@
       "cron": "20 8 * * *",
       "function": "growthBudgetAutoPlan",
       "_comment": "Computes the growth-budget plan, stores a GrowthPlan snapshot, and alerts if the redemption reserve is underfunded."
+    },
+    {
+      "name": "survey-commitment-reminder",
+      "cron": "15 * * * *",
+      "function": "surveyCommitmentReminder",
+      "_comment": "Hourly: nudges users whose chosen survey time has come and who haven't hit the $8 goal; awards streak-milestone bonuses."
     }
   ]
 }
