@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { useLocale } from '@/components/locale/LocaleContext';
 import CatalogWelcomeChat from '@/components/marketplace/CatalogWelcomeChat';
 import SellerDealBanner from '@/components/seller/SellerDealBanner';
+import MarketplaceSectionNav from '@/components/marketplace/MarketplaceSectionNav';
 import AddToStorefrontButton from '@/components/seller/AddToStorefrontButton';
 import { useVariant } from '@/components/experiments/VariantProvider';
 import { reportMetric } from '@/lib/liveVariants';
@@ -280,6 +281,7 @@ export default function Marketplace() {
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
+      <MarketplaceSectionNav active="Marketplace" />
       <CatalogWelcomeChat />
 
       {/* Affordability warning — shown before an over-limit order; nothing is charged until acknowledged. */}

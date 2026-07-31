@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
+import MarketplaceSectionNav from '@/components/marketplace/MarketplaceSectionNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -142,6 +143,7 @@ export default function ServicesStore() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-8">
+      <MarketplaceSectionNav active="ServicesStore" />
       <div className="mb-1 flex items-center gap-2"><Briefcase className="h-6 w-6" /><h1 className="text-2xl font-bold">Services</h1></div>
       <p className="mb-4 text-sm text-gray-500 flex items-center gap-1"><Wrench className="h-3.5 w-3.5" /> Booked & fulfilled by the provider — tutoring, design, coaching, repairs & more.</p>
 

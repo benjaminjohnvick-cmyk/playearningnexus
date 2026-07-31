@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
+import MarketplaceSectionNav from '@/components/marketplace/MarketplaceSectionNav';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -124,6 +125,7 @@ export default function DigitalStore() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-8">
+      <MarketplaceSectionNav active="DigitalStore" />
       <div className="mb-1 flex items-center gap-2"><Cloud className="h-6 w-6" /><h1 className="text-2xl font-bold">Digital Products</h1></div>
       <p className="mb-4 text-sm text-gray-500 flex items-center gap-1"><Download className="h-3.5 w-3.5" /> Delivered online instantly — no shipping.</p>
 

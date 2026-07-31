@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
+import MarketplaceSectionNav from '@/components/marketplace/MarketplaceSectionNav';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -135,6 +136,7 @@ export default function PhysicalStore() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-8">
+      <MarketplaceSectionNav active="PhysicalStore" />
       <div className="mb-4 flex items-center gap-2">
         <ShoppingBag className="h-6 w-6" /><h1 className="text-2xl font-bold">Buy Physical Items</h1>
       </div>
