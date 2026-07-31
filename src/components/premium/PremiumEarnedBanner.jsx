@@ -16,6 +16,7 @@ export default function PremiumEarnedBanner({ user, onEnrolled }) {
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [affiliate, setAffiliate] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function PremiumEarnedBanner({ user, onEnrolled }) {
       const res = await base44.functions.invoke('premiumAcceptOffer', {
         social_consent: true,
         annual_agreement: true,
+        affiliate_opt_in: affiliate,
       });
       if (res?.data?.enrolled) {
         setEnrolled(true);
@@ -71,12 +73,19 @@ export default function PremiumEarnedBanner({ user, onEnrolled }) {
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-4 h-4 text-yellow-300" />
-              <h3 className="text-xl font-bold">You've earned Premium!</h3>
+              <h3 className="text-xl font-bold">{status.path === 'founding' && !status.earned ? 'Founding-member Premium — free' : "You've earned Premium!"}</h3>
             </div>
             <p className="text-white/90 text-sm mb-3">
-              You've completed your daily surveys on <strong>{status.qualifying_days}</strong> days — you've
-              earned a spot in Premium. As a Premium member your surveys pay <strong>24% cash back</strong>{' '}
-              (instead of points), plus you earn points back on every purchase.
+              {status.path === 'founding' && !status.earned ? (
+                <>You're one of our first members — claim a <strong>free founding seat</strong> in Premium. Premium
+                surveys pay a <strong>bigger, faster reward</strong> (up to <strong>24%</strong> of your balance
+                spendable at once vs 12%), and you earn points back on every purchase.</>
+              ) : (
+                <>You completed your daily surveys on <strong>{status.qualifying_days}</strong> days with{' '}
+                <strong>{status.referrals}</strong> successful referrals — you've earned Premium. Premium surveys pay a
+                <strong> bigger, faster reward</strong> (up to <strong>24%</strong> of your balance spendable at once),
+                plus points back on every purchase.</>
+              )}
             </p>
 
             <label className="flex items-start gap-2 text-sm text-white/90 mb-4 cursor-pointer select-none">
@@ -90,6 +99,19 @@ export default function PremiumEarnedBanner({ user, onEnrolled }) {
                 By accepting, I agree to post occasional <strong>clearly-marked #ad</strong> promotional
                 content and to the <strong>one-year program terms</strong>. My membership continues year to
                 year as long as I keep up my daily surveys.
+              </span>
+            </label>
+
+            <label className="flex items-start gap-2 text-sm text-white/90 mb-4 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={affiliate}
+                onChange={(e) => setAffiliate(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded accent-purple-300"
+              />
+              <span>
+                Also make me an <strong>affiliate</strong> — earn 300 points per referral plus 10% of what your
+                referrals earn. (Optional; you can turn this off.)
               </span>
             </label>
 

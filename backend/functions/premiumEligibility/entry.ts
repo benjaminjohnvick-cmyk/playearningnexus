@@ -4,6 +4,7 @@ import { isEnabled } from "../../sdk/feature-flags.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { db } from "../../sdk/db.ts";
 import { hasLoyaltyCapacity } from "../../sdk/loyalty.ts";
+import { premiumQualification } from "../../sdk/premium-tier.ts";
 
 // premiumEligibility — read-only check: has this user EARNED the one-tap Premium offer?
 //
@@ -38,20 +39,28 @@ export default __handler(async (req) => {
       if (Number.isFinite(d) && d >= cutoffMs) qualifyingDays++;
     }
 
-    const met = qualifyingDays >= needDays;
     const programOpen = await isEnabled("loyalty_program");
     const cap = await hasLoyaltyCapacity();
-    // Earned members bypass the capacity governor (they did the work), but we surface capacity so the
-    // banner can explain a rare "spot opening soon" case honestly rather than silently.
-    const eligible = met && !alreadyPremium && programOpen;
+
+    // Two ways in: EARNED (survey-days + successful referrals) or FOUNDING (free seat for early members).
+    const q = await premiumQualification(user.id, qualifyingDays, needDays);
+    const eligible = q.eligible && !alreadyPremium && programOpen;
 
     return Response.json({
       eligible,
       already_premium: alreadyPremium,
       program_open: programOpen,
+      path: q.path,                              // "earned" | "founding" | null
+      earned: q.earned,
+      founding_available: q.founding_available,
+      founding_seats: q.founding_seats,
+      founding_taken: q.founding_taken,
       qualifying_days: qualifyingDays,
       days_required: needDays,
       days_remaining: Math.max(0, needDays - qualifyingDays),
+      referrals: q.referrals,
+      referrals_required: q.referrals_required,
+      referrals_remaining: Math.max(0, q.referrals_required - q.referrals),
       window_days: windowDays,
       daily_goal_usd: goalUsd,
       capacity: { ok: cap.ok, enrolled: cap.enrolled, capacity: cap.capacity },

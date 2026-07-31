@@ -4,6 +4,7 @@ import { isEnabled } from "../../sdk/feature-flags.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { db } from "../../sdk/db.ts";
 import { loyaltyPerks } from "../../sdk/loyalty.ts";
+import { premiumQualification } from "../../sdk/premium-tier.ts";
 
 // premiumAcceptOffer — the user's ONE TAP that turns an EARNED offer into Premium enrollment.
 //
@@ -43,7 +44,7 @@ export default __handler(async (req) => {
       return Response.json({ enrolled: true, already: true, perks: loyaltyPerks({ loyalty_enrolled: true }), message: "You're already a Premium member." });
     }
 
-    // RE-VERIFY the earned qualification server-side.
+    // RE-VERIFY server-side: EARNED (survey-days + referrals) or FOUNDING (free seat). Never trust client.
     const cutoffMs = Date.now() - windowDays * 86400000;
     const rows = await base44.asServiceRole.entities.DailyEarnings
       .filter({ user_id: user.id }, "-date", 5000).catch(() => []) as Record<string, unknown>[];
@@ -53,13 +54,18 @@ export default __handler(async (req) => {
       const d = r.date ? new Date(String(r.date) + "T00:00:00Z").getTime() : NaN;
       if (Number.isFinite(d) && d >= cutoffMs) qualifyingDays++;
     }
-    if (qualifyingDays < needDays) {
+    const q = await premiumQualification(user.id, qualifyingDays, needDays);
+    if (!q.eligible) {
       return Response.json({
         error: "not_yet_eligible",
-        message: "You haven't reached the survey-day milestone yet — keep completing your daily surveys.",
-        qualifying_days: qualifyingDays, days_required: needDays, days_remaining: needDays - qualifyingDays,
+        message: "You haven't earned Premium yet — keep completing your daily surveys and get 3 successful referrals (or wait for a founding seat).",
+        qualifying_days: qualifyingDays, days_required: needDays, days_remaining: Math.max(0, needDays - qualifyingDays),
+        referrals: q.referrals, referrals_required: q.referrals_required,
       }, { status: 403 });
     }
+    // Affiliate opt-in comes with the upgrade (given as an option; defaults on).
+    const affiliateOptIn = body.affiliate_opt_in !== false;
+    if (affiliateOptIn) await db.update("User", user.id, { is_affiliate: true, affiliate_since: new Date().toISOString() }).catch(() => null);
 
     const now = new Date();
     // Mirror loyaltyEnroll's patch; mark auto_qualified so the origin is auditable. Earned member ⇒
@@ -76,6 +82,8 @@ export default __handler(async (req) => {
       cap_year_start: existing?.cap_year_start ?? now.toISOString(),
       rewardback_used_usd: Number(existing?.rewardback_used_usd) || 0,
       renewal_due: false,
+      entry_path: q.path,                 // "earned" | "founding"
+      is_affiliate: affiliateOptIn,
     };
     if (existing?.id) await db.update("PremiumPPCMembership", String(existing.id), patch).catch(() => null);
     else await db.create("PremiumPPCMembership", patch, user.id).catch(() => null);
@@ -99,8 +107,12 @@ export default __handler(async (req) => {
       enrolled: true,
       auto_qualified: true,
       indefinite: true,
+      entry_path: q.path,
+      is_affiliate: affiliateOptIn,
       perks: loyaltyPerks({ loyalty_enrolled: true }),
-      message: "You're in — Premium unlocked. Keep up your daily surveys to keep earning cash back and points back.",
+      message: q.path === "founding"
+        ? "You're in — Premium unlocked as a founding member. Your surveys now pay a bigger, faster reward."
+        : "You're in — Premium unlocked. You earned it. Your surveys now pay a bigger, faster reward.",
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
