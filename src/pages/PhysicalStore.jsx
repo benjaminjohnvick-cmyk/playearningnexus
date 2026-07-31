@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import MarketplaceSectionNav from '@/components/marketplace/MarketplaceSectionNav';
+import ApplyPointsAtCheckout from '@/components/marketplace/ApplyPointsAtCheckout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -220,6 +221,8 @@ export default function PhysicalStore() {
                       <Zap className="mr-1 h-4 w-4" /> Buy now
                     </Button>
                   )}
+                  {/* Opt-in: apply points at checkout (funded by PayPal). Never auto. */}
+                  <ApplyPointsAtCheckout listing={l} onDone={load} />
                   {/* Credit card (+markup) */}
                   {l.price_usd > 0 && (
                     <Button size="sm" variant="outline" className="w-full" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
