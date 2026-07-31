@@ -4,6 +4,7 @@ import { getNumber } from "../../sdk/settings.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
 import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
+import { payReferralSignupBonusOnce, creditReferralOverrideOnEarn } from "../../sdk/referral-rewards.ts";
 
 // HMAC-SHA256 of the callback URL (signature param stripped), hex, constant-time compared.
 async function verifyHmac(url: URL, provided: string, secret: string): Promise<boolean> {
@@ -123,6 +124,12 @@ export default __handler(async (req) => {
     }
     // Lifetime realized value (drives tiers/narratives) — the value the user actually received, in $.
     await adjustUserBalance(uid, realizedUsd, { field: "total_earnings" });
+
+    // Referral rewards (single-level, platform-funded): pay the referrer's one-time activation bonus on
+    // this (fraud-screened) survey, and mint the 10% ongoing override on the points just earned. Both are
+    // best-effort and never block the user's own credit.
+    await payReferralSignupBonusOnce(base44, uid).catch(() => null);
+    if (creditPoints > 0) await creditReferralOverrideOnEarn(base44, uid, creditPoints).catch(() => null);
 
     const rewardLabel = rw.isPremium ? `$${creditCash.toFixed(2)} cash back` : `${creditPoints} points`;
 

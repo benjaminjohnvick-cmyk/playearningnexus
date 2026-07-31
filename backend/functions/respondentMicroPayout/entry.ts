@@ -6,6 +6,7 @@ import { getNumber } from "../../sdk/settings.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
 import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
+import { payReferralSignupBonusOnce, creditReferralOverrideOnEarn } from "../../sdk/referral-rewards.ts";
 import { db } from "../../sdk/db.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
@@ -121,6 +122,11 @@ export default __handler(async (req) => {
       await adjustUserBalance(respondent_user_id, creditPoints, { field: "points" });
     }
     await adjustUserBalance(respondent_user_id, payoutAmount, { field: "total_earnings" });
+
+    // Referral rewards (single-level, platform-funded): activation bonus (once) + 10% ongoing override on
+    // the referred user's survey points. Minted on top; the respondent keeps 100% of their own points.
+    await payReferralSignupBonusOnce(base44, respondent_user_id).catch(() => null);
+    if (creditPoints > 0) await creditReferralOverrideOnEarn(base44, respondent_user_id, creditPoints).catch(() => null);
 
     // Mark the response paid immediately after the credit so a retry hits the idempotency guard above.
     await base44.asServiceRole.entities.PPCSurveyResponse.update(response_id, { payout_to_user: payoutAmount, payout_status: 'paid' }).catch(() => null);
