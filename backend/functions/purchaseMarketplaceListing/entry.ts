@@ -9,7 +9,8 @@ import { purchaseGate } from "../../sdk/household.ts";
 import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
 import { quoteDiscount, recordLoyaltyDiscount } from "../../sdk/loyalty.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
-import { recordRevenue, recordSubsidy, sellerCommissionPct, sellerCashbackPointsPct, marketplaceMarginSource, catalogWholesaleFraction, pointValueUsd } from "../../sdk/revenue.ts";
+import { recordRevenue, recordSubsidy, sellerCommissionPct, sellerCashbackPointsPct, marketplaceMarginSource, catalogWholesaleFraction, pointValueUsd, sellerCashbackRequiresActivation } from "../../sdk/revenue.ts";
+import { isSellerActivated } from "../../sdk/seller-activation.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -217,20 +218,38 @@ export default __handler(async (req) => {
         //   seller             — commission taken from the seller's proceeds (A2), booked as revenue.
         //   off                — seller keeps 100%, nothing added.
         const mode = marketplaceMarginSource();
-        let sellerCreditPoints = pointsPrice;   // default: seller keeps the full list price
+        let liveCreditPoints = pointsPrice;   // sale proceeds — always spendable (seller keeps 100%)
+        let lockedCashbackPoints = 0;         // cash-back HELD until the seller activates USER membership
         let commissionPoints = 0, cashbackPoints = 0;
         if (mode === "seller") {
           commissionPoints = Math.round(pointsPrice * sellerCommissionPct());
-          sellerCreditPoints = Math.max(0, pointsPrice - commissionPoints);
+          liveCreditPoints = Math.max(0, pointsPrice - commissionPoints);
         } else if (mode === "cashback") {
           cashbackPoints = Math.round(pointsPrice * sellerCashbackPointsPct());
-          sellerCreditPoints = pointsPrice + cashbackPoints;   // 100% + cash-back
+          // The 10% cash-back is spendable only once the seller has signed up to USE the site as a member
+          // (one-click activation, agreeing to seller + user for a year). Until then it's LOCKED; the
+          // sellerActivateMembership handler sweeps pending_cashback_points into spendable points.
+          const unlocked = !sellerCashbackRequiresActivation() || isSellerActivated(seller);
+          if (unlocked) liveCreditPoints += cashbackPoints;
+          else lockedCashbackPoints = cashbackPoints;
         }
+        // Credit the seller's SPENDABLE balance (sale proceeds + any unlocked cash-back), atomically.
         for (let attempt = 0; attempt < 5; attempt++) {
           const s = (await base44.asServiceRole.entities.User.filter({ id: seller.id }))[0] || seller;
           const sb = Number(s.points) || 0;
-          const ok = await db.updateIf("User", seller.id, { points: sb + sellerCreditPoints }, { field: "points", equals: String(sb) }).catch(() => false);
+          const ok = await db.updateIf("User", seller.id, { points: sb + liveCreditPoints }, { field: "points", equals: String(sb) }).catch(() => false);
           if (ok) break;
+        }
+        // Hold the cash-back in the LOCKED bucket when the seller hasn't activated user membership yet.
+        // Atomic increment (COALESCE-safe first write); the one-click activation unlocks and spends it.
+        if (lockedCashbackPoints > 0) {
+          await db.incrementField("User", seller.id, "pending_cashback_points", lockedCashbackPoints).catch(() => null);
+          await base44.asServiceRole.entities.Notification.create({
+            user_id: seller.id, type: "seller_cashback_locked",
+            title: "💸 You have cash-back waiting",
+            message: `You earned ${lockedCashbackPoints} cash-back points on "${listing.title}". Sign up to use the site as a member — one tap — to unlock and spend your cash-back.`,
+            is_read: false,
+          }).catch(() => null);
         }
         if (commissionPoints > 0) {
           await recordRevenue({ type: "seller_commission", amount_usd: commissionPoints * pointValueUsd(), user_id: seller.id, ref: listing.id, meta: { listing_id: listing.id, commission_points: commissionPoints, pct: sellerCommissionPct() } }).catch(() => null);

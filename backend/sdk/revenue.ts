@@ -15,7 +15,7 @@
 //   B22 shipping spread · B23 audience segments/panels
 
 import { db } from "./db.ts";
-import { snapNumber, snapBool } from "./settings.ts";
+import { snapNumber, snapBool, snapString } from "./settings.ts";
 import { round2 } from "./premium-ppc.ts";
 
 export type RevenueType =
@@ -87,6 +87,12 @@ export const marketplaceMarginSource = () => {
 };
 // Cash-back points granted to the seller (they keep 100% of the sale AND get this back). Closed-loop scrip.
 export const sellerCashbackPointsPct = () => Math.min(1, Math.max(0, snapNumber("SELLER_CASHBACK_POINTS_PCT", 0.10)));
+// Gate: hold the seller's cash-back as LOCKED points until the seller signs up to use the site as a USER
+// (one-click seller onboarding, agreeing to seller + user for a year). Keeps the perk inside the closed
+// loop — the seller can only spend the cash-back by using the platform, which is the whole point of it.
+export const sellerCashbackRequiresActivation = () => snapBool("SELLER_CASHBACK_REQUIRES_ACTIVATION", true);
+// Length (months) of the seller+user commitment captured at one-click activation. Default 12 = one year.
+export const sellerUserCommitmentMonths = () => Math.max(1, Math.round(snapNumber("SELLER_USER_COMMITMENT_MONTHS", 12)));
 // Suggestion 3 — default wholesale fraction for platform-catalog items when no explicit wholesale cost is
 // set (0.90 → wholesale ≈ 90% of face, so ~10% is the sourcing spread the platform keeps at redemption).
 export const catalogWholesaleFraction = () => Math.min(1, Math.max(0, snapNumber("CATALOG_WHOLESALE_FRACTION", 0.90)));

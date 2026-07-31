@@ -59,7 +59,14 @@ the **buyer pays no markup**. The platform's 10% is not taken from anyone — it
 
 1. **Seller cash-back (Suggestion 1)** — issued as closed-loop points (nearly free scrip). Recorded as a
    **subsidy** (`recordSubsidy`, `kind:"subsidy"`), i.e. a cost, not revenue — so it never inflates the
-   revenue total.
+   revenue total. **The cash-back is gated behind using the site as a member:** while
+   `SELLER_CASHBACK_REQUIRES_ACTIVATION` is on (default), the 10% lands in a **locked**
+   `pending_cashback_points` bucket the seller can't spend until they complete the **one-click seller
+   onboarding** — agreeing to use the platform as **both a seller and a member for a year**
+   (`SELLER_USER_COMMITMENT_MONTHS`, default 12). `sellerActivateMembership` records that consent to the
+   append-only `ConsentRecord` ledger and **sweeps** the locked points into spendable `points`. This keeps
+   the perk fully inside the closed loop — a seller can only realize their cash-back by using the site — and
+   is *not* money transmission: nothing is ever converted to cash.
 2. **Breakage is the real margin (Suggestion 2)** — `breakageReport` tracks outstanding vs redeemed points
    and recognizes the unredeemed portion (`BREAKAGE_RECOGNITION_PCT`) as retained value. This is where the
    "10%" actually lands: value of points that are never redeemed, paid by no one.

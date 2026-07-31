@@ -79,6 +79,16 @@ off. Nothing here spends real money (card charging is off).
       user B is credited the **full list price + 10% cash-back points** (`SELLER_CASHBACK_POINTS_PCT`), the
       buyer paid no markup, and a **subsidy** `RevenueEvent` (`kind: "subsidy"`) is written. (Switch
       `MARKETPLACE_MARGIN_SOURCE` to `seller` for the commission mode, or `off` for neither.)
+- [ ] **Seller cash-back is LOCKED until activation (default on):** after that member-listing sale, user B
+      sees the sale proceeds in their **spendable** balance but the **10% cash-back is held** — user B gets a
+      "cash-back waiting" notice and their `pending_cashback_points` rises (it is NOT in spendable `points`).
+- [ ] **One-click activation:** as user B, open the **Business Upload** page → the emerald **"You have N
+      cash-back points waiting"** banner shows → check the box → tap **Activate & unlock** → the held points
+      move into spendable `points`, `seller_user_activated: true` is set with a `seller_user_commitment_until`
+      one year out, and a `ConsentRecord` (`kind: "seller_user_activation"`) is written. After activation,
+      future cash-back is spendable immediately.
+- Knob: `SELLER_CASHBACK_REQUIRES_ACTIVATION` (on), `SELLER_USER_COMMITMENT_MONTHS` (12). Set the flag off to
+  credit cash-back straight to spendable points with no gate.
 - [ ] **Catalog spread:** buy a **platform-catalog** item with points → a `sourcing_margin` `RevenueEvent`
       is written (face value − wholesale). Buyer paid the normal price, not a markup.
 - [ ] **Breakage report:** run `breakageReport` (admin) → shows outstanding vs redeemed points, the

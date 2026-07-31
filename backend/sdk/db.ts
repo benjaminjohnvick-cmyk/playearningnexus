@@ -192,6 +192,18 @@ export const db = {
       return r.rows[0] ? rowToDoc(entity, r.rows[0]) : null;
     });
   },
+  // Atomic numeric increment on a JSONB field (no read-modify-write race, no CAS retry). COALESCE treats an
+  // ABSENT field as 0, so the first write works even when the key doesn't exist yet. `delta` may be negative.
+  async incrementField(entity: string, id: string, field: string, delta: number): Promise<number | null> {
+    const f = String(field).replace(/[^a-zA-Z0-9_]/g, "");
+    const d = Number(delta) || 0;
+    const sql = `UPDATE ${quoteTbl(entity)} SET data = jsonb_set(data, '{${f}}', to_jsonb(COALESCE((data->>'${f}')::numeric, 0) + $2::numeric), true), updated_date = now() WHERE id = $1 RETURNING *`;
+    return await withClient(async (c) => {
+      const r = await c.queryObject<Record<string, unknown>>(sql, [id, d]);
+      const row = r.rows[0] ? rowToDoc(entity, r.rows[0]) : null;
+      return row ? (Number((row as Record<string, unknown>)[f]) || 0) : null;
+    });
+  },
   async bulkCreate(entity: string, docs: Record<string, unknown>[], createdBy?: string) {
     const out = [];
     for (const d of docs) out.push(await this.create(entity, d, createdBy));
