@@ -8,6 +8,8 @@ import { ShoppingBag, Plus, Loader2, Coins, CreditCard, ExternalLink, Search, Al
 import { toast } from 'sonner';
 import { useLocale } from '@/components/locale/LocaleContext';
 import CatalogWelcomeChat from '@/components/marketplace/CatalogWelcomeChat';
+import SellerDealBanner from '@/components/seller/SellerDealBanner';
+import AddToStorefrontButton from '@/components/seller/AddToStorefrontButton';
 import { useVariant } from '@/components/experiments/VariantProvider';
 import { reportMetric } from '@/lib/liveVariants';
 import { Link } from 'react-router-dom';
@@ -340,6 +342,9 @@ export default function Marketplace() {
           <span className="text-sm font-semibold">Browse →</span>
         </Link>
       </div>
+      {/* Prominent seller deal + one-click storefront signup (keep 100% + 10% back in points). */}
+      <SellerDealBanner />
+
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2"><ShoppingBag className="w-6 h-6" /><h1 className="text-2xl font-bold">Marketplace</h1></div>
         <Button size="sm" onClick={() => setShowSell((v) => !v)}><Plus className="w-4 h-4 mr-1" /> Sell an item</Button>
@@ -453,6 +458,8 @@ export default function Marketplace() {
                         <CreditCard className="w-4 h-4 mr-1" /> {buyCta === 'variant' ? `Buy · ${formatPrice(l.price_usd)}` : formatPrice(l.price_usd)}
                       </Button>
                     )}
+                    {/* Resell a catalog product from your storefront — earn 10% back in points if it sells. */}
+                    <AddToStorefrontButton listing={l} />
                   </div>
                 )}
                 {/* Finance a real, shippable item with Affirm (never points/affiliate). Shows only when

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, CheckCircle, Clock, XCircle, Package, Image, Tag, DollarSign, Megaphone, ShoppingBag, Gamepad2, FileDigit, Edit2, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 import SellerActivateCashback from '@/components/seller/SellerActivateCashback';
+import SellerDealBanner from '@/components/seller/SellerDealBanner';
 
 const CATEGORIES = [
   { value: 'puzzle', label: '🧩 Puzzle', fields: ['difficulty', 'levels_count'] },
@@ -209,6 +210,8 @@ export default function SellerUpload() {
           <p className="text-slate-500">Upload products (physical, digital, games) and ads in one place for AI-powered review</p>
         </div>
 
+        {/* Prominent deal + one-click storefront signup (keep 100% + 10% back in points). */}
+        <SellerDealBanner />
         {/* One-click: activate as a member to unlock held cash-back (seller keeps 100% + 10% back) */}
         <SellerActivateCashback />
 

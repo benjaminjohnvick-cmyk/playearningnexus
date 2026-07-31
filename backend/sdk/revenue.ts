@@ -23,7 +23,7 @@ export type RevenueType =
   | "business_signup" | "business_onboarding" | "business_subscription" | "lead_fee" | "coop_fund"
   | "processing_rebate" | "advertising" | "breakage" | "sponsored_prize" | "dev_creator_cut"
   | "white_label" | "bnpl_merchant_fee" | "membership_fee" | "arbitrage_margin" | "shipping_margin"
-  | "audience_panel" | "other";
+  | "audience_panel" | "curator_reward" | "other";
 
 /** Record ONE non-customer REVENUE event (real money in) into the unified ledger. */
 export async function recordRevenue(input: {
@@ -93,6 +93,11 @@ export const sellerCashbackPointsPct = () => Math.min(1, Math.max(0, snapNumber(
 export const sellerCashbackRequiresActivation = () => snapBool("SELLER_CASHBACK_REQUIRES_ACTIVATION", true);
 // Length (months) of the seller+user commitment captured at one-click activation. Default 12 = one year.
 export const sellerUserCommitmentMonths = () => Math.max(1, Math.round(snapNumber("SELLER_USER_COMMITMENT_MONTHS", 12)));
+// Curator reward: when a user resells a PLATFORM-CATALOG product from their storefront (found via search,
+// fulfilled by the AI), they earn this % back in non-cashable points on a real sale. The platform sources +
+// fulfills and keeps the wholesale spread; the buyer pays no markup. Same closed-loop gate as seller cash-
+// back (locked until the user activates member use). Defaults to the seller cash-back rate (10%).
+export const curatorRewardPointsPct = () => Math.min(1, Math.max(0, snapNumber("CURATOR_REWARD_POINTS_PCT", 0.10)));
 // Suggestion 3 — default wholesale fraction for platform-catalog items when no explicit wholesale cost is
 // set (0.90 → wholesale ≈ 90% of face, so ~10% is the sourcing spread the platform keeps at redemption).
 export const catalogWholesaleFraction = () => Math.min(1, Math.max(0, snapNumber("CATALOG_WHOLESALE_FRACTION", 0.90)));

@@ -9,7 +9,7 @@ import { purchaseGate } from "../../sdk/household.ts";
 import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
 import { quoteDiscount, recordLoyaltyDiscount } from "../../sdk/loyalty.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
-import { recordRevenue, recordSubsidy, sellerCommissionPct, sellerCashbackPointsPct, marketplaceMarginSource, catalogWholesaleFraction, pointValueUsd, sellerCashbackRequiresActivation } from "../../sdk/revenue.ts";
+import { recordRevenue, recordSubsidy, sellerCommissionPct, sellerCashbackPointsPct, marketplaceMarginSource, catalogWholesaleFraction, pointValueUsd, sellerCashbackRequiresActivation, curatorRewardPointsPct } from "../../sdk/revenue.ts";
 import { isSellerActivated } from "../../sdk/seller-activation.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
@@ -34,6 +34,11 @@ export default __handler(async (req) => {
 
     const source = listing.source || "user";
     const isPlatform = source === "platform_catalog" || listing.seller_id === PLATFORM_SELLER_ID;
+    // Curated = a member reselling a catalog product from their storefront. The curator (a real user) is
+    // credited a 10% points reward, but the PLATFORM sources + fulfills it (AI) and keeps the wholesale
+    // spread — so for fulfillment it behaves like a platform sale, not a member-ships sale.
+    const isCurated = source === "curated";
+    const platformFulfilled = isPlatform || isCurated;
 
     // Affiliate listings: no on-platform charge — hand back the authorized affiliate link; the retailer
     // sells and fulfills. (This keeps real branded goods legal without us taking money for them.)
@@ -211,7 +216,39 @@ export default __handler(async (req) => {
       // Credit the seller only when there's a real member seller. Platform-catalog points are platform
       // revenue (closed-loop), so there's no user to credit. Seller gets FULL list price; the welcome
       // discount is absorbed by the platform (and only applies to platform items anyway). Atomic credit.
-      if (!isPlatform && seller) {
+      if (isCurated && seller) {
+        // CURATED resale of a catalog product: the PLATFORM sources + fulfills and keeps the wholesale
+        // spread (like a platform sale); the curator (a member) earns a 10% points reward, NOT 100%. The
+        // reward is locked until they activate member use, same closed-loop gate as seller cash-back.
+        const faceUsd = pointsPrice * pointValueUsd();
+        const wholesaleUsd = Number(listing.wholesale_cost_usd) || faceUsd * catalogWholesaleFraction();
+        const spread = Math.max(0, faceUsd - wholesaleUsd);
+        if (spread > 0) {
+          await recordRevenue({ type: "sourcing_margin", amount_usd: spread, ref: listing.id, meta: { listing_id: listing.id, curated: true, face_usd: Math.round(faceUsd * 100) / 100, wholesale_usd: Math.round(wholesaleUsd * 100) / 100 } }).catch(() => null);
+        }
+        const pct = Number(listing.curator_reward_pct) > 0 ? Number(listing.curator_reward_pct) : curatorRewardPointsPct();
+        const curatorPoints = Math.round(pointsPrice * pct);
+        if (curatorPoints > 0) {
+          const unlocked = !sellerCashbackRequiresActivation() || isSellerActivated(seller);
+          if (unlocked) {
+            for (let attempt = 0; attempt < 5; attempt++) {
+              const s = (await base44.asServiceRole.entities.User.filter({ id: seller.id }))[0] || seller;
+              const sb = Number(s.points) || 0;
+              const ok = await db.updateIf("User", seller.id, { points: sb + curatorPoints }, { field: "points", equals: String(sb) }).catch(() => false);
+              if (ok) break;
+            }
+          } else {
+            await db.incrementField("User", seller.id, "pending_cashback_points", curatorPoints).catch(() => null);
+            await base44.asServiceRole.entities.Notification.create({
+              user_id: seller.id, type: "seller_cashback_locked",
+              title: "💸 You have curator points waiting",
+              message: `You earned ${curatorPoints} points on "${listing.title}" (curated). Sign up to use the site as a member — one tap — to unlock and spend them.`,
+              is_read: false,
+            }).catch(() => null);
+          }
+          await recordSubsidy({ type: "curator_reward", amount_usd: curatorPoints * pointValueUsd(), user_id: seller.id, ref: listing.id, funded_by: "breakage+advertiser_pool", meta: { listing_id: listing.id, curator_points: curatorPoints, pct, note: "curator_reward" } }).catch(() => null);
+        }
+      } else if (!isPlatform && seller) {
         // How the platform takes its marketplace margin (MARKETPLACE_MARGIN_SOURCE):
         //   cashback (default) — seller keeps 100% AND gets cash-back points; the perk is a SUBSIDY funded
         //                        by breakage + the advertiser pool (recorded, not charged to anyone).
@@ -291,7 +328,7 @@ export default __handler(async (req) => {
       : "awaiting_shipment";
     const fulfillment_type = isDigital ? "digital_delivery"
       : listing.fulfillment_mode === "pickup" ? "local_pickup"
-      : (isPlatform ? "platform_ai" : "seller_ship");
+      : (platformFulfilled ? "platform_ai" : "seller_ship");
     const order = await base44.asServiceRole.entities.Order.create({
       user_id: user.id,
       seller_id: listing.seller_id,
@@ -332,11 +369,11 @@ export default __handler(async (req) => {
       user_id: user.id, type: "marketplace_purchase",
       title: paidNow ? "🛍️ Purchase confirmed" : "🛍️ Order started",
       message: paidNow
-        ? `You bought "${listing.title}".${isPlatform ? " It's being prepared for fulfillment." : " The seller will ship it soon."}`
+        ? `You bought "${listing.title}".${platformFulfilled ? " It's being prepared for fulfillment." : " The seller will ship it soon."}`
         : `Your order for "${listing.title}" is awaiting card payment. It'll be fulfilled once payment completes.`,
       is_read: false,
     }).catch(() => null);
-    if (!isPlatform && paidNow) {
+    if (!platformFulfilled && paidNow) {
       await base44.asServiceRole.entities.Notification.create({
         user_id: listing.seller_id, type: "marketplace_sale",
         title: "💰 Your item sold!", message: `"${listing.title}" sold. Please ship it to complete the sale and release your funds.`, is_read: false,
@@ -345,7 +382,7 @@ export default __handler(async (req) => {
 
     // Kick the appropriate fulfillment engine ONLY when payment is actually captured (points).
     if (paidNow) {
-      const fulfillFn = isPlatform ? "aiOrderFulfillment" : "autoOrderFulfillmentAndFundsRelease";
+      const fulfillFn = platformFulfilled ? "aiOrderFulfillment" : "autoOrderFulfillmentAndFundsRelease";
       base44.asServiceRole.functions.invoke(fulfillFn, { order_id: (order as any).id }).catch(() => null);
     }
 

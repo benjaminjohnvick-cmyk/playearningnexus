@@ -86,6 +86,26 @@ Modes: set `MARKETPLACE_MARGIN_SOURCE` to `seller` (commission from the seller, 
 100%, no cash-back) if you prefer. `revenueReport` now splits `recorded_revenue_usd` from `subsidies_usd`
 and shows `net_after_subsidies_usd`.
 
+## Member storefronts — every user can sell in one click
+
+Because fulfillment is AI-automated and the economy is closed-loop, **any user can become a seller in one
+tap** (`sellerSignupOneClick`) — the account username *is* the seller name; there's no separate seller
+account. The deal, advertised prominently (`SellerDealBanner` on the Marketplace and seller pages):
+
+- **Your own uploads:** keep **100%** of the sale **+ 10% back in points** (the seller cash-back model
+  above — 10% locked until member activation, funded by breakage + the advertiser pool).
+- **Curated resale (`addCatalogToStorefront`):** a user resells a **platform-catalog** product they found
+  via search from their storefront. The **platform sources + fulfills** it (AI order function) and keeps the
+  **wholesale spread** (`sourcing_margin`); the buyer pays no added markup; the **curator earns 10% back in
+  points** on a real sale (`curator_reward` subsidy, `CURATOR_REWARD_POINTS_PCT`, locked until activation).
+  This is *not* the "keep 100%" deal — the curator didn't source or ship it, so they get the 10% only.
+
+Why this is safe and non-farmable: the 10% pays **only on a real sale** (`purchaseMarketplaceListing`), never
+for listing activity — so bulk-adding products mints nothing. Curated listings disclose platform fulfillment
+(`fulfilled_by: "platform_ai"`). The optional **Active Seller** level (≥300 products across ≥30 days) is
+recognition only and grants **no** points. And the one door stays shut: points remain non-cashable — a
+seller realizes value only by spending on the site.
+
 ## Compliance notes
 
 - **Never a customer markup** is the invariant — `revenueReport.customer_paid_usd` must stay `0`.

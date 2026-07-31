@@ -89,6 +89,18 @@ off. Nothing here spends real money (card charging is off).
       future cash-back is spendable immediately.
 - Knob: `SELLER_CASHBACK_REQUIRES_ACTIVATION` (on), `SELLER_USER_COMMITMENT_MONTHS` (12). Set the flag off to
   credit cash-back straight to spendable points with no gate.
+- [ ] **One-click become a seller:** on the Marketplace, the emerald **"Sell and keep 100% — plus 10% back
+      in points"** banner shows → check the box → **Open my storefront** → toast confirms `@username`; the
+      banner flips to the "You're a seller" strip. A `ConsentRecord` (`seller_user_activation`, via
+      `seller_signup_one_click`) is written and `is_seller: true` is set.
+- [ ] **Curate a catalog product:** on a **GamerGain Official** (platform-catalog) card, tap **Sell this** →
+      a new listing appears under your username (`source: "curated"`, `fulfilled_by: "platform_ai"`). Adding
+      the same item twice says "already in your storefront."
+- [ ] **Curated sale pays 10% (on sale only):** as another user, buy that curated listing with points →
+      the buyer gets it (fulfilled by the AI, curator is NOT asked to ship), a `sourcing_margin` revenue and
+      a `curator_reward` **subsidy** are written, and the curator's 10% lands in `pending_cashback_points`
+      (locked) until they activate — no points are minted just for listing.
+- Knob: `CURATOR_REWARD_POINTS_PCT` (0.10). Active-seller level (≥300 products / ≥30 days) is a badge only.
 - [ ] **Catalog spread:** buy a **platform-catalog** item with points → a `sourcing_margin` `RevenueEvent`
       is written (face value − wholesale). Buyer paid the normal price, not a markup.
 - [ ] **Breakage report:** run `breakageReport` (admin) → shows outstanding vs redeemed points, the

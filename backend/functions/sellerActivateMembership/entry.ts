@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { recordConsent } from "../../sdk/consent-ledger.ts";
 import { sellerUserCommitmentMonths } from "../../sdk/revenue.ts";
-import { SELLER_USER_CONSENT_KIND, commitmentUntil, isSellerActivated } from "../../sdk/seller-activation.ts";
+import { SELLER_USER_CONSENT_KIND, commitmentUntil, isSellerActivated, sweepPendingCashback } from "../../sdk/seller-activation.ts";
 
 // sellerActivateMembership — the seller's ONE TAP that turns on using the site as a USER and unlocks their
 // held cash-back. By tapping, the seller agrees to use the platform as BOTH a seller AND a user for a year
@@ -44,20 +44,9 @@ export default __handler(async (req) => {
       seller_user_commitment_months: months,
     }).catch(() => null);
 
-    // 2) Sweep the LOCKED cash-back into spendable points. Re-read for a fresh held amount, credit points,
-    //    then decrement pending by exactly what we moved (so an in-flight sale that added more isn't lost).
-    const fresh = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || user;
-    const held = Math.max(0, Math.round(Number((fresh as Record<string, unknown>).pending_cashback_points) || 0));
-    let swept = 0;
-    if (held > 0) {
-      for (let attempt = 0; attempt < 5; attempt++) {
-        const s = (await base44.asServiceRole.entities.User.filter({ id: user.id }))[0] || fresh;
-        const bal = Number((s as Record<string, unknown>).points) || 0;
-        const ok = await db.updateIf("User", user.id, { points: bal + held }, { field: "points", equals: String(bal) }).catch(() => false);
-        if (ok) { swept = held; break; }
-      }
-      if (swept > 0) await db.incrementField("User", user.id, "pending_cashback_points", -swept).catch(() => null);
-    }
+    // 2) Sweep the LOCKED cash-back into spendable points (shared helper: CAS on points, decrement pending
+    //    by exactly what moved so an in-flight sale that added more isn't lost).
+    const swept = await sweepPendingCashback(user.id);
 
     // 3) Append the consent record (append-only evidence: they agreed, to exactly what, when).
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("cf-connecting-ip") || null;
