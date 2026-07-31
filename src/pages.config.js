@@ -55,6 +55,8 @@ import AdminPricingFeedback from './pages/AdminPricingFeedback';
 import AdminUsers from './pages/AdminUsers';
 import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import AdGridSurvey from './pages/AdGridSurvey';
+import AIShoppingAssistant from './pages/AIShoppingAssistant';
+import BuyingDesk from './pages/BuyingDesk';
 import BusinessDashboard from './pages/BusinessDashboard';
 import BusinessPortal from './pages/BusinessPortal';
 import CRMDashboard from './pages/CRMDashboard';
@@ -127,6 +129,8 @@ export const PAGES = {
     "AdminUsers": AdminUsers,
     "AffiliateMarketplace": AffiliateMarketplace,
     "AdGridSurvey": AdGridSurvey,
+    "AIShoppingAssistant": AIShoppingAssistant,
+    "BuyingDesk": BuyingDesk,
     "BusinessDashboard": BusinessDashboard,
     "BusinessPortal": BusinessPortal,
     "CRMDashboard": CRMDashboard,

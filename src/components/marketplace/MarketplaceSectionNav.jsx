@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ShoppingBag, Package, Cloud, Wrench, AppWindow, Grid3x3, Store } from 'lucide-react';
+import { ShoppingBag, Package, Cloud, Wrench, AppWindow, Grid3x3, Store, Sparkles } from 'lucide-react';
 
 /**
  * MarketplaceSectionNav — one uniform navbar for EVERY marketplace section (Marketplace home, Physical,
@@ -10,6 +10,7 @@ import { ShoppingBag, Package, Cloud, Wrench, AppWindow, Grid3x3, Store } from '
  */
 const SECTIONS = [
   { key: 'Marketplace', label: 'All', icon: ShoppingBag },
+  { key: 'AIShoppingAssistant', label: 'AI Assistant', icon: Sparkles },
   { key: 'PhysicalStore', label: 'Physical', icon: Package },
   { key: 'DigitalStore', label: 'Digital', icon: Cloud },
   { key: 'ServicesStore', label: 'Services', icon: Wrench },

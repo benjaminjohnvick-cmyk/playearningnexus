@@ -35,9 +35,11 @@ export default __handler(async (req) => {
 
     await recordMoneyFlow({ direction: "in", amount_usd: cap.amount_usd || Number(order.amount) || 0, kind: "card_payment", ref: String(order.id), provider: "paypal", meta: { user_id: user.id, capture_id: cap.capture_id } }).catch(() => null);
 
-    // Fulfillment: platform-fulfilled orders go to the AI engine, member listings to funds-release.
-    const isPlatform = order.source === "platform_catalog" || order.source === "curated";
-    const fn = isPlatform ? "aiOrderFulfillment" : "autoOrderFulfillmentAndFundsRelease";
+    // Fulfillment: dropship → place the supplier order; platform catalog → AI engine; member listings →
+    // funds-release.
+    const fn = order.source === "dropship" ? "dropshipFulfill"
+      : (order.source === "platform_catalog" || order.source === "curated") ? "aiOrderFulfillment"
+      : "autoOrderFulfillmentAndFundsRelease";
     base44.asServiceRole.functions.invoke(fn, { order_id: order.id }).catch(() => null);
 
     await base44.asServiceRole.entities.Notification.create({

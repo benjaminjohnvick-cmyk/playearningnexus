@@ -902,5 +902,22 @@
   },
   "MoneyLedgerEntry": {
     "scope": "admin"
+  },
+  "Supplier": {
+    "scope": "admin"
+  },
+  "GiftCardStock": {
+    "scope": "admin"
+  },
+  "GiftCardRedemption": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "SourcedOrder": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "BuyingDeskTask": {
+    "scope": "admin"
   }
 }

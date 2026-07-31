@@ -3255,6 +3255,61 @@ CREATE TABLE IF NOT EXISTS "UserProductProfile" (
 CREATE INDEX IF NOT EXISTS "UserProductProfile_data_gin" ON "UserProductProfile" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "UserProductProfile_created" ON "UserProductProfile" (created_date DESC);
 
+-- Supplier
+CREATE TABLE IF NOT EXISTS "Supplier" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "Supplier_data_gin" ON "Supplier" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "Supplier_created" ON "Supplier" (created_date DESC);
+
+-- GiftCardStock
+CREATE TABLE IF NOT EXISTS "GiftCardStock" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GiftCardStock_data_gin" ON "GiftCardStock" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GiftCardStock_created" ON "GiftCardStock" (created_date DESC);
+
+-- GiftCardRedemption
+CREATE TABLE IF NOT EXISTS "GiftCardRedemption" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GiftCardRedemption_data_gin" ON "GiftCardRedemption" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GiftCardRedemption_created" ON "GiftCardRedemption" (created_date DESC);
+
+-- SourcedOrder
+CREATE TABLE IF NOT EXISTS "SourcedOrder" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SourcedOrder_data_gin" ON "SourcedOrder" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SourcedOrder_created" ON "SourcedOrder" (created_date DESC);
+
+-- BuyingDeskTask
+CREATE TABLE IF NOT EXISTS "BuyingDeskTask" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "BuyingDeskTask_data_gin" ON "BuyingDeskTask" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "BuyingDeskTask_created" ON "BuyingDeskTask" (created_date DESC);
+
 CREATE TABLE IF NOT EXISTS "BusinessAccount" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
   created_date timestamptz NOT NULL DEFAULT now(),
