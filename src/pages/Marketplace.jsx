@@ -218,6 +218,19 @@ export default function Marketplace() {
     } catch (e) { toast.error(e?.data?.error || e.message || 'Search failed'); setRealSearch((s) => ({ ...s, loading: false })); }
   }
 
+  // Pay by card AND apply points: points cover what the spend cap allows (funded by PayPal via AI
+  // fulfillment), the card is charged only the remaining net.
+  async function hybridBuy(listing) {
+    setBusy(listing.id + 'hybrid');
+    try {
+      const res = await base44.functions.invoke('hybridCheckout', { listing_id: listing.id, apply_points: true });
+      if (res.data?.blocked) toast.error(res.data.message || 'Payment method unavailable');
+      else if (res.data?.success) { toast.success(res.data.message || 'Order placed.'); await load(); }
+      else toast.error(res.data?.error || res.data?.message || 'Checkout failed');
+    } catch (e) { toast.error(e?.data?.error || e.message || 'Checkout failed'); }
+    finally { setBusy(null); }
+  }
+
   async function buy(listing, method, acknowledged) {
     setBusy(listing.id + method);
     try {
@@ -458,6 +471,12 @@ export default function Marketplace() {
                     {l.price_usd > 0 && (
                       <Button size="sm" disabled={busy === l.id + 'card'} onClick={() => buy(l, 'card')}>
                         <CreditCard className="w-4 h-4 mr-1" /> {buyCta === 'variant' ? `Buy · ${formatPrice(l.price_usd)}` : formatPrice(l.price_usd)}
+                      </Button>
+                    )}
+                    {/* Pay by card AND apply your points (points funded by PayPal via AI fulfillment). */}
+                    {l.price_usd > 0 && l.price_points > 0 && (
+                      <Button size="sm" variant="secondary" disabled={busy === l.id + 'hybrid'} onClick={() => hybridBuy(l)} title="Pay by card and apply your points">
+                        <Coins className="w-4 h-4 mr-1" /> Card + points
                       </Button>
                     )}
                     {/* Resell a catalog product from your storefront — earn 10% back in points if it sells. */}
