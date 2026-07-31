@@ -7,6 +7,8 @@
 // retailer) and/or a `supplier_id` (→ full-auto dropship). The router (sourcing.ts) picks the channel.
 
 import type { SourcedItem } from "./sourcing.ts";
+import { cached } from "./cache.ts";
+import { snapNumber } from "./settings.ts";
 
 const feedBase = () => (Deno.env.get("PRODUCT_FEED_API_BASE") || "").replace(/\/+$/, "");
 const feedKey = () => Deno.env.get("PRODUCT_FEED_API_KEY") || "";
@@ -22,10 +24,18 @@ export function withAffiliateTag(url: string): string {
 }
 
 /** Search connected product feeds. Returns normalized items (with affiliate buy_url and/or supplier refs).
- *  Empty array when no feed is configured — the caller falls back to the platform's own catalog. */
+ *  Empty array when no feed is configured — the caller falls back to the platform's own catalog.
+ *  CACHED (PRODUCT_FEED_CACHE_TTL_S, default 1h) so repeated searches don't re-bill the feed API — a real
+ *  cost lever, since discovery is the most-called AI/API path. */
 export async function searchProductFeeds(query: string, opts?: { limit?: number }): Promise<SourcedItem[]> {
   if (!feedsConfigured() || !query) return [];
   const limit = Math.max(1, Math.min(50, opts?.limit || 20));
+  const ttl = Math.max(0, Math.round(snapNumber("PRODUCT_FEED_CACHE_TTL_S", 3600)));
+  const key = `feedsearch:${query.toLowerCase().trim()}:${limit}`;
+  return await cached(key, ttl, () => rawSearchProductFeeds(query, limit));
+}
+
+async function rawSearchProductFeeds(query: string, limit: number): Promise<SourcedItem[]> {
   try {
     const url = `${feedBase()}/search?q=${encodeURIComponent(query)}&limit=${limit}`;
     const res = await fetch(url, { headers: { authorization: `Bearer ${feedKey()}` } });

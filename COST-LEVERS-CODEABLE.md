@@ -209,3 +209,21 @@ Device-first free transcription is in; Whisper is fallback only and metered. Rem
 
 Every item above keeps the platform fully on. None disables a feature; they change *how* the work is done,
 not *whether* it runs.
+
+## Latest levers (this session's features — applied in code)
+
+- **LLM-6 — cheap tier on every new AI path.** The AI Shopping Assistant (`aiOrderAssistant`), AdGrid ad
+  generation (`createAdGridAd`), and the growth-plan narrative (`growthBudgetAutoPlan`) all call the
+  `gpt_5_mini` tier (gpt-4o-mini / claude-3-5-haiku). No premium-model calls in the hot paths.
+- **CACHE-3 — product-feed search cache.** `searchProductFeeds` is wrapped in `cached()`
+  (`PRODUCT_FEED_CACHE_TTL_S`, default 1h). Discovery is the most-called external path; caching it means
+  repeated/near-duplicate searches don't re-bill the feed API. *Biggest new external-cost win.*
+- **LLM-7 — AI generation is opt-in.** AdGrid ad copy + product pages are advertiser-written by default; the
+  AI drafts them only when `ai_generate:true` is passed. The assistant's LLM ranking is a thin call over
+  already-fetched results and degrades to "cheapest match" with no LLM if a key isn't set.
+- **GATE-2 — graceful-without-keys.** PayPal, product feeds, dropship, and Whisper all no-op cleanly when
+  their key/account isn't set — no failed external calls (and no spend) before you connect them.
+- **BRAKE — `AI_DAILY_SPEND_CAP_USD`** still governs every provider path as the global hard ceiling.
+
+Same rule as before: everything stays **on from the get-go**; the floor comes from cheap tiers, caching, and
+rules-first — never from switching a feature off.

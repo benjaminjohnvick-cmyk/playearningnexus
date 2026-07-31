@@ -141,3 +141,51 @@ There is no Mac purchase and no product-build hours, because the product is alre
 - Keep the **iOS review clean** (demo login, merit-not-gambling framing) to avoid rejection-round hours.
 - **Runtime stays cheap by default** — the cost levers are applied in code; flip `REDIS_URL` /
   `DATABASE_REPLICA_URL` only when a load test says you need them (`COST-LEVERS-CODEABLE.md`).
+
+## Also shipped & ON (latest session — all prebuilt, deploy-only)
+
+Every item below ships switched **on** by default (flag/setting defaults enforce it) — no build phase, the
+developer only deploys and tests:
+
+- **Economics:** no customer markup for anyone; **50/50 survey split** (users accrue 50% as non-cashable
+  points); **12%/24%-of-balance per-transaction spend cap**; PPC AdGrid **$8,000**; double-ROI free-social
+  guarantee **$16,000**; referral **300-point** activation bonus + 10% single-level override.
+- **Premium tier scale-up:** earned upgrade (survey-days **+ 3 referrals**) → one-tap opt-in + affiliate;
+  **free founding cohort** so premium revenue starts day one.
+- **Daily commitment nudge** (pick-a-time reminder + streaks, App-Store-safe) · **AdGrid PPC engine**
+  (16-thumbnail / 2-question flow, Option E, auto-wishlist, per-user answer profile, end-of-session links).
+- **Marketplace uniformity:** one section navbar + Amazon-style cards across all sections; App Store parity.
+- **Seller storefronts** (one-click, keep 100% + 10% back; curated catalog resale) · **affiliate referral
+  rewards** · **Growth Engine + redemption reserve** (admin) · **Profit page**.
+- **Payments & checkout:** live **PayPal API** wiring (`PAYPAL-SETUP.md`); opt-in **"Apply points"** button
+  on every checkout; **hybrid card+points** (points funded via PayPal).
+- **AI Shopping Assistant + 7 sanctioned sourcing channels** (`SOURCING-AND-FULFILLMENT.md`): dropship
+  (full AI auto), affiliate hand-off, product feeds, gift-card rail, wholesale/supplier registry, and a
+  manual **Buying Desk** fallback.
+- **Setup Wizard** (admin page + `setupStatus`): a live go-live checklist of what's connected/on and the
+  exact next step for anything that isn't.
+
+## Go-live: the only remaining work is connecting YOUR accounts
+
+Everything above is code-complete and on. Open the **Setup Wizard** (admin) — it turns green as you connect
+each of these (none is billable dev work):
+
+1. **AI key** — `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`): powers the assistant, moderation, and voice
+   surveys. *(cheap model tier by default)*
+2. **PayPal** — `PAYPAL_CLIENT_ID` / `PAYPAL_SECRET` (sandbox → live) + turn on `card_charging`
+   (`PAYPAL-SETUP.md`). All money routes through your PayPal business account.
+3. **Product feed** — `PRODUCT_FEED_API_BASE` / `PRODUCT_FEED_API_KEY` + `AFFILIATE_TAG`: lets the assistant
+   search everywhere (else it searches your own catalog).
+4. **Dropship supplier(s)** — `registerSupplier` + its key env var: flips those SKUs to full-auto fulfillment
+   (unconnected orders fall back to the Buying Desk automatically).
+5. **Gift-card stock** — `giftCardStockAdd` (optional): powers the points→gift-card rail.
+
+## Cost at the floor (applied in code, everything still on)
+
+- **All AI calls use the cheap model tier** (`gpt_5_mini` → gpt-4o-mini / claude-3-5-haiku by default).
+- **Rules-first before AI** on moderation/triage; **caching** on translations and now **product-feed
+  searches** (`PRODUCT_FEED_CACHE_TTL_S`, 1h) so discovery doesn't re-bill the feed API.
+- **AdGrid ad copy** is advertiser-written by default; AI generation is opt-in per ad.
+- **`AI_DAILY_SPEND_CAP_USD`** is the global hard brake — set it and no path can exceed it.
+- Nothing is turned off to save money; the floor comes from cheap tiers + caching + rules-first, not from
+  disabling features.

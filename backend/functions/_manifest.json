@@ -637,6 +637,7 @@
   "sessionEnd",
   "sessionStart",
   "setSurveyCommitment",
+  "setupStatus",
   "smartContentSchedulingOptimizer",
   "smartPayoutScheduler",
   "socialMediaOAuthHandler",

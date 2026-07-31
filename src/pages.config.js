@@ -57,6 +57,7 @@ import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import AdGridSurvey from './pages/AdGridSurvey';
 import AIShoppingAssistant from './pages/AIShoppingAssistant';
 import BuyingDesk from './pages/BuyingDesk';
+import SetupWizard from './pages/SetupWizard';
 import BusinessDashboard from './pages/BusinessDashboard';
 import BusinessPortal from './pages/BusinessPortal';
 import CRMDashboard from './pages/CRMDashboard';
@@ -131,6 +132,7 @@ export const PAGES = {
     "AdGridSurvey": AdGridSurvey,
     "AIShoppingAssistant": AIShoppingAssistant,
     "BuyingDesk": BuyingDesk,
+    "SetupWizard": SetupWizard,
     "BusinessDashboard": BusinessDashboard,
     "BusinessPortal": BusinessPortal,
     "CRMDashboard": CRMDashboard,
