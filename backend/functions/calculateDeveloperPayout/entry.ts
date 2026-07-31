@@ -62,6 +62,16 @@ export default __handler(async (req) => {
       calculated_at: new Date().toISOString()
     });
 
+    // B16 — record the PLATFORM's existing cut of developer revenue into the unified RevenueEvent ledger
+    // (business side, never charged to players). This surfaces the cut in revenueReport WITHOUT changing
+    // the economics — the developer's share is already set by DEVELOPER_REVENUE_SHARE above; we don't
+    // deduct again.
+    try {
+      const { recordRevenue } = await import("../../sdk/revenue.ts");
+      const platformCut = Math.max(0, totalRevenue - developerShare);
+      if (platformCut > 0) await recordRevenue({ type: "dev_creator_cut", amount_usd: platformCut, business_id: developer_id, ref: payout.id, meta: { total_revenue: totalRevenue, dev_share_rate: devShareRate } });
+    } catch { /* revenue logging is best-effort */ }
+
     return Response.json({
       success: true,
       payout: {

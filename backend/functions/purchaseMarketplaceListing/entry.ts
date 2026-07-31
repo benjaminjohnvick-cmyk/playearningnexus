@@ -9,6 +9,7 @@ import { purchaseGate } from "../../sdk/household.ts";
 import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
 import { quoteDiscount, recordLoyaltyDiscount } from "../../sdk/loyalty.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
+import { recordRevenue, sellerCommissionPct, pointValueUsd } from "../../sdk/revenue.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -210,11 +211,19 @@ export default __handler(async (req) => {
       // revenue (closed-loop), so there's no user to credit. Seller gets FULL list price; the welcome
       // discount is absorbed by the platform (and only applies to platform items anyway). Atomic credit.
       if (!isPlatform && seller) {
+        // A2 — platform commission taken from the SELLER's proceeds (never the buyer). The seller nets the
+        // rest; the commission is booked to the RevenueEvent ledger. Set MARKETPLACE_SELLER_COMMISSION_PCT
+        // to 0 to keep sellers whole.
+        const commissionPoints = Math.round(pointsPrice * sellerCommissionPct());
+        const sellerNetPoints = Math.max(0, pointsPrice - commissionPoints);
         for (let attempt = 0; attempt < 5; attempt++) {
           const s = (await base44.asServiceRole.entities.User.filter({ id: seller.id }))[0] || seller;
           const sb = Number(s.points) || 0;
-          const ok = await db.updateIf("User", seller.id, { points: sb + pointsPrice }, { field: "points", equals: String(sb) }).catch(() => false);
+          const ok = await db.updateIf("User", seller.id, { points: sb + sellerNetPoints }, { field: "points", equals: String(sb) }).catch(() => false);
           if (ok) break;
+        }
+        if (commissionPoints > 0) {
+          await recordRevenue({ type: "seller_commission", amount_usd: commissionPoints * pointValueUsd(), user_id: seller.id, ref: listing.id, meta: { listing_id: listing.id, commission_points: commissionPoints, pct: sellerCommissionPct() } }).catch(() => null);
         }
       }
       // Deduct the used welcome credit from the buyer's pool (platform items only).
