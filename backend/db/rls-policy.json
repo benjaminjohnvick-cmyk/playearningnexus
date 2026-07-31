@@ -899,5 +899,8 @@
   "UserProductProfile": {
     "scope": "owner",
     "owner_field": "user_id"
+  },
+  "MoneyLedgerEntry": {
+    "scope": "admin"
   }
 }
