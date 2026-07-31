@@ -15,12 +15,11 @@ import { adjustUserBalance } from "./balance.ts";
 import { snapNumber, snapBool } from "./settings.ts";
 import { pointValueUsd, recordSubsidy } from "./revenue.ts";
 
-export const referralSignupBonusUsd = () => Math.max(0, snapNumber("REFERRAL_SIGNUP_BONUS_USD", 4));
+export const referralSignupBonusPoints = () => Math.max(0, Math.round(snapNumber("REFERRAL_SIGNUP_BONUS_POINTS", 300)));
 export const referralOverridePct = () => Math.min(1, Math.max(0, snapNumber("REFERRAL_OVERRIDE_PCT", 0.10)));
 export const referralOverrideEnabled = () => snapBool("REFERRAL_OVERRIDE_ENABLED", true);
 export const referralBonusRequireKyc = () => snapBool("REFERRAL_BONUS_REQUIRE_KYC", false);
 
-const usdToPoints = (usd: number) => Math.round(Math.max(0, usd) / Math.max(0.0001, pointValueUsd()));
 
 /** Best-effort identity-KYC check across the common field names (used only when the toggle is on). */
 export function kycVerifiedBestEffort(user: Record<string, unknown> | null | undefined): boolean {
@@ -58,7 +57,7 @@ export async function payReferralSignupBonusOnce(base44: any, referredUserId: st
     if (!kycVerifiedBestEffort(u)) return 0;
   }
 
-  const bonusPoints = usdToPoints(referralSignupBonusUsd());
+  const bonusPoints = referralSignupBonusPoints();
 
   // Atomic claim (COALESCE-safe on an absent field): only the caller that increments the counter to exactly
   // 1 wins the payout, so concurrent survey completions can't double-pay. incrementField returns null on

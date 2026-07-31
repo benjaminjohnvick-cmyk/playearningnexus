@@ -3,7 +3,7 @@
 A referrer earns two ways, both **in non-cashable points**, both **platform-funded** (the referred user is
 never shortchanged), and both **single-level** (you earn only from people you directly referred):
 
-1. **Activation bonus — $4 in points, once per referral.** Paid to the referrer when their referred user
+1. **Activation bonus — 300 points, once per referral.** Paid to the referrer when their referred user
    completes a **first, fraud-screened survey** (real advertiser-funded activity — not just signing up).
    Idempotent: an atomic claim on the `Referral` row pays it exactly once even under concurrent surveys.
 2. **Ongoing override — 10% of the referral's survey points.** Whenever a direct referral earns survey

@@ -31,14 +31,14 @@ export async function isPremiumUser(userId: string): Promise<boolean> {
 /** Compute the tiered reward for a survey worth `grossUsd`. */
 export async function computeSurveyReward(isPremium: boolean, grossUsd: number): Promise<SurveyReward> {
   const gross = Math.max(0, Math.round(grossUsd * 100) / 100);
-  if (isPremium) {
-    const pct = await getNumber("SURVEY_PREMIUM_CASHBACK_PCT", 0.24);
-    const cashUsd = Math.round(gross * pct * 100) / 100;
-    return { isPremium: true, points: 0, cashUsd, realizedUsd: cashUsd };
-  }
-  const ppd = await getNumber("SURVEY_POINTS_PER_DOLLAR", 12);
+  // 50/50 split: the platform keeps 50% (real cash), and the user accrues 50% of the survey value as
+  // NON-CASHABLE points — for BOTH tiers. The premium/non-premium difference is NOT the accrual rate; it's
+  // the per-transaction SPEND CAP applied at redemption (premium 24% vs non-premium 12% of the price).
+  // So $8 of surveys → the user gets $4 in points, the platform keeps $4 in cash.
+  const userSharePct = Math.min(1, Math.max(0, await getNumber("SURVEY_USER_SHARE_PCT", 0.5)));
   const pointCents = Math.max(1, await getNumber("POINT_VALUE_CENTS", 1));
-  const points = Math.max(0, Math.round(gross * ppd));
+  const userUsd = Math.round(gross * userSharePct * 100) / 100;
+  const points = Math.max(0, Math.round(userUsd * 100 / pointCents));
   const realizedUsd = Math.round(points * pointCents) / 100;
-  return { isPremium: false, points, cashUsd: 0, realizedUsd };
+  return { isPremium, points, cashUsd: 0, realizedUsd };
 }
