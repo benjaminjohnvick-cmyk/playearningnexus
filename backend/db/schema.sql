@@ -3211,6 +3211,50 @@ CREATE TABLE IF NOT EXISTS "GrowthPlan" (
 CREATE INDEX IF NOT EXISTS "GrowthPlan_data_gin" ON "GrowthPlan" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "GrowthPlan_created" ON "GrowthPlan" (created_date DESC);
 
+-- AdGridAd
+CREATE TABLE IF NOT EXISTS "AdGridAd" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdGridAd_data_gin" ON "AdGridAd" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdGridAd_created" ON "AdGridAd" (created_date DESC);
+
+-- AdGridResponse
+CREATE TABLE IF NOT EXISTS "AdGridResponse" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdGridResponse_data_gin" ON "AdGridResponse" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdGridResponse_created" ON "AdGridResponse" (created_date DESC);
+
+-- AdGridSession
+CREATE TABLE IF NOT EXISTS "AdGridSession" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdGridSession_data_gin" ON "AdGridSession" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdGridSession_created" ON "AdGridSession" (created_date DESC);
+
+-- UserProductProfile
+CREATE TABLE IF NOT EXISTS "UserProductProfile" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "UserProductProfile_data_gin" ON "UserProductProfile" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "UserProductProfile_created" ON "UserProductProfile" (created_date DESC);
+
 CREATE TABLE IF NOT EXISTS "BusinessAccount" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
   created_date timestamptz NOT NULL DEFAULT now(),

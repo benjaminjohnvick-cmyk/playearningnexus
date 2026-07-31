@@ -45,6 +45,9 @@ export const REGISTRY: SettingDef[] = [
 
   // 2. Premium PPC network
   { key: "PPC_GRID_ANNUAL_PRICE", label: "PPC AdGrid annual price", category: "Premium PPC", type: "number", default: "8000", unit: "$", help: "What an advertiser pays for a year of PPC AdGrid ($8,000). Funds the matched member's benefits. Paired with the double-ROI free-social guarantee (2× = $16,000 of advertised value)." },
+  { key: "ADGRID_THUMBNAIL_PRICE", label: "AdGrid price per thumbnail", category: "Premium PPC", type: "number", default: "0.50", unit: "$", help: "What a completed thumbnail (2 questions + interest) is worth. 16 × $0.50 = $8 gross/day.", min: 0 },
+  { key: "ADGRID_THUMBNAILS_PER_SESSION", label: "AdGrid thumbnails per daily session", category: "Premium PPC", type: "number", default: "16", unit: "tiles", help: "Thumbnails a premium user works per day to hit the $8 goal.", min: 1 },
+  { key: "ADGRID_QUESTIONS_PER_THUMBNAIL", label: "AdGrid questions per thumbnail", category: "Premium PPC", type: "number", default: "2", unit: "Qs", help: "Advertiser survey questions per thumbnail (plus the permanent 'are you interested?' Option E).", min: 1 },
   { key: "PREMIUM_ANNUAL_POINTS_CEILING", label: "Annual points-earn ceiling (per matched user)", category: "Premium PPC", type: "number", default: "1460", unit: "$" },
   { key: "PREMIUM_DAILY_EARN_CAP", label: "Base per-active-day earn cap", category: "Premium PPC", type: "number", default: "4", unit: "$" },
   { key: "PREMIUM_WELCOME_BONUS", label: "Welcome bonus at enrollment", category: "Premium PPC", type: "number", default: "25", unit: "$" },
