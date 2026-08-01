@@ -666,6 +666,7 @@
   "sessionEnd",
   "sessionStart",
   "setBurstPace",
+  "setChatPrefs",
   "setSurveyCommitment",
   "setupStatus",
   "smartContentSchedulingOptimizer",

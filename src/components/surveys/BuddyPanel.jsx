@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, Loader2, Send, Flag, UserPlus, Lock, Heart } from 'lucide-react';
 import { toast } from 'sonner';
+import ChatPrefsBar from './ChatPrefsBar';
 
 const CHEERS = ['Keep going! 🔥', "You've got this 💪", 'Almost there!', 'Nice pace! 👏', 'One more 👍', "Let's finish strong 🚀"];
 
@@ -108,6 +109,7 @@ export default function BuddyPanel() {
           </div>
         </div>
 
+        <ChatPrefsBar onChange={() => { match(); }} />
         {waiting ? (
           <div className="text-sm text-slate-500 py-3">Looking for a buddy who's earning now — keep going, and we'll pair you the moment someone's free. <button className="text-violet-600 ml-1" onClick={match}>refresh</button></div>
         ) : (

@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, Loader2, Send, Flag, UserPlus, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import ChatPrefsBar from './ChatPrefsBar';
 
 const CHEERS = ['Keep going! 🔥', "You've got this 💪", 'Almost there!', 'Nice pace! 👏', 'One more 👍', "Let's finish strong 🚀"];
 const SAFETY = 'Keep it friendly and on-platform. Never send money or share contact info. Report anything off.';
@@ -117,6 +118,8 @@ export default function GroupSessionPanel() {
           <button className="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center gap-0.5" onClick={report} title="Report inappropriate behavior — ends the chat and sends it to our team"><Flag className="w-3 h-3" /> Report</button>
         </div>
       </div>
+
+      <ChatPrefsBar onChange={() => load()} />
 
       {/* Members + progress */}
       <div className="space-y-1.5 mb-3">

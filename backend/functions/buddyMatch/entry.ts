@@ -27,9 +27,11 @@ export default __handler(async (req) => {
       return Response.json({ status: "active", pair_id: existing.id, buddy_user_id: buddyId });
     }
 
-    // Join someone who's waiting (not me).
+    // Join someone who's waiting (not me) — preferring a country the user chose to chat with, if any.
     const waiting = await db.filter("BuddyPair", { status: "waiting" }, "-created_date", 50).catch(() => []) as Record<string, unknown>[];
-    const open = (waiting || []).find((p) => p.user_a && p.user_a !== user.id && !p.user_b);
+    const prefCountries = Array.isArray((user as Record<string, unknown>).chat_countries) ? (user as Record<string, unknown>).chat_countries as string[] : [];
+    const openCandidates = (waiting || []).filter((p) => p.user_a && p.user_a !== user.id && !p.user_b);
+    const open = (prefCountries.length ? openCandidates.find((p) => p.country && prefCountries.includes(String(p.country))) : null) || openCandidates[0];
     if (open) {
       await db.update("BuddyPair", open.id as string, { user_b: user.id, status: "active", matched_at: new Date().toISOString() }).catch(() => null);
       // Let the waiting user know they've been matched.
@@ -40,9 +42,12 @@ export default __handler(async (req) => {
       return Response.json({ status: "active", pair_id: open.id, buddy_user_id: open.user_a });
     }
 
-    // Otherwise wait for a partner (solo earning still works meanwhile).
+    // Otherwise wait for a partner (solo earning still works meanwhile). Tag with the user's country so
+    // others who chose to chat with that country can be matched.
     const created = await base44.asServiceRole.entities.BuddyPair.create({
-      user_a: user.id, user_b: null, status: "waiting", source: "queue", created_day: new Date().toISOString().slice(0, 10),
+      user_a: user.id, user_b: null, status: "waiting", source: "queue",
+      country: (user as Record<string, unknown>).country || null,
+      created_day: new Date().toISOString().slice(0, 10),
     });
     return Response.json({ status: "waiting", pair_id: created.id });
   } catch (error) {

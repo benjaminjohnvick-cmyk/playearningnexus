@@ -228,6 +228,29 @@ private chat, and never mandatory.
 - No off-platform identity exchange, no facilitated meetups — connection stays in-app where moderation works.
 - No self-reported "KYC vetting" (false security + PII liability); trust is shown via behavior/standing.
 
+## J. Cross-language chat, leaderboards, and premium access
+
+- **Leaderboards** (`leaderboard.ts` + `leaderboard`): scopes **friends** (buddies + group) and **global**;
+  metrics = top earner, active days, surveys, top saver, network (referrals), level. Financial ranks
+  (earner, saver) are **rank-only — never dollar amounts** (status without nudging overspend). UI:
+  `LeaderboardPanel.jsx`.
+- **Cross-language chat** (`chat-i18n.ts`, `setChatPrefs`): users pick the language they READ chat in;
+  buddy/group messages auto-translate into it on display (cheap-tier, cached do-once). Users can also pick
+  countries to be matched with (`buddyMatch` prefers them). `ChatPrefsBar.jsx` in both panels. Scam guard's
+  concrete signals (app names, payment services, links, numbers, crypto) are language-agnostic; phrase-level
+  multilingual detection is a documented follow-up.
+- **Premium access:** all buddy/group/leaderboard features are available to premium AND non-premium — none
+  are gated to a tier. The "non-premium default" only sets the default earn *mode*, not access. Premium can
+  use every social option; premium-exclusive *enhancements* (private hosted groups, priority matching,
+  exclusive leagues, status badges) are a proposed next build.
+
+### Voice survey assistant (feasibility, for reference)
+AI reading questions aloud + transcribing the USER'S OWN spoken answer (Whisper + confirm) is legitimate and
+already built (`VoiceSurveyMode`, verified-survey pipeline) — a nicer voice (e.g. ElevenLabs TTS) is an
+optional upgrade. It works only on OWN AdGrid/PPC surveys, never on BitLabs (cross-origin iframe + one-live-
+respondent rule). A human/AI entering answers *for* a user on a third-party survey is proxy answering (fraud)
+and isn't built.
+
 ## Compliance guardrails (unchanged, restated)
 
 - No passive/auto-answer, no gaze auto-selection — genuine human answers only.
