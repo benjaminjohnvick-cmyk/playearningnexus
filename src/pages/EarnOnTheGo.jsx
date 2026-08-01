@@ -5,6 +5,7 @@ import BurstMode from '@/components/surveys/BurstMode';
 import BuddyPanel from '@/components/surveys/BuddyPanel';
 import GroupSessionPanel from '@/components/surveys/GroupSessionPanel';
 import LeaderboardPanel from '@/components/surveys/LeaderboardPanel';
+import VoiceAdGridAssistant from '@/components/surveys/VoiceAdGridAssistant';
 import { Loader2, Zap } from 'lucide-react';
 
 /**
@@ -51,6 +52,7 @@ export default function EarnOnTheGo() {
       ) : (
         <div className="space-y-4">
           <BurstMode availableSurveys={surveys} onOpenSurvey={openSurvey} />
+          <VoiceAdGridAssistant />
           <GroupSessionPanel />
           <BuddyPanel />
           <LeaderboardPanel />

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mic, Volume2, Check, Loader2, X } from 'lucide-react';
 import { speak as ttsSpeak } from '@/lib/voiceTts';
@@ -12,7 +12,7 @@ import { speak as ttsSpeak } from '@/lib/voiceTts';
  * Natural pace by design: reading + a spoken answer lands a question well above the speeder floor, so it
  * pays. Speeding it up would only trip fraud detection. Props: question {q, options[]}, onAnswer(option).
  */
-export default function VoiceSurveyMode({ question, onAnswer, disabled }) {
+export default function VoiceSurveyMode({ question, onAnswer, disabled, autoRead }) {
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState('');
   const [match, setMatch] = useState(null);   // the option we think they said (needs confirm)
@@ -26,6 +26,12 @@ export default function VoiceSurveyMode({ question, onAnswer, disabled }) {
     const opts = (question.options || []).map((o, i) => `Option ${i + 1}: ${o}`).join('. ');
     ttsSpeak(`${question.q}. ${opts}`);
   }, [question]);
+
+  // Hands-free flow: auto-read each new question aloud.
+  useEffect(() => {
+    if (autoRead && question?.q) { setHeard(''); setMatch(null); readAloud(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question?.q, autoRead]);
 
   // Map a spoken phrase to the closest option (exact text, or "option N", or contained words).
   const mapToOption = (said) => {
