@@ -422,6 +422,19 @@ CREATE TABLE IF NOT EXISTS "BuddyPair" (
 CREATE INDEX IF NOT EXISTS "BuddyPair_data_gin" ON "BuddyPair" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "BuddyPair_created" ON "BuddyPair" (created_date DESC);
 
+-- BuddyVoiceClip: a voice message between two MUTUALLY-CONNECTED buddies. Transcribed for moderation
+-- (answer-wall + scam-guard on the transcript) and retained. data: { pair_id, from_user_id, to_user_id,
+-- audio_base64, mime, transcript, day, flagged }
+CREATE TABLE IF NOT EXISTS "BuddyVoiceClip" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "BuddyVoiceClip_data_gin" ON "BuddyVoiceClip" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "BuddyVoiceClip_created" ON "BuddyVoiceClip" (created_date DESC);
+
 -- BugReport: 13 properties
 CREATE TABLE IF NOT EXISTS "BugReport" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

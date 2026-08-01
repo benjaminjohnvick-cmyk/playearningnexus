@@ -69,3 +69,43 @@ export function ownershipTable(opts: { priceUsd: number; isPremium: boolean }): 
     minutesToOwn({ priceUsd: opts.priceUsd, ownershipPct: pct, isPremium: opts.isPremium }),
   );
 }
+
+/** Max share of an item a user may earn back as a discount (the rest is paid out of pocket). */
+export function buyerMaxDiscountPct(): number {
+  return clampPct(snapNumber("BUYER_MAX_DISCOUNT_PCT", 0.50) * 100);   // stored as a fraction (0.50 = 50%)
+}
+
+export interface OwnershipSplit {
+  price_usd: number;
+  out_of_pocket_pct: number;   // % the user pays by card now
+  earn_back_pct: number;       // % they earn back via surveys (the ownership discount)
+  max_discount_pct: number;    // policy cap on earn-back
+  minutes: number;             // survey minutes to earn the earn-back %
+  days_at_cap: number;
+  out_of_pocket_usd: number;   // dollars they actually pay (kept internal; UI can lead with %)
+}
+
+/**
+ * Given an item price and how much the user wants to pay OUT OF POCKET, split it into: the % paid now vs the
+ * % earned back via surveys (capped by the max-discount policy), plus the survey minutes to earn that back.
+ * Percentages + minutes are the headline; dollars are included but the UI leads with %.
+ */
+export function ownershipSplit(opts: { priceUsd: number; outOfPocketUsd: number; isPremium: boolean }): OwnershipSplit {
+  const price = Math.max(0, Number(opts.priceUsd) || 0);
+  const maxDiscount = buyerMaxDiscountPct();                 // e.g. 50
+  const minOutOfPocketPct = Math.max(0, 100 - maxDiscount);  // e.g. 50
+  // Clamp the requested out-of-pocket to [minOutOfPocket .. 100%].
+  let oopPct = price > 0 ? clampPct((Math.max(0, Number(opts.outOfPocketUsd) || 0) / price) * 100) : 100;
+  oopPct = Math.min(100, Math.max(minOutOfPocketPct, oopPct));
+  const earnBackPct = Math.round((100 - oopPct) * 100) / 100;
+  const step = minutesToOwn({ priceUsd: price, ownershipPct: earnBackPct, isPremium: opts.isPremium });
+  return {
+    price_usd: Math.round(price * 100) / 100,
+    out_of_pocket_pct: Math.round(oopPct * 100) / 100,
+    earn_back_pct: earnBackPct,
+    max_discount_pct: maxDiscount,
+    minutes: step.minutes,
+    days_at_cap: step.days_at_cap,
+    out_of_pocket_usd: Math.round(price * (oopPct / 100) * 100) / 100,
+  };
+}

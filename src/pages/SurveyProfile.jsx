@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, UserCheck, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import WishlistSplit from '@/components/surveys/WishlistSplit';
 
 /**
  * SurveyProfile — the "CYK" master profile. The user fills their stable demographic/screening facts ONCE.
@@ -92,6 +93,8 @@ export default function SurveyProfile() {
         <p className="text-[11px] text-slate-400 flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Used only to match surveys — never to answer them.</p>
         <Button onClick={save} disabled={saving}>{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save profile'}</Button>
       </div>
+
+      <WishlistSplit />
     </div>
   );
 }

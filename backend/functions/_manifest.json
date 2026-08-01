@@ -12,6 +12,7 @@
   "adScheduledReports",
   "adSentimentScanner",
   "addCatalogToStorefront",
+  "addWishlistProducts",
   "adminAlertNotifier",
   "adminAuditLogAnalyzer",
   "adminOptimizationDecide",
@@ -375,6 +376,8 @@
   "buddyReport",
   "buddySendMessage",
   "buddyStatus",
+  "buddyVoiceClip",
+  "buddyVoiceMessage",
   "buildUserAIProfiles",
   "burstComplete",
   "burstDayStatus",
@@ -401,6 +404,7 @@
   "chatTranscriptExport",
   "checkAndAwardBadges",
   "checkSurveyFraud",
+  "checkoutOwnershipQuote",
   "churnPredictionAffiliates",
   "churnPredictionEngine",
   "claimDailyBoost",
@@ -736,5 +740,7 @@
   "viralContentGenerator",
   "weeklyContestWinner",
   "welcomeCreditStatus",
+  "wishlistAISuggest",
+  "wishlistGet",
   "youtubeAutoEmbed"
 ]

@@ -22,7 +22,8 @@ export default __handler(async (req) => {
 
     const rows = await db.filter("BuddyMessage", { pair_id: pairId }, "-created_date", limit).catch(() => []) as Record<string, unknown>[];
     let messages = (rows || []).filter((m) => !m.flagged).map((m) => ({
-      id: m.id, from_me: m.from_user_id === user.id, kind: m.kind, text: String(m.text || ""), original: String(m.text || ""), at: m.created_date,
+      id: m.id, from_me: m.from_user_id === user.id, kind: m.kind, text: String(m.text || ""), original: String(m.text || ""),
+      voice_clip_id: m.voice_clip_id || null, at: m.created_date,
     })).reverse();
 
     // Auto-translate into the reader's chat language (their own messages stay as-is).

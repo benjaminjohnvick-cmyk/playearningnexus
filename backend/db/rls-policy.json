@@ -136,6 +136,9 @@
   "BuddyPair": {
     "scope": "global"
   },
+  "BuddyVoiceClip": {
+    "scope": "global"
+  },
   "BugReport": {
     "scope": "global"
   },

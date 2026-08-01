@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Loader2, Send, Flag, UserPlus, Lock, Heart } from 'lucide-react';
+import { Users, Loader2, Send, Flag, UserPlus, Lock, Heart, Mic, Square, Play } from 'lucide-react';
 import { toast } from 'sonner';
 import ChatPrefsBar from './ChatPrefsBar';
 import GroupSessionPanel from './GroupSessionPanel';
@@ -107,6 +107,33 @@ export default function BuddyPanel() {
     catch { toast.error('Could not save your commitment.'); }
   };
 
+  // Voice notes — only when the two buddies have mutually connected. Recorded + transcribed for moderation.
+  const [recording, setRecording] = useState(false);
+  const recRef = useRef(null);
+  const recordVoice = async () => {
+    if (recording) { try { recRef.current?.stop(); } catch { /* ignore */ } return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const rec = new MediaRecorder(stream); recRef.current = rec; const chunks = [];
+      rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+      rec.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop()); setRecording(false);
+        const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
+        const b64 = await new Promise((res) => { const r = new FileReader(); r.onloadend = () => res(String(r.result)); r.readAsDataURL(blob); });
+        try {
+          const resp = await base44.functions.invoke('buddyVoiceMessage', { pair_id: status.pair_id, audio_base64: b64, mime: blob.type });
+          if (resp.data?.blocked) toast.error(resp.data.message || 'Voice note blocked.'); else await load();
+        } catch { toast.error('Could not send voice note.'); }
+      };
+      rec.start(); setRecording(true);
+      setTimeout(() => { try { if (rec.state === 'recording') rec.stop(); } catch { /* ignore */ } }, 20000); // 20s cap
+    } catch { toast.error('Mic not available.'); }
+  };
+  const playClip = async (clipId) => {
+    try { const r = await base44.functions.invoke('buddyVoiceClip', { clip_id: clipId }); if (r.data?.audio_base64) new Audio(r.data.audio_base64.startsWith('data:') ? r.data.audio_base64 : `data:${r.data.mime};base64,${r.data.audio_base64}`).play(); }
+    catch { /* ignore */ }
+  };
+
   if (solo) {
     return (
       <Card className="border-dashed"><CardContent className="p-4 flex items-center justify-between">
@@ -182,7 +209,12 @@ export default function BuddyPanel() {
               {messages.length === 0 ? <div className="text-xs text-slate-400">Say hi and cheer each other on 👋</div> :
                 messages.map((m) => (
                   <div key={m.id} className={`text-xs ${m.from_me ? 'text-right' : 'text-left'}`}>
-                    <span className={`inline-block px-2 py-1 rounded-lg ${m.from_me ? 'bg-violet-500 text-white' : 'bg-white border'}`}>{m.text}</span>
+                    <span className={`inline-block px-2 py-1 rounded-lg ${m.from_me ? 'bg-violet-500 text-white' : 'bg-white border'}`}>
+                      {m.kind === 'voice' && m.voice_clip_id && (
+                        <button onClick={() => playClip(m.voice_clip_id)} className="inline-flex items-center gap-1 mr-1 align-middle"><Play className="w-3 h-3" /></button>
+                      )}
+                      {m.text}
+                    </span>
                   </div>
                 ))}
             </div>
@@ -191,6 +223,11 @@ export default function BuddyPanel() {
             <div className="flex items-center gap-2 mb-2">
               <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Encourage your buddy… (no survey answers)"
                 className="flex-1 border rounded-md px-2 py-1.5 text-sm" maxLength={280} onKeyDown={(e) => { if (e.key === 'Enter' && text.trim()) send('text', text.trim()); }} />
+              {status.connect?.connected && (
+                <Button size="sm" variant={recording ? 'destructive' : 'outline'} onClick={recordVoice} title="Hands-free voice note (connected buddies only)">
+                  {recording ? <Square className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </Button>
+              )}
               <Button size="sm" disabled={busy || !text.trim()} onClick={() => send('text', text.trim())}><Send className="w-4 h-4" /></Button>
             </div>
             <div className="text-[10px] text-slate-400 mb-3">Chat is for encouragement only — sharing survey answers is blocked. {status.chat?.remaining != null && `${status.chat.remaining} messages left today.`}</div>
