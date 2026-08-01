@@ -398,6 +398,30 @@ CREATE TABLE IF NOT EXISTS "Badge" (
 CREATE INDEX IF NOT EXISTS "Badge_data_gin" ON "Badge" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "Badge_created" ON "Badge" (created_date DESC);
 
+-- BuddyMessage: an encouragement message between paired buddies. ENCOURAGEMENT ONLY — never survey answers
+-- (answer-wall enforced). data: { pair_id, from_user_id, to_user_id, kind, text, flagged, day }
+CREATE TABLE IF NOT EXISTS "BuddyMessage" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "BuddyMessage_data_gin" ON "BuddyMessage" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "BuddyMessage_created" ON "BuddyMessage" (created_date DESC);
+
+-- BuddyPair: two users paired for accountability/encouragement while earning. data: { user_a, user_b,
+-- status, source, unlocked_connect, connect_request_by, connected, created_day }
+CREATE TABLE IF NOT EXISTS "BuddyPair" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "BuddyPair_data_gin" ON "BuddyPair" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "BuddyPair_created" ON "BuddyPair" (created_date DESC);
+
 -- BugReport: 13 properties
 CREATE TABLE IF NOT EXISTS "BugReport" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

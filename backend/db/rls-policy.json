@@ -130,6 +130,12 @@
     "scope": "owner",
     "owner_field": "user_id"
   },
+  "BuddyMessage": {
+    "scope": "global"
+  },
+  "BuddyPair": {
+    "scope": "global"
+  },
   "BugReport": {
     "scope": "global"
   },

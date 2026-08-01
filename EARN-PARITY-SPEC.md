@@ -181,6 +181,25 @@ which does NOT lock anyone out). The daily goal is worked in short, resumable bu
 $8/day *outcome* is deliberately NOT a hard lockout gate here, pending the "hard gate vs required-effort +
 funded-path" decision. Nothing in this code blocks a user from the site.
 
+## H. Earn-together buddies (paired engagement)
+
+Social accountability ("body-doubling") to lift completion and retention. Paired earning is the encouraged
+non-premium default with a **solo fallback — never a hard lockout**.
+
+- **buddy.ts** — pairing, the **answer-wall** (blocks messages that look like sharing survey answers/content
+  — collusion + IP leak), chat rate limits (base vs unlocked), the $9 unlock, and the reserve-gated bonus.
+- **Entities:** `BuddyPair`, `BuddyMessage`. **Functions:** buddyMatch, buddyStatus, buddySendMessage,
+  buddyMessages, buddyReport (safety: report/leave/block), buddyConnectRequest, buddyBonusClaim.
+- **Chat is encouragement-only** — canned cheers + answer-walled free text, rate-limited, reportable.
+- **Buddy bonus** (the "10% bump"): a % of the day's take, **closed-loop Site Cash, reserve-ledgered, capped,
+  once/day** — never cash out.
+- **$9 unlock:** cumulative survey earnings ≥ threshold unlock *extended* (still-moderated, still
+  answer-walled) chat + an **opt-in, mutual, in-app connect** (add-as-friend). 
+- **NOT built — real-world meetups.** "Meet each other" is deliberately limited to an in-app connection.
+  An earning platform arranging in-person meetings between strangers is a serious safety/liability line, so
+  the reward stops at in-app. "Unlimited chat" is implemented as *extended, still-moderated* — never
+  unmoderated. Frontend: `BuddyPanel.jsx` (both progress bars, cheers, chat, unlock/connect, report, solo).
+
 ## Compliance guardrails (unchanged, restated)
 
 - No passive/auto-answer, no gaze auto-selection — genuine human answers only.

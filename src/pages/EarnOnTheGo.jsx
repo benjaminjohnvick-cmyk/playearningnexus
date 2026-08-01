@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '@/utils';
 import BurstMode from '@/components/surveys/BurstMode';
+import BuddyPanel from '@/components/surveys/BuddyPanel';
 import { Loader2, Zap } from 'lucide-react';
 
 /**
@@ -46,7 +47,10 @@ export default function EarnOnTheGo() {
       {loading ? (
         <div className="p-6 flex items-center gap-2 text-slate-400"><Loader2 className="w-5 h-5 animate-spin" /> Finding your quickest surveys…</div>
       ) : (
-        <BurstMode availableSurveys={surveys} onOpenSurvey={openSurvey} />
+        <div className="space-y-4">
+          <BurstMode availableSurveys={surveys} onOpenSurvey={openSurvey} />
+          <BuddyPanel />
+        </div>
       )}
     </div>
   );

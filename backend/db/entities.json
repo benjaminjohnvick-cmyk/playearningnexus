@@ -44,6 +44,8 @@
   "AutomationReview",
   "BNPLFamilyMember",
   "Badge",
+  "BuddyMessage",
+  "BuddyPair",
   "BugReport",
   "BurstSession",
   "BusinessAccount",
