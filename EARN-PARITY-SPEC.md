@@ -200,6 +200,34 @@ non-premium default with a **solo fallback — never a hard lockout**.
   the reward stops at in-app. "Unlimited chat" is implemented as *extended, still-moderated* — never
   unmoderated. Frontend: `BuddyPanel.jsx` (both progress bars, cheers, chat, unlock/connect, report, solo).
 
+## I. Groups, opt-in 1:1, anti-scam, and safety transcripts
+
+Consent-progressive community: **group first, then optionally 1:1** — never dropping strangers straight into
+private chat, and never mandatory.
+
+- **Groups (user-chosen size):** `GroupSession` + `GroupMessage` entities; `groupCreate` (you pick the size,
+  clamped to admin bounds), `groupJoin` (matchmake or by id), `groupStatus` (members + live progress),
+  `groupSendMessage`, `groupMessages`, `groupLeave` (with report). Group chat is answer-walled + scam-guarded
+  + rate-limited.
+- **Opt-in 1:1 after a group:** `groupStartOneOnOne` — two members who shared a group can MUTUALLY opt into a
+  private 1:1, which becomes a normal buddy pair (all its protections). Activates only when BOTH opt in.
+  In-app only — no contact-info exchange, no meetups.
+- **Anti-scam guard (`scam-guard.ts`):** BLOCKS off-platform contact (Instagram/WhatsApp/…), payment handles
+  (Cash App/Venmo/crypto/…), money solicitation, raw contact info, and external links, with a kind safety
+  message — because a money platform is a prime target for romance/investment scams that start by moving
+  off-platform. Wired into both group and buddy chat. `SCAM_GUARD_ENABLED` (default on).
+- **Safety transcripts:** all buddy/group messages persist and are retained `CHAT_TRANSCRIPT_RETENTION_DAYS`
+  (default 90 — disclose in the privacy policy). `chatTranscriptExport` compiles a conversation to a TXT
+  transcript for moderation — **admin-only (`requireInternalOrAdmin`); users can never pull each other's
+  chats.**
+- Frontend: `GroupSessionPanel.jsx` (size picker, members + progress, cheers + guarded chat, pair-1:1,
+  leave/report, safety tip). Wired into `EarnOnTheGo`.
+
+### Safety lines held (restated)
+- Nothing social is mandatory; opt-in with a solo/leave path everywhere.
+- No off-platform identity exchange, no facilitated meetups — connection stays in-app where moderation works.
+- No self-reported "KYC vetting" (false security + PII liability); trust is shown via behavior/standing.
+
 ## Compliance guardrails (unchanged, restated)
 
 - No passive/auto-answer, no gaze auto-selection — genuine human answers only.

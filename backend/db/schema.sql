@@ -3231,6 +3231,30 @@ CREATE TABLE IF NOT EXISTS "GroupGoalReward" (
 CREATE INDEX IF NOT EXISTS "GroupGoalReward_data_gin" ON "GroupGoalReward" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "GroupGoalReward_created" ON "GroupGoalReward" (created_date DESC);
 
+-- GroupSession: an "earn together" group of a user-chosen size (community/belonging). data: { creator_id,
+-- size, members[], status, topic, created_day }
+CREATE TABLE IF NOT EXISTS "GroupSession" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GroupSession_data_gin" ON "GroupSession" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GroupSession_created" ON "GroupSession" (created_date DESC);
+
+-- GroupMessage: an encouragement message in a GroupSession. Answer-walled + scam-guarded. Retained for
+-- safety/moderation. data: { session_id, from_user_id, kind, text, flagged, day }
+CREATE TABLE IF NOT EXISTS "GroupMessage" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GroupMessage_data_gin" ON "GroupMessage" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GroupMessage_created" ON "GroupMessage" (created_date DESC);
+
 CREATE TABLE IF NOT EXISTS "VerifiedSurveyMedia" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
   created_date timestamptz NOT NULL DEFAULT now(),

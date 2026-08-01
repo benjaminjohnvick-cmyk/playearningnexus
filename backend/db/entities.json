@@ -120,6 +120,8 @@
   "GroupContribution",
   "GroupGoal",
   "GroupGoalReward",
+  "GroupMessage",
+  "GroupSession",
   "GroupSpendRequest",
   "GrowthHeatmapData",
   "GrowthPlan",

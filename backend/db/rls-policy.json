@@ -869,6 +869,12 @@
     "scope": "owner",
     "owner_field": "owner_user_id"
   },
+  "GroupMessage": {
+    "scope": "global"
+  },
+  "GroupSession": {
+    "scope": "global"
+  },
   "GroupGoalReward": {
     "scope": "owner",
     "owner_field": "user_id"

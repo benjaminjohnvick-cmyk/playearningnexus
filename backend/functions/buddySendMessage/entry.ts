@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { answerWall, isUnlocked, chatDailyLimit, CANNED_CHEERS } from "../../sdk/buddy.ts";
+import { scanMessage } from "../../sdk/scam-guard.ts";
 
 // buddySendMessage (authenticated) — send an ENCOURAGEMENT to your buddy. Canned cheers are always safe;
 // free text passes the ANSWER-WALL (blocks anything that looks like sharing survey answers/content) and a
@@ -29,6 +30,8 @@ export default __handler(async (req) => {
     } else {
       const wall = answerWall(text);
       if (!wall.ok) return Response.json({ blocked: true, reason: wall.reason, message: "Keep it to encouragement — you can't share survey answers." }, { status: 422 });
+      const scam = scanMessage(text);
+      if (scam.blocked) return Response.json({ blocked: true, reason: `scam_${scam.category}`, message: scam.message }, { status: 422 });
     }
 
     // Rate limit (higher once unlocked).
