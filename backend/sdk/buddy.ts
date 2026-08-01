@@ -19,6 +19,9 @@ export const buddyChatExtendedDailyLimit = () => Math.max(0, Math.round(snapNumb
 export const buddyUnlockEarningsUsd = () => Math.max(0, snapNumber("BUDDY_UNLOCK_EARNINGS_USD", 9));
 /** Paired earning is the non-premium DEFAULT (a nudge), but a solo fallback always exists — never a lockout. */
 export const buddyDefaultNonPremium = () => snapBool("BUDDY_DEFAULT_NONPREMIUM", true);
+/** ON = non-premium can't toggle buddy chat off (premium can). Safety valves still apply: leave/report a bad
+ *  buddy re-matches into a new one, and earning is never blocked when no buddy is available. */
+export const buddyMandatoryNonPremium = () => snapBool("BUDDY_MANDATORY_NONPREMIUM", true);
 
 /** Buddy chat asks each person to commit to earning their daily take-home. Accountability, not a cage —
  *  Leave/Report always work. Applies to ALL tiers (premium + non-premium). */

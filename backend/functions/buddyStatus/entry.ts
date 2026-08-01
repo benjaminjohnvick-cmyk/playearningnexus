@@ -2,7 +2,8 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { burstDailyGoalUsd } from "../../sdk/burst.ts";
-import { isUnlocked, chatDailyLimit, buddyUnlockEarningsUsd, buddyCommitEnabled, buddyCommitTargetUsd } from "../../sdk/buddy.ts";
+import { isPremiumUser } from "../../sdk/survey-reward.ts";
+import { isUnlocked, chatDailyLimit, buddyUnlockEarningsUsd, buddyCommitEnabled, buddyCommitTargetUsd, buddyMandatoryNonPremium } from "../../sdk/buddy.ts";
 
 // buddyStatus (authenticated) — current buddy state: who you're paired with, both of today's progress, your
 // unlock progress toward extended chat + connect, chat allowance left, and connect state. Read-only.
@@ -19,6 +20,8 @@ export default __handler(async (req) => {
 
     const cumulativeUsd = Number(user.total_earnings) || 0;
     const unlocked = isUnlocked(cumulativeUsd);
+    const premium = await isPremiumUser(user.id);
+    const mandatory = buddyMandatoryNonPremium() && !premium;   // non-premium can't opt out; premium can
 
     // Today's messages sent (for the rate-limit display).
     let sentToday = 0;
@@ -66,6 +69,9 @@ export default __handler(async (req) => {
       has_buddy: !!(pair && (pair.user_a && pair.user_b)),
       pair_id: pair?.id || null,
       status: pair ? pair.status : "none",
+      is_premium: premium,
+      mandatory,   // non-premium can't turn buddy chat off; safety valves (leave/report→re-match) still apply
+
       me: { earned_today: Number(myEarn?.[0]?.survey_gross) || Number(myEarn?.[0]?.total_earned) || 0, goal_usd: goal },
       buddy,
       unlock: {

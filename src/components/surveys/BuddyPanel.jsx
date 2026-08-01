@@ -68,10 +68,15 @@ export default function BuddyPanel() {
     catch { /* ignore */ }
   };
 
+  const mandatory = !!status?.mandatory;   // non-premium can't opt out; premium can
+
+  // End the current pairing. For mandatory (non-premium) users we re-match into a NEW buddy rather than
+  // dropping to permanent solo (safety valve: they always escape a specific buddy, never get trapped or
+  // blocked from earning). Premium users can go solo.
   const leave = async () => {
-    if (!status?.pair_id) { setSolo(true); return; }
-    try { await base44.functions.invoke('buddyReport', { pair_id: status.pair_id, reason: '' }); } catch { /* ignore */ }
-    setSolo(true); toast.message("You're earning solo now.");
+    if (status?.pair_id) { try { await base44.functions.invoke('buddyReport', { pair_id: status.pair_id, reason: '' }); } catch { /* ignore */ } }
+    if (mandatory) { toast.message('Finding you a new buddy…'); await match(); }
+    else { setSolo(true); toast.message("You're earning solo now."); }
   };
 
   const report = async () => {
@@ -79,7 +84,7 @@ export default function BuddyPanel() {
     try {
       const r = await base44.functions.invoke('reportChat', { kind: 'buddy', id: status.pair_id, reason: 'Inappropriate behavior' });
       toast.success(r.data?.message || 'Reported — the chat has ended and our team will review it.');
-      setSolo(true);
+      if (mandatory) { await match(); } else { setSolo(true); }   // safety: always escape this buddy; re-match if mandatory
     } catch { toast.error('Could not submit report.'); }
   };
 
@@ -110,7 +115,7 @@ export default function BuddyPanel() {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2"><Users className="w-5 h-5 text-violet-600" /><h3 className="font-bold">Earn together</h3></div>
           <div className="flex items-center gap-2">
-            <button className="text-xs text-slate-400 hover:text-slate-600" onClick={leave}>go solo</button>
+            <button className="text-xs text-slate-400 hover:text-slate-600" onClick={leave}>{mandatory ? 'new buddy' : 'go solo'}</button>
             {status.has_buddy && <button className="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center gap-0.5" onClick={report} title="Report inappropriate behavior — ends the chat and sends it to our team"><Flag className="w-3 h-3" /> Report</button>}
           </div>
         </div>
