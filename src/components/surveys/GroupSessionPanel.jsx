@@ -74,10 +74,19 @@ export default function GroupSessionPanel() {
     } catch { /* ignore */ }
   };
 
-  const leave = async (report) => {
-    if (sessionId) { try { await base44.functions.invoke('groupLeave', { session_id: sessionId, reason: report ? 'reported by user' : '' }); } catch { /* ignore */ } }
+  const leave = async () => {
+    if (sessionId) { try { await base44.functions.invoke('groupLeave', { session_id: sessionId, reason: '' }); } catch { /* ignore */ } }
     setJoined(false); setSessionId(null); setStatus(null); setMessages([]);
-    if (report) toast.success('Reported & left.'); else toast.message('Left the group.');
+    toast.message('Left the group.');
+  };
+
+  const report = async () => {
+    if (!sessionId) { setJoined(false); return; }
+    try {
+      const r = await base44.functions.invoke('reportChat', { kind: 'group', id: sessionId, reason: 'Inappropriate behavior' });
+      toast.success(r.data?.message || 'Reported — the chat has ended and our team will review it.');
+    } catch { toast.error('Could not submit report.'); }
+    setJoined(false); setSessionId(null); setStatus(null); setMessages([]);
   };
 
   if (!joined) {
@@ -104,8 +113,8 @@ export default function GroupSessionPanel() {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2"><Users className="w-5 h-5 text-sky-600" /><h3 className="font-bold">Your group {status?.status === 'open' ? '(filling…)' : ''}</h3></div>
         <div className="flex items-center gap-2">
-          <button className="text-xs text-slate-400 hover:text-slate-600" onClick={() => leave(false)}>leave</button>
-          <button className="text-xs text-rose-400 hover:text-rose-600" onClick={() => leave(true)} title="Report & leave"><Flag className="w-3 h-3 inline" /></button>
+          <button className="text-xs text-slate-400 hover:text-slate-600" onClick={leave}>leave</button>
+          <button className="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center gap-0.5" onClick={report} title="Report inappropriate behavior — ends the chat and sends it to our team"><Flag className="w-3 h-3" /> Report</button>
         </div>
       </div>
 

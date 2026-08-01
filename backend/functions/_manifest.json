@@ -628,6 +628,7 @@
   "registerPushToken",
   "registerSupplier",
   "relistItem",
+  "reportChat",
   "requestGroupSpend",
   "requestManualPayout",
   "requestPayout",

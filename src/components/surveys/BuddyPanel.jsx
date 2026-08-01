@@ -75,8 +75,11 @@ export default function BuddyPanel() {
 
   const report = async () => {
     if (!status?.pair_id) return;
-    try { await base44.functions.invoke('buddyReport', { pair_id: status.pair_id, reason: 'reported by user', block: true }); toast.success('Reported — pair ended.'); setSolo(true); }
-    catch { /* ignore */ }
+    try {
+      const r = await base44.functions.invoke('reportChat', { kind: 'buddy', id: status.pair_id, reason: 'Inappropriate behavior' });
+      toast.success(r.data?.message || 'Reported — the chat has ended and our team will review it.');
+      setSolo(true);
+    } catch { toast.error('Could not submit report.'); }
   };
 
   if (solo) {
@@ -101,7 +104,7 @@ export default function BuddyPanel() {
           <div className="flex items-center gap-2"><Users className="w-5 h-5 text-violet-600" /><h3 className="font-bold">Earn together</h3></div>
           <div className="flex items-center gap-2">
             <button className="text-xs text-slate-400 hover:text-slate-600" onClick={leave}>go solo</button>
-            {status.has_buddy && <button className="text-xs text-rose-400 hover:text-rose-600" onClick={report} title="Report & leave"><Flag className="w-3 h-3 inline" /></button>}
+            {status.has_buddy && <button className="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center gap-0.5" onClick={report} title="Report inappropriate behavior — ends the chat and sends it to our team"><Flag className="w-3 h-3" /> Report</button>}
           </div>
         </div>
 
