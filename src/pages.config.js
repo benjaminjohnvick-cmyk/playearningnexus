@@ -67,6 +67,7 @@ import ContactUs from './pages/ContactUs';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorMarketplace from './pages/CreatorMarketplace';
 import DailyChallenges from './pages/DailyChallenges';
+import EarnOnTheGo from './pages/EarnOnTheGo';
 import DeveloperAIDashboard from './pages/DeveloperAIDashboard';
 import DeveloperAnalytics from './pages/DeveloperAnalytics';
 import DeveloperEventManagement from './pages/DeveloperEventManagement';
@@ -144,6 +145,7 @@ export const PAGES = {
     "CreatorDashboard": CreatorDashboard,
     "CreatorMarketplace": CreatorMarketplace,
     "DailyChallenges": DailyChallenges,
+    "EarnOnTheGo": EarnOnTheGo,
     "DeveloperAIDashboard": DeveloperAIDashboard,
     "DeveloperAnalytics": DeveloperAnalytics,
     "DeveloperEventManagement": DeveloperEventManagement,

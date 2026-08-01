@@ -45,6 +45,7 @@
   "BNPLFamilyMember",
   "Badge",
   "BugReport",
+  "BurstSession",
   "BusinessAccount",
   "BusinessClient",
   "BusinessSubscription",

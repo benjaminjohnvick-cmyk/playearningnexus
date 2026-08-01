@@ -409,6 +409,19 @@ CREATE TABLE IF NOT EXISTS "BugReport" (
 CREATE INDEX IF NOT EXISTS "BugReport_data_gin" ON "BugReport" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "BugReport_created" ON "BugReport" (created_date DESC);
 
+-- BurstSession: a user's "earn on the go" state for a day — progress toward the daily goal across many
+-- short bursts, resumable across devices. data: { user_id, day, earned_usd, bursts_completed, pace,
+-- last_active_at, last_device }
+CREATE TABLE IF NOT EXISTS "BurstSession" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "BurstSession_data_gin" ON "BurstSession" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "BurstSession_created" ON "BurstSession" (created_date DESC);
+
 -- BusinessClient: 20 properties
 CREATE TABLE IF NOT EXISTS "BusinessClient" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

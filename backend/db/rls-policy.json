@@ -874,6 +874,10 @@
   "RevenueEvent": {
     "scope": "admin"
   },
+  "BurstSession": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "BusinessAccount": {
     "scope": "owner",
     "owner_field": "owner_user_id"

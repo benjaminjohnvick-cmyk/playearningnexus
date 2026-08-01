@@ -158,6 +158,29 @@ a completeness meter). Why it matters: screen-outs are the #1 time-waster; bette
 - Every earning path stays inside the closed loop (non-cashable Site Cash) and inside the integrity engine
   (speeder floor, attention/consistency, genuine-answer requirement).
 
+## G. Earn on the go (bursts) — suggestions 1–14
+
+Non-premium takes surveys in a **burst format** by default (a UX default, `BURST_MANDATORY_NONPREMIUM`,
+which does NOT lock anyone out). The daily goal is worked in short, resumable bursts.
+
+- **burst.ts** — config + `computeBurstStatus` (progress vs goal) + `shortestFirst` (quick-hit surveys) +
+  `nextBurstDecision`: goal reached → shortest BitLabs survey → **AdGrid top-up** (when BitLabs is dry, via
+  the built adgrid-access) → other enabled provider → nothing-right-now. Each burst is ONE straight-through
+  unit + a break; pausing never happens mid-survey (integrity engine).
+- **Functions:** `burstNext` (next unit, passing the client's available surveys), `burstDayStatus` (progress
+  bar), `burstComplete` (advance the counter, cross-device sync), `setBurstPace` (one-at-a-time / timed
+  sprint / count). **BurstSession** entity holds per-day state.
+- **Frontend:** `BurstMode.jsx` (progress bar, pace picker, one-survey bursts, timed sprint, break timer,
+  AdGrid top-up, offline handling), `EarnOnTheGo` page, `offlineQueue.js` (IndexedDB queue that flushes on
+  reconnect — answers still pass timing/attention checks on flush).
+- **Reaches $8 by** stacking on the built inventory levers: BitLabs bursts → AdGrid top-up (A) → CPX (D),
+  with screen-out credit (E) and profile matching (F) making each burst more productive, and reallocation
+  (B) handing consistent earners premium-speed inventory.
+
+**Requirement note (suggestions 15–18, NOT yet built):** the burst *format* is the non-premium default; the
+$8/day *outcome* is deliberately NOT a hard lockout gate here, pending the "hard gate vs required-effort +
+funded-path" decision. Nothing in this code blocks a user from the site.
+
 ## Compliance guardrails (unchanged, restated)
 
 - No passive/auto-answer, no gaze auto-selection — genuine human answers only.
