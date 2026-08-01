@@ -4,6 +4,7 @@ import { hasConsented } from "../../sdk/consent-ledger.ts";
 import {
   CONSENT_VERSION, consentsForMethod, verifiedSurveysEnabled, verifiedMinValidity, assessValidity,
 } from "../../sdk/verified-survey.ts";
+import { scoreCompletionTiming } from "../../sdk/survey-timing.ts";
 
 // submitVerifiedSurveyResponse — the authoritative submit for a VERIFIED (voice/video) PPC survey. The
 // respondent has already recorded, transcribed, and CONFIRMED their answers on the client; this creates
@@ -68,6 +69,15 @@ export default __handler(async (req) => {
       await base44.asServiceRole.entities.VerifiedSurveyMedia.update(String(mid), { response_id: response.id }).catch(() => null);
     }
 
+    // 1b) TIMING INTEGRITY — straight-through, not too fast. Interrupted/too-fast completions are held
+    //     (is_blocked) for review, never auto-paid. Signals come from the device (foreground time + visibility).
+    const timing = scoreCompletionTiming({
+      seconds: Number(body.time_taken_seconds) || 0,
+      expectedSeconds: Number(survey.estimated_time_seconds) || Number(survey.estimated_time) || undefined,
+      interrupted: !!body.interrupted,
+      restarts: Number(body.restarts) || 0,
+    });
+
     // 2) AI "valid response" score (inline → no client race). Below threshold BLOCKS the payout by
     //    setting is_blocked, which respondentMicroPayout already refuses on. Fails open (scored:false).
     const validity = await assessValidity(survey, cleanAnswers, transcript);
@@ -75,7 +85,14 @@ export default __handler(async (req) => {
       validity_score: validity.validity_score,
       validity_reasons: validity.reasons,
       validity_scored: validity.scored,
+      timing_seconds: Number(body.time_taken_seconds) || 0,
+      timing_ok: timing.ok,
     };
+    if (timing.flagged) {
+      patch.is_flagged = true;
+      patch.flag_reason = `timing_${timing.reason}`;
+      patch.is_blocked = true;   // hold for review — no payout on a too-fast / interrupted run
+    }
     if (validity.scored && !validity.ok) {
       patch.is_flagged = true;
       patch.flag_reason = `low_validity_${validity.validity_score}`;

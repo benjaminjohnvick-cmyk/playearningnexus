@@ -1322,6 +1322,19 @@ CREATE TABLE IF NOT EXISTS "OnboardingProgress" (
 CREATE INDEX IF NOT EXISTS "OnboardingProgress_data_gin" ON "OnboardingProgress" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "OnboardingProgress_created" ON "OnboardingProgress" (created_date DESC);
 
+-- OpsShift: a paid operator's (staff/contractor) recurring coverage window, in UTC hours, for 24/7
+-- round-the-clock batch-approval coverage. Operators run the company's own fulfillment; they never touch
+-- another user's funds. data: { operator_user_id, operator_name, tz, start_hour_utc, end_hour_utc, days[], active }
+CREATE TABLE IF NOT EXISTS "OpsShift" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "OpsShift_data_gin" ON "OpsShift" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "OpsShift_created" ON "OpsShift" (created_date DESC);
+
 -- Order: 26 properties
 CREATE TABLE IF NOT EXISTS "Order" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
@@ -2943,6 +2956,18 @@ CREATE TABLE IF NOT EXISTS "InteractionEvent" (
 );
 CREATE INDEX IF NOT EXISTS "InteractionEvent_data_gin" ON "InteractionEvent" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "InteractionEvent_created" ON "InteractionEvent" (created_date DESC);
+
+-- ItemSavingsGoal: a user's "bank toward this item" goal. Progress is computed live from the user's
+-- Site Cash balance vs the item price; notified at 100% (covered). No cash ever leaves the platform.
+CREATE TABLE IF NOT EXISTS "ItemSavingsGoal" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ItemSavingsGoal_data_gin" ON "ItemSavingsGoal" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ItemSavingsGoal_created" ON "ItemSavingsGoal" (created_date DESC);
 
 CREATE TABLE IF NOT EXISTS "Layaway" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

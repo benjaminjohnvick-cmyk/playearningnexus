@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Heart, Coins, CreditCard } from 'lucide-react';
+import { Star, Heart, Coins, CreditCard, PiggyBank } from 'lucide-react';
+import BankTowardItem from './BankTowardItem';
 
 /**
  * MarketplaceProductCard — a shared, Amazon-style product card for every marketplace section: image, title,
@@ -25,6 +26,7 @@ function Stars({ rating = 0, count = 0 }) {
 }
 
 export default function MarketplaceProductCard({ listing: l, onBuyPoints, onBuyCard, onWishlist, formatPrice, markupPct = 0, busyKey }) {
+  const [showOwn, setShowOwn] = useState(false);
   const img = l.image_url || (Array.isArray(l.images) ? l.images[0] : null);
   const pts = l.price_points > 0 ? Math.round(l.price_points * (1 + (markupPct || 0) / 100)) : 0;
   const fmt = formatPrice || ((u) => `$${Number(u || 0).toFixed(2)}`);
@@ -59,6 +61,13 @@ export default function MarketplaceProductCard({ listing: l, onBuyPoints, onBuyC
             </Button>
           )}
         </div>
+        {l.price_usd > 0 && (
+          <button onClick={() => setShowOwn((v) => !v)}
+            className="mt-2 text-[11px] text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+            <PiggyBank className="w-3 h-3" /> {showOwn ? 'Hide' : 'Own it with survey time'}
+          </button>
+        )}
+        {showOwn && <div className="mt-2"><BankTowardItem listing={l} /></div>}
       </CardContent>
     </Card>
   );

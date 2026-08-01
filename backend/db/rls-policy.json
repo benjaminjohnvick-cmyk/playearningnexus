@@ -373,6 +373,10 @@
   "IntegrationConfig": {
     "scope": "global"
   },
+  "ItemSavingsGoal": {
+    "scope": "owner",
+    "owner_field": "created_by"
+  },
   "LeaderboardEntry": {
     "scope": "owner",
     "owner_field": "user_id"
@@ -419,6 +423,9 @@
   "OnboardingProgress": {
     "scope": "owner",
     "owner_field": "user_id"
+  },
+  "OpsShift": {
+    "scope": "global"
   },
   "Order": {
     "scope": "owner",

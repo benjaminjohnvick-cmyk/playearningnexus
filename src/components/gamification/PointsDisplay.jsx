@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, TrendingUp, Star } from "lucide-react";
+import { pointsAsCash, SITE_CASH_NOTE } from "@/lib/siteCash";
 
 export default function PointsDisplay({ user }) {
   const pointsToNextLevel = (user.level * 1000) - (user.points || 0);
@@ -29,8 +30,9 @@ export default function PointsDisplay({ user }) {
           </div>
         </div>
         <div className="text-right">
-          <p className="text-sm text-gray-600">Total Points</p>
-          <p className="text-2xl font-bold text-purple-600">{user.points || 0}</p>
+          <p className="text-sm text-gray-600">Site Cash</p>
+          <p className="text-2xl font-bold text-purple-600">{pointsAsCash(user.points)}</p>
+          <p className="text-[10px] text-gray-400 max-w-[9rem] leading-tight">{SITE_CASH_NOTE}</p>
         </div>
       </div>
 

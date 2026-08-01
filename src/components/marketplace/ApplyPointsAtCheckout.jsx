@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Coins, Loader2 } from 'lucide-react';
+import { Wallet, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**
@@ -44,19 +44,19 @@ export default function ApplyPointsAtCheckout({ listing, onDone }) {
 
   if (!preview) {
     return (
-      <Button size="sm" variant="secondary" disabled={busy} onClick={doPreview} title="Apply your points to this purchase">
-        {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Coins className="w-4 h-4 mr-1" /> Apply points</>}
+      <Button size="sm" variant="secondary" disabled={busy} onClick={doPreview} title="Apply your Site Cash to this purchase">
+        {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Wallet className="w-4 h-4 mr-1" /> Apply my Site Cash</>}
       </Button>
     );
   }
 
   if (!(preview.points_applicable > 0)) {
-    return <span className="text-xs text-slate-400">No points to apply</span>;
+    return <span className="text-xs text-slate-400">No Site Cash to apply</span>;
   }
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <span className="text-xs text-emerald-700 font-semibold">−${preview.savings_usd.toFixed(2)} ({preview.points_applicable.toLocaleString()} pts) · card ${preview.card_after_points_usd.toFixed(2)}</span>
+      <span className="text-xs text-emerald-700 font-semibold">−${preview.savings_usd.toFixed(2)} Site Cash · card pays ${preview.card_after_points_usd.toFixed(2)}</span>
       <Button size="sm" disabled={busy} onClick={confirm}>
         {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm'}
       </Button>

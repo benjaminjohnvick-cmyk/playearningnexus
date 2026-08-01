@@ -8,6 +8,7 @@ import { DollarSign, Gamepad2, TrendingUp, Library, Star, Clock, Eye, Users, Sen
 import ProfitInsightsTab from '../components/dashboard/ProfitInsightsTab';
 import { Card, CardContent } from "@/components/ui/card";
 import StatsCard from '../components/dashboard/StatsCard';
+import { pointsAsCash, SITE_CASH_NOTE } from '@/lib/siteCash';
 import GameCard from '../components/games/GameCard';
 import UserLicenseAgreement from '../components/user/UserLicenseAgreement';
 import AIRecommendations from '../components/dashboard/AIRecommendations';
@@ -280,9 +281,9 @@ export default function UserDashboard() {
           />
           <StatsCard
             icon={TrendingUp}
-            label="Points"
-            value={user.points || 0}
-            trend={`Level ${user.level || 1}`}
+            label="Site Cash"
+            value={pointsAsCash(user.points)}
+            trend={SITE_CASH_NOTE}
             color="amber"
           />
           <StatsCard
