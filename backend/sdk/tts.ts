@@ -10,6 +10,9 @@ import { snapNumber, snapBool } from "./settings.ts";
 
 export const ttsEnabled = () => snapBool("TTS_ENABLED", true);
 export const ttsMaxChars = () => Math.max(1, Math.round(snapNumber("TTS_MAX_CHARS", 600)));
+/** By default the paid ElevenLabs voice is a PREMIUM perk; non-premium gets the free device voice. Flip this
+ *  ON to give every tier the ElevenLabs voice (higher cost). Either way, non-premium keeps the assistant. */
+export const elevenLabsForNonPremium = () => snapBool("TTS_ELEVENLABS_FOR_NONPREMIUM", false);
 
 export function elevenLabsConfigured(): boolean {
   return !!Deno.env.get("ELEVENLABS_API_KEY");
