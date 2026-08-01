@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import BurstMode from '@/components/surveys/BurstMode';
 import BuddyPanel from '@/components/surveys/BuddyPanel';
 import GroupSessionPanel from '@/components/surveys/GroupSessionPanel';
+import LeaderboardPanel from '@/components/surveys/LeaderboardPanel';
 import { Loader2, Zap } from 'lucide-react';
 
 /**
@@ -52,6 +53,7 @@ export default function EarnOnTheGo() {
           <BurstMode availableSurveys={surveys} onOpenSurvey={openSurvey} />
           <GroupSessionPanel />
           <BuddyPanel />
+          <LeaderboardPanel />
         </div>
       )}
     </div>
