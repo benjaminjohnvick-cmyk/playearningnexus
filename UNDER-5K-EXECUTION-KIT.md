@@ -189,3 +189,27 @@ each of these (none is billable dev work):
 - **`AI_DAILY_SPEND_CAP_USD`** is the global hard brake — set it and no path can exceed it.
 - Nothing is turned off to save money; the floor comes from cheap tiers + caching + rules-first, not from
   disabling features.
+
+## Scaling survey supply to Swagbucks size (start with BitLabs)
+
+Supply is the constraint at scale — millions of users need many redundant survey networks so there's always
+inventory. The provider registry (`backend/sdk/survey-providers.ts`) ships with **11 networks wired**:
+BitLabs (ON at launch), CPX Research, TheoremReach, Pollfish, InBrain, TapResearch, Cint/Lucid, AdGate,
+ayeT-Studios, Revlum, Prodege. **Only BitLabs is on**; the rest are OFF until you sign each one and add its
+key. Flip `PROVIDER_<NAME>_ENABLED` on (and set `<NAME>_API_KEY`) as you onboard them — the router serves
+whichever networks are enabled + configured, so adding supply is a settings toggle, not a code change.
+
+The path to 100M-user scale is: (1) BitLabs at launch; (2) add CPX + TheoremReach + Pollfish early (biggest
+easy supply); (3) add Cint/Lucid for enterprise-grade volume; (4) your own **AdGrid** inventory grows with
+every advertiser you sign (highest-paying, fully yours). Redundant networks also mean no single provider
+outage stops earning.
+
+## New-feature cost levers (voice, translation, buddy/group)
+
+- **ElevenLabs voice** is a **premium perk** by default (`TTS_ELEVENLABS_FOR_NONPREMIUM=0`); non-premium
+  uses the device's built-in voice (free). So voice costs scale only with premium usage.
+- **Chat translation** is cheap-tier + do-once cached (`chat-i18n.ts`) — each unique line translates once.
+- **Voice survey assistant** runs on your own AdGrid surveys only (no per-user human labor — the AI reads and
+  the user speaks their own answer).
+- **Anti-scam + answer-wall** are pure code (regex), zero AI cost.
+- Everything above still respects `AI_DAILY_SPEND_CAP_USD` — the global brake covers voice + translation too.
