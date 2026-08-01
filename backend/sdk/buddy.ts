@@ -20,6 +20,11 @@ export const buddyUnlockEarningsUsd = () => Math.max(0, snapNumber("BUDDY_UNLOCK
 /** Paired earning is the non-premium DEFAULT (a nudge), but a solo fallback always exists — never a lockout. */
 export const buddyDefaultNonPremium = () => snapBool("BUDDY_DEFAULT_NONPREMIUM", true);
 
+/** Buddy chat asks each person to commit to earning their daily take-home. Accountability, not a cage —
+ *  Leave/Report always work. Applies to ALL tiers (premium + non-premium). */
+export const buddyCommitEnabled = () => snapBool("BUDDY_COMMIT_ENABLED", true);
+export const buddyCommitTargetUsd = () => Math.max(0, snapNumber("BUDDY_COMMIT_TARGET_USD", 4.50));
+
 /** Safe canned encouragements — always allowed, no free-text risk. */
 export const CANNED_CHEERS = [
   "Keep going! 🔥", "You've got this 💪", "Almost there!", "Nice pace! 👏",

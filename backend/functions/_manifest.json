@@ -367,6 +367,7 @@
   "batchGameRecommendations",
   "bitlabsPostback",
   "breakageReport",
+  "buddyAcceptCommitment",
   "buddyBonusClaim",
   "buddyConnectRequest",
   "buddyMatch",

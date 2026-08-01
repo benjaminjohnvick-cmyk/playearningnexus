@@ -83,6 +83,12 @@ export default function BuddyPanel() {
     } catch { toast.error('Could not submit report.'); }
   };
 
+  const acceptCommit = async () => {
+    if (!status?.pair_id) return;
+    try { await base44.functions.invoke('buddyAcceptCommitment', { pair_id: status.pair_id }); await load(); }
+    catch { toast.error('Could not save your commitment.'); }
+  };
+
   if (solo) {
     return (
       <Card className="border-dashed"><CardContent className="p-4 flex items-center justify-between">
@@ -112,8 +118,25 @@ export default function BuddyPanel() {
         <ChatPrefsBar onChange={() => { match(); }} />
         {waiting ? (
           <div className="text-sm text-slate-500 py-3">Looking for a buddy who's earning now — keep going, and we'll pair you the moment someone's free. <button className="text-violet-600 ml-1" onClick={match}>refresh</button></div>
+        ) : (status.commitment?.enabled && !status.commitment?.i_committed) ? (
+          <div className="rounded-lg bg-violet-50 border border-violet-100 p-3">
+            <div className="text-sm font-semibold mb-1">Lock in with your buddy 🤝</div>
+            <div className="text-xs text-slate-600 mb-3">To use buddy chat, you both commit to earning your <b>${status.commitment.target_usd?.toFixed(2)}</b> today — your half of the ${(status.commitment.target_usd * 2)?.toFixed(2)} you two are going for. You can leave any time; this is a goal you're setting together, not a lock on the door.</div>
+            <Button size="sm" onClick={acceptCommit}>I'm in — let's earn ${status.commitment.target_usd?.toFixed(2)} each</Button>
+          </div>
         ) : (
           <>
+            {/* Lock-in progress */}
+            {status.commitment?.enabled && (
+              <div className="mb-3 text-xs rounded-md bg-violet-50 border border-violet-100 px-2 py-1.5 flex items-center justify-between">
+                <span className="font-medium text-violet-800">Locked in · ${status.commitment.target_usd?.toFixed(2)} each</span>
+                <span className="text-slate-600">
+                  You {status.commitment.my_done ? '✓' : `$${status.commitment.my_take_usd?.toFixed(2)}`}
+                  {' · '}Buddy {status.commitment.buddy_done ? '✓' : (status.commitment.buddy_committed ? `$${status.commitment.buddy_take_usd?.toFixed(2)}` : '…')}
+                  {status.commitment.both_done ? ' 🎉' : ''}
+                </span>
+              </div>
+            )}
             {/* Both progress bars */}
             <div className="space-y-2 mb-3">
               <div>

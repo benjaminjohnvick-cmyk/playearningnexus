@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { burstDailyGoalUsd } from "../../sdk/burst.ts";
-import { isUnlocked, chatDailyLimit, buddyUnlockEarningsUsd } from "../../sdk/buddy.ts";
+import { isUnlocked, chatDailyLimit, buddyUnlockEarningsUsd, buddyCommitEnabled, buddyCommitTargetUsd } from "../../sdk/buddy.ts";
 
 // buddyStatus (authenticated) — current buddy state: who you're paired with, both of today's progress, your
 // unlock progress toward extended chat + connect, chat allowance left, and connect state. Read-only.
@@ -40,10 +40,27 @@ export default __handler(async (req) => {
           user_id: buddyId,
           display_name: bu?.full_name ? String(bu.full_name).split(" ")[0] : "Your buddy",   // first name only
           earned_today: Number(be?.[0]?.survey_gross) || Number(be?.[0]?.total_earned) || 0,
+          earned_take: Number(be?.[0]?.total_earned) || 0,
           goal_usd: goal,
         };
       }
     }
+
+    // Commitment (accountability, not a cage — Leave/Report always work). Applies to all tiers.
+    const commitTarget = buddyCommitTargetUsd();
+    const iAmA = pair ? pair.user_a === user.id : false;
+    const myTake = Number(myEarn?.[0]?.total_earned) || 0;
+    const commitment = {
+      enabled: buddyCommitEnabled(),
+      target_usd: commitTarget,
+      i_committed: pair ? (iAmA ? !!pair.committed_a : !!pair.committed_b) : false,
+      buddy_committed: pair ? (iAmA ? !!pair.committed_b : !!pair.committed_a) : false,
+      my_take_usd: Math.round(myTake * 100) / 100,
+      my_done: myTake >= commitTarget,
+      buddy_take_usd: buddy?.earned_take || 0,
+      buddy_done: (buddy?.earned_take || 0) >= commitTarget,
+      both_done: myTake >= commitTarget && (buddy?.earned_take || 0) >= commitTarget,
+    };
 
     return Response.json({
       has_buddy: !!(pair && (pair.user_a && pair.user_b)),
@@ -59,6 +76,7 @@ export default __handler(async (req) => {
       },
       chat: { sent_today: sentToday, daily_limit: chatDailyLimit(unlocked), remaining: Math.max(0, chatDailyLimit(unlocked) - sentToday) },
       connect: { requested_by: pair?.connect_request_by || null, connected: !!pair?.connected },
+      commitment,
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
