@@ -6,6 +6,7 @@ import { Users, Loader2, Send, Flag, UserPlus, Lock, Heart, Mic, Square, Play } 
 import { toast } from 'sonner';
 import ChatPrefsBar from './ChatPrefsBar';
 import GroupSessionPanel from './GroupSessionPanel';
+import { onSurveyActivity } from '@/lib/activityPing';
 
 const CHEERS = ['Keep going! 🔥', "You've got this 💪", 'Almost there!', 'Nice pace! 👏', 'One more 👍', "Let's finish strong 🚀"];
 
@@ -23,8 +24,10 @@ export default function BuddyPanel() {
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [fellBack, setFellBack] = useState(false);   // waited too long for a 1:1 → auto-added to a group
+  const [chatPaused, setChatPaused] = useState(false);   // paused after survey inactivity
   const pollRef = useRef(null);
   const fbTimer = useRef(null);
+  const idleTimer = useRef(null);
 
   const load = useCallback(async () => {
     try {
@@ -49,6 +52,18 @@ export default function BuddyPanel() {
     pollRef.current = setInterval(load, 15000);
     return () => clearInterval(pollRef.current);
   }, [solo, load]);
+
+  // Auto-pause chat when the user stops doing surveys; resume the moment they complete one again.
+  useEffect(() => {
+    const idleMs = ((status?.chat_idle_seconds || 60)) * 1000;
+    const arm = () => {
+      clearTimeout(idleTimer.current);
+      idleTimer.current = setTimeout(() => setChatPaused(true), idleMs);
+    };
+    const off = onSurveyActivity(() => { setChatPaused(false); arm(); });
+    arm();   // start the idle countdown on mount
+    return () => { off(); clearTimeout(idleTimer.current); };
+  }, [status?.chat_idle_seconds]);
 
   // No 1:1 buddy within the wait window → auto-add to an online group. A buddy arriving cancels it.
   useEffect(() => {
@@ -130,8 +145,14 @@ export default function BuddyPanel() {
     } catch { toast.error('Mic not available.'); }
   };
   const playClip = async (clipId) => {
-    try { const r = await base44.functions.invoke('buddyVoiceClip', { clip_id: clipId }); if (r.data?.audio_base64) new Audio(r.data.audio_base64.startsWith('data:') ? r.data.audio_base64 : `data:${r.data.mime};base64,${r.data.audio_base64}`).play(); }
-    catch { /* ignore */ }
+    try {
+      const r = await base44.functions.invoke('buddyVoiceClip', { clip_id: clipId });
+      const d = r.data || {};
+      // Prefer the spoken translation in your language; else play the original audio.
+      if (d.translated_audio_base64) { new Audio(`data:audio/mpeg;base64,${d.translated_audio_base64}`).play(); return; }
+      if (d.translated_transcript) toast.message(d.translated_transcript);   // at least show it in your language
+      if (d.audio_base64) new Audio(d.audio_base64.startsWith('data:') ? d.audio_base64 : `data:${d.mime};base64,${d.audio_base64}`).play();
+    } catch { /* ignore */ }
   };
 
   if (solo) {
@@ -199,9 +220,15 @@ export default function BuddyPanel() {
               </div>
             </div>
 
+            {chatPaused && (
+              <div className="mb-2 text-xs rounded-md bg-amber-50 border border-amber-200 text-amber-800 px-2 py-1.5">
+                Chat paused — complete a survey to keep talking with your buddy.
+              </div>
+            )}
+
             {/* Cheers */}
             <div className="flex flex-wrap gap-1 mb-2">
-              {CHEERS.map((c) => <button key={c} disabled={busy} onClick={() => send('canned', c)} className="text-xs px-2 py-1 rounded-full bg-violet-50 hover:bg-violet-100 border border-violet-100">{c}</button>)}
+              {CHEERS.map((c) => <button key={c} disabled={busy || chatPaused} onClick={() => send('canned', c)} className="text-xs px-2 py-1 rounded-full bg-violet-50 hover:bg-violet-100 border border-violet-100 disabled:opacity-40">{c}</button>)}
             </div>
 
             {/* Messages */}
@@ -221,14 +248,14 @@ export default function BuddyPanel() {
 
             {/* Text (encouragement only) */}
             <div className="flex items-center gap-2 mb-2">
-              <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Encourage your buddy… (no survey answers)"
-                className="flex-1 border rounded-md px-2 py-1.5 text-sm" maxLength={280} onKeyDown={(e) => { if (e.key === 'Enter' && text.trim()) send('text', text.trim()); }} />
+              <input value={text} onChange={(e) => setText(e.target.value)} disabled={chatPaused} placeholder={chatPaused ? 'Paused — do a survey to resume' : 'Encourage your buddy… (no survey answers)'}
+                className="flex-1 border rounded-md px-2 py-1.5 text-sm disabled:bg-slate-50" maxLength={280} onKeyDown={(e) => { if (e.key === 'Enter' && text.trim() && !chatPaused) send('text', text.trim()); }} />
               {status.connect?.connected && (
-                <Button size="sm" variant={recording ? 'destructive' : 'outline'} onClick={recordVoice} title="Hands-free voice note (connected buddies only)">
+                <Button size="sm" variant={recording ? 'destructive' : 'outline'} disabled={chatPaused && !recording} onClick={recordVoice} title="Hands-free voice note (connected buddies only)">
                   {recording ? <Square className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 </Button>
               )}
-              <Button size="sm" disabled={busy || !text.trim()} onClick={() => send('text', text.trim())}><Send className="w-4 h-4" /></Button>
+              <Button size="sm" disabled={busy || chatPaused || !text.trim()} onClick={() => send('text', text.trim())}><Send className="w-4 h-4" /></Button>
             </div>
             <div className="text-[10px] text-slate-400 mb-3">Chat is for encouragement only — sharing survey answers is blocked. {status.chat?.remaining != null && `${status.chat.remaining} messages left today.`}</div>
 

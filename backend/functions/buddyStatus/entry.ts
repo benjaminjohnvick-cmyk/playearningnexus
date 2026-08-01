@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { burstDailyGoalUsd } from "../../sdk/burst.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
-import { isUnlocked, chatDailyLimit, buddyUnlockEarningsUsd, buddyCommitEnabled, buddyCommitTargetUsd, buddyMandatoryNonPremium, buddyMatchWaitSeconds } from "../../sdk/buddy.ts";
+import { isUnlocked, chatDailyLimit, buddyUnlockEarningsUsd, buddyCommitEnabled, buddyCommitTargetUsd, buddyMandatoryNonPremium, buddyMatchWaitSeconds, buddyChatIdleSeconds } from "../../sdk/buddy.ts";
 
 // buddyStatus (authenticated) — current buddy state: who you're paired with, both of today's progress, your
 // unlock progress toward extended chat + connect, chat allowance left, and connect state. Read-only.
@@ -72,6 +72,7 @@ export default __handler(async (req) => {
       is_premium: premium,
       mandatory,   // non-premium can't turn buddy chat off; safety valves (leave/report→re-match) still apply
       match_wait_seconds: buddyMatchWaitSeconds(),   // wait this long for a 1:1, then auto-add to a group
+      chat_idle_seconds: buddyChatIdleSeconds(),     // chat/voice pauses after this long without a survey
 
       me: { earned_today: Number(myEarn?.[0]?.survey_gross) || Number(myEarn?.[0]?.total_earned) || 0, goal_usd: goal },
       buddy,

@@ -24,6 +24,8 @@ export const buddyDefaultNonPremium = () => snapBool("BUDDY_DEFAULT_NONPREMIUM",
 export const buddyMandatoryNonPremium = () => snapBool("BUDDY_MANDATORY_NONPREMIUM", true);
 /** Seconds to wait for a 1:1 buddy before auto-adding the user to an online group instead. */
 export const buddyMatchWaitSeconds = () => Math.max(5, Math.round(snapNumber("BUDDY_MATCH_WAIT_SECONDS", 60)));
+/** Buddy chat/voice pauses after this many seconds without a completed survey (resumes on activity). */
+export const buddyChatIdleSeconds = () => Math.max(10, Math.round(snapNumber("BUDDY_CHAT_IDLE_SECONDS", 60)));
 
 /** Buddy chat asks each person to commit to earning their daily take-home. Accountability, not a cage —
  *  Leave/Report always work. Applies to ALL tiers (premium + non-premium). */

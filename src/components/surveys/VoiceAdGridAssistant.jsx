@@ -6,6 +6,7 @@ import { Headphones, Loader2, CheckCircle2, Play, Square } from 'lucide-react';
 import { toast } from 'sonner';
 import VoiceSurveyMode from './VoiceSurveyMode';
 import { speak as ttsSpeak } from '@/lib/voiceTts';
+import { pingSurveyActivity } from '@/lib/activityPing';
 
 /**
  * VoiceAdGridAssistant — the full hands-free "phone survey": AI reads each question of a whole AdGrid round
@@ -80,6 +81,7 @@ export default function VoiceAdGridAssistant() {
 
   // Called by VoiceSurveyMode when the user confirms an answer.
   const onAnswer = (option) => {
+    pingSurveyActivity();   // keeps buddy chat awake
     const isInterest = !!currentQ?.is_interest;
     const rec = { q: currentQ.q, choice: option, is_interest: isInterest };
     const nextAnswers = [...answers, rec];

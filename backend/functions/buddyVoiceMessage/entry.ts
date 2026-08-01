@@ -52,9 +52,11 @@ export default __handler(async (req) => {
       if (scam.blocked) return Response.json({ blocked: true, reason: `scam_${scam.category}`, message: scam.message }, { status: 422 });
     }
 
-    // Store the clip (audio + transcript) and a chat entry (so it shows, translates, and is retained).
+    // Store the clip (audio + transcript + speaker's language) and a chat entry (so it shows, translates,
+    // and is retained). The speaker's language lets playback translate to the listener's language.
+    const speakerLang = String((user as Record<string, unknown>).chat_lang || "en").toLowerCase();
     const clip = await base44.asServiceRole.entities.BuddyVoiceClip.create({
-      pair_id: pairId, from_user_id: user.id, to_user_id: buddyId, audio_base64: audioB64, mime, transcript, day: today, flagged: false,
+      pair_id: pairId, from_user_id: user.id, to_user_id: buddyId, audio_base64: audioB64, mime, transcript, lang: speakerLang, day: today, flagged: false,
     });
     await base44.asServiceRole.entities.BuddyMessage.create({
       pair_id: pairId, from_user_id: user.id, to_user_id: buddyId, kind: "voice", text: transcript || "🎤 voice note",

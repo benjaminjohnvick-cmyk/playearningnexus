@@ -25,10 +25,12 @@ function hash(s: string): string {
 }
 const TTL = 60 * 60 * 24 * 14; // 14 days — chat lines can repeat (cheers etc.); translate each once.
 
-/** Translate an array of chat strings to targetLang. Cache-first; only misses hit the cheap-tier model. */
-export async function translateChat(base44: any, texts: string[], targetLang: string): Promise<string[]> {
+/** Translate an array of chat strings to targetLang. Cache-first; only misses hit the cheap-tier model.
+ *  `force` translates even when the target is English (for voice notes where the source may be another
+ *  language) — the default skips English targets since most chat text is already English. */
+export async function translateChat(base44: any, texts: string[], targetLang: string, force = false): Promise<string[]> {
   const lang = String(targetLang || "en").toLowerCase();
-  if (!Array.isArray(texts) || !texts.length || lang === "en") return texts || [];
+  if (!Array.isArray(texts) || !texts.length || (lang === "en" && !force)) return texts || [];
   const langName = languageName(lang);
 
   const out: string[] = new Array(texts.length);

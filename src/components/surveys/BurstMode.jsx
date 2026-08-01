@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Zap, Coffee, Loader2, Timer, CheckCircle2, ArrowRight, WifiOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { enqueue, flush, onReconnect } from '@/lib/offlineQueue';
+import { pingSurveyActivity } from '@/lib/activityPing';
 
 /**
  * BurstMode — "earn on the go". Work the daily goal in short bursts: the app hands you the shortest next
@@ -59,6 +60,7 @@ export default function BurstMode({ availableSurveys = [], onOpenSurvey }) {
   };
 
   const completeUnit = async (mode) => {
+    pingSurveyActivity();   // keeps buddy chat awake
     const item = { unit: mode, device: 'web' };
     if (offline) { await enqueue(item); toast.message('Saved offline — will sync when you reconnect.'); }
     else {
