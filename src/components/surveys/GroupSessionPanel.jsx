@@ -14,7 +14,7 @@ const SAFETY = 'Keep it friendly and on-platform. Never send money or share cont
  * (answer-walled + scam-guarded chat). After a group session you can mutually opt into a 1:1 with a member.
  * Everything opt-in and in-app; chat is retained for safety. No contact-info exchange, no meetups.
  */
-export default function GroupSessionPanel() {
+export default function GroupSessionPanel({ autoJoin }) {
   const [sessionId, setSessionId] = useState(null);
   const [status, setStatus] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -23,6 +23,7 @@ export default function GroupSessionPanel() {
   const [busy, setBusy] = useState(false);
   const [joined, setJoined] = useState(false);
   const pollRef = useRef(null);
+  const autoJoinedRef = useRef(false);
 
   const load = useCallback(async (sid) => {
     const id = sid || sessionId;
@@ -40,6 +41,12 @@ export default function GroupSessionPanel() {
     pollRef.current = setInterval(() => load(), 15000);
     return () => clearInterval(pollRef.current);
   }, [joined, load]);
+
+  // Auto-fallback: when dropped in with autoJoin (no 1:1 buddy was found), join a group immediately.
+  useEffect(() => {
+    if (autoJoin && !joined && !autoJoinedRef.current) { autoJoinedRef.current = true; quickJoin(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoJoin]);
 
   const create = async () => {
     setBusy(true);

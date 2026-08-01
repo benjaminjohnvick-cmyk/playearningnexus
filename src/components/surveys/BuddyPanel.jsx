@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Users, Loader2, Send, Flag, UserPlus, Lock, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import ChatPrefsBar from './ChatPrefsBar';
+import GroupSessionPanel from './GroupSessionPanel';
 
 const CHEERS = ['Keep going! 🔥', "You've got this 💪", 'Almost there!', 'Nice pace! 👏', 'One more 👍', "Let's finish strong 🚀"];
 
@@ -21,7 +22,9 @@ export default function BuddyPanel() {
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [fellBack, setFellBack] = useState(false);   // waited too long for a 1:1 → auto-added to a group
   const pollRef = useRef(null);
+  const fbTimer = useRef(null);
 
   const load = useCallback(async () => {
     try {
@@ -46,6 +49,16 @@ export default function BuddyPanel() {
     pollRef.current = setInterval(load, 15000);
     return () => clearInterval(pollRef.current);
   }, [solo, load]);
+
+  // No 1:1 buddy within the wait window → auto-add to an online group. A buddy arriving cancels it.
+  useEffect(() => {
+    const waiting = !solo && status && (status.status === 'waiting' || !status.has_buddy);
+    if (waiting && !fellBack) {
+      const ms = ((status?.match_wait_seconds || 60)) * 1000;
+      fbTimer.current = setTimeout(() => setFellBack(true), ms);
+      return () => clearTimeout(fbTimer.current);
+    }
+  }, [solo, status, fellBack]);
 
   const send = async (kind, body) => {
     if (!status?.pair_id) return;
@@ -121,8 +134,13 @@ export default function BuddyPanel() {
         </div>
 
         <ChatPrefsBar onChange={() => { match(); }} />
-        {waiting ? (
-          <div className="text-sm text-slate-500 py-3">Looking for a buddy who's earning now — keep going, and we'll pair you the moment someone's free. <button className="text-violet-600 ml-1" onClick={match}>refresh</button></div>
+        {waiting && fellBack ? (
+          <div>
+            <div className="text-xs text-slate-500 mb-2">No 1:1 buddy free right now — we added you to an online group so you're never earning alone.</div>
+            <GroupSessionPanel autoJoin />
+          </div>
+        ) : waiting ? (
+          <div className="text-sm text-slate-500 py-3">Looking for a buddy who's earning now — we'll pair you the moment someone's free, or add you to a group in a few seconds. <button className="text-violet-600 ml-1" onClick={match}>refresh</button></div>
         ) : (status.commitment?.enabled && !status.commitment?.i_committed) ? (
           <div className="rounded-lg bg-violet-50 border border-violet-100 p-3">
             <div className="text-sm font-semibold mb-1">Lock in with your buddy 🤝</div>
