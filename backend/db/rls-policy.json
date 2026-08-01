@@ -903,6 +903,18 @@
     "scope": "owner",
     "owner_field": "user_id"
   },
+  "AdGridSlotGrant": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "ScreenOutEvent": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "SurveyProfile": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "UserProductProfile": {
     "scope": "owner",
     "owner_field": "user_id"

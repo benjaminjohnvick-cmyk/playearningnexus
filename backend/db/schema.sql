@@ -3269,6 +3269,44 @@ CREATE TABLE IF NOT EXISTS "AdGridSession" (
 CREATE INDEX IF NOT EXISTS "AdGridSession_data_gin" ON "AdGridSession" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AdGridSession_created" ON "AdGridSession" (created_date DESC);
 
+-- AdGridSlotGrant: a one-day pass giving a high-value NON-premium user premium-priority AdGrid access,
+-- reallocated from a premium member who didn't use their slot that day. data: { user_id, granted_date,
+-- source, expires_at, used }
+CREATE TABLE IF NOT EXISTS "AdGridSlotGrant" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdGridSlotGrant_data_gin" ON "AdGridSlotGrant" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdGridSlotGrant_created" ON "AdGridSlotGrant" (created_date DESC);
+
+-- ScreenOutEvent: a survey disqualification (screen-out). Powers the reserve-gated consolation credit and
+-- profiling analytics. data: { user_id, provider, survey_id, day, credited_usd }
+CREATE TABLE IF NOT EXISTS "ScreenOutEvent" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ScreenOutEvent_data_gin" ON "ScreenOutEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ScreenOutEvent_created" ON "ScreenOutEvent" (created_date DESC);
+
+-- SurveyProfile: a user's "CYK" master profile — their real, stable demographic/screening answers, filled
+-- once and kept current. Powers the provider profiler and CONFIRMED screening autofill ONLY. Never holds or
+-- fills substantive survey content. data: { user_id, answers:{key:value}, updated_at }
+CREATE TABLE IF NOT EXISTS "SurveyProfile" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SurveyProfile_data_gin" ON "SurveyProfile" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SurveyProfile_created" ON "SurveyProfile" (created_date DESC);
+
 -- UserProductProfile
 CREATE TABLE IF NOT EXISTS "UserProductProfile" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

@@ -223,6 +223,12 @@
       "cron": "15 * * * *",
       "function": "surveyCommitmentReminder",
       "_comment": "Hourly: nudges users whose chosen survey time has come and who haven't hit the $8 goal; awards streak-milestone bonuses."
+    },
+    {
+      "name": "adgrid-slot-reallocation",
+      "cron": "0 16 * * *",
+      "function": "adGridReallocateSlots",
+      "_comment": "Daily (REALLOC_CUTOFF_HOUR_UTC): hands unused premium AdGrid slots to high-value non-premium earners as one-day passes."
     }
   ]
 }
