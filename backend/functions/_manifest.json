@@ -719,6 +719,7 @@
   "translateText",
   "triggerAffiliateOnboardingSequence",
   "triggerEmailMarketing",
+  "ttsSpeak",
   "updateUserTiers",
   "userAssistantChat",
   "userPersonalized",

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mic, Volume2, Check, Loader2, X } from 'lucide-react';
+import { speak as ttsSpeak } from '@/lib/voiceTts';
 
 /**
  * VoiceSurveyMode — answer a survey question by voice, for speed and accessibility. The phone READS the
@@ -20,20 +21,11 @@ export default function VoiceSurveyMode({ question, onAnswer, disabled }) {
   const speechOK = typeof window !== 'undefined' && ('speechSynthesis' in window);
   const SR = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
 
-  const speak = useCallback((text) => {
-    if (!speechOK) return;
-    try {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 1;            // natural pace — not sped up
-      window.speechSynthesis.speak(u);
-    } catch { /* ignore */ }
-  }, [speechOK]);
-
-  const readAloud = () => {
+  // Reads via the server's ElevenLabs voice when configured, else the device's built-in speech (free).
+  const readAloud = useCallback(() => {
     const opts = (question.options || []).map((o, i) => `Option ${i + 1}: ${o}`).join('. ');
-    speak(`${question.q}. ${opts}`);
-  };
+    ttsSpeak(`${question.q}. ${opts}`);
+  }, [question]);
 
   // Map a spoken phrase to the closest option (exact text, or "option N", or contained words).
   const mapToOption = (said) => {
