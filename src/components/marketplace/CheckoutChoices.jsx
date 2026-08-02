@@ -6,6 +6,7 @@ import { CreditCard, Wallet, PiggyBank, Clock, Sparkles, Loader2, Check } from '
 import { toast } from 'sonner';
 import { formatCash } from '@/lib/siteCash';
 import BankTowardItem from './BankTowardItem';
+import EarnBackPlanPanel from './EarnBackPlanPanel';
 
 /**
  * CheckoutChoices — the "how do you want to get this?" screen shown before purchase. Presents the ways a
@@ -94,9 +95,7 @@ export default function CheckoutChoices({ listing, onDone }) {
                   <div className="mt-2"><BankTowardItem listing={listing} /></div>
                 )}
                 {Active && o.key === 'earnback' && (
-                  <Button size="sm" className="mt-2" disabled={busy} onClick={(e) => { e.stopPropagation(); card(false); }}>
-                    {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : `Buy now ${formatCash(priceUsd)} — earn it back`}
-                  </Button>
+                  <div className="mt-2" onClick={(e) => e.stopPropagation()}><EarnBackPlanPanel listing={listing} /></div>
                 )}
                 {Active && o.key === 'wait' && (
                   <div className="mt-2 flex items-center gap-2 flex-wrap">

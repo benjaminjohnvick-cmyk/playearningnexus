@@ -844,6 +844,33 @@ CREATE TABLE IF NOT EXISTS "DynamicPricing" (
 CREATE INDEX IF NOT EXISTS "DynamicPricing_data_gin" ON "DynamicPricing" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "DynamicPricing_created" ON "DynamicPricing" (created_date DESC);
 
+-- EarnBackLedger: one row per month tracking TOTAL premium earn-back discount issued across all members —
+-- the global monthly kill-switch counter. data: { month (YYYY-MM), premium_issued_usd }
+CREATE TABLE IF NOT EXISTS "EarnBackLedger" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "EarnBackLedger_data_gin" ON "EarnBackLedger" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "EarnBackLedger_created" ON "EarnBackLedger" (created_date DESC);
+
+-- EarnBackPlan: a member's prepay-and-earn-back commitment on ONE item. They prepaid (item + portion) and
+-- earn the portion back as a discount via daily surveys. Rebate, not lending. "ownership_pct" is a
+-- non-tradeable progress label. data: { user_id, item_title, item_price_usd, chosen_pct, discount_target_usd,
+-- portion_prepaid_usd, earned_usd, earned_this_month_usd, minutes_required, minutes_done, is_premium, tier,
+-- status (active|paused|completed|abandoned), month, grace_used, last_active_day, ownership_pct, created_at }
+CREATE TABLE IF NOT EXISTS "EarnBackPlan" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "EarnBackPlan_data_gin" ON "EarnBackPlan" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "EarnBackPlan_created" ON "EarnBackPlan" (created_date DESC);
+
 -- EcosystemConfig: 10 properties
 CREATE TABLE IF NOT EXISTS "EcosystemConfig" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

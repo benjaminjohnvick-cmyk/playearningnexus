@@ -23,7 +23,7 @@ export type RevenueType =
   | "business_signup" | "business_onboarding" | "business_subscription" | "lead_fee" | "coop_fund"
   | "processing_rebate" | "advertising" | "breakage" | "sponsored_prize" | "dev_creator_cut"
   | "white_label" | "bnpl_merchant_fee" | "membership_fee" | "arbitrage_margin" | "shipping_margin"
-  | "audience_panel" | "curator_reward" | "referral_bonus" | "referral_override" | "screenout_credit" | "buddy_bonus" | "other";
+  | "audience_panel" | "curator_reward" | "referral_bonus" | "referral_override" | "screenout_credit" | "buddy_bonus" | "earnback_subsidy" | "other";
 
 /** Record ONE non-customer REVENUE event (real money in) into the unified ledger. */
 export async function recordRevenue(input: {

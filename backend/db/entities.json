@@ -93,6 +93,8 @@
   "DisputeNegotiationSettings",
   "DomainEvent",
   "DynamicPricing",
+  "EarnBackLedger",
+  "EarnBackPlan",
   "EcosystemConfig",
   "EcosystemRunLog",
   "EmailMarketingFlow",

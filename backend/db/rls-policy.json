@@ -957,5 +957,12 @@
   },
   "BuyingDeskTask": {
     "scope": "admin"
+  },
+  "EarnBackPlan": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "EarnBackLedger": {
+    "scope": "global"
   }
 }
