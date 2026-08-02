@@ -7,6 +7,7 @@
 // its built-in speech synthesis (free) — so it degrades gracefully with no key.
 
 import { snapNumber, snapBool } from "./settings.ts";
+import { ttsIsSelf, selfSynthesize } from "./providers.ts";
 
 export const ttsEnabled = () => snapBool("TTS_ENABLED", true);
 export const ttsMaxChars = () => Math.max(1, Math.round(snapNumber("TTS_MAX_CHARS", 600)));
@@ -16,6 +17,22 @@ export const elevenLabsForNonPremium = () => snapBool("TTS_ELEVENLABS_FOR_NONPRE
 
 export function elevenLabsConfigured(): boolean {
   return !!Deno.env.get("ELEVENLABS_API_KEY");
+}
+
+/** A natural voice is available if EITHER ElevenLabs is keyed OR a self-hosted TTS server is selected. */
+export function ttsConfigured(): boolean {
+  return elevenLabsConfigured() || ttsIsSelf();
+}
+
+/** Provider-agnostic speech synthesis: routes to your self-hosted TTS when selected (falling back to
+ *  ElevenLabs on error), else ElevenLabs. Same { audio_base64, mime } shape, or null when unavailable. */
+export async function synthesizeSpeech(text: string, voiceId?: string): Promise<{ audio_base64: string; mime: string } | null> {
+  if (ttsIsSelf()) {
+    const out = await selfSynthesize(text, voiceId);
+    if (out) return out;
+    // fall back to ElevenLabs if it's keyed
+  }
+  return await synthesizeElevenLabs(text, voiceId);
 }
 
 function base64(bytes: Uint8Array): string {

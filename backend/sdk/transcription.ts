@@ -7,6 +7,7 @@
 // of throwing, so the feature can ship on by default and simply light up once the key is set.
 
 import { assertAiSpendUnderCap, recordAiUsdSpend } from "./integrations.ts";
+import { sttIsSelf, selfTranscribe } from "./providers.ts";
 
 const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
 const OPENAI_TRANSCRIBE_URL = "https://api.openai.com/v1/audio/transcriptions";
@@ -15,7 +16,7 @@ const OPENAI_TRANSCRIBE_URL = "https://api.openai.com/v1/audio/transcriptions";
 const WHISPER_USD_PER_MIN = 0.006;
 
 export function transcriptionAvailable(): boolean {
-  return !!OPENAI_KEY;
+  return !!OPENAI_KEY || sttIsSelf();
 }
 
 export interface TranscriptionResult {
@@ -35,12 +36,20 @@ export async function transcribeAudio(
   mimeType = "audio/webm",
   opts: { model?: string; language?: string; filename?: string } = {},
 ): Promise<TranscriptionResult> {
-  if (!OPENAI_KEY) return { ok: false, error: "transcription_unavailable" };
   if (!bytes || bytes.length === 0) return { ok: false, error: "empty_audio" };
 
   const model = opts.model || "whisper-1";
   const ext = mimeType.includes("mp4") ? "mp4" : mimeType.includes("mpeg") ? "mp3" : mimeType.includes("wav") ? "wav" : "webm";
   const filename = opts.filename || `answer.${ext}`;
+
+  // Self-hosted STT (faster-whisper) when selected — no per-minute API cost, so it skips the spend meter.
+  if (sttIsSelf()) {
+    const out = await selfTranscribe(bytes, mimeType, filename, opts.language);
+    if (out.ok) return { ok: true, text: out.text, model: "self" };
+    if (!OPENAI_KEY) return { ok: false, error: out.error || "transcription_unavailable" };
+    // else fall through to managed Whisper
+  }
+  if (!OPENAI_KEY) return { ok: false, error: "transcription_unavailable" };
 
   // Honor the SAME global AI_DAILY_SPEND_CAP_USD brake every other provider call uses.
   try { assertAiSpendUnderCap(); } catch { return { ok: false, error: "ai_spend_cap_reached" }; }

@@ -140,6 +140,18 @@ async function invokeLLMRaw(args: LLMArgs): Promise<unknown> {
     ? "You are a helpful assistant. Respond ONLY with valid JSON matching the requested schema. No prose."
     : "You are a helpful assistant.";
 
+  if (provider === "self") {
+    // Your own OpenAI-compatible server (vLLM/Ollama/TGI). Falls back to OpenAI on error if a key is set.
+    try {
+      const { selfChat } = await import("./providers.ts");
+      const text = await selfChat(args.prompt + (wantJson ? `\n\nJSON schema: ${JSON.stringify(args.response_json_schema)}` : ""), sys, wantJson);
+      return wantJson ? safeJson(text) : text;
+    } catch (e) {
+      if (!OPENAI_KEY) throw e;   // no managed fallback available — surface the self error
+      // else fall through to the OpenAI path below
+    }
+  }
+
   if (provider === "anthropic") {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -275,6 +287,15 @@ export async function GenerateImage(args: { prompt: string; size?: string }) {
     const j = await r.json();
     // Stability returns base64; hand back a data URL so callers get a usable src.
     return { url: j?.image ? `data:image/png;base64,${j.image}` : "" };
+  }
+
+  if (provider === "self") {
+    // Your own SDXL/FLUX HTTP server. Falls back to OpenAI images on empty result if a key is set.
+    const { selfImage } = await import("./providers.ts");
+    const out = await selfImage(args.prompt, args.size);
+    if (out.url) return out;
+    if (!(Deno.env.get("IMAGE_API_KEY") ?? OPENAI_KEY)) return { url: "" };
+    // else fall through to OpenAI images
   }
 
   // default: OpenAI images

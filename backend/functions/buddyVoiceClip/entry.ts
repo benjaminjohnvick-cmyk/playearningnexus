@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { translateChat } from "../../sdk/chat-i18n.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
-import { elevenLabsConfigured, elevenLabsForNonPremium, synthesizeElevenLabs, ttsMaxChars } from "../../sdk/tts.ts";
+import { ttsConfigured, elevenLabsForNonPremium, synthesizeSpeech, ttsMaxChars } from "../../sdk/tts.ts";
 
 // buddyVoiceClip (authenticated) — fetch a voice clip for playback, TRANSLATED into the listener's language
 // when it differs from the speaker's. The listener gets: the original audio, a translated transcript, and
@@ -36,8 +36,8 @@ export default __handler(async (req) => {
       out.translated_transcript = translated;
 
       const premium = await isPremiumUser(user.id);
-      if ((premium || elevenLabsForNonPremium()) && elevenLabsConfigured()) {
-        const audio = await synthesizeElevenLabs(translated.slice(0, ttsMaxChars())).catch(() => null);
+      if ((premium || elevenLabsForNonPremium()) && ttsConfigured()) {
+        const audio = await synthesizeSpeech(translated.slice(0, ttsMaxChars())).catch(() => null);
         if (audio) out.translated_audio_base64 = audio.audio_base64;
       }
     }

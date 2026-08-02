@@ -1,6 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { ttsEnabled, ttsMaxChars, elevenLabsConfigured, elevenLabsForNonPremium, synthesizeElevenLabs } from "../../sdk/tts.ts";
+import { ttsEnabled, ttsMaxChars, ttsConfigured, elevenLabsForNonPremium, synthesizeSpeech } from "../../sdk/tts.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
 
 // ttsSpeak (authenticated) — read a survey question aloud for the voice assistant (available to ALL tiers).
@@ -23,8 +23,8 @@ export default __handler(async (req) => {
     const premium = await isPremiumUser(user.id);
     const mayUseElevenLabs = premium || elevenLabsForNonPremium();
 
-    if (mayUseElevenLabs && elevenLabsConfigured()) {
-      const audio = await synthesizeElevenLabs(text, body.voice_id ? String(body.voice_id) : undefined);
+    if (mayUseElevenLabs && ttsConfigured()) {
+      const audio = await synthesizeSpeech(text, body.voice_id ? String(body.voice_id) : undefined);
       if (audio) return Response.json({ provider: "elevenlabs", audio_base64: audio.audio_base64, mime: audio.mime });
     }
     // Free fallback — the browser reads it with the device's built-in voice (no key, no cost). Every tier.
