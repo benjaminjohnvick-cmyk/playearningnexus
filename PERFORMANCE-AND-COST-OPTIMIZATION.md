@@ -1,5 +1,7 @@
 # Performance & cost optimization pass
 
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
+
 This pass removes cost and risk from everything built this session while keeping every feature. Nothing
 was deleted; each concern became a bounded, tunable lever. Result: the whole learning/telemetry/
 experiment stack runs at ~$0 additional cost and never impedes the user experience.

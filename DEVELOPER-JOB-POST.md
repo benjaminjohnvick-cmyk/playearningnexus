@@ -1,4 +1,6 @@
 # Hiring Kit — GamerGain / PlayEarning Nexus
+
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
 Two things you can use right away: a **job post** to publish (Upwork/LinkedIn/etc.), and a set of
 **screening questions** (with what a good answer looks like) to make sure a candidate actually knows
 the stack before you hire.

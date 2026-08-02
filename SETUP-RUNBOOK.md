@@ -1,5 +1,7 @@
 # PlayEarning Nexus — Setup Runbook (API Keys & Deploy)
 
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
+
 A one-page checklist to wire up the app. Nothing here is new — every variable below is already referenced in the code. Work top to bottom.
 
 > **Self-hosted — no Base44.** The backend is your own Deno service + PostgreSQL in `/backend`.

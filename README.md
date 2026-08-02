@@ -1,5 +1,7 @@
 # GamerGain / PlayEarning Nexus
 
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
+
 A play-to-earn platform (surveys, games, referrals, rewards). **Self-hosted** — this app no longer
 uses Base44; it runs on its own React frontend + a Deno backend + PostgreSQL.
 

@@ -1,5 +1,7 @@
 # Pre-Launch "Go-Live" — everything ON and populated before your first user
 
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
+
 This is the last kit step before you open the doors. It answers one question with one command:
 **"Is the app fully up, switched fully on, and already full of content — ready for a real user right now?"**
 

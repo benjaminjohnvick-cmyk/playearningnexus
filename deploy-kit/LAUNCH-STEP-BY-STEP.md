@@ -1,4 +1,6 @@
 # Launch — Step by Step (developer handoff)
+
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
 ## GamerGain / PlayEarning Nexus · using the pre-built execution kit
 
 **How to read this:** every step is tagged with who does it —

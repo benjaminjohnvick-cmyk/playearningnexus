@@ -1,4 +1,6 @@
 # Developer Handoff Brief — GamerGain / PlayEarning Nexus
+
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
 ### Scope: launch on **web + native apps (Android & iOS)**
 
 You're being brought in to **stand up, deploy, and ship** an app whose code is already written.

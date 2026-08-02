@@ -1,5 +1,7 @@
 # API Keys Worksheet — fill this in BEFORE the developer starts
 
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
+
 Every value the app needs, where to get it, and where it goes. **The owner fills this in** (account
 signups are not developer work). Hand the completed sheet to the developer and Phase 1 drops from
 8–12h to ~6h. **Never commit real values** — paste them into Railway's Variables UI only.
