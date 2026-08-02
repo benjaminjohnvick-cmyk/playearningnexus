@@ -1,5 +1,9 @@
 # GamerGain — Launch Cost Estimate (floor edition)
 
+> **Posture: everything is ON, up, and running from the get-go.** There is no build phase — the product
+> ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy +
+> test + submit only. That is *why* these numbers are this low. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
+
 **Prepared 2026-07-30 · Supersedes the 2026-07-28 estimate · Figures are planning targets, not quotes**
 
 This revision folds in the work completed tonight and re-states the posture you asked for: **everything

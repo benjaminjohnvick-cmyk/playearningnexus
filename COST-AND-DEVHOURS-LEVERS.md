@@ -1,5 +1,8 @@
 # Cost & Dev-Hours Levers — Full Launch (Load Test + PWA + Native Apps)
 
+> **Posture: everything is ON, up, and running from the get-go** — no build phase, so these levers are about
+> deploy/test/scale, not development. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
+
 Goal: land a **full launch** — web PWA, Android, iOS, plus a load test — while keeping **development
 hours** and **runtime cost** at the low end, and keeping the **new AI/catalog features from adding to
 the bill**. This is the complete list (everything we've used before + new levers created by the recent

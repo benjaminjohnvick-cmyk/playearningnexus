@@ -1,5 +1,9 @@
 # PlayEarning Nexus — Master Launch Guide (Updated)
 
+> **Posture: everything is ON, up, and running from the get-go.** The product ships feature-complete with
+> every flag ON by default and pre-warms its own content — deploy is "turn the key," not "build the app."
+> See `EVERYTHING-ON-FROM-DAY-ONE.md`.
+
 ### Everything to configure, build, and ship — in the order to do it
 
 _Updated July 24, 2026. This is the single, end-to-end guide to take the app from code to live on web, Android, and iOS. It's ordered by best practice and efficiency: set up accounts → wire APIs → build → PWA → deploy → automate → legal → native apps → go live._
