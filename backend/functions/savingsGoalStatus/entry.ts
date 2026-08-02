@@ -19,7 +19,7 @@ export default __handler(async (req) => {
     const cashUsd = Math.round((Number(user.points) || 0) * pointUsd * 100) / 100;
     const premium = await isPremiumUser(user.id);
     const ratePerMin = earnRateUsdPerMin(premium);
-    const cap = earnDailyCapUsd();
+    const cap = earnDailyCapUsd(premium);
 
     const rows = await db.filter("ItemSavingsGoal", { created_by: user.id, status: "active" }, "-created_date", 50).catch(() => []) as Record<string, unknown>[];
 

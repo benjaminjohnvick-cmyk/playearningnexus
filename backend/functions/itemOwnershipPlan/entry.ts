@@ -47,7 +47,7 @@ export default __handler(async (req) => {
       site_cash_usd: cashUsd,
       is_premium: premium,
       earn_rate_usd_per_min: earnRateUsdPerMin(premium),
-      daily_cap_usd: earnDailyCapUsd(),
+      daily_cap_usd: earnDailyCapUsd(premium),
       current_ownership_pct: currentPct,
       covered_fully: coveredFully,
       usd_to_full: Math.max(0, Math.round((usdForOwnership(priceUsd, 100) - cashUsd) * 100) / 100),

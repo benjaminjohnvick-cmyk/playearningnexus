@@ -27,10 +27,18 @@ export function earnRateUsdPerMin(isPremium: boolean): number {
   return Math.max(0, cents) / 100;
 }
 
-/** Daily cap on earned Site Cash (USD). Same $8/day for both tiers by default. */
-export function earnDailyCapUsd(): number {
-  return Math.max(0, snapNumber("EARN_DAILY_CAP_USD", 8));
+/** Daily cap on earned Site Cash (USD). Premium members' daily "portion" is PREMIUM_DAILY_PORTION_USD
+ *  ($7/day by default) — of which $1/day is the subscription fee (PREMIUM_FINANCE_DAILY_USD), so premium
+ *  nets ~$6/day. Non-premium uses EARN_DAILY_CAP_USD ($8). All amounts are closed-loop Site Cash. */
+export function earnDailyCapUsd(isPremium = false): number {
+  return isPremium
+    ? Math.max(0, snapNumber("PREMIUM_DAILY_PORTION_USD", 7))
+    : Math.max(0, snapNumber("EARN_DAILY_CAP_USD", 8));
 }
+
+/** Premium daily Site Cash portion ($7/day) and the $1/day subscription fee taken from it. */
+export const premiumDailyPortionUsd = () => Math.max(0, snapNumber("PREMIUM_DAILY_PORTION_USD", 7));
+export const premiumDailySubFeeUsd = () => Math.max(0, snapNumber("PREMIUM_FINANCE_DAILY_USD", 1));
 
 /** How much Site Cash (USD) is needed to own `ownershipPct` of an item priced `priceUsd`. */
 export function usdForOwnership(priceUsd: number, ownershipPct: number): number {
