@@ -279,8 +279,12 @@ export const REGISTRY: SettingDef[] = [
   // the default; `self` falls back to managed on error. See SELF-HOSTED-PROVIDERS.md.
   { key: "PROVIDER_STT", label: "Speech-to-text provider", category: "AI & Agents", type: "select", options: ["groq", "managed", "self"], default: "groq", help: "groq = Whisper on Groq's free tier (no GPU); needs GROQ_API_KEY, falls back to OpenAI Whisper until set. managed = OpenAI Whisper. self = your faster-whisper server." },
   { key: "GROQ_STT_MODEL", label: "Groq STT model", category: "AI & Agents", type: "string", default: "whisper-large-v3-turbo", help: "Whisper model on Groq. whisper-large-v3-turbo = fastest/cheapest; whisper-large-v3 = top accuracy." },
-  { key: "PROVIDER_TTS", label: "Text-to-speech provider", category: "AI & Agents", type: "select", options: ["managed", "openai", "self"], default: "managed", help: "managed = ElevenLabs (natural, pricier) else device voice. openai = tts-1 (~10× cheaper, reuses OPENAI_API_KEY). self = your XTTS/Piper server. (Groq has no TTS.)" },
+  { key: "PROVIDER_TTS", label: "Text-to-speech provider", category: "AI & Agents", type: "select", options: ["managed", "openai", "polly", "self"], default: "managed", help: "managed = ElevenLabs (natural, pricier) else device voice. openai = tts-1 (~10× cheaper). polly = Amazon Polly (free tier 5M chars/mo first year, then ~$4/1M, reuses AWS creds). self = your XTTS/Piper server. (Groq has no TTS.)" },
   { key: "TTS_OPENAI_MODEL", label: "OpenAI TTS model", category: "AI & Agents", type: "string", default: "tts-1", help: "Used when PROVIDER_TTS=openai. tts-1 = cheap/fast; tts-1-hd = higher quality." },
+  { key: "POLLY_VOICE", label: "Amazon Polly voice", category: "AI & Agents", type: "string", default: "Joanna", help: "Polly VoiceId when PROVIDER_TTS=polly (e.g. Joanna, Matthew, Danielle, Ruth)." },
+  { key: "POLLY_ENGINE", label: "Amazon Polly engine", category: "AI & Agents", type: "select", options: ["neural", "standard"], default: "neural", help: "neural = best quality (~$16/1M). standard = cheapest (~$4/1M, 5M/mo free first year)." },
+  { key: "TTS_CACHE_ENABLED", label: "Cache synthesized speech", category: "AI & Agents", type: "boolean", default: "1", help: "Cache audio by (provider, voice, text) so repeated prompts — survey questions, canned cheers — synthesize ONCE. Biggest TTS cost cut. Most effective with REDIS_URL set (shared cache)." },
+  { key: "TTS_CACHE_TTL_DAYS", label: "Speech cache lifetime", category: "AI & Agents", type: "number", default: "30", unit: "days", help: "How long cached audio lives. Repeated prompts within this window cost nothing to re-voice.", min: 1 },
   { key: "TTS_OPENAI_VOICE", label: "OpenAI TTS voice", category: "AI & Agents", type: "string", default: "alloy", help: "alloy, echo, fable, onyx, nova, or shimmer." },
   { key: "SELF_LLM_URL", label: "Self LLM endpoint", category: "AI & Agents", type: "string", default: "", help: "OpenAI-compatible /chat/completions URL (vLLM/Ollama/TGI). Used when LLM_PROVIDER=self." },
   { key: "SELF_LLM_MODEL", label: "Self LLM model", category: "AI & Agents", type: "string", default: "llama-3.1-8b-instruct", help: "Model name your self-hosted LLM server serves." },
@@ -387,6 +391,7 @@ export const REGISTRY: SettingDef[] = [
 
   // 11. Messaging & marketing
   { key: "EMAIL_FROM", label: "Email 'from' address", category: "Messaging & Marketing", type: "string", default: "no-reply@yourdomain.com" },
+  { key: "EMAIL_PROVIDER", label: "Email provider", category: "Messaging & Marketing", type: "select", options: ["ses", "brevo", "sendgrid", "smtp"], default: "ses", env: "EMAIL_PROVIDER", help: "ses = Amazon SES, cheapest at scale (~$0.10/1k), reuses AWS creds. brevo = free tier ~9k/mo (needs BREVO_API_KEY). sendgrid (free tier discontinued). smtp = your own server. Auto-falls back to whichever provider's creds are set." },
   { key: "EMAIL_FREQUENCY_CAP_PER_WEEK", label: "Marketing email cap / user / week", category: "Messaging & Marketing", type: "number", default: "3" },
   { key: "SOCIAL_POST_CADENCE_HOURS", label: "Social auto-post cadence", category: "Messaging & Marketing", type: "number", default: "6", unit: "hours" },
 

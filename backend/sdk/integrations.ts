@@ -253,10 +253,37 @@ export function SendEmail(args: { to: string; subject: string; body: string; fro
   return limited("email", EMAIL_CONCURRENCY, () => sendEmailRaw(args));
 }
 
+// Pick the email provider: the configured one if its creds are present, else the first configured provider
+// in cost order (SES cheapest at scale → Brevo free tier → SendGrid → SMTP). Keeps mail flowing if a
+// provider is selected but unconfigured, and gets you off SendGrid's discontinued free tier by default.
+function pickEmailProvider(): string {
+  const want = snapString("EMAIL_PROVIDER", "ses").toLowerCase();
+  const has: Record<string, boolean> = {
+    ses: !!Deno.env.get("AWS_ACCESS_KEY_ID"),
+    brevo: !!Deno.env.get("BREVO_API_KEY"),
+    sendgrid: !!Deno.env.get("SENDGRID_API_KEY"),
+    smtp: !!Deno.env.get("SMTP_HOST"),
+  };
+  if (has[want]) return want;
+  for (const p of ["ses", "brevo", "sendgrid", "smtp"]) if (has[p]) return p;
+  return want;   // nothing configured → try the wanted one anyway (fails gracefully)
+}
+
+async function brevoSend(args: { to: string; subject: string; body: string; from: string }) {
+  const r = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: { "api-key": Deno.env.get("BREVO_API_KEY") ?? "", "content-type": "application/json", accept: "application/json" },
+    body: JSON.stringify({ sender: { email: args.from }, to: [{ email: args.to }], subject: args.subject, htmlContent: args.body }),
+  });
+  if (!r.ok && (r.status === 429 || r.status >= 500)) throw Object.assign(new Error(`Brevo ${r.status}`), { status: r.status });
+  return { success: r.ok, status: r.status };
+}
+
 async function sendEmailRaw(args: { to: string; subject: string; body: string; from?: string }) {
-  const provider = Deno.env.get("EMAIL_PROVIDER") ?? "sendgrid";
+  const provider = pickEmailProvider();
   const from = args.from ?? snapString("EMAIL_FROM", "no-reply@yourdomain.com");
   if (provider === "ses") return await sesSend({ ...args, from });
+  if (provider === "brevo") return await brevoSend({ ...args, from });
   if (provider === "smtp") { const { smtpSend } = await import("./email-smtp.ts"); return await smtpSend({ ...args, from }); }
   const r = await fetch("https://api.sendgrid.com/v3/mail/send", {
     method: "POST",
