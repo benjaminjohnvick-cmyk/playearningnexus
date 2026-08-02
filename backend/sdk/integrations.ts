@@ -76,6 +76,16 @@ export function recordAiTokenSpend(totalTokens: number): void {
 export function recordAiUsdSpend(usd: number): void { addAiSpend(usd); }
 const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
 const ANTHROPIC_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+const GROQ_KEY = Deno.env.get("GROQ_API_KEY");
+const GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+// Groq hosts open models (Llama) on its free tier — OpenAI-compatible, no GPU to run. Tiered small/large
+// like the others. Overridable via GROQ_MODEL_SMALL / GROQ_MODEL_LARGE.
+const GROQ_MODEL_MAP: Record<string, string> = {
+  gpt_5_mini: Deno.env.get("GROQ_MODEL_SMALL") ?? "llama-3.1-8b-instant",
+  gpt_5: Deno.env.get("GROQ_MODEL_LARGE") ?? "llama-3.3-70b-versatile",
+  default: Deno.env.get("GROQ_MODEL_SMALL") ?? "llama-3.1-8b-instant",
+};
 
 // Maps the Base44 model aliases (e.g. 'gpt_5_mini') to real model IDs.
 const MODEL_MAP: Record<string, string> = {
@@ -97,10 +107,19 @@ const CLAUDE_MODEL_MAP: Record<string, string> = {
 };
 
 /** Resolve a Base44 alias (or raw model id) to a real model id for the active provider. */
-function resolveModelId(alias?: string): string {
+function resolveModelId(alias?: string, providerOverride?: string): string {
   const key = alias ?? "default";
   // Provider + per-tier model IDs are admin-adjustable live (DB override → env → default).
-  const provider = snapString("LLM_PROVIDER", LLM_PROVIDER);
+  const provider = providerOverride ?? snapString("LLM_PROVIDER", LLM_PROVIDER);
+  if (provider === "groq") {
+    if (key.startsWith("llama") || key.includes("/")) return key;
+    const gmap: Record<string, string> = {
+      gpt_5_mini: snapString("GROQ_MODEL_SMALL", GROQ_MODEL_MAP.gpt_5_mini),
+      gpt_5: snapString("GROQ_MODEL_LARGE", GROQ_MODEL_MAP.gpt_5),
+      default: snapString("GROQ_MODEL_SMALL", GROQ_MODEL_MAP.default),
+    };
+    return gmap[key] ?? gmap.default;
+  }
   if (provider === "anthropic") {
     const flat = Deno.env.get("ANTHROPIC_MODEL");
     if (flat) return flat;
@@ -132,13 +151,39 @@ export function InvokeLLM(args: LLMArgs): Promise<unknown> {
 
 async function invokeLLMRaw(args: LLMArgs): Promise<unknown> {
   const wantJson = !!args.response_json_schema;
-  const model = resolveModelId(args.model);
   // Read the LIVE provider (DB→env→default) so an admin switching provider in the panel routes to the
   // matching API. Using the load-time const here would send a Claude model id to OpenAI (or vice-versa).
-  const provider = snapString("LLM_PROVIDER", LLM_PROVIDER);
+  let provider = snapString("LLM_PROVIDER", LLM_PROVIDER);
+  // Graceful downgrade: if Groq is selected but no key is set, behave as OpenAI (so both the model id and
+  // the call target match). The `self` path resolves its own model internally, so it needs no downgrade.
+  if (provider === "groq" && !GROQ_KEY) provider = "openai";
+  const model = resolveModelId(args.model, provider);
   const sys = wantJson
     ? "You are a helpful assistant. Respond ONLY with valid JSON matching the requested schema. No prose."
     : "You are a helpful assistant.";
+
+  if (provider === "groq" && GROQ_KEY) {
+    // Llama on Groq's free tier — OpenAI-compatible, no GPU. Falls back to OpenAI on error if a key is set.
+    try {
+      const r = await fetch(GROQ_CHAT_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${GROQ_KEY}` },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: "system", content: sys }, { role: "user", content: args.prompt + (wantJson ? `\n\nJSON schema: ${JSON.stringify(args.response_json_schema)}` : "") }],
+          ...(wantJson ? { response_format: { type: "json_object" } } : {}),
+        }),
+      });
+      if (!r.ok) throw Object.assign(new Error(`Groq ${r.status}`), { status: r.status });
+      const j = await r.json();
+      const text = j?.choices?.[0]?.message?.content ?? "";
+      try { addAiSpend(estimateLlmCostUsd((Number(j?.usage?.prompt_tokens) || 0) + (Number(j?.usage?.completion_tokens) || 0))); } catch { /* best-effort */ }
+      return wantJson ? safeJson(text) : text;
+    } catch (e) {
+      if (!OPENAI_KEY) throw e;   // no managed fallback — surface the Groq error
+      // else fall through to OpenAI
+    }
+  }
 
   if (provider === "self") {
     // Your own OpenAI-compatible server (vLLM/Ollama/TGI). Falls back to OpenAI on error if a key is set.

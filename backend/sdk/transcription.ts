@@ -8,15 +8,21 @@
 
 import { assertAiSpendUnderCap, recordAiUsdSpend } from "./integrations.ts";
 import { sttIsSelf, selfTranscribe } from "./providers.ts";
+import { snapString } from "./settings.ts";
 
 const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
 const OPENAI_TRANSCRIBE_URL = "https://api.openai.com/v1/audio/transcriptions";
+const GROQ_KEY = Deno.env.get("GROQ_API_KEY");
+const GROQ_TRANSCRIBE_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
+
+/** STT provider: 'groq' (Whisper on Groq's free tier), 'self' (your server), or 'managed' (OpenAI Whisper). */
+const sttIsGroq = () => snapString("PROVIDER_STT", "managed").toLowerCase() === "groq" && !!GROQ_KEY;
 // whisper-1 is ~$0.006 / minute. We can't know exact duration server-side, so estimate minutes from the
 // encoded size (opus webm ≈ 1 MB/min is conservative) purely to feed the shared AI spend meter.
 const WHISPER_USD_PER_MIN = 0.006;
 
 export function transcriptionAvailable(): boolean {
-  return !!OPENAI_KEY || sttIsSelf();
+  return !!OPENAI_KEY || sttIsSelf() || sttIsGroq();
 }
 
 export interface TranscriptionResult {
@@ -46,9 +52,32 @@ export async function transcribeAudio(
   if (sttIsSelf()) {
     const out = await selfTranscribe(bytes, mimeType, filename, opts.language);
     if (out.ok) return { ok: true, text: out.text, model: "self" };
-    if (!OPENAI_KEY) return { ok: false, error: out.error || "transcription_unavailable" };
-    // else fall through to managed Whisper
+    if (!OPENAI_KEY && !GROQ_KEY) return { ok: false, error: out.error || "transcription_unavailable" };
+    // else fall through to Groq / managed Whisper
   }
+
+  // Groq-hosted Whisper (free tier, no GPU) when selected. Falls back to OpenAI Whisper on error.
+  if (sttIsGroq()) {
+    try {
+      const form = new FormData();
+      form.append("file", new Blob([bytes], { type: mimeType }), filename);
+      form.append("model", snapString("GROQ_STT_MODEL", "whisper-large-v3-turbo"));
+      form.append("response_format", "json");
+      if (opts.language) form.append("language", opts.language);
+      const res = await fetch(GROQ_TRANSCRIBE_URL, { method: "POST", headers: { Authorization: `Bearer ${GROQ_KEY}` }, body: form });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        const text = String(data?.text || "").trim();
+        if (text) return { ok: true, text, model: "groq-whisper" };
+      }
+      if (!OPENAI_KEY) return { ok: false, error: `transcription_failed_groq_${res.status}`.trim(), model: "groq-whisper" };
+      // else fall through to OpenAI Whisper
+    } catch (e) {
+      if (!OPENAI_KEY) return { ok: false, error: `transcription_error: ${(e as Error).message}` };
+      // else fall through
+    }
+  }
+
   if (!OPENAI_KEY) return { ok: false, error: "transcription_unavailable" };
 
   // Honor the SAME global AI_DAILY_SPEND_CAP_USD brake every other provider call uses.
