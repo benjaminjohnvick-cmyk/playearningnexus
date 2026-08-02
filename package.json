@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "setup": "node deploy-kit/setup.mjs",
+    "env:check": "node deploy-kit/env-check.mjs",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --quiet",

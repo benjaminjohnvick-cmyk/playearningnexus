@@ -31,10 +31,14 @@ else
   TODO+=("Fill in $ENVFILE with your API keys, then run this again.")
 fi
 MISSING=""
-for v in DATABASE_URL AUTH_JWT_SECRET OPENAI_API_KEY SENDGRID_API_KEY; do
+for v in DATABASE_URL AUTH_JWT_SECRET APP_URL; do
   eval "val=\${$v:-}"; [ -z "${val:-}" ] && MISSING="$MISSING $v"
 done
-[ -n "$MISSING" ] && { warn "still missing:$MISSING"; } || ok "core keys present"
+[ -n "$MISSING" ] && { warn "still missing (required):$MISSING"; TODO+=("Set required vars:$MISSING (run: npm run setup)"); } || ok "required core keys present"
+# Free-tier AI stack is optional — the app falls back gracefully. Just note what's not on the $0 path.
+[ -z "${GROQ_API_KEY:-}" ] && warn "GROQ_API_KEY not set → AI + speech-to-text will use OpenAI (paid) instead of Groq's free tier"
+[ -z "${CLOUDFLARE_API_TOKEN:-}" ] && warn "CLOUDFLARE_API_TOKEN not set → images use Bedrock/Titan (~\$0.01) instead of Cloudflare free"
+{ [ -z "${BREVO_API_KEY:-}" ] && [ -z "${AWS_ACCESS_KEY_ID:-}" ]; } && warn "no email provider creds → set BREVO_API_KEY (free ~9k/mo) or AWS creds (SES)"
 
 # ---- STEP 2: auto-generate secrets ------------------------------------------
 say "STEP 2/7  Auto-generate the secrets you can't get from a provider"

@@ -23,6 +23,11 @@ async function check(name, key, fn) {
 }
 const ok = (r) => r.ok || r.status === 200;
 
+// Free stack (drives AI/media/email to $0).
+await check('Groq (LLM+STT)', 'GROQ_API_KEY', async k => ok(await fetch('https://api.groq.com/openai/v1/models', { headers: { authorization: `Bearer ${k}` } })));
+await check('Cloudflare (image)', 'CLOUDFLARE_API_TOKEN', async k => { const acct = g('CLOUDFLARE_ACCOUNT_ID'); if (!acct) return false; const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}/tokens/verify`, { headers: { authorization: `Bearer ${k}` } }); return r.status !== 401 && r.status !== 403; });
+await check('Brevo (email)', 'BREVO_API_KEY', async k => { const r = await fetch('https://api.brevo.com/v3/account', { headers: { 'api-key': k } }); return r.status !== 401; });
+// Managed fallbacks / other providers.
 await check('OpenAI', 'OPENAI_API_KEY', async k => ok(await fetch('https://api.openai.com/v1/models', { headers: { authorization: `Bearer ${k}` } })));
 await check('Anthropic', 'ANTHROPIC_API_KEY', async k => { const r = await fetch('https://api.anthropic.com/v1/models', { headers: { 'x-api-key': k, 'anthropic-version': '2023-06-01' } }); return r.status !== 401; });
 await check('Stripe', 'STRIPE_SECRET_KEY', async k => ok(await fetch('https://api.stripe.com/v1/balance', { headers: { authorization: `Bearer ${k}` } })));
@@ -40,8 +45,19 @@ for (const [name, key] of [['Database URL', 'DATABASE_URL'], ['JWT secret', 'AUT
 }
 
 console.log(`\nProvider / key check (${envPath})\n` + '-'.repeat(52));
-for (const r of rows) console.log(`  ${r.status.padEnd(6)} ${r.provider.padEnd(14)} ${r.note}`);
+for (const r of rows) console.log(`  ${r.status.padEnd(6)} ${r.provider.padEnd(18)} ${r.note}`);
 const bad = rows.filter(r => ['FAIL', 'ERR', 'MISSING'].includes(r.status));
+
+// Cost-floor readout — which capabilities are running free vs falling back to paid.
+const aws = !!g('AWS_ACCESS_KEY_ID');
+const line = (label, free, freeText, paidText) => `  ${label.padEnd(20)} ${free ? '\x1b[1;32m' + freeText + '\x1b[0m' : '\x1b[1;33m' + paidText + '\x1b[0m'}`;
+console.log('\nCost at the floor\n' + '-'.repeat(52));
+console.log(line('AI + speech-to-text', !!g('GROQ_API_KEY'), 'Groq free tier — $0', 'no GROQ_API_KEY → OpenAI (paid)'));
+console.log(line('Image generation', !!(g('CLOUDFLARE_ACCOUNT_ID') && g('CLOUDFLARE_API_TOKEN')), 'Cloudflare free — $0', 'no CF creds → Bedrock/Titan (~$0.01/img)'));
+console.log(line('Email', !!g('BREVO_API_KEY') || aws, g('BREVO_API_KEY') ? 'Brevo free ~9k/mo' : 'Amazon SES ~$0.10/1k', 'set BREVO_API_KEY (free) or AWS creds'));
+console.log(line('Voice (TTS)', true, aws ? 'Polly free tier / device voice' : 'free device voice', ''));
+console.log('  \x1b[2m→ AI/media/email $0/mo on free tiers; only recurring cost is hosting (~$5–20/mo).\x1b[0m');
+
 console.log('-'.repeat(52));
 console.log(bad.length ? `\n${bad.length} item(s) need attention before deploy.` : `\nAll configured keys valid. ✓`);
 process.exit(bad.length ? 1 : 0);

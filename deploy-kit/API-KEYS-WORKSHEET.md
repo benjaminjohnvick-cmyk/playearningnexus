@@ -17,15 +17,19 @@ build variable (`VITE_*`, public) · **required** = app won't run without it.
 | `CORS_ORIGIN` **[B]** | Your frontend domain | `____________________` |
 | `VITE_NEXUS_API_URL` **[F]** required | Your backend domain (Railway-generated or custom) | `____________________` |
 
-## AI / email / images (the real usage-cost drivers)
-| Variable | Where to get it | Your value |
+## AI / email / images — the FREE stack (all $0 on free tiers; each falls back if unset)
+Fastest path: run `npm run setup` (the terminal wizard fills these in for you). All optional — the app
+runs without them, just on a paid fallback path.
+| Variable | Where to get it (FREE) | Your value |
 |---|---|---|
-| `OPENAI_API_KEY` **[B]** required | platform.openai.com → API keys (or use `ANTHROPIC_API_KEY` + `LLM_PROVIDER=anthropic`) | `____________________` |
-| `SENDGRID_API_KEY` **[B]** required | sendgrid.com → Settings → API Keys (or SES/SMTP) | `____________________` |
-| `EMAIL_FROM` **[B]** required | A verified sender address in SendGrid | `____________________` |
-| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` **[B]** | AWS IAM user with S3 access (for file uploads) | `____________________` |
-| `AWS_REGION` / `S3_BUCKET` **[B]** | Your S3 bucket + region | `____________________` |
-| `GOOGLE_CLIENT_ID` **[B]** + `VITE_GOOGLE_CLIENT_ID` **[F]** | console.cloud.google.com → OAuth 2.0 Client (optional; enables Google sign-in) | `____________________` |
+| `GROQ_API_KEY` **[B]** | console.groq.com → API keys. Powers ALL AI + speech-to-text at $0. Falls back to OpenAI. | `____________________` |
+| `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` **[B]** | dash.cloudflare.com → Workers AI token. Free image generation. Falls back to Bedrock/Titan. | `____________________` |
+| `BREVO_API_KEY` **[B]** | brevo.com → SMTP & API. Free ~9k emails/mo (set `EMAIL_PROVIDER=brevo`). Or use SES with AWS creds. | `____________________` |
+| `EMAIL_FROM` **[B]** required | A verified sender for your email provider | `____________________` |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_REGION` / `S3_BUCKET` **[B]** | AWS IAM user — enables SES email, Polly voice (free 5M/mo yr 1), and S3 uploads | `____________________` |
+| `REDIS_URL` **[B]** optional | Railway Redis — shares the TTS/translation cache across instances (bigger savings) | `____________________` |
+| `OPENAI_API_KEY` **[B]** optional | platform.openai.com — only a fallback now; Groq is the default | `____________________` |
+| `GOOGLE_CLIENT_ID` **[B]** + `VITE_GOOGLE_CLIENT_ID` **[F]** | console.cloud.google.com → OAuth 2.0 Client (optional; Google sign-in) | `____________________` |
 
 ## Payments (required for money features)
 | Variable | Where to get it | Your value |
