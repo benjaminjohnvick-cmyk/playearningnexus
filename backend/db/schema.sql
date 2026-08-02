@@ -1676,6 +1676,19 @@ CREATE TABLE IF NOT EXISTS "PromoCode" (
 CREATE INDEX IF NOT EXISTS "PromoCode_data_gin" ON "PromoCode" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "PromoCode_created" ON "PromoCode" (created_date DESC);
 
+-- ProviderUsage: real hosted-inference spend per capability per month, for the self-host advisor. Free-tier
+-- and self-hosted calls record nothing (real_spend_usd only). data: { month (YYYY-MM), capability
+-- (llm|stt|tts|image), real_spend_usd, calls }
+CREATE TABLE IF NOT EXISTS "ProviderUsage" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ProviderUsage_data_gin" ON "ProviderUsage" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ProviderUsage_created" ON "ProviderUsage" (created_date DESC);
+
 -- PushSubscription: 7 properties
 CREATE TABLE IF NOT EXISTS "PushSubscription" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

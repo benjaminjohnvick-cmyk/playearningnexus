@@ -8,6 +8,7 @@
 import { limited, LLM_CONCURRENCY, EMAIL_CONCURRENCY } from "./queue.ts";
 import { sesSend } from "./aws/ses.ts";
 import { signedFetch, credsFromEnv } from "./aws/sigv4.ts";
+import { recordProviderUse, imageCostUsd } from "./provider-advisor.ts";
 
 // Chunked base64 encode (btoa on a huge spread arg overflows the call stack).
 function bytesToBase64(bytes: Uint8Array): string {
@@ -210,7 +211,9 @@ async function invokeLLMRaw(args: LLMArgs): Promise<unknown> {
     if (!r.ok) throw Object.assign(new Error(`Anthropic ${r.status}`), { status: r.status });
     const j = await r.json();
     const text = j?.content?.[0]?.text ?? "";
-    try { addAiSpend(estimateLlmCostUsd((Number(j?.usage?.input_tokens) || 0) + (Number(j?.usage?.output_tokens) || 0))); } catch { /* cost tracking is best-effort */ }
+    const usd = estimateLlmCostUsd((Number(j?.usage?.input_tokens) || 0) + (Number(j?.usage?.output_tokens) || 0));
+    try { addAiSpend(usd); } catch { /* cost tracking is best-effort */ }
+    recordProviderUse("llm", usd);   // real hosted spend → self-host advisor
     return wantJson ? safeJson(text) : text;
   }
 
@@ -230,7 +233,9 @@ async function invokeLLMRaw(args: LLMArgs): Promise<unknown> {
   if (!r.ok) throw Object.assign(new Error(`OpenAI ${r.status}`), { status: r.status });
   const j = await r.json();
   const text = j?.choices?.[0]?.message?.content ?? "";
-  try { addAiSpend(estimateLlmCostUsd((Number(j?.usage?.prompt_tokens) || 0) + (Number(j?.usage?.completion_tokens) || 0))); } catch { /* cost tracking is best-effort */ }
+  const usd = estimateLlmCostUsd((Number(j?.usage?.prompt_tokens) || 0) + (Number(j?.usage?.completion_tokens) || 0));
+  try { addAiSpend(usd); } catch { /* cost tracking is best-effort */ }
+  recordProviderUse("llm", usd);   // real hosted spend → self-host advisor
   return wantJson ? safeJson(text) : text;
 }
 
@@ -275,6 +280,14 @@ async function sendEmailRaw(args: { to: string; subject: string; body: string; f
  *  Both AWS paths generate ORIGINAL images (no third-party catalog content). Returns { url } as a
  *  data URL (base64) so callers get a usable src even without S3; image-gen.ts persists it to S3. */
 export async function GenerateImage(args: { prompt: string; size?: string }) {
+  const out = await generateImageRaw(args) as { url?: string };
+  // Meter real image spend for the self-host advisor (free/self paths don't cost you).
+  const prov = snapString("IMAGE_PROVIDER", "openai");
+  if (prov !== "self" && out?.url) recordProviderUse("image", imageCostUsd());
+  return out;
+}
+
+async function generateImageRaw(args: { prompt: string; size?: string }) {
   const provider = snapString("IMAGE_PROVIDER", "openai");
 
   if (provider === "aws_bedrock") {

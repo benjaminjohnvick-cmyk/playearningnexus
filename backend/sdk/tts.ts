@@ -9,6 +9,7 @@
 import { snapNumber, snapBool, snapString } from "./settings.ts";
 import { ttsIsSelf, selfSynthesize } from "./providers.ts";
 import { recordAiUsdSpend } from "./integrations.ts";
+import { recordProviderUse } from "./provider-advisor.ts";
 
 export const ttsEnabled = () => snapBool("TTS_ENABLED", true);
 /** Managed TTS voice: 'elevenlabs' (natural, pricier) or 'openai' (tts-1, ~10× cheaper, reuses OPENAI key). */
@@ -39,8 +40,10 @@ export async function synthesizeOpenAI(text: string, voiceId?: string): Promise<
     });
     if (!res.ok) return null;
     const buf = new Uint8Array(await res.arrayBuffer());
-    // tts-1 ≈ $15 / 1M chars — feed the shared AI spend meter (best-effort), same as the Whisper path.
-    try { recordAiUsdSpend(String(text).length * 0.000015); } catch { /* best-effort */ }
+    // tts-1 ≈ $15 / 1M chars — feed the shared AI spend meter + self-host advisor (best-effort).
+    const usd = String(text).length * 0.000015;
+    try { recordAiUsdSpend(usd); } catch { /* best-effort */ }
+    recordProviderUse("tts", usd);
     return buf.length ? { audio_base64: base64(buf), mime: "audio/mpeg" } : null;
   } catch {
     return null;
@@ -91,6 +94,7 @@ export async function synthesizeElevenLabs(text: string, voiceId?: string): Prom
     if (!res.ok) return null;
     const buf = new Uint8Array(await res.arrayBuffer());
     if (!buf.length) return null;
+    recordProviderUse("tts", String(text).length * 0.00018);   // ≈ ElevenLabs overage → self-host advisor
     return { audio_base64: base64(buf), mime: "audio/mpeg" };
   } catch {
     return null;

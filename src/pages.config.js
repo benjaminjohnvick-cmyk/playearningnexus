@@ -84,6 +84,7 @@ import GuildDetails from './pages/GuildDetails';
 import Guilds from './pages/Guilds';
 import Home from './pages/Home';
 import Profit from './pages/Profit';
+import ProviderAdvisor from './pages/ProviderAdvisor';
 import InAppGameStore from './pages/InAppGameStore';
 import InAppStore from './pages/InAppStore';
 import IntegrationSettings from './pages/IntegrationSettings';
@@ -162,6 +163,7 @@ export const PAGES = {
     "Guilds": Guilds,
     "Home": Home,
     "Profit": Profit,
+    "ProviderAdvisor": ProviderAdvisor,
     "InAppGameStore": InAppGameStore,
     "InAppStore": InAppStore,
     "IntegrationSettings": IntegrationSettings,

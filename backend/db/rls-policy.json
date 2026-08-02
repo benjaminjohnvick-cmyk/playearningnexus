@@ -968,5 +968,8 @@
   "PremiumFinancePlan": {
     "scope": "owner",
     "owner_field": "user_id"
+  },
+  "ProviderUsage": {
+    "scope": "global"
   }
 }

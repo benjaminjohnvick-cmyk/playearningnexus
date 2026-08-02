@@ -99,8 +99,10 @@ export async function transcribeAudio(
     if (!res.ok) return { ok: false, error: `transcription_failed_${res.status}: ${data?.error?.message || ""}`.trim(), model };
     const text = String(data?.text || "").trim();
     if (!text) return { ok: false, error: "no_speech_detected", model };
-    // Feed the shared AI spend meter (best-effort estimate from encoded size).
-    recordAiUsdSpend((bytes.length / (1024 * 1024)) * WHISPER_USD_PER_MIN);
+    // Feed the shared AI spend meter + the self-host advisor (best-effort estimate from encoded size).
+    const usd = (bytes.length / (1024 * 1024)) * WHISPER_USD_PER_MIN;
+    recordAiUsdSpend(usd);
+    import("./provider-advisor.ts").then((m) => m.recordProviderUse("stt", usd)).catch(() => {});
     return { ok: true, text, model };
   } catch (e) {
     return { ok: false, error: `transcription_error: ${(e as Error).message}` };

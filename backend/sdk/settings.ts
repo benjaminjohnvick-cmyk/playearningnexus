@@ -292,6 +292,12 @@ export const REGISTRY: SettingDef[] = [
   { key: "SELF_TTS_KEY", label: "Self TTS bearer (optional)", category: "AI & Agents", type: "string", default: "" },
   { key: "SELF_IMAGE_URL", label: "Self image endpoint", category: "AI & Agents", type: "string", default: "", help: "Your SDXL/FLUX HTTP server (A1111/ComfyUI/OpenAI-images-compatible). Used when IMAGE_PROVIDER=self." },
   { key: "SELF_IMAGE_KEY", label: "Self image bearer (optional)", category: "AI & Agents", type: "string", default: "" },
+
+  // Self-host advisor — watches REAL hosted spend per capability and recommends flipping to your own GPU
+  // once it'd be cheaper than the hosted bills. Surfaced in the admin panel (ProviderAdvisor).
+  { key: "GPU_MONTHLY_COST_USD", label: "Self-hosted GPU monthly cost (break-even)", category: "AI & Agents", type: "number", default: "400", unit: "$/mo", help: "Reference monthly cost of a self-hosted GPU (rented or amortized). The advisor recommends switching a capability to self-hosting once its projected monthly hosted spend beats this.", min: 0 },
+  { key: "SELFHOST_RECOMMEND_MARGIN", label: "Self-host recommend margin", category: "AI & Agents", type: "number", default: "1.2", unit: "×", help: "Recommend self-hosting once projected monthly spend ≥ GPU cost × this. 1.2 = wait until it's 20% past break-even (avoids flip-flopping).", min: 1 },
+  { key: "IMAGE_COST_USD", label: "Per-image cost estimate", category: "AI & Agents", type: "number", default: "0.01", unit: "$", help: "Approx cost per generated image, used only to meter the image capability for the self-host advisor.", min: 0 },
   { key: "CATALOG_IMAGES_ENABLED", label: "Generate catalog product images", category: "AI & Agents", type: "boolean", default: "1", help: "Kill switch. OFF = catalog listings launch text-only (no image generation, $0)." },
   { key: "CATALOG_IMAGES_MAX_PER_RUN", label: "Max catalog images per seed run", category: "AI & Agents", type: "number", default: "100", min: 0, help: "Budget guard — a single catalog seed run won't generate more images than this, so cost is paced across scheduled runs." },
   { key: "CATALOG_SUBCATEGORY_IMAGES", label: "Generate subcategory tile images", category: "AI & Agents", type: "boolean", default: "0", help: "Budget posture OFF = only the ~40 top-level department tiles get images (keeps total ≈ $10–15 one-time). ON = also generate ~905 subcategory tiles." },
