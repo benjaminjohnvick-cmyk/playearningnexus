@@ -79,6 +79,8 @@ const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
 const ANTHROPIC_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const GROQ_KEY = Deno.env.get("GROQ_API_KEY");
 const GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions";
+const CF_ACCOUNT_ID = Deno.env.get("CLOUDFLARE_ACCOUNT_ID");
+const CF_API_TOKEN = Deno.env.get("CLOUDFLARE_API_TOKEN");
 
 // Groq hosts open models (Llama) on its free tier — OpenAI-compatible, no GPU to run. Tiered small/large
 // like the others. Overridable via GROQ_MODEL_SMALL / GROQ_MODEL_LARGE.
@@ -281,14 +283,53 @@ async function sendEmailRaw(args: { to: string; subject: string; body: string; f
  *  data URL (base64) so callers get a usable src even without S3; image-gen.ts persists it to S3. */
 export async function GenerateImage(args: { prompt: string; size?: string }) {
   const out = await generateImageRaw(args) as { url?: string };
-  // Meter real image spend for the self-host advisor (free/self paths don't cost you).
-  const prov = snapString("IMAGE_PROVIDER", "openai");
-  if (prov !== "self" && out?.url) recordProviderUse("image", imageCostUsd());
+  // Meter real image spend for the self-host advisor. Free paths (self-hosted, Cloudflare free tier)
+  // don't cost you, so they record nothing.
+  const prov = snapString("IMAGE_PROVIDER", "cloudflare");
+  if (prov !== "self" && prov !== "cloudflare" && out?.url) recordProviderUse("image", imageCostUsd());
   return out;
 }
 
+/** Cloudflare Workers AI image generation — free tier, no GPU. FLUX-1-schnell (JSON base64) by default;
+ *  Stable Diffusion models return raw bytes. Returns a data URL, or "" on error. */
+async function cloudflareImage(prompt: string, size?: string): Promise<{ url: string }> {
+  try {
+    const model = snapString("CF_IMAGE_MODEL", "@cf/black-forest-labs/flux-1-schnell");
+    const endpoint = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/ai/run/${model}`;
+    const [w, h] = (size ?? "1024x1024").split("x").map((n) => Number(n) || 1024);
+    const body: Record<string, unknown> = { prompt };
+    if (model.includes("flux")) body.steps = Math.max(1, Math.min(8, Number(snapString("CF_IMAGE_STEPS", "4")) || 4));
+    else { body.width = w; body.height = h; body.num_steps = 20; }
+    const r = await fetch(endpoint, {
+      method: "POST",
+      headers: { authorization: `Bearer ${CF_API_TOKEN}`, "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok && (r.status === 429 || r.status >= 500)) throw Object.assign(new Error(`Cloudflare ${r.status}`), { status: r.status });
+    if (!r.ok) return { url: "" };
+    const ct = r.headers.get("content-type") ?? "";
+    if (ct.startsWith("image/")) {
+      const bytes = new Uint8Array(await r.arrayBuffer());
+      return { url: bytes.length ? `data:${ct};base64,${bytesToBase64(bytes)}` : "" };
+    }
+    const j = await r.json().catch(() => ({}));
+    const b64 = j?.result?.image ?? "";   // FLUX-schnell returns { result: { image: "<base64 jpeg>" } }
+    return { url: b64 ? `data:image/jpeg;base64,${b64}` : "" };
+  } catch {
+    return { url: "" };
+  }
+}
+
 async function generateImageRaw(args: { prompt: string; size?: string }) {
-  const provider = snapString("IMAGE_PROVIDER", "openai");
+  let provider = snapString("IMAGE_PROVIDER", "cloudflare");
+
+  if (provider === "cloudflare") {
+    if (CF_ACCOUNT_ID && CF_API_TOKEN) {
+      const cf = await cloudflareImage(args.prompt, args.size);
+      if (cf.url) return cf;
+    }
+    provider = "aws_bedrock";   // graceful fallback when CF creds are missing or it errors
+  }
 
   if (provider === "aws_bedrock") {
     const creds = credsFromEnv();
