@@ -3243,6 +3243,21 @@ CREATE TABLE IF NOT EXISTS "PremiumEnrollClaim" (
 );
 CREATE INDEX IF NOT EXISTS "PremiumEnrollClaim_data_gin" ON "PremiumEnrollClaim" USING gin (data jsonb_path_ops);
 
+-- PremiumFinancePlan: a member's no-upfront Premium finance cycle. $1/day is deducted from earned Site Cash
+-- toward the membership price; overpayment returns as Site Cash at cycle close; an uncovered price downgrades
+-- to free. Pay-as-you-earn from rewards — not lending. data: { user_id, cycle_start, cycle_days, price_usd,
+-- daily_usd, deducted_usd, earning_days, month_earnings_usd, covered, qualified, status
+-- (active|renewed|downgraded), last_deduct_day, created_at }
+CREATE TABLE IF NOT EXISTS "PremiumFinancePlan" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PremiumFinancePlan_data_gin" ON "PremiumFinancePlan" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "PremiumFinancePlan_created" ON "PremiumFinancePlan" (created_date DESC);
+
 CREATE TABLE IF NOT EXISTS "LoyaltyLedger" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
   created_date timestamptz NOT NULL DEFAULT now(),

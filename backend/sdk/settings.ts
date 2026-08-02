@@ -134,6 +134,14 @@ export const REGISTRY: SettingDef[] = [
   { key: "EARNBACK_FOUNDING_WINDOW_DAYS", label: "Premium founding window", category: "Premium PPC", type: "number", default: "90", unit: "days", help: "Days from launch that the founding price is offered to new signups. After this, new signups pay the after-founding price. Founding members roll to it at their next renewal.", min: 0 },
   { key: "EARNBACK_LAUNCH_DATE", label: "Premium founding start date", category: "Premium PPC", type: "string", default: "", help: "YYYY-MM-DD the founding window starts (usually launch day). Blank = founding pricing stays on until set." },
 
+  // 6c. Premium financed from earnings — no upfront; $1/day is deducted from earned Site Cash toward the
+  // membership, any overpayment returns as Site Cash at month's end, and under-earning downgrades to free.
+  // Not lending (pay-as-you-earn from rewards, no debt). See PREMIUM-FINANCE-FROM-EARNINGS.md.
+  { key: "PREMIUM_FINANCE_ENABLED", label: "Finance Premium from earnings", category: "Premium PPC", type: "boolean", default: "1", help: "Let members get Premium with no upfront charge — $1/day is deducted from their earned Site Cash toward the membership. Closed-loop; under-earning downgrades them to free, no debt." },
+  { key: "PREMIUM_FINANCE_DAILY_USD", label: "Daily membership deduction", category: "Premium PPC", type: "number", default: "1", unit: "$/day", help: "Site Cash deducted per earning day toward the membership. Never pushes a balance negative; earn nothing that day = no deduction.", min: 0 },
+  { key: "PREMIUM_FINANCE_CYCLE_DAYS", label: "Membership finance cycle", category: "Premium PPC", type: "number", default: "30", unit: "days", help: "Length of a billing cycle. At cycle end any overpayment (deducted minus the price) returns as Site Cash, and an uncovered price downgrades the member to free.", min: 1 },
+  { key: "PREMIUM_FINANCE_SUCCESS_MONTHLY_USD", label: "Successful-month earning target", category: "Premium PPC", type: "number", default: "216", unit: "$", help: "Cumulative survey earnings in a cycle that flag it a 'successful month' (recognition/streak). Default 216 = $8/day × 27 days. The overpayment refund returns regardless of this; the flag is for status only.", min: 0 },
+
   // 7a. Earn parity — non-premium AdGrid access + reallocation + multi-provider + screen-out credit + CYK profile
   { key: "ADGRID_NONPREMIUM_ENABLED", label: "Non-premium AdGrid access", category: "Surveys", type: "boolean", default: "1", help: "Let non-premium users tap the high-paying AdGrid inventory from the non-reserved slice (falls back to BitLabs when it's gone). Premium always has priority." },
   { key: "ADGRID_PREMIUM_RESERVE_PCT", label: "AdGrid premium reserve", category: "Surveys", type: "number", default: "0.5", unit: "×", help: "Share of active AdGrid inventory held for premium only. 0.5 = premium-first on half; non-premium can tap the other half.", min: 0, max: 1 },

@@ -964,5 +964,9 @@
   },
   "EarnBackLedger": {
     "scope": "global"
+  },
+  "PremiumFinancePlan": {
+    "scope": "owner",
+    "owner_field": "user_id"
   }
 }
