@@ -182,13 +182,55 @@ each of these (none is billable dev work):
 
 ## Cost at the floor (applied in code, everything still on)
 
-- **All AI calls use the cheap model tier** (`gpt_5_mini` → gpt-4o-mini / claude-3-5-haiku by default).
-- **Rules-first before AI** on moderation/triage; **caching** on translations and now **product-feed
-  searches** (`PRODUCT_FEED_CACHE_TTL_S`, 1h) so discovery doesn't re-bill the feed API.
+- **All AI calls use the cheap model tier** (`gpt_5_mini` → 8B by default).
+- **Rules-first before AI** on moderation/triage; **caching** on translations, **product-feed searches**
+  (`PRODUCT_FEED_CACHE_TTL_S`, 1h), and now **synthesized speech** (`TTS_CACHE_ENABLED`) so nothing re-bills.
 - **AdGrid ad copy** is advertiser-written by default; AI generation is opt-in per ad.
 - **`AI_DAILY_SPEND_CAP_USD`** is the global hard brake — set it and no path can exceed it.
-- Nothing is turned off to save money; the floor comes from cheap tiers + caching + rules-first, not from
-  disabling features.
+- Nothing is turned off to save money; the floor comes from free tiers + caching + rules-first.
+
+## The free provider stack — AI/media/email at $0 (no GPU)
+
+Every external AI/media service now defaults to a free (or free-tier) hosted provider, each with graceful
+fallback so nothing breaks before you add a key. This drives the entire AI + media + email layer to **$0/mo**
+at launch scale. The **Setup Wizard** (admin → SetupWizard) shows each one's status live with the exact
+free-signup step, and the **Self-host advisor** (admin → ProviderAdvisor) later tells you if/when paid volume
+ever makes an owned GPU cheaper.
+
+| Capability | Default provider | Cost | Key to add (free) | Falls back to |
+|-----------|------------------|------|-------------------|---------------|
+| LLM (all AI: assistant, moderation, ranking, translation) | Groq — Llama 3.1-8B / 3.3-70B | **$0** free tier | `GROQ_API_KEY` (console.groq.com) | OpenAI |
+| Speech-to-text (voice surveys) | Groq — whisper-large-v3-turbo | **$0** free tier | same `GROQ_API_KEY` | OpenAI Whisper |
+| Image generation (catalog) | Cloudflare Workers AI — FLUX-1-schnell | **$0** free tier | `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` | Bedrock/Titan (~$0.01/img) |
+| Text-to-speech (premium voice) | Device voice (free) / Polly | **$0** (Polly free 5M/mo yr 1) | `PROVIDER_TTS=polly` + AWS creds | ElevenLabs |
+| Speech cache | on (`TTS_CACHE_ENABLED`) | **$0** — synthesize once | optional `REDIS_URL` to share | per-instance |
+| Transactional email | Amazon SES (~$0.10/1k) or Brevo (free ~9k/mo) | **~$0** | `EMAIL_PROVIDER=brevo`+`BREVO_API_KEY`, or AWS SES | auto-fallback |
+
+**Cost levers, in order of impact:** (1) **cache repeated output** — survey prompts/cheers voice once, feed
+searches + translations cached; (2) **free tiers first, paid fallback** — wired for LLM/STT/image/email;
+(3) **right-size** — 8B model + cheap voices for the many simple jobs, premium only where it matters;
+(4) **shift channels** — reminders via free push + near-free email, SMS reserved for what needs it;
+(5) **self-host later** only when the advisor says a GPU (or CPU, for Piper TTS) beats the hosted bills.
+
+## Cost estimate (everything on, from day one)
+
+**Recurring:** the AI/media/email layer runs at **$0/mo** on the free tiers above. The only recurring cost is
+**hosting** — Railway all-in-one at **~$5–$20/mo** (web + Postgres; add ~$5 for Redis if you want a shared
+cache). SMS is pay-per-use and starts effectively $0 (marketing SMS is held off until TCPA opt-in).
+
+**One-off to launch:** Google Play **$25** (one-time) + a domain **~$15/yr**; add Apple **$99/yr** only if you
+ship native iOS. So the **hard cash floor is ~$40** (web + Android) or **~$139** (with iOS).
+
+**Year-one infrastructure (ex-labor):** roughly **$100–$340** — hosting ($60–$240) + the one-off above. All AI,
+images, transcription, voice, and email are $0 on free tiers within launch-scale usage.
+
+**Developer labor:** unchanged product (everything is prebuilt and ON), so the developer only deploys, tests,
+and submits — **~$1,700–$2,500 at $75/hr**, and **less** to the extent you self-serve the key-plugging through
+the Setup Wizard (it turns "developer configures integrations" into a checklist you can run yourself).
+
+**All-in year one: ~$1,800–$2,800**, with the external cash floor at **~$40–$139**. The AI/media portion, which
+used to be the scary variable, is now a flat **$0** until you deliberately outgrow the free tiers — at which
+point the advisor flags the cheapest next step.
 
 ## Scaling survey supply to Swagbucks size (start with BitLabs)
 

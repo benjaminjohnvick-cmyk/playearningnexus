@@ -50,6 +50,24 @@ export default function SetupWizard() {
             </CardContent>
           </Card>
 
+          {data.cost_floor && (
+            <Card className="mb-4 border-emerald-200 bg-emerald-50/40">
+              <CardHeader><CardTitle className="text-base">Cost at the floor</CardTitle></CardHeader>
+              <CardContent className="text-sm text-slate-700 space-y-1">
+                <div>AI · images · transcription · voice · email: <strong className="text-emerald-600">$0/mo</strong> — all on free tiers.</div>
+                <div>Hosting (Railway, all-in-one): <strong>${data.cost_floor.monthly_hosting_usd_low}–${data.cost_floor.monthly_hosting_usd_high}/mo</strong>.</div>
+                <div>One-off to launch: <strong>${data.cost_floor.external_oneoff_usd}</strong> {data.cost_floor.ios_included ? '(includes Apple $99/yr)' : '(Google Play $25 + domain ~$15; add $99/yr for iOS)'}.</div>
+                <div>Year-one infrastructure: <strong>${data.cost_floor.year_one_infra_low_usd}–${data.cost_floor.year_one_infra_high_usd}</strong> — developer labor separate.</div>
+                <div className="text-xs text-slate-400 pt-1">{data.cost_floor.note}</div>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card className="mb-4">
+            <CardHeader><CardTitle className="text-base">Free provider stack — drives AI/media cost to $0</CardTitle></CardHeader>
+            <CardContent>{(data.providers || []).map((it) => <Row key={it.key} it={it} />)}</CardContent>
+          </Card>
+
           <Card className="mb-4">
             <CardHeader><CardTitle className="text-base">Connect your accounts</CardTitle></CardHeader>
             <CardContent>{(data.integrations || []).map((it) => <Row key={it.key} it={it} />)}</CardContent>
