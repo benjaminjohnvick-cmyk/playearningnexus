@@ -27,16 +27,18 @@ export function earnRateUsdPerMin(isPremium: boolean): number {
   return Math.max(0, cents) / 100;
 }
 
-/** Daily cap on earned Site Cash (USD). Premium members' daily "portion" is PREMIUM_DAILY_PORTION_USD
- *  ($7/day by default) — of which $1/day is the subscription fee (PREMIUM_FINANCE_DAILY_USD), so premium
- *  nets ~$6/day. Non-premium uses EARN_DAILY_CAP_USD ($8). All amounts are closed-loop Site Cash. */
+/** Daily cap on earned Site Cash (USD). Premium members keep the FULL PREMIUM_DAILY_PORTION_USD ($7/day);
+ *  the $1/day subscription fee is ON TOP (covered by the prepaid annual subscription), not deducted here.
+ *  Non-premium uses EARN_DAILY_CAP_USD ($8). All amounts are closed-loop Site Cash — never a cash payout.
+ *  Annual premium portion: minimum $1,820 (5 days/week) up to maximum $2,555 (7 days/week). */
 export function earnDailyCapUsd(isPremium = false): number {
   return isPremium
     ? Math.max(0, snapNumber("PREMIUM_DAILY_PORTION_USD", 7))
     : Math.max(0, snapNumber("EARN_DAILY_CAP_USD", 8));
 }
 
-/** Premium daily Site Cash portion ($7/day) and the $1/day subscription fee taken from it. */
+/** Premium's full daily Site Cash portion ($7/day, member keeps all of it) and the separate $1/day
+ *  subscription fee charged ON TOP (via the prepaid annual subscription). */
 export const premiumDailyPortionUsd = () => Math.max(0, snapNumber("PREMIUM_DAILY_PORTION_USD", 7));
 export const premiumDailySubFeeUsd = () => Math.max(0, snapNumber("PREMIUM_FINANCE_DAILY_USD", 1));
 
