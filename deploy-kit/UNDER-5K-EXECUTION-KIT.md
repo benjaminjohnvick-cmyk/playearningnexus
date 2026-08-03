@@ -1,5 +1,25 @@
 # Under-$5K Execution Kit — GamerGain / PlayEarning Nexus
 
+> ## ⭐ CURRENT RECONCILED ESTIMATE — 2026-08-03
+>
+> **All GamerGain launch-cost docs use these figures. Where an older number appears anywhere below, this
+> banner supersedes it.** (Reflects everything built through 2026-08-03: the scale flywheels + Services page,
+> the opt-in shopping extension, and the one-command cost floor.)
+>
+> - **Full launch — web PWA + Android + native iOS: ~$2,900–$4,000 year-one all-in.** Developer labor is
+>   ~$2,025–$3,075 (≈ 27–41 hours @ $75/hr) — deploy, test, and submit only, because every feature ships
+>   prebuilt and ON.
+> - **Shoestring — web PWA + Android (iOS as fast-follow): ~$2,000–$2,800.**
+> - **Hard external cash floor: ~$139** for all three platforms (Apple $99/yr + Google Play $25 + domain
+>   ~$15); **~$40** shoestring (no Apple fee — the PWA covers iPhone via Safari).
+> - **Recurring: AI / media / email $0/mo** on free tiers (locked in by `npm run cost:floor`); hosting
+>   ~$10–30/mo; LLM capped ~$5–40/mo. **Optional** AWS auto-scaling + full load test adds up to a
+>   ~$3,100–$4,800 all-in ceiling.
+>
+> *Older single figures in these docs (e.g. "$3,750–$4,950" or "under $3,900") predate the kit/automation
+> that trimmed the developer hours; the number above is current.*
+
+
 **Purpose:** get a developer from "code on GitHub" to "live on web + Android + iOS" for **≤ $5,000**
 at **$75/hr**. It works by removing the guesswork — every phase below ships with the exact config, copy,
 and steps, so the developer runs near the *low* end of the estimate instead of the high end.
