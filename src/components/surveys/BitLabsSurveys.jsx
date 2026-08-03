@@ -5,11 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Loader2, RefreshCw, Info } from "lucide-react";
 import { toast } from "sonner";
+import SurveyInterstitialAd from './SurveyInterstitialAd';
 
 export default function BitLabsSurveys({ user, onEarningsUpdate }) {
   const [surveyUrl, setSurveyUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [surveyLoaded, setSurveyLoaded] = useState(false);
+  const [showAd, setShowAd] = useState(false);   // 30s interstitial before starting a survey (non-premium)
+
+  // Show the interstitial ad first; SurveyInterstitialAd self-dismisses instantly for premium / when off.
+  const startSurveys = () => setShowAd(true);
 
   const loadSurveys = async () => {
     setLoading(true);
@@ -50,6 +55,7 @@ export default function BitLabsSurveys({ user, onEarningsUpdate }) {
 
   return (
     <div className="space-y-4">
+      {showAd && <SurveyInterstitialAd onDone={() => { setShowAd(false); loadSurveys(); }} />}
       {/* Info card */}
       <Card className="border-blue-200 bg-blue-50">
         <CardContent className="p-4">
@@ -99,7 +105,7 @@ export default function BitLabsSurveys({ user, onEarningsUpdate }) {
               Click below to load available surveys. Complete them to earn money toward your daily $3 goal.
             </p>
             <Button
-              onClick={loadSurveys}
+              onClick={startSurveys}
               disabled={loading}
               className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3 text-lg"
             >
