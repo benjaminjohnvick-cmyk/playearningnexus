@@ -37,10 +37,31 @@ can add it later. (Fastest: run `npm run setup` and paste these when prompted �
 - ☐ Run `npm ci`
 - ☐ Run **`npm run setup`** — paste the keys from Section A when prompted. It writes `backend/.env`,
   auto-generates the security secret, and sets every provider to its free default.
+- ☐ Run **`npm run cost:floor`** — pins EVERY cost lever to its floor (free-tier providers, do-once caching,
+  rules-first, right-sized models, revenue offsets ON). Add `--cap 5` to also set a hard $5/day AI spend brake:
+  `node deploy-kit/cost-floor.mjs --cap 5`. Nothing is turned off — everything stays ON, just cheapest.
 - ☐ Run **`npm run env:check`** — confirms each key works and prints the cost-floor readout.
 
 Only three values are truly required to boot: `DATABASE_URL` (from Railway, Section C), `AUTH_JWT_SECRET`
 (auto-generated), `APP_URL` (your domain). Everything else has a working fallback.
+
+**Cost at the floor (already applied by `cost:floor` — nothing to build, just what it pins):**
+
+| Lever | Floor | Effect |
+|-------|-------|--------|
+| AI + speech-to-text | Groq free tier | all AI + voice transcription at **$0** |
+| Image generation | Cloudflare FLUX-schnell, 4 steps | images at **$0**, only top-level tiles imaged |
+| Email | Brevo free ~9k/mo (else SES) | **~$0** |
+| Voice (TTS) | device voice free; premium only | cost scales only with premium |
+| Caching | speech + feed searches + translations cached | repeated output **never re-bills** |
+| Models | 8B cheap tier default | 70B only when reasoning is asked for |
+| Rules-first | free matcher before AI | easy cases skip AI entirely |
+| Shared cache | in-memory (free); Redis optional | no Redis bill until scale needs it |
+| Guardrail | `--cap 5` sets a hard $5/day AI brake | no path can exceed it |
+| Revenue offsets (ON) | interstitial ad + survey hold + shopping cashback | income that covers the ~$5–20/mo hosting |
+
+Result: **AI/media/email $0/mo** at launch scale; only recurring cost is hosting ~$5–20/mo, itself offset by
+the revenue levers. Later, admin → **ProviderAdvisor** flags IF paid volume ever makes an owned GPU cheaper.
 
 ---
 

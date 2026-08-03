@@ -182,12 +182,33 @@ each of these (none is billable dev work):
 
 ## Cost at the floor (applied in code, everything still on)
 
-- **All AI calls use the cheap model tier** (`gpt_5_mini` → 8B by default).
-- **Rules-first before AI** on moderation/triage; **caching** on translations, **product-feed searches**
-  (`PRODUCT_FEED_CACHE_TTL_S`, 1h), and now **synthesized speech** (`TTS_CACHE_ENABLED`) so nothing re-bills.
-- **AdGrid ad copy** is advertiser-written by default; AI generation is opt-in per ad.
-- **`AI_DAILY_SPEND_CAP_USD`** is the global hard brake — set it and no path can exceed it.
-- Nothing is turned off to save money; the floor comes from free tiers + caching + rules-first.
+**One command pins every lever:** `npm run cost:floor` (or `node deploy-kit/cost-floor.mjs --cap 5` to also set
+a hard $5/day AI spend brake). It writes the floor values into `backend/.env`, prints the full readout, and is
+safe to re-run. Nothing is turned off — everything stays ON, just at its cheapest path. The levers it pins:
+
+- **All AI calls use the cheap model tier** (8B `llama-3.1-8b-instant` by default; 70B only when reasoning is
+  explicitly requested via `model:"gpt_5"`).
+- **Rules-first before AI** — a free rules matcher (`AUTOFILL_MATCH_MIN_CONFIDENCE`) resolves the easy survey
+  answers so they skip the AI entirely; anti-scam + answer-wall are pure regex (zero AI).
+- **Do-once caching** on translations, **product-feed searches** (`PRODUCT_FEED_CACHE_TTL_S`, 1h), and
+  **synthesized speech** (`TTS_CACHE_ENABLED`, 30-day) so repeated output never re-bills.
+- **Right-sized images** — Cloudflare FLUX-schnell at **4 steps**; only top-level Service tiles get a GPU image
+  (`SERVICE_SUBCATEGORY_IMAGES=0`), not every subsection.
+- **In-memory cache by default** — no Redis bill; add `REDIS_URL` only when a load test says you need a shared
+  cache. AdGrid ad copy is advertiser-written by default; AI generation is opt-in per ad.
+- **Per-feature cost governors** — Points Boost daily/lifetime caps (`BOOST_DAILY_CAP_USD`,
+  `BOOST_LIFETIME_CAP_USD`), session-capture analysis budget (`SESSION_CAPTURE_DAILY_BUDGET_USD`), and the
+  global hard brake **`AI_DAILY_SPEND_CAP_USD`** — set it and no path can exceed it.
+- **Self-host advisor** (admin → ProviderAdvisor) meters real hosted spend and flags IF/when an owned GPU
+  ever beats the free/paid tiers — so you only self-host when the math says to, never speculatively.
+- Nothing is turned off to save money; the floor comes from free tiers + caching + rules-first + right-sizing.
+
+**Revenue offsets that fund the floor (ON from day one):** three levers generate income that covers the small
+hosting bill, pushing *net* cost toward zero as usage grows — the **30-second interstitial ad** between surveys
+(non-premium, your own inventory → your ad revenue), the **marketplace-equivalent survey hold** (an equal % of
+gross survey revenue, since you hold no inventory), and the opt-in **shopping-extension affiliate cashback**
+(your share of commission on purchases anywhere). See `SCALE-TO-AMAZON-STRATEGY.md` +
+`SHOPPING-EXTENSION-AND-SERVICES.md`.
 
 ## The free provider stack — AI/media/email at $0 (no GPU)
 

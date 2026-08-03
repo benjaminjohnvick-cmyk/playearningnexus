@@ -225,5 +225,20 @@ not *whether* it runs.
   their key/account isn't set — no failed external calls (and no spend) before you connect them.
 - **BRAKE — `AI_DAILY_SPEND_CAP_USD`** still governs every provider path as the global hard ceiling.
 
-Same rule as before: everything stays **on from the get-go**; the floor comes from cheap tiers, caching, and
-rules-first — never from switching a feature off.
+## Latest levers (2026-08-03 — one-command floor + revenue offsets)
+
+- **FLOOR-CMD — `npm run cost:floor`** (`deploy-kit/cost-floor.mjs`). One command pins EVERY lever above to
+  its floor value in `backend/.env` and prints a full readout (free-tier providers, do-once caching,
+  rules-first, right-sized 8B + FLUX-4-step, in-memory cache, per-feature governors). `--cap 5` also sets the
+  global AI spend brake. Idempotent; re-run any time. Because every setting is env-overridable by its own key
+  (`settings.ts` resolves env → DB → default), writing these to `.env` makes them take effect.
+- **OFFSET — revenue that funds the floor (ON by default).** Three levers generate income against the ~$5–20/mo
+  hosting: the **30s survey interstitial** (own-inventory ad, non-premium → your ad revenue), the
+  **marketplace-equivalent hold** (`MARKETPLACE_EQUIV_HOLD_ENABLED`, an equal % of gross survey revenue since
+  you hold no inventory), and the opt-in **shopping-extension affiliate cashback** (`SHOPPING_*`, your share of
+  commission). Net cost trends toward zero as usage grows.
+- **READOUT — surfaced everywhere.** `setup.mjs`, `env-check.mjs`, and `cost-floor.mjs` all print the same
+  cost-at-the-floor picture, so the owner sees exactly which capabilities are free vs. on a paid fallback.
+
+Same rule as before: everything stays **on from the get-go**; the floor comes from cheap tiers, caching,
+rules-first, right-sizing, and revenue offsets — never from switching a feature off.

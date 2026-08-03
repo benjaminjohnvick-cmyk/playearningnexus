@@ -6,6 +6,7 @@
   "scripts": {
     "setup": "node deploy-kit/setup.mjs",
     "env:check": "node deploy-kit/env-check.mjs",
+    "cost:floor": "node deploy-kit/cost-floor.mjs",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --quiet",

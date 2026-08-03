@@ -56,7 +56,13 @@ console.log(line('AI + speech-to-text', !!g('GROQ_API_KEY'), 'Groq free tier —
 console.log(line('Image generation', !!(g('CLOUDFLARE_ACCOUNT_ID') && g('CLOUDFLARE_API_TOKEN')), 'Cloudflare free — $0', 'no CF creds → Bedrock/Titan (~$0.01/img)'));
 console.log(line('Email', !!g('BREVO_API_KEY') || aws, g('BREVO_API_KEY') ? 'Brevo free ~9k/mo' : 'Amazon SES ~$0.10/1k', 'set BREVO_API_KEY (free) or AWS creds'));
 console.log(line('Voice (TTS)', true, aws ? 'Polly free tier / device voice' : 'free device voice', ''));
-console.log('  \x1b[2m→ AI/media/email $0/mo on free tiers; only recurring cost is hosting (~$5–20/mo).\x1b[0m');
+console.log(line('Shared cache', !!g('REDIS_URL'), 'Redis shared cache', 'in-memory cache (free) — Redis optional at scale'));
+// Applied-in-code levers (no key needed — on by default; shown so the whole floor is visible).
+console.log('  \x1b[2mAlso applied in code: do-once caching (speech, feed searches, translations), rules-first');
+console.log('  before AI, 8B cheap-model default, FLUX 4-step images, self-host advisor. Revenue offsets');
+console.log('  (survey interstitial, marketplace-equiv hold, shopping cashback) cover the hosting bill.\x1b[0m');
+console.log('  \x1b[2m→ AI/media/email $0/mo on free tiers; only recurring cost is hosting (~$5–20/mo).');
+console.log('    Pin every lever + set a spend cap:  npm run cost:floor   (or  node deploy-kit/cost-floor.mjs --cap 5)\x1b[0m');
 
 console.log('-'.repeat(52));
 console.log(bad.length ? `\n${bad.length} item(s) need attention before deploy.` : `\nAll configured keys valid. ✓`);

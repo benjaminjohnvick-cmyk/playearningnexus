@@ -111,7 +111,11 @@ async function run() {
   console.log(`  Image generation    : ${free("CLOUDFLARE_ACCOUNT_ID") && free("CLOUDFLARE_API_TOKEN") ? `${C.g}Cloudflare free — $0${C.x}` : `${C.y}not set → falls back to Bedrock/Titan (~$0.01/img)${C.x}`}`);
   console.log(`  Email               : ${free("BREVO_API_KEY") ? `${C.g}Brevo free ~9k/mo${C.x}` : free("AWS_ACCESS_KEY_ID") ? `${C.g}Amazon SES ~$0.10/1k${C.x}` : `${C.y}set BREVO_API_KEY (free) or AWS creds (SES)${C.x}`}`);
   console.log(`  Voice (TTS)         : ${free("AWS_ACCESS_KEY_ID") ? `${C.g}Polly free tier available${C.x}` : `${C.g}free device voice${C.x}`}`);
+  console.log(`  Shared cache        : ${free("REDIS_URL") ? `${C.g}Redis${C.x}` : `${C.g}in-memory (free) — Redis optional${C.x}`}`);
+  console.log(`  ${C.d}Applied in code (no key): do-once caching, rules-first-before-AI, 8B cheap-model default,${C.x}`);
+  console.log(`  ${C.d}FLUX 4-step images, self-host advisor. Revenue offsets (interstitial, survey hold, shopping) cover hosting.${C.x}`);
   console.log(`  ${C.d}→ AI/media/email $0/mo on free tiers. Only recurring cost is hosting (~$5–20/mo).${C.x}`);
+  console.log(`  ${C.c}Pin EVERY cost lever to the floor:${C.x} run  ${C.b}npm run cost:floor${C.x}  ${C.d}(adds a spend cap with --cap 5).${C.x}`);
 
   // Live key validation (reuses env-check).
   console.log(`\n${C.b}Verifying keys…${C.x}`);
