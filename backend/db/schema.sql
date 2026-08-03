@@ -3416,6 +3416,22 @@ CREATE TABLE IF NOT EXISTS "AffiliatePurchase" (
 CREATE INDEX IF NOT EXISTS "AffiliatePurchase_data_gin" ON "AffiliatePurchase" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AffiliatePurchase_created" ON "AffiliatePurchase" (created_date DESC);
 
+-- FoundingAdvertiser: a founding-advertiser package purchase (advertiser-funded launch). This records an
+-- ADVERTISING + membership purchase, NOT an investment — there is no guaranteed return. Funds are held in
+-- escrow until the premium-user launch milestone; if it's missed by the deadline, status flips to
+-- refund_due. "Value back" is variable member survey earnings (separate, not an offset). data: {
+--   user_id, tier, price_usd, term_years, status (escrowed|active|refund_due|refunded|cancelled),
+--   impressions_per_year, impressions_served, purchased_at, disclosures_version, milestone_met }
+CREATE TABLE IF NOT EXISTS "FoundingAdvertiser" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "FoundingAdvertiser_data_gin" ON "FoundingAdvertiser" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "FoundingAdvertiser_created" ON "FoundingAdvertiser" (created_date DESC);
+
 -- AdGridResponse
 CREATE TABLE IF NOT EXISTS "AdGridResponse" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

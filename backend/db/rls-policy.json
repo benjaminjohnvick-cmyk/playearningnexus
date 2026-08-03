@@ -982,5 +982,9 @@
   "AffiliatePurchase": {
     "scope": "owner",
     "owner_field": "user_id"
+  },
+  "FoundingAdvertiser": {
+    "scope": "owner",
+    "owner_field": "user_id"
   }
 }

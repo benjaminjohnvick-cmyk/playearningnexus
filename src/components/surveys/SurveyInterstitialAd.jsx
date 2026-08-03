@@ -18,9 +18,12 @@ export default function SurveyInterstitialAd({ onDone }) {
   const [left, setLeft] = useState(30);
   const timer = useRef(null);
 
-  const finish = useCallback((adId) => {
+  const finish = useCallback((adId, foundingOwnerId) => {
     setState('done');
-    base44.functions.invoke('surveyInterstitialGate', { completed: true, ad_id: adId || 'house' }).catch(() => {});
+    base44.functions.invoke('surveyInterstitialGate', {
+      completed: true, ad_id: adId || 'house',
+      ...(foundingOwnerId ? { founding_owner_id: foundingOwnerId } : {}),
+    }).catch(() => {});
     onDone?.();
   }, [onDone]);
 
@@ -63,7 +66,7 @@ export default function SurveyInterstitialAd({ onDone }) {
           {ad?.title && <div className="text-sm font-medium text-slate-800 truncate">{ad.title}</div>}
           <button
             disabled={!done}
-            onClick={() => finish(ad?.ad_id)}
+            onClick={() => finish(ad?.ad_id, ad?.founding_owner_id)}
             className={`w-full text-sm py-2 rounded-md font-medium flex items-center justify-center gap-1 ${done ? 'bg-violet-600 text-white hover:bg-violet-700' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}>
             {done ? <><X className="w-4 h-4" /> Continue to survey</> : `Continue in ${left}s`}
           </button>
