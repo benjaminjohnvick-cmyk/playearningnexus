@@ -23,3 +23,29 @@ export function sellerSaleSplit(grossUsd: number): SaleSplit {
   const commission = Math.round(gross * pct * 100) / 100;
   return { gross_usd: gross, commission_usd: commission, seller_net_usd: Math.round((gross - commission) * 100) / 100, commission_pct: pct };
 }
+
+// ── Marketplace-equivalent hold (revised flywheel #3) ────────────────────────────────────────────────
+// You hold NO inventory — users can look up whatever they want anywhere. Rather than collect commission
+// from third-party sellers, hold back an equal percentage of GROSS survey revenue as the same revenue line.
+// This is applied to gross BEFORE the user's survey share, so it slightly lowers the user pool and MUST be
+// disclosed (Terms + earn-rate page). Toggle with MARKETPLACE_EQUIV_HOLD_ENABLED.
+
+export const marketplaceEquivHoldEnabled = () => snapBool("MARKETPLACE_EQUIV_HOLD_ENABLED", true);
+export const marketplaceEquivHoldPct = () =>
+  Math.min(1, Math.max(0, snapNumber("MARKETPLACE_EQUIV_HOLD_PCT", 0.12)));
+
+export interface EquivHold {
+  gross_usd: number;      // original gross survey revenue
+  hold_usd: number;       // amount held back as the marketplace-equivalent line
+  net_gross_usd: number;  // gross remaining after the hold, on which the user share is computed
+  hold_pct: number;
+}
+
+/** Apply the marketplace-equivalent hold to a gross survey amount. Returns the held amount (your revenue)
+ *  and the net gross the user's share should be computed from. No-op (0 hold) when disabled. */
+export function applyMarketplaceEquivHold(grossUsd: number): EquivHold {
+  const gross = Math.max(0, Math.round((Number(grossUsd) || 0) * 100) / 100);
+  const pct = marketplaceEquivHoldEnabled() ? marketplaceEquivHoldPct() : 0;
+  const hold = Math.round(gross * pct * 100) / 100;
+  return { gross_usd: gross, hold_usd: hold, net_gross_usd: Math.round((gross - hold) * 100) / 100, hold_pct: pct };
+}

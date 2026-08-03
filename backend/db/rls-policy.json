@@ -978,5 +978,9 @@
   "AdImpression": {
     "scope": "owner",
     "owner_field": "user_id"
+  },
+  "AffiliatePurchase": {
+    "scope": "owner",
+    "owner_field": "user_id"
   }
 }

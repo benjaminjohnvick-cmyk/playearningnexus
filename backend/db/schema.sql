@@ -3401,6 +3401,21 @@ CREATE TABLE IF NOT EXISTS "AdImpression" (
 CREATE INDEX IF NOT EXISTS "AdImpression_data_gin" ON "AdImpression" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AdImpression_created" ON "AdImpression" (created_date DESC);
 
+-- AffiliatePurchase: a purchase seen through the OPT-IN shopping extension (Honey-style), recorded ONLY
+-- after explicit consent (ConsentRecord kind "shopping_tracking"). DATA-MINIMIZED on purpose: merchant,
+-- order total, affiliate commission, coarse day/ref — never full carts, item lists, card data, or browsing
+-- history. Cashback is closed-loop Site Cash. data: { user_id, merchant, order_total_usd, currency,
+-- commission_usd, cashback_usd, network, order_ref, day, consent_kind }
+CREATE TABLE IF NOT EXISTS "AffiliatePurchase" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AffiliatePurchase_data_gin" ON "AffiliatePurchase" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AffiliatePurchase_created" ON "AffiliatePurchase" (created_date DESC);
+
 -- AdGridResponse
 CREATE TABLE IF NOT EXISTS "AdGridResponse" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

@@ -53,6 +53,18 @@ opt out, behavioral capture and screenshot sampling stop on your next load. Pers
 captured events are masked. Opting out does not stop essential processing needed to run your account
 and transactions.
 
+## 5a. Optional shopping helper (browser extension)
+
+If you choose to install and turn on our optional shopping helper, then — and only then — it can see the
+online purchases you make while it is active so it can apply available discounts and give you Site Cash
+back. In connection with those purchases we record a **minimal** set of information: the merchant, the
+order total, and the commission earned on the purchase. We do **not** collect your card or payment
+details, your full shopping cart or item list, or your general browsing history through this feature.
+Cashback is credited as Site Cash (store credit), which has no cash value outside the Service. The helper
+is entirely optional and off until you turn it on; you can turn it off at any time, which stops all
+tracking, and you may withdraw your consent in your privacy settings. *(This feature is being prepared;
+its final consent screen and data-handling terms are subject to a dedicated privacy review before launch.)*
+
 ## 6. How we share information
 We share information with: **service providers** (hosting, database, payment processing, email/SMS,
 analytics, AI/LLM and image-generation providers, and IP-geolocation and exchange-rate providers) that

@@ -1,6 +1,7 @@
 import { getNumber, snapBool, snapNumber } from "./settings.ts";
 import { db } from "./db.ts";
 import { cacheGet, cacheSet } from "./cache.ts";
+import { applyMarketplaceEquivHold } from "./marketplace-fee.ts";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Survey reward tiers (replaces the old flat 50/50 split).
@@ -48,13 +49,17 @@ export async function isPremiumUser(userId: string): Promise<boolean> {
 /** Compute the tiered reward for a survey worth `grossUsd`. */
 export async function computeSurveyReward(isPremium: boolean, grossUsd: number): Promise<SurveyReward> {
   const gross = Math.max(0, Math.round(grossUsd * 100) / 100);
-  // 50/50 split: the platform keeps 50% (real cash), and the user accrues 50% of the survey value as
+  // Revised flywheel #3: you hold no inventory, so instead of seller commission you hold back an equal % of
+  // GROSS survey revenue as the marketplace-equivalent line. Applied FIRST, before the user share — so the
+  // user share is computed on the net gross. Disclosed to users (Terms + earn-rate page). No-op when the
+  // MARKETPLACE_EQUIV_HOLD_ENABLED flag is off.
+  const { net_gross_usd: netGross } = applyMarketplaceEquivHold(gross);
+  // 50/50 split: the platform keeps 50% (real cash), and the user accrues 50% of the (net) survey value as
   // NON-CASHABLE points — for BOTH tiers. The premium/non-premium difference is NOT the accrual rate; it's
   // the per-transaction SPEND CAP applied at redemption (premium 24% vs non-premium 12% of the price).
-  // So $8 of surveys → the user gets $4 in points, the platform keeps $4 in cash.
   const userSharePct = Math.min(1, Math.max(0, await getNumber("SURVEY_USER_SHARE_PCT", 0.5)));
   const pointCents = Math.max(1, await getNumber("POINT_VALUE_CENTS", 1));
-  const userUsd = Math.round(gross * userSharePct * 100) / 100;
+  const userUsd = Math.round(netGross * userSharePct * 100) / 100;
   const points = Math.max(0, Math.round(userUsd * 100 / pointCents));
   const realizedUsd = Math.round(points * pointCents) / 100;
   return { isPremium, points, cashUsd: 0, realizedUsd };

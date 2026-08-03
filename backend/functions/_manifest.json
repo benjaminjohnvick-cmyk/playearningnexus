@@ -684,6 +684,8 @@
   "setChatPrefs",
   "setSurveyCommitment",
   "setupStatus",
+  "shoppingConsent",
+  "shoppingPurchaseIngest",
   "smartContentSchedulingOptimizer",
   "smartPayoutScheduler",
   "socialMediaOAuthHandler",

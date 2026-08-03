@@ -35,6 +35,7 @@
   "AffiliateOnboarding",
   "AffiliatePerformanceSnapshot",
   "AffiliateProduct",
+  "AffiliatePurchase",
   "AffiliateSale",
   "AffiliateTier",
   "AgentLearningMemory",

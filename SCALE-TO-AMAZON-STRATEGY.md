@@ -31,14 +31,26 @@ run *their* rewards/play-to-earn on your rails; you take a SaaS fee + transactio
   Multi-tenancy is **impossible to retrofit** — building the seam early (even unused) keeps the door open.
   Requests resolve to a tenant (default = your own); new brands become new tenants.
 
-## 3. Third-party marketplace flywheel — the classic Amazon move
+## 3. Marketplace flywheel, inventory-free — the classic Amazon move, adapted
 
-Open the store to third-party sellers; take **commission + fulfillment margin + seller advertising.** Your
-differentiator: the closed loop means users hold Site Cash that *must* be spent on-platform — guaranteed,
-capturable demand sellers pay to reach. Selection → users → sellers → you tax the middle.
+You hold **no inventory** — members can look up whatever they want and buy it anywhere. So instead of taxing
+third-party sellers on a store you stock, you capture the same revenue line two ways: an **equivalent hold on
+survey revenue**, and an **opt-in shopping extension** that earns affiliate commission on purchases members
+make across the whole web. Your differentiator is unchanged: the closed loop means users hold Site Cash that
+*must* be spent on-platform — guaranteed, capturable demand.
 
-- **Coded now:** marketplace **seller-commission** config (`marketplace-fee.ts` helper + settings) on top of
-  the existing seller onboarding.
+- **Coded now — marketplace-equivalent hold.** Rather than collect seller commission, hold back an equal
+  percentage of **gross survey revenue** as the same revenue line (`marketplace-fee.ts` →
+  `applyMarketplaceEquivHold`, `MARKETPLACE_EQUIV_HOLD_*` settings, applied in `computeSurveyReward` before
+  the user share). It’s an **additional** hold on gross, so it slightly lowers the user pool — **disclosed**
+  in Terms and on the earn-rate page. The original seller-commission config (`sellerSaleSplit`) stays, unused,
+  in case you ever do stock a store.
+- **Coded now — opt-in shopping extension (Honey-style), backend + consent.** `shopping.ts` +
+  `shoppingConsent` + `shoppingPurchaseIngest` + `AffiliatePurchase` entity + `SHOPPING_*` settings. With the
+  user’s explicit in-app consent, the (separately-shipped) extension applies discounts wherever they shop and
+  posts each purchase; a configurable share of the affiliate commission returns to the user as closed-loop
+  Site Cash, the rest is your revenue. **Data-minimized** (merchant, order total, commission only) and
+  **consent-gated**; shipping needs affiliate partnerships + Chrome Web Store review + a privacy review.
 - **Your addition — mandatory 30-second ad between surveys (non-premium).** Coded: `surveyInterstitialGate`
   + `SurveyInterstitialAd.jsx` + `SURVEY_INTERSTITIAL_*` settings, wired into the live survey-start flow.
   Non-premium users watch a 30s ad between surveys (premium exempt — an upgrade lever); the ad is your own
@@ -49,6 +61,14 @@ capturable demand sellers pay to reach. Selection → users → sellers → you 
 Platforms die from unit economics before demand. The provider/self-host layer + advisor keeps AI/media/infra
 near $0 at launch and bounded at scale — what lets the three revenue flywheels survive to hundreds of
 millions of users.
+
+## All four, offered as Services on the website
+
+Each flywheel is now presented publicly as a **service** on a `/Services` marketing page (`src/pages/Services.jsx`):
+consented audience insights, rewards-as-a-service, marketplace/ad reach, and cost-leverage — plus the opt-in
+shopping helper. Marketing-only (a partnerships contact email, no lead form/backend), each card labels what’s
+live vs. a foundation. This makes the platform’s B2B offer legible to brands, sellers, and partners the moment
+they land, instead of it living only in strategy docs.
 
 ## The one-sentence strategy
 
