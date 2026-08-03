@@ -446,6 +446,7 @@
   "dropshipFulfill",
   "earnBackAbandon",
   "earnBackCredit",
+  "earnBackPrefs",
   "earnBackStart",
   "earnBackStatus",
   "earningVelocityMonitor",

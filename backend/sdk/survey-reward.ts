@@ -1,5 +1,6 @@
-import { getNumber } from "./settings.ts";
+import { getNumber, snapBool, snapNumber } from "./settings.ts";
 import { db } from "./db.ts";
+import { cacheGet, cacheSet } from "./cache.ts";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Survey reward tiers (replaces the old flat 50/50 split).
@@ -22,10 +23,26 @@ export interface SurveyReward {
 }
 
 /** Premium = an enrolled loyalty member (same signal used across the app). */
+/** Are premium seats still open? Everyone is premium by default (PREMIUM_DEFAULT_ALL) UNTIL the seat cap
+ *  (PREMIUM_SEAT_CAP) is reached — after that, new users stay non-premium and fall back to the third-party
+ *  survey networks (all of which ship ON). cap<=0 = unlimited (no counting). Bounded + cached (10 min). */
+export async function premiumSeatsOpen(): Promise<boolean> {
+  const cap = snapNumber("PREMIUM_SEAT_CAP", 0);
+  if (cap <= 0) return true;
+  const hit = await cacheGet<boolean>("premium_seats_open").catch(() => null);
+  if (typeof hit === "boolean") return hit;
+  const rows = await db.filter("User", {}, "-created_date", cap + 1).catch(() => []) as unknown[];
+  const open = (rows?.length || 0) <= cap;   // found more than cap users → seats full
+  await cacheSet("premium_seats_open", open, 600).catch(() => null);
+  return open;
+}
+
 export async function isPremiumUser(userId: string): Promise<boolean> {
   const rows = await db.filter("PremiumPPCMembership", { user_id: userId }, "-created_date", 1).catch(() => []) as Record<string, unknown>[];
-  const member = rows[0] || null;
-  return !!member?.loyalty_enrolled;
+  if (rows[0]?.loyalty_enrolled) return true;
+  // Everyone premium by default (until the seat cap fills; then fall back to third-party surveys).
+  if (snapBool("PREMIUM_DEFAULT_ALL", true) && await premiumSeatsOpen()) return true;
+  return false;
 }
 
 /** Compute the tiered reward for a survey worth `grossUsd`. */
