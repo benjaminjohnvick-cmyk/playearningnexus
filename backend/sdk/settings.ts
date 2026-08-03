@@ -167,6 +167,23 @@ export const REGISTRY: SettingDef[] = [
   { key: "PROVIDER_AYET_ENABLED", label: "Survey provider: ayeT-Studios", category: "Surveys", type: "boolean", default: "1", help: "Add ayeT-Studios inventory (needs AYET_API_KEY)." },
   { key: "PROVIDER_REVLUM_ENABLED", label: "Survey provider: Revlum", category: "Surveys", type: "boolean", default: "1", help: "Add Revlum inventory (needs REVLUM_API_KEY)." },
   { key: "PROVIDER_PRODEGE_ENABLED", label: "Survey provider: Prodege", category: "Surveys", type: "boolean", default: "1", help: "Add Prodege (MySoapbox) inventory (needs PRODEGE_API_KEY)." },
+
+  // ── Scale & Platform — the four flywheels (see SCALE-TO-AMAZON-STRATEGY.md). Foundations, not finished
+  //    businesses: each keeps the architecture from capping growth. ──────────────────────────────────────
+  // Flywheel 1 — consented aggregate insights (market-research supply). Aggregate-only + k-anonymity.
+  { key: "INSIGHTS_ENABLED", label: "Consented insights product", category: "Scale & Platform", type: "boolean", default: "1", help: "Expose AGGREGATE-only, consent-gated survey/audience insights to brands/researchers (the market-research supply business). Never individual PII." },
+  { key: "INSIGHTS_MIN_COHORT", label: "Insights minimum cohort (k-anonymity)", category: "Scale & Platform", type: "number", default: "50", unit: "people", help: "Suppress any aggregate whose cohort is smaller than this, so no individual can be re-identified. Higher = safer.", min: 5 },
+  // Flywheel 2 — rewards-as-a-service / multi-tenancy foundation.
+  { key: "MULTITENANCY_ENABLED", label: "Multi-tenant (rewards-as-a-service)", category: "Scale & Platform", type: "boolean", default: "0", help: "Let other brands run their own rewards/play-to-earn on your rails as separate tenants. Off by default (you're the only tenant); the seam is built so it can be turned on without a rewrite." },
+  { key: "DEFAULT_TENANT_ID", label: "Default tenant id", category: "Scale & Platform", type: "string", default: "gamergain", help: "Your own tenant. Requests with no tenant header resolve here." },
+  { key: "RAAS_REVENUE_SHARE_PCT", label: "RaaS platform fee", category: "Scale & Platform", type: "number", default: "0.15", unit: "×", help: "Platform's cut of a tenant brand's on-rails transaction volume (0.15 = 15%). Plus their SaaS fee.", min: 0, max: 1 },
+  // Flywheel 3 — third-party marketplace fees.
+  { key: "MARKETPLACE_THIRD_PARTY_ENABLED", label: "Third-party marketplace sellers", category: "Scale & Platform", type: "boolean", default: "1", help: "Open the store to third-party sellers and take a commission on their sales (the Amazon flywheel). Seller onboarding already exists." },
+  { key: "MARKETPLACE_COMMISSION_PCT", label: "Marketplace seller commission", category: "Scale & Platform", type: "number", default: "0.12", unit: "×", help: "Your commission on a third-party seller's sale (0.12 = 12%). Plus fulfillment margin + seller advertising.", min: 0, max: 1 },
+  // Flywheel 3 addition — mandatory 30s interstitial ad between surveys (non-premium only).
+  { key: "SURVEY_INTERSTITIAL_ENABLED", label: "Interstitial ad between surveys", category: "Scale & Platform", type: "boolean", default: "1", help: "Show a short ad between surveys. Feeds your own ad revenue (flywheel #1) from your engaged audience." },
+  { key: "SURVEY_INTERSTITIAL_SECONDS", label: "Interstitial ad length", category: "Scale & Platform", type: "number", default: "30", unit: "sec", help: "How long the interstitial ad runs before the user can continue to the next survey.", min: 5, max: 60 },
+  { key: "SURVEY_INTERSTITIAL_NONPREMIUM_ONLY", label: "Interstitial: non-premium only", category: "Scale & Platform", type: "boolean", default: "1", help: "Only non-premium users see the interstitial ad; premium is exempt (an upgrade incentive)." },
   { key: "CPX_APP_ID", label: "CPX app id", category: "Surveys", type: "string", default: "", help: "CPX Research app id.", sensitive: true },
   { key: "CPX_SECRET", label: "CPX secret", category: "Surveys", type: "string", default: "", help: "CPX Research secure-hash secret. Lives in env/DB, never in a URL.", sensitive: true },
   { key: "THEOREMREACH_API_KEY", label: "TheoremReach API key", category: "Surveys", type: "string", default: "", help: "TheoremReach API key.", sensitive: true },

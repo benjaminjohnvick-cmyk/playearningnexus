@@ -2891,6 +2891,19 @@ CREATE TABLE IF NOT EXISTS "TaxProfile" (
 CREATE INDEX IF NOT EXISTS "TaxProfile_data_gin" ON "TaxProfile" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "TaxProfile_created" ON "TaxProfile" (created_date DESC);
 
+-- Tenant: a brand running its own rewards/play-to-earn on the platform's rails (rewards-as-a-service,
+-- flywheel #2). The default tenant is the operator itself. data: { tenant_id, name, status, revenue_share_pct,
+-- saas_fee_usd, contact, created_at }
+CREATE TABLE IF NOT EXISTS "Tenant" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "Tenant_data_gin" ON "Tenant" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "Tenant_created" ON "Tenant" (created_date DESC);
+
 -- AI optimization engine entities (self-learning price/settings optimizer)
 
 -- OptimizationSignal
@@ -3375,6 +3388,18 @@ CREATE TABLE IF NOT EXISTS "AdGridAd" (
 );
 CREATE INDEX IF NOT EXISTS "AdGridAd_data_gin" ON "AdGridAd" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AdGridAd_created" ON "AdGridAd" (created_date DESC);
+
+-- AdImpression: a served ad impression (e.g. the 30s survey interstitial). Feeds your own ad-revenue
+-- reporting (flywheel #1). data: { user_id, ad_id, placement, seconds, day }
+CREATE TABLE IF NOT EXISTS "AdImpression" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdImpression_data_gin" ON "AdImpression" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdImpression_created" ON "AdImpression" (created_date DESC);
 
 -- AdGridResponse
 CREATE TABLE IF NOT EXISTS "AdGridResponse" (

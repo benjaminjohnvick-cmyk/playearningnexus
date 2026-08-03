@@ -971,5 +971,12 @@
   },
   "ProviderUsage": {
     "scope": "global"
+  },
+  "Tenant": {
+    "scope": "global"
+  },
+  "AdImpression": {
+    "scope": "owner",
+    "owner_field": "user_id"
   }
 }
