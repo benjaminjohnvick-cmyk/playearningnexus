@@ -79,18 +79,19 @@ export function foundingValueSummary() {
     store_credit_points: credit,
     store_credit_release_years: relYears,
     store_credit_points_per_year: Math.round(credit / relYears),
-    // 3) Survey earning share — a share of variable earnings, not a promised amount
+    // 2) Survey earning share — the value they keep: 100% of variable survey earnings, paid as store credit
     survey_earn_share_pct: foundingSurveyEarnSharePct(),
     disclosure:
       "These are what your founding membership includes — shown in real units, not dollars, and NOT a refund " +
-      "or a promised return on your payment. Store credit (points) is closed-loop: it spends only on this " +
-      "site, is not cash, has no cash value, and is only useful while the store is operating.",
-    // The extra upside is deliberately framed as SEPARATE from the purchase and NOT a return.
+      "or a promised return on your payment. What you earn from surveys is paid as Site Cash — closed-loop " +
+      "store credit that spends ONLY on this site, is not cash, has no cash value, and is only useful while " +
+      "the store is operating.",
+    // The survey earnings are deliberately framed as SEPARATE from the purchase and NOT a return.
     separate_upside:
-      "Beyond your package, you can earn more as a member — you keep 100% of what you make from surveys, and " +
-      "you may receive discretionary store-credit bonuses. This upside is SEPARATE from what you're buying, " +
-      "is VARIABLE and NOT guaranteed, is NOT a return on your payment, and could be little or nothing. It's " +
-      "on top of the package, never a promise of getting your money back.",
+      "The value you keep is your survey earnings — you keep 100% of what you earn, up to $8/day. This is " +
+      "SEPARATE from what you're buying, is VARIABLE and NOT guaranteed (it could be little or nothing), is " +
+      "NOT a return on your payment, and is paid as Site Cash store credit spendable only on this site. There " +
+      "is no separate cash-back or points grant — just the surveys you choose to do.",
   };
 }
 

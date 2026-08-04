@@ -48,6 +48,14 @@ export default function FoundingAdvertiser() {
   const m = data.milestone || {};
   const pct = m.target ? Math.min(100, Math.round(((m.current || 0) / m.target) * 100)) : 0;
   const fpct = m.founders_target ? Math.min(100, Math.round(((m.founders_current || 0) / m.founders_target) * 100)) : 0;
+  const v = data.value || {};
+  const vtiles = [
+    { n: Number(v.ad_impressions_total || 0).toLocaleString(), s: <>founding ad impressions<br />across surveys + social</> },
+    ...(Number(v.store_credit_points) > 0
+      ? [{ n: Number(v.store_credit_points).toLocaleString(), s: <>store-credit points<br />released over {v.store_credit_release_years} years</> }]
+      : []),
+    { n: `${Math.round((v.survey_earn_share_pct || 0) * 100)}%`, s: <>of your survey earnings you keep<br />(up to $8/day, as Site Cash)</> },
+  ];
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
@@ -66,19 +74,13 @@ export default function FoundingAdvertiser() {
         <Card className="mb-6 border-violet-200 bg-gradient-to-br from-violet-50 to-indigo-50">
           <CardContent className="p-5">
             <div className="text-sm font-semibold text-slate-800 mb-3">Your founding membership includes</div>
-            <div className="grid grid-cols-3 gap-3 text-center">
-              <div>
-                <div className="text-2xl font-bold text-violet-700">{Number(data.value.ad_impressions_total).toLocaleString()}</div>
-                <div className="text-[11px] text-slate-600 mt-1">founding ad impressions<br />across surveys + social</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-violet-700">{Number(data.value.store_credit_points).toLocaleString()}</div>
-                <div className="text-[11px] text-slate-600 mt-1">store-credit points<br />released over {data.value.store_credit_release_years} years</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-violet-700">{Math.round((data.value.survey_earn_share_pct || 0) * 100)}%</div>
-                <div className="text-[11px] text-slate-600 mt-1">of your survey earnings<br />are yours to keep</div>
-              </div>
+            <div className={`grid ${vtiles.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-3 text-center`}>
+              {vtiles.map((t, i) => (
+                <div key={i}>
+                  <div className="text-2xl font-bold text-violet-700">{t.n}</div>
+                  <div className="text-[11px] text-slate-600 mt-1">{t.s}</div>
+                </div>
+              ))}
             </div>
             <p className="text-[11px] text-slate-500 mt-3 leading-relaxed">{data.value.disclosure}</p>
           </CardContent>

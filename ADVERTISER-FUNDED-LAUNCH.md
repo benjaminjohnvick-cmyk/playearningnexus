@@ -51,18 +51,20 @@ program keeps the appeal and drops the guarantee:
 
 ## The founding value package — the "three numbers," represented legally
 
-Founding advertisers see three headline numbers, shown in **real deliverable units, never dollars** and never
-as a return or a "worth $X":
+Founding advertisers see the headline numbers in **real deliverable units, never dollars** and never as a
+return or a "worth $X":
 
 1. **Founding ad impressions** — a concrete count across **both** surfaces (between-survey interstitial + the
    social feed), `FOUNDING_INTERSTITIAL_IMPRESSIONS_PER_YEAR` × the term.
-2. **Founding store credit** — `FOUNDING_STORE_CREDIT_POINTS` in **points** (closed-loop, non-cashable store
-   credit), released in equal annual tranches over `FOUNDING_STORE_CREDIT_RELEASE_YEARS` (25%/year over 4).
-   Delivered by `foundingPerksRelease` (scheduled) once the record is active; `foundingCreditTrancheDue` only
-   ever releases the tranche actually due, so it never double-credits.
-3. **Survey earning share** — `FOUNDING_SURVEY_EARN_SHARE_PCT` (100%): they keep all of what they earn from
-   surveys. The **amount is variable and not guaranteed** — this is a share of whatever they actually earn,
-   not a promised figure.
+2. **Survey earning share** — `FOUNDING_SURVEY_EARN_SHARE_PCT` (100%): they keep all of what they earn from
+   surveys, up to the $8/day cap. The **amount is variable and not guaranteed** — a share of whatever they
+   actually earn, not a promised figure — and it is paid as **Site Cash: closed-loop store credit that spends
+   ONLY on-site**, never cash.
+
+There is **no separate store-credit grant** (the earlier "25%/year store credit" is removed;
+`FOUNDING_STORE_CREDIT_POINTS` defaults to 0). The only value a founding advertiser keeps is their survey
+earnings, which must be spent as on-site store credit. The `foundingPerksRelease` / `foundingCreditTrancheDue`
+machinery stays in place but is inert at 0, so a grant could be re-enabled later without new code.
 
 **Why this is legal/ethical, and the line we don't cross:** we show points as points — honest store credit,
 non-cashable, spendable only on-site, useful only while the store operates — and we do **not** show a dollar
