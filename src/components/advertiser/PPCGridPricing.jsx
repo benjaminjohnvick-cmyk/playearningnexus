@@ -56,6 +56,7 @@ function CheckoutForm({ plan, user, onSuccess }) {
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
   const [cardComplete, setCardComplete] = useState(false);
+  const [surveyOptIn, setSurveyOptIn] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -83,6 +84,9 @@ function CheckoutForm({ plan, user, onSuccess }) {
         user_id: user?.id,
         user_email: user?.email,
         amount: plan.price,
+        // OPTIONAL: also participate as a survey-taker (third-party survey providers). Opt-in only.
+        survey_optin: surveyOptIn,
+        survey_consent: surveyOptIn ? { accepted: true, terms_version: 'advertiser-surveys-1' } : undefined,
       });
 
       if (res.data?.success) {
@@ -118,6 +122,24 @@ function CheckoutForm({ plan, user, onSuccess }) {
         <p>{plan.total} — {plan.description}</p>
         {plan.key !== 'yearly' && <p className="text-gray-400 mt-1">Minimum commitment: 1 year ({plan.yearTotal})</p>}
       </div>
+
+      {/* OPTIONAL: also participate as a survey-taker (third-party providers) */}
+      <label className="flex items-start gap-2.5 bg-gray-800 border border-gray-600 rounded-xl p-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={surveyOptIn}
+          onChange={(e) => setSurveyOptIn(e.target.checked)}
+          className="mt-0.5 h-4 w-4 flex-shrink-0 accent-yellow-500"
+        />
+        <span className="text-xs text-gray-300 leading-relaxed">
+          <span className="font-bold text-white">Also let me take surveys (optional).</span> I want to
+          participate as a survey-taker too. My surveys will be served by the{' '}
+          <span className="text-yellow-300 font-semibold">third-party survey providers</span> (not my own
+          campaigns). I understand survey availability and reward are variable and not guaranteed. You can
+          skip this and it won't affect your ad plan.
+        </span>
+      </label>
+
       <Button
         type="submit"
         disabled={processing || !stripe || !cardComplete}

@@ -37,18 +37,30 @@ export default __handler(async (req) => {
     const required = enabled && !(nonPremiumOnly && premium);
     if (!required) return Response.json({ required: false, premium });
 
-    // Serve one ad from your own inventory. Founding advertisers' active creatives get PRIORITY (up to their
-    // allotment); then any active AdGrid/sponsored slot; then a house ad.
+    // Serve one ad from your own inventory. Priority order:
+    //   1) Founding advertisers' active creatives (up to their yearly allotment),
+    //   2) Paying PPC-grid advertisers' active creatives,
+    //   3) any active AdGrid/sponsored slot, then
+    //   4) a house ad.
     const slots = await base44.asServiceRole.entities.AdGridAd.filter({ status: "active" }).then((r: any) => r || []).catch(() => []) as Record<string, unknown>[];
     let pick = (slots || [])[0] || null;
     let foundingOwnerId: string | null = null;
+    let ppcAdvertiser = false;
     if (foundingInterstitialPriority() && (slots || []).length) {
       const owners = await activeFoundingAdOwners(db).catch(() => new Set<string>());
       const fpick = (slots || []).find((s) => owners.has(String(s.created_by)));
       if (fpick) { pick = fpick; foundingOwnerId = String(fpick.created_by); }
     }
+    // If no founding ad was chosen, prefer an ad whose advertiser is actively paying for the PPC grid, so
+    // paying PPC advertisers are placed in the mandatory between-survey slot ahead of any stray/house ad.
+    if (!foundingOwnerId && snapBool("SURVEY_INTERSTITIAL_PPC_PRIORITY", true) && (slots || []).length) {
+      const advertisers = await base44.asServiceRole.entities.User.filter({ ppc_grid_active: true }).then((r: any) => r || []).catch(() => []) as Record<string, unknown>[];
+      const paying = new Set((advertisers || []).map((a) => String(a.id)));
+      const ppick = (slots || []).find((s) => paying.has(String(s.advertiser_user_id)) || paying.has(String(s.created_by)));
+      if (ppick) { pick = ppick; ppcAdvertiser = true; }
+    }
     const ad = pick
-      ? { ad_id: pick.id, title: pick.title || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId }
+      ? { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser }
       : { ad_id: "house", title: "Upgrade to Premium — skip the ads", image_url: "", url: "/Pricing" };
 
     return Response.json({ required: true, seconds, premium, ad });

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { advertiserSurveyOptInEnabled, advertiserSurveyProvider, recordAdvertiserSurveyOptIn } from "../../sdk/advertiser-surveys.ts";
 import Stripe from 'npm:stripe@14.21.0';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), { apiVersion: '2023-10-16' });
@@ -17,10 +18,22 @@ export default __handler(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { plan, payment_method_id, amount } = await req.json();
+    const { plan, payment_method_id, amount, survey_optin, survey_consent } = await req.json();
 
     const planConfig = PLANS[plan];
     if (!planConfig) return Response.json({ error: 'Invalid plan' }, { status: 400 });
+
+    // OPTIONAL: the advertiser chose, on signup, to ALSO participate as a survey-taker. If they ticked it,
+    // they must accept the short consent line. When on, they're flagged to fill out surveys from the
+    // THIRD-PARTY providers only (never the platform's own PPC surveys). Purely opt-in; leaving it off
+    // changes nothing about the advertiser's subscription.
+    const wantsSurveyOptIn = survey_optin === true && advertiserSurveyOptInEnabled();
+    if (wantsSurveyOptIn && !(survey_consent && survey_consent.accepted === true)) {
+      return Response.json({
+        error: "To also participate as a survey-taker, please accept the survey-participation consent (survey_consent.accepted required). Survey availability and reward are variable and not guaranteed.",
+        requires_survey_consent: true,
+      }, { status: 400 });
+    }
 
     // Create or retrieve Stripe customer
     let customerId = user.stripe_customer_id;
@@ -100,7 +113,26 @@ export default __handler(async (req) => {
       description: planConfig.label,
     }).catch(() => null);
 
-    return Response.json({ success: true, plan, ...result });
+    // OPTIONAL survey-taker opt-in — records User flags + an append-only consent record. Best-effort;
+    // a failure here never blocks the (already-completed) subscription.
+    let surveyOptIn = null;
+    if (wantsSurveyOptIn) {
+      const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null;
+      surveyOptIn = await recordAdvertiserSurveyOptIn(user.id, {
+        accepted: true,
+        termsVersion: survey_consent?.terms_version ?? null,
+        ip,
+      }).catch(() => null);
+    }
+
+    return Response.json({
+      success: true,
+      plan,
+      ...result,
+      survey_optin: surveyOptIn
+        ? { opted_in: true, provider: surveyOptIn.provider, note: "You're also set up as a survey-taker. Your surveys come from the third-party providers; availability and reward vary and are not guaranteed." }
+        : { opted_in: false, available: advertiserSurveyOptInEnabled(), provider: advertiserSurveyProvider() },
+    });
   } catch (error) {
     return Response.json({ success: false, error: error.message }, { status: 500 });
   }
