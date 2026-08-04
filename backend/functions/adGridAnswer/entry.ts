@@ -3,6 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
 import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
+import { foundingFullKeepActive, recordFoundingFullKeepEarning } from "../../sdk/founding-advertiser.ts";
 import { payReferralSignupBonusOnce, creditReferralOverrideOnEarn } from "../../sdk/referral-rewards.ts";
 import { adgridThumbnailPrice, sessionGrossTarget, profileLine } from "../../sdk/adgrid.ts";
 
@@ -64,9 +65,11 @@ export default __handler(async (req) => {
     if (!already) {
       const gross = adgridThumbnailPrice();
       const premium = await isPremiumUser(user.id);
-      const rw = await computeSurveyReward(premium, gross);
+      const ff = await foundingFullKeepActive(db, user.id, day);
+      const rw = await computeSurveyReward(premium, gross, ff.active ? 1 : undefined);
       if (rw.points > 0) { await adjustUserBalance(user.id, rw.points, { field: "points" }); creditedPoints = rw.points; }
       await adjustUserBalance(user.id, rw.realizedUsd, { field: "total_earnings" });
+      if (ff.active && ff.record) await recordFoundingFullKeepEarning(db, ff.record, rw.realizedUsd, day);
 
       // DailyEarnings: gross drives the $8/day goal; realized is take-home value.
       const deRows = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id: user.id, date: day }).catch(() => []) as Record<string, unknown>[];

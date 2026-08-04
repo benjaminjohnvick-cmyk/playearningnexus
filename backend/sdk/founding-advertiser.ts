@@ -39,6 +39,71 @@ export const foundingStoreCreditPoints = () => Math.max(0, snapNumber("FOUNDING_
 export const foundingStoreCreditReleaseYears = () => Math.max(1, snapNumber("FOUNDING_STORE_CREDIT_RELEASE_YEARS", 4));
 export const foundingSurveyEarnSharePct = () => Math.min(1, Math.max(0, snapNumber("FOUNDING_SURVEY_EARN_SHARE_PCT", 1)));
 export const foundingMissedBonusMult = () => Math.max(1, snapNumber("FOUNDING_MILESTONE_MISSED_BONUS_MULT", 1));
+export const foundingFullKeepCapToPrice = () => snapBool("FOUNDING_FULLKEEP_CAP_TO_PRICE", true);
+export const foundingFullKeepCapExplicit = () => Math.max(0, snapNumber("FOUNDING_FULLKEEP_CAP_USD", 0));
+export const foundingFullKeepYears = () => Math.max(1, snapNumber("FOUNDING_FULLKEEP_YEARS", 4));
+
+/** The cumulative cap (USD) on a founding member's 100%-keep survey benefit. Cap = amount paid (default) or
+ *  an explicit setting. NOTE: cap = payment is a return-of-capital signal; keep member copy as a variable cap,
+ *  never a promise to recoup. */
+export function foundingFullKeepCapUsd(rec: Record<string, unknown>): number {
+  if (foundingFullKeepCapToPrice()) return Math.max(0, Number(rec.price_usd) || foundingPriceUsd());
+  return foundingFullKeepCapExplicit();
+}
+
+export interface FullKeepStatus {
+  cap_usd: number;
+  earned_usd: number;     // cumulative full-keep earnings recorded so far
+  remaining_usd: number;
+  years: number;
+  within_window: boolean;
+  active: boolean;        // still keeping 100%? (cap not reached AND within the window AND record is active)
+  ended_reason: string;   // "" | "cap_reached" | "window_elapsed" | "not_active"
+}
+
+/** Evaluate a founding member's full-keep status. `todayISO` passed in for testability. */
+export function foundingFullKeepStatus(rec: Record<string, unknown>, todayISO: string): FullKeepStatus {
+  const cap = foundingFullKeepCapUsd(rec);
+  const earned = Math.max(0, Number(rec.fullkeep_earned_usd) || 0);
+  const years = foundingFullKeepYears();
+  const startISO = String(rec.fullkeep_start || rec.credit_start || rec.purchased_at || "");
+  let withinWindow = true;
+  if (startISO) {
+    const start = Date.parse(startISO), today = Date.parse(todayISO);
+    if (!isNaN(start) && !isNaN(today)) {
+      withinWindow = (today - start) < years * 365.25 * 24 * 3600 * 1000;
+    }
+  }
+  const isActiveStatus = rec.status === FA_STATUS.ACTIVE;
+  const capReached = cap > 0 && earned >= cap;
+  const active = isActiveStatus && withinWindow && !capReached;
+  const ended_reason = !isActiveStatus ? "not_active" : capReached ? "cap_reached" : !withinWindow ? "window_elapsed" : "";
+  return { cap_usd: cap, earned_usd: earned, remaining_usd: Math.max(0, cap - earned), years, within_window: withinWindow, active, ended_reason };
+}
+
+/** For the survey-reward path: is this user a founding member currently keeping 100%? Returns the record too. */
+export async function foundingFullKeepActive(dbi: {
+  filter: (name: string, q: Record<string, unknown>, sort?: string, limit?: number) => Promise<Record<string, unknown>[]>;
+}, userId: string, todayISO: string): Promise<{ active: boolean; record: Record<string, unknown> | null }> {
+  const rows = await dbi.filter("FoundingAdvertiser", { user_id: userId, status: FA_STATUS.ACTIVE }, "-created_date", 1).catch(() => []);
+  const rec = (rows || [])[0] || null;
+  if (!rec) return { active: false, record: null };
+  return { active: foundingFullKeepStatus(rec, todayISO).active, record: rec };
+}
+
+/** Record realized survey earnings against a founding member's full-keep cap (call after crediting). Caps the
+ *  increment so cumulative never exceeds the cap. Returns the updated status. */
+export async function recordFoundingFullKeepEarning(dbi: {
+  update: (name: string, id: string, patch: Record<string, unknown>) => Promise<unknown>;
+}, rec: Record<string, unknown>, realizedUsd: number, todayISO: string): Promise<void> {
+  const cap = foundingFullKeepCapUsd(rec);
+  const earned = Math.max(0, Number(rec.fullkeep_earned_usd) || 0);
+  const add = Math.max(0, cap > 0 ? Math.min(Number(realizedUsd) || 0, cap - earned) : (Number(realizedUsd) || 0));
+  if (add <= 0) return;
+  const patch: Record<string, unknown> = { fullkeep_earned_usd: Math.round((earned + add) * 100) / 100 };
+  if (!rec.fullkeep_start) patch.fullkeep_start = todayISO;
+  await dbi.update("FoundingAdvertiser", rec.id as string, patch).catch(() => null);
+}
 
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 
@@ -88,10 +153,12 @@ export function foundingValueSummary() {
       "the store is operating.",
     // The survey earnings are deliberately framed as SEPARATE from the purchase and NOT a return.
     separate_upside:
-      "The value you keep is your survey earnings — you keep 100% of what you earn, up to $8/day. This is " +
-      "SEPARATE from what you're buying, is VARIABLE and NOT guaranteed (it could be little or nothing), is " +
-      "NOT a return on your payment, and is paid as Site Cash store credit spendable only on this site. There " +
-      "is no separate cash-back or points grant — just the surveys you choose to do.",
+      "As a founding member you keep 100% of what you earn from surveys (up to $8/day) — a founding rate that " +
+      "applies up to a set cap, over " + foundingFullKeepYears() + " years, after which you earn at the " +
+      "standard member rate. This is SEPARATE from what you're buying, is VARIABLE and NOT guaranteed (you may " +
+      "earn little, and are not promised to reach the cap), is NOT a return on your payment, and is paid as " +
+      "Site Cash store credit spendable only on this site. There is no cash-back or points grant — just the " +
+      "surveys you choose to do.",
   };
 }
 

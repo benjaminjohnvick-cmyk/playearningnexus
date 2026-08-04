@@ -3,6 +3,8 @@ import { __handler } from "../../sdk/runtime.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
 import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
+import { db } from "../../sdk/db.ts";
+import { foundingFullKeepActive, recordFoundingFullKeepEarning } from "../../sdk/founding-advertiser.ts";
 
 // cpxPostback — MONEY-IN endpoint for CPX Research survey completions (the second survey network). Mirrors
 // bitlabsPostback's reward path so every provider shares one payout rule: platform keeps the network cash,
@@ -43,7 +45,9 @@ export default __handler(async (req) => {
 
     const gross = Math.max(0, Math.round(reward * 100) / 100);
     const premium = await isPremiumUser(uid);
-    const rw = await computeSurveyReward(premium, gross);
+    const ffToday = new Date().toISOString().slice(0, 10);
+    const ff = await foundingFullKeepActive(db, uid, ffToday);
+    const rw = await computeSurveyReward(premium, gross, ff.active ? 1 : undefined);
 
     let creditPoints = rw.points;
     let creditCash = rw.cashUsd;
@@ -60,6 +64,7 @@ export default __handler(async (req) => {
     }
 
     const today = new Date().toISOString().split("T")[0];
+    if (ff.active && ff.record) await recordFoundingFullKeepEarning(db, ff.record, realizedUsd, ffToday);
     const dailyEarnings = await base44.asServiceRole.entities.DailyEarnings.filter({ user_id: uid, date: today });
     if (dailyEarnings.length > 0) {
       const current = dailyEarnings[0];

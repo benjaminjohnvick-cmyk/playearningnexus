@@ -29,6 +29,7 @@ export default __handler(async (req) => {
       for (const r of pending) {
         const patch: Record<string, unknown> = { status: FA_STATUS.ACTIVE, milestone_met: true };
         if (!r.credit_start) patch.credit_start = today;
+        if (!r.fullkeep_start) patch.fullkeep_start = today;   // 100%-keep window starts at launch
         const ok = await db.update("FoundingAdvertiser", r.id as string, patch).catch(() => null);
         if (ok) activated++;
       }

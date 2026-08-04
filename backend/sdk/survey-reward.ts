@@ -46,8 +46,9 @@ export async function isPremiumUser(userId: string): Promise<boolean> {
   return false;
 }
 
-/** Compute the tiered reward for a survey worth `grossUsd`. */
-export async function computeSurveyReward(isPremium: boolean, grossUsd: number): Promise<SurveyReward> {
+/** Compute the tiered reward for a survey worth `grossUsd`. `userSharePctOverride` (0–1) lets a caller force
+ *  a specific accrual share — used for the founding full-keep benefit (1.0 = keep 100%) until its cap. */
+export async function computeSurveyReward(isPremium: boolean, grossUsd: number, userSharePctOverride?: number): Promise<SurveyReward> {
   const gross = Math.max(0, Math.round(grossUsd * 100) / 100);
   // Revised flywheel #3: you hold no inventory, so instead of seller commission you hold back an equal % of
   // GROSS survey revenue as the marketplace-equivalent line. Applied FIRST, before the user share — so the
@@ -57,7 +58,9 @@ export async function computeSurveyReward(isPremium: boolean, grossUsd: number):
   // 50/50 split: the platform keeps 50% (real cash), and the user accrues 50% of the (net) survey value as
   // NON-CASHABLE points — for BOTH tiers. The premium/non-premium difference is NOT the accrual rate; it's
   // the per-transaction SPEND CAP applied at redemption (premium 24% vs non-premium 12% of the price).
-  const userSharePct = Math.min(1, Math.max(0, await getNumber("SURVEY_USER_SHARE_PCT", 0.5)));
+  const userSharePct = (typeof userSharePctOverride === "number")
+    ? Math.min(1, Math.max(0, userSharePctOverride))
+    : Math.min(1, Math.max(0, await getNumber("SURVEY_USER_SHARE_PCT", 0.5)));
   const pointCents = Math.max(1, await getNumber("POINT_VALUE_CENTS", 1));
   const userUsd = Math.round(netGross * userSharePct * 100) / 100;
   const points = Math.max(0, Math.round(userUsd * 100 / pointCents));

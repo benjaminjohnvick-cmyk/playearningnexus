@@ -4,7 +4,7 @@ import { db } from "../../sdk/db.ts";
 import {
   foundingEnabled, foundingPriceUsd, foundingTermYears, foundingImpressionsPerYear,
   foundingSlots, foundingSlotsRemaining, foundingUpsellBusiness, foundingDisclosures,
-  foundingValueSummary, milestoneState, FA_STATUS,
+  foundingValueSummary, foundingFullKeepStatus, milestoneState, FA_STATUS,
 } from "../../sdk/founding-advertiser.ts";
 
 // foundingAdvertiserOffer (authenticated) — the honest terms of the founding-advertiser package + the
@@ -30,6 +30,9 @@ export default __handler(async (req) => {
           impressions_per_year: mineRows[0].impressions_per_year,
           impressions_served: mineRows[0].impressions_served || 0,
           purchased_at: mineRows[0].purchased_at,
+          // Founding full-keep progress: how much of the 100%-keep window/cap the member has used (variable,
+          // not a promised amount). Shown so they can see their standing, never as "money you'll get back".
+          full_keep: foundingFullKeepStatus(mineRows[0], today),
         }
       : null;
 

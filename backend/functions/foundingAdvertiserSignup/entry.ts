@@ -71,6 +71,8 @@ export default __handler(async (req) => {
       store_credit_release_years: foundingStoreCreditReleaseYears(),
       store_credit_points_released: 0,
       credit_start: null,                            // set when the record activates (platform launched)
+      fullkeep_earned_usd: 0,                        // cumulative 100%-keep survey earnings toward the cap
+      fullkeep_start: null,                          // window starts at activation
       survey_earn_share_pct: foundingSurveyEarnSharePct(),
       member_enrolled: foundingAutoEnrollMember(),   // part of the closed loop; earns surveys as a member
       affiliate_enrolled: foundingAutoEnrollMember(),

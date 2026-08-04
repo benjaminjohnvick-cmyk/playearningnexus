@@ -4,6 +4,8 @@ import { getNumber } from "../../sdk/settings.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
 import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
+import { db } from "../../sdk/db.ts";
+import { foundingFullKeepActive, recordFoundingFullKeepEarning } from "../../sdk/founding-advertiser.ts";
 import { payReferralSignupBonusOnce, creditReferralOverrideOnEarn } from "../../sdk/referral-rewards.ts";
 
 // HMAC-SHA256 of the callback URL (signature param stripped), hex, constant-time compared.
@@ -73,7 +75,10 @@ export default __handler(async (req) => {
     // (premium: 24% of $). No user-to-user movement; non-premium users never receive cash.
     const gross = Math.max(0, Math.round(reward * 100) / 100);
     const premium = await isPremiumUser(uid);
-    const rw = await computeSurveyReward(premium, gross);
+    // Founding full-keep: while active (within cap + window), a founding member keeps 100% of the accrual.
+    const ffToday = new Date().toISOString().slice(0, 10);
+    const ff = await foundingFullKeepActive(db, uid, ffToday);
+    const rw = await computeSurveyReward(premium, gross, ff.active ? 1 : undefined);
 
     // Daily earnings cap applies to the user's realized $ value; scale the reward down if capped.
     let creditPoints = rw.points;
@@ -90,6 +95,8 @@ export default __handler(async (req) => {
       return Response.json({ ok: true, capped: true, reason: 'Daily earnings cap reached', cap: allowance.cap });
     }
     const today = new Date().toISOString().split('T')[0];
+    // Meter the realized earnings against the founding full-keep cap (records only while active).
+    if (ff.active && ff.record) await recordFoundingFullKeepEarning(db, ff.record, realizedUsd, ffToday);
 
     // DailyEarnings: total_earned = the value the user actually received today ($, kept honest so
     // "you earned $X" is never overstated); survey_gross = gross survey value done today (drives the

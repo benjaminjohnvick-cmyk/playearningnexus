@@ -8,6 +8,7 @@ import { adjustUserBalance } from "../../sdk/balance.ts";
 import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
 import { payReferralSignupBonusOnce, creditReferralOverrideOnEarn } from "../../sdk/referral-rewards.ts";
 import { db } from "../../sdk/db.ts";
+import { foundingFullKeepActive, recordFoundingFullKeepEarning } from "../../sdk/founding-advertiser.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
 const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
@@ -97,7 +98,9 @@ export default __handler(async (req) => {
     // non-premium → SURVEY_POINTS_PER_DOLLAR points/$ (12 pts/$, closed-loop). payoutAmount = the user's
     // realized $ value (aliased so the rest of this function is unchanged).
     const premium = await isPremiumUser(respondent_user_id);
-    const rw = await computeSurveyReward(premium, grossPayout);
+    const ffToday = new Date().toISOString().slice(0, 10);
+    const ff = await foundingFullKeepActive(db, respondent_user_id, ffToday);
+    const rw = await computeSurveyReward(premium, grossPayout, ff.active ? 1 : undefined);
     let creditPoints = rw.points, creditCash = rw.cashUsd, payoutAmount = rw.realizedUsd;
 
     // Enforce the per-user daily earnings cap (DAILY_EARN_CAP_USD; 0 = no cap).
@@ -109,6 +112,7 @@ export default __handler(async (req) => {
       payoutAmount = allowance.allowed;
     }
     if (payoutAmount <= 0 && creditPoints <= 0) return Response.json({ success: false, reason: 'Daily earnings cap reached', payout: 0, cap: allowance.cap });
+    if (ff.active && ff.record) await recordFoundingFullKeepEarning(db, ff.record, payoutAmount, ffToday);
 
     // Load respondent user
     const users = await base44.asServiceRole.entities.User.filter({ id: respondent_user_id });

@@ -61,6 +61,22 @@ return or a "worth $X":
    actually earn, not a promised figure — and it is paid as **Site Cash: closed-loop store credit that spends
    ONLY on-site**, never cash.
 
+### Founding full-keep CAP (the 100%-keep is bounded)
+
+The founding 100%-keep survey rate applies only **up to a cumulative cap, over a window** (`FOUNDING_FULLKEEP_*`
+settings; default cap = the amount paid, window = 4 years), after which the member reverts to the standard
+survey-reward share. It's metered per member on their `FoundingAdvertiser` record (`fullkeep_earned_usd`) and
+wired into every survey-credit path (`bitlabsPostback`, `cpxPostback`, `adGridAnswer`, `respondentMicroPayout`)
+via `computeSurveyReward`'s share override + `recordFoundingFullKeepEarning`.
+
+**COMPLIANCE — the sharp edge here.** Setting the cap equal to what they paid, and any copy that says "earn
+back / recoup what you paid over 4 years," is BOTH (a) an FTC earnings claim — survey inventory cannot
+guarantee the amount, so a promise to reach the cap is unsubstantiated and deceptive — and (b) a
+return-of-capital signal that reads like an investment. The mitigating fact is that members earn it through
+their **own survey work** (not passively), which is why it's presented strictly as a **cap on a variable,
+not-guaranteed benefit** ("keep 100% up to your founding cap, amounts vary, you may not reach it"), never a
+promise to recoup. Do not soften that. Counsel must review this specific mechanic and all its copy.
+
 There is **no separate store-credit grant** (the earlier "25%/year store credit" is removed;
 `FOUNDING_STORE_CREDIT_POINTS` defaults to 0). The only value a founding advertiser keeps is their survey
 earnings, which must be spent as on-site store credit. The `foundingPerksRelease` / `foundingCreditTrancheDue`

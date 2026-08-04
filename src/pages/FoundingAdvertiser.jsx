@@ -185,6 +185,13 @@ export default function FoundingAdvertiser() {
             <div>
               <div className="font-semibold text-emerald-900 text-sm">You hold a founding seat — status: {String(mine.status)}.</div>
               <div className="text-xs text-emerald-800">{Number(mine.impressions_per_year).toLocaleString()} impressions/year · served so far: {Number(mine.impressions_served || 0).toLocaleString()}.</div>
+              {mine.full_keep && (
+                <div className="text-xs text-emerald-800 mt-1">
+                  {mine.full_keep.active
+                    ? <>Full-keep survey rate: <strong>active</strong> — you’ve earned ${Number(mine.full_keep.earned_usd).toLocaleString()} of your ${Number(mine.full_keep.cap_usd).toLocaleString()} founding cap ({mine.full_keep.years}-yr window). Amounts vary with the surveys you do.</>
+                    : <>Full-keep survey rate: ended ({mine.full_keep.ended_reason.replace('_', ' ')}) — you now earn at the standard member rate.</>}
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
