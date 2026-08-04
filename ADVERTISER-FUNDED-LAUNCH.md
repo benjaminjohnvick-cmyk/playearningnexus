@@ -23,10 +23,21 @@ program keeps the appeal and drops the guarantee:
   earn **variable** Site Cash from surveys like any member. This is the honest version of "earn your cost
   back": it genuinely offsets real-world cost, but it is **disclosed as variable, not guaranteed, and not a
   repayment** of the advertising fee. Site Cash is closed-loop, non-cashable.
-- **Escrow + dual milestone** — funds are held in escrow until the platform reaches **BOTH**
+- **Funds model — `FOUNDING_FUNDS_MODEL` (default `presale`).** Chosen: **presale** — the full $8,000 is
+  **non-refundable founding revenue** that funds the ramp-up, crowdfunding-style. `escrow` (fully refundable,
+  not spendable) and `hybrid` (a non-refundable deposit spendable now + the rest escrowed/refundable) are also
+  supported by the same code, switched by this setting. `signupFinancials()` splits every payment into a
+  spendable (non-refundable) portion and an escrowed (refundable) portion per the model, and the code keeps the
+  two pots hard-separated — escrow is never spent on ramp-up.
+- **Dual milestone** — the platform "launches" (advertising begins delivering) only when it reaches **BOTH**
   `FOUNDING_LAUNCH_MILESTONE_PREMIUM_USERS` (100,000) premium users **and** `FOUNDING_LAUNCH_MILESTONE_FOUNDERS`
-  (100,000) founding members. If both aren't met by `FOUNDING_LAUNCH_MILESTONE_DEADLINE`, escrowed payments are
-  flagged for **automatic refund**. The program keeps running until both gates are met.
+  (100,000) founding members. In `presale`, the milestone gates **delivery**, not a refund: if it's missed by
+  the deadline, presale purchases are marked `launch_unmet` (**no money back — disclosed and accepted at
+  purchase**); escrow/hybrid refundable portions are flagged `refund_due`.
+- **Non-refundable risk is disclosed prominently.** In presale/hybrid, the offer page shows a red warning box
+  and the acceptance checkbox states the payment is non-refundable and may be lost if the platform doesn't
+  launch. This honest disclosure is what keeps a crowdfunding-style pre-sale legitimate — it must not be
+  softened.
 - **No member shortfall charge, ever** — `FOUNDING_MEMBER_SHORTFALL_CHARGE` is coded **off and must stay off**.
   Members are never charged for "falling short" of an earnings figure, because there is no promised figure.
 - **Ramp-up funded from operating capital, not escrow** — keeping the offer attractive before launch is paid
@@ -37,6 +48,34 @@ program keeps the appeal and drops the guarantee:
   satisfaction guarantee (never a guarantee of financial return).
 - **Everything serves the flywheel** — the store-credit rewards spend only on-platform, keeping advertisers
   and their audiences inside the closed loop; upsell/downsell hooks pull people deeper in.
+
+## The founding value package — the "three numbers," represented legally
+
+Founding advertisers see three headline numbers, shown in **real deliverable units, never dollars** and never
+as a return or a "worth $X":
+
+1. **Founding ad impressions** — a concrete count across **both** surfaces (between-survey interstitial + the
+   social feed), `FOUNDING_INTERSTITIAL_IMPRESSIONS_PER_YEAR` × the term.
+2. **Founding store credit** — `FOUNDING_STORE_CREDIT_POINTS` in **points** (closed-loop, non-cashable store
+   credit), released in equal annual tranches over `FOUNDING_STORE_CREDIT_RELEASE_YEARS` (25%/year over 4).
+   Delivered by `foundingPerksRelease` (scheduled) once the record is active; `foundingCreditTrancheDue` only
+   ever releases the tranche actually due, so it never double-credits.
+3. **Survey earning share** — `FOUNDING_SURVEY_EARN_SHARE_PCT` (100%): they keep all of what they earn from
+   surveys. The **amount is variable and not guaranteed** — this is a share of whatever they actually earn,
+   not a promised figure.
+
+**Why this is legal/ethical, and the line we don't cross:** we show points as points — honest store credit,
+non-cashable, spendable only on-site, useful only while the store operates — and we do **not** show a dollar
+value, imply a dollar equivalence, or claim any multiple/return. That matters because *disguising a promised
+dollar return as points would not make it legal* — regulators judge substance over form. What keeps it clean
+is that these are genuine **deliverables** (a grant, an impression count, an earning share), framed as what the
+membership *includes*, not as ROI. The page states plainly they are "not a refund or a promised return," and
+that store credit is worthless if the store isn't operating.
+
+- **Both outcomes, honestly.** Missing the 100k milestone doesn't void the package — it still delivers on
+  whatever platform exists, and you can dial goodwill higher for the milestone-missed case via
+  `FOUNDING_MILESTONE_MISSED_BONUS_MULT` (discretionary, from margin). The one thing no design can promise:
+  if the platform **never launches**, none of this can be delivered and the (presale) money is lost — disclosed.
 
 ## What's coded
 
@@ -75,9 +114,14 @@ These were in the original ask but are the parts that would create real legal li
 ## Hard gates before this can go live (not code — get these first)
 
 - **Securities + FTC counsel review** of the whole offer, the disclosures, and every piece of marketing copy.
-  Pre-selling a limited, prepaid program with a refund milestone still needs a lawyer's eyes even in this
-  framing. This module is a scaffold; it is **off the critical path to a compliant launch until counsel signs
-  off**.
+  Pre-selling a limited, prepaid program still needs a lawyer's eyes even in this framing. This module is a
+  scaffold; it is **off the critical path to a compliant launch until counsel signs off**.
+- **Crowdfunding / pre-sale obligations (presale model).** Taking non-refundable money to build-then-deliver is
+  a crowdfunding-style pre-sale. The FTC has pursued crowdfunders who took money and didn't make a good-faith
+  effort to deliver, so: use the funds for the stated purpose (building/launching the platform), keep records,
+  and make the non-refundable + may-not-launch risk unmistakable to buyers (the UI does this — don't weaken
+  it). The line that must never be crossed: **no promised financial return, and never pay any promised payout
+  to earlier buyers out of later buyers' money** — that's the Ponzi mechanic, illegal regardless of framing.
 - **A real escrow arrangement** (a licensed escrow agent / segregated account) for the held funds. The code
   tracks `escrowed` / `refund_due` state and flags; it never moves money. Your processor + escrow agent act on
   the flags.

@@ -4,8 +4,9 @@ import { db } from "../../sdk/db.ts";
 import { recordConsent } from "../../sdk/consent-ledger.ts";
 import {
   foundingEnabled, foundingProgramOpen, foundingPriceUsd, foundingTermYears,
-  foundingImpressionsPerYear, foundingAutoEnrollMember, foundingEscrowRequired,
+  foundingImpressionsPerYear, foundingAutoEnrollMember, signupFinancials,
   foundingDisclosures, DISCLOSURES_VERSION, FA_STATUS,
+  foundingStoreCreditPoints, foundingStoreCreditReleaseYears, foundingSurveyEarnSharePct, foundingSocialAdsEnabled,
 } from "../../sdk/founding-advertiser.ts";
 
 // foundingAdvertiserSignup (authenticated) — reserve a founding-advertiser seat. This records the purchase
@@ -46,16 +47,31 @@ export default __handler(async (req) => {
       shown: foundingDisclosures(), ip, meta: { feature: "founding_advertiser" },
     }).catch(() => null);
 
-    // Record the purchase as ESCROWED (funds held pending the launch milestone). Real payment/escrow is
-    // external — this is the state record only.
+    // Split the payment per the configured funds model. presale = fully non-refundable revenue (spendable on
+    // ramp-up); escrow = fully refundable/held; hybrid = deposit spendable + rest escrowed. Real payment +
+    // escrow are external — this is the state record only (it never moves money).
+    const fin = signupFinancials();
+    const initialStatus = fin.model === "escrow" ? FA_STATUS.ESCROWED : FA_STATUS.FUNDED;
     const rec = await base44.asServiceRole.entities.FoundingAdvertiser.create({
       user_id: user.id,
       tier: "founding",
-      price_usd: foundingPriceUsd(),
+      price_usd: fin.price_usd,
+      funds_model: fin.model,
+      spendable_usd: fin.spendable_usd,      // non-refundable revenue that funds the ramp-up
+      escrow_usd: fin.escrow_usd,            // refundable portion held in escrow (0 in presale)
+      refundable: fin.refundable,
       term_years: foundingTermYears(),
-      status: foundingEscrowRequired() ? FA_STATUS.ESCROWED : FA_STATUS.ACTIVE,
+      status: initialStatus,
       impressions_per_year: foundingImpressionsPerYear(),
       impressions_served: 0,
+      social_ads: foundingSocialAdsEnabled(),
+      // Founding store-credit grant (points / closed-loop, non-cashable) — released in annual tranches once
+      // the platform is live. A membership benefit, not a refund or a dollar value.
+      store_credit_points_granted: foundingStoreCreditPoints(),
+      store_credit_release_years: foundingStoreCreditReleaseYears(),
+      store_credit_points_released: 0,
+      credit_start: null,                            // set when the record activates (platform launched)
+      survey_earn_share_pct: foundingSurveyEarnSharePct(),
       member_enrolled: foundingAutoEnrollMember(),   // part of the closed loop; earns surveys as a member
       affiliate_enrolled: foundingAutoEnrollMember(),
       disclosures_version: DISCLOSURES_VERSION,
@@ -63,13 +79,16 @@ export default __handler(async (req) => {
       purchased_at: new Date().toISOString(),
     }).catch(() => null);
 
-    return Response.json({
-      ok: true,
-      status: rec ? (rec as Record<string, unknown>).status : FA_STATUS.ESCROWED,
-      record: rec,
-      note: "Funds are held in escrow until the premium-user launch milestone is met; refunded if it isn't. " +
-            "You are enrolled as a member and can earn variable Site Cash from surveys (not a repayment of your ad cost).",
-    });
+    const note = fin.model === "presale"
+      ? "This founding payment is NON-REFUNDABLE and funds building/launching the platform. Your advertising " +
+        "begins delivering once both launch milestones are met. You are also a member and can earn variable " +
+        "Site Cash from surveys (not a repayment of your ad cost)."
+      : fin.model === "hybrid"
+      ? `A ${fin.spendable_usd.toLocaleString()} deposit is non-refundable and funds the ramp-up; ` +
+        `${fin.escrow_usd.toLocaleString()} is escrowed and refunded if the milestones aren't met.`
+      : "Funds are held in escrow until both launch milestones are met; refunded if they aren't.";
+
+    return Response.json({ ok: true, status: rec ? (rec as Record<string, unknown>).status : initialStatus, record: rec, note });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

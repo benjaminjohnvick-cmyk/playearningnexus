@@ -4,7 +4,7 @@ import { db } from "../../sdk/db.ts";
 import {
   foundingEnabled, foundingPriceUsd, foundingTermYears, foundingImpressionsPerYear,
   foundingSlots, foundingSlotsRemaining, foundingUpsellBusiness, foundingDisclosures,
-  milestoneState, FA_STATUS,
+  foundingValueSummary, milestoneState, FA_STATUS,
 } from "../../sdk/founding-advertiser.ts";
 
 // foundingAdvertiserOffer (authenticated) — the honest terms of the founding-advertiser package + the
@@ -46,6 +46,7 @@ export default __handler(async (req) => {
         met: milestone.met, deadline: milestone.deadline,
       },
       disclosures: foundingDisclosures(),
+      value: foundingValueSummary(),
       upsell_business: foundingUpsellBusiness(),
       mine,
       statuses: FA_STATUS,

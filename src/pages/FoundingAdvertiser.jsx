@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ShieldCheck, Megaphone, Users, Lock, CheckCircle2, Info } from 'lucide-react';
+import { Loader2, ShieldCheck, Megaphone, Users, Lock, CheckCircle2, Info, AlertTriangle } from 'lucide-react';
 
 // FoundingAdvertiser — the advertiser-funded launch offer. This page sells ADVERTISING + membership. It must
 // NEVER promise a financial return: the disclosures are shown up front and acceptance is required before
@@ -61,12 +61,48 @@ export default function FoundingAdvertiser() {
         </p>
       </div>
 
+      {/* The three numbers — what the membership INCLUDES, in real units (no dollars, not a return). */}
+      {data.value && (
+        <Card className="mb-6 border-violet-200 bg-gradient-to-br from-violet-50 to-indigo-50">
+          <CardContent className="p-5">
+            <div className="text-sm font-semibold text-slate-800 mb-3">Your founding membership includes</div>
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div>
+                <div className="text-2xl font-bold text-violet-700">{Number(data.value.ad_impressions_total).toLocaleString()}</div>
+                <div className="text-[11px] text-slate-600 mt-1">founding ad impressions<br />across surveys + social</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-violet-700">{Number(data.value.store_credit_points).toLocaleString()}</div>
+                <div className="text-[11px] text-slate-600 mt-1">store-credit points<br />released over {data.value.store_credit_release_years} years</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-violet-700">{Math.round((data.value.survey_earn_share_pct || 0) * 100)}%</div>
+                <div className="text-[11px] text-slate-600 mt-1">of your survey earnings<br />are yours to keep</div>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-500 mt-3 leading-relaxed">{data.value.disclosure}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Separate, variable upside — deliberately NOT framed as a return on the payment. */}
+      {data.value?.separate_upside && (
+        <Card className="mb-6 border-slate-200 bg-slate-50">
+          <CardContent className="p-5">
+            <div className="text-sm font-semibold text-slate-800 mb-1">Beyond your package — separate &amp; not guaranteed</div>
+            <p className="text-xs text-slate-600 leading-relaxed">{data.value.separate_upside}</p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* What you get */}
       <div className="grid sm:grid-cols-3 gap-4 mb-6">
         {[
           { icon: Megaphone, t: 'Guaranteed ad allotment', s: `${Number(data.impressions_per_year).toLocaleString()} between-survey impressions every year, for ${data.term_years} years.` },
           { icon: Users, t: 'You’re a member too', s: 'Enrolled in the closed loop — earn Site Cash from surveys like any member.' },
-          { icon: ShieldCheck, t: 'Escrow-protected', s: 'Your payment is held in escrow and refunded if the launch milestone isn’t met.' },
+          d.model === 'escrow'
+            ? { icon: ShieldCheck, t: 'Escrow-protected', s: 'Your payment is held in escrow and refunded if the launch milestones aren’t met.' }
+            : { icon: Megaphone, t: 'You fund the launch', s: 'Your founding purchase funds building and launching the platform (non-refundable — see the note below).' },
         ].map((x) => {
           const I = x.icon;
           return (
@@ -103,8 +139,9 @@ export default function FoundingAdvertiser() {
           </div>
 
           <div className="text-xs text-slate-600 mt-3">
-            We don’t go live until <strong>both</strong> milestones are met. Until then your payment stays in
-            escrow{m.deadline ? <> (refunded if we don’t reach them by <strong>{m.deadline}</strong>)</> : null}.
+            We don’t go live until <strong>both</strong> milestones are met — your advertising begins delivering
+            at launch{m.deadline ? <> (target by <strong>{m.deadline}</strong>)</> : null}. See the note above for
+            exactly how your payment is handled.
           </div>
           <div className="text-xs text-slate-500 mt-1">{Number(data.slots_remaining).toLocaleString()} of {Number(data.slots).toLocaleString()} founding seats left.</div>
         </CardContent>
@@ -118,11 +155,25 @@ export default function FoundingAdvertiser() {
             <li>{d.is_advertising_not_investment}</li>
             <li>{d.survey_earnings_variable}</li>
             <li>{d.no_shortfall_charge}</li>
-            <li>{d.escrow_and_refund}</li>
             <li>{d.what_you_get}</li>
           </ul>
         </CardContent>
       </Card>
+
+      {/* Refund policy — for the non-refundable presale/hybrid models this is a prominent RISK warning. */}
+      {d.refund_policy && (
+        <Card className={`mb-6 ${d.model === 'escrow' ? 'border-emerald-200 bg-emerald-50' : 'border-red-300 bg-red-50'}`}>
+          <CardContent className="p-5">
+            <div className={`flex items-start gap-2 text-sm ${d.model === 'escrow' ? 'text-emerald-900' : 'text-red-800'}`}>
+              {d.model === 'escrow' ? <ShieldCheck className="w-5 h-5 flex-shrink-0" /> : <AlertTriangle className="w-5 h-5 flex-shrink-0" />}
+              <div>
+                <div className="font-bold mb-1">{d.model === 'escrow' ? 'Refundable' : 'Please read carefully — non-refundable'}</div>
+                <p className="leading-relaxed">{d.refund_policy}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Action */}
       {mine ? (
@@ -141,8 +192,10 @@ export default function FoundingAdvertiser() {
             <label className="flex items-start gap-2 text-sm text-slate-700 cursor-pointer">
               <input type="checkbox" className="mt-1" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
               <span>I understand this is a purchase of advertising and membership — <strong>not an investment</strong> — that
-                survey earnings are variable and not a repayment of my ad cost, and that my payment is escrowed and refundable
-                if the launch milestone isn’t met.</span>
+                survey earnings are variable and not a repayment of my ad cost, and{' '}
+                {d.model === 'escrow'
+                  ? <>that my payment is escrowed and refunded if the launch milestones aren’t met.</>
+                  : <>that my payment is <strong>non-refundable</strong>, funds building the platform, and may not be returned if the platform doesn’t launch.</>}</span>
             </label>
             <Button onClick={reserve} disabled={!accepted || submitting} className="mt-4 w-full bg-amber-600 hover:bg-amber-700">
               {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Reserving…</> : <>Reserve my founding seat — {money(data.price_usd)}</>}

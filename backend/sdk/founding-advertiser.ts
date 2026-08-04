@@ -32,12 +32,91 @@ export const foundingMilestoneFounders = () => Math.max(0, snapNumber("FOUNDING_
 export const memberShortfallChargeEnabled = () => snapBool("FOUNDING_MEMBER_SHORTFALL_CHARGE", false);
 export const foundingMilestoneDeadline = () => snapString("FOUNDING_LAUNCH_MILESTONE_DEADLINE", "");
 export const foundingUpsellBusiness = () => snapBool("FOUNDING_UPSELL_BUSINESS_ENABLED", true);
+export const foundingFundsModel = () => snapString("FOUNDING_FUNDS_MODEL", "presale"); // presale | escrow | hybrid
+export const foundingNonrefundablePct = () => Math.min(1, Math.max(0, snapNumber("FOUNDING_NONREFUNDABLE_PCT", 0.25)));
+export const foundingSocialAdsEnabled = () => snapBool("FOUNDING_SOCIAL_ADS_ENABLED", true);
+export const foundingStoreCreditPoints = () => Math.max(0, snapNumber("FOUNDING_STORE_CREDIT_POINTS", 800000));
+export const foundingStoreCreditReleaseYears = () => Math.max(1, snapNumber("FOUNDING_STORE_CREDIT_RELEASE_YEARS", 4));
+export const foundingSurveyEarnSharePct = () => Math.min(1, Math.max(0, snapNumber("FOUNDING_SURVEY_EARN_SHARE_PCT", 1)));
+export const foundingMissedBonusMult = () => Math.max(1, snapNumber("FOUNDING_MILESTONE_MISSED_BONUS_MULT", 1));
+
+const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
+
+export interface SignupFinancials {
+  model: string;
+  price_usd: number;
+  spendable_usd: number;    // non-refundable revenue you may spend on ramp-up now
+  escrow_usd: number;       // refundable, held in escrow until the milestone
+  refundable: boolean;      // is ANY portion refundable if the milestone is missed?
+}
+
+/** Split a founding payment into the spendable (non-refundable) and escrowed (refundable) portions per the
+ *  configured model. presale → all spendable; escrow → all escrowed; hybrid → deposit spendable, rest escrow. */
+export function signupFinancials(): SignupFinancials {
+  const price = foundingPriceUsd();
+  const model = foundingFundsModel();
+  if (model === "escrow") return { model, price_usd: price, spendable_usd: 0, escrow_usd: price, refundable: true };
+  if (model === "hybrid") {
+    const spendable = round2(price * foundingNonrefundablePct());
+    return { model, price_usd: price, spendable_usd: spendable, escrow_usd: round2(price - spendable), refundable: true };
+  }
+  // presale (default): the whole price is non-refundable revenue that funds the ramp-up.
+  return { model: "presale", price_usd: price, spendable_usd: price, escrow_usd: 0, refundable: false };
+}
+
+/** The founding VALUE PACKAGE — the "three numbers," in real deliverable units, never dollars or a return. */
+export function foundingValueSummary() {
+  const perYear = foundingImpressionsPerYear();
+  const years = foundingTermYears();
+  const credit = foundingStoreCreditPoints();
+  const relYears = foundingStoreCreditReleaseYears();
+  return {
+    // 1) Ad reach — a concrete impression count across both surfaces
+    ad_impressions_per_year: perYear,
+    ad_impressions_total: perYear * years,
+    ad_surfaces: foundingSocialAdsEnabled() ? ["between-survey", "social feed"] : ["between-survey"],
+    // 2) Founding store credit — in points (store credit), released over the term
+    store_credit_points: credit,
+    store_credit_release_years: relYears,
+    store_credit_points_per_year: Math.round(credit / relYears),
+    // 3) Survey earning share — a share of variable earnings, not a promised amount
+    survey_earn_share_pct: foundingSurveyEarnSharePct(),
+    disclosure:
+      "These are what your founding membership includes — shown in real units, not dollars, and NOT a refund " +
+      "or a promised return on your payment. Store credit (points) is closed-loop: it spends only on this " +
+      "site, is not cash, has no cash value, and is only useful while the store is operating.",
+    // The extra upside is deliberately framed as SEPARATE from the purchase and NOT a return.
+    separate_upside:
+      "Beyond your package, you can earn more as a member — you keep 100% of what you make from surveys, and " +
+      "you may receive discretionary store-credit bonuses. This upside is SEPARATE from what you're buying, " +
+      "is VARIABLE and NOT guaranteed, is NOT a return on your payment, and could be little or nothing. It's " +
+      "on top of the package, never a promise of getting your money back.",
+  };
+}
+
+/** How many founding store-credit points are due to release NOW for a record (equal annual tranches).
+ *  `todayISO` is passed in for testability. Points are non-cashable store credit. */
+export function foundingCreditTrancheDue(rec: Record<string, unknown>, todayISO: string): number {
+  const granted = Number(rec.store_credit_points_granted) || 0;
+  const years = Math.max(1, Number(rec.store_credit_release_years) || foundingStoreCreditReleaseYears());
+  const released = Number(rec.store_credit_points_released) || 0;
+  const startISO = String(rec.credit_start || rec.purchased_at || "");
+  if (!granted || !startISO) return 0;
+  const start = Date.parse(startISO), today = Date.parse(todayISO);
+  if (isNaN(start) || isNaN(today)) return 0;
+  const yearsElapsed = Math.floor((today - start) / (365.25 * 24 * 3600 * 1000));
+  const tranchesDue = Math.min(years, yearsElapsed + 1);   // first tranche on activation, then annually
+  const shouldBeReleased = Math.round((granted / years) * tranchesDue);
+  return Math.max(0, shouldBeReleased - released);
+}
 
 /** Statuses a FoundingAdvertiser record can hold. */
 export const FA_STATUS = {
-  ESCROWED: "escrowed",   // paid, funds held in escrow pending the launch milestone
+  FUNDED: "funded",       // presale/hybrid: paid, non-refundable portion is spendable revenue, awaiting launch
+  ESCROWED: "escrowed",   // escrow model: paid, funds held in escrow pending the launch milestone
   ACTIVE: "active",       // milestone met — advertising is live
-  REFUND_DUE: "refund_due", // milestone missed by deadline — flagged for automatic refund
+  REFUND_DUE: "refund_due", // escrow/hybrid milestone missed — refundable portion flagged for refund
+  LAUNCH_UNMET: "launch_unmet", // presale: milestone missed by deadline — non-refundable, no money back (disclosed)
   REFUNDED: "refunded",
   CANCELLED: "cancelled",
 } as const;
@@ -129,10 +208,14 @@ export async function noteFoundingImpression(dbi: {
   await dbi.update("FoundingAdvertiser", rec.id as string, { impressions_served: (Number(rec.impressions_served) || 0) + 1 }).catch(() => null);
 }
 
-/** Honest, plain-language disclosures shown before any founding purchase. Not legal advice; counsel-gated. */
+/** Honest, plain-language disclosures shown before any founding purchase. MODEL-AWARE: in the presale model
+ *  the refund line becomes a prominent NO-REFUND risk warning. Not legal advice; counsel-gated. */
 export function foundingDisclosures() {
-  return {
+  const model = foundingFundsModel();
+  const fin = signupFinancials();
+  const base = {
     version: DISCLOSURES_VERSION,
+    model,
     is_advertising_not_investment:
       "This is a purchase of advertising and membership — not an investment. You are not buying a financial " +
       "return, and no profit, gain, or 'multiple' of your money is promised or guaranteed.",
@@ -144,12 +227,38 @@ export function foundingDisclosures() {
     no_shortfall_charge:
       "You will NEVER be charged for 'falling short' of any earnings amount. There is no required earnings " +
       "figure and no card charge tied to survey results. Your survey earnings are simply whatever you earn.",
-    escrow_and_refund:
-      "Founding payments are held in escrow until the platform reaches its launch milestones — both a target " +
-      "number of premium users AND a target number of founding members. If those aren't met by the stated " +
-      "deadline, your payment is refunded.",
     what_you_get:
       "You receive a fixed, stated allotment of between-survey ad impressions per year for the package term, " +
-      "priority placement, a locked-in rate, and membership in the closed-loop rewards ecosystem.",
+      "priority placement, a locked-in rate, and membership in the closed-loop rewards ecosystem. Your " +
+      "advertising begins delivering once the platform launches (both milestones met).",
+  };
+
+  if (model === "presale") {
+    return {
+      ...base,
+      refund_policy:
+        "IMPORTANT — THIS PAYMENT IS NON-REFUNDABLE. Your founding payment is used to build and launch the " +
+        "platform (like backing a crowdfunding project). We aim to launch once both milestones are met, but " +
+        "there is no guarantee we will. If the platform does not launch, YOU WILL NOT GET YOUR MONEY BACK. " +
+        "Only pay what you can afford to lose.",
+    };
+  }
+  if (model === "hybrid") {
+    return {
+      ...base,
+      refund_policy:
+        `Of your ${fin.price_usd.toLocaleString()} payment, ${fin.spendable_usd.toLocaleString()} is a ` +
+        `NON-REFUNDABLE founding deposit used to build and launch the platform, and ` +
+        `${fin.escrow_usd.toLocaleString()} is held in escrow and refunded to you if both launch milestones ` +
+        "aren't met by the deadline. The non-refundable deposit is not returned even if we don't launch.",
+    };
+  }
+  // escrow
+  return {
+    ...base,
+    refund_policy:
+      "Your founding payment is held in escrow until the platform reaches BOTH launch milestones (a target " +
+      "number of premium users AND of founding members). If those aren't met by the deadline, your payment " +
+      "is refunded in full.",
   };
 }
