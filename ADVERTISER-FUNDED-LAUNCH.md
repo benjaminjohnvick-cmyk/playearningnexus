@@ -29,11 +29,17 @@ program keeps the appeal and drops the guarantee:
   supported by the same code, switched by this setting. `signupFinancials()` splits every payment into a
   spendable (non-refundable) portion and an escrowed (refundable) portion per the model, and the code keeps the
   two pots hard-separated — escrow is never spent on ramp-up.
-- **Dual milestone** — the platform "launches" (advertising begins delivering) only when it reaches **BOTH**
-  `FOUNDING_LAUNCH_MILESTONE_PREMIUM_USERS` (100,000) premium users **and** `FOUNDING_LAUNCH_MILESTONE_FOUNDERS`
-  (100,000) founding members. In `presale`, the milestone gates **delivery**, not a refund: if it's missed by
-  the deadline, presale purchases are marked `launch_unmet` (**no money back — disclosed and accepted at
-  purchase**); escrow/hybrid refundable portions are flagged `refund_due`.
+- **Single milestone — founders ARE the users.** In the first-year offer, each founding member also signs up
+  as a user and uses the site for the year, so there is **one** launch gate: `FOUNDING_LAUNCH_MILESTONE_FOUNDERS`
+  (100,000) founding members. `FOUNDING_LAUNCH_MILESTONE_PREMIUM_USERS` defaults to **0** (no separate user
+  pool) — you need 100,000 people total, not 100k founders plus 100k users. (`milestoneState` still supports a
+  separate user gate if that setting is ever set > 0.) The milestone gates **delivery**, not a refund: if it's
+  missed by the deadline, presale purchases are marked `launch_unmet` (**no money back — disclosed and accepted
+  at purchase**); escrow/hybrid refundable portions are flagged `refund_due`.
+- **Founding participation + feedback.** Founding members are told they participate for the year (sign up, use
+  the site, do surveys) and that we ask for feedback via surveys to refine the site. This is framed as
+  participation, not an enforced quota — there is no penalty/charge for a shortfall (see "no member shortfall
+  charge").
 - **Non-refundable risk is disclosed prominently.** In presale/hybrid, the offer page shows a red warning box
   and the acceptance checkbox states the payment is non-refundable and may be lost if the platform doesn't
   launch. This honest disclosure is what keeps a crowdfunding-style pre-sale legitimate — it must not be
@@ -63,11 +69,18 @@ return or a "worth $X":
 
 ### Founding full-keep CAP (the 100%-keep is bounded)
 
-The founding 100%-keep survey rate applies only **up to a cumulative cap, over a window** (`FOUNDING_FULLKEEP_*`
+The founding 100%-keep survey rate applies **up to a cumulative cap, over a window** (`FOUNDING_FULLKEEP_*`
 settings; default cap = the amount paid, window = 4 years), after which the member reverts to the standard
 survey-reward share. It's metered per member on their `FoundingAdvertiser` record (`fullkeep_earned_usd`) and
 wired into every survey-credit path (`bitlabsPostback`, `cpxPostback`, `adGridAnswer`, `respondentMicroPayout`)
 via `computeSurveyReward`'s share override + `recordFoundingFullKeepEarning`.
+
+**It also applies in the FAILURE case.** `foundingFullKeepStatus` treats any live seat — `funded` (offer year),
+`active` (launched), or `launch_unmet` (failure) — as eligible. So if the platform doesn't reach the milestone,
+a founding member can keep earning store credit at the founding rate by completing **third-party surveys** (the
+integrated networks — BitLabs, CPX, etc. — which don't need the platform's own advertiser base), up to the cap,
+over the 4-year window, **as long as the site operates**. It is not a refund, stops if the site stops, and — per
+the disclosure (`failure_recoup`) — is never a promise to recoup what they paid.
 
 **COMPLIANCE — the sharp edge here.** Setting the cap equal to what they paid, and any copy that says "earn
 back / recoup what you paid over 4 years," is BOTH (a) an FTC earnings claim — survey inventory cannot
@@ -112,6 +125,18 @@ that store credit is worthless if the store isn't operating.
   is accurate.
 - **Page** `/FoundingAdvertiser` (`FoundingAdvertiser.jsx`) — the offer, with the disclosures shown up front
   and a **required** acceptance checkbox before any seat is reserved.
+
+## Two earnings claims to police in the copy
+
+- **"8 minutes a day to earn $8."** Arithmetically the premium rate ($1/min, $8/day cap) works out to ~8
+  minutes, but survey *availability* can't guarantee 8 minutes of paying surveys every day. Presented as a
+  flat "it only takes 8 minutes to earn $8," that's an FTC earnings claim that likely isn't substantiatable.
+  The coded disclosure (`effort_note`) qualifies it: "~8 minutes *when surveys are available*; availability and
+  earnings vary and are not guaranteed; not a promise you'll earn $8 in 8 minutes." Keep it that way.
+- **"Use the site for 4 years to get your store credit back (if it fails)."** This is recoup-your-payment
+  framing. It is only implemented as the **full-keep cap** — a variable benefit earned through the member's own
+  surveys, capped, over 4 years — and must be presented as such, never as a promise to "get your money back."
+  A guarantee of recoupment is both an FTC earnings claim and a return-of-capital signal.
 
 ## What is deliberately NOT built (and why)
 

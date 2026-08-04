@@ -74,10 +74,14 @@ export function foundingFullKeepStatus(rec: Record<string, unknown>, todayISO: s
       withinWindow = (today - start) < years * 365.25 * 24 * 3600 * 1000;
     }
   }
-  const isActiveStatus = rec.status === FA_STATUS.ACTIVE;
+  // A "live seat" keeps the founding full-keep rate: during the offer year (funded/escrowed), after launch
+  // (active), AND in the failure case (launch_unmet) — where the member can still earn store credit up to the
+  // cap by doing THIRD-PARTY surveys, over the 4-year window, as long as the site operates. Not refunded/
+  // cancelled seats. This is variable, earned through their own survey work, and never a promise to recoup.
+  const liveSeat = rec.status !== FA_STATUS.REFUNDED && rec.status !== FA_STATUS.CANCELLED;
   const capReached = cap > 0 && earned >= cap;
-  const active = isActiveStatus && withinWindow && !capReached;
-  const ended_reason = !isActiveStatus ? "not_active" : capReached ? "cap_reached" : !withinWindow ? "window_elapsed" : "";
+  const active = liveSeat && withinWindow && !capReached;
+  const ended_reason = !liveSeat ? "not_active" : capReached ? "cap_reached" : !withinWindow ? "window_elapsed" : "";
   return { cap_usd: cap, earned_usd: earned, remaining_usd: Math.max(0, cap - earned), years, within_window: withinWindow, active, ended_reason };
 }
 
@@ -85,7 +89,9 @@ export function foundingFullKeepStatus(rec: Record<string, unknown>, todayISO: s
 export async function foundingFullKeepActive(dbi: {
   filter: (name: string, q: Record<string, unknown>, sort?: string, limit?: number) => Promise<Record<string, unknown>[]>;
 }, userId: string, todayISO: string): Promise<{ active: boolean; record: Record<string, unknown> | null }> {
-  const rows = await dbi.filter("FoundingAdvertiser", { user_id: userId, status: FA_STATUS.ACTIVE }, "-created_date", 1).catch(() => []);
+  // Their most recent founding seat (any status); foundingFullKeepStatus decides eligibility — this way the
+  // full-keep rate also applies during the offer year and in the launch-unmet (failure) recoup case.
+  const rows = await dbi.filter("FoundingAdvertiser", { user_id: userId }, "-created_date", 1).catch(() => []);
   const rec = (rows || [])[0] || null;
   if (!rec) return { active: false, record: null };
   return { active: foundingFullKeepStatus(rec, todayISO).active, record: rec };
@@ -298,7 +304,25 @@ export function foundingDisclosures() {
     what_you_get:
       "You receive a fixed, stated allotment of between-survey ad impressions per year for the package term, " +
       "priority placement, a locked-in rate, and membership in the closed-loop rewards ecosystem. Your " +
-      "advertising begins delivering once the platform launches (both milestones met).",
+      "advertising begins delivering once the platform reaches its launch milestone.",
+    founder_is_user:
+      "As a founding member you are also a user of the site: you sign up, use it, and do surveys during the " +
+      "first year. Because founders are the users, the launch milestone is a single count of founding members " +
+      "— not founders plus a separate pool of users.",
+    participation_and_feedback:
+      "During the first year we will regularly ask for your feedback through surveys and use it to refine the " +
+      "site's features and functions. Founding members help shape the product.",
+    effort_note:
+      "At the premium rate, the $8/day cap works out to roughly 8 minutes of surveys WHEN surveys are " +
+      "available. Survey availability and your earnings VARY and are NOT guaranteed — some days there may be " +
+      "less, or nothing, to do. This is not a promise that you will earn $8 in 8 minutes.",
+    failure_recoup:
+      "If the platform does not launch, your payment is still non-refundable — but as long as the site keeps " +
+      "operating you can continue earning at the founding rate (you keep 100% of what you earn, up to your " +
+      "founding cap) by completing THIRD-PARTY surveys, over up to " + foundingFullKeepYears() + " years. This " +
+      "is VARIABLE and NOT guaranteed: you earn it through your own survey work, it depends on how many surveys " +
+      "you complete and their availability, it is paid only as on-site store credit (not cash), it stops if the " +
+      "site stops operating, and it is NOT a refund and NOT a promise to recoup what you paid.",
   };
 
   if (model === "presale") {

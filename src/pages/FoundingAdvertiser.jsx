@@ -122,18 +122,22 @@ export default function FoundingAdvertiser() {
       {/* Milestone */}
       <Card className="mb-6 border-slate-200">
         <CardContent className="p-5">
-          <div className="text-sm font-semibold text-slate-800 flex items-center gap-2 mb-3"><Lock className="w-4 h-4 text-slate-500" /> Launch milestones — both must be met</div>
+          <div className="text-sm font-semibold text-slate-800 flex items-center gap-2 mb-3"><Lock className="w-4 h-4 text-slate-500" /> Launch milestone{Number(m.target) > 0 ? 's — both must be met' : ''}</div>
+
+          {Number(m.target) > 0 && (
+            <>
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-xs text-slate-600">Separate users</div>
+                <div className="text-xs text-slate-500">{Number(m.current || 0).toLocaleString()} / {Number(m.target || 0).toLocaleString()}</div>
+              </div>
+              <div className="h-2 rounded-full bg-slate-100 overflow-hidden mb-3">
+                <div className="h-full bg-amber-500" style={{ width: `${pct}%` }} />
+              </div>
+            </>
+          )}
 
           <div className="flex items-center justify-between mb-1">
-            <div className="text-xs text-slate-600">Premium users</div>
-            <div className="text-xs text-slate-500">{Number(m.current || 0).toLocaleString()} / {Number(m.target || 0).toLocaleString()}</div>
-          </div>
-          <div className="h-2 rounded-full bg-slate-100 overflow-hidden mb-3">
-            <div className="h-full bg-amber-500" style={{ width: `${pct}%` }} />
-          </div>
-
-          <div className="flex items-center justify-between mb-1">
-            <div className="text-xs text-slate-600">Founding members</div>
+            <div className="text-xs text-slate-600">Founding members {Number(m.target) > 0 ? '' : '(who are the users)'}</div>
             <div className="text-xs text-slate-500">{Number(m.founders_current || 0).toLocaleString()} / {Number(m.founders_target || 0).toLocaleString()}</div>
           </div>
           <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
@@ -141,7 +145,7 @@ export default function FoundingAdvertiser() {
           </div>
 
           <div className="text-xs text-slate-600 mt-3">
-            We don’t go live until <strong>both</strong> milestones are met — your advertising begins delivering
+            We don’t go live until we reach {Number(m.target) > 0 ? <><strong>both</strong> milestones</> : <><strong>{Number(m.founders_target || 0).toLocaleString()}</strong> founding members (who are also the users)</>} — your advertising begins delivering
             at launch{m.deadline ? <> (target by <strong>{m.deadline}</strong>)</> : null}. See the note above for
             exactly how your payment is handled.
           </div>
@@ -155,8 +159,12 @@ export default function FoundingAdvertiser() {
           <div className="flex items-center gap-2 mb-2 text-amber-900 font-semibold text-sm"><Info className="w-4 h-4" /> Please read before you reserve</div>
           <ul className="text-xs text-amber-900/90 space-y-1.5 list-disc pl-5">
             <li>{d.is_advertising_not_investment}</li>
+            <li>{d.founder_is_user}</li>
             <li>{d.survey_earnings_variable}</li>
+            <li>{d.effort_note}</li>
             <li>{d.no_shortfall_charge}</li>
+            <li>{d.failure_recoup}</li>
+            <li>{d.participation_and_feedback}</li>
             <li>{d.what_you_get}</li>
           </ul>
         </CardContent>
