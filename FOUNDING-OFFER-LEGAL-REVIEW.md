@@ -125,7 +125,8 @@ earlier buyers** — it is a pure availability/scarcity threshold, not a payout 
 
 - Availability cap: `FOUNDING_ADVERTISER_SLOTS` (100,000 Tier 1 advertisers).
 - In-window share: `FOUNDING_SURVEY_EARN_SHARE_PCT` (1.0 = keep 100%).
-- Post-Tier-1 share: `TIER1_POST_SURVEY_SHARE_PCT` (0.75 = member keeps 75%, platform fee 25%).
+- Post-Tier-1 platform fee (admin-tunable): `TIER1_POST_PLATFORM_FEE_PCT` (0.25 = platform keeps 25%, member
+  keeps 75%). The member's keep-share is 1 − this fee.
 - Perk window: `FOUNDING_FULLKEEP_YEARS` (4). Cap: `FOUNDING_FULLKEEP_CAP_TO_PRICE` = **OFF**,
   `FOUNDING_FULLKEEP_CAP_USD` = 0 (no cap).
 - Funds model: `FOUNDING_FUNDS_MODEL` = presale | escrow | hybrid (currently **presale**, non-refundable).

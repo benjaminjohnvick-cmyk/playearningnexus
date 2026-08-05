@@ -26,9 +26,19 @@ import { cacheGet, cacheSet } from "./cache.ts";
 
 export const DISCLOSURES_VERSION = "2";
 
-/** Post-Tier-1 survey earn share: what a member who joins AFTER the offer closes keeps (0.75 = 75%; the
- *  platform keeps 25% as its fee). Tier 1 members keep 100% in-window, then revert to this. */
-export const tier1PostSurveySharePct = () => Math.min(1, Math.max(0, snapNumber("TIER1_POST_SURVEY_SHARE_PCT", 0.75)));
+/** Post-Tier-1 PLATFORM FEE: the share of a post-Tier-1 member's own third-party survey revenue the
+ *  platform keeps (admin-tunable in the settings panel; 0.25 = 25% fee). Legacy env override
+ *  `TIER1_POST_SURVEY_SHARE_PCT` (a keep-share) still wins if explicitly set, for back-compat. */
+export const tier1PostPlatformFeePct = () => Math.min(1, Math.max(0, snapNumber("TIER1_POST_PLATFORM_FEE_PCT", 0.25)));
+
+/** Post-Tier-1 survey earn SHARE — what the member keeps (= 1 − the platform fee). What a member who joins
+ *  AFTER the offer closes keeps (default 0.75 = 75%). Tier 1 members keep 100% in-window, then revert here.
+ *  Derived from the admin-set platform fee; a legacy explicit share override is honored if present. */
+export const tier1PostSurveySharePct = () => {
+  const legacy = snapNumber("TIER1_POST_SURVEY_SHARE_PCT", -1);
+  if (legacy >= 0) return Math.min(1, Math.max(0, legacy));   // back-compat: explicit share override wins
+  return Math.min(1, Math.max(0, 1 - tier1PostPlatformFeePct()));
+};
 
 export const foundingEnabled = () => snapBool("FOUNDING_ADVERTISER_ENABLED", true);
 export const foundingSlots = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_SLOTS", 100000));

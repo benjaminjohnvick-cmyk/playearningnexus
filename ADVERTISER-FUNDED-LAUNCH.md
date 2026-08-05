@@ -14,14 +14,15 @@
 > - **Availability window.** Open until **100,000 Tier 1 advertisers** enroll, then it closes. Reaching the
 >   cap owes nobody anything — it's a scarcity threshold, not a payout event.
 > - **After the offer closes** (or after a member's 4-year window), members keep the **post-Tier-1 share**:
->   **75%** of their own survey earnings; the platform keeps **25%** as its fee (`TIER1_POST_SURVEY_SHARE_PCT`).
+>   **75%** of their own survey earnings; the platform keeps **25%** as its fee — set in the admin panel via
+>   `TIER1_POST_PLATFORM_FEE_PCT` (the member's keep-share is 1 − the fee).
 >   Existing Tier 1 members are grandfathered at 100% for their window.
 > - **After signup, members may be upsold** into additional advertising/spend options (optional).
 > - **REMOVED vs the old "Founding" version:** the "cap = amount paid" recoup benefit (a return-of-capital
 >   signal), the launch-milestone escrow/refund machinery, and any stated per-day/per-minute earnings figure.
 >   `FOUNDING_FULLKEEP_CAP_TO_PRICE` is now OFF; there is no cap.
 > - **Key flags:** `FOUNDING_ADVERTISER_SLOTS` (100k cap), `FOUNDING_SURVEY_EARN_SHARE_PCT` (1.0 in-window),
->   `TIER1_POST_SURVEY_SHARE_PCT` (0.75), `FOUNDING_FULLKEEP_YEARS` (4), `FOUNDING_FUNDS_MODEL` (presale).
+>   `TIER1_POST_PLATFORM_FEE_PCT` (0.25 — admin-tunable), `FOUNDING_FULLKEEP_YEARS` (4), `FOUNDING_FUNDS_MODEL` (presale).
 > - **Compliance:** see `FOUNDING-OFFER-LEGAL-REVIEW.md` (rewritten for this lighter structure). Counsel-gated;
 >   nothing collects money until an attorney reviews the offer and every line of member-facing copy.
 >
