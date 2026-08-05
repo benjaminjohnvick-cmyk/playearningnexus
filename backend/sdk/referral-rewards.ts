@@ -16,6 +16,9 @@ import { snapNumber, snapBool } from "./settings.ts";
 import { pointValueUsd, recordSubsidy } from "./revenue.ts";
 
 export const referralSignupBonusPoints = () => Math.max(0, Math.round(snapNumber("REFERRAL_SIGNUP_BONUS_POINTS", 300)));
+/** INTERNAL value of a qualified referral to the business (default $5). NEVER shown to any user — used only
+ *  in internal accounting/dashboards and stamped on the Referral row when it qualifies. */
+export const referralInternalValueUsd = () => Math.max(0, snapNumber("REFERRAL_INTERNAL_VALUE_USD", 5));
 export const referralOverridePct = () => Math.min(1, Math.max(0, snapNumber("REFERRAL_OVERRIDE_PCT", 0.10)));
 export const referralOverrideEnabled = () => snapBool("REFERRAL_OVERRIDE_ENABLED", true);
 export const referralBonusRequireKyc = () => snapBool("REFERRAL_BONUS_REQUIRE_KYC", false);
@@ -65,7 +68,8 @@ export async function payReferralSignupBonusOnce(base44: any, referredUserId: st
   const claim = await db.incrementField("Referral", String(referral.id), "signup_bonus_claim", 1).catch(() => null);
   if (claim !== 1) return 0;
 
-  await db.update("Referral", String(referral.id), { signup_bonus_paid: true, signup_bonus_points: bonusPoints, signup_bonus_at: new Date().toISOString() }).catch(() => null);
+  // Stamp the INTERNAL per-referral value ($5 default) for internal accounting only — never surfaced to users.
+  await db.update("Referral", String(referral.id), { signup_bonus_paid: true, signup_bonus_points: bonusPoints, signup_bonus_at: new Date().toISOString(), internal_value_usd: referralInternalValueUsd() }).catch(() => null);
   if (bonusPoints <= 0) return 0;
 
   await adjustUserBalance(referrerId, bonusPoints, { field: "points" }).catch(() => null);

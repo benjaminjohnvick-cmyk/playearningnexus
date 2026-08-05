@@ -18,6 +18,8 @@ export default function FoundingAdvertiser() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [accepted, setAccepted] = useState(false);
+  const [acceptedEarned, setAcceptedEarned] = useState(false);
+  const [path, setPath] = useState('paid');           // 'paid' | 'noupfront_tier1' | 'free_earn'
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
 
@@ -36,6 +38,18 @@ export default function FoundingAdvertiser() {
     setSubmitting(true);
     try {
       const res = await base44.functions.invoke('foundingAdvertiserSignup', { accept_disclosures: true });
+      setResult(res.data || null);
+      await load();
+    } catch (e) { setResult({ error: e?.message || 'Something went wrong.' }); }
+    finally { setSubmitting(false); }
+  };
+
+  // Join a $0 Tier 1 option (no-upfront participation, or free earn-to-unlock).
+  const joinEarned = async (mode) => {
+    if (!acceptedEarned) return;
+    setSubmitting(true);
+    try {
+      const res = await base44.functions.invoke('earnedAdvertiserJoin', { mode, accept_disclosures: true });
       setResult(res.data || null);
       await load();
     } catch (e) { setResult({ error: e?.message || 'Something went wrong.' }); }
@@ -176,7 +190,7 @@ export default function FoundingAdvertiser() {
         </Card>
       )}
 
-      {/* Action */}
+      {/* Action — choose how you want into Tier 1 */}
       {mine ? (
         <Card className="border-emerald-200 bg-emerald-50">
           <CardContent className="p-5 flex items-center gap-3">
@@ -197,30 +211,90 @@ export default function FoundingAdvertiser() {
             </div>
           </CardContent>
         </Card>
-      ) : data.open ? (
-        <Card className="border-slate-200">
-          <CardContent className="p-5">
-            <label className="flex items-start gap-2 text-sm text-slate-700 cursor-pointer">
-              <input type="checkbox" className="mt-1" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-              <span>I understand I’m buying <strong>advertising and membership</strong> — <strong>not an investment</strong>; that the
-                100%-survey-keep is a <strong>separate</strong> perk with <strong>no promised amount and no cap</strong>, paid as Site Cash,
-                and not a return of my ad cost; and{' '}
-                {d.model === 'escrow'
-                  ? <>that my payment is escrowed and refunded if the platform doesn’t open.</>
-                  : <>that my payment is <strong>non-refundable</strong> and funds building/launching/growing the platform.</>}</span>
-            </label>
-            <Button onClick={reserve} disabled={!accepted || submitting} className="mt-4 w-full bg-amber-600 hover:bg-amber-700">
-              {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Reserving…</> : <>Get Tier 1 — {money(data.price_usd)}</>}
-            </Button>
-            {result?.error && <p className="text-xs text-red-600 mt-2">{result.error}</p>}
-            {result?.ok && <p className="text-xs text-emerald-700 mt-2">{result.note}</p>}
-            <p className="text-[11px] text-slate-400 mt-3">Payment is handled securely at the next step. No card is charged here.</p>
+      ) : data.earned_mine ? (
+        <Card className="border-emerald-200 bg-emerald-50">
+          <CardContent className="p-5 flex items-center gap-3">
+            <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+            <div>
+              <div className="font-semibold text-emerald-900 text-sm">
+                You’re in Tier 1 via the {data.earned_mine.mode === 'noupfront_tier1' ? 'no-upfront (participation)' : 'free earn-to-unlock'} option — status: {String(data.earned_mine.status)}.
+              </div>
+              <div className="text-xs text-emerald-800">Unlock level: {Number(data.earned_mine.unlock_level) || 0} / 4. $0 upfront · nothing owed. Keep going to unlock more.</div>
+            </div>
           </CardContent>
         </Card>
       ) : (
-        <div className="text-center text-slate-600 text-sm">
-          The Tier 1 introductory offer has closed. New members now keep {postPct} of their survey earnings (paid as Site Cash).
-        </div>
+        <Card className="border-slate-300">
+          <CardContent className="p-5">
+            <div className="text-sm font-semibold text-slate-800 mb-3">Choose how you want into Tier 1</div>
+            {/* Path selector */}
+            <div className="grid sm:grid-cols-3 gap-3 mb-4">
+              {[
+                { key: 'paid', o: data.options?.paid },
+                { key: 'noupfront_tier1', o: data.options?.no_upfront },
+                { key: 'free_earn', o: data.options?.free_earn },
+              ].filter((x) => x.o && x.o.enabled).map(({ key, o }) => (
+                <button key={key} onClick={() => { setPath(key); setAccepted(false); setAcceptedEarned(false); setResult(null); }}
+                  className={`text-left rounded-xl border-2 p-3 transition ${path === key ? 'border-amber-500 bg-amber-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                  <div className="text-xs font-bold text-slate-900">{o.label}</div>
+                  <div className="text-[15px] font-black text-amber-700 my-0.5">{o.cost_usd > 0 ? money(o.cost_usd) : '$0'}</div>
+                  <div className="text-[11px] text-slate-600 leading-snug">{o.summary}</div>
+                </button>
+              ))}
+            </div>
+
+            {/* PAID path */}
+            {path === 'paid' && (data.open ? (
+              <>
+                <label className="flex items-start gap-2 text-sm text-slate-700 cursor-pointer">
+                  <input type="checkbox" className="mt-1" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
+                  <span>I understand I’m buying <strong>advertising and membership</strong> — <strong>not an investment</strong>; that the
+                    100%-survey-keep is a <strong>separate</strong> perk with <strong>no promised amount and no cap</strong>, paid as Site Cash,
+                    and not a return of my ad cost; and{' '}
+                    {d.model === 'escrow'
+                      ? <>that my payment is escrowed and refunded if the platform doesn’t open.</>
+                      : <>that my payment is <strong>non-refundable</strong> and funds building/launching/growing the platform.</>}</span>
+                </label>
+                <Button onClick={reserve} disabled={!accepted || submitting} className="mt-4 w-full bg-amber-600 hover:bg-amber-700">
+                  {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Reserving…</> : <>Get Tier 1 — {money(data.price_usd)}</>}
+                </Button>
+                <p className="text-[11px] text-slate-400 mt-3">Payment is handled securely at the next step. No card is charged here.</p>
+              </>
+            ) : (
+              <div className="text-center text-slate-600 text-sm">The paid Tier 1 introductory offer has closed — but you can still join free with the options above.</div>
+            ))}
+
+            {/* $0 paths (no-upfront + free earn-to-unlock) */}
+            {(path === 'noupfront_tier1' || path === 'free_earn') && (() => {
+              const o = path === 'noupfront_tier1' ? data.options?.no_upfront : data.options?.free_earn;
+              const ed = o?.disclosures || {};
+              return (
+                <>
+                  <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-5 mb-3">
+                    <li><strong>{ed.nothing_owed}</strong></li>
+                    <li>{ed.how_it_works}</li>
+                    <li>{ed.earned_not_bought}</li>
+                    <li>{ed.no_promised_amount}</li>
+                    {ed.referrals_accelerate && <li>{ed.referrals_accelerate}</li>}
+                  </ul>
+                  <label className="flex items-start gap-2 text-sm text-slate-700 cursor-pointer">
+                    <input type="checkbox" className="mt-1" checked={acceptedEarned} onChange={(e) => setAcceptedEarned(e.target.checked)} />
+                    <span>I understand this is <strong>free</strong>, I <strong>owe nothing ever</strong>, no amount is promised, and{' '}
+                      {path === 'noupfront_tier1'
+                        ? <>my advertising delivers over the participation term while I stay active (stop anytime, owe nothing).</>
+                        : <>I unlock advertiser benefits as a reward for my own activity; referring is optional and never required.</>}</span>
+                  </label>
+                  <Button onClick={() => joinEarned(path)} disabled={!acceptedEarned || submitting} className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700">
+                    {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting…</> : <>{path === 'noupfront_tier1' ? 'Start no-upfront Tier 1 — $0' : 'Start free — earn as you go'}</>}
+                  </Button>
+                </>
+              );
+            })()}
+
+            {result?.error && <p className="text-xs text-red-600 mt-2">{result.error}</p>}
+            {result?.ok && <p className="text-xs text-emerald-700 mt-2">{result.note}</p>}
+          </CardContent>
+        </Card>
       )}
     </div>
   );

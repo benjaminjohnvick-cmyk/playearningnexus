@@ -4,6 +4,7 @@ import { snapBool, snapNumber } from "../../sdk/settings.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
 import { db } from "../../sdk/db.ts";
 import { foundingInterstitialPriority, activeFoundingAdOwners, noteFoundingImpression } from "../../sdk/founding-advertiser.ts";
+import { activeEarnedAdOwners } from "../../sdk/earned-advertiser.ts";
 
 // surveyInterstitialGate (authenticated) — the mandatory ~30s ad BETWEEN surveys for non-premium users
 // (flywheel #3 addition). Premium is exempt (an upgrade incentive). The ad is served from your OWN inventory
@@ -59,8 +60,18 @@ export default __handler(async (req) => {
       const ppick = (slots || []).find((s) => paying.has(String(s.advertiser_user_id)) || paying.has(String(s.created_by)));
       if (ppick) { pick = ppick; ppcAdvertiser = true; }
     }
+    // Then earned / no-upfront advertisers whose free advertising is currently delivering (participating).
+    // Their unlocked/free ad benefit actually shows here, after founding + paid PPC priority, before house.
+    let earnedAdvertiser = false;
+    if (!foundingOwnerId && !ppcAdvertiser && (slots || []).length) {
+      const earnedOwners = await activeEarnedAdOwners(db, new Date().toISOString().slice(0, 10)).catch(() => new Set<string>());
+      if (earnedOwners.size) {
+        const epick = (slots || []).find((s) => earnedOwners.has(String(s.advertiser_user_id)) || earnedOwners.has(String(s.created_by)));
+        if (epick) { pick = epick; earnedAdvertiser = true; }
+      }
+    }
     const ad = pick
-      ? { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser }
+      ? { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser, earned_advertiser: earnedAdvertiser }
       : { ad_id: "house", title: "Upgrade to Premium — skip the ads", image_url: "", url: "/Pricing" };
 
     return Response.json({ required: true, seconds, premium, ad });

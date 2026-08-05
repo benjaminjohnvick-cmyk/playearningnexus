@@ -36,6 +36,25 @@
     "scope": "owner",
     "owner_field": "owner_user_id"
   },
+  "AdGridAd": {
+    "scope": "global"
+  },
+  "AdGridResponse": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "AdGridSession": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "AdGridSlotGrant": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "AdImpression": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "AdLearningMemory": {
     "scope": "owner",
     "owner_field": "owner_user_id"
@@ -98,6 +117,10 @@
   "AffiliateProduct": {
     "scope": "global"
   },
+  "AffiliatePurchase": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "AffiliateSale": {
     "scope": "owner",
     "owner_field": "user_id"
@@ -105,10 +128,24 @@
   "AffiliateTier": {
     "scope": "global"
   },
+  "AgentConversation": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "AgentLearningMemory": {
     "scope": "global"
   },
+  "AgentMessage": {
+    "scope": "owner",
+    "owner_field": "created_by"
+  },
   "AgentPerformanceLog": {
+    "scope": "global"
+  },
+  "AnalyticsEvent": {
+    "scope": "global"
+  },
+  "AppLog": {
     "scope": "global"
   },
   "AppStorePrice": {
@@ -142,9 +179,24 @@
   "BugReport": {
     "scope": "global"
   },
+  "BurstSession": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "BusinessAccount": {
+    "scope": "owner",
+    "owner_field": "owner_user_id"
+  },
   "BusinessClient": {
     "scope": "owner",
     "owner_field": "owner_user_id"
+  },
+  "BusinessSubscription": {
+    "scope": "owner",
+    "owner_field": "owner_user_id"
+  },
+  "BuyingDeskTask": {
+    "scope": "admin"
   },
   "CRMAutomation": {
     "scope": "global"
@@ -264,6 +316,17 @@
   "DynamicPricing": {
     "scope": "global"
   },
+  "EarnBackLedger": {
+    "scope": "global"
+  },
+  "EarnBackPlan": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "EarnedAdvertiser": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "EcosystemConfig": {
     "scope": "global"
   },
@@ -277,6 +340,9 @@
   "EmailSequence": {
     "scope": "owner",
     "owner_field": "owner_id"
+  },
+  "Expense": {
+    "scope": "admin"
   },
   "FeatureMockup": {
     "scope": "global"
@@ -293,6 +359,10 @@
   },
   "ForumPost": {
     "scope": "global"
+  },
+  "FoundingAdvertiser": {
+    "scope": "owner",
+    "owner_field": "user_id"
   },
   "FraudReport": {
     "scope": "owner",
@@ -330,6 +400,13 @@
     "scope": "owner",
     "owner_field": "user_id"
   },
+  "GiftCardRedemption": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "GiftCardStock": {
+    "scope": "admin"
+  },
   "GiftTransaction": {
     "scope": "owner",
     "owner_field": "recipient_user_id"
@@ -345,12 +422,29 @@
     "scope": "owner",
     "owner_field": "user_id"
   },
+  "GroupGoal": {
+    "scope": "owner",
+    "owner_field": "owner_user_id"
+  },
+  "GroupGoalReward": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "GroupMessage": {
+    "scope": "global"
+  },
+  "GroupSession": {
+    "scope": "global"
+  },
   "GroupSpendRequest": {
     "scope": "owner",
     "owner_field": "recipient_user_id"
   },
   "GrowthHeatmapData": {
     "scope": "global"
+  },
+  "GrowthPlan": {
+    "scope": "admin"
   },
   "Guild": {
     "scope": "global"
@@ -421,6 +515,9 @@
   },
   "MockupVoteSurvey": {
     "scope": "global"
+  },
+  "MoneyLedgerEntry": {
+    "scope": "admin"
   },
   "MoneyTransfer": {
     "scope": "global"
@@ -499,6 +596,10 @@
     "scope": "owner",
     "owner_field": "user_id"
   },
+  "PremiumFinancePlan": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "PremiumMembership": {
     "scope": "owner",
     "owner_field": "user_id"
@@ -520,6 +621,9 @@
     "owner_field": "user_id"
   },
   "PromoCode": {
+    "scope": "global"
+  },
+  "ProviderUsage": {
     "scope": "global"
   },
   "PushSubscription": {
@@ -574,6 +678,10 @@
     "scope": "owner",
     "owner_field": "referrer_user_id"
   },
+  "ReferralInviteBatch": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "ReferralJackpot": {
     "scope": "owner",
     "owner_field": "user_id"
@@ -624,6 +732,9 @@
     "scope": "owner",
     "owner_field": "user_id"
   },
+  "RevenueEvent": {
+    "scope": "admin"
+  },
   "RevenueProduct": {
     "scope": "global"
   },
@@ -634,6 +745,10 @@
     "scope": "global"
   },
   "SavedSurveySearch": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "ScreenOutEvent": {
     "scope": "owner",
     "owner_field": "user_id"
   },
@@ -666,11 +781,19 @@
     "scope": "owner",
     "owner_field": "user_id"
   },
+  "SourcedOrder": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "SponsoredContent": {
     "scope": "global"
   },
   "SponsoredListing": {
     "scope": "global"
+  },
+  "SponsoredPlacement": {
+    "scope": "owner",
+    "owner_field": "owner_user_id"
   },
   "SquadActivityFeed": {
     "scope": "global"
@@ -696,6 +819,9 @@
   "Subscription": {
     "scope": "owner",
     "owner_field": "user_id"
+  },
+  "Supplier": {
+    "scope": "admin"
   },
   "SupportTicket": {
     "scope": "owner",
@@ -726,6 +852,10 @@
   "SurveyMarketplaceListing": {
     "scope": "global"
   },
+  "SurveyProfile": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "SurveyRecommendation": {
     "scope": "owner",
     "owner_field": "user_id"
@@ -734,6 +864,9 @@
     "scope": "global"
   },
   "SurveyTemplate": {
+    "scope": "global"
+  },
+  "Tenant": {
     "scope": "global"
   },
   "TieredMembership": {
@@ -811,6 +944,10 @@
     "scope": "owner",
     "owner_field": "user_id"
   },
+  "UserProductProfile": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
   "UserRecommendation": {
     "scope": "owner",
     "owner_field": "user_id"
@@ -820,6 +957,10 @@
     "owner_field": "user_id"
   },
   "UserSuggestion": {
+    "scope": "owner",
+    "owner_field": "user_id"
+  },
+  "VerifiedSurveyMedia": {
     "scope": "owner",
     "owner_field": "user_id"
   },
@@ -851,139 +992,6 @@
     "owner_field": "user_id"
   },
   "YouTubeVideoSession": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AgentConversation": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AgentMessage": {
-    "scope": "owner",
-    "owner_field": "created_by"
-  },
-  "AnalyticsEvent": {
-    "scope": "global"
-  },
-  "AppLog": {
-    "scope": "global"
-  },
-  "GroupGoal": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "GroupMessage": {
-    "scope": "global"
-  },
-  "GroupSession": {
-    "scope": "global"
-  },
-  "GroupGoalReward": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "VerifiedSurveyMedia": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "RevenueEvent": {
-    "scope": "admin"
-  },
-  "BurstSession": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "BusinessAccount": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "BusinessSubscription": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "SponsoredPlacement": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "Expense": {
-    "scope": "admin"
-  },
-  "GrowthPlan": {
-    "scope": "admin"
-  },
-  "AdGridAd": {
-    "scope": "global"
-  },
-  "AdGridResponse": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AdGridSession": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AdGridSlotGrant": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ScreenOutEvent": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SurveyProfile": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserProductProfile": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "MoneyLedgerEntry": {
-    "scope": "admin"
-  },
-  "Supplier": {
-    "scope": "admin"
-  },
-  "GiftCardStock": {
-    "scope": "admin"
-  },
-  "GiftCardRedemption": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SourcedOrder": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "BuyingDeskTask": {
-    "scope": "admin"
-  },
-  "EarnBackPlan": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "EarnBackLedger": {
-    "scope": "global"
-  },
-  "PremiumFinancePlan": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ProviderUsage": {
-    "scope": "global"
-  },
-  "Tenant": {
-    "scope": "global"
-  },
-  "AdImpression": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AffiliatePurchase": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "FoundingAdvertiser": {
     "scope": "owner",
     "owner_field": "user_id"
   }

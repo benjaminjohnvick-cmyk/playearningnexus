@@ -3432,6 +3432,39 @@ CREATE TABLE IF NOT EXISTS "FoundingAdvertiser" (
 CREATE INDEX IF NOT EXISTS "FoundingAdvertiser_data_gin" ON "FoundingAdvertiser" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "FoundingAdvertiser_created" ON "FoundingAdvertiser" (created_date DESC);
 
+-- EarnedAdvertiser: the FREE "earn-to-unlock" advertiser tier AND the no-upfront (participation-term) Tier 1
+-- option. The member pays NOTHING and owes NOTHING; the platform generates its value by monetizing the
+-- member's ongoing activity over time (an LTV target), never as a fee/debt/charge. Benefits are GRANTED as
+-- rewards for activity (free_earn) or delivered over a participation term (noupfront_tier1); stopping forfeits
+-- only the undelivered remainder — never a charge. data: {
+--   user_id, mode (free_earn|noupfront_tier1), unlock_level (0..4), metric, activity_progress,
+--   perks_granted, survey_earn_share_pct, term_years, active_window_days, started_at, last_active_at,
+--   commitment_accepted, disclosures_version, owed (always 0) }
+CREATE TABLE IF NOT EXISTS "EarnedAdvertiser" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "EarnedAdvertiser_data_gin" ON "EarnedAdvertiser" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "EarnedAdvertiser_created" ON "EarnedAdvertiser" (created_date DESC);
+
+-- ReferralInviteBatch: DATA-MINIMIZED log of a user sending referral invites from their OWN device (native
+-- SMS). Stores ONLY: who sent, the day, how many, the channel, whether the template was customized, and a
+-- consent reference. It NEVER stores the contacts, phone numbers, names, or message bodies — those stay on
+-- the user's device. Used for the anti-spam daily cap, attribution, and a consent audit trail. data: {
+--   user_id, day, count, channel, template_customized, consent_ref }
+CREATE TABLE IF NOT EXISTS "ReferralInviteBatch" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ReferralInviteBatch_data_gin" ON "ReferralInviteBatch" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ReferralInviteBatch_created" ON "ReferralInviteBatch" (created_date DESC);
+
 -- AdGridResponse
 CREATE TABLE IF NOT EXISTS "AdGridResponse" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
