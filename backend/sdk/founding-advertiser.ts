@@ -40,6 +40,39 @@ export const tier1PostSurveySharePct = () => {
   return Math.min(1, Math.max(0, 1 - tier1PostPlatformFeePct()));
 };
 
+// ── Tier 1 VALUE STACK getters — all admin-tunable; every item is a REAL delivered feature/service, never
+//    a dollar value and never a financial return. ──────────────────────────────────────────────────────
+export const tier1LaunchBonusImpressions = () => Math.max(0, snapNumber("TIER1_LAUNCH_BONUS_IMPRESSIONS", 100000));
+export const tier1IncludesPremium = () => snapBool("TIER1_INCLUDE_PREMIUM", true);
+export const tier1AiCreativeIncluded = () => snapBool("TIER1_AI_CREATIVE_INCLUDED", true);
+export const tier1AiSocialPostsPerMonth = () => Math.max(0, snapNumber("TIER1_AI_SOCIAL_POSTS_PER_MONTH", 30));
+export const tier1AbTestingIncluded = () => snapBool("TIER1_AB_TESTING_INCLUDED", true);
+export const tier1AnalyticsIncluded = () => snapBool("TIER1_ANALYTICS_INCLUDED", true);
+export const tier1SentimentInsightsIncluded = () => snapBool("TIER1_SENTIMENT_INSIGHTS_INCLUDED", true);
+export const tier1FeaturedPlacement = () => snapBool("TIER1_FEATURED_PLACEMENT", true);
+export const tier1PrioritySupport = () => snapBool("TIER1_PRIORITY_SUPPORT", true);
+export const tier1LockedRenewal = () => snapBool("TIER1_LOCKED_RENEWAL", true);
+export const tier1EarlyAccess = () => snapBool("TIER1_EARLY_ACCESS", true);
+
+/** The Tier 1 entitlement/perk object stamped on the record at signup — a durable record of exactly what
+ *  the package includes for this member. All items are delivered features/services, not a financial return. */
+export function tier1Perks(): Record<string, unknown> {
+  return {
+    premium_included: tier1IncludesPremium(),
+    ai_creative: tier1AiCreativeIncluded(),
+    ai_social_posts_per_month: tier1AiSocialPostsPerMonth(),
+    ab_testing: tier1AbTestingIncluded(),
+    analytics: tier1AnalyticsIncluded(),
+    sentiment_insights: tier1SentimentInsightsIncluded(),
+    featured_placement: tier1FeaturedPlacement(),
+    priority_support: tier1PrioritySupport(),
+    locked_renewal: tier1LockedRenewal(),
+    early_access: tier1EarlyAccess(),
+    launch_bonus_impressions: tier1LaunchBonusImpressions(),
+    social_ads: foundingSocialAdsEnabled(),
+  };
+}
+
 export const foundingEnabled = () => snapBool("FOUNDING_ADVERTISER_ENABLED", true);
 export const foundingSlots = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_SLOTS", 100000));
 export const foundingPriceUsd = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_PRICE_USD", 8000));
@@ -172,23 +205,47 @@ export function signupFinancials(): SignupFinancials {
   return { model: "presale", price_usd: price, spendable_usd: price, escrow_usd: 0, refundable: false };
 }
 
-/** The Tier 1 offer summary — TWO deliberately separate parts: (1) the advertising product you buy, and
- *  (2) a standalone membership perk (a survey earn-SHARE, never a dollar figure or a return). */
+/** The Tier 1 offer summary — TWO deliberately separate parts: (1) the advertising product you buy (now
+ *  PACKED with included features/services), and (2) a standalone membership perk (a survey earn-SHARE,
+ *  never a dollar figure or a return). Everything in `included` is a delivered feature/service. */
 export function foundingValueSummary() {
   const perYear = foundingImpressionsPerYear();
   const years = foundingTermYears();
+  const bonus = tier1LaunchBonusImpressions();
+  // The packed "everything included" stack — real deliverables only. Toggle each via settings.
+  const included: { label: string; detail: string }[] = [];
+  const add = (on: boolean, label: string, detail: string) => { if (on) included.push({ label, detail }); };
+  add(bonus > 0, `+${bonus.toLocaleString()} launch bonus impressions`, "A one-time bonus ad allotment on top of your yearly impressions.");
+  add(foundingSocialAdsEnabled(), "Runs on 2 surfaces", "Your ads run in the between-survey slot AND on the social-feed surface.");
+  add(tier1FeaturedPlacement(), "Featured placement", "Priority placement in the between-survey slot plus a spot on the Tier 1 sponsors wall.");
+  add(tier1AiCreativeIncluded(), "Free AI ad creative", "We draft your ad creatives and product-page copy with AI — no design work needed.");
+  add(tier1AiSocialPostsPerMonth() > 0, `${tier1AiSocialPostsPerMonth()} AI social posts / month`, "Clearly-labeled AI-written social ad posts generated for you each month.");
+  add(tier1AbTestingIncluded(), "Automatic A/B testing", "We test your creatives against each other and lean into the best performer.");
+  add(tier1AnalyticsIncluded(), "Real-time analytics & ROI", "Live impression/click analytics and ROI reporting for every campaign.");
+  add(tier1SentimentInsightsIncluded(), "Consumer-sentiment insights", "Aggregate, anonymized sentiment from responses to your ad questions (no personal data).");
+  add(tier1IncludesPremium(), "Premium membership included", "You get Premium membership at no extra cost — the highest survey inventory and perks.");
+  add(tier1PrioritySupport(), "Priority concierge support", "Front-of-line support for anything you need.");
+  add(tier1LockedRenewal(), "Locked-in renewal rate", "Keep your introductory advertising rate at renewal for as long as you stay.");
+  add(tier1EarlyAccess(), "Early access to new surfaces", "First access to new ad surfaces and features as they launch.");
   return {
-    // PART 1 — the advertising PRODUCT (what you pay for), on its own merits, in real units (not dollars).
+    // PART 1 — the advertising PRODUCT (what you pay for), PACKED, on its own merits, in real units.
     advertising: {
       impressions_per_year: perYear,
-      impressions_total: perYear * years,
+      launch_bonus_impressions: bonus,
+      impressions_total: perYear * years + bonus,
       term_years: years,
       surfaces: foundingSocialAdsEnabled() ? ["between-survey", "social feed"] : ["between-survey"],
       priority: foundingInterstitialPriority(),
       disclosure:
         "This is the advertising you are buying: a fixed, stated allotment of ad impressions per year for the " +
-        "package term, with priority placement, at a locked-in introductory Tier 1 price. It stands on its own.",
+        "package term (plus any launch bonus), with priority placement and the included features below, at a " +
+        "locked-in introductory Tier 1 price. It stands on its own.",
     },
+    // Everything included with the advertising package — all delivered features/services (not a return).
+    included,
+    included_disclosure:
+      "These are features and services INCLUDED with your advertising package — real, delivered value, not a " +
+      "cash amount and not a financial return. What each is worth to you depends on how you use it.",
     // PART 2 — a SEPARATE membership perk: a survey earn-SHARE. No amount, no cap, not a return.
     survey_perk: {
       earn_share_pct: foundingSurveyEarnSharePct(),          // 1 = keep 100% of what YOU earn

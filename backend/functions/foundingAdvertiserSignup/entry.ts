@@ -7,6 +7,7 @@ import {
   foundingImpressionsPerYear, foundingAutoEnrollMember, signupFinancials,
   foundingDisclosures, DISCLOSURES_VERSION, FA_STATUS,
   foundingSurveyEarnSharePct, tier1PostSurveySharePct, foundingFullKeepYears, foundingSocialAdsEnabled,
+  tier1Perks, tier1LaunchBonusImpressions, tier1IncludesPremium,
 } from "../../sdk/founding-advertiser.ts";
 
 // foundingAdvertiserSignup (authenticated) — reserve a Tier 1 advertising seat. Clean Tier 1 model:
@@ -68,8 +69,12 @@ export default __handler(async (req) => {
       // The advertising is live immediately (no launch-milestone gate in the clean model).
       status: FA_STATUS.ACTIVE,
       impressions_per_year: foundingImpressionsPerYear(),
+      launch_bonus_impressions: tier1LaunchBonusImpressions(),
       impressions_served: 0,
       social_ads: foundingSocialAdsEnabled(),
+      // The packed value stack — a durable record of exactly what this member's package includes.
+      premium_included: tier1IncludesPremium(),
+      perks: tier1Perks(),
       // SEPARATE survey earn-SHARE perk — a rate, not an amount; NO cap.
       survey_earn_share_pct: sharePct,       // 1.0 (Tier 1, in-window) or the post-Tier-1 share
       fullkeep_window_years: foundingFullKeepYears(),

@@ -88,6 +88,27 @@ export default function FoundingAdvertiser() {
         </CardContent>
       </Card>
 
+      {/* Everything included with the advertising package — real delivered features/services. */}
+      {Array.isArray(data.value?.included) && data.value.included.length > 0 && (
+        <Card className="mb-6 border-emerald-200 bg-emerald-50/50">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 text-sm font-semibold text-emerald-900 mb-3"><CheckCircle2 className="w-4 h-4" /> Everything included in your Tier 1 package</div>
+            <div className="grid sm:grid-cols-2 gap-2.5">
+              {data.value.included.map((it, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-xs font-semibold text-slate-800">{it.label}</div>
+                    <div className="text-[11px] text-slate-600 leading-snug">{it.detail}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {data.value.included_disclosure && <p className="text-[11px] text-slate-500 mt-3 leading-relaxed">{data.value.included_disclosure}</p>}
+          </CardContent>
+        </Card>
+      )}
+
       {/* PART 2 — the SEPARATE membership perk (a survey earn-SHARE; no amount, no cap, not a return). */}
       <Card className="mb-6 border-violet-200 bg-gradient-to-br from-violet-50 to-indigo-50">
         <CardContent className="p-5">
