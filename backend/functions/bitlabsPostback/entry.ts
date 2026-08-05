@@ -78,7 +78,7 @@ export default __handler(async (req) => {
     // Founding full-keep: while active (within cap + window), a founding member keeps 100% of the accrual.
     const ffToday = new Date().toISOString().slice(0, 10);
     const ff = await foundingFullKeepActive(db, uid, ffToday);
-    const rw = await computeSurveyReward(premium, gross, ff.active ? 1 : undefined);
+    const rw = await computeSurveyReward(premium, gross, ff.active ? ff.share : undefined);
 
     // Daily earnings cap applies to the user's realized $ value; scale the reward down if capped.
     let creditPoints = rw.points;
@@ -155,7 +155,7 @@ export default __handler(async (req) => {
       user_id: uid,
       type: 'points_earned',
       title: '✅ Survey Completed!',
-      message: `You earned ${rewardLabel} from a survey. Keep going to reach your $8/day survey goal!`,
+      message: `You earned ${rewardLabel} from a survey. Keep going — complete more surveys to reach your daily store-unlock goal!`,
       status: 'unread',
       delivery_method: ['in_app']
     });

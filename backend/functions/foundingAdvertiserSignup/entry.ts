@@ -6,26 +6,26 @@ import {
   foundingEnabled, foundingProgramOpen, foundingPriceUsd, foundingTermYears,
   foundingImpressionsPerYear, foundingAutoEnrollMember, signupFinancials,
   foundingDisclosures, DISCLOSURES_VERSION, FA_STATUS,
-  foundingStoreCreditPoints, foundingStoreCreditReleaseYears, foundingSurveyEarnSharePct, foundingSocialAdsEnabled,
+  foundingSurveyEarnSharePct, tier1PostSurveySharePct, foundingFullKeepYears, foundingSocialAdsEnabled,
 } from "../../sdk/founding-advertiser.ts";
 
-// foundingAdvertiserSignup (authenticated) — reserve a founding-advertiser seat. This records the purchase
-// as ESCROWED and enrolls the buyer as a member/affiliate of the closed loop. It does NOT move real money:
-// the actual payment + escrow are handled by your processor/escrow agent (counsel-gated). No financial
-// return is promised; member survey earnings are a separate, variable benefit.
-//
-// GATING: the buyer must explicitly accept the disclosures ({ accept_disclosures: true }) — which state, in
-// plain language, that this is advertising (not an investment), earnings are variable and not an offset,
-// and funds are escrowed/refundable. One active record per user.
-//   { accept_disclosures: true } → { ok, status, record } | { error }
+// foundingAdvertiserSignup (authenticated) — reserve a Tier 1 advertising seat. Clean Tier 1 model:
+//   • Records the purchase of an ADVERTISING product (impressions/term/priority) at the introductory price.
+//   • Enrolls the buyer as a member with a SEPARATE survey earn-SHARE perk: keep 100% of their OWN survey
+//     earnings for the window (default 4 years) — no amount promised, no cap, not a return of the price.
+//   • Availability: while the Tier 1 offer is OPEN (cap not reached) the member keeps 100% in-window; a member
+//     who joins AFTER it closes keeps the post-Tier-1 share (default 75%; platform fee 25%).
+//   • NON-REFUNDABLE presale by default; NO escrow, NO refund milestone. Records ACTIVE immediately.
+//   • Never moves real money — payment is handled by the processor (counsel-gated). Requires explicit,
+//     recorded acceptance of the disclosures.
+//   { accept_disclosures: true } → { ok, tier1, status, survey_earn_share_pct, record } | { error }
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (!foundingEnabled()) return Response.json({ error: "Program not open." }, { status: 403 });
-    if (!(await foundingProgramOpen())) return Response.json({ error: "All founding slots are taken." }, { status: 409 });
+    if (!foundingEnabled()) return Response.json({ error: "Offer not open." }, { status: 403 });
 
     const body = await req.json().catch(() => ({}));
     if (body.accept_disclosures !== true) {
@@ -37,60 +37,69 @@ export default __handler(async (req) => {
     const existing = await db.filter("FoundingAdvertiser", { user_id: user.id }, "-created_date", 1)
       .catch(() => []) as Record<string, unknown>[];
     if (existing[0] && ![FA_STATUS.REFUNDED, FA_STATUS.CANCELLED].includes(existing[0].status as never)) {
-      return Response.json({ error: "You already hold a founding-advertiser seat.", record: existing[0] }, { status: 409 });
+      return Response.json({ error: "You already hold a Tier 1 seat.", record: existing[0] }, { status: 409 });
     }
+
+    // Tier assignment by AVAILABILITY: while the introductory offer is open, the member keeps 100% in-window;
+    // once the advertiser cap is reached the offer has closed and new members keep the post-Tier-1 share.
+    const isTier1 = await foundingProgramOpen();
+    const sharePct = isTier1 ? foundingSurveyEarnSharePct() : tier1PostSurveySharePct();
 
     const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || null;
     // Record explicit consent to the honest disclosures (append-only evidence).
     await recordConsent({
-      user_id: user.id, kind: "founding_advertiser_terms", version: DISCLOSURES_VERSION, accepted: true,
-      shown: foundingDisclosures(), ip, meta: { feature: "founding_advertiser" },
+      user_id: user.id, kind: "tier1_advertiser_terms", version: DISCLOSURES_VERSION, accepted: true,
+      shown: foundingDisclosures(), ip, meta: { feature: "tier1_advertiser", tier1: isTier1 },
     }).catch(() => null);
 
-    // Split the payment per the configured funds model. presale = fully non-refundable revenue (spendable on
-    // ramp-up); escrow = fully refundable/held; hybrid = deposit spendable + rest escrowed. Real payment +
-    // escrow are external — this is the state record only (it never moves money).
+    // Presale funds split (non-refundable revenue by default). Real payment/escrow are external — state only.
     const fin = signupFinancials();
-    const initialStatus = fin.model === "escrow" ? FA_STATUS.ESCROWED : FA_STATUS.FUNDED;
+    const now = new Date().toISOString();
     const rec = await base44.asServiceRole.entities.FoundingAdvertiser.create({
       user_id: user.id,
-      tier: "founding",
+      tier: "tier1",
+      tier1: isTier1,                        // true = joined while the offer was open (100%-keep in-window)
       price_usd: fin.price_usd,
       funds_model: fin.model,
-      spendable_usd: fin.spendable_usd,      // non-refundable revenue that funds the ramp-up
-      escrow_usd: fin.escrow_usd,            // refundable portion held in escrow (0 in presale)
+      spendable_usd: fin.spendable_usd,      // non-refundable revenue that funds build/launch/growth
+      escrow_usd: fin.escrow_usd,            // refundable portion (0 in presale)
       refundable: fin.refundable,
       term_years: foundingTermYears(),
-      status: initialStatus,
+      // The advertising is live immediately (no launch-milestone gate in the clean model).
+      status: FA_STATUS.ACTIVE,
       impressions_per_year: foundingImpressionsPerYear(),
       impressions_served: 0,
       social_ads: foundingSocialAdsEnabled(),
-      // Founding store-credit grant (points / closed-loop, non-cashable) — released in annual tranches once
-      // the platform is live. A membership benefit, not a refund or a dollar value.
-      store_credit_points_granted: foundingStoreCreditPoints(),
-      store_credit_release_years: foundingStoreCreditReleaseYears(),
-      store_credit_points_released: 0,
-      credit_start: null,                            // set when the record activates (platform launched)
-      fullkeep_earned_usd: 0,                        // cumulative 100%-keep survey earnings toward the cap
-      fullkeep_start: null,                          // window starts at activation
-      survey_earn_share_pct: foundingSurveyEarnSharePct(),
-      member_enrolled: foundingAutoEnrollMember(),   // part of the closed loop; earns surveys as a member
+      // SEPARATE survey earn-SHARE perk — a rate, not an amount; NO cap.
+      survey_earn_share_pct: sharePct,       // 1.0 (Tier 1, in-window) or the post-Tier-1 share
+      fullkeep_window_years: foundingFullKeepYears(),
+      fullkeep_earned_usd: 0,                // cumulative survey earnings recorded (reporting only; no cap)
+      fullkeep_start: now,                   // 100%-keep window starts at signup
+      credit_start: now,
+      member_enrolled: foundingAutoEnrollMember(),
       affiliate_enrolled: foundingAutoEnrollMember(),
       disclosures_version: DISCLOSURES_VERSION,
-      milestone_met: false,
-      purchased_at: new Date().toISOString(),
+      purchased_at: now,
     }).catch(() => null);
 
-    const note = fin.model === "presale"
-      ? "This founding payment is NON-REFUNDABLE and funds building/launching the platform. Your advertising " +
-        "begins delivering once both launch milestones are met. You are also a member and can earn variable " +
-        "Site Cash from surveys (not a repayment of your ad cost)."
-      : fin.model === "hybrid"
-      ? `A ${fin.spendable_usd.toLocaleString()} deposit is non-refundable and funds the ramp-up; ` +
-        `${fin.escrow_usd.toLocaleString()} is escrowed and refunded if the milestones aren't met.`
-      : "Funds are held in escrow until both launch milestones are met; refunded if they aren't.";
+    const note = isTier1
+      ? "Tier 1 confirmed. You've bought the advertising package, and as a Tier 1 member you keep 100% of what " +
+        "YOU earn from third-party surveys for " + foundingFullKeepYears() + " years (paid as Site Cash; a rate, " +
+        "not a promised amount; separate from the ad price). " +
+        (fin.model === "presale" ? "Your payment is NON-REFUNDABLE." : "")
+      : "The Tier 1 introductory offer has closed. You've bought the advertising package; as a member you keep " +
+        Math.round(sharePct * 100) + "% of what you earn from third-party surveys (platform fee " +
+        Math.round((1 - sharePct) * 100) + "%), paid as Site Cash. " +
+        (fin.model === "presale" ? "Your payment is NON-REFUNDABLE." : "");
 
-    return Response.json({ ok: true, status: rec ? (rec as Record<string, unknown>).status : initialStatus, record: rec, note });
+    return Response.json({
+      ok: true,
+      tier1: isTier1,
+      status: rec ? (rec as Record<string, unknown>).status : FA_STATUS.ACTIVE,
+      survey_earn_share_pct: sharePct,
+      record: rec,
+      note,
+    });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

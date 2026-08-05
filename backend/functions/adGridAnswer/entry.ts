@@ -66,7 +66,7 @@ export default __handler(async (req) => {
       const gross = adgridThumbnailPrice();
       const premium = await isPremiumUser(user.id);
       const ff = await foundingFullKeepActive(db, user.id, day);
-      const rw = await computeSurveyReward(premium, gross, ff.active ? 1 : undefined);
+      const rw = await computeSurveyReward(premium, gross, ff.active ? ff.share : undefined);
       if (rw.points > 0) { await adjustUserBalance(user.id, rw.points, { field: "points" }); creditedPoints = rw.points; }
       await adjustUserBalance(user.id, rw.realizedUsd, { field: "total_earnings" });
       if (ff.active && ff.record) await recordFoundingFullKeepEarning(db, ff.record, rw.realizedUsd, day);

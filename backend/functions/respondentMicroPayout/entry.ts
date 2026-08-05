@@ -100,7 +100,7 @@ export default __handler(async (req) => {
     const premium = await isPremiumUser(respondent_user_id);
     const ffToday = new Date().toISOString().slice(0, 10);
     const ff = await foundingFullKeepActive(db, respondent_user_id, ffToday);
-    const rw = await computeSurveyReward(premium, grossPayout, ff.active ? 1 : undefined);
+    const rw = await computeSurveyReward(premium, grossPayout, ff.active ? ff.share : undefined);
     let creditPoints = rw.points, creditCash = rw.cashUsd, payoutAmount = rw.realizedUsd;
 
     // Enforce the per-user daily earnings cap (DAILY_EARN_CAP_USD; 0 = no cap).

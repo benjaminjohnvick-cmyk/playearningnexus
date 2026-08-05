@@ -1,22 +1,34 @@
-// founding-advertiser.ts — the advertiser-funded launch program (see ADVERTISER-FUNDED-LAUNCH.md).
+// founding-advertiser.ts — the "Tier 1" introductory advertising offer (see ADVERTISER-FUNDED-LAUNCH.md).
 //
-// WHAT THIS IS (and is NOT):
-//   • IS: a limited, prepaid ADVERTISING package + closed-loop membership. Founding advertisers buy a
-//     multi-year package (a fixed, stated allotment of between-survey ad impressions + perks) and are also
-//     enrolled as members who can earn Site Cash from surveys like anyone.
-//   • IS NOT: an investment, a security, or a promise of any financial return. There is NO guaranteed 2x/4x,
-//     no "zero risk / guaranteed profit," and NO card charge tied to a survey-earnings shortfall. Member
-//     survey earnings are VARIABLE, NOT GUARANTEED, and NOT an offset to the advertising cost — they are a
-//     separate membership benefit, paid only as closed-loop, non-cashable Site Cash.
-//   • Pre-launch: funds are ESCROWED until the premium-user milestone is met; auto-refunded if it isn't.
-//     This requires a real escrow arrangement and securities/FTC counsel sign-off before it can go live.
-//     This module only tracks state and flags — it never moves real money.
+// CLEAN TIER 1 MODEL — two things sold, kept DELIBERATELY SEPARATE:
+//   1) AN ADVERTISING PRODUCT, on its own merits: a fixed, stated allotment of between-survey (and social)
+//      ad impressions per year for the package term, at a locked-in introductory price. This is what the
+//      buyer pays for.
+//   2) A STANDALONE MEMBERSHIP PERK: as a member, a Tier 1 buyer keeps 100% of what THEY earn from
+//      THIRD-PARTY surveys for a time window (default 4 years), paid ONLY as closed-loop, non-cashable
+//      Site Cash. NO amount is promised, there is NO cap, and it is NOT tied to, a return of, or an offset
+//      to the advertising price. It is a better earning RATE (a share), never a recoup of the payment.
+//
+// AVAILABILITY: Tier 1 is an introductory offer, OPEN until a set number of Tier 1 advertisers enroll
+//   (FOUNDING_ADVERTISER_SLOTS, default 100,000), then it CLOSES. A member who joins AFTER it closes keeps
+//   only the post-Tier-1 share (TIER1_POST_SURVEY_SHARE_PCT, default 0.75 = 75%; platform fee 25%). Existing
+//   Tier 1 members are unaffected. After signup, members may be offered additional advertising/spend upsells.
+//
+// WHAT THIS IS NOT: an investment, a security, or a promise of any financial return. NO guaranteed 2x/4x,
+//   no "zero risk / guaranteed profit," no card charge tied to a survey-earnings shortfall, no cap pegged to
+//   the amount paid, and no recoup framing anywhere. The presale payment is NON-REFUNDABLE and funds the
+//   build/launch/user-acquisition — never used to pay a return to earlier buyers. This module tracks state
+//   only; it never moves real money. Counsel-gated before any money is collected.
 
 import { snapBool, snapNumber, snapString } from "./settings.ts";
 import { db } from "./db.ts";
 import { cacheGet, cacheSet } from "./cache.ts";
 
-export const DISCLOSURES_VERSION = "1";
+export const DISCLOSURES_VERSION = "2";
+
+/** Post-Tier-1 survey earn share: what a member who joins AFTER the offer closes keeps (0.75 = 75%; the
+ *  platform keeps 25% as its fee). Tier 1 members keep 100% in-window, then revert to this. */
+export const tier1PostSurveySharePct = () => Math.min(1, Math.max(0, snapNumber("TIER1_POST_SURVEY_SHARE_PCT", 0.75)));
 
 export const foundingEnabled = () => snapBool("FOUNDING_ADVERTISER_ENABLED", true);
 export const foundingSlots = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_SLOTS", 100000));
@@ -39,62 +51,77 @@ export const foundingStoreCreditPoints = () => Math.max(0, snapNumber("FOUNDING_
 export const foundingStoreCreditReleaseYears = () => Math.max(1, snapNumber("FOUNDING_STORE_CREDIT_RELEASE_YEARS", 4));
 export const foundingSurveyEarnSharePct = () => Math.min(1, Math.max(0, snapNumber("FOUNDING_SURVEY_EARN_SHARE_PCT", 1)));
 export const foundingMissedBonusMult = () => Math.max(1, snapNumber("FOUNDING_MILESTONE_MISSED_BONUS_MULT", 1));
-export const foundingFullKeepCapToPrice = () => snapBool("FOUNDING_FULLKEEP_CAP_TO_PRICE", true);
+export const foundingFullKeepCapToPrice = () => snapBool("FOUNDING_FULLKEEP_CAP_TO_PRICE", false);
 export const foundingFullKeepCapExplicit = () => Math.max(0, snapNumber("FOUNDING_FULLKEEP_CAP_USD", 0));
 export const foundingFullKeepYears = () => Math.max(1, snapNumber("FOUNDING_FULLKEEP_YEARS", 4));
 
-/** The cumulative cap (USD) on a founding member's 100%-keep survey benefit. Cap = amount paid (default) or
- *  an explicit setting. NOTE: cap = payment is a return-of-capital signal; keep member copy as a variable cap,
- *  never a promise to recoup. */
+/** @deprecated The clean Tier 1 model has NO cap (a cap pegged to the payment reads as return-of-capital).
+ *  Retained only so any legacy importer resolves; returns the (normally 0) configured cap. */
 export function foundingFullKeepCapUsd(rec: Record<string, unknown>): number {
   if (foundingFullKeepCapToPrice()) return Math.max(0, Number(rec.price_usd) || foundingPriceUsd());
   return foundingFullKeepCapExplicit();
 }
 
-export interface FullKeepStatus {
-  cap_usd: number;
-  earned_usd: number;     // cumulative full-keep earnings recorded so far
-  remaining_usd: number;
-  years: number;
-  within_window: boolean;
-  active: boolean;        // still keeping 100%? (cap not reached AND within the window AND record is active)
-  ended_reason: string;   // "" | "cap_reached" | "window_elapsed" | "not_active"
+/** Is this record a Tier 1 (in-offer) member? True when they enrolled at the 100%-keep rate. */
+export function isTier1Member(rec: Record<string, unknown>): boolean {
+  if (rec.tier1 === true) return true;
+  const s = Number(rec.survey_earn_share_pct);
+  return Number.isFinite(s) ? s >= 1 : false;
 }
 
-/** Evaluate a founding member's full-keep status. `todayISO` passed in for testability. */
+export interface FullKeepStatus {
+  share: number;          // the survey earn-share to apply for this member RIGHT NOW (1 = keep 100%)
+  tier1: boolean;         // is this a Tier 1 (in-offer) member?
+  in_window: boolean;     // still inside the Tier 1 100%-keep window?
+  years: number;
+  earned_usd: number;     // cumulative survey earnings recorded (reporting only; NO cap)
+  active: boolean;        // is a member-rate override in effect? (a live, non-refunded/cancelled seat)
+  ended_reason: string;   // "" | "window_elapsed" | "not_active"
+  // legacy fields (kept so older callers still resolve; not used for gating in the Tier 1 model)
+  cap_usd: number;
+  remaining_usd: number;
+  within_window: boolean;
+}
+
+/** Evaluate a member's current survey earn-share. Clean Tier 1 model: NO cap. A Tier 1 member keeps 100%
+ *  (share = their recorded in-window share, default 1) while inside the window, then reverts to the
+ *  post-Tier-1 share; a member who joined after the offer closed keeps the post-Tier-1 share throughout.
+ *  `todayISO` passed in for testability. */
 export function foundingFullKeepStatus(rec: Record<string, unknown>, todayISO: string): FullKeepStatus {
-  const cap = foundingFullKeepCapUsd(rec);
   const earned = Math.max(0, Number(rec.fullkeep_earned_usd) || 0);
   const years = foundingFullKeepYears();
   const startISO = String(rec.fullkeep_start || rec.credit_start || rec.purchased_at || "");
-  let withinWindow = true;
+  let inWindow = true;
   if (startISO) {
     const start = Date.parse(startISO), today = Date.parse(todayISO);
     if (!isNaN(start) && !isNaN(today)) {
-      withinWindow = (today - start) < years * 365.25 * 24 * 3600 * 1000;
+      inWindow = (today - start) < years * 365.25 * 24 * 3600 * 1000;
     }
   }
-  // A "live seat" keeps the founding full-keep rate: during the offer year (funded/escrowed), after launch
-  // (active), AND in the failure case (launch_unmet) — where the member can still earn store credit up to the
-  // cap by doing THIRD-PARTY surveys, over the 4-year window, as long as the site operates. Not refunded/
-  // cancelled seats. This is variable, earned through their own survey work, and never a promise to recoup.
+  // A live seat gets a member-rate override; a refunded/cancelled seat reverts to the platform standard.
   const liveSeat = rec.status !== FA_STATUS.REFUNDED && rec.status !== FA_STATUS.CANCELLED;
-  const capReached = cap > 0 && earned >= cap;
-  const active = liveSeat && withinWindow && !capReached;
-  const ended_reason = !liveSeat ? "not_active" : capReached ? "cap_reached" : !withinWindow ? "window_elapsed" : "";
-  return { cap_usd: cap, earned_usd: earned, remaining_usd: Math.max(0, cap - earned), years, within_window: withinWindow, active, ended_reason };
+  const tier1 = isTier1Member(rec);
+  const inWindowShare = tier1 ? Math.min(1, Math.max(0, Number(rec.survey_earn_share_pct) || 1)) : tier1PostSurveySharePct();
+  // In-window Tier 1 → their 100% rate; out-of-window (or a post-Tier-1 member) → the post-Tier-1 share.
+  const share = (tier1 && inWindow) ? inWindowShare : tier1PostSurveySharePct();
+  const active = liveSeat;
+  const ended_reason = !liveSeat ? "not_active" : (tier1 && !inWindow) ? "window_elapsed" : "";
+  return {
+    share, tier1, in_window: inWindow, years, earned_usd: earned, active, ended_reason,
+    cap_usd: 0, remaining_usd: 0, within_window: inWindow,
+  };
 }
 
-/** For the survey-reward path: is this user a founding member currently keeping 100%? Returns the record too. */
+/** For the survey-reward path: the member survey earn-share override in effect for this user (if any).
+ *  Returns `{ active, share, record }`. Callers apply `share` as the userSharePctOverride when active. */
 export async function foundingFullKeepActive(dbi: {
   filter: (name: string, q: Record<string, unknown>, sort?: string, limit?: number) => Promise<Record<string, unknown>[]>;
-}, userId: string, todayISO: string): Promise<{ active: boolean; record: Record<string, unknown> | null }> {
-  // Their most recent founding seat (any status); foundingFullKeepStatus decides eligibility — this way the
-  // full-keep rate also applies during the offer year and in the launch-unmet (failure) recoup case.
+}, userId: string, todayISO: string): Promise<{ active: boolean; share: number; record: Record<string, unknown> | null }> {
   const rows = await dbi.filter("FoundingAdvertiser", { user_id: userId }, "-created_date", 1).catch(() => []);
   const rec = (rows || [])[0] || null;
-  if (!rec) return { active: false, record: null };
-  return { active: foundingFullKeepStatus(rec, todayISO).active, record: rec };
+  if (!rec) return { active: false, share: 1, record: null };
+  const st = foundingFullKeepStatus(rec, todayISO);
+  return { active: st.active, share: st.share, record: rec };
 }
 
 /** Record realized survey earnings against a founding member's full-keep cap (call after crediting). Caps the
@@ -135,36 +162,38 @@ export function signupFinancials(): SignupFinancials {
   return { model: "presale", price_usd: price, spendable_usd: price, escrow_usd: 0, refundable: false };
 }
 
-/** The founding VALUE PACKAGE — the "three numbers," in real deliverable units, never dollars or a return. */
+/** The Tier 1 offer summary — TWO deliberately separate parts: (1) the advertising product you buy, and
+ *  (2) a standalone membership perk (a survey earn-SHARE, never a dollar figure or a return). */
 export function foundingValueSummary() {
   const perYear = foundingImpressionsPerYear();
   const years = foundingTermYears();
-  const credit = foundingStoreCreditPoints();
-  const relYears = foundingStoreCreditReleaseYears();
   return {
-    // 1) Ad reach — a concrete impression count across both surfaces
-    ad_impressions_per_year: perYear,
-    ad_impressions_total: perYear * years,
-    ad_surfaces: foundingSocialAdsEnabled() ? ["between-survey", "social feed"] : ["between-survey"],
-    // 2) Founding store credit — in points (store credit), released over the term
-    store_credit_points: credit,
-    store_credit_release_years: relYears,
-    store_credit_points_per_year: Math.round(credit / relYears),
-    // 2) Survey earning share — the value they keep: 100% of variable survey earnings, paid as store credit
-    survey_earn_share_pct: foundingSurveyEarnSharePct(),
-    disclosure:
-      "These are what your founding membership includes — shown in real units, not dollars, and NOT a refund " +
-      "or a promised return on your payment. What you earn from surveys is paid as Site Cash — closed-loop " +
-      "store credit that spends ONLY on this site, is not cash, has no cash value, and is only useful while " +
-      "the store is operating.",
-    // The survey earnings are deliberately framed as SEPARATE from the purchase and NOT a return.
-    separate_upside:
-      "As a founding member you keep 100% of what you earn from surveys (up to $8/day) — a founding rate that " +
-      "applies up to a set cap, over " + foundingFullKeepYears() + " years, after which you earn at the " +
-      "standard member rate. This is SEPARATE from what you're buying, is VARIABLE and NOT guaranteed (you may " +
-      "earn little, and are not promised to reach the cap), is NOT a return on your payment, and is paid as " +
-      "Site Cash store credit spendable only on this site. There is no cash-back or points grant — just the " +
-      "surveys you choose to do.",
+    // PART 1 — the advertising PRODUCT (what you pay for), on its own merits, in real units (not dollars).
+    advertising: {
+      impressions_per_year: perYear,
+      impressions_total: perYear * years,
+      term_years: years,
+      surfaces: foundingSocialAdsEnabled() ? ["between-survey", "social feed"] : ["between-survey"],
+      priority: foundingInterstitialPriority(),
+      disclosure:
+        "This is the advertising you are buying: a fixed, stated allotment of ad impressions per year for the " +
+        "package term, with priority placement, at a locked-in introductory Tier 1 price. It stands on its own.",
+    },
+    // PART 2 — a SEPARATE membership perk: a survey earn-SHARE. No amount, no cap, not a return.
+    survey_perk: {
+      earn_share_pct: foundingSurveyEarnSharePct(),          // 1 = keep 100% of what YOU earn
+      window_years: foundingFullKeepYears(),
+      post_offer_share_pct: tier1PostSurveySharePct(),        // reverts to this after the window / after close
+      paid_as: "Site Cash (closed-loop store credit, non-cashable)",
+      disclosure:
+        "SEPARATE from the advertising above: as a Tier 1 member you keep 100% of what YOU earn from " +
+        "third-party surveys for " + foundingFullKeepYears() + " years — a better earning SHARE, paid only as " +
+        "Site Cash (closed-loop store credit that spends only on this site, is not cash, and is useful only " +
+        "while the store operates). NO amount is promised, there is NO cap, and it is NOT a return of, or an " +
+        "offset to, the advertising price. Your earnings are whatever your own survey work produces, and they " +
+        "VARY and are NOT guaranteed. After the window (or if you join after Tier 1 closes) you keep the " +
+        "standard post-Tier-1 share (" + Math.round(tier1PostSurveySharePct() * 100) + "%).",
+    },
   };
 }
 
@@ -282,57 +311,71 @@ export async function noteFoundingImpression(dbi: {
   await dbi.update("FoundingAdvertiser", rec.id as string, { impressions_served: (Number(rec.impressions_served) || 0) + 1 }).catch(() => null);
 }
 
-/** Honest, plain-language disclosures shown before any founding purchase. MODEL-AWARE: in the presale model
- *  the refund line becomes a prominent NO-REFUND risk warning. Not legal advice; counsel-gated. */
+/** Honest, plain-language disclosures shown before any Tier 1 purchase. The advertising product and the
+ *  survey perk are described SEPARATELY, and the survey perk carries no amount, no cap, and no recoup
+ *  framing. MODEL-AWARE refund line. Not legal advice; counsel-gated before any money is collected. */
 export function foundingDisclosures() {
   const model = foundingFundsModel();
   const fin = signupFinancials();
+  const postPct = Math.round(tier1PostSurveySharePct() * 100);
   const base = {
     version: DISCLOSURES_VERSION,
     model,
+    // ---- The advertising PRODUCT (what you pay for) ------------------------------------------------
+    advertising_product:
+      "WHAT YOU ARE BUYING: an advertising package — a fixed, stated allotment of between-survey (and, if " +
+      "enabled, social-feed) ad impressions per year for the package term, with priority placement, at a " +
+      "locked-in introductory Tier 1 price. You are buying advertising, on its own merits.",
     is_advertising_not_investment:
-      "This is a purchase of advertising and membership — not an investment. You are not buying a financial " +
-      "return, and no profit, gain, or 'multiple' of your money is promised or guaranteed.",
+      "This is a purchase of advertising and membership — NOT an investment or a security. You are not buying " +
+      "a financial return, and no profit, gain, or 'multiple' of your money is promised or guaranteed.",
+    // ---- The SEPARATE membership perk (a survey earn-SHARE) ----------------------------------------
+    survey_perk_separate:
+      "SEPARATE MEMBERSHIP PERK (not part of the price of advertising): as a Tier 1 member you keep 100% of " +
+      "what YOU earn from third-party surveys for " + foundingFullKeepYears() + " years — a better earning " +
+      "SHARE, not a dollar figure. There is NO cap and NO promised amount. It is NOT a return of, and NOT an " +
+      "offset to, what you paid for advertising. It is simply a higher share of whatever your own survey work " +
+      "happens to earn.",
     survey_earnings_variable:
-      "As a member you can earn rewards by completing surveys, but survey availability and earnings VARY, are " +
-      "NOT guaranteed, and are NOT a repayment or offset of what you paid for advertising. Rewards are " +
-      "closed-loop store credit (Site Cash) that can only be spent on this site — they are not cash and are " +
-      "not redeemable for cash.",
+      "Survey availability and earnings VARY and are NOT guaranteed. Some days there may be less, or nothing, " +
+      "to do. We do not promise you will earn any particular amount. Rewards are closed-loop store credit " +
+      "(Site Cash) that can only be spent on this site — they are not cash and are not redeemable for cash.",
+    closed_loop_site_cash:
+      "All survey rewards are paid as Site Cash: closed-loop, non-cashable store credit that spends ONLY on " +
+      "this site, has no cash value, cannot be transferred to another person, and is useful only while the " +
+      "store is operating.",
     no_shortfall_charge:
       "You will NEVER be charged for 'falling short' of any earnings amount. There is no required earnings " +
-      "figure and no card charge tied to survey results. Your survey earnings are simply whatever you earn.",
-    what_you_get:
-      "You receive a fixed, stated allotment of between-survey ad impressions per year for the package term, " +
-      "priority placement, a locked-in rate, and membership in the closed-loop rewards ecosystem. Your " +
-      "advertising begins delivering once the platform reaches its launch milestone.",
-    founder_is_user:
-      "As a founding member you are also a user of the site: you sign up, use it, and do surveys during the " +
-      "first year. Because founders are the users, the launch milestone is a single count of founding members " +
-      "— not founders plus a separate pool of users.",
-    participation_and_feedback:
-      "During the first year we will regularly ask for your feedback through surveys and use it to refine the " +
-      "site's features and functions. Founding members help shape the product.",
+      "figure and no card charge tied to survey results.",
     effort_note:
-      "At the premium rate, the $8/day cap works out to roughly 8 minutes of surveys WHEN surveys are " +
-      "available. Survey availability and your earnings VARY and are NOT guaranteed — some days there may be " +
-      "less, or nothing, to do. This is not a promise that you will earn $8 in 8 minutes.",
-    failure_recoup:
-      "If the platform does not launch, your payment is still non-refundable — but as long as the site keeps " +
-      "operating you can continue earning at the founding rate (you keep 100% of what you earn, up to your " +
-      "founding cap) by completing THIRD-PARTY surveys, over up to " + foundingFullKeepYears() + " years. This " +
-      "is VARIABLE and NOT guaranteed: you earn it through your own survey work, it depends on how many surveys " +
-      "you complete and their availability, it is paid only as on-site store credit (not cash), it stops if the " +
-      "site stops operating, and it is NOT a refund and NOT a promise to recoup what you paid.",
+      "Surveys take a few minutes each when they are available. We are deliberately NOT stating a per-day or " +
+      "per-minute earnings figure, because your earnings depend entirely on your own activity and on survey " +
+      "availability, which vary and are not guaranteed.",
+    member_is_user:
+      "As a Tier 1 member you are also a user of the site: you can sign up, use it, and do surveys like any " +
+      "member. Doing surveys is entirely optional and is never required to keep your advertising.",
+    participation_and_feedback:
+      "From time to time we may ask for your feedback through surveys and use it to refine the site. " +
+      "Participating is optional.",
+    // ---- Availability window + what changes after it closes ---------------------------------------
+    availability_and_post_rate:
+      "Tier 1 is a LIMITED introductory offer. It stays open until " + foundingSlots().toLocaleString() +
+      " Tier 1 advertisers have enrolled, then it closes. Members who join AFTER it closes keep " + postPct +
+      "% of their own survey earnings (the platform keeps the rest as its fee) instead of 100%. If you are " +
+      "already a Tier 1 member, this change does not affect you during your window.",
+    upsell_note:
+      "After you join, we may offer you additional advertising or spending options. These are optional; you " +
+      "are never required to buy anything further, and declining them does not affect what you already bought.",
   };
 
   if (model === "presale") {
     return {
       ...base,
       refund_policy:
-        "IMPORTANT — THIS PAYMENT IS NON-REFUNDABLE. Your founding payment is used to build and launch the " +
-        "platform (like backing a crowdfunding project). We aim to launch once both milestones are met, but " +
-        "there is no guarantee we will. If the platform does not launch, YOU WILL NOT GET YOUR MONEY BACK. " +
-        "Only pay what you can afford to lose.",
+        "IMPORTANT — THIS PAYMENT IS NON-REFUNDABLE. Your Tier 1 payment is used to build, launch, and grow " +
+        "the platform (like backing a crowdfunding project). It is NOT used to pay any return to earlier " +
+        "buyers. There is no guarantee the platform will succeed. If it does not, YOU WILL NOT GET YOUR MONEY " +
+        "BACK. Only pay what you can afford to lose.",
     };
   }
   if (model === "hybrid") {
@@ -340,17 +383,16 @@ export function foundingDisclosures() {
       ...base,
       refund_policy:
         `Of your ${fin.price_usd.toLocaleString()} payment, ${fin.spendable_usd.toLocaleString()} is a ` +
-        `NON-REFUNDABLE founding deposit used to build and launch the platform, and ` +
-        `${fin.escrow_usd.toLocaleString()} is held in escrow and refunded to you if both launch milestones ` +
-        "aren't met by the deadline. The non-refundable deposit is not returned even if we don't launch.",
+        `NON-REFUNDABLE deposit used to build/launch/grow the platform, and ${fin.escrow_usd.toLocaleString()} ` +
+        "is held in escrow and refunded to you if the platform does not open. The non-refundable deposit is " +
+        "not returned even if we don't launch.",
     };
   }
   // escrow
   return {
     ...base,
     refund_policy:
-      "Your founding payment is held in escrow until the platform reaches BOTH launch milestones (a target " +
-      "number of premium users AND of founding members). If those aren't met by the deadline, your payment " +
-      "is refunded in full.",
+      "Your Tier 1 payment is held in escrow until the platform opens. If it does not open by the stated " +
+      "date, your payment is refunded in full.",
   };
 }

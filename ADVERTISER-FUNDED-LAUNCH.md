@@ -1,6 +1,35 @@
-# Advertiser-Funded Launch — Founding Advertiser program
+# Advertiser-Funded Launch — Tier 1 advertising offer
 
-The launch strategy: **sign founding advertisers first, use that capital to acquire users in year one.** This
+> ## ⭐ CURRENT MODEL — the clean "Tier 1" offer (supersedes the "Founding" details further below)
+>
+> The offer was reworked into a lighter **Tier 1** structure that drops the two heaviest legal risks. As
+> coded now:
+>
+> - **Two things, kept DELIBERATELY SEPARATE.** (1) An **advertising product** — ~200,000 between-survey
+>   impressions/year for a 4-year term at a locked-in introductory price ($8,000, non-refundable presale),
+>   sold on its own merits. (2) A **standalone membership perk** — keep **100% of what YOU earn** from
+>   **third-party** surveys for **4 years**, paid only as **Site Cash** (closed-loop, non-cashable). It's a
+>   better **SHARE**, with **NO promised amount, NO cap**, and it is **not a return of / offset to** the ad
+>   price.
+> - **Availability window.** Open until **100,000 Tier 1 advertisers** enroll, then it closes. Reaching the
+>   cap owes nobody anything — it's a scarcity threshold, not a payout event.
+> - **After the offer closes** (or after a member's 4-year window), members keep the **post-Tier-1 share**:
+>   **75%** of their own survey earnings; the platform keeps **25%** as its fee (`TIER1_POST_SURVEY_SHARE_PCT`).
+>   Existing Tier 1 members are grandfathered at 100% for their window.
+> - **After signup, members may be upsold** into additional advertising/spend options (optional).
+> - **REMOVED vs the old "Founding" version:** the "cap = amount paid" recoup benefit (a return-of-capital
+>   signal), the launch-milestone escrow/refund machinery, and any stated per-day/per-minute earnings figure.
+>   `FOUNDING_FULLKEEP_CAP_TO_PRICE` is now OFF; there is no cap.
+> - **Key flags:** `FOUNDING_ADVERTISER_SLOTS` (100k cap), `FOUNDING_SURVEY_EARN_SHARE_PCT` (1.0 in-window),
+>   `TIER1_POST_SURVEY_SHARE_PCT` (0.75), `FOUNDING_FULLKEEP_YEARS` (4), `FOUNDING_FUNDS_MODEL` (presale).
+> - **Compliance:** see `FOUNDING-OFFER-LEGAL-REVIEW.md` (rewritten for this lighter structure). Counsel-gated;
+>   nothing collects money until an attorney reviews the offer and every line of member-facing copy.
+>
+> The sections below are retained for history/context; where they conflict with this box, **this box wins.**
+
+---
+
+The launch strategy: **sign Tier 1 advertisers first, use that capital to acquire users in year one.** This
 doc describes the program as it is **coded** — deliberately structured as an *advertising + membership* sale,
 not an investment, so it can actually ship without inviting an SEC/FTC problem.
 

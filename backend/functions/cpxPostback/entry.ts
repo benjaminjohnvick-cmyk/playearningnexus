@@ -47,7 +47,7 @@ export default __handler(async (req) => {
     const premium = await isPremiumUser(uid);
     const ffToday = new Date().toISOString().slice(0, 10);
     const ff = await foundingFullKeepActive(db, uid, ffToday);
-    const rw = await computeSurveyReward(premium, gross, ff.active ? 1 : undefined);
+    const rw = await computeSurveyReward(premium, gross, ff.active ? ff.share : undefined);
 
     let creditPoints = rw.points;
     let creditCash = rw.cashUsd;

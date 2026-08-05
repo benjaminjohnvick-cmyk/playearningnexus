@@ -4,14 +4,15 @@ import { db } from "../../sdk/db.ts";
 import {
   foundingEnabled, foundingPriceUsd, foundingTermYears, foundingImpressionsPerYear,
   foundingSlots, foundingSlotsRemaining, foundingUpsellBusiness, foundingDisclosures,
-  foundingValueSummary, foundingFullKeepStatus, milestoneState, FA_STATUS,
+  foundingValueSummary, foundingFullKeepStatus, foundingFullKeepYears,
+  foundingSurveyEarnSharePct, tier1PostSurveySharePct, FA_STATUS,
 } from "../../sdk/founding-advertiser.ts";
 
-// foundingAdvertiserOffer (authenticated) — the honest terms of the founding-advertiser package + the
-// caller's own status. Read-only. Everything here is advertising + membership; NOTHING here promises a
-// financial return (see the disclosures block).
-//   {} → { open, price_usd, term_years, impressions_per_year, slots, slots_remaining, milestone,
-//          disclosures, upsell_business, mine }
+// foundingAdvertiserOffer (authenticated) — the honest terms of the Tier 1 introductory advertising offer +
+// the caller's own status. Read-only. Two things, kept SEPARATE: the advertising PRODUCT you buy, and a
+// standalone survey earn-SHARE membership perk. NOTHING here promises a financial return (see disclosures).
+//   {} → { open, price_usd, term_years, impressions_per_year, slots, slots_remaining, in_offer_share,
+//          post_offer_share, fullkeep_years, disclosures, value, upsell_business, mine, statuses }
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -19,35 +20,35 @@ export default __handler(async (req) => {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const today = new Date().toISOString().slice(0, 10);
-    const [remaining, milestone] = await Promise.all([foundingSlotsRemaining(), milestoneState(today)]);
+    const remaining = await foundingSlotsRemaining();
+    const open = foundingEnabled() && remaining > 0;
 
     const mineRows = await db.filter("FoundingAdvertiser", { user_id: user.id }, "-created_date", 1)
       .catch(() => []) as Record<string, unknown>[];
     const mine = mineRows[0]
       ? {
           status: mineRows[0].status,
+          tier1: mineRows[0].tier1 === true,
           term_years: mineRows[0].term_years,
           impressions_per_year: mineRows[0].impressions_per_year,
           impressions_served: mineRows[0].impressions_served || 0,
           purchased_at: mineRows[0].purchased_at,
-          // Founding full-keep progress: how much of the 100%-keep window/cap the member has used (variable,
-          // not a promised amount). Shown so they can see their standing, never as "money you'll get back".
-          full_keep: foundingFullKeepStatus(mineRows[0], today),
+          // The member's current survey earn-SHARE standing (a rate, never a promised amount). Shows whether
+          // they're still in their 100%-keep window, what share applies now, and cumulative earnings to date.
+          survey_share: foundingFullKeepStatus(mineRows[0], today),
         }
       : null;
 
     return Response.json({
-      open: foundingEnabled() && remaining > 0,
+      open,
       price_usd: foundingPriceUsd(),
       term_years: foundingTermYears(),
       impressions_per_year: foundingImpressionsPerYear(),
       slots: foundingSlots(),
       slots_remaining: remaining,
-      milestone: {
-        target: milestone.target, current: milestone.current, users_met: milestone.users_met,
-        founders_target: milestone.founders_target, founders_current: milestone.founders_current, founders_met: milestone.founders_met,
-        met: milestone.met, deadline: milestone.deadline,
-      },
+      in_offer_share: foundingSurveyEarnSharePct(),      // 1.0 — Tier 1 members keep 100% in-window
+      post_offer_share: tier1PostSurveySharePct(),        // 0.75 — after the offer closes, members keep 75%
+      fullkeep_years: foundingFullKeepYears(),
       disclosures: foundingDisclosures(),
       value: foundingValueSummary(),
       upsell_business: foundingUpsellBusiness(),
