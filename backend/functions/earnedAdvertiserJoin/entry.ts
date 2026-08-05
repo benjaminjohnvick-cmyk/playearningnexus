@@ -4,7 +4,7 @@ import { db } from "../../sdk/db.ts";
 import { recordConsent } from "../../sdk/consent-ledger.ts";
 import {
   freeAdvertiserTierEnabled, noUpfrontEnabled, noUpfrontTermYears, noUpfrontActiveWindowDays,
-  earnUnlockMetric, freeTierSurveySharePct, earnedDisclosures, levelGrants, EARN_MODE,
+  earnUnlockMetric, freeTierSurveySharePct, freeTierTermYears, earnedDisclosures, levelGrants, EARN_MODE,
   EARNED_DISCLOSURES_VERSION, onboardingRequireInviteStep,
 } from "../../sdk/earned-advertiser.ts";
 
@@ -54,11 +54,13 @@ export default __handler(async (req) => {
       activity_progress: 0,
       perks_granted: levelGrants(startLevel),
       survey_earn_share_pct: freeTierSurveySharePct(),   // standard share (NOT the Tier-1 100%-keep)
-      term_years: isNoUpfront ? noUpfrontTermYears() : 0,
+      // Participation term (a program length + delivery schedule, NEVER a debt): no-upfront and (now) the free
+      // tier both run over a term; stopping forfeits only future benefits and never creates a charge.
+      term_years: isNoUpfront ? noUpfrontTermYears() : freeTierTermYears(),
       active_window_days: noUpfrontActiveWindowDays(),
       started_at: now,
       last_active_at: now,
-      commitment_accepted: isNoUpfront ? true : false,   // agreed to the participation term (not a debt)
+      commitment_accepted: isNoUpfront || freeTierTermYears() > 0,   // agreed to the participation term (not a debt)
       disclosures_version: EARNED_DISCLOSURES_VERSION,
       // Required onboarding invite step: user must be SHOWN/prompted the invite feature and acknowledge it
       // (sending is optional). "pending" until acknowledged. NOT a requirement to actually refer anyone.
@@ -69,7 +71,7 @@ export default __handler(async (req) => {
 
     const note = isNoUpfront
       ? `You're a no-upfront Tier 1 advertiser. Your advertising delivers over ${noUpfrontTermYears()} years while you stay active — $0 upfront, nothing owed. If you stop, delivery simply pauses; you are never charged.`
-      : "You're in the free earn-to-unlock tier. Complete surveys and use the site to unlock advertiser benefits — nothing owed, ever.";
+      : `You're in the free earn-to-unlock tier${freeTierTermYears() > 0 ? ` — a ${freeTierTermYears()}-year participation program` : ""}. Complete surveys and use the site to unlock advertiser benefits over time. Nothing owed, ever — stop anytime and you're never charged.`;
 
     return Response.json({ ok: true, mode, record: rec, note, disclosures: earnedDisclosures(mode) });
   } catch (error) {

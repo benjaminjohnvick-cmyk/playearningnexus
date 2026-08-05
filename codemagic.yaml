@@ -29,6 +29,7 @@ workflows:
         script: |
           npx cap add ios 2>/dev/null || echo "ios/ already present"
           npx cap sync ios
+          node scripts/inject-native-permissions.mjs   # NSContactsUsageDescription (contact-invite)
       - name: Set up code signing (managed by Codemagic)
         script: |
           xcode-project use-profiles
@@ -68,6 +69,7 @@ workflows:
         script: |
           npx cap add android 2>/dev/null || echo "android/ already present"
           npx cap sync android
+          node scripts/inject-native-permissions.mjs   # READ_CONTACTS (contact-invite)
       - name: Set up keystore
         script: |
           echo $CM_KEYSTORE | base64 --decode > $CM_BUILD_DIR/upload.keystore

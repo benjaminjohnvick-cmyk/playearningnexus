@@ -273,6 +273,7 @@ export default function FoundingAdvertiser() {
                   <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-5 mb-3">
                     <li><strong>{ed.nothing_owed}</strong></li>
                     <li>{ed.how_it_works}</li>
+                    {ed.participation_term && <li>{ed.participation_term}</li>}
                     <li>{ed.earned_not_bought}</li>
                     <li>{ed.no_promised_amount}</li>
                     {ed.referrals_accelerate && <li>{ed.referrals_accelerate}</li>}
@@ -282,7 +283,7 @@ export default function FoundingAdvertiser() {
                     <span>I understand this is <strong>free</strong>, I <strong>owe nothing ever</strong>, no amount is promised, and{' '}
                       {path === 'noupfront_tier1'
                         ? <>my advertising delivers over the participation term while I stay active (stop anytime, owe nothing).</>
-                        : <>I unlock advertiser benefits as a reward for my own activity; referring is optional and never required.</>}</span>
+                        : <>I unlock advertiser benefits over a participation program as a reward for my own activity; referring is optional; and I can stop anytime and owe nothing.</>}</span>
                   </label>
                   <Button onClick={() => joinEarned(path)} disabled={!acceptedEarned || submitting} className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700">
                     {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting…</> : <>{path === 'noupfront_tier1' ? 'Start no-upfront Tier 1 — $0' : 'Start free — earn as you go'}</>}

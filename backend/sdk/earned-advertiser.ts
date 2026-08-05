@@ -24,6 +24,7 @@ export const earnUnlockThreshold = (level: number) =>
   Math.max(0, snapNumber(`EARN_UNLOCK_THRESHOLD_${Math.min(4, Math.max(1, level))}`,
     [0, 30, 120, 300, 730][Math.min(4, Math.max(1, level))]));
 export const freeTierSurveySharePct = () => Math.min(1, Math.max(0, snapNumber("FREE_TIER_SURVEY_SHARE_PCT", 0.75)));
+export const freeTierTermYears = () => Math.max(0, snapNumber("FREE_TIER_TERM_YEARS", 4));
 export const targetUserLtvUsd = () => Math.max(0, snapNumber("TARGET_USER_LTV_USD", 8000)); // INTERNAL only
 export const noUpfrontEnabled = () => snapBool("TIER1_NOUPFRONT_ENABLED", true);
 export const noUpfrontTermYears = () => Math.max(1, snapNumber("TIER1_NOUPFRONT_TERM_YEARS", 4));
@@ -176,27 +177,35 @@ export function lastActiveISO(rows: Record<string, unknown>[]): string {
   return best;
 }
 
-/** Is a no-upfront member currently PARTICIPATING? (active within the window AND within the term.) This gates
- *  DELIVERY of the free advertising only — lapsing pauses delivery, it NEVER creates a charge. */
-export function noupfrontParticipating(rec: Record<string, unknown>, todayISO: string): { participating: boolean; within_term: boolean; active: boolean } {
+/** Is a member currently PARTICIPATING within their term? (active within the window AND within the term.)
+ *  Works for BOTH the no-upfront and the free tiers — gates DELIVERY only; lapsing pauses delivery and NEVER
+ *  creates a charge. A record with term_years = 0 is treated as open-ended (always within term). */
+export function earnedParticipating(rec: Record<string, unknown>, todayISO: string): { participating: boolean; within_term: boolean; active: boolean } {
   const startISO = String(rec.started_at || rec.created_date || "");
-  const term = Number(rec.term_years) || noUpfrontTermYears();
+  const term = Number(rec.term_years) || 0;
   const win = Number(rec.active_window_days) || noUpfrontActiveWindowDays();
   const today = Date.parse(todayISO);
   let withinTerm = true;
-  if (startISO) { const s = Date.parse(startISO); if (!isNaN(s) && !isNaN(today)) withinTerm = (today - s) < term * 365.25 * 24 * 3600 * 1000; }
+  if (term > 0 && startISO) { const s = Date.parse(startISO); if (!isNaN(s) && !isNaN(today)) withinTerm = (today - s) < term * 365.25 * 24 * 3600 * 1000; }
   const last = String(rec.last_active_at || "");
   let active = false;
   if (last) { const l = Date.parse(last); if (!isNaN(l) && !isNaN(today)) active = (today - l) <= win * 24 * 3600 * 1000; }
   return { participating: withinTerm && active, within_term: withinTerm, active };
 }
 
+/** Back-compat alias (no-upfront specifically). */
+export function noupfrontParticipating(rec: Record<string, unknown>, todayISO: string): { participating: boolean; within_term: boolean; active: boolean } {
+  return earnedParticipating(rec, todayISO);
+}
+
 /** Does this earned/no-upfront advertiser's creatives serve right now? (Gates ad delivery; never a charge.) */
 export function earnedAdActive(rec: Record<string, unknown>, todayISO: string): boolean {
   if (!rec || rec.status === "stopped" || rec.status === "cancelled") return false;
-  if (rec.mode === EARN_MODE.NOUPFRONT) return noupfrontParticipating(rec, todayISO).participating;
-  // free_earn: serves once they've unlocked at least the Starter level.
-  return (Number(rec.unlock_level) || 0) >= 1;
+  if (rec.mode === EARN_MODE.NOUPFRONT) return earnedParticipating(rec, todayISO).participating;
+  // free_earn: serves once they've unlocked at least the Starter level AND (if a term applies) while they're
+  // participating within the term. A lapse pauses delivery; it never charges anything.
+  if ((Number(rec.unlock_level) || 0) < 1) return false;
+  return (Number(rec.term_years) || 0) > 0 ? earnedParticipating(rec, todayISO).participating : true;
 }
 
 /** User-ids of earned/no-upfront advertisers whose ads should serve now (for the interstitial pool). */
@@ -243,6 +252,7 @@ export function earnedDisclosures(mode: string) {
         "are never charged and never owe anything.",
     };
   }
+  const freeTerm = freeTierTermYears();
   return {
     ...base,
     mode: EARN_MODE.FREE,
@@ -250,5 +260,12 @@ export function earnedDisclosures(mode: string) {
       "Free earn-to-unlock: use the site and complete surveys, and you progressively unlock advertiser " +
       "benefits — from a starter credit up to a full advertiser package — as a reward for your activity. Keep " +
       "as much as you unlock; owe nothing at any point.",
+    participation_term: freeTerm > 0
+      ? "This is a " + freeTerm + "-year participation program: you unlock and receive your advertiser " +
+        "benefits over up to " + freeTerm + " years while you stay active. This term is a program length and " +
+        "delivery schedule — it is NOT a contract debt and NOT an obligation to pay or to keep using the site. " +
+        "If you stop, the remaining/undelivered benefits simply pause or end; you are never charged and never " +
+        "owe anything."
+      : "There is no fixed term — unlock benefits at your own pace; owe nothing at any point.",
   };
 }

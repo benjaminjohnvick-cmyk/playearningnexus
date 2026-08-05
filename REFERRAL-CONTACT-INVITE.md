@@ -57,13 +57,22 @@ leave the device. Plus a `ConsentRecord` (kind `referral_contact_invite`) as the
 - `backend/functions/referralInviteRecord` — records consent + a count from the device (never contacts).
 - `ReferralInviteBatch` entity (data-minimized). `REFERRAL_INTERNAL_VALUE_USD` stamped in `referral-rewards.ts`.
 
-## Mobile side (to implement in the Capacitor app)
+## Mobile side (WIRED)
 
-- Use a Capacitor **Contacts** plugin (with iOS `NSContactsUsageDescription` / Android `READ_CONTACTS`
-  permission + a clear consent screen) to read contacts **on-device only**.
-- Build the messages client-side from the template; open the native SMS composer / share sheet per the OS.
-- After sending, call `referralInviteRecord` with the **count only**.
-- Never upload the address book. Never send server-side.
+- **Plugin:** `@capacitor-community/contacts` is in `package.json`. `npx cap sync` picks it up. The page
+  (`src/pages/ReferralInvite.jsx`) dynamically imports it and falls back to manual entry if it's unavailable
+  (e.g., on web).
+- **Permission strings:** injected by `scripts/inject-native-permissions.mjs` — iOS
+  `NSContactsUsageDescription` into `ios/App/App/Info.plist`, Android `READ_CONTACTS` into the manifest. It's
+  idempotent and runs automatically after the native shells are (re)generated: it's wired into
+  `scripts/regenerate-native.sh` and both `codemagic.yaml` build workflows (after `cap sync`, before build).
+  This is required because `android/` and `ios/` are git-ignored and recreated on each build.
+- **Flow:** the page reads contacts on-device, builds messages from the template, opens the native SMS
+  composer per contact (the user taps send), then calls `referralInviteRecord` with the **count only**.
+- The address book is never uploaded and messages are never sent server-side.
+
+To build native shells locally: `bash scripts/regenerate-native.sh` (adds platforms, syncs, injects the
+permission strings), then open Android Studio / Xcode.
 
 *Not legal advice. The device-sends / server-never-stores design is chosen specifically to stay clear of
 TCPA/CAN-SPAM and contact-privacy claims. Counsel should review the consent copy and the flow before launch.*

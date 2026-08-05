@@ -37,5 +37,8 @@ fi
 echo "▶ Syncing web build + plugins into native shells…"
 npx cap sync
 
+echo "▶ Injecting native permission strings (contacts)…"
+node scripts/inject-native-permissions.mjs
+
 echo "✓ Done. Open with: npm run cap:open:android   (and, on a Mac) npm run cap:open:ios"
 echo "  Note: android/ and ios/ are git-ignored — they are build artifacts, not source."
