@@ -93,6 +93,8 @@ const SellerUpload = lazy(() => import('./pages/SellerUpload'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const Services = lazy(() => import('./pages/Services'));
 const FoundingAdvertiser = lazy(() => import('./pages/FoundingAdvertiser'));
+const ReferralInvite = lazy(() => import('./pages/ReferralInvite'));
+const EarnedAdvertiserLedger = lazy(() => import('./pages/EarnedAdvertiserLedger'));
 const CompleteProfile = lazy(() => import('./pages/CompleteProfile'));
 const AdminCredentials = lazy(() => import('./pages/AdminCredentials'));
 const AdminGlobalSettings = lazy(() => import('./pages/AdminGlobalSettings'));
@@ -358,6 +360,8 @@ const AuthenticatedApp = () => {
       <Route path="/Pricing" element={<LayoutWrapper currentPageName="Pricing"><Pricing /></LayoutWrapper>} />
       <Route path="/Services" element={<LayoutWrapper currentPageName="Services"><Services /></LayoutWrapper>} />
       <Route path="/FoundingAdvertiser" element={<LayoutWrapper currentPageName="FoundingAdvertiser"><FoundingAdvertiser /></LayoutWrapper>} />
+      <Route path="/ReferralInvite" element={<LayoutWrapper currentPageName="ReferralInvite"><ReferralInvite /></LayoutWrapper>} />
+      <Route path="/EarnedAdvertiserLedger" element={<LayoutWrapper currentPageName="EarnedAdvertiserLedger"><EarnedAdvertiserLedger /></LayoutWrapper>} />
       <Route path="/CompleteProfile" element={<CompleteProfile />} />
       <Route path="/AdminCredentials" element={<LayoutWrapper currentPageName="AdminCredentials"><AdminCredentials /></LayoutWrapper>} />
       <Route path="/AdminGlobalSettings" element={<LayoutWrapper currentPageName="AdminGlobalSettings"><AdminGlobalSettings /></LayoutWrapper>} />
