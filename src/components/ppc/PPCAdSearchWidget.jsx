@@ -188,7 +188,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
   // Unified Grandia Granaria Search bar (always product compare mode)
   if (variant === 'compact') {
     return (
-      <div className="relative bg-gradient-to-r from-blue-700 to-indigo-700 w-full">
+      <div className="relative bg-gradient-to-r from-[#0b1020] to-[#101a33] w-full">
         <div className="px-3 py-2 flex items-center gap-2">
           {/* Logo/Branding */}
           <div className="flex items-center gap-1 text-white min-w-fit flex-shrink-0">
@@ -228,7 +228,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
           <Button
             size="sm"
             variant="ghost"
-            className="text-white hover:bg-blue-500 hidden lg:flex flex-shrink-0"
+            className="text-white hover:bg-white/10 hidden lg:flex flex-shrink-0"
             onClick={() => setShowSocialManager(true)}
             title="Connect social media"
           >
@@ -239,7 +239,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
           <Button
             size="sm"
             variant="ghost"
-            className="text-white hover:bg-blue-500 hidden lg:flex flex-shrink-0"
+            className="text-white hover:bg-white/10 hidden lg:flex flex-shrink-0"
             onClick={handleDownload}
             title="Download GainerGain Search Extension"
           >

@@ -297,10 +297,10 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Header - Only show on Home page */}
         {currentPageName === 'Home' && <header
-          className="sticky top-0 z-50 border-b-2 border-red-200 shadow-lg"
+          className="sticky top-0 z-50 border-b border-white/10 shadow-lg text-white"
           style={{
-            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(254, 242, 242, 0.8))',
-            boxShadow: '0 4px 30px rgba(220, 38, 38, 0.1)'
+            background: 'linear-gradient(to bottom, #0b1020, #101a33)',
+            boxShadow: '0 6px 24px rgba(0,0,0,0.35)'
           }}>
           
           <div className="max-w-7xl mx-auto px-4 py-3">
@@ -309,13 +309,13 @@ export default function Layout({ children, currentPageName }) {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Link to={createPageUrl('Home')} className="flex items-center gap-2 group">
                   <div className="group-hover:scale-110 transition-transform">
-                    <GamerGainLogo className="w-10 h-10" />
+                    <img src="/gg-logo-mark.svg" alt="Grandia Granaria" className="w-11 h-11" draggable={false} />
                   </div>
                   <span className="hidden sm:flex flex-col leading-none">
-                    <span className="text-xl font-bold bg-gradient-to-r from-[#006fcf] to-[#00175a] bg-clip-text text-transparent">
+                    <span className="text-xl font-bold bg-gradient-to-r from-white to-[#8fc3f5] bg-clip-text text-transparent">
                       Grandia Granaria
                     </span>
-                    <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mt-0.5">
+                    <span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">
                       Where the World's Goods Gather
                     </span>
                   </span>
@@ -327,43 +327,43 @@ export default function Layout({ children, currentPageName }) {
               <nav className="hidden md:flex items-center gap-1 flex-shrink-0 px-2">
                 <Link to="/DeveloperToolsHub" className="flex-shrink-0">
                   <Button variant={currentPageName === 'DeveloperToolsHub' ? "default" : "ghost"} size="sm"
-                  className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md whitespace-nowrap" : "bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold border border-violet-300 whitespace-nowrap"}>
+                  className={currentPageName === 'DeveloperToolsHub' ? "bg-gradient-to-r from-violet-600 to-purple-600 shadow-md whitespace-nowrap" : "text-white/90 hover:bg-white/10 font-bold border border-white/15 whitespace-nowrap"}>
                     🎮 AI Game Creator
                   </Button>
                 </Link>
                 <Link to={createPageUrl('InAppGameStore')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'InAppGameStore' ? "default" : "ghost"} size="sm"
-                  className={currentPageName === 'InAppGameStore' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
+                  className={currentPageName === 'InAppGameStore' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "text-white/90 hover:bg-white/10 whitespace-nowrap"}>
                     🛒 Store
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Surveys')} className="flex-shrink-0">
                   <Button variant={currentPageName === 'Surveys' ? "default" : "ghost"} size="sm"
-                  className={currentPageName === 'Surveys' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
+                  className={currentPageName === 'Surveys' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "text-white/90 hover:bg-white/10 whitespace-nowrap"}>
                     📋 Surveys
                   </Button>
                 </Link>
                 <Link to={createPageUrl('UserDashboard')} className="flex-shrink-0 hidden lg:block">
                   <Button variant={currentPageName === 'UserDashboard' ? "default" : "ghost"} size="sm"
-                  className={currentPageName === 'UserDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "hover:bg-red-50 whitespace-nowrap"}>
+                  className={currentPageName === 'UserDashboard' ? "bg-gradient-to-r from-red-600 to-red-700 shadow-md whitespace-nowrap" : "text-white/90 hover:bg-white/10 whitespace-nowrap"}>
                     📊 Dashboard
                   </Button>
                 </Link>
                 <Link to={createPageUrl('AddStoreCredit')} className="flex-shrink-0 hidden lg:block">
                   <Button variant={currentPageName === 'AddStoreCredit' ? "default" : "ghost"} size="sm"
-                  className={currentPageName === 'AddStoreCredit' ? "bg-gradient-to-r from-green-600 to-green-700 shadow-md whitespace-nowrap" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200 whitespace-nowrap"}>
+                  className={currentPageName === 'AddStoreCredit' ? "bg-gradient-to-r from-green-600 to-green-700 shadow-md whitespace-nowrap" : "text-white/90 hover:bg-white/10 font-semibold border border-white/15 whitespace-nowrap"}>
                     ➕ Add Credit
                   </Button>
                 </Link>
                 <Link to={createPageUrl('Withdrawal')} className="flex-shrink-0 hidden lg:block">
                   <Button variant={currentPageName === 'Withdrawal' ? "default" : "ghost"} size="sm"
-                  className={currentPageName === 'Withdrawal' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md whitespace-nowrap" : "hover:bg-green-50 text-green-700 font-semibold border border-green-200 whitespace-nowrap"}>
+                  className={currentPageName === 'Withdrawal' ? "bg-gradient-to-r from-green-600 to-emerald-600 shadow-md whitespace-nowrap" : "text-white/90 hover:bg-white/10 font-semibold border border-white/15 whitespace-nowrap"}>
                     💵 Withdraw
                   </Button>
                 </Link>
                 <Link to={createPageUrl('ReferralContest')} className="flex-shrink-0 hidden lg:block">
                   <Button variant={currentPageName === 'ReferralContest' ? "default" : "ghost"} size="sm"
-                  className={currentPageName === 'ReferralContest' ? "bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-md whitespace-nowrap" : "hover:bg-yellow-50 text-yellow-700 font-semibold whitespace-nowrap"}>
+                  className={currentPageName === 'ReferralContest' ? "bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-md whitespace-nowrap" : "text-white/90 hover:bg-white/10 font-semibold whitespace-nowrap"}>
                     🏆 Contest
                   </Button>
                 </Link>
@@ -374,8 +374,8 @@ export default function Layout({ children, currentPageName }) {
                 {isAuthenticated && user ?
                 <>
                       <div className="text-right hidden lg:block">
-                        <p className="text-xs font-medium text-gray-900">{user.full_name}</p>
-                        <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
+                        <p className="text-xs font-medium text-white">{user.full_name}</p>
+                        <p className="text-xs text-emerald-400 font-medium">${(user.total_earnings || 0).toFixed(2)}</p>
                       </div>
                       {mountSideEffects &&
                   <Suspense fallback={null}>
@@ -438,7 +438,7 @@ export default function Layout({ children, currentPageName }) {
               <>
                     <div className="pt-3 pb-1 border-t">
                       <p className="text-sm font-medium text-gray-900">{user.full_name}</p>
-                      <p className="text-xs text-emerald-600 font-medium">${(user.total_earnings || 0).toFixed(2)} earned</p>
+                      <p className="text-xs text-emerald-400 font-medium">${(user.total_earnings || 0).toFixed(2)} earned</p>
                     </div>
                     <Link to={createPageUrl('Settings')} onClick={() => setIsMenuOpen(false)}>
                       <Button variant="ghost" className="w-full justify-start text-sm">
@@ -468,7 +468,7 @@ export default function Layout({ children, currentPageName }) {
 
         {/* PPC Widget Top Bar — deferred to avoid initial load spike */}
          {isAuthenticated && user && mountSideEffects &&
-        <div className="sticky top-0 z-40 bg-white border-b border-red-200 shadow-sm">
+        <div className="sticky top-0 z-40 bg-[#0e1320] border-b border-white/10 shadow-sm">
              <PPCAdSearchWidget variant="compact" />
            </div>
         }
@@ -534,7 +534,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="md:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
                   <GamerGainLogo className="w-10 h-10" />
-                  <span className="flex flex-col leading-none"><span className="text-xl font-bold bg-gradient-to-r from-[#006fcf] to-[#00175a] bg-clip-text text-transparent">Grandia Granaria</span><span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mt-0.5">Where the World's Goods Gather</span></span>
+                  <span className="flex flex-col leading-none"><span className="text-xl font-bold bg-gradient-to-r from-white to-[#8fc3f5] bg-clip-text text-transparent">Grandia Granaria</span><span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">Where the World's Goods Gather</span></span>
                 </div>
                 <p className="text-gray-600 text-sm">The premium game discovery platform. Play games, earn rewards, connect with creators.</p>
               </div>
