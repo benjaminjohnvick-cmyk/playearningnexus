@@ -8,7 +8,7 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from "framer-motion";
 
 const QUICK_SUGGESTIONS = [
-  { label: '💰 How to earn?', prompt: 'How do I start earning money on Grandia Granaria?' },
+  { label: '💰 How to earn?', prompt: 'How do I start earning money on Get Goods Gratis (Free)?' },
   { label: '👥 Refer friends', prompt: 'How does the referral program work?' },
   { label: '🎮 Game store', prompt: 'How do I browse and play games in the store?' },
   { label: '🏆 Tournaments', prompt: 'How do I join a tournament?' },
@@ -39,7 +39,7 @@ export default function AIChatbot() {
     catch { return DEFAULT_PREFS; }
   });
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: '👋 Welcome to Grandia Granaria! I\'m your AI assistant.\n\nI can help you with:\n• 🎮 Finding and playing games\n• 📊 Completing surveys ($0.50–$2.00 each)\n• 🏆 Tournaments & guilds\n• 💰 Maximizing your earnings\n• 👥 Referral programs\n\nWhat would you like to know?' }
+    { role: 'assistant', content: '👋 Welcome to Get Goods Gratis (Free)! I\'m your AI assistant.\n\nI can help you with:\n• 🎮 Finding and playing games\n• 📊 Completing surveys ($0.50–$2.00 each)\n• 🏆 Tournaments & guilds\n• 💰 Maximizing your earnings\n• 👥 Referral programs\n\nWhat would you like to know?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -86,7 +86,7 @@ export default function AIChatbot() {
     setLoading(true);
 
     const response = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are Grandia Granaria AI Assistant. ${getToneInstruction()}
+      prompt: `You are Get Goods Gratis (Free) AI Assistant. ${getToneInstruction()}
 
 **Platform Overview:**
 - Play games, earn money through surveys ($0.50–$2.00 each, 50/50 revenue share)

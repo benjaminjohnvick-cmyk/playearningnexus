@@ -185,7 +185,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
     setShowSocialManager(false);
   };
 
-  // Unified Grandia Granaria Search bar (always product compare mode)
+  // Unified Get Goods Gratis (Free) Search bar (always product compare mode)
   if (variant === 'compact') {
     return (
       <div className="relative bg-gradient-to-r from-[#0b1020] to-[#101a33] w-full">
@@ -193,7 +193,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
           {/* Logo/Branding */}
           <div className="flex items-center gap-1 text-white min-w-fit flex-shrink-0">
             <Zap className="w-4 h-4" />
-            <span className="font-bold text-sm hidden lg:inline">Grandia Granaria</span>
+            <span className="font-bold text-sm hidden lg:inline">Get Goods Gratis (Free)</span>
           </div>
 
           {/* Unified Search + Compare Bar */}
@@ -378,7 +378,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
               </div>
 
               <div className="px-3 pb-3">
-                <p className="text-[10px] text-gray-400 text-center">Prices are real-time estimates · Click any link to buy directly · Order via Grandia Granaria available in the <Link to={createPageUrl('InAppGameStore')} className="text-blue-500 underline">Game Store</Link></p>
+                <p className="text-[10px] text-gray-400 text-center">Prices are real-time estimates · Click any link to buy directly · Order via Get Goods Gratis (Free) available in the <Link to={createPageUrl('InAppGameStore')} className="text-blue-500 underline">Game Store</Link></p>
               </div>
             </motion.div>
           )}

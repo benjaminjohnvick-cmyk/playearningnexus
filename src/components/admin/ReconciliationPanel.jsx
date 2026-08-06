@@ -52,9 +52,9 @@ function DiscrepancyRow({ d, index, reportId, onResolved }) {
           <tr><td><strong>Details</strong></td><td>${d.description}</td></tr>
         </table>
         <p>Please review this discrepancy and contact our finance team if you have questions.</p>
-        <p>— Grandia Granaria Finance Team</p>
+        <p>— Get Goods Gratis (Free) Finance Team</p>
       `,
-      from_name: 'Grandia Granaria Finance',
+      from_name: 'Get Goods Gratis (Free) Finance',
     });
     toast.success(`Email sent to ${d.user_email}`);
     setEmailing(false);

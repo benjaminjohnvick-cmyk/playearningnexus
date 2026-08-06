@@ -67,7 +67,7 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
       const ctx = canvas.getContext('2d');
       ctx.textBaseline = 'top';
       ctx.font = '14px Arial';
-      ctx.fillText('Grandia Granaria🎮', 2, 2);
+      ctx.fillText('Get Goods Gratis (Free)🎮', 2, 2);
       const canvasStr = canvas.toDataURL().slice(-50);
       const nav = `${navigator.language}|${navigator.hardwareConcurrency}|${screen.width}x${screen.height}`;
       return btoa(canvasStr + nav).slice(0, 32);

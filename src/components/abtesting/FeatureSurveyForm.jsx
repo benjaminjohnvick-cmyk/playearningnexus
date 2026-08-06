@@ -29,7 +29,7 @@ export default function FeatureSurveyForm({ onCreated, onCancel }) {
     setGenerating(true);
     try {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `For a Grandia Granaria platform feature called "${form.feature_name}" (category: ${form.category}), generate a great survey question and 4 distinct answer options to understand what users want.
+        prompt: `For a Get Goods Gratis (Free) platform feature called "${form.feature_name}" (category: ${form.category}), generate a great survey question and 4 distinct answer options to understand what users want.
 Return JSON: { "question": "string", "options": ["string","string","string","string"] }`,
         response_json_schema: {
           type: 'object',

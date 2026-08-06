@@ -72,9 +72,9 @@ export default function AffiliateChurnMonitor() {
 
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: prediction.affiliate_email,
-        from_name: 'Grandia Granaria',
+        from_name: 'Get Goods Gratis (Free)',
         subject: '🎁 We Miss You — Special Win-Back Bonus Inside',
-        body: `Hi,\n\nWe noticed you haven't been as active lately, and we want to help you succeed!\n\n🎁 Exclusive Offer: +$50 Bonus on your next payout\n\nThis special offer expires in 7 days.\n\nWe're here to support you: https://gamergain.app/AffiliatePortal\n\n— Grandia Granaria Team`
+        body: `Hi,\n\nWe noticed you haven't been as active lately, and we want to help you succeed!\n\n🎁 Exclusive Offer: +$50 Bonus on your next payout\n\nThis special offer expires in 7 days.\n\nWe're here to support you: https://gamergain.app/AffiliatePortal\n\n— Get Goods Gratis (Free) Team`
       }).catch(() => null);
 
       queryClient.invalidateQueries({ queryKey: ['churnPredictions'] });

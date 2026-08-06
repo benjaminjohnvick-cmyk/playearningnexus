@@ -309,14 +309,14 @@ export default function Layout({ children, currentPageName }) {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Link to={createPageUrl('Home')} className="flex items-center gap-2 group">
                   <div className="group-hover:scale-110 transition-transform">
-                    <img src="/gg-logo-mark.svg" alt="Grandia Granaria" className="w-11 h-11" draggable={false} />
+                    <img src="/gg-logo-mark.svg" alt="Get Goods Gratis (Free)" className="w-11 h-11" draggable={false} />
                   </div>
                   <span className="hidden sm:flex flex-col leading-none">
                     <span className="text-xl font-bold bg-gradient-to-r from-white to-[#8fc3f5] bg-clip-text text-transparent">
-                      Grandia Granaria
+                      Get Goods Gratis (Free)
                     </span>
                     <span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">
-                      Where the World's Goods Gather
+                      Where Global Goods Gather
                     </span>
                   </span>
                 </Link>
@@ -534,7 +534,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="md:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
                   <GamerGainLogo className="w-10 h-10" />
-                  <span className="flex flex-col leading-none"><span className="text-xl font-bold bg-gradient-to-r from-white to-[#8fc3f5] bg-clip-text text-transparent">Grandia Granaria</span><span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">Where the World's Goods Gather</span></span>
+                  <span className="flex flex-col leading-none"><span className="text-xl font-bold bg-gradient-to-r from-white to-[#8fc3f5] bg-clip-text text-transparent">Get Goods Gratis (Free)</span><span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">Where Global Goods Gather</span></span>
                 </div>
                 <p className="text-gray-600 text-sm">The premium game discovery platform. Play games, earn rewards, connect with creators.</p>
               </div>
@@ -558,7 +558,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </div>
             <div className="border-t mt-8 pt-8 text-center text-sm text-gray-500">
-              <p>© 2024 Grandia Granaria. All rights reserved. | Premium gaming platform</p>
+              <p>© 2024 Get Goods Gratis (Free). All rights reserved. | Premium gaming platform</p>
             </div>
           </div>
         </footer>

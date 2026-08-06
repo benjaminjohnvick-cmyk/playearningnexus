@@ -25,9 +25,9 @@ const ULAModal = ({ onAccept, onClose }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
     <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
       <h2 className="text-xl font-bold text-gray-900 mb-2">🤝 AI Affiliate Agreement</h2>
-      <p className="text-sm text-gray-500 mb-4">Please read carefully before joining the Grandia Granaria AI Affiliate Program.</p>
+      <p className="text-sm text-gray-500 mb-4">Please read carefully before joining the Get Goods Gratis (Free) AI Affiliate Program.</p>
       <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 max-h-64 overflow-y-auto space-y-3 mb-6 leading-relaxed">
-        <p><strong>By accepting this agreement, you authorize Grandia Granaria to:</strong></p>
+        <p><strong>By accepting this agreement, you authorize Get Goods Gratis (Free) to:</strong></p>
         <ul className="list-disc ml-4 space-y-1">
           <li>Automatically generate AI-written promotional ads on your behalf using current trending topics.</li>
           <li>Post those ads to your connected social media accounts (Facebook, Twitter, Instagram, Snapchat, TikTok) <strong>once per day</strong>.</li>
@@ -35,12 +35,12 @@ const ULAModal = ({ onAccept, onClose }) => (
         </ul>
         <p><strong>Earnings Structure:</strong></p>
         <ul className="list-disc ml-4 space-y-1">
-          <li><strong>$5 website credit</strong> when a referred user earns their first $8 on Grandia Granaria (PPC ads + BitLabs surveys only).</li>
+          <li><strong>$5 website credit</strong> when a referred user earns their first $8 on Get Goods Gratis (Free) (PPC ads + BitLabs surveys only).</li>
           <li><strong>$0.25 website credit</strong> every time any of your referrals (up to 3 levels deep) earns another $8 milestone.</li>
-          <li>Credits can only be spent on the Grandia Granaria platform.</li>
+          <li>Credits can only be spent on the Get Goods Gratis (Free) platform.</li>
         </ul>
         <p><strong>You can withdraw consent and disconnect at any time from your dashboard.</strong></p>
-        <p className="text-xs text-gray-400">Grandia Granaria reserves the right to pause posting if ads violate platform terms of service. All generated content complies with applicable advertising standards.</p>
+        <p className="text-xs text-gray-400">Get Goods Gratis (Free) reserves the right to pause posting if ads violate platform terms of service. All generated content complies with applicable advertising standards.</p>
       </div>
       <div className="flex gap-3">
         <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
@@ -182,8 +182,8 @@ export default function AffiliateMLMDashboard() {
                   {[
                     { icon: '🎯', title: '$5 Direct Referral Credit', desc: 'When your referred user earns their first $8 from PPC ads or BitLabs surveys' },
                     { icon: '🔁', title: '$0.25 Per $8 Milestone', desc: 'Every time any downline member earns another $8 (up to 3 levels deep)' },
-                    { icon: '📊', title: '50/50 Split', desc: 'Each $8 earned = $4 to user + $4 to Grandia Granaria. Your $0.25 bonus comes from PPC/BitLabs earnings only' },
-                    { icon: '🏦', title: 'Platform Credits Only', desc: 'All earnings are website credit — spend on games, surveys, and more on Grandia Granaria' }
+                    { icon: '📊', title: '50/50 Split', desc: 'Each $8 earned = $4 to user + $4 to Get Goods Gratis (Free). Your $0.25 bonus comes from PPC/BitLabs earnings only' },
+                    { icon: '🏦', title: 'Platform Credits Only', desc: 'All earnings are website credit — spend on games, surveys, and more on Get Goods Gratis (Free)' }
                   ].map(({ icon, title, desc }) => (
                     <div key={title} className="flex gap-3 p-3 bg-gray-50 rounded-xl">
                       <span className="text-xl flex-shrink-0">{icon}</span>

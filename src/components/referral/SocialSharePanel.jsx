@@ -6,9 +6,9 @@ import { Share2, Twitter, Facebook, Copy, MessageCircle, CheckCircle } from 'luc
 import { toast } from 'sonner';
 
 const SHARE_MESSAGES = [
-  "🎮 I'm earning real money playing games on Grandia Granaria! Join me and we both get bonuses:",
-  "💰 Did you know you can get paid to play games? I've been using Grandia Granaria - check it out:",
-  "🏆 Level up your gaming AND your wallet! Grandia Granaria pays you to play. Use my link:",
+  "🎮 I'm earning real money playing games on Get Goods Gratis (Free)! Join me and we both get bonuses:",
+  "💰 Did you know you can get paid to play games? I've been using Get Goods Gratis (Free) - check it out:",
+  "🏆 Level up your gaming AND your wallet! Get Goods Gratis (Free) pays you to play. Use my link:",
 ];
 
 export default function SocialSharePanel({ referralLink }) {
@@ -38,7 +38,7 @@ export default function SocialSharePanel({ referralLink }) {
 
   const shareNative = async () => {
     if (navigator.share) {
-      await navigator.share({ title: 'Join Grandia Granaria!', text: SHARE_MESSAGES[selectedMsg], url: referralLink });
+      await navigator.share({ title: 'Join Get Goods Gratis (Free)!', text: SHARE_MESSAGES[selectedMsg], url: referralLink });
     } else {
       copyMessage();
     }

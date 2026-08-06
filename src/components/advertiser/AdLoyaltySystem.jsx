@@ -50,7 +50,7 @@ export default function AdLoyaltySystem({ ads, userId }) {
     const next = [...claimed, id];
     setClaimed(next);
     localStorage.setItem(`gg_claimed_${userId}`, JSON.stringify(next));
-    toast.success(`+${points} Grandia Granaria Points earned! 🎉`);
+    toast.success(`+${points} Get Goods Gratis (Free) Points earned! 🎉`);
   };
 
   const redeemReward = async (reward) => {
@@ -73,7 +73,7 @@ export default function AdLoyaltySystem({ ads, userId }) {
           <div>
             <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">Advertiser Level</p>
             <p className={`text-3xl font-black ${level.color}`}>{level.name}</p>
-            <p className="text-gray-500 text-xs mt-1">{totalPoints.toLocaleString()} Grandia Granaria Points earned</p>
+            <p className="text-gray-500 text-xs mt-1">{totalPoints.toLocaleString()} Get Goods Gratis (Free) Points earned</p>
           </div>
           <div className="text-right">
             <p className="text-white font-black text-2xl">{spendablePoints.toLocaleString()}</p>

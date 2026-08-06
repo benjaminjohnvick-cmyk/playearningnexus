@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 const DEFAULT_SETTINGS = [
   { key: 'maintenance_mode', value: 'false', category: 'maintenance', label: 'Maintenance Mode', description: 'Puts the site in maintenance mode, blocking non-admin access.' },
   { key: 'maintenance_message', value: 'We are currently down for maintenance. Please check back soon.', category: 'maintenance', label: 'Maintenance Message', description: 'Message shown to users during maintenance.' },
-  { key: 'site_name', value: 'Grandia Granaria', category: 'branding', label: 'Site Name', description: 'The display name for the platform.' },
+  { key: 'site_name', value: 'Get Goods Gratis (Free)', category: 'branding', label: 'Site Name', description: 'The display name for the platform.' },
   { key: 'primary_color', value: '#dc2626', category: 'branding', label: 'Primary Color (hex)', description: 'Main brand color used across the UI.' },
   { key: 'logo_url', value: '', category: 'branding', label: 'Logo URL', description: 'URL to the site logo image.' },
   { key: 'notify_new_user', value: 'true', category: 'notifications', label: 'Notify on New User', description: 'Send admin notification when a new user registers.' },

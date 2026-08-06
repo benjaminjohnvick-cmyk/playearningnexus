@@ -91,7 +91,7 @@ function getTemplates(referralLink, referralCode, userName) {
         tone: 'Casual',
         body: `💸 I just found a legit way to earn money from home — and you need to hear about this.
 
-Grandia Granaria pays you real cash for completing surveys & playing games. I've been earning daily just by doing what I already do. 🎮
+Get Goods Gratis (Free) pays you real cash for completing surveys & playing games. I've been earning daily just by doing what I already do. 🎮
 
 ✅ No experience needed
 ✅ Earn 50% of every survey you complete
@@ -102,7 +102,7 @@ My referral link is in my bio 👆 or use code: ${referralCode}
 
 🔗 ${shortLink}
 
-#GrandiaGranaria #EarnFromHome #SideHustle #PassiveIncome #SurveyMoney #WorkFromHome #MakeMoneyOnline #GamingLife #EarnExtra #MoneyMindset #SideIncome #DigitalIncome #PayPal #CashApp #ReferralBonus #Surveys #GetPaid #OnlineEarning #FinancialFreedom #GamingCommunity #EarnWhileYouPlay #MoneyTips #IncomeSources #FreeToJoin #RealMoney #NoScam #HustleHard #EarnRealCash #PaydayEveryDay #JoinNow`,
+#GetGoodsGratis #EarnFromHome #SideHustle #PassiveIncome #SurveyMoney #WorkFromHome #MakeMoneyOnline #GamingLife #EarnExtra #MoneyMindset #SideIncome #DigitalIncome #PayPal #CashApp #ReferralBonus #Surveys #GetPaid #OnlineEarning #FinancialFreedom #GamingCommunity #EarnWhileYouPlay #MoneyTips #IncomeSources #FreeToJoin #RealMoney #NoScam #HustleHard #EarnRealCash #PaydayEveryDay #JoinNow`,
       },
       {
         id: 'ig_lifestyle',
@@ -110,7 +110,7 @@ My referral link is in my bio 👆 or use code: ${referralCode}
         tone: 'Aspirational',
         body: `Imagine earning money during your lunch break. That's my reality now. 🙌
 
-I've been using @Grandia Granaria to turn spare time into real income. Surveys, games, referral bonuses — it all adds up.
+I've been using @Get Goods Gratis (Free) to turn spare time into real income. Surveys, games, referral bonuses — it all adds up.
 
 The best part? I get paid every time someone I refer earns too. 💰♾️
 
@@ -120,7 +120,7 @@ Code: ${referralCode}
 
 Drop a 💸 in the comments if you want to know more!
 
-#GrandiaGranaria #EarnMoney #SideHustleLife #SurveyApps #GamingPays #MakeMoneyOnline #WorkFromAnywhere #EarnFromHome #LifestyleIncome #FinancialGoals #HustleSmart #PassiveIncome #Referrals #GamingRewards #RealPayouts`,
+#GetGoodsGratis #EarnMoney #SideHustleLife #SurveyApps #GamingPays #MakeMoneyOnline #WorkFromAnywhere #EarnFromHome #LifestyleIncome #FinancialGoals #HustleSmart #PassiveIncome #Referrals #GamingRewards #RealPayouts`,
       },
     ],
 
@@ -129,13 +129,13 @@ Drop a 💸 in the comments if you want to know more!
         id: 'tt_hook',
         label: '🔥 Viral Hook',
         tone: 'Energetic',
-        body: `POV: You're earning $3+ a day just from surveys 🎮💸 Use my link: ${shortLink} Code: ${referralCode} #GrandiaGranaria #EarnMoney #SideHustle #SurveyMoney #GamersGetPaid`,
+        body: `POV: You're earning $3+ a day just from surveys 🎮💸 Use my link: ${shortLink} Code: ${referralCode} #GetGoodsGratis #EarnMoney #SideHustle #SurveyMoney #GamersGetPaid`,
       },
       {
         id: 'tt_story',
         label: '📖 Story Format',
         tone: 'Relatable',
-        body: `I was skeptical but Grandia Granaria actually pays 🤯 Sign up free → ${shortLink} (code: ${referralCode}) #GrandiaGranaria #MakeMoneyOnline #EarnFromHome #NoBS #RealMoney`,
+        body: `I was skeptical but Get Goods Gratis (Free) actually pays 🤯 Sign up free → ${shortLink} (code: ${referralCode}) #GetGoodsGratis #MakeMoneyOnline #EarnFromHome #NoBS #RealMoney`,
       },
     ],
 
@@ -146,7 +146,7 @@ Drop a 💸 in the comments if you want to know more!
         tone: 'Professional',
         body: `I want to share something that's quietly been supplementing my income for the past few months.
 
-Grandia Granaria is a platform that pays users real money to complete market research surveys and engage with games. What makes it different:
+Get Goods Gratis (Free) is a platform that pays users real money to complete market research surveys and engage with games. What makes it different:
 
 → 50% revenue share on every survey completed
 → A structured referral program that compounds over time
@@ -160,7 +160,7 @@ Code: ${referralCode}
 
 Happy to answer any questions in the comments. 👇
 
-#SideIncome #PassiveIncome #PersonalFinance #SurveyResearch #GrandiaGranaria #DigitalEarnings #ExtraIncome #WorkSmart`,
+#SideIncome #PassiveIncome #PersonalFinance #SurveyResearch #GetGoodsGratis #DigitalEarnings #ExtraIncome #WorkSmart`,
       },
       {
         id: 'li_story',
@@ -170,7 +170,7 @@ Happy to answer any questions in the comments. 👇
 
 I was wrong.
 
-After a friend kept talking about Grandia Granaria, I finally tried it. The platform pays you 50% of every survey value, has a real referral system, and actually processes payouts within 24–48 hours.
+After a friend kept talking about Get Goods Gratis (Free), I finally tried it. The platform pays you 50% of every survey value, has a real referral system, and actually processes payouts within 24–48 hours.
 
 Here's what I've learned:
 • Consistency beats intensity — 15 min/day adds up
@@ -182,7 +182,7 @@ If you're open to a legitimate side income that requires minimal time investment
 Free to sign up → ${shortLink}
 Code: ${referralCode}
 
-#SideHustle #IncomeStreams #GrandiaGranaria #PersonalFinance #EarnMore`,
+#SideHustle #IncomeStreams #GetGoodsGratis #PersonalFinance #EarnMore`,
       },
     ],
 
@@ -191,13 +191,13 @@ Code: ${referralCode}
         id: 'tw_short',
         label: '⚡ Quick Fire',
         tone: 'Direct',
-        body: `I earn real money from surveys + games every day with @Grandia Granaria 💸 Free to join → ${shortLink} (code: ${referralCode}) #SideHustle #EarnMoney #GrandiaGranaria`,
+        body: `I earn real money from surveys + games every day with @Get Goods Gratis (Free) 💸 Free to join → ${shortLink} (code: ${referralCode}) #SideHustle #EarnMoney #GetGoodsGratis`,
       },
       {
         id: 'tw_thread_opener',
         label: '🧵 Thread Opener',
         tone: 'Conversational',
-        body: `Okay I need to talk about Grandia Granaria because it's actually paying out real money 🧵
+        body: `Okay I need to talk about Get Goods Gratis (Free) because it's actually paying out real money 🧵
 
 Sign up free with my link: ${shortLink} — code ${referralCode}
 
@@ -215,7 +215,7 @@ Here's how it works 👇`,
 
 I wanted to share something I've been using lately that's been surprisingly good for earning extra cash.
 
-It's called Grandia Granaria. You complete short surveys and earn 50% of the value — paid directly to your PayPal, Venmo, or Cash App. No catches, no minimum time commitment.
+It's called Get Goods Gratis (Free). You complete short surveys and earn 50% of the value — paid directly to your PayPal, Venmo, or Cash App. No catches, no minimum time commitment.
 
 I've been doing it in my spare time and it's been adding up.
 
@@ -230,10 +230,10 @@ Let me know if you have any questions. Highly recommend giving it a shot.
         id: 'em_formal',
         label: '💼 Semi-Formal',
         tone: 'Professional',
-        subject: "Thought you'd find this useful — Grandia Granaria",
+        subject: "Thought you'd find this useful — Get Goods Gratis (Free)",
         body: `Hi,
 
-I wanted to share a platform I've been using for supplemental income: Grandia Granaria.
+I wanted to share a platform I've been using for supplemental income: Get Goods Gratis (Free).
 
 It's a survey and game-based rewards platform that pays users 50% of each survey's value in real cash (PayPal, Venmo, Cash App). There's also a referral system that generates ongoing commission income.
 
@@ -254,13 +254,13 @@ ${name}`,
         id: 'wa_quick',
         label: '💬 Quick Message',
         tone: 'Casual',
-        body: `Hey! 👋 Have you heard of Grandia Granaria? It pays real money for surveys + games. I've been using it and it actually works 💸 Sign up free with my link: ${shortLink} (code: ${referralCode})`,
+        body: `Hey! 👋 Have you heard of Get Goods Gratis (Free)? It pays real money for surveys + games. I've been using it and it actually works 💸 Sign up free with my link: ${shortLink} (code: ${referralCode})`,
       },
       {
         id: 'wa_group',
         label: '👥 Group Chat',
         tone: 'Energetic',
-        body: `🚨 Anyone else looking for extra income? Grandia Granaria pays you for completing surveys — 50% of every survey goes to YOU. Instant PayPal/Cash App payouts.
+        body: `🚨 Anyone else looking for extra income? Get Goods Gratis (Free) pays you for completing surveys — 50% of every survey goes to YOU. Instant PayPal/Cash App payouts.
 
 Free to join 👇
 ${shortLink}
@@ -301,7 +301,7 @@ const BANNERS = [
     emoji: '💸',
     headline: 'Earn Real Money Daily',
     sub: 'Surveys · Games · Referrals',
-    copyText: (code) => `💸 Earn real money completing surveys & playing games on Grandia Granaria! Free to join → Use code: ${code} #GrandiaGranaria #EarnMoney`,
+    copyText: (code) => `💸 Earn real money completing surveys & playing games on Get Goods Gratis (Free)! Free to join → Use code: ${code} #GetGoodsGratis #EarnMoney`,
   },
   {
     id: 'b2',
@@ -309,7 +309,7 @@ const BANNERS = [
     emoji: '🎮',
     headline: 'Get Paid to Play',
     sub: '50% of every survey value · Instant payout',
-    copyText: (code) => `🎮 Get paid to play games and complete surveys! Grandia Granaria pays you 50% of every survey. Code: ${code} #GetPaidToPlay #GrandiaGranaria`,
+    copyText: (code) => `🎮 Get paid to play games and complete surveys! Get Goods Gratis (Free) pays you 50% of every survey. Code: ${code} #GetPaidToPlay #GetGoodsGratis`,
   },
   {
     id: 'b3',
@@ -317,7 +317,7 @@ const BANNERS = [
     emoji: '🏆',
     headline: '$3/Day. Every Day.',
     sub: 'Hit your daily goal → unlock the game store',
-    copyText: (code) => `🏆 I earn $3+ every day on Grandia Granaria. It's legit, it's free, and it pays instantly. Join with my code: ${code} #SideHustle #GrandiaGranaria`,
+    copyText: (code) => `🏆 I earn $3+ every day on Get Goods Gratis (Free). It's legit, it's free, and it pays instantly. Join with my code: ${code} #SideHustle #GetGoodsGratis`,
   },
   {
     id: 'b4',
@@ -325,7 +325,7 @@ const BANNERS = [
     emoji: '♾️',
     headline: 'Passive Referral Income',
     sub: '25% commission on every referral — forever',
-    copyText: (code) => `♾️ Earn 25% commission FOREVER on everyone you refer to Grandia Granaria. Passive income that stacks! Code: ${code} #PassiveIncome #Referrals`,
+    copyText: (code) => `♾️ Earn 25% commission FOREVER on everyone you refer to Get Goods Gratis (Free). Passive income that stacks! Code: ${code} #PassiveIncome #Referrals`,
   },
   {
     id: 'b5',
@@ -333,7 +333,7 @@ const BANNERS = [
     emoji: '⚡',
     headline: 'Tier Up. Earn More.',
     sub: 'Tier 3 unlocks $240/day potential',
-    copyText: (code) => `⚡ Grandia Granaria has 3 earning tiers. Get to Tier 3 and unlock $240/day + $3.5M/yr referral potential. Start free: ${code} #GrandiaGranaria #TierUp`,
+    copyText: (code) => `⚡ Get Goods Gratis (Free) has 3 earning tiers. Get to Tier 3 and unlock $240/day + $3.5M/yr referral potential. Start free: ${code} #GetGoodsGratis #TierUp`,
   },
   {
     id: 'b6',
@@ -341,7 +341,7 @@ const BANNERS = [
     emoji: '🚀',
     headline: 'Join 10,000+ Earners',
     sub: 'Free · No experience needed · Start today',
-    copyText: (code) => `🚀 Over 10,000 people are earning daily on Grandia Granaria. Don't miss out — sign up free with my code: ${code} #GrandiaGranaria #EarnToday`,
+    copyText: (code) => `🚀 Over 10,000 people are earning daily on Get Goods Gratis (Free). Don't miss out — sign up free with my code: ${code} #GetGoodsGratis #EarnToday`,
   },
 ];
 

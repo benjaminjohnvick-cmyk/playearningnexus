@@ -13,13 +13,13 @@ const Facebook = (props) => <svg {...props} viewBox="0 0 24 24" fill="currentCol
 
 const SHARE_MESSAGES = {
   twitter: [
-    (link) => `🎮 I'm earning real money playing games & taking surveys on Grandia Granaria! Join me and we BOTH get rewarded 💰 → ${link} #GrandiaGranaria #EarnOnline`,
-    (link) => `Imagine getting paid to play games 🕹️ That's Grandia Granaria. Use my link and start earning today → ${link}`,
+    (link) => `🎮 I'm earning real money playing games & taking surveys on Get Goods Gratis (Free)! Join me and we BOTH get rewarded 💰 → ${link} #GetGoodsGratis #EarnOnline`,
+    (link) => `Imagine getting paid to play games 🕹️ That's Get Goods Gratis (Free). Use my link and start earning today → ${link}`,
     (link) => `Just hit another referral milestone on @GamerGainApp 🏆 You can earn too — ${link} #PassiveIncome #Gamers`,
   ],
   facebook: [
-    (link) => `🎮 I've been using Grandia Granaria to earn money by playing games and completing surveys, and it's been amazing!\n\nSign up with my link and we both get a bonus when you start earning:\n👉 ${link}\n\nLet's grow together! 💰`,
-    (link) => `Have you tried Grandia Granaria yet? I've been earning real cash playing games 🕹️\n\nUse my referral link to join — you get a bonus and so do I:\n${link}`,
+    (link) => `🎮 I've been using Get Goods Gratis (Free) to earn money by playing games and completing surveys, and it's been amazing!\n\nSign up with my link and we both get a bonus when you start earning:\n👉 ${link}\n\nLet's grow together! 💰`,
+    (link) => `Have you tried Get Goods Gratis (Free) yet? I've been earning real cash playing games 🕹️\n\nUse my referral link to join — you get a bonus and so do I:\n${link}`,
   ],
 };
 

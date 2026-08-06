@@ -229,7 +229,7 @@ export default function ProfitInsightsTab({ user }) {
             <li>• <strong>Shop Search:</strong> $0.05 per daily search (auto-deducted from $0.40 PPC earnings)</li>
             <li>• <strong>Store Purchases:</strong> 10% markup on all sales</li>
             <li>• <strong>Credit Card:</strong> $1 flat or 3% (whichever is higher)</li>
-            <li>• <strong>PPC Ads:</strong> You earn $0.20, Grandia Granaria earns $0.20 per completed ad survey</li>
+            <li>• <strong>PPC Ads:</strong> You earn $0.20, Get Goods Gratis (Free) earns $0.20 per completed ad survey</li>
           </ul>
         </CardContent>
       </Card>

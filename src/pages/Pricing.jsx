@@ -44,14 +44,14 @@ export default function Pricing() {
         </div>
       </div>
 
-      {/* Grandia Granaria Double Guarantee — top of page */}
+      {/* Get Goods Gratis (Free) Double Guarantee — top of page */}
       <div className="bg-yellow-400 py-8 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-6">
             <ShieldCheck className="w-10 h-10 text-yellow-800 mx-auto mb-2" />
-            <h2 className="text-2xl font-black text-gray-900">The Grandia Granaria Double Guarantee</h2>
+            <h2 className="text-2xl font-black text-gray-900">The Get Goods Gratis (Free) Double Guarantee</h2>
             <p className="text-gray-700 text-sm mt-1">We don't stop working until you've won — twice. Applies to both paid business tiers.</p>
-            <p className="text-gray-700 text-sm mt-1 font-semibold">💸 Developers can pay for either tier using their Grandia Granaria developer earnings — zero out-of-pocket.</p>
+            <p className="text-gray-700 text-sm mt-1 font-semibold">💸 Developers can pay for either tier using their Get Goods Gratis (Free) developer earnings — zero out-of-pocket.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             {[
@@ -235,7 +235,7 @@ export default function Pricing() {
 
                         <div className="bg-white/10 rounded-xl px-4 py-3 mb-4 border border-white/20">
                           <p className="text-xs font-bold text-green-300 uppercase mb-1">💸 Developer Earnings Payment</p>
-                          <p className="text-xs text-purple-200 leading-snug">Developers can pay for this tier directly from their Grandia Granaria developer earnings — no out-of-pocket payment required. Earnings are automatically applied at checkout.</p>
+                          <p className="text-xs text-purple-200 leading-snug">Developers can pay for this tier directly from their Get Goods Gratis (Free) developer earnings — no out-of-pocket payment required. Earnings are automatically applied at checkout.</p>
                         </div>
                         <Link to={createPageUrl('PPCSurveyBuilder')}>
                           <Button className={`w-full bg-gradient-to-r ${tier.color} border-0 text-white font-bold h-11`}>
@@ -251,9 +251,9 @@ export default function Pricing() {
                 <div className="bg-yellow-400 rounded-2xl p-8 text-gray-900">
                   <div className="text-center mb-6">
                     <ShieldCheck className="w-12 h-12 text-yellow-800 mx-auto mb-3" />
-                    <h3 className="text-2xl font-black">The Grandia Granaria Double Guarantee</h3>
+                    <h3 className="text-2xl font-black">The Get Goods Gratis (Free) Double Guarantee</h3>
                     <p className="text-gray-700 mt-1">We don't stop working until you've won — twice.</p>
-                    <p className="text-gray-700 mt-1 font-semibold text-sm">💸 Developers: pay for either tier directly from your Grandia Granaria developer earnings — no out-of-pocket required.</p>
+                    <p className="text-gray-700 mt-1 font-semibold text-sm">💸 Developers: pay for either tier directly from your Get Goods Gratis (Free) developer earnings — no out-of-pocket required.</p>
                   </div>
                   <div className="grid md:grid-cols-2 gap-6">
                     {[

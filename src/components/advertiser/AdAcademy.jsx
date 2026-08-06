@@ -59,7 +59,7 @@ const MODULES = [
   },
   {
     id: 'loyalty_advanced',
-    title: 'Maximizing Grandia Granaria Points & Rewards',
+    title: 'Maximizing Get Goods Gratis (Free) Points & Rewards',
     emoji: '⭐',
     duration: '3 min',
     badge: { icon: '⭐', label: 'Points Legend', color: 'bg-orange-500/20 border-orange-500/30 text-orange-300' },

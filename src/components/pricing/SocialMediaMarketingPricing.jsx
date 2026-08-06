@@ -87,12 +87,12 @@ export default function SocialMediaMarketingPricing() {
               {[
                 'Every connected social media user is automatically listed as an influencer',
                 'Industry standard starting price: $500 per post',
-                '$500/post fee goes to Grandia Granaria if user has simply opted into the network (no set prices)',
+                '$500/post fee goes to Get Goods Gratis (Free) if user has simply opted into the network (no set prices)',
                 'Users who set their own prices earn their custom rate',
                 'Users capped at $2,000/year if they have opted in but not set custom prices',
-                'Money deposited automatically into Grandia Granaria account',
+                'Money deposited automatically into Get Goods Gratis (Free) account',
                 'One-click "Connect All" button to join the network',
-                'Hiring influencers is FREE — Grandia Granaria earns 10% on profits only',
+                'Hiring influencers is FREE — Get Goods Gratis (Free) earns 10% on profits only',
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
@@ -102,9 +102,9 @@ export default function SocialMediaMarketingPricing() {
             </ul>
 
             <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-              <p className="text-xs font-bold text-blue-800 uppercase mb-1">Grandia Granaria Fee Structure</p>
+              <p className="text-xs font-bold text-blue-800 uppercase mb-1">Get Goods Gratis (Free) Fee Structure</p>
               <p className="text-sm text-gray-700">
-                Grandia Granaria charges a <strong>10% fee</strong> on any profits made after the influencer receives their fee.
+                Get Goods Gratis (Free) charges a <strong>10% fee</strong> on any profits made after the influencer receives their fee.
                 Hiring influencers is always <strong>free</strong>.
               </p>
             </div>
@@ -125,12 +125,12 @@ export default function SocialMediaMarketingPricing() {
             {
               icon: '💰',
               title: 'Set Your Own Rates',
-              desc: 'Custom influencers set their own per-post prices. Network-only users start at $500/post (Grandia Granaria keeps this fee).',
+              desc: 'Custom influencers set their own per-post prices. Network-only users start at $500/post (Get Goods Gratis (Free) keeps this fee).',
             },
             {
               icon: '🤝',
               title: '10% Platform Fee',
-              desc: 'Grandia Granaria only charges 10% on profits made after the influencer gets paid. Hiring is always free.',
+              desc: 'Get Goods Gratis (Free) only charges 10% on profits made after the influencer gets paid. Hiring is always free.',
             },
           ].map((item, i) => (
             <div key={i} className="bg-white/10 rounded-xl p-5 text-center">
@@ -154,7 +154,7 @@ export default function SocialMediaMarketingPricing() {
             { label: 'Custom influencer rate', value: 'Self-set — unlimited' },
             { label: 'Platform commission', value: '10% of post profits' },
             { label: 'Influencer sign-up', value: 'Always FREE' },
-            { label: 'Default post price (network)', value: '$500/post → Grandia Granaria' },
+            { label: 'Default post price (network)', value: '$500/post → Get Goods Gratis (Free)' },
           ].map((item, i) => (
             <div key={i} className="bg-white border border-gray-200 rounded-xl p-3 text-center">
               <p className="text-xs text-gray-500 mb-1">{item.label}</p>

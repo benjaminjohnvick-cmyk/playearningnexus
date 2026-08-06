@@ -15,7 +15,7 @@ export default function WidgetDownloadPrompt() {
 
   const handleDownload = () => {
     const widgetData = {
-      name: 'Grandia Granaria Search Widget',
+      name: 'Get Goods Gratis (Free) Search Widget',
       version: '1.0.0',
       description: 'Search for products, earn $0.40/day from PPC ads, get contest entries, and win up to $1M+.',
       contest: {
@@ -36,7 +36,7 @@ export default function WidgetDownloadPrompt() {
     URL.revokeObjectURL(url);
     localStorage.setItem(DOWNLOADED_KEY, '1');
     setVisible(false);
-    toast.success('Grandia Granaria Widget downloaded! Check your downloads folder.');
+    toast.success('Get Goods Gratis (Free) Widget downloaded! Check your downloads folder.');
   };
 
   if (!visible) return null;
@@ -47,7 +47,7 @@ export default function WidgetDownloadPrompt() {
         {/* Left: icon + title */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <Download className="w-5 h-5 text-yellow-400" />
-          <span className="font-black text-white text-sm whitespace-nowrap">Get the Grandia Granaria Search Widget</span>
+          <span className="font-black text-white text-sm whitespace-nowrap">Get the Get Goods Gratis (Free) Search Widget</span>
         </div>
 
         {/* Middle: benefits */}

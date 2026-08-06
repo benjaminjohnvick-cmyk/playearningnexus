@@ -115,7 +115,7 @@ Grid Tier: ${primaryComp.tier}
 
 ${autoAdjust ? `Your bids have been automatically adjusted to $${(primaryComp.currentBid + margin).toFixed(3)}.` : 'Consider reviewing your bid strategy.'}
 
-— Grandia Granaria Ad Dashboard
+— Get Goods Gratis (Free) Ad Dashboard
       `.trim(),
     });
     setSending(false);

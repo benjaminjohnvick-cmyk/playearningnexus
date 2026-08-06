@@ -17,31 +17,31 @@ const SNIPPETS = [
     platform: 'Twitter / X',
     icon: Twitter,
     color: 'bg-black text-white hover:bg-gray-800',
-    text: (link, name) => `💰 I've been earning real cash completing surveys on Grandia Granaria! Join me and we both earn more. Use my link 👇\n${link}\n\n#GrandiaGranaria #EarnMoney #SideHustle`,
+    text: (link, name) => `💰 I've been earning real cash completing surveys on Get Goods Gratis (Free)! Join me and we both earn more. Use my link 👇\n${link}\n\n#GetGoodsGratis #EarnMoney #SideHustle`,
   },
   {
     platform: 'Facebook',
     icon: Facebook,
     color: 'bg-blue-600 text-white hover:bg-blue-700',
-    text: (link, name) => `Hey friends! 🎮 I've been using Grandia Granaria to earn money in my spare time by completing surveys. It's legit and actually pays out!\n\nUse my personal invite link and we'll both get a bonus:\n${link}`,
+    text: (link, name) => `Hey friends! 🎮 I've been using Get Goods Gratis (Free) to earn money in my spare time by completing surveys. It's legit and actually pays out!\n\nUse my personal invite link and we'll both get a bonus:\n${link}`,
   },
   {
     platform: 'LinkedIn',
     icon: Linkedin,
     color: 'bg-blue-700 text-white hover:bg-blue-800',
-    text: (link, name) => `Looking for a legitimate way to earn extra income? I've been using Grandia Granaria — a survey & rewards platform that pays real money.\n\nJoin via my referral link and start earning today:\n${link}\n\n#SideIncome #EarnMoney #Productivity`,
+    text: (link, name) => `Looking for a legitimate way to earn extra income? I've been using Get Goods Gratis (Free) — a survey & rewards platform that pays real money.\n\nJoin via my referral link and start earning today:\n${link}\n\n#SideIncome #EarnMoney #Productivity`,
   },
   {
     platform: 'WhatsApp / SMS',
     icon: MessageSquare,
     color: 'bg-green-500 text-white hover:bg-green-600',
-    text: (link, name) => `Hey! Thought you'd like this — I've been earning money on Grandia Granaria taking surveys. Check it out with my link and we both earn a bonus: ${link}`,
+    text: (link, name) => `Hey! Thought you'd like this — I've been earning money on Get Goods Gratis (Free) taking surveys. Check it out with my link and we both earn a bonus: ${link}`,
   },
   {
     platform: 'Email',
     icon: Mail,
     color: 'bg-gray-600 text-white hover:bg-gray-700',
-    text: (link, name) => `Subject: Earn money in your spare time — try this with me!\n\nHi,\n\nI wanted to share Grandia Granaria with you — it's a platform where you earn real money completing surveys. I've been using it for a while and it actually pays!\n\nUse my personal invite link to get started:\n${link}\n\nLet me know if you have any questions. Hope to see you on the platform!\n\nBest,\n${name}`,
+    text: (link, name) => `Subject: Earn money in your spare time — try this with me!\n\nHi,\n\nI wanted to share Get Goods Gratis (Free) with you — it's a platform where you earn real money completing surveys. I've been using it for a while and it actually pays!\n\nUse my personal invite link to get started:\n${link}\n\nLet me know if you have any questions. Hope to see you on the platform!\n\nBest,\n${name}`,
   },
 ];
 

@@ -264,7 +264,7 @@ export default function DeveloperOnboarding() {
         {/* Header */}
         <div className="text-center">
           <Badge className="bg-indigo-100 text-indigo-800 px-4 py-1.5 text-sm mb-3">Developer Onboarding</Badge>
-          <h1 className="text-3xl font-black text-gray-900">Get Your Game on Grandia Granaria</h1>
+          <h1 className="text-3xl font-black text-gray-900">Get Your Game on Get Goods Gratis (Free)</h1>
           <p className="text-gray-500 text-sm mt-1">Complete 4 steps to publish your game and start earning</p>
         </div>
 

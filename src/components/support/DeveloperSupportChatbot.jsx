@@ -69,7 +69,7 @@ export default function DeveloperSupportChatbot({ isOpen, onClose, developerId, 
       }
 
       // Prepare AI prompt with context
-      const contextPrompt = `You are a developer support assistant for Grandia Granaria platform. 
+      const contextPrompt = `You are a developer support assistant for Get Goods Gratis (Free) platform. 
       
 Developer Context:
 - Company: ${developerContext?.client?.company_name || 'N/A'}

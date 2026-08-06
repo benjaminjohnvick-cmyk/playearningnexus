@@ -13,7 +13,7 @@ export default function InvitationLinkGenerator({ user }) {
   const referralCode = user ? `REF-${user.id.slice(0, 8).toUpperCase()}` : '';
   const referralLink = user ? `${window.location.origin}/?ref=${referralCode}` : '';
 
-  const defaultMessage = `🎮 Join me on Grandia Granaria — earn real money completing surveys & playing games! Use my link to get started: ${referralLink}`;
+  const defaultMessage = `🎮 Join me on Get Goods Gratis (Free) — earn real money completing surveys & playing games! Use my link to get started: ${referralLink}`;
   const shareMessage = customMessage || defaultMessage;
 
   const copyLink = async () => {
@@ -33,7 +33,7 @@ export default function InvitationLinkGenerator({ user }) {
     const urls = {
       twitter: `https://twitter.com/intent/tweet?text=${encodedMsg}`,
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}&quote=${encodedMsg}`,
-      email: `mailto:?subject=Join Grandia Granaria — Earn Real Money!&body=${encodedMsg}`,
+      email: `mailto:?subject=Join Get Goods Gratis (Free) — Earn Real Money!&body=${encodedMsg}`,
       sms: `sms:?body=${encodedMsg}`,
     };
     if (urls[channel]) window.open(urls[channel], '_blank');

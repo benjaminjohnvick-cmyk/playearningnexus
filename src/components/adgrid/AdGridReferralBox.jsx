@@ -30,9 +30,9 @@ export default function AdGridReferralBox({ user }) {
 
   const handleShare = async () => {
     if (!referralLink) return;
-    const text = `🎮 I'm earning real money on Grandia Granaria's Ad Grid! Click ads from Nike, Apple, Tesla & more — answer 4 questions, earn $0.20 each. Check it out:\n${referralLink}`;
+    const text = `🎮 I'm earning real money on Get Goods Gratis (Free)'s Ad Grid! Click ads from Nike, Apple, Tesla & more — answer 4 questions, earn $0.20 each. Check it out:\n${referralLink}`;
     if (navigator.share) {
-      await navigator.share({ title: 'Grandia Granaria Ad Grid', text });
+      await navigator.share({ title: 'Get Goods Gratis (Free) Ad Grid', text });
     } else {
       navigator.clipboard.writeText(text);
       toast.success('Share text copied!');

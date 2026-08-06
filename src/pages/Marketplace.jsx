@@ -99,7 +99,7 @@ export default function Marketplace() {
 
   // Source presentation: label + badge tint. Affiliate listings are clearly marked per FTC.
   function sourceMeta(l) {
-    if (l.source === 'platform_catalog') return { label: 'Grandia Granaria Official', tint: 'bg-red-600' };
+    if (l.source === 'platform_catalog') return { label: 'Get Goods Gratis (Free) Official', tint: 'bg-red-600' };
     if (l.source === 'affiliate') return { label: l.source_label || 'Affiliate', tint: 'bg-amber-600' };
     return null;
   }
@@ -556,7 +556,7 @@ export default function Marketplace() {
             </div>
 
             {/* In-app catalog matches (buyable with points, closed-loop) */}
-            <div className="text-sm font-semibold mb-2 flex items-center gap-2"><ShoppingBag className="w-4 h-4" /> In the Grandia Granaria catalog</div>
+            <div className="text-sm font-semibold mb-2 flex items-center gap-2"><ShoppingBag className="w-4 h-4" /> In the Get Goods Gratis (Free) catalog</div>
             {matches.length === 0 ? (
               <div className="text-sm text-zinc-400">No catalog matches — try the web listings above.</div>
             ) : (

@@ -63,7 +63,7 @@ export default function WishlistBNPLSummary({ wishlistItems = [], onActivateBNPL
             <div className="border-t border-emerald-200 px-5 py-5 bg-gradient-to-br from-emerald-600 to-teal-700 text-white">
               <h3 className="text-lg font-black mb-1">How to unlock $10,000 in buying power 💰</h3>
               <p className="text-emerald-100 text-sm mb-4">
-                Grandia Granaria's Buy Now Pay Later lets you shop anything up to $10,000 — paid back through your earned rewards. Here's the math:
+                Get Goods Gratis (Free)'s Buy Now Pay Later lets you shop anything up to $10,000 — paid back through your earned rewards. Here's the math:
               </p>
 
               <div className="grid sm:grid-cols-3 gap-3 mb-4">
@@ -90,7 +90,7 @@ export default function WishlistBNPLSummary({ wishlistItems = [], onActivateBNPL
                   &nbsp;→&nbsp; $210/week &nbsp;→&nbsp; $900/month
                 </p>
                 <p className="text-xs text-emerald-200 mt-1">
-                  Grandia Granaria advances you the $10,000 and deducts repayments from your daily referral earnings — zero out-of-pocket stress.
+                  Get Goods Gratis (Free) advances you the $10,000 and deducts repayments from your daily referral earnings — zero out-of-pocket stress.
                 </p>
               </div>
 

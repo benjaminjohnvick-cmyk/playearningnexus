@@ -27,7 +27,7 @@ function generatePlatformData(ads) {
     // What it WOULD cost on that platform
     const equivalentCostCPM = parseFloat((impressions / 1000 * p.cpmBenchmark).toFixed(2));
     const equivalentCostCPC = parseFloat((clicks * p.cpcBenchmark).toFixed(2));
-    const gridActualCost = parseFloat((conversions * 0.4).toFixed(2)); // Grandia Granaria charges per survey
+    const gridActualCost = parseFloat((conversions * 0.4).toFixed(2)); // Get Goods Gratis (Free) charges per survey
     const savings = parseFloat((Math.max(equivalentCostCPM, equivalentCostCPC) - gridActualCost).toFixed(2));
 
     return {
@@ -138,10 +138,10 @@ export default function AdSocialChannelAnalytics({ ads }) {
         <div className="flex items-start gap-2">
           <Info className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-blue-300 font-bold text-sm">Grandia Granaria vs. Market Cost Comparison</p>
+            <p className="text-blue-300 font-bold text-sm">Get Goods Gratis (Free) vs. Market Cost Comparison</p>
             <p className="text-gray-400 text-xs mt-1">
               If you ran equivalent campaigns on these 5 platforms, you'd spend approximately <span className="text-red-400 font-bold">${totalEquivCost.toFixed(2)}</span> in CPM costs alone.
-              Your Grandia Granaria campaigns delivered the same reach for only <span className="text-green-400 font-bold">${totalGridCost.toFixed(2)}</span> — a
+              Your Get Goods Gratis (Free) campaigns delivered the same reach for only <span className="text-green-400 font-bold">${totalGridCost.toFixed(2)}</span> — a
               <span className="text-green-300 font-bold"> {totalEquivCost > 0 ? ((totalSavings / totalEquivCost) * 100).toFixed(0) : 0}% cost reduction</span>.
             </p>
           </div>
@@ -184,7 +184,7 @@ export default function AdSocialChannelAnalytics({ ads }) {
             <p className="font-bold text-white mb-1">How we calculate market cost:</p>
             <p>CPM (cost per 1000 views): {sel.impressions.toLocaleString()} impressions ÷ 1000 × ${sel.cpmBenchmark} benchmark = <span className="text-red-400 font-bold">${sel.equivalentCostCPM}</span></p>
             <p className="mt-0.5">CPC (cost per click): {sel.clicks.toLocaleString()} clicks × ${sel.cpcBenchmark} benchmark = <span className="text-red-400 font-bold">${sel.equivalentCostCPC}</span></p>
-            <p className="mt-0.5">Grandia Granaria (per-survey): {sel.conversions} completions × $0.40 = <span className="text-green-400 font-bold">${sel.gridActualCost}</span></p>
+            <p className="mt-0.5">Get Goods Gratis (Free) (per-survey): {sel.conversions} completions × $0.40 = <span className="text-green-400 font-bold">${sel.gridActualCost}</span></p>
           </div>
         </div>
       )}

@@ -64,7 +64,7 @@ export default function AdReportScheduler({ ads, adBalance, userEmail }) {
     if (!email) { toast.error('Enter an email address'); return; }
     setSending(true);
     const lines = [];
-    lines.push(`📊 Grandia Granaria Advertiser ${freq === 'weekly' ? 'Weekly' : 'Monthly'} Report\n`);
+    lines.push(`📊 Get Goods Gratis (Free) Advertiser ${freq === 'weekly' ? 'Weekly' : 'Monthly'} Report\n`);
     lines.push(`Period: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}\n`);
     if (selectedMetrics.includes('spend'))       lines.push(`💰 Total Spend: $${metrics.spend.toFixed(2)}`);
     if (selectedMetrics.includes('clicks'))      lines.push(`🖱 Total Clicks: ${metrics.clicks}`);
@@ -79,7 +79,7 @@ export default function AdReportScheduler({ ads, adBalance, userEmail }) {
 
     await base44.integrations.Core.SendEmail({
       to: email,
-      subject: `Your Grandia Granaria ${freq === 'weekly' ? 'Weekly' : 'Monthly'} Ad Report`,
+      subject: `Your Get Goods Gratis (Free) ${freq === 'weekly' ? 'Weekly' : 'Monthly'} Ad Report`,
       body: lines.join('\n'),
     });
     toast.success('Report sent to ' + email);
@@ -161,7 +161,7 @@ export default function AdReportScheduler({ ads, adBalance, userEmail }) {
 
       {showPreview && (
         <div className="bg-gray-950 border border-gray-700 rounded-xl p-4 font-mono text-xs text-gray-300 space-y-1">
-          <p className="text-yellow-400 font-bold">📊 Grandia Granaria {freq === 'weekly' ? 'Weekly' : 'Monthly'} Report</p>
+          <p className="text-yellow-400 font-bold">📊 Get Goods Gratis (Free) {freq === 'weekly' ? 'Weekly' : 'Monthly'} Report</p>
           {selectedMetrics.includes('spend') && <p>💰 Total Spend: ${metrics.spend.toFixed(2)}</p>}
           {selectedMetrics.includes('clicks') && <p>🖱 Total Clicks: {metrics.clicks}</p>}
           {selectedMetrics.includes('conversions') && <p>✅ Conversions: {metrics.conversions}</p>}

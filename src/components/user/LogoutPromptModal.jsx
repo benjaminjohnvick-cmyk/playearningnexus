@@ -56,13 +56,13 @@ export default function LogoutPromptModal({ isOpen, onClose, onLogout, user, con
   // Generate suggested message based on context
   const getSuggestedMessage = () => {
     if (completedActivity === 'survey') {
-      return `Just completed a survey on Grandia Granaria and earned ${points} points! 💰 Join me and start earning while gaming! #GrandiaGranaria #EarnMoney #Gaming`;
+      return `Just completed a survey on Get Goods Gratis (Free) and earned ${points} points! 💰 Join me and start earning while gaming! #GetGoodsGratis #EarnMoney #Gaming`;
     } else if (completedActivity === 'game') {
-      return `Had an amazing gaming session playing ${activityName} on Grandia Granaria! 🎮 Earning rewards while playing my favorite games! #GrandiaGranaria #Gaming`;
+      return `Had an amazing gaming session playing ${activityName} on Get Goods Gratis (Free)! 🎮 Earning rewards while playing my favorite games! #GetGoodsGratis #Gaming`;
     } else if (completedActivity === 'achievement') {
-      return `Unlocked the "${activityName}" achievement on Grandia Granaria! 🏆 Leveling up and earning rewards! #GrandiaGranaria #Achievement #Gaming`;
+      return `Unlocked the "${activityName}" achievement on Get Goods Gratis (Free)! 🏆 Leveling up and earning rewards! #GetGoodsGratis #Achievement #Gaming`;
     }
-    return `Just had a great session on Grandia Granaria! 🎮 Playing games, completing surveys, and earning real rewards. Check it out! #GrandiaGranaria #Gaming #EarnWhileYouPlay`;
+    return `Just had a great session on Get Goods Gratis (Free)! 🎮 Playing games, completing surveys, and earning real rewards. Check it out! #GetGoodsGratis #Gaming #EarnWhileYouPlay`;
   };
 
   const suggestedMessage = getSuggestedMessage();
@@ -76,7 +76,7 @@ export default function LogoutPromptModal({ isOpen, onClose, onLogout, user, con
             Share Your Success!
           </DialogTitle>
           <DialogDescription>
-            Before you go, share your Grandia Granaria experience with your friends!
+            Before you go, share your Get Goods Gratis (Free) experience with your friends!
           </DialogDescription>
         </DialogHeader>
 

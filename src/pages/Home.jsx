@@ -156,7 +156,7 @@ export default function Home() {
             {/* Left: hero copy + login */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <div className="inline-block px-3 py-1 bg-white/20 rounded-full mb-3">
-                <span className="text-white font-bold text-xs">🎮 Grandia Granaria Platform</span>
+                <span className="text-white font-bold text-xs">🎮 Get Goods Gratis (Free) Platform</span>
               </div>
               <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-tight">
                 Play Games.<br />Earn Real Money.
@@ -316,7 +316,7 @@ export default function Home() {
             <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl p-6 text-white text-center">
               <div className="text-2xl mb-2">🎮</div>
               <h3 className="text-xl font-black mb-1">AI Game Creator</h3>
-              <p className="text-violet-200 text-sm mb-4">Build a full game concept from real player feedback — free for developers on Grandia Granaria.</p>
+              <p className="text-violet-200 text-sm mb-4">Build a full game concept from real player feedback — free for developers on Get Goods Gratis (Free).</p>
               <Link to="/DeveloperToolsHub">
                 <Button className="bg-white text-violet-700 hover:bg-violet-50 font-bold">
                   Launch AI Game Creator <ArrowRight className="w-4 h-4 ml-1" />

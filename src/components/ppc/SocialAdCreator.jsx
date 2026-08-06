@@ -28,16 +28,16 @@ export default function SocialAdCreator({ clickedAds = [], user, onClose }) {
     setStep('generating');
     try {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a social media ad copywriter for Grandia Granaria. Create social media ad posts for the following brands that a user just engaged with on the Grandia Granaria PPC Ad Grid.
+        prompt: `You are a social media ad copywriter for Get Goods Gratis (Free). Create social media ad posts for the following brands that a user just engaged with on the Get Goods Gratis (Free) PPC Ad Grid.
 
 Brands clicked: ${clickedAds.map(a => a.brand).join(', ')}
 
 For each brand, create 1 short social media post (max 280 characters) that:
 1. Promotes the brand's product/service
-2. Mentions they found it on Grandia Granaria
+2. Mentions they found it on Get Goods Gratis (Free)
 3. Includes a call to action
 4. Includes relevant emojis
-5. Ends with: "via @Grandia Granaria 🎮 gamergain.app"
+5. Ends with: "via @Get Goods Gratis (Free) 🎮 gamergain.app"
 
 Keep each post engaging, natural, and platform-friendly.`,
         response_json_schema: {
@@ -293,7 +293,7 @@ Keep each post engaging, natural, and platform-friendly.`,
                 <span className="text-green-400 font-black text-xl">{publishedCount}</span> social posts are now live across your connected platforms.
               </p>
               <div className="bg-green-900/20 border border-green-600/30 rounded-xl p-3 mb-5 text-xs text-green-300">
-                ✅ All posts include Grandia Granaria branding + sign-up link<br />
+                ✅ All posts include Get Goods Gratis (Free) branding + sign-up link<br />
                 ✅ Each post tracks clicks back to your ad<br />
                 ✅ AI will monitor performance and optimize
               </div>

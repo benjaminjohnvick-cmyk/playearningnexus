@@ -82,7 +82,7 @@ fetch('https://api.gamergain.com/v1/users/{user_id}', {
         <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           <CardTitle className="flex items-center gap-2">
             <Code className="w-6 h-6" />
-            Grandia Granaria Developer SDK
+            Get Goods Gratis (Free) Developer SDK
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
@@ -117,7 +117,7 @@ fetch('https://api.gamergain.com/v1/users/{user_id}', {
                 <div>
                   <p className="font-semibold text-green-900">SDK Ready</p>
                   <p className="text-sm text-green-700">
-                    Use the examples below to integrate Grandia Granaria into your game.
+                    Use the examples below to integrate Get Goods Gratis (Free) into your game.
                   </p>
                 </div>
               </div>

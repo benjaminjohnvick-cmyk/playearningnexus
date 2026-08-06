@@ -15,7 +15,7 @@ export default function AIReadinessReview({ profile, assets, revenue }) {
     setLoading(true);
     try {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a senior app store review specialist at Grandia Granaria, a gaming + survey earning platform.
+        prompt: `You are a senior app store review specialist at Get Goods Gratis (Free), a gaming + survey earning platform.
 Evaluate this developer's submission for app store readiness.
 
 Developer Profile:
@@ -90,7 +90,7 @@ Return JSON:
         </div>
         <h3 className="font-bold text-lg mb-1">AI Readiness Review</h3>
         <p className="text-sm text-indigo-100 mb-4">
-          Get instant feedback on your submission before it goes to the Grandia Granaria review team.
+          Get instant feedback on your submission before it goes to the Get Goods Gratis (Free) review team.
         </p>
         <Button
           onClick={runReview}

@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/AuthContext';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 
-// Self-hosted login/signup form, styled to match the Grandia Granaria app design system
+// Self-hosted login/signup form, styled to match the Get Goods Gratis (Free) app design system
 // (green logo/wordmark, red CTA, red-50/white background). Replaces Base44's hosted screen.
 // mode: 'login' | 'signup'. On success, stores the JWT and navigates to ?redirect= (or home).
 export default function AuthForm({ mode = 'login' }) {
@@ -55,7 +55,7 @@ export default function AuthForm({ mode = 'login' }) {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-3">
             <GamerGainLogo className="w-12 h-12" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Grandia Granaria</span>
+            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Get Goods Gratis (Free)</span>
           </div>
           <p className="text-gray-500 text-sm">{isSignup ? 'Create your account' : 'Sign in to your account'}</p>
         </div>

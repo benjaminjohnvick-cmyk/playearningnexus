@@ -294,7 +294,7 @@ export default function AffiliateOnboarding() {
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-6 h-6 text-green-600" />
                     <div>
-                      <p className="font-semibold text-green-900">Welcome to Grandia Granaria!</p>
+                      <p className="font-semibold text-green-900">Welcome to Get Goods Gratis (Free)!</p>
                       <p className="text-sm text-green-700">Check your email for your personalized onboarding sequence.</p>
                     </div>
                   </div>

@@ -172,7 +172,7 @@ export default function Store() {
         <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-3">
           <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-amber-800">
-            <strong>All purchases are made through Grandia Granaria.</strong> Use the search button to find any product — we'll buy it for you. Prices include a 10% platform fee.
+            <strong>All purchases are made through Get Goods Gratis (Free).</strong> Use the search button to find any product — we'll buy it for you. Prices include a 10% platform fee.
           </p>
         </div>
 

@@ -1,13 +1,13 @@
 {
-  "name": "Grandia Granaria",
-  "short_name": "Grandia",
-  "description": "Where the World's Goods Gather — play, survey, shop, and earn.",
+  "name": "Get Goods Gratis (Free)",
+  "short_name": "Get Goods",
+  "description": "Where global goods gather — play, survey, shop, and earn.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0e1320",
-  "theme_color": "#0e1320",
+  "background_color": "#0a142e",
+  "theme_color": "#0a142e",
   "categories": ["games", "entertainment", "shopping", "finance"],
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

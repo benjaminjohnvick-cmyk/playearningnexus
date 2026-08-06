@@ -17,7 +17,7 @@ const portals = [
     tagline: 'Submit, monetize, and grow your games',
     path: 'DeveloperOnboarding',
     cta: 'Open Developer Portal',
-    description: 'Upload your games or apps and plug into a built-in audience of engaged, paying users. Grandia Granaria handles discovery, payment processing, and user acquisition — you focus on building.',
+    description: 'Upload your games or apps and plug into a built-in audience of engaged, paying users. Get Goods Gratis (Free) handles discovery, payment processing, and user acquisition — you focus on building.',
     features: [
       '50/50 revenue split on all in-app purchases',
       '$6 CPI (cost-per-install) — only pay when users install',
@@ -147,7 +147,7 @@ const socialComparison = [
   { platform: 'Google Ads', cpc: '$2 – $6', cpm: '$0.51 – $3', engagement: 'Intent-based', fraud: 'Low-moderate' },
   { platform: 'TikTok Ads', cpc: '$0.50 – $1.00', cpm: '$10 – $30', engagement: 'Passive video', fraud: 'High (bots)' },
   { platform: 'LinkedIn Ads', cpc: '$5 – $12', cpm: '$30 – $60', engagement: 'Professional', fraud: 'Low' },
-  { platform: 'Grandia Granaria PPC', cpc: '$0.40 flat', cpm: '~$4–$8', engagement: '✅ Task-completed', fraud: '✅ AI-filtered <1%' },
+  { platform: 'Get Goods Gratis (Free) PPC', cpc: '$0.40 flat', cpm: '~$4–$8', engagement: '✅ Task-completed', fraud: '✅ AI-filtered <1%' },
 ];
 
 export default function BusinessPricingSection() {
@@ -166,7 +166,7 @@ export default function BusinessPricingSection() {
           Business Portals & Pricing
         </h2>
         <p className="text-lg text-gray-500 max-w-3xl mx-auto">
-          Grandia Granaria is more than a consumer platform — it's a full B2B ecosystem. Whether you build games, run surveys, advertise brands, or sell products, there's a dedicated portal built for you.
+          Get Goods Gratis (Free) is more than a consumer platform — it's a full B2B ecosystem. Whether you build games, run surveys, advertise brands, or sell products, there's a dedicated portal built for you.
         </p>
       </div>
 
@@ -277,17 +277,17 @@ export default function BusinessPricingSection() {
             <Share2 className="w-3.5 h-3.5 inline mr-1" /> Social Advertising ROI
           </Badge>
           <h3 className="text-3xl font-black text-gray-900 mb-3">
-            Why Advertise on Grandia Granaria Instead of Meta or Google?
+            Why Advertise on Get Goods Gratis (Free) Instead of Meta or Google?
           </h3>
           <p className="text-gray-500 max-w-2xl mx-auto text-base">
-            Traditional platforms charge premium rates for passive impressions. Grandia Granaria users <strong>complete tasks</strong> to engage with your ads — giving you verified human interaction at a fraction of the cost.
+            Traditional platforms charge premium rates for passive impressions. Get Goods Gratis (Free) users <strong>complete tasks</strong> to engage with your ads — giving you verified human interaction at a fraction of the cost.
           </p>
         </div>
 
         {/* Savings callout */}
         <div className="grid md:grid-cols-3 gap-5 mb-10">
           {[
-            { icon: '💸', title: 'Save 70–95% per click', desc: 'Grandia Granaria\'s flat $0.40 PPC task vs. $2–$12 average CPC on Meta and Google Ads.' },
+            { icon: '💸', title: 'Save 70–95% per click', desc: 'Get Goods Gratis (Free)\'s flat $0.40 PPC task vs. $2–$12 average CPC on Meta and Google Ads.' },
             { icon: '🤖', title: 'Zero bot traffic', desc: 'Every click is verified by our AI fraud engine. You never pay for a bot impression again.' },
             { icon: '📣', title: 'Free social amplification', desc: 'Your brand gets shared through our 7M-user referral network at no extra charge — organic reach built in.' },
           ].map((item, i) => (
@@ -313,7 +313,7 @@ export default function BusinessPricingSection() {
             </thead>
             <tbody>
               {socialComparison.map((row, i) => {
-                const isGG = row.platform.includes('Grandia Granaria');
+                const isGG = row.platform.includes('Get Goods Gratis (Free)');
                 return (
                   <tr
                     key={i}
@@ -342,7 +342,7 @@ export default function BusinessPricingSection() {
       <div
         className="text-center bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-12 text-white"
       >
-        <h3 className="text-3xl font-black mb-3">Ready to grow your business on Grandia Granaria?</h3>
+        <h3 className="text-3xl font-black mb-3">Ready to grow your business on Get Goods Gratis (Free)?</h3>
         <p className="text-gray-300 mb-8 max-w-xl mx-auto">
           Pick the portal that fits your business and start seeing results. No setup fees, no contracts — just performance.
         </p>

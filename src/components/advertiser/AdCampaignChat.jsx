@@ -180,7 +180,7 @@ export default function AdCampaignChat({ ads }) {
 
     const result = await base44.integrations.Core.InvokeLLM({
       model: 'claude_sonnet_4_6',
-      prompt: `You are an expert advertising intelligence analyst for Grandia Granaria Ad Grid. You have access to real campaign data and must give SPECIFIC, DATA-DRIVEN answers with actual numbers from the campaigns.
+      prompt: `You are an expert advertising intelligence analyst for Get Goods Gratis (Free) Ad Grid. You have access to real campaign data and must give SPECIFIC, DATA-DRIVEN answers with actual numbers from the campaigns.
 
 REAL CAMPAIGN DATA:
 ${buildContext(ads)}

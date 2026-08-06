@@ -244,7 +244,7 @@ export default function GameVotingHub() {
           <TabsContent value="apply" className="mt-4">
             <div className="space-y-4">
               <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 text-white">
-                <h2 className="text-xl font-bold mb-1">Host Your Game on Grandia Granaria</h2>
+                <h2 className="text-xl font-bold mb-1">Host Your Game on Get Goods Gratis (Free)</h2>
                 <p className="text-sm text-indigo-100">Submit your application. Our AI reviews it, then our community votes. Top-voted games get added to Featured automatically.</p>
                 <div className="grid grid-cols-3 gap-3 mt-4 text-center">
                   {[['1. Apply', 'Submit your game details'], ['2. AI Reviews', 'Scored for platform fit'], ['3. Community Votes', 'Top games go live']].map(([title, desc]) => (
@@ -301,8 +301,8 @@ export default function GameVotingHub() {
                       <Input value={applyForm.demo_url} onChange={e => setApplyForm(f => ({ ...f, demo_url: e.target.value }))} placeholder="https://..." className="text-sm h-8" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-gray-600 mb-1">Why Grandia Granaria?</p>
-                      <Textarea value={applyForm.why_gamergain} onChange={e => setApplyForm(f => ({ ...f, why_gamergain: e.target.value }))} placeholder="Why do you want to host on Grandia Granaria?" className="text-sm h-14" />
+                      <p className="text-xs font-semibold text-gray-600 mb-1">Why Get Goods Gratis (Free)?</p>
+                      <Textarea value={applyForm.why_gamergain} onChange={e => setApplyForm(f => ({ ...f, why_gamergain: e.target.value }))} placeholder="Why do you want to host on Get Goods Gratis (Free)?" className="text-sm h-14" />
                     </div>
                     <div className="flex gap-2 justify-end">
                       <Button variant="outline" size="sm" onClick={() => setShowApplyForm(false)}>Cancel</Button>

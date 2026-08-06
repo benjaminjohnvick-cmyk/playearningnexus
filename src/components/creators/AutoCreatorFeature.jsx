@@ -55,7 +55,7 @@ export default function AutoCreatorFeature({ user }) {
     const ctx = buildContext();
     try {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a viral social media content expert. Create engaging posts for a Grandia Granaria user who earns real money by playing games and completing surveys.
+        prompt: `You are a viral social media content expert. Create engaging posts for a Get Goods Gratis (Free) user who earns real money by playing games and completing surveys.
 
 User stats:
 - Total earnings: $${ctx.totalEarned}

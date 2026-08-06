@@ -13,7 +13,7 @@ const PLACEMENT_SLOTS = [
   {
     id: 'homepage_hero',
     name: 'Homepage Hero Banner',
-    description: 'Top-of-fold banner on the Grandia Granaria homepage. Maximum visibility.',
+    description: 'Top-of-fold banner on the Get Goods Gratis (Free) homepage. Maximum visibility.',
     icon: '🏠',
     dailyImpressions: 12400,
     currentBid: 85,

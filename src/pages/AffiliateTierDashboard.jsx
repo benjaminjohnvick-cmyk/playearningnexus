@@ -74,7 +74,7 @@ export default function AffiliateTierDashboard() {
     await base44.integrations.Core.SendEmail({
       to: user.email,
       subject: `🎉 You've been promoted to ${TIER_CONFIG[eligibleTierName]?.label} Affiliate!`,
-      body: `Congratulations ${user.full_name}!\n\nYour performance over the last 90 days has earned you a promotion to ${TIER_CONFIG[eligibleTierName]?.label} tier!\n\nYour new commission rate is ${TIER_CONFIG[eligibleTierName]?.commission}%.\n\nBenefits:\n${TIER_BENEFITS[eligibleTierName].join('\n')}\n\nKeep up the amazing work!\n\nGrandia Granaria Team`
+      body: `Congratulations ${user.full_name}!\n\nYour performance over the last 90 days has earned you a promotion to ${TIER_CONFIG[eligibleTierName]?.label} tier!\n\nYour new commission rate is ${TIER_CONFIG[eligibleTierName]?.commission}%.\n\nBenefits:\n${TIER_BENEFITS[eligibleTierName].join('\n')}\n\nKeep up the amazing work!\n\nGet Goods Gratis (Free) Team`
     });
     // Update onboarding record
     if (onboarding?.id) {

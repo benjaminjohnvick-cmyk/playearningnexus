@@ -15,7 +15,7 @@ export default function AIChatSupport({ user }) {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: 'Hi! I\'m your AI assistant. I can help you with questions about Grandia Granaria, games, surveys, or your account. How can I help you today?',
+      content: 'Hi! I\'m your AI assistant. I can help you with questions about Get Goods Gratis (Free), games, surveys, or your account. How can I help you today?',
       timestamp: new Date()
     }
   ]);
@@ -42,7 +42,7 @@ export default function AIChatSupport({ user }) {
       setMessages(prev => [...prev, userMsg]);
 
       // Create context about the platform for the AI
-      const context = `You are a helpful customer support assistant for Grandia Granaria, a gaming platform where users:
+      const context = `You are a helpful customer support assistant for Get Goods Gratis (Free), a gaming platform where users:
 - Play games and earn money through surveys
 - Need to complete $2 worth of surveys daily to unlock games
 - Can earn points and badges for various activities

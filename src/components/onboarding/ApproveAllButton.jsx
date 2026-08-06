@@ -19,7 +19,7 @@ const MORE_INFO_ITEMS = [
   {
     icon: <Bot className="w-5 h-5 text-purple-500" />,
     title: '🤖 AI Social Media Engine — Auto-Connected',
-    desc: 'Grandia Granaria\'s AI Social Media Engine connects to all your detected social accounts and immediately generates short-form viral scripts tailored for TikTok, Instagram Reels, Twitter, Facebook, and Snapchat. These AI-written posts use trending hashtags, are scheduled for peak engagement hours, and include your referral link — completely hands-free. Your first 2 posts per platform are scheduled instantly.'
+    desc: 'Get Goods Gratis (Free)\'s AI Social Media Engine connects to all your detected social accounts and immediately generates short-form viral scripts tailored for TikTok, Instagram Reels, Twitter, Facebook, and Snapchat. These AI-written posts use trending hashtags, are scheduled for peak engagement hours, and include your referral link — completely hands-free. Your first 2 posts per platform are scheduled instantly.'
   },
   {
     icon: <Bot className="w-5 h-5 text-pink-500" />,
@@ -49,7 +49,7 @@ const MORE_INFO_ITEMS = [
   {
     icon: <DollarSign className="w-5 h-5 text-green-500" />,
     title: '$5 Direct Referral Credit',
-    desc: 'When a user you directly referred hits their first $8 earning milestone, you receive a one-time $5 website credit bonus automatically. These credits are spendable on Grandia Granaria instantly.'
+    desc: 'When a user you directly referred hits their first $8 earning milestone, you receive a one-time $5 website credit bonus automatically. These credits are spendable on Get Goods Gratis (Free) instantly.'
   },
   {
     icon: <TrendingUp className="w-5 h-5 text-orange-500" />,
@@ -69,7 +69,7 @@ const MORE_INFO_ITEMS = [
   {
     icon: <Lock className="w-5 h-5 text-gray-500" />,
     title: 'User License Agreement (ULA)',
-    desc: 'By approving, you authorize Grandia Granaria\'s AI to post content on your connected social accounts. You can revoke this at any time from your Affiliate MLM Dashboard. We will never post anything offensive, illegal, or off-brand. All AI-generated content is brand-safe and compliant.'
+    desc: 'By approving, you authorize Get Goods Gratis (Free)\'s AI to post content on your connected social accounts. You can revoke this at any time from your Affiliate MLM Dashboard. We will never post anything offensive, illegal, or off-brand. All AI-generated content is brand-safe and compliant.'
   },
 ];
 
@@ -239,7 +239,7 @@ Respond as JSON: { "detected_platforms": ["tiktok","instagram","twitter","facebo
       try {
         const request = new window.PaymentRequest(
           [{ supportedMethods: 'basic-card', data: { supportedNetworks: ['visa', 'mastercard', 'amex', 'discover'] } }],
-          { total: { label: 'Link Card to Grandia Granaria', amount: { currency: 'USD', value: '0.00' } } },
+          { total: { label: 'Link Card to Get Goods Gratis (Free)', amount: { currency: 'USD', value: '0.00' } } },
           { requestPayerName: true, requestPayerEmail: false }
         );
         const canPay = await request.canMakePayment();

@@ -6,7 +6,7 @@ import { Upload, Link2, CheckCircle, Loader2, DollarSign, TrendingUp, BarChart2,
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
-// AI Cost Comparison Data — Grandia Granaria vs typical social media
+// AI Cost Comparison Data — Get Goods Gratis (Free) vs typical social media
 const SOCIAL_MEDIA_BENCHMARKS = [
   { platform: 'Facebook Ads',   cpm: 14.00, cpc: 0.97,  ctr: 0.90, convRate: 9.2,  roi: 2.5,  costPerPost: 50.00 },
   { platform: 'Instagram Ads',  cpm: 10.00, cpc: 1.20,  ctr: 0.80, convRate: 3.1,  roi: 2.1,  costPerPost: 50.00 },
@@ -16,9 +16,9 @@ const SOCIAL_MEDIA_BENCHMARKS = [
   { platform: 'YouTube Ads',    cpm: 9.68,  cpc: 3.21,  ctr: 0.60, convRate: 2.0,  roi: 2.2,  costPerPost: 50.00 },
 ];
 
-// Grandia Granaria PPC Model
+// Get Goods Gratis (Free) PPC Model
 const GAMERGAIN = {
-  platform: 'Grandia Granaria Ad Grid',
+  platform: 'Get Goods Gratis (Free) Ad Grid',
   cpc: 0.50,
   cpm: 2.50,  // 5000 views/day grid, $0.50 * 5 clicks per 1000 views estimate
   ctr: 8.00,  // users actively click to earn — very high intent
@@ -78,9 +78,9 @@ export default function PartDProductUpload({ ads = [], userId }) {
     setAiLoading(true);
     try {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an advertising cost analyst. Analyze the following PPC advertising data for Grandia Granaria vs typical social media platforms.
+        prompt: `You are an advertising cost analyst. Analyze the following PPC advertising data for Get Goods Gratis (Free) vs typical social media platforms.
 
-Grandia Granaria Ad Grid Specs:
+Get Goods Gratis (Free) Ad Grid Specs:
 - CPC: $${GAMERGAIN.cpc} per click (user earns $0.25, platform earns $0.25)
 - Each click triggers 20 social media posts automatically
 - Cost per social media post: $${GAMERGAIN.costPerPost.toFixed(3)} (vs $0.50 industry avg per post)
@@ -94,7 +94,7 @@ Grandia Granaria Ad Grid Specs:
 Social Media Benchmarks (per platform):
 ${SOCIAL_MEDIA_BENCHMARKS.map(p => `${p.platform}: CPC $${p.cpc}, CPM $${p.cpm}, CTR ${p.ctr}%, Conv. Rate ${p.convRate}%, ROI ${p.roi}x, Cost per post $${p.costPerPost}`).join('\n')}
 
-Provide a structured analysis comparing Grandia Granaria vs each platform across: CPM, CPC, CTR, Conversion Rate, ROI, Dollar Cost for ${budget} budget, Average Cost per Post, and estimated Views. Calculate how many clicks, posts, and estimated sales $${budget} would generate on Grandia Granaria vs each platform. Conclude with a clear recommendation.`,
+Provide a structured analysis comparing Get Goods Gratis (Free) vs each platform across: CPM, CPC, CTR, Conversion Rate, ROI, Dollar Cost for ${budget} budget, Average Cost per Post, and estimated Views. Calculate how many clicks, posts, and estimated sales $${budget} would generate on Get Goods Gratis (Free) vs each platform. Conclude with a clear recommendation.`,
         response_json_schema: {
           type: 'object',
           properties: {
@@ -165,7 +165,7 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
               <Upload className="w-4 h-4 text-yellow-400" /> Part D — Product Ad Upload
             </h3>
             <p className="text-gray-400 text-xs mb-5">
-              Submit your product. Your ad will keep running on the Grandia Granaria Ad Grid and across all connected social media 
+              Submit your product. Your ad will keep running on the Get Goods Gratis (Free) Ad Grid and across all connected social media 
               until your <span className="text-yellow-400 font-bold">sales revenue is 2× your ad budget</span>.
             </p>
 
@@ -177,7 +177,7 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
                 <div className="bg-green-900/30 border border-green-600/40 rounded-xl p-3 text-xs text-green-300 text-left">
                   ✅ Ad runs until sales revenue = 2× ad budget<br />
                   ✅ 20 social posts auto-created per click<br />
-                  ✅ Grandia Granaria logo + signup link included on all ads<br />
+                  ✅ Get Goods Gratis (Free) logo + signup link included on all ads<br />
                   ✅ Link tracking & view analytics enabled
                 </div>
                 <Button className="mt-4 bg-yellow-500 text-black font-black" onClick={() => { setSubmitted(false); setProductUrl(''); setProductImage(null); setImagePreview(''); }}>
@@ -224,13 +224,13 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
                         <p className="text-gray-500 text-[10px] mb-1 font-bold">Ad Preview (with branding)</p>
                         <div className="relative rounded-lg overflow-hidden border border-yellow-500/40">
                           <img src={imagePreview} alt="Ad" className="w-full h-24 object-cover" />
-                          {/* Part F: Grandia Granaria logo + signup link overlay */}
+                          {/* Part F: Get Goods Gratis (Free) logo + signup link overlay */}
                           <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1.5 py-1 flex items-center justify-between">
-                            <span className="text-[8px] text-red-400 font-black">🎮 Grandia Granaria</span>
+                            <span className="text-[8px] text-red-400 font-black">🎮 Get Goods Gratis (Free)</span>
                             <span className="text-[7px] text-yellow-400">Sign Up →</span>
                           </div>
                         </div>
-                        <p className="text-gray-600 text-[9px] mt-1 text-center">Grandia Granaria logo + signup link auto-added</p>
+                        <p className="text-gray-600 text-[9px] mt-1 text-center">Get Goods Gratis (Free) logo + signup link auto-added</p>
                       </div>
                     )}
                   </div>
@@ -239,8 +239,8 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
                 {/* Campaign goal callout */}
                 <div className="bg-blue-900/30 border border-blue-600/40 rounded-xl p-3 text-xs text-blue-300">
                   <p className="font-bold mb-0.5">📈 2× Revenue Campaign Goal</p>
-                  Grandia Granaria will keep running your ads across the grid and all connected social media platforms until your total 
-                  sales revenue is <strong>2× greater than your ad budget</strong>. All posts include the Grandia Granaria logo and a sign-up link.
+                  Get Goods Gratis (Free) will keep running your ads across the grid and all connected social media platforms until your total 
+                  sales revenue is <strong>2× greater than your ad budget</strong>. All posts include the Get Goods Gratis (Free) logo and a sign-up link.
                 </div>
 
                 <Button
@@ -257,7 +257,7 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
           {/* Cost comparison teaser */}
           <div className="bg-gray-900 border border-purple-500/30 rounded-2xl p-4 flex items-center justify-between gap-4">
             <div>
-              <p className="text-white font-black text-sm">See how Grandia Granaria compares to social media ads</p>
+              <p className="text-white font-black text-sm">See how Get Goods Gratis (Free) compares to social media ads</p>
               <p className="text-gray-400 text-xs mt-0.5">AI analysis: CPM, CPC, CTR, ROI, cost per post & more</p>
             </div>
             <Button size="sm" className="bg-purple-600 hover:bg-purple-500 text-white font-bold flex-shrink-0"
@@ -275,7 +275,7 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
               <BarChart2 className="w-4 h-4 text-purple-400" /> AI Cost Comparison Analysis
             </h3>
             <p className="text-gray-400 text-xs mb-4">
-              Compare Grandia Granaria PPC pricing against typical social media ad costs across all key metrics.
+              Compare Get Goods Gratis (Free) PPC pricing against typical social media ad costs across all key metrics.
             </p>
 
             {/* Budget input */}
@@ -307,7 +307,7 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
                 <tbody>
                   <tr className="border-b-2 border-yellow-500/40 bg-yellow-500/10">
                     <td className="py-2.5 pr-3 font-black text-yellow-400 flex items-center gap-1">
-                      🎮 Grandia Granaria <Badge className="ml-1 bg-yellow-500 text-black text-[9px] px-1 py-0">BEST</Badge>
+                      🎮 Get Goods Gratis (Free) <Badge className="ml-1 bg-yellow-500 text-black text-[9px] px-1 py-0">BEST</Badge>
                     </td>
                     <td className="text-right py-2.5 px-2 text-green-400 font-bold">${GAMERGAIN.cpm.toFixed(2)}</td>
                     <td className="text-right py-2.5 px-2 text-green-400 font-bold">${GAMERGAIN.cpc.toFixed(2)}</td>
@@ -331,7 +331,7 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
               </table>
             </div>
 
-            {/* Grandia Granaria unique value props */}
+            {/* Get Goods Gratis (Free) unique value props */}
             <div className="grid grid-cols-2 gap-2 mb-4">
               {[
                 { icon: <MousePointerClick className="w-3.5 h-3.5 text-yellow-400" />, label: 'Cost per click', gg: '$0.50', vs: '$0.58–$3.21', winner: true },
@@ -358,7 +358,7 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
                 <p>• Each click generates: <span className="text-yellow-400 font-bold">20 social posts</span> across 6 platforms</p>
                 <p>• Cost per social post: <span className="text-green-400 font-bold">$0.50 ÷ 20 = $0.025/post</span></p>
                 <p>• Industry average per sponsored post: <span className="text-red-400 font-bold">$50.00/post</span></p>
-                <p className="text-green-400 font-bold mt-1">→ Grandia Granaria is <span className="text-white">2,000×</span> cheaper per social media post</p>
+                <p className="text-green-400 font-bold mt-1">→ Get Goods Gratis (Free) is <span className="text-white">2,000×</span> cheaper per social media post</p>
               </div>
             </div>
 
@@ -372,7 +372,7 @@ Provide a structured analysis comparing Grandia Granaria vs each platform across
                   </div>
                   {aiAnalysis.gamergain_metrics && (
                     <div className="bg-yellow-900/20 border border-yellow-500/40 rounded-xl p-4">
-                      <p className="text-yellow-400 font-bold text-sm mb-2">🎮 Your ${budget} Budget on Grandia Granaria</p>
+                      <p className="text-yellow-400 font-bold text-sm mb-2">🎮 Your ${budget} Budget on Get Goods Gratis (Free)</p>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
                         {[
                           { label: 'Clicks', value: aiAnalysis.gamergain_metrics.clicks?.toFixed(0) },

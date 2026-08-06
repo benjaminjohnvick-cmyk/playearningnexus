@@ -68,7 +68,7 @@ export default function Services() {
         <Badge className="mb-3 bg-violet-100 text-violet-700 hover:bg-violet-100">For brands, sellers & partners</Badge>
         <h1 className="text-3xl md:text-4xl font-bold text-slate-900">Platform Services</h1>
         <p className="mt-3 text-slate-600 max-w-2xl mx-auto">
-          Beyond the rewards app, Grandia Granaria offers its rails to others. Each service below turns a piece of what
+          Beyond the rewards app, Get Goods Gratis (Free) offers its rails to others. Each service below turns a piece of what
           we’ve already built into something brands, researchers, and partners can use.
         </p>
       </div>

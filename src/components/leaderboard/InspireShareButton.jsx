@@ -10,7 +10,7 @@ export default function InspireShareButton({ user, rank, dailyEarned, weeklyEarn
   const referralCode = user?.referral_code || user?.id?.slice(0, 8).toUpperCase() || 'GAMERGAIN';
   const rankText = rank <= 3 ? ['🥇 #1', '🥈 #2', '🥉 #3'][rank - 1] : `#${rank}`;
 
-  const shareText = `🎮 I'm ranked ${rankText} on Grandia Granaria's leaderboard today!\n💰 Earned $${(dailyEarned || 0).toFixed(2)} just from surveys today.\n\nJoin me and start earning — use my link 👇`;
+  const shareText = `🎮 I'm ranked ${rankText} on Get Goods Gratis (Free)'s leaderboard today!\n💰 Earned $${(dailyEarned || 0).toFixed(2)} just from surveys today.\n\nJoin me and start earning — use my link 👇`;
   const shareUrl = `https://gamergain.app?ref=${referralCode}`;
   const fullText = `${shareText}\n${shareUrl}`;
 
@@ -33,7 +33,7 @@ export default function InspireShareButton({ user, rank, dailyEarned, weeklyEarn
 
   const handleNativeShare = () => {
     if (navigator.share) {
-      navigator.share({ title: 'I\'m on the Grandia Granaria Leaderboard!', text: shareText, url: shareUrl });
+      navigator.share({ title: 'I\'m on the Get Goods Gratis (Free) Leaderboard!', text: shareText, url: shareUrl });
     } else {
       handleCopy();
     }

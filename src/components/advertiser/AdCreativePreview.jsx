@@ -67,7 +67,7 @@ function SocialPostPreview({ imageUrl, tagline, brandName }) {
             <span className="text-black text-[10px] font-black">GG</span>
           </div>
           <div>
-            <p className="text-white text-xs font-bold">Grandia Granaria</p>
+            <p className="text-white text-xs font-bold">Get Goods Gratis (Free)</p>
             <p className="text-gray-500 text-[10px]">Sponsored · Just now</p>
           </div>
         </div>
@@ -120,7 +120,7 @@ function BannerPreview({ imageUrl, tagline, brandName }) {
           <button className="bg-yellow-500 hover:bg-yellow-400 text-black font-black text-xs px-3 py-1.5 rounded-lg">
             Learn More →
           </button>
-          <p className="text-gray-600 text-[10px] mt-0.5">Powered by Grandia Granaria</p>
+          <p className="text-gray-600 text-[10px] mt-0.5">Powered by Get Goods Gratis (Free)</p>
         </div>
         {/* "AD" pill */}
         <span className="absolute top-1 left-1 bg-gray-700 text-gray-400 text-[9px] px-1 rounded font-bold">AD</span>

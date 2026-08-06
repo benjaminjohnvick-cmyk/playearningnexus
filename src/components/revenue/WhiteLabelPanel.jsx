@@ -53,7 +53,7 @@ export default function WhiteLabelPanel() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-900">White-Label Licensing</h2>
-        <p className="text-gray-500 text-sm">Power your business with Grandia Granaria's proven technology — under your own brand</p>
+        <p className="text-gray-500 text-sm">Power your business with Get Goods Gratis (Free)'s proven technology — under your own brand</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -164,7 +164,7 @@ export default function InAppGameStore() {
         <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-3">
           <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-amber-800">
-            <strong>All purchases are made through Grandia Granaria.</strong> Search any item using the purple button above — we'll buy it for you. Prices include a 10% platform fee. No cash leaves our ecosystem; all money is earned and spent here.
+            <strong>All purchases are made through Get Goods Gratis (Free).</strong> Search any item using the purple button above — we'll buy it for you. Prices include a 10% platform fee. No cash leaves our ecosystem; all money is earned and spent here.
           </p>
         </div>
 

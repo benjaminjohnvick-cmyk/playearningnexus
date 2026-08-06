@@ -36,7 +36,7 @@ const TYPE_PREFS = [
   { key: 'achievement_unlocks',     label: 'Badges & Achievements',  desc: 'Milestones and rewards',       icon: Trophy,      color: 'text-purple-600' },
   { key: 'purchase_complete',       label: 'Purchases',              desc: 'Game and store purchases',      icon: ShoppingBag, color: 'text-orange-600' },
   { key: 'wishlist_price_drops',    label: 'Wishlist Price Drops',   desc: 'Price drops on your wishlist', icon: Zap,         color: 'text-yellow-600' },
-  { key: 'platform_announcements',  label: 'Platform Announcements', desc: 'Important updates from Grandia Granaria', icon: Megaphone, color: 'text-red-600' },
+  { key: 'platform_announcements',  label: 'Platform Announcements', desc: 'Important updates from Get Goods Gratis (Free)', icon: Megaphone, color: 'text-red-600' },
 ];
 
 async function requestPushPermission() {
@@ -48,7 +48,7 @@ async function requestPushPermission() {
 
 async function sendTestPush() {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  new Notification('Grandia Granaria', {
+  new Notification('Get Goods Gratis (Free)', {
     body: '🔔 Push notifications are now enabled for critical updates!',
     icon: '/favicon.ico',
   });
@@ -126,7 +126,7 @@ export default function NotificationSettings() {
             <Bell className="w-9 h-9 text-red-600" />
             Notification Settings
           </h1>
-          <p className="text-gray-500">Choose how and when Grandia Granaria reaches you</p>
+          <p className="text-gray-500">Choose how and when Get Goods Gratis (Free) reaches you</p>
         </div>
 
         <div className="space-y-6">

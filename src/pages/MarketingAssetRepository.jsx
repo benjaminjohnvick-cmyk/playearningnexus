@@ -19,7 +19,7 @@ function CaptionModal({ asset, onClose }) {
   const generateCaptions = async () => {
     setGenerating(true);
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `Generate engaging social media captions for a marketing asset titled "${asset.title}" (${asset.category}). Description: ${asset.description || 'Marketing material for Grandia Granaria affiliate program'}. Generate a caption for each platform: Twitter (280 chars max), Instagram (engaging with hashtags), TikTok (trendy, short), Facebook (friendly), LinkedIn (professional). Return JSON.`,
+      prompt: `Generate engaging social media captions for a marketing asset titled "${asset.title}" (${asset.category}). Description: ${asset.description || 'Marketing material for Get Goods Gratis (Free) affiliate program'}. Generate a caption for each platform: Twitter (280 chars max), Instagram (engaging with hashtags), TikTok (trendy, short), Facebook (friendly), LinkedIn (professional). Return JSON.`,
       response_json_schema: {
         type: 'object',
         properties: {

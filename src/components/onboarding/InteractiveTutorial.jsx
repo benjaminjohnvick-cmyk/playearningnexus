@@ -11,10 +11,10 @@ import {
 const TUTORIAL_STEPS = [
   {
     id: 'welcome',
-    title: 'Welcome to Grandia Granaria! 🎮',
+    title: 'Welcome to Get Goods Gratis (Free)! 🎮',
     icon: Home,
     description: 'Your all-in-one platform for gaming, earning, and connecting!',
-    content: `Grandia Granaria combines:
+    content: `Get Goods Gratis (Free) combines:
 • 🎮 Access to thousands of games
 • 💰 Multiple ways to earn money
 • 🤝 Vibrant gaming community
@@ -26,7 +26,7 @@ Let's take a quick tour!`
     id: 'earning',
     title: 'Earning Opportunities',
     icon: DollarSign,
-    description: 'Multiple ways to make money on Grandia Granaria',
+    description: 'Multiple ways to make money on Get Goods Gratis (Free)',
     content: `How you earn:
 • 📋 Complete surveys ($1-$10 each)
 • 🎯 Refer users ($5-$50 per referral)

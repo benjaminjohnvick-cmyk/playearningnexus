@@ -80,7 +80,7 @@ export default function PreLaunchSurveyPanel({ gameData, onComplete }) {
           AI Pre-Launch Game Survey
           <Badge className="bg-purple-100 text-purple-700 ml-auto">Optional but Recommended</Badge>
         </CardTitle>
-        <p className="text-xs text-gray-500">Test your game with real Grandia Granaria users before going live. AI generates & analyzes feedback automatically.</p>
+        <p className="text-xs text-gray-500">Test your game with real Get Goods Gratis (Free) users before going live. AI generates & analyzes feedback automatically.</p>
       </CardHeader>
       <CardContent className="space-y-4">
 
@@ -104,7 +104,7 @@ export default function PreLaunchSurveyPanel({ gameData, onComplete }) {
               <p className="text-xs font-bold text-blue-700 mb-1">🤖 How it works</p>
               <ol className="text-xs text-blue-600 space-y-1 list-decimal list-inside">
                 <li>AI generates 8-10 tailored survey questions for your specific game</li>
-                <li>Survey is distributed to relevant Grandia Granaria users</li>
+                <li>Survey is distributed to relevant Get Goods Gratis (Free) users</li>
                 <li>AI analyzes responses and produces a launch readiness report</li>
                 <li>You get actionable insights before spending on marketing</li>
               </ol>

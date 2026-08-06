@@ -185,7 +185,7 @@ For each platform, generate platform-optimized ad copy with relevant hashtags. F
             <CardContent className="space-y-4">
               <div>
                 <Label>Product / Campaign Name *</Label>
-                <Input value={adBrief.product_name} onChange={e => setAdBrief({...adBrief, product_name: e.target.value})} placeholder="e.g. Grandia Granaria Premium Subscription" />
+                <Input value={adBrief.product_name} onChange={e => setAdBrief({...adBrief, product_name: e.target.value})} placeholder="e.g. Get Goods Gratis (Free) Premium Subscription" />
               </div>
               <div>
                 <Label>Target Audience</Label>

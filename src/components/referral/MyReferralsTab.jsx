@@ -34,7 +34,7 @@ const SOCIAL_PLATFORMS = [
   },
 ];
 
-const SHARE_TEXT = "I'm earning real money completing surveys on Grandia Granaria! Join me and start earning too 🎮💰";
+const SHARE_TEXT = "I'm earning real money completing surveys on Get Goods Gratis (Free)! Join me and start earning too 🎮💰";
 
 export default function MyReferralsTab({ user }) {
   const [copied, setCopied] = useState(false);

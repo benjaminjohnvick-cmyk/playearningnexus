@@ -116,7 +116,7 @@ export default function AIDisputeResolutionCenter() {
         `[${t.type || 'txn'}] $${t.amount} — ${t.description || ''} — ${t.status} — ${new Date(t.created_date).toLocaleDateString()}`
       ).join('\n');
 
-      const prompt = `You are an AI dispute resolution analyst for Grandia Granaria, a platform where users earn money through surveys, referrals, and games.
+      const prompt = `You are an AI dispute resolution analyst for Get Goods Gratis (Free), a platform where users earn money through surveys, referrals, and games.
 
 USER DISPUTE:
 - Type: ${disputeData?.dispute_type || disputeType}

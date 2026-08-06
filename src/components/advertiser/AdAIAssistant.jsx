@@ -78,7 +78,7 @@ export default function AdAIAssistant({ ads }) {
     try {
       const history = messages.slice(-6).map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n');
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert AI advertising assistant for Grandia Granaria, a gaming platform's ad grid.
+        prompt: `You are an expert AI advertising assistant for Get Goods Gratis (Free), a gaming platform's ad grid.
 
 ADVERTISER'S CAMPAIGN DATA:
 ${buildAdContext()}

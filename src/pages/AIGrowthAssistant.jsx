@@ -110,7 +110,7 @@ export default function AIGrowthAssistant() {
   const generateInsights = async () => {
     setGeneratingInsights(true);
     try {
-      const prompt = `You are an AI Growth Assistant for a game developer on Grandia Granaria platform.
+      const prompt = `You are an AI Growth Assistant for a game developer on Get Goods Gratis (Free) platform.
 
 Developer Data:
 - Total surveys created: ${surveys.length} (${activeSurveys} active)
@@ -171,7 +171,7 @@ Return a JSON object like:
   const generateWeeklyReport = async () => {
     setGeneratingReport(true);
     try {
-      const prompt = `You are an AI Growth Assistant writing a weekly developer performance report for Grandia Granaria.
+      const prompt = `You are an AI Growth Assistant writing a weekly developer performance report for Get Goods Gratis (Free).
 
 Developer Stats:
 - Revenue trend: ${revTrend}% change vs last month
