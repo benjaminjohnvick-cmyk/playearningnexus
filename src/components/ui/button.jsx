@@ -34,13 +34,24 @@ const buttonVariants = cva(
   }
 )
 
-const Button = React.forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
+// Variants that render as filled/bordered "real" buttons get the American-flag
+// roll-over reveal (see .flag-btn in index.css). Subtle controls (ghost/link) and
+// icon-only buttons are left clean so the effect stays tasteful.
+const FLAG_VARIANTS = new Set(["default", "destructive", "secondary", "outline"])
+
+const Button = React.forwardRef(({ className, variant, size, asChild = false, children, ...props }, ref) => {
   const Comp = asChild ? Slot : "button"
+  const resolvedVariant = variant || "default"
+  // Skip the flag on Slot buttons (asChild) since Slot requires a single child,
+  // and on icon-only buttons where a flag behind an icon reads as noise.
+  const withFlag = !asChild && size !== "icon" && FLAG_VARIANTS.has(resolvedVariant)
   return (
     (<Comp
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size, className }), withFlag && "flag-btn")}
       ref={ref}
-      {...props} />)
+      {...props}>
+      {withFlag ? <span className="flag-btn__label">{children}</span> : children}
+    </Comp>)
   );
 })
 Button.displayName = "Button"

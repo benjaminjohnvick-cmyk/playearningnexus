@@ -10,33 +10,35 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
+    --primary: 208 100% 41%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 225 100% 18%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 208 100% 96%;
+    --accent-foreground: 225 100% 18%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --border: 214 14% 85%;
+    --input: 214 14% 85%;
+    --ring: 208 100% 41%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* American flag used for the button roll-over reveal */
+    --us-flag: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20190%20100%22%20preserveAspectRatio%3D%22xMidYMid%20slice%22%3E%3Crect%20x%3D%220%22%20y%3D%220.0000%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23b22234%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%227.6923%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2215.3846%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23b22234%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2223.0769%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2230.7692%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23b22234%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2238.4615%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2246.1538%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23b22234%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2253.8462%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2261.5385%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23b22234%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2269.2308%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2276.9231%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23b22234%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2284.6154%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2292.3077%22%20width%3D%22190%22%20height%3D%227.6923%22%20fill%3D%22%23b22234%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2276.0%22%20height%3D%2253.8462%22%20fill%3D%22%233c3b6e%22%2F%3E%3Ccircle%20cx%3D%226.333%22%20cy%3D%225.385%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2219.000%22%20cy%3D%225.385%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2231.667%22%20cy%3D%225.385%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2244.333%22%20cy%3D%225.385%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2257.000%22%20cy%3D%225.385%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2269.667%22%20cy%3D%225.385%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2212.667%22%20cy%3D%2210.769%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2225.333%22%20cy%3D%2210.769%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2238.000%22%20cy%3D%2210.769%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2250.667%22%20cy%3D%2210.769%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2263.333%22%20cy%3D%2210.769%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%226.333%22%20cy%3D%2216.154%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2219.000%22%20cy%3D%2216.154%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2231.667%22%20cy%3D%2216.154%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2244.333%22%20cy%3D%2216.154%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2257.000%22%20cy%3D%2216.154%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2269.667%22%20cy%3D%2216.154%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2212.667%22%20cy%3D%2221.538%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2225.333%22%20cy%3D%2221.538%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2238.000%22%20cy%3D%2221.538%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2250.667%22%20cy%3D%2221.538%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2263.333%22%20cy%3D%2221.538%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%226.333%22%20cy%3D%2226.923%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2219.000%22%20cy%3D%2226.923%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2231.667%22%20cy%3D%2226.923%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2244.333%22%20cy%3D%2226.923%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2257.000%22%20cy%3D%2226.923%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2269.667%22%20cy%3D%2226.923%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2212.667%22%20cy%3D%2232.308%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2225.333%22%20cy%3D%2232.308%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2238.000%22%20cy%3D%2232.308%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2250.667%22%20cy%3D%2232.308%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2263.333%22%20cy%3D%2232.308%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%226.333%22%20cy%3D%2237.692%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2219.000%22%20cy%3D%2237.692%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2231.667%22%20cy%3D%2237.692%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2244.333%22%20cy%3D%2237.692%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2257.000%22%20cy%3D%2237.692%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2269.667%22%20cy%3D%2237.692%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2212.667%22%20cy%3D%2243.077%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2225.333%22%20cy%3D%2243.077%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2238.000%22%20cy%3D%2243.077%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2250.667%22%20cy%3D%2243.077%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2263.333%22%20cy%3D%2243.077%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%226.333%22%20cy%3D%2248.462%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2219.000%22%20cy%3D%2248.462%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2231.667%22%20cy%3D%2248.462%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2244.333%22%20cy%3D%2248.462%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2257.000%22%20cy%3D%2248.462%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3Ccircle%20cx%3D%2269.667%22%20cy%3D%2248.462%22%20r%3D%221.5%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E");
+    --sidebar-background: 225 100% 18%;
+    --sidebar-foreground: 210 40% 92%;
+    --sidebar-primary: 208 100% 41%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 213 60% 26%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 213 50% 30%;
+    --sidebar-ring: 208 100% 55%;
   }
 
   .dark {
@@ -46,19 +48,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
+    --primary: 208 100% 55%;
+    --primary-foreground: 225 100% 12%;
+    --secondary: 213 40% 18%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 213 45% 22%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --ring: 208 100% 55%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -125,4 +127,28 @@
   .skip-link:focus {
     top: 0.5rem;
   }
+}
+
+@layer components {
+  /* American-flag reveal behind button text on hover / focus / click.
+     Applied by <Button> to its solid variants via the .flag-btn class. */
+  .flag-btn { position: relative; overflow: hidden; isolation: isolate; }
+  .flag-btn > .flag-btn__label {
+    position: relative; z-index: 1;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+  }
+  .flag-btn::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    opacity: 0; transform: scale(1.06); pointer-events: none;
+    background-image: linear-gradient(rgba(0,12,45,0.40), rgba(0,12,45,0.40)), var(--us-flag);
+    background-size: cover, cover; background-position: center, center; background-repeat: no-repeat, no-repeat;
+    transition: opacity 0.28s ease, transform 0.28s ease;
+  }
+  .flag-btn:hover::before,
+  .flag-btn:focus-visible::before,
+  .flag-btn:active::before { opacity: 1; transform: scale(1); }
+  .flag-btn:hover > .flag-btn__label,
+  .flag-btn:focus-visible > .flag-btn__label,
+  .flag-btn:active > .flag-btn__label { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.85); }
 }
