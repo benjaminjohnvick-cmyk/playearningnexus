@@ -311,8 +311,13 @@ export default function Layout({ children, currentPageName }) {
                   <div className="group-hover:scale-110 transition-transform">
                     <GamerGainLogo className="w-10 h-10" />
                   </div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent hidden sm:inline">
-                    Grandia Granaria
+                  <span className="hidden sm:flex flex-col leading-none">
+                    <span className="text-xl font-bold bg-gradient-to-r from-[#006fcf] to-[#00175a] bg-clip-text text-transparent">
+                      Grandia Granaria
+                    </span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mt-0.5">
+                      Where the World's Goods Gather
+                    </span>
                   </span>
                 </Link>
                 <MegaContestButton />
@@ -529,7 +534,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="md:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
                   <GamerGainLogo className="w-10 h-10" />
-                  <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Grandia Granaria</span>
+                  <span className="flex flex-col leading-none"><span className="text-xl font-bold bg-gradient-to-r from-[#006fcf] to-[#00175a] bg-clip-text text-transparent">Grandia Granaria</span><span className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mt-0.5">Where the World's Goods Gather</span></span>
                 </div>
                 <p className="text-gray-600 text-sm">The premium game discovery platform. Play games, earn rewards, connect with creators.</p>
               </div>
