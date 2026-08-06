@@ -58,7 +58,7 @@ export default function AIVideoStudio() {
 
   const referralLink = user ? `https://gamergain.app?ref=${user.id?.slice(0, 8)}` : 'https://gamergain.app';
   const ctaText = ctaType === 'referral'
-    ? `Join me on GamerGain → ${referralLink}`
+    ? `Join me on Grandia Granaria → ${referralLink}`
     : (customCTA || `Check it out → ${referralLink}`);
 
   const togglePlatform = (id) =>

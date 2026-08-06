@@ -144,7 +144,7 @@ export default function RecentEarningsFeed() {
           Live Earnings Feed
           <Badge className="bg-green-100 text-green-700 text-xs ml-auto">🔴 Live</Badge>
         </CardTitle>
-        <p className="text-xs text-gray-400">Real-time activity from the GamerGain community</p>
+        <p className="text-xs text-gray-400">Real-time activity from the Grandia Granaria community</p>
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <AnimatePresence mode="popLayout">

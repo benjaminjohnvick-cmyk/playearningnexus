@@ -175,7 +175,7 @@ function SurveyModal({ ad, step, onAnswer, onClose, adsClickedToday }) {
         <div className="flex items-center justify-between mb-3">
           <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
             className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center gap-1">
-            <Globe className="w-3 h-3" /> GamerGain.app
+            <Globe className="w-3 h-3" /> Grandia Granaria.app
           </a>
           <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg px-2 py-1 text-xs font-bold text-yellow-300">
             Tasks completed: {adsClickedToday} of {REQUIRED_DAILY_CLICKS}
@@ -212,7 +212,7 @@ function SurveyModal({ ad, step, onAnswer, onClose, adsClickedToday }) {
           ))}
         </div>
         <p className="text-center text-gray-500 text-[10px] mt-4">
-          You earn ${EARNINGS_PER_CLICK.toFixed(2)} · GamerGain earns ${EARNINGS_PER_CLICK.toFixed(2)} · Business gets discovered
+          You earn ${EARNINGS_PER_CLICK.toFixed(2)} · Grandia Granaria earns ${EARNINGS_PER_CLICK.toFixed(2)} · Business gets discovered
         </p>
       </motion.div>
     </motion.div>
@@ -238,7 +238,7 @@ function SuccessModal({ ad, onVisit, onBack, adsClickedToday }) {
         <div className="flex items-center justify-between mb-4">
           <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
             className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center gap-1">
-            <Globe className="w-3 h-3" /> GamerGain.app
+            <Globe className="w-3 h-3" /> Grandia Granaria.app
           </a>
           <div className={`rounded-lg px-2 py-1 text-xs font-bold border ${adsClickedToday >= REQUIRED_DAILY_CLICKS ? 'bg-green-500/20 border-green-500/40 text-green-300' : 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300'}`}>
             Tasks completed: {adsClickedToday} of {REQUIRED_DAILY_CLICKS}
@@ -495,9 +495,9 @@ export default function PaidPPCAdsMosaic() {
   };
 
   const handleShareGrid = async () => {
-    const shareText = `🎮 The GamerGain Million Dollar Ad Grid — click brand ads, answer 4 questions, earn $0.20 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/PaidPPCAdsMosaic`;
+    const shareText = `🎮 The Grandia Granaria Million Dollar Ad Grid — click brand ads, answer 4 questions, earn $0.20 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/PaidPPCAdsMosaic`;
     if (navigator.share) {
-      await navigator.share({ title: 'GamerGain Million Dollar Ad Grid', text: shareText });
+      await navigator.share({ title: 'Grandia Granaria Million Dollar Ad Grid', text: shareText });
     } else {
       navigator.clipboard.writeText(shareText);
       toast.success('Share link copied!');
@@ -555,13 +555,13 @@ export default function PaidPPCAdsMosaic() {
         )}
       </AnimatePresence>
       <div className="bg-red-700 text-center py-2 text-sm font-bold tracking-wide sticky top-0 z-40">
-        🎮 <a href="https://gamergain.app" className="underline hover:text-yellow-300">GamerGain.app</a>
+        🎮 <a href="https://gamergain.app" className="underline hover:text-yellow-300">Grandia Granaria.app</a>
         {' '}— Click an ad · Answer 4 questions ($0.40) · Earn $0.20 · Visit the business
       </div>
       <div className="max-w-5xl mx-auto px-4 pt-8 pb-4 text-center">
         <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 px-5 py-2 rounded-full mb-4 shadow-lg">
           <DollarSign className="w-5 h-5" />
-          <span className="font-black text-lg">GamerGain Million Dollar Ad Grid</span>
+          <span className="font-black text-lg">Grandia Granaria Million Dollar Ad Grid</span>
         </div>
         <h1 className="text-4xl md:text-5xl font-black mb-3 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent leading-tight">
           The Million Dollar<br />Homepage
@@ -718,7 +718,7 @@ export default function PaidPPCAdsMosaic() {
         )}
 
         <p className="text-center text-gray-600 text-xs mt-4">
-          16 ads per set · Auto-loads when all clicked · Powered by GamerGain.app
+          16 ads per set · Auto-loads when all clicked · Powered by Grandia Granaria.app
         </p>
       </div>
       {/* Part H: Social Ad Creator modal */}

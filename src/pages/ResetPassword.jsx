@@ -39,7 +39,7 @@ export default function ResetPassword() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-3">
             <GamerGainLogo className="w-12 h-12" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">GamerGain</span>
+            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Grandia Granaria</span>
           </div>
           <p className="text-gray-500 text-sm">Choose a new password{email ? ` for ${email}` : ''}</p>
         </div>

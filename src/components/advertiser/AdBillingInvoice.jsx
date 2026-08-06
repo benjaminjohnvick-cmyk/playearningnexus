@@ -38,7 +38,7 @@ function InvoicePreview({ data, onClose }) {
             <p className="text-gray-500 text-sm">Invoice #{data.invoiceNumber}</p>
           </div>
           <div className="text-right">
-            <p className="font-black text-gray-900">GamerGain Ad Grid</p>
+            <p className="font-black text-gray-900">Grandia Granaria Ad Grid</p>
             <p className="text-gray-500 text-xs">advertising@gamergain.com</p>
           </div>
         </div>
@@ -94,7 +94,7 @@ function InvoicePreview({ data, onClose }) {
         </div>
 
         <div className="mt-6 p-3 bg-gray-50 rounded-xl text-xs text-gray-500 text-center">
-          This document serves as a tax-compliant invoice for GamerGain advertising services.
+          This document serves as a tax-compliant invoice for Grandia Granaria advertising services.
         </div>
         <div className="flex gap-2 mt-4">
           <Button onClick={onClose} variant="outline" className="flex-1">Close</Button>
@@ -134,7 +134,7 @@ export default function AdBillingInvoice({ userId, userEmail }) {
     const body = `
 Hi,
 
-Please find attached your GamerGain Ad Spend Report for ${dateFrom} to ${dateTo}.
+Please find attached your Grandia Granaria Ad Spend Report for ${dateFrom} to ${dateTo}.
 
 Summary:
 • Total Ad Spend: $${invoiceData.totalSpend.toFixed(2)}
@@ -147,11 +147,11 @@ ${invoiceData.taxRate > 0 ? `• VAT/Tax (${(invoiceData.taxRate * 100).toFixed(
 Tax Region: ${taxRegion}
 
 Best regards,
-GamerGain Ad Grid
+Grandia Granaria Ad Grid
     `;
     await base44.integrations.Core.SendEmail({
       to: recipientEmail,
-      subject: `GamerGain Invoice #${invoiceData.invoiceNumber} — ${dateFrom} to ${dateTo}`,
+      subject: `Grandia Granaria Invoice #${invoiceData.invoiceNumber} — ${dateFrom} to ${dateTo}`,
       body,
     });
     setSending(false);

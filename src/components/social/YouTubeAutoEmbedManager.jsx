@@ -104,7 +104,7 @@ export default function YouTubeAutoEmbedManager({ user }) {
           <Youtube className="w-16 h-16 text-red-600 mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-gray-900 mb-2">Connect Your YouTube Channel</h3>
           <p className="text-gray-600 mb-4">
-            Our AI agent will automatically add the GamerGain ad grid to your video intros and outros.
+            Our AI agent will automatically add the Grandia Granaria ad grid to your video intros and outros.
             Earn $0.20 per click!
           </p>
           <Button 

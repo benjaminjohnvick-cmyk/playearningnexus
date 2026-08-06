@@ -158,7 +158,7 @@ export default function AIPricingEnginePanel({ engineData, onOrderBestDeal, load
 
       <div className="px-4 py-2 border-t bg-gray-50 flex items-center gap-1.5">
         <Info className="w-3 h-3 text-gray-400" />
-        <p className="text-[10px] text-gray-400">Prices are AI-estimated from live web data. "Order Best Deal" uses GamerGain automated fulfillment.</p>
+        <p className="text-[10px] text-gray-400">Prices are AI-estimated from live web data. "Order Best Deal" uses Grandia Granaria automated fulfillment.</p>
       </div>
     </div>
   );

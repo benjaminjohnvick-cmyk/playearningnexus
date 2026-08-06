@@ -168,7 +168,7 @@ export default function DeveloperEarningsDashboard() {
                     <p className="text-sm text-red-700 mt-1">
                       Your cumulative earnings have reached ${ENTERPRISE_THRESHOLD_400K.toLocaleString()}. You have been automatically enrolled
                       in the Tier 3 Brand Partnership ($1,000,000 over 2 years). All fees are deducted from your ongoing developer earnings.
-                      This allows GamerGain to continue promoting your app.
+                      This allows Grandia Granaria to continue promoting your app.
                     </p>
                     <Link to={createPageUrl('DeveloperOnboarding')}>
                       <Button className="mt-3 bg-red-600 hover:bg-red-700 text-white">

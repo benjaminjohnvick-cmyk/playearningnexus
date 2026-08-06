@@ -161,7 +161,7 @@ export default function PPCNetworkPricing() {
             </div>
             <ul className="space-y-2">
               {[
-                'GamerGain continues to run your ads at no extra charge until 2× ROI is reached',
+                'Grandia Granaria continues to run your ads at no extra charge until 2× ROI is reached',
                 'Tracking and reporting provided in real time',
                 'Guaranteed reach to ALL active platform users',
                 'AI-optimized ad placement for maximum engagement',

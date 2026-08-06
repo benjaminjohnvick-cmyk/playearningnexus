@@ -54,7 +54,7 @@ export default function Wishlist() {
               <Heart className="w-8 h-8 text-red-500 fill-red-500" />
               My Wishlist
             </h1>
-            <p className="text-gray-500 mt-1">Save items and order through GamerGain — prices include 10% platform fee</p>
+            <p className="text-gray-500 mt-1">Save items and order through Grandia Granaria — prices include 10% platform fee</p>
           </div>
           <div className="w-full mt-4 space-y-4">
             <div className="flex gap-3 justify-between items-center">

@@ -143,7 +143,7 @@ export default function FeaturedGameBidding() {
         </div>
         <p className="text-gray-400 text-xs">
           When a developer's cumulative earnings reach $400,000, they are automatically enrolled in the Enterprise tier for 1 year. 
-          This allows GamerGain to continue promoting their app. All fees are deducted from ongoing developer earnings.
+          This allows Grandia Granaria to continue promoting their app. All fees are deducted from ongoing developer earnings.
         </p>
         <Link to={createPageUrl('DeveloperOnboarding')} className="block mt-4">
           <Button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold">

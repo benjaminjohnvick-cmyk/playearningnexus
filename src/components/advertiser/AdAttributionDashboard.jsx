@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Share2, MousePointerClick, Grid2x2, CheckSquare, ShoppingCart, Zap, RefreshCw, ChevronRight } from 'lucide-react';
 
-// Proprietary GamerGain Lift Score formula
+// Proprietary Grandia Granaria Lift Score formula
 function calcLiftScore({ socialShares, clicks, gridVisits, completions, sales, spend }) {
   if (spend === 0) return 0;
   const completionRate = clicks > 0 ? completions / clicks : 0;
@@ -118,7 +118,7 @@ export default function AdAttributionDashboard({ ads }) {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <p className="text-white font-black text-sm flex items-center gap-2 mb-1">
-              <Zap className="w-4 h-4 text-yellow-400" /> GamerGain Lift Score™
+              <Zap className="w-4 h-4 text-yellow-400" /> Grandia Granaria Lift Score™
             </p>
             <p className="text-gray-500 text-xs max-w-xs">
               Proprietary score (0–100) measuring campaign amplification across Social → Click → Grid → Completion → Sale.

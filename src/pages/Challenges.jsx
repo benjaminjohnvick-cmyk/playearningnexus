@@ -62,7 +62,7 @@ const CHALLENGES = [
   {
     id: 'first_100',
     title: 'First $100 Earned',
-    description: 'Reach $100 in total lifetime earnings on GamerGain.',
+    description: 'Reach $100 in total lifetime earnings on Grandia Granaria.',
     icon: DollarSign,
     color: 'from-green-500 to-emerald-600',
     category: 'earnings',

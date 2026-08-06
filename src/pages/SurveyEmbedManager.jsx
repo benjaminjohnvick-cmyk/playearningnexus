@@ -29,7 +29,7 @@ function CopyButton({ text, label = 'Copy' }) {
 function EmbedCodeBlock({ surveyId, surveyTitle }) {
   const scriptTag = `<script src="${WIDGET_API}?path=widget&survey_id=${surveyId}" async></script>`;
   const divTag = `<div data-gg-survey="${surveyId}"></div>`;
-  const fullEmbed = `<!-- GamerGain Survey: ${surveyTitle} -->\n<div data-gg-survey="${surveyId}"></div>\n<script src="${WIDGET_API}?path=widget&survey_id=${surveyId}" async></script>`;
+  const fullEmbed = `<!-- Grandia Granaria Survey: ${surveyTitle} -->\n<div data-gg-survey="${surveyId}"></div>\n<script src="${WIDGET_API}?path=widget&survey_id=${surveyId}" async></script>`;
 
   return (
     <div className="space-y-4">
@@ -136,7 +136,7 @@ export default function SurveyEmbedManager() {
             Embed Surveys on Any Website
           </h1>
           <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-            Copy a single code snippet and paste it into any website. Responses are tracked directly back to your GamerGain account.
+            Copy a single code snippet and paste it into any website. Responses are tracked directly back to your Grandia Granaria account.
           </p>
         </div>
 
@@ -145,7 +145,7 @@ export default function SurveyEmbedManager() {
           {[
             { icon: Code2, title: '1. Copy Snippet', desc: 'Get the embed code for any active PPC survey you own.', color: 'bg-blue-50 border-blue-200' },
             { icon: Globe, title: '2. Paste on Your Site', desc: 'Drop the code into any webpage — WordPress, Webflow, plain HTML, anywhere.', color: 'bg-purple-50 border-purple-200' },
-            { icon: BarChart2, title: '3. Track Responses', desc: 'All completions sync back to your GamerGain dashboard in real time.', color: 'bg-green-50 border-green-200' },
+            { icon: BarChart2, title: '3. Track Responses', desc: 'All completions sync back to your Grandia Granaria dashboard in real time.', color: 'bg-green-50 border-green-200' },
           ].map(({ icon: StepIcon, title, desc, color }) => (
             <div key={title} className={`border rounded-xl p-4 ${color}`}>
               <StepIcon className="w-6 h-6 mb-2 text-gray-700" />

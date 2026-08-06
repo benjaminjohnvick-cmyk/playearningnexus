@@ -25,11 +25,11 @@ const AGREEMENT_TEXT = `GAMERGAIN PARTNER SERVICE AGREEMENT
 
 Last updated: ${new Date().toLocaleDateString()}
 
-By signing this agreement, you ("Partner") agree to the following terms with GamerGain ("Platform"):
+By signing this agreement, you ("Partner") agree to the following terms with Grandia Granaria ("Platform"):
 
 1. SERVICES
-   Partner will promote and/or host surveys through the GamerGain PPC Marketplace.
-   GamerGain will provide access to the survey network, analytics, and payment processing.
+   Partner will promote and/or host surveys through the Grandia Granaria PPC Marketplace.
+   Grandia Granaria will provide access to the survey network, analytics, and payment processing.
 
 2. REVENUE SHARE
    - Tier 1 Partners: 50% revenue split on all survey completions
@@ -54,11 +54,11 @@ By signing this agreement, you ("Partner") agree to the following terms with Gam
 
 6. TERMINATION
    Either party may terminate this agreement with 30 days written notice.
-   GamerGain reserves the right to immediately suspend accounts for policy violations.
+   Grandia Granaria reserves the right to immediately suspend accounts for policy violations.
 
 7. LIABILITY
-   GamerGain is not liable for third-party payment processing delays or errors.
-   Partner indemnifies GamerGain against claims arising from Partner's content.
+   Grandia Granaria is not liable for third-party payment processing delays or errors.
+   Partner indemnifies Grandia Granaria against claims arising from Partner's content.
 
 8. GOVERNING LAW
    This agreement is governed by the laws of the State of Delaware, USA.
@@ -171,7 +171,7 @@ export default function PartnerOnboarding() {
       // Send confirmation email
       await base44.integrations.Core.SendEmail({
         to: contactEmail,
-        subject: '✅ Welcome to GamerGain Partner Network!',
+        subject: '✅ Welcome to Grandia Granaria Partner Network!',
         body: `
           <h2>Welcome, ${companyName}!</h2>
           <p>Your partner account has been successfully activated. Here's what happens next:</p>
@@ -181,12 +181,12 @@ export default function PartnerOnboarding() {
             <li>📊 Access your dashboard at: <a href="${window.location.origin}/BusinessDashboard">Business Dashboard</a></li>
           </ul>
           <p>Signed agreement: ${signatureName} · ${new Date().toISOString()}</p>
-          <p>— GamerGain Partner Team</p>
+          <p>— Grandia Granaria Partner Team</p>
         `,
-        from_name: 'GamerGain Partners',
+        from_name: 'Grandia Granaria Partners',
       }).catch(() => {});
       setStep(4);
-      toast.success('Onboarding complete! Welcome to GamerGain Partners 🎉');
+      toast.success('Onboarding complete! Welcome to Grandia Granaria Partners 🎉');
     } catch (err) {
       toast.error('Error: ' + err.message);
     } finally {
@@ -209,7 +209,7 @@ export default function PartnerOnboarding() {
         {/* Header */}
         <div className="text-center">
           <Badge className="bg-indigo-100 text-indigo-800 text-sm px-4 py-1.5 mb-3">Partner Onboarding</Badge>
-          <h1 className="text-3xl font-bold text-gray-900">Join the GamerGain Network</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Join the Grandia Granaria Network</h1>
           <p className="text-gray-500 mt-1 text-sm">Complete setup to start earning as a brand partner</p>
         </div>
 
@@ -282,7 +282,7 @@ export default function PartnerOnboarding() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-gray-600 block mb-1">Company Bio / Description</label>
-                    <Textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us about your company and how you plan to use the GamerGain network…" rows={3} className="border-2 resize-none" />
+                    <Textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us about your company and how you plan to use the Grandia Granaria network…" rows={3} className="border-2 resize-none" />
                   </div>
 
                   <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-3 flex items-start gap-2">
@@ -422,7 +422,7 @@ export default function PartnerOnboarding() {
                         disabled={!agreementRead}
                       />
                       <span className="text-xs text-gray-700">
-                        I, <strong>{signatureName || '___'}</strong>, have read and agree to the GamerGain Partner Service Agreement.
+                        I, <strong>{signatureName || '___'}</strong>, have read and agree to the Grandia Granaria Partner Service Agreement.
                         I understand this constitutes a legally binding digital signature.
                         Signed on: <strong>{new Date().toLocaleDateString()}</strong>
                       </span>
@@ -453,7 +453,7 @@ export default function PartnerOnboarding() {
                   <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg">
                     <CheckCircle2 className="w-10 h-10 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to GamerGain! 🎉</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Grandia Granaria! 🎉</h2>
                   <p className="text-gray-600 text-sm mb-6">Your partner account is active. You now have access to the business dashboard, survey publishing tools, and partner payouts.</p>
                   <div className="grid sm:grid-cols-3 gap-3 mb-6">
                     {[

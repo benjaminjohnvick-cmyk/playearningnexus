@@ -40,13 +40,13 @@ export default function MarketResearchPanel({ userTier = 'free' }) {
     },
     {
       id: 'r3', title: 'Gaming Product Demand Forecast 2026', category: 'product_demand',
-      summary: 'AI-forecasted product category demand based on wishlist, purchase, and browsing data from GamerGain users.',
+      summary: 'AI-forecasted product category demand based on wishlist, purchase, and browsing data from Grandia Granaria users.',
       price_usd: 199, sample_size: 45000, purchases_count: 12, ai_insights: ['RPG gear up 45% demand', 'Gaming chairs top wishlist', 'Headsets show 28% price elasticity'],
       data_period_start: '2026-01-01', data_period_end: '2026-05-01'
     },
     {
       id: 'r4', title: 'Gamer Demographics Deep Dive', category: 'demographics',
-      summary: 'Detailed breakdown of GamerGain user demographics including age, geography, income, and gaming preferences.',
+      summary: 'Detailed breakdown of Grandia Granaria user demographics including age, geography, income, and gaming preferences.',
       price_usd: 249, sample_size: 80000, purchases_count: 8, ai_insights: ['18-24 age group = 42%', 'Tier 2 cities growing fastest', 'High income gamers spend 4x more'],
       data_period_start: '2025-01-01', data_period_end: '2026-05-01'
     },

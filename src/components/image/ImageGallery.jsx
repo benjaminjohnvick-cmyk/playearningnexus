@@ -27,7 +27,7 @@ export default function ImageGallery({ images, onImageSelect }) {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${imageName}_GamerGain.png`;
+      link.download = `${imageName}_GrandiaGranaria.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -39,7 +39,7 @@ export default function ImageGallery({ images, onImageSelect }) {
   };
 
   const handleShare = (image) => {
-    const shareCaption = `🌟 Check out my AI-generated image created with GamerGain! 🎮✨\n\n#GamerGain #AIArt #AIGenerated`;
+    const shareCaption = `🌟 Check out my AI-generated image created with Grandia Granaria! 🎮✨\n\n#GrandiaGranaria #AIArt #AIGenerated`;
     navigator.clipboard.writeText(shareCaption);
     toast.success('Caption copied! Share on social media');
   };

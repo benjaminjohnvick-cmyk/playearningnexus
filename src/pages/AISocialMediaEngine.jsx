@@ -41,11 +41,11 @@ export default function AISocialMediaEngine() {
   const connectedPlatforms = connections.map(c => c.platform).filter(p => PLATFORM_CONFIG[p]);
 
   const TRENDING_HASHTAGS = {
-    tiktok:    ['#GamerGain', '#EarnMoney', '#SideHustle', '#MakeMoneyOnline', '#GamingLife', '#FYP', '#viral'],
-    instagram: ['#GamerGain', '#EarnFromHome', '#SideIncome', '#GamingCommunity', '#MoneyTips', '#Reels'],
-    twitter:   ['#GamerGain', '#EarnOnline', '#Passive Income', '#Gaming', '#Crypto'],
-    facebook:  ['#GamerGain', '#EarnMoney', '#WorkFromHome', '#Gaming'],
-    snapchat:  ['#GamerGain', '#EarnOnline', '#Games', '#Money'],
+    tiktok:    ['#GrandiaGranaria', '#EarnMoney', '#SideHustle', '#MakeMoneyOnline', '#GamingLife', '#FYP', '#viral'],
+    instagram: ['#GrandiaGranaria', '#EarnFromHome', '#SideIncome', '#GamingCommunity', '#MoneyTips', '#Reels'],
+    twitter:   ['#GrandiaGranaria', '#EarnOnline', '#Passive Income', '#Gaming', '#Crypto'],
+    facebook:  ['#GrandiaGranaria', '#EarnMoney', '#WorkFromHome', '#Gaming'],
+    snapchat:  ['#GrandiaGranaria', '#EarnOnline', '#Games', '#Money'],
   };
 
   const generateScripts = async () => {
@@ -53,7 +53,7 @@ export default function AISocialMediaEngine() {
     setGenerating(true);
     try {
       // Pick top post as inspiration
-      const inspiration = topPosts[0]?.base_content || 'Join GamerGain to earn money by completing surveys, playing games, and referring friends. Daily payouts available!';
+      const inspiration = topPosts[0]?.base_content || 'Join Grandia Granaria to earn money by completing surveys, playing games, and referring friends. Daily payouts available!';
 
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `You are a viral social media content expert. Based on this top-performing affiliate content: "${inspiration}"
@@ -72,7 +72,7 @@ Format EXACTLY as JSON:
   "snapchat": "script text here (max 200 chars, casual snap style)"
 }
 
-Make each one feel native to its platform. Mention GamerGain, earning money, and a sense of urgency.`,
+Make each one feel native to its platform. Mention Grandia Granaria, earning money, and a sense of urgency.`,
         response_json_schema: {
           type: 'object',
           properties: {

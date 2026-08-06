@@ -1,6 +1,6 @@
 // Over-the-air (OTA) live updates for the native wrappers.
 //
-// GamerGain is a React web app inside a Capacitor shell, so ~all of the app's code is a WEB BUNDLE
+// Grandia Granaria is a React web app inside a Capacitor shell, so ~all of the app's code is a WEB BUNDLE
 // (JS/HTML/CSS). OTA pushes an updated web bundle straight to INSTALLED native apps — the native shell
 // is unchanged, so there's NO App Store / Play review for web-layer changes. Users pick up the new
 // bundle on next app open/login; there's no downtime. Only genuinely-new NATIVE code (a new plugin, a

@@ -113,7 +113,7 @@ export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 8 }
           <p className="text-xs text-gray-600">
             • Daily SMS reminders to stay on track<br />
             • Earn $8 total in PPC ads to unlock games & purchases<br />
-            • You keep $4 · GamerGain keeps $4 (50/50 split)
+            • You keep $4 · Grandia Granaria keeps $4 (50/50 split)
           </p>
         </div>
       </CardContent>

@@ -14,18 +14,18 @@ const DEMO_CAMPAIGNS = [
     description: 'Fund the next-gen AI matchmaking system with personality-based pairing.',
     goal_amount: 5000, raised_amount: 3750, backers_count: 47, status: 'active',
     end_date: '2026-06-30T00:00:00Z',
-    ai_generated_pitch: 'Imagine being matched with opponents who truly challenge you — not just by skill, but by playstyle, reaction speed, and strategy. Our V2 AI matchmaking system analyzes 40+ behavioral signals to create the most engaging tournaments ever built on GamerGain. Back us now and be among the first to experience the future of competitive gaming!'
+    ai_generated_pitch: 'Imagine being matched with opponents who truly challenge you — not just by skill, but by playstyle, reaction speed, and strategy. Our V2 AI matchmaking system analyzes 40+ behavioral signals to create the most engaging tournaments ever built on Grandia Granaria. Back us now and be among the first to experience the future of competitive gaming!'
   },
   {
-    id: 'c2', title: 'GamerGain Mobile App (iOS + Android)', category: 'infrastructure',
+    id: 'c2', title: 'Grandia Granaria Mobile App (iOS + Android)', category: 'infrastructure',
     description: 'Native mobile apps with offline survey support and push notifications.',
     goal_amount: 15000, raised_amount: 9200, backers_count: 134, status: 'active',
     end_date: '2026-07-15T00:00:00Z',
-    ai_generated_pitch: 'GamerGain deserves to be in your pocket. With a native mobile app, you could earn while commuting, play surveys during lunch, and never miss a tournament — all offline-capable. Your backing will bring GamerGain to iOS and Android with full feature parity.'
+    ai_generated_pitch: 'Grandia Granaria deserves to be in your pocket. With a native mobile app, you could earn while commuting, play surveys during lunch, and never miss a tournament — all offline-capable. Your backing will bring Grandia Granaria to iOS and Android with full feature parity.'
   },
   {
     id: 'c3', title: 'Community Game Jam Fund', category: 'community',
-    description: 'Annual prize pool for indie game developers building on GamerGain.',
+    description: 'Annual prize pool for indie game developers building on Grandia Granaria.',
     goal_amount: 3000, raised_amount: 3000, backers_count: 89, status: 'funded',
     end_date: '2026-05-01T00:00:00Z',
   },

@@ -53,8 +53,8 @@ export default function AdTeamManager({ userId, userName }) {
     // Send notification email
     await base44.integrations.Core.SendEmail({
       to: inviteEmail.trim(),
-      subject: `${userName} invited you to their Advertiser Dashboard on GamerGain`,
-      body: `Hi,\n\n${userName} has invited you to collaborate on their GamerGain advertising account as a ${ROLE_LABELS[inviteRole] || inviteRole}.\n\nYour role gives you ${ROLES[inviteRole]?.desc}.\n\nSign in at https://gamergain.app/AdBusinessDashboard to get started.\n\nGamerGain Team`,
+      subject: `${userName} invited you to their Advertiser Dashboard on Grandia Granaria`,
+      body: `Hi,\n\n${userName} has invited you to collaborate on their Grandia Granaria advertising account as a ${ROLE_LABELS[inviteRole] || inviteRole}.\n\nYour role gives you ${ROLES[inviteRole]?.desc}.\n\nSign in at https://gamergain.app/AdBusinessDashboard to get started.\n\nGrandia Granaria Team`,
     }).catch(() => null);
 
     persist([...members, newMember]);

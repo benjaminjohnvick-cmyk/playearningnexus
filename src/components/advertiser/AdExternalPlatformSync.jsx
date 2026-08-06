@@ -140,7 +140,7 @@ export default function AdExternalPlatformSync({ ads }) {
         {/* Grid vs External comparison */}
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3">
-            <p className="text-yellow-400 text-xs font-bold mb-2">🎮 GamerGain Ad Grid</p>
+            <p className="text-yellow-400 text-xs font-bold mb-2">🎮 Grandia Granaria Ad Grid</p>
             <div className="space-y-1 text-xs">
               <div className="flex justify-between"><span className="text-gray-400">Clicks</span><span className="text-white font-bold">{gridMetrics.clicks}</span></div>
               <div className="flex justify-between"><span className="text-gray-400">CTR</span><span className="text-blue-400 font-bold">{gridMetrics.ctr}%</span></div>

@@ -258,7 +258,7 @@ export default function AdBusinessDashboard() {
         <div>
           <Building2 className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
           <h1 className="text-3xl font-black text-white mb-2">Advertiser Dashboard</h1>
-          <p className="text-gray-400 mb-6">Sign in to manage your ads on the GamerGain Million Dollar Ad Grid</p>
+          <p className="text-gray-400 mb-6">Sign in to manage your ads on the Grandia Granaria Million Dollar Ad Grid</p>
           <Button
             className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-black gap-2"
             onClick={() => base44.auth.redirectToLogin()}
@@ -283,7 +283,7 @@ export default function AdBusinessDashboard() {
             </div>
             <div>
               <h1 className="text-lg font-black text-white leading-none">Advertiser Dashboard</h1>
-              <p className="text-gray-500 text-xs">GamerGain Million Dollar Ad Grid</p>
+              <p className="text-gray-500 text-xs">Grandia Granaria Million Dollar Ad Grid</p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
@@ -474,7 +474,7 @@ export default function AdBusinessDashboard() {
                 <BarChart2 className="w-16 h-16 text-gray-700 mx-auto mb-4" />
                 <h2 className="text-2xl font-black text-white mb-2">No ads yet</h2>
                 <p className="text-gray-500 mb-6 max-w-sm mx-auto">
-                  Submit your first ad to appear on the GamerGain Million Dollar Ad Grid.
+                  Submit your first ad to appear on the Grandia Granaria Million Dollar Ad Grid.
                 </p>
                 <Button
                   className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-black gap-1"
@@ -524,7 +524,7 @@ export default function AdBusinessDashboard() {
         {activeTab === 'Loyalty' && (
           <div className="space-y-6">
             <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-              <Star className="w-4 h-4 text-yellow-400" /> GamerGain Points & Loyalty Rewards
+              <Star className="w-4 h-4 text-yellow-400" /> Grandia Granaria Points & Loyalty Rewards
             </h2>
             <AdLoyaltySystem ads={ads} userId={user.id} />
           </div>
@@ -815,7 +815,7 @@ export default function AdBusinessDashboard() {
             <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
               <Globe className="w-4 h-4 text-green-400" /> Social Channel Analytics & Cost Comparison
             </h2>
-            <p className="text-gray-500 text-xs">Performance tracking across Meta, Google, TikTok, X, and Snapchat — with a full market cost comparison showing what you'd pay vs. GamerGain.</p>
+            <p className="text-gray-500 text-xs">Performance tracking across Meta, Google, TikTok, X, and Snapchat — with a full market cost comparison showing what you'd pay vs. Grandia Granaria.</p>
             <AdSocialChannelAnalytics ads={ads} />
           </div>
         )}

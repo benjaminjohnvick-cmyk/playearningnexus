@@ -312,7 +312,7 @@ export default function Layout({ children, currentPageName }) {
                     <GamerGainLogo className="w-10 h-10" />
                   </div>
                   <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent hidden sm:inline">
-                    GamerGain
+                    Grandia Granaria
                   </span>
                 </Link>
                 <MegaContestButton />
@@ -529,7 +529,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="md:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
                   <GamerGainLogo className="w-10 h-10" />
-                  <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">GamerGain</span>
+                  <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Grandia Granaria</span>
                 </div>
                 <p className="text-gray-600 text-sm">The premium game discovery platform. Play games, earn rewards, connect with creators.</p>
               </div>
@@ -553,7 +553,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </div>
             <div className="border-t mt-8 pt-8 text-center text-sm text-gray-500">
-              <p>© 2024 GamerGain. All rights reserved. | Premium gaming platform</p>
+              <p>© 2024 Grandia Granaria. All rights reserved. | Premium gaming platform</p>
             </div>
           </div>
         </footer>

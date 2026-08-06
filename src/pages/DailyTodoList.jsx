@@ -34,7 +34,7 @@ const CORE_TASKS = [
     bg: 'bg-blue-50 border-blue-200',
     badgeBg: 'bg-blue-600',
     title: 'Task 2 — Daily Shop Search (−$0.05)',
-    description: 'Use the Shop button on the GamerGain search widget to search for 1 product. $0.05 is auto-deducted. The product is added to your Wishlist, and you receive contest entries automatically.',
+    description: 'Use the Shop button on the Grandia Granaria search widget to search for 1 product. $0.05 is auto-deducted. The product is added to your Wishlist, and you receive contest entries automatically.',
     action: { label: 'Open Store & Search', path: 'InAppGameStore' },
     points: 10,
     note: '−$0.05 + contest entries awarded',
@@ -83,8 +83,8 @@ const EXTRA_MANDATORY_TASKS = [
     color: 'text-orange-600',
     bg: 'bg-orange-50 border-orange-200',
     badgeBg: 'bg-orange-600',
-    title: 'Download the GamerGain Search Widget',
-    description: 'Install the GamerGain search widget for automatic ad earnings and contest entries.',
+    title: 'Download the Grandia Granaria Search Widget',
+    description: 'Install the Grandia Granaria search widget for automatic ad earnings and contest entries.',
     action: { label: 'Download Widget', path: 'PPCMarketplace' },
     points: 10,
   },
@@ -128,7 +128,7 @@ const EXTRA_MANDATORY_TASKS = [
     bg: 'bg-yellow-50 border-yellow-200',
     badgeBg: 'bg-yellow-600',
     title: 'Check Referral Prize Pool',
-    description: 'View your contest entries and current ranking for the GamerGain prize pool.',
+    description: 'View your contest entries and current ranking for the Grandia Granaria prize pool.',
     action: { label: 'View Contest', path: 'ReferralContest' },
     points: 5,
   },
@@ -229,7 +229,7 @@ export default function DailyTodoList() {
     setLoadingAi(true);
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Generate 5 personalized daily earn-section tasks for GamerGain user ${u?.full_name || 'User'} (earnings: $${(u?.total_earnings || 0).toFixed(2)}).
+        prompt: `Generate 5 personalized daily earn-section tasks for Grandia Granaria user ${u?.full_name || 'User'} (earnings: $${(u?.total_earnings || 0).toFixed(2)}).
 Available pages: Surveys, PPCMarketplace, InAppGameStore, ReferralDashboard, Tournaments, Guilds, AchievementsPage, DailyEarningStreak, GlobalLeaderboard, Wishlist, Withdrawal, RewardsMarketplace, ReferralContest, CreatorDashboard, ExploreSurveys.
 Tasks should focus on earning activities. Return JSON array: id, title, description, icon_name (lucide icon name), path, points (5-25).`,
         response_json_schema: {

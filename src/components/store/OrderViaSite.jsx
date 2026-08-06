@@ -124,7 +124,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ShoppingCart className="w-5 h-5 text-red-600" />
-            Order via GamerGain
+            Order via Grandia Granaria
           </DialogTitle>
         </DialogHeader>
 

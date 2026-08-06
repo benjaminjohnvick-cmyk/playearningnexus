@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 const ONBOARDING_STEPS = [
   {
     id: 'welcome',
-    title: 'Welcome to GamerGain Referrals',
+    title: 'Welcome to Grandia Granaria Referrals',
     description: 'Earn money by referring users and businesses to our platform',
     icon: Sparkles,
     content: `

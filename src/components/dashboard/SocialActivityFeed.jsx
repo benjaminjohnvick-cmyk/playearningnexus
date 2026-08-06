@@ -20,7 +20,7 @@ const MOCK_FEED = [
   {
     id: 2,
     type: 'milestone',
-    user: 'GamerGain',
+    user: 'Grandia Granaria',
     avatar: '🎉',
     action: '10,000 users have now earned $3+ today — community milestone reached!',
     time: '15m ago',

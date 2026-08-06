@@ -24,7 +24,7 @@ export default function ReviewerLogin() {
     <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white p-6">
       <div className="text-center max-w-sm">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-700 mx-auto mb-4 flex items-center justify-center text-2xl font-black">G</div>
-        <h1 className="text-xl font-bold mb-2">GamerGain — Reviewer Demo</h1>
+        <h1 className="text-xl font-bold mb-2">Grandia Granaria — Reviewer Demo</h1>
         <p className="text-gray-300 text-sm">{status}</p>
       </div>
     </div>

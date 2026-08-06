@@ -55,7 +55,7 @@ export default function PersonalizedGameBundles({ user }) {
 
       // Call AI to generate bundle recommendations
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a game bundle curator for GamerGain platform. Based on the user's profile, create 3-4 personalized game bundles.
+        prompt: `You are a game bundle curator for Grandia Granaria platform. Based on the user's profile, create 3-4 personalized game bundles.
 
 User Profile:
 - Games in Library: ${userLibrary.map(g => g.title).join(', ') || 'None'}

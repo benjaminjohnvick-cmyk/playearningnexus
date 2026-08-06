@@ -66,7 +66,7 @@ export default function AIModelAsServicePanel({ user }) {
     setRunning(true);
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are the GamerGain "${model.name}" AI model. 
+        prompt: `You are the Grandia Granaria "${model.name}" AI model. 
         Process this input: "${testInput}"
         Respond in the format shown by this example output: ${model.example_output}
         Keep the response concise and realistic.`

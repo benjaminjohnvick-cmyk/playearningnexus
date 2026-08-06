@@ -17,7 +17,7 @@ function openUrlFor(platform, text, link) {
     case 'x': return `https://twitter.com/intent/tweet?text=${t}`;
     case 'whatsapp': return `https://wa.me/?text=${t}`;
     case 'telegram': return `https://t.me/share/url?url=${u}&text=${t}`;
-    case 'reddit': return `https://www.reddit.com/submit?title=${encodeURIComponent('Check out GamerGain')}&text=${t}`;
+    case 'reddit': return `https://www.reddit.com/submit?title=${encodeURIComponent('Check out Grandia Granaria')}&text=${t}`;
     case 'email': return `mailto:?subject=${encodeURIComponent('Thought you’d like this')}&body=${t}`;
     case 'sms': return `sms:?&body=${t}`;
     case 'instagram': return 'https://www.instagram.com/';
@@ -125,7 +125,7 @@ export default function ReferralInvite() {
   const shareSocial = async () => {
     const text = personalize(template, 'there', link);
     try {
-      if (navigator.share) { await navigator.share({ title: 'GamerGain', text, url: link }); setOpenedCount((n) => n + 1); }
+      if (navigator.share) { await navigator.share({ title: 'Grandia Granaria', text, url: link }); setOpenedCount((n) => n + 1); }
       else { await navigator.clipboard.writeText(`${text}`); setCopied(true); setTimeout(() => setCopied(false), 2000); }
     } catch { /* user cancelled share */ }
   };

@@ -19,12 +19,12 @@ const tiers = [
     earnings: [
       { label: 'Minimum daily earnings', value: 'At least $8.00/day', bold: true },
       { label: 'Your share (50/50 split)', value: '$4.00/day to you', bold: true },
-      { label: 'Platform share (50/50 split)', value: '$4.00/day to GamerGain', bold: false },
+      { label: 'Platform share (50/50 split)', value: '$4.00/day to Grandia Granaria', bold: false },
       { label: '$1.00 of your $4.00 goes to featured game', value: 'Days 3–6 of featured game', bold: false },
       { label: 'Minimum monthly earnings', value: '~$120/month', bold: false },
       { label: 'Minimum annual earnings', value: '~$1,460/year', bold: false },
     ],
-    note: 'During the first 2 days a new game is featured, GamerGain keeps 100% of the $8.00. Starting day 3, the 50/50 split applies and $1.00 of your $4.00 goes to the developer for 4 of 6 featured days.',
+    note: 'During the first 2 days a new game is featured, Grandia Granaria keeps 100% of the $8.00. Starting day 3, the 50/50 split applies and $1.00 of your $4.00 goes to the developer for 4 of 6 featured days.',
   },
   {
     name: 'Tier 2 — Growth',
@@ -161,7 +161,7 @@ export default function SurveyUserTiers() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { label: 'Users × $8/day', value: '$800,000/day', sub: 'Total daily platform earnings' },
-            { label: 'Platform share (50%)', value: '$400,000/day', sub: 'GamerGain daily revenue' },
+            { label: 'Platform share (50%)', value: '$400,000/day', sub: 'Grandia Granaria daily revenue' },
             { label: 'User share (50%)', value: '$400,000/day', sub: 'Distributed to all users' },
             { label: 'Developer payout/day', value: '$100,000/day', sub: '$1 × 100K users × 4 of 6 days avg' },
           ].map((item, i) => (

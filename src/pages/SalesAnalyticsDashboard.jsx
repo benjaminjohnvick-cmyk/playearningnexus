@@ -99,7 +99,7 @@ export default function SalesAnalyticsDashboard() {
       };
 
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a sales analytics AI for GamerGain platform. Analyze this sales data and provide insights:
+        prompt: `You are a sales analytics AI for Grandia Granaria platform. Analyze this sales data and provide insights:
 
 ${JSON.stringify(summary, null, 2)}
 

@@ -72,8 +72,8 @@ export default function ConsultingServicesPanel({ user }) {
     try {
       await base44.integrations.Core.SendEmail({
         to: form.email,
-        subject: `GamerGain Consulting: Your ${showBooking.name} booking`,
-        body: `Hi ${form.name},\n\nThank you for booking ${showBooking.name} ($${showBooking.price}).\n\nOur team will contact you within 24 hours to schedule your kickoff call.\n\nDetails: ${form.details}\n\nTeam GamerGain`
+        subject: `Grandia Granaria Consulting: Your ${showBooking.name} booking`,
+        body: `Hi ${form.name},\n\nThank you for booking ${showBooking.name} ($${showBooking.price}).\n\nOur team will contact you within 24 hours to schedule your kickoff call.\n\nDetails: ${form.details}\n\nTeam Grandia Granaria`
       });
       toast.success('Booking confirmed! Check your email.');
       setShowBooking(null);

@@ -22,7 +22,7 @@ const tiers = [
         desc: 'Get your product in front of all users on our network. Shown to verified, incentivized respondents.',
         price: '$3,000 minimum',
         details: [
-          'Shown to ALL users on the GamerGain network',
+          'Shown to ALL users on the Grandia Granaria network',
           'Minimum $3,000 per campaign',
           'Pay out of advertising profits — up to 1 year to repay',
           'Self-service survey builder with AI question generator',

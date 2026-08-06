@@ -122,7 +122,7 @@ export default function AffiliateMarketingPage() {
             💰 Affiliate Marketing Program
           </Badge>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-            Become a GamerGain Affiliate
+            Become a Grandia Granaria Affiliate
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
             Earn <strong>$500</strong> for your first referral + PPC business client, then earn <strong>10% of revenue</strong> from
@@ -281,7 +281,7 @@ export default function AffiliateMarketingPage() {
 
         {/* CTA */}
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Ready to start earning passive income as a GamerGain affiliate?</p>
+          <p className="text-gray-600 mb-4">Ready to start earning passive income as a Grandia Granaria affiliate?</p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link to={createPageUrl('AffiliatePortal')}>
               <Button variant="outline" className="border-pink-400 text-pink-700 hover:bg-pink-50">

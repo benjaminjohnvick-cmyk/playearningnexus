@@ -23,7 +23,7 @@ export default function PayoutReceiptDownloader({ payout, user }) {
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
-      doc.text('GamerGain', margin, 18);
+      doc.text('Grandia Granaria', margin, 18);
       doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
       doc.text('Payout Receipt', margin, 28);
@@ -47,7 +47,7 @@ export default function PayoutReceiptDownloader({ payout, user }) {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(60, 60, 60);
-      doc.text(user?.full_name || 'GamerGain User', margin, 72);
+      doc.text(user?.full_name || 'Grandia Granaria User', margin, 72);
       doc.text(payout.recipient_email || user?.email || '—', margin, 79);
       doc.text(`Method: ${(payout.method || 'paypal').toUpperCase()}`, margin, 86);
 
@@ -101,9 +101,9 @@ export default function PayoutReceiptDownloader({ payout, user }) {
       doc.line(margin, 268, pageW - margin, 268);
       doc.setFontSize(8);
       doc.setTextColor(150, 150, 150);
-      doc.text('GamerGain · support@gamergain.com · This is an automated receipt.', pageW / 2, 274, { align: 'center' });
+      doc.text('Grandia Granaria · support@gamergain.com · This is an automated receipt.', pageW / 2, 274, { align: 'center' });
 
-      doc.save(`GamerGain-Payout-${payout.id || 'receipt'}.pdf`);
+      doc.save(`Grandia Granaria-Payout-${payout.id || 'receipt'}.pdf`);
     } catch (err) {
       console.error('PDF error:', err);
     } finally {

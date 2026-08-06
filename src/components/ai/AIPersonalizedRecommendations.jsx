@@ -24,7 +24,7 @@ export default function AIPersonalizedRecommendations({ user }) {
       const surveysCompleted = responses.filter(r => r.completed).length;
 
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a personalized recommendation AI for GamerGain, a gaming + survey rewards platform.
+        prompt: `You are a personalized recommendation AI for Grandia Granaria, a gaming + survey rewards platform.
 
 User Profile:
 - Name: ${user.full_name}

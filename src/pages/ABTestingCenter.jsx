@@ -57,7 +57,7 @@ export default function ABTestingCenter() {
   const generateWithAI = useMutation({
     mutationFn: async () => {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Generate an A/B test for a GamerGain survey platform. Test type: "${form.test_type}".
+        prompt: `Generate an A/B test for a Grandia Granaria survey platform. Test type: "${form.test_type}".
 Create two compelling variants that differ meaningfully.
 Return JSON: { "variant_a": { "label": "Control", "headline": "string", "description": "string", "cta_text": "string" }, "variant_b": { "label": "Challenger", "headline": "string", "description": "string", "cta_text": "string" } }`,
         response_json_schema: {

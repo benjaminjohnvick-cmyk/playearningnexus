@@ -218,7 +218,7 @@ export default function ProductSearchResults({ products, searchQuery, searchImag
                       className="text-xs h-8 px-2.5 bg-red-600 hover:bg-red-700 text-white"
                       onClick={() => setOrderProduct({ ...product, product_name: product.name })}
                     >
-                      <ShoppingBag className="w-3.5 h-3.5 mr-1" /> Order via GamerGain
+                      <ShoppingBag className="w-3.5 h-3.5 mr-1" /> Order via Grandia Granaria
                     </Button>
                   </div>
                 </div>
@@ -233,7 +233,7 @@ export default function ProductSearchResults({ products, searchQuery, searchImag
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
           <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-gray-700">
-            <strong>Order via GamerGain</strong> — we purchase the item on your behalf. A 10% platform fee applies. Prices are real-time estimates and may vary.
+            <strong>Order via Grandia Granaria</strong> — we purchase the item on your behalf. A 10% platform fee applies. Prices are real-time estimates and may vary.
           </p>
         </div>
       </div>

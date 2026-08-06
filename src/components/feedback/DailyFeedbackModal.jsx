@@ -144,7 +144,7 @@ export default function DailyFeedbackModal({ user }) {
             </div>
             <div>
               <h2 className="text-white font-bold text-lg">Daily Platform Survey</h2>
-              <p className="text-white/80 text-xs">Help us improve GamerGain — takes ~3 minutes</p>
+              <p className="text-white/80 text-xs">Help us improve Grandia Granaria — takes ~3 minutes</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -188,7 +188,7 @@ export default function DailyFeedbackModal({ user }) {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Lightbulb className="w-5 h-5 text-purple-600" />
-                <p className="text-gray-900 font-semibold text-base">What would make GamerGain better for you?</p>
+                <p className="text-gray-900 font-semibold text-base">What would make Grandia Granaria better for you?</p>
               </div>
               <p className="text-xs text-purple-600 mb-4 bg-purple-50 rounded-lg px-3 py-2 border border-purple-100">
                 💡 Top suggestions get turned into tomorrow's survey questions and may be built into the platform!
@@ -278,7 +278,7 @@ export default function DailyFeedbackModal({ user }) {
             </Button>
 
             <p className="text-xs text-gray-400">
-              {isSuggestionStep ? 'Your suggestion shapes GamerGain' : 'Survey closes at midnight'}
+              {isSuggestionStep ? 'Your suggestion shapes Grandia Granaria' : 'Survey closes at midnight'}
             </p>
 
             {!isSuggestionStep ? (

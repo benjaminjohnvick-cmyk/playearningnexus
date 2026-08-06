@@ -72,7 +72,7 @@ export default function WishlistGoalShare({ user, balance, threshold, progress }
     ? `${window.location.origin}?ref=${referralLink.link_code}`
     : null;
 
-  const shareText = `🎮 I'm ${progress.toFixed(0)}% of the way to my $${threshold.toFixed(2)} goal on GamerGain! I earn real money completing surveys. Join me! 💰`;
+  const shareText = `🎮 I'm ${progress.toFixed(0)}% of the way to my $${threshold.toFixed(2)} goal on Grandia Granaria! I earn real money completing surveys. Join me! 💰`;
 
   const handleShare = (platform) => {
     if (!referralUrl) {
@@ -111,7 +111,7 @@ export default function WishlistGoalShare({ user, balance, threshold, progress }
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-purple-600" />
-              <span className="text-sm font-semibold text-purple-800">My GamerGain Goal</span>
+              <span className="text-sm font-semibold text-purple-800">My Grandia Granaria Goal</span>
             </div>
             <Badge className="bg-purple-100 text-purple-700">{progress.toFixed(0)}% complete</Badge>
           </div>

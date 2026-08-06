@@ -157,9 +157,9 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
       <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-3 text-xs text-gray-400">
         <p className="font-bold text-gray-300 mb-1">How it works:</p>
         <ul className="space-y-0.5 list-disc list-inside">
-          <li>Your ad appears as a thumbnail in the GamerGain Million Dollar Ad Grid</li>
+          <li>Your ad appears as a thumbnail in the Grandia Granaria Million Dollar Ad Grid</li>
           <li>Users click your ad, answer 4 survey questions ($0.10 each)</li>
-          <li>User earns $0.20 · GamerGain earns $0.20 · You get discovered</li>
+          <li>User earns $0.20 · Grandia Granaria earns $0.20 · You get discovered</li>
           <li>User then visits your landing page URL</li>
         </ul>
       </div>

@@ -99,16 +99,16 @@ export default function InAppAdMonetization() {
           AI-Driven Ad Marketplace for Every Game
         </h2>
         <p className="text-gray-500 max-w-3xl mx-auto">
-          Industry-standard pricing across CPI, CPA, and CPM models. GamerGain takes a <strong>10% platform cut</strong> of all ad spend —
+          Industry-standard pricing across CPI, CPA, and CPM models. Grandia Granaria takes a <strong>10% platform cut</strong> of all ad spend —
           publishers keep <strong>90%</strong>. AI agents automate bidding, targeting, and optimization in real time.
         </p>
       </div>
 
       {/* Platform Take Rate */}
       <div className="bg-gradient-to-r from-violet-600 to-purple-700 rounded-2xl p-6 text-white mb-8 text-center">
-        <h3 className="text-xl font-black mb-2">💰 Revenue Split — 10% GamerGain / 90% Publisher</h3>
+        <h3 className="text-xl font-black mb-2">💰 Revenue Split — 10% Grandia Granaria / 90% Publisher</h3>
         <p className="text-purple-100 text-sm">
-          Competitive advantage: AppLovin charges 20–30%, AdMob ~32%. GamerGain only takes 10% — attracting more developers to the flywheel.
+          Competitive advantage: AppLovin charges 20–30%, AdMob ~32%. Grandia Granaria only takes 10% — attracting more developers to the flywheel.
         </p>
       </div>
 
@@ -159,7 +159,7 @@ export default function InAppAdMonetization() {
               <p className="text-sm text-gray-700 mb-3">
                 App advertisers can choose to pay <strong>nothing upfront</strong>. Instead, they commit to sharing
                 <strong> 10% of all profits generated from the ads in perpetuity</strong>. This removes the barrier to entry for new advertisers
-                and aligns GamerGain's success with theirs.
+                and aligns Grandia Granaria's success with theirs.
               </p>
               <ul className="space-y-1">
                 {[
@@ -233,12 +233,12 @@ export default function InAppAdMonetization() {
 
       {/* Revenue Streams Summary */}
       <div className="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6">
-        <h3 className="font-black text-gray-900 mb-4 text-center">GamerGain Revenue Streams (AppLovin Model)</h3>
+        <h3 className="font-black text-gray-900 mb-4 text-center">Grandia Granaria Revenue Streams (AppLovin Model)</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             { label: 'Performance Advertising', value: 'CPI / CPA / CPM', sub: 'Spread between advertiser spend & publisher payout = gross profit' },
             { label: 'Real-Time Ad Auctions', value: '10% platform fee', sub: 'Millisecond auctions when users open games' },
-            { label: 'SDK Revenue Share', value: '10% take rate', sub: '90% to publisher, 10% to GamerGain on all ad volume' },
+            { label: 'SDK Revenue Share', value: '10% take rate', sub: '90% to publisher, 10% to Grandia Granaria on all ad volume' },
             { label: 'AppDiscovery / UA', value: 'Fees on ad spend', sub: 'AI automates placement, bidding, targeting, optimization' },
             { label: 'Attribution (Adjust-style)', value: 'SaaS subscription', sub: 'Analytics, fraud prevention, campaign measurement' },
             { label: 'Social/CTV Video Ads', value: 'CPM-based', sub: 'Channel distribution fees + revenue-sharing' },

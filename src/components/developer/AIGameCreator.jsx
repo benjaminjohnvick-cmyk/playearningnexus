@@ -70,7 +70,7 @@ export default function AIGameCreator() {
                 { emoji: '📊', title: 'Reads All Feedback', desc: 'Survey responses, reviews, votes, suggestions' },
                 { emoji: '🧠', title: 'AI Design Engine', desc: 'Identifies patterns, gaps, and opportunities' },
                 { emoji: '📋', title: 'Full Game Design Doc', desc: 'Complete GDD ready for developers' },
-                { emoji: '🆓', title: '100% Free', desc: 'No cost — built into GamerGain platform' },
+                { emoji: '🆓', title: '100% Free', desc: 'No cost — built into Grandia Granaria platform' },
               ].map(item => (
                 <div key={item.title} className="p-3 bg-violet-50 border border-violet-100 rounded-xl text-xs text-center">
                   <p className="text-xl mb-1">{item.emoji}</p>

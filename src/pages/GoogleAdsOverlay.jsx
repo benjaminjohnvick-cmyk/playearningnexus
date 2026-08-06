@@ -147,11 +147,11 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
         className="bg-gray-900 border border-gray-700 rounded-3xl shadow-2xl max-w-sm w-full p-6"
         onClick={e => e.stopPropagation()}
       >
-        {/* GamerGain.app link at top of modal */}
+        {/* Grandia Granaria.app link at top of modal */}
         <div className="text-center mb-3">
           <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
             className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center justify-center gap-1">
-            <Globe className="w-3 h-3" /> GamerGain.app
+            <Globe className="w-3 h-3" /> Grandia Granaria.app
           </a>
         </div>
 
@@ -193,7 +193,7 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
         </div>
 
         <p className="text-center text-gray-500 text-[10px] mt-4">
-          You earn $0.20 · GamerGain earns $0.20 · Business gets discovered
+          You earn $0.20 · Grandia Granaria earns $0.20 · Business gets discovered
         </p>
       </motion.div>
     </motion.div>
@@ -216,10 +216,10 @@ function SuccessModal({ ad, onVisit, onBack }) {
         className="bg-gray-900 border border-green-500 rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center"
         style={{ boxShadow: '0 0 40px rgba(34,197,94,0.25)' }}
       >
-        {/* GamerGain.app link */}
+        {/* Grandia Granaria.app link */}
         <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
           className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center justify-center gap-1 mb-4">
-          <Globe className="w-3 h-3" /> GamerGain.app
+          <Globe className="w-3 h-3" /> Grandia Granaria.app
         </a>
 
         <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-3" />
@@ -380,9 +380,9 @@ export default function GoogleAdsOverlay() {
   };
 
   const handleShareGrid = async () => {
-    const shareText = `🎮 The GamerGain Million Dollar Ad Grid — click brand ads, answer 5 questions, earn $0.25 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/GoogleAdsOverlay`;
+    const shareText = `🎮 The Grandia Granaria Million Dollar Ad Grid — click brand ads, answer 5 questions, earn $0.25 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/GoogleAdsOverlay`;
     if (navigator.share) {
-      await navigator.share({ title: 'GamerGain Million Dollar Ad Grid', text: shareText });
+      await navigator.share({ title: 'Grandia Granaria Million Dollar Ad Grid', text: shareText });
     } else {
       navigator.clipboard.writeText(shareText);
       toast.success('Share link copied!');
@@ -392,9 +392,9 @@ export default function GoogleAdsOverlay() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
 
-      {/* ── Top sticky banner with GamerGain.app link ── */}
+      {/* ── Top sticky banner with Grandia Granaria.app link ── */}
       <div className="bg-red-700 text-center py-2 text-sm font-bold tracking-wide sticky top-0 z-40">
-        🎮 <a href="https://gamergain.app" className="underline hover:text-yellow-300">GamerGain.app</a>
+        🎮 <a href="https://gamergain.app" className="underline hover:text-yellow-300">Grandia Granaria.app</a>
         {' '}— Click an ad · Answer 5 questions ($0.50) · Earn $0.25 · Visit the business
       </div>
 
@@ -402,7 +402,7 @@ export default function GoogleAdsOverlay() {
       <div className="max-w-5xl mx-auto px-4 pt-8 pb-4 text-center">
         <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 px-5 py-2 rounded-full mb-4 shadow-lg">
           <DollarSign className="w-5 h-5" />
-          <span className="font-black text-lg">GamerGain Million Dollar Ad Grid</span>
+          <span className="font-black text-lg">Grandia Granaria Million Dollar Ad Grid</span>
         </div>
 
         <h1 className="text-4xl md:text-5xl font-black mb-3 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent leading-tight">
@@ -413,7 +413,7 @@ export default function GoogleAdsOverlay() {
           Every thumbnail is a real business. <span className="text-yellow-400 font-bold">Click any ad</span>, answer
           5 survey questions worth <span className="text-yellow-400 font-bold">$0.10 each ($0.50 total)</span>,
           and <span className="text-green-400 font-bold">you earn $0.25</span>.
-          The other $0.25 goes to GamerGain. Then visit the business!
+          The other $0.25 goes to Grandia Granaria. Then visit the business!
         </p>
 
         {/* Link to site */}
@@ -460,7 +460,7 @@ export default function GoogleAdsOverlay() {
             🖱️ Click any ad thumbnail → Answer 5 survey questions ($0.10 each = $0.50 total)
           </p>
           <p className="text-yellow-300/80 text-xs mt-1">
-            Unlock the business info & site link · You earn <strong>$0.25</strong> · GamerGain earns <strong>$0.25</strong>
+            Unlock the business info & site link · You earn <strong>$0.25</strong> · Grandia Granaria earns <strong>$0.25</strong>
           </p>
           <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-red-400 text-xs font-bold mt-2 hover:text-red-300">
@@ -494,7 +494,7 @@ export default function GoogleAdsOverlay() {
         </div>
 
         <p className="text-center text-gray-600 text-xs mt-3">
-          Grid auto-expands as new businesses join · Pixel size auto-adjusts · Powered by GamerGain.app
+          Grid auto-expands as new businesses join · Pixel size auto-adjusts · Powered by Grandia Granaria.app
         </p>
       </div>
 

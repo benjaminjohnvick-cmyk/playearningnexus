@@ -23,7 +23,7 @@ function AdPreviewCard({ ad, variant }) {
       <div className="absolute bottom-0 left-0 right-0 p-3">
         <p className="text-white font-black text-sm leading-tight">{ad.brand}</p>
         <p className="text-gray-300 text-xs italic mb-2">"{ad.tagline}"</p>
-        {/* Part F: GamerGain branding bar */}
+        {/* Part F: Grandia Granaria branding bar */}
         <div className="bg-black/70 backdrop-blur-sm rounded-lg px-2 py-1.5 flex items-center justify-between border border-red-500/30">
           <div className="flex items-center gap-1.5">
             <div className="w-4 h-4 rounded-sm overflow-hidden flex-shrink-0 bg-red-600 flex items-center justify-center">
@@ -31,7 +31,7 @@ function AdPreviewCard({ ad, variant }) {
             </div>
             <a href={SITE_URL} target="_blank" rel="noopener noreferrer"
               className="text-red-400 font-black text-[10px] hover:text-red-300">
-              GamerGain.app
+              Grandia Granaria.app
             </a>
           </div>
           <a href={SIGNUP_URL} target="_blank" rel="noopener noreferrer"
@@ -42,7 +42,7 @@ function AdPreviewCard({ ad, variant }) {
       </div>
       {/* Top watermark */}
       <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm rounded-md px-1.5 py-0.5 flex items-center gap-1">
-        <span className="text-red-400 text-[9px] font-black">🎮 Powered by GamerGain</span>
+        <span className="text-red-400 text-[9px] font-black">🎮 Powered by Grandia Granaria</span>
       </div>
     </div>
   );
@@ -56,10 +56,10 @@ export default function PartFAdBranding() {
     <div className="space-y-6">
       <div className="bg-gray-900 border border-red-500/30 rounded-2xl p-5">
         <h3 className="text-white font-black mb-1 flex items-center gap-2">
-          <Globe className="w-4 h-4 text-red-400" /> Part F — GamerGain Ad Branding
+          <Globe className="w-4 h-4 text-red-400" /> Part F — Grandia Granaria Ad Branding
         </h3>
         <p className="text-gray-400 text-xs mb-5">
-          All ads on GamerGain automatically include the <span className="text-red-400 font-bold">GamerGain logo</span> and 
+          All ads on Grandia Granaria automatically include the <span className="text-red-400 font-bold">Grandia Granaria logo</span> and 
           a <span className="text-yellow-400 font-bold">sign-up link</span> (gamergain.app). 
           This is applied to every ad on the grid and all social media posts generated from clicks.
         </p>
@@ -67,9 +67,9 @@ export default function PartFAdBranding() {
         {/* Branding requirements */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           {[
-            { icon: '🎮', title: 'GamerGain Logo', desc: 'Displayed on all ad creatives — top-left watermark and bottom branding bar', check: true },
+            { icon: '🎮', title: 'Grandia Granaria Logo', desc: 'Displayed on all ad creatives — top-left watermark and bottom branding bar', check: true },
             { icon: '🔗', title: 'Sign-Up Link', desc: 'gamergain.app/signup — included on every ad and social post', check: true },
-            { icon: '📱', title: 'Social Posts', desc: 'All 20 auto-generated social posts include GamerGain branding', check: true },
+            { icon: '📱', title: 'Social Posts', desc: 'All 20 auto-generated social posts include Grandia Granaria branding', check: true },
             { icon: '🌐', title: 'Website Link', desc: 'gamergain.app shown prominently on every ad format', check: true },
           ].map(item => (
             <div key={item.title} className="bg-gray-800 rounded-xl p-3 flex items-start gap-2">
@@ -119,10 +119,10 @@ export default function PartFAdBranding() {
               <div className="bg-gray-800 rounded-xl p-3">
                 <p className="text-white font-bold mb-1">What's on every ad:</p>
                 <ul className="space-y-1.5">
-                  <li className="flex items-start gap-1.5"><CheckCircle className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" /> <span>Top-left: "🎮 Powered by GamerGain"</span></li>
-                  <li className="flex items-start gap-1.5"><CheckCircle className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" /> <span>Bottom bar: GamerGain logo + red branding</span></li>
+                  <li className="flex items-start gap-1.5"><CheckCircle className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" /> <span>Top-left: "🎮 Powered by Grandia Granaria"</span></li>
+                  <li className="flex items-start gap-1.5"><CheckCircle className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" /> <span>Bottom bar: Grandia Granaria logo + red branding</span></li>
                   <li className="flex items-start gap-1.5"><CheckCircle className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" /> <span>Yellow "Sign Up Free →" CTA button</span></li>
-                  <li className="flex items-start gap-1.5"><CheckCircle className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" /> <span>GamerGain.app URL prominently displayed</span></li>
+                  <li className="flex items-start gap-1.5"><CheckCircle className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" /> <span>Grandia Granaria.app URL prominently displayed</span></li>
                 </ul>
               </div>
               <div className="bg-gray-800 rounded-xl p-3">

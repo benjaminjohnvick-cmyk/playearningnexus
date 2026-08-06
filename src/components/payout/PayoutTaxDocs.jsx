@@ -32,7 +32,7 @@ export default function PayoutTaxDocs({ user, payouts = [] }) {
   const downloadTaxDoc = (year, total) => {
     const doc = `
 TAX SUMMARY — ${year}
-Platform: GamerGain
+Platform: Grandia Granaria
 Taxpayer: ${user?.full_name || 'N/A'}
 Email: ${user?.email || 'N/A'}
 
@@ -42,7 +42,7 @@ Total Net Payouts: $${total.toFixed(2)}
 ${total >= 600 ? `⚠ Form 1099-NEC may be required (earnings ≥ $600)` : `✓ Below $600 threshold — 1099 not required`}
 
 Note: This is an informal summary. Please consult a tax professional.
-GamerGain does not provide tax advice.
+Grandia Granaria does not provide tax advice.
     `.trim();
     const blob = new Blob([doc], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -80,7 +80,7 @@ GamerGain does not provide tax advice.
 
         {/* W-9 info note */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-700">
-          <strong>W-9 on file?</strong> GamerGain may request a W-9 form when earnings exceed $600/year. Ensure your payout profile name matches your tax records.
+          <strong>W-9 on file?</strong> Grandia Granaria may request a W-9 form when earnings exceed $600/year. Ensure your payout profile name matches your tax records.
         </div>
 
         {/* Yearly summaries */}

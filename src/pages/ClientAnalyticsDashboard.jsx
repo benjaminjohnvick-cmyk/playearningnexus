@@ -429,9 +429,9 @@ export default function ClientAnalyticsDashboard() {
                   ))}
                 </div>
                 <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-5 text-white">
-                  <h4 className="font-black mb-2 text-lg">📋 GamerGain Commitment</h4>
+                  <h4 className="font-black mb-2 text-lg">📋 Grandia Granaria Commitment</h4>
                   <p className="text-purple-100 text-sm leading-relaxed">
-                    As a <strong>{selectedTier}</strong> client, GamerGain is committed to working with you until you earn <strong>${tierCfg.roiTarget.toLocaleString()}</strong> in measurable ROI — that's 2× your ${tierCfg.investment.toLocaleString()} investment. Additionally, you receive <strong>${tierCfg.adBonus.toLocaleString()}</strong> in FREE AI platform advertising (an additional 2×). We don't stop until you win.
+                    As a <strong>{selectedTier}</strong> client, Grandia Granaria is committed to working with you until you earn <strong>${tierCfg.roiTarget.toLocaleString()}</strong> in measurable ROI — that's 2× your ${tierCfg.investment.toLocaleString()} investment. Additionally, you receive <strong>${tierCfg.adBonus.toLocaleString()}</strong> in FREE AI platform advertising (an additional 2×). We don't stop until you win.
                   </p>
                 </div>
               </CardContent>

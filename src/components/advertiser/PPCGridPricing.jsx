@@ -180,7 +180,7 @@ export default function PPCGridPricing({ user, onActivated }) {
         <CheckCircle className="w-10 h-10 text-green-400 flex-shrink-0" />
         <div>
           <p className="text-green-300 font-black text-lg">PPC Ad Grid — Active ✅</p>
-          <p className="text-gray-400 text-sm">Your ad is live on the GamerGain Million Dollar Ad Grid. Charges auto-deduct per your plan.</p>
+          <p className="text-gray-400 text-sm">Your ad is live on the Grandia Granaria Million Dollar Ad Grid. Charges auto-deduct per your plan.</p>
         </div>
       </div>
     );
@@ -192,7 +192,7 @@ export default function PPCGridPricing({ user, onActivated }) {
       <div className="text-center">
         <div className="inline-flex items-center gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-full px-4 py-1.5 mb-3">
           <Zap className="w-3.5 h-3.5 text-yellow-400" />
-          <span className="text-yellow-300 text-xs font-bold">GamerGain Million Dollar Ad Grid</span>
+          <span className="text-yellow-300 text-xs font-bold">Grandia Granaria Million Dollar Ad Grid</span>
         </div>
         <h2 className="text-white font-black text-2xl mb-1">Choose Your Ad Grid Plan</h2>
         <p className="text-gray-400 text-sm">Minimum 1-year commitment · Auto-charged by credit card · Cancel after 12 months</p>
@@ -245,9 +245,9 @@ export default function PPCGridPricing({ user, onActivated }) {
         <p className="text-white font-bold text-sm mb-3">✅ All plans include:</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-400">
           {[
-            'Spot on the GamerGain Million Dollar Ad Grid',
+            'Spot on the Grandia Granaria Million Dollar Ad Grid',
             '20 social posts auto-generated per click',
-            'GamerGain logo + signup CTA on all ads',
+            'Grandia Granaria logo + signup CTA on all ads',
             'Real-time analytics & click tracking',
             'Auto-pause when budget is depleted',
             'Fraud detection & invalid click protection',

@@ -560,7 +560,7 @@ export default function Withdrawal() {
                           <ShoppingBag className="w-5 h-5 text-green-600" />
                         </div>
                         <span className="font-semibold text-gray-800">Buy With Your Balance</span>
-                        <span className="text-xs text-gray-400">Use your GamerGain earnings at checkout</span>
+                        <span className="text-xs text-gray-400">Use your Grandia Granaria earnings at checkout</span>
                       </div>
                       <ArrowRight className="w-5 h-5 text-purple-300 hidden sm:block flex-shrink-0" />
                       {/* Step 3 */}

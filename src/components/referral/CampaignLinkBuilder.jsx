@@ -44,7 +44,7 @@ function LinkCard({ link, onDelete }) {
 
   const share = () => {
     if (navigator.share) {
-      navigator.share({ url: fullUrl, title: `Join GamerGain! — ${link.campaign_name}` });
+      navigator.share({ url: fullUrl, title: `Join Grandia Granaria! — ${link.campaign_name}` });
     } else {
       copy();
     }

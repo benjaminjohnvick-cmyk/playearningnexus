@@ -56,7 +56,7 @@ export default function APIAccessPanel({ user }) {
     <div className="space-y-4">
       <div>
         <h2 className="text-2xl font-bold text-gray-900">API Access & Integration Fees</h2>
-        <p className="text-gray-500 text-sm">Programmatic access to GamerGain data and features</p>
+        <p className="text-gray-500 text-sm">Programmatic access to Grandia Granaria data and features</p>
       </div>
 
       {/* Current Key */}

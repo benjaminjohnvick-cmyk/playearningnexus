@@ -35,7 +35,7 @@ const DEMO_PRODUCTS = [
   { id: '3', name: 'Pro Survey Templates', category: 'digital_content', price_usd: 9.99, icon: '📋', description: '50 premium survey templates', total_sold: 456 },
   { id: '4', name: 'Advanced Analytics Unlock', category: 'feature_unlock', price_usd: 14.99, icon: '📊', description: 'Unlock lifetime advanced analytics', total_sold: 234 },
   { id: '5', name: '10 Extra Survey Attempts', category: 'consumable', price_usd: 2.49, icon: '🔄', description: 'Get 10 additional survey slots', total_sold: 2341 },
-  { id: '6', name: 'Tip the Creators', category: 'tip', price_usd: 5.00, icon: '❤️', description: 'Support the GamerGain community', total_sold: 789 },
+  { id: '6', name: 'Tip the Creators', category: 'tip', price_usd: 5.00, icon: '❤️', description: 'Support the Grandia Granaria community', total_sold: 789 },
   { id: '7', name: '100 AI Credits', category: 'ai_credits', price_usd: 7.99, icon: '🤖', description: 'Run AI analysis, generate surveys & more', total_sold: 567 },
   { id: '8', name: 'API Pro Access (1 month)', category: 'api_access', price_usd: 19.99, icon: '🔑', description: '5,000 API calls/day for 30 days', total_sold: 123 },
 ];

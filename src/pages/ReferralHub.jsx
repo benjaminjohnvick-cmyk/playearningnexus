@@ -81,9 +81,9 @@ export default function ReferralHub() {
   const currentTier = activeReferrals >= 50 ? 3 : activeReferrals >= 10 ? 2 : 1;
 
   const copyLink = () => { navigator.clipboard.writeText(referralLink); toast.success('Referral link copied!'); };
-  const shareOnTwitter = () => window.open(`https://twitter.com/intent/tweet?text=Join%20GamerGain%20and%20earn%20real%20money!%20${encodeURIComponent(referralLink)}`, '_blank');
+  const shareOnTwitter = () => window.open(`https://twitter.com/intent/tweet?text=Join%20Grandia%20Granaria%20and%20earn%20real%20money!%20${encodeURIComponent(referralLink)}`, '_blank');
   const shareOnFacebook = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`, '_blank');
-  const shareViaWhatsApp = () => window.open(`https://wa.me/?text=Join%20GamerGain%20and%20earn%20real%20money!%20${encodeURIComponent(referralLink)}`, '_blank');
+  const shareViaWhatsApp = () => window.open(`https://wa.me/?text=Join%20Grandia%20Granaria%20and%20earn%20real%20money!%20${encodeURIComponent(referralLink)}`, '_blank');
 
   if (!user) return (
     <div className="flex items-center justify-center min-h-screen">

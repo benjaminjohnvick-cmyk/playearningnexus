@@ -39,8 +39,8 @@ export default function ShareableReferralCard({ user }) {
   const handleShare = async (link = defaultLink) => {
     if (navigator.share) {
       await navigator.share({
-        title: 'Join GamerGain — Earn Real Cash!',
-        text: `I'm earning real cash playing games on GamerGain! Join me: `,
+        title: 'Join Grandia Granaria — Earn Real Cash!',
+        text: `I'm earning real cash playing games on Grandia Granaria! Join me: `,
         url: link,
       });
     } else {
@@ -83,7 +83,7 @@ export default function ShareableReferralCard({ user }) {
         <div className="bg-gray-900 rounded-2xl p-5 text-white space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-gray-400 uppercase tracking-widest">GamerGain Referral Card</p>
+              <p className="text-xs text-gray-400 uppercase tracking-widest">Grandia Granaria Referral Card</p>
               <p className="text-xl font-black mt-0.5">{user?.full_name}</p>
             </div>
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">

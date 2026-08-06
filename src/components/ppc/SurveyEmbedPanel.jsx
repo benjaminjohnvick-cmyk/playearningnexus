@@ -58,7 +58,7 @@ function SurveyEmbedRow({ survey }) {
             </div>
           </div>
           <p className="text-xs text-gray-400">
-            Works on WordPress, Webflow, Squarespace, or any plain HTML site. Responses sync back to your GamerGain dashboard automatically.
+            Works on WordPress, Webflow, Squarespace, or any plain HTML site. Responses sync back to your Grandia Granaria dashboard automatically.
           </p>
         </div>
       )}

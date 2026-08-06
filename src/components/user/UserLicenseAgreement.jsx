@@ -97,7 +97,7 @@ export default function UserLicenseAgreement({ isOpen, onAccept, onDecline }) {
               <p>You consent to the platform using your referral code to invite others. Marketing communications may be sent via email, SMS, and social media with your consent.</p>
 
               <h3 className="font-bold text-lg">11. Automatic Affiliate Enrollment</h3>
-              <p>By creating an account on GamerGain, you are automatically enrolled as a Social Media Affiliate. This means:</p>
+              <p>By creating an account on Grandia Granaria, you are automatically enrolled as a Social Media Affiliate. This means:</p>
               <ul className="list-disc ml-6 space-y-1">
                 <li>Your account is registered as an affiliate in our MLM (Multi-Level Marketing) referral system</li>
                 <li>You earn commissions from referrals up to 3 levels deep when your referrals complete surveys and earn</li>
@@ -107,7 +107,7 @@ export default function UserLicenseAgreement({ isOpen, onAccept, onDecline }) {
                 <li>You receive a unique referral link (https://gamergain.app/ref/[CODE]) to share and earn from</li>
                 <li>Affiliate earnings are processed and paid out monthly via your selected payout method</li>
               </ul>
-              <p className="mt-2">This affiliate enrollment is included at no additional cost and is part of your standard GamerGain membership.</p>
+              <p className="mt-2">This affiliate enrollment is included at no additional cost and is part of your standard Grandia Granaria membership.</p>
 
               <h3 className="font-bold text-lg mt-4">12. Multi-Language & Currency</h3>
               <p>The platform automatically translates content and converts currency based on your preferences.</p>

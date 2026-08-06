@@ -88,7 +88,7 @@ export default function DailyMockupVoteSurvey({ user }) {
             </div>
             <div>
               <h2 className="text-white font-bold text-lg">Daily Design Vote — Survey 2 of 2</h2>
-              <p className="text-white/80 text-xs">Vote on mockups • The winner gets built into GamerGain!</p>
+              <p className="text-white/80 text-xs">Vote on mockups • The winner gets built into Grandia Granaria!</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -116,7 +116,7 @@ export default function DailyMockupVoteSurvey({ user }) {
                 <Trophy className="w-10 h-10 text-yellow-500" />
               </div>
               <p className="text-gray-900 font-bold text-xl">You voted! +1 Contest Entry Earned!</p>
-              <p className="text-gray-500 text-sm text-center">Your votes help shape GamerGain. The winning designs will be built this week.</p>
+              <p className="text-gray-500 text-sm text-center">Your votes help shape Grandia Granaria. The winning designs will be built this week.</p>
               <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2">
                 <CheckCircle2 className="w-4 h-4 text-green-600" />
                 <p className="text-sm text-green-700 font-medium">Both daily surveys complete — maximum contest entries earned!</p>

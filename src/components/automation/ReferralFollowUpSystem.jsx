@@ -59,7 +59,7 @@ export default function ReferralFollowUpSystem({ user, isAdmin = false }) {
 
         // Generate personalized message via LLM
         const messageResponse = await base44.integrations.Core.InvokeLLM({
-          prompt: `Write a short, friendly email reminder (3-4 sentences max) to a GamerGain user who signed up ${Math.round(hoursOld)} hours ago but hasn't completed their first survey yet.
+          prompt: `Write a short, friendly email reminder (3-4 sentences max) to a Grandia Granaria user who signed up ${Math.round(hoursOld)} hours ago but hasn't completed their first survey yet.
           
           Key points to mention:
           - It only takes a few minutes to complete a survey
@@ -86,8 +86,8 @@ export default function ReferralFollowUpSystem({ user, isAdmin = false }) {
         // Send actual email via Core integration
         await base44.integrations.Core.SendEmail({
           to: user.email, // In production, would be referred user's email
-          subject: "You're almost there! Complete your first survey on GamerGain 🎮",
-          body: `Hi there,\n\n${typeof messageResponse === 'string' ? messageResponse : 'Just a quick reminder to complete your first survey on GamerGain!'}\n\nStart earning: ${window.location.origin}\n\nBest,\nThe GamerGain Team`
+          subject: "You're almost there! Complete your first survey on Grandia Granaria 🎮",
+          body: `Hi there,\n\n${typeof messageResponse === 'string' ? messageResponse : 'Just a quick reminder to complete your first survey on Grandia Granaria!'}\n\nStart earning: ${window.location.origin}\n\nBest,\nThe Grandia Granaria Team`
         });
 
         results.push(fu);

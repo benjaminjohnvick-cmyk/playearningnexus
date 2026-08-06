@@ -88,13 +88,13 @@ export default function MovieStarGenerator() {
       if (uploadedImageUrl) {
         // Transform uploaded photo
         prompt = `Create a high-quality, creative transformation of ${userName} in the reference image. ${imageDescription ? imageDescription : 'Transform them into an epic, cinematic style'}.
-        Include subtle GamerGain branding elements (logo or text) integrated naturally into the scene. 
+        Include subtle Grandia Granaria branding elements (logo or text) integrated naturally into the scene. 
         The image should be vibrant, professional, and social media ready. 
         Style: photorealistic, dynamic lighting, 4K quality.`;
       } else {
         // Generate stock brand image
-        prompt = `Create a high-quality promotional image for GamerGain gaming platform featuring ${userName}. ${imageDescription}.
-        Include GamerGain branding elements (logo or text) integrated naturally. Gaming aesthetic, vibrant colors, professional, social media ready.
+        prompt = `Create a high-quality promotional image for Grandia Granaria gaming platform featuring ${userName}. ${imageDescription}.
+        Include Grandia Granaria branding elements (logo or text) integrated naturally. Gaming aesthetic, vibrant colors, professional, social media ready.
         Style: photorealistic, dynamic lighting, 4K quality, modern gaming brand.`;
       }
       
@@ -167,7 +167,7 @@ export default function MovieStarGenerator() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `GamerGain_AI_Image.png`;
+      link.download = `GrandiaGranaria_AI_Image.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -180,9 +180,9 @@ export default function MovieStarGenerator() {
 
   const shareCaption = `🌟 Check out this amazing AI-generated image! 
 
-Created with GamerGain's AI Image Generator 🎮✨
+Created with Grandia Granaria's AI Image Generator 🎮✨
 
-#GamerGain #AIArt #AIGenerated #Gaming #CreativeAI`;
+#GrandiaGranaria #AIArt #AIGenerated #Gaming #CreativeAI`;
 
   const handleCopyCaption = () => {
     navigator.clipboard.writeText(shareCaption);
@@ -215,7 +215,7 @@ Created with GamerGain's AI Image Generator 🎮✨
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent mb-2">
             AI Image Generator
           </h1>
-          <p className="text-gray-600">Upload your photo or create GamerGain brand images with AI</p>
+          <p className="text-gray-600">Upload your photo or create Grandia Granaria brand images with AI</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -311,7 +311,7 @@ Created with GamerGain's AI Image Generator 🎮✨
                   className="mt-2"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {uploadedImageUrl ? 'How to transform your photo' : 'Describe the GamerGain brand image to create'}
+                  {uploadedImageUrl ? 'How to transform your photo' : 'Describe the Grandia Granaria brand image to create'}
                 </p>
               </div>
 
@@ -334,7 +334,7 @@ Created with GamerGain's AI Image Generator 🎮✨
               </Button>
 
               <p className="text-xs text-gray-500 text-center">
-                Images include GamerGain branding for promotional use
+                Images include Grandia Granaria branding for promotional use
               </p>
             </CardContent>
           </Card>
@@ -405,7 +405,7 @@ Created with GamerGain's AI Image Generator 🎮✨
 
                       <SocialShareButtons
                         imageUrl={generatedImage}
-                        caption={`🎮 Check out my amazing AI-generated image by GamerGain! ${userName ? `Featuring ${userName}!` : ''} Create yours now and start earning! 💰 ${referralLink ? `\n\nJoin here: ${referralLink}` : ''} #GamerGain #AIArt #${userName?.replace(/\s+/g, '')}`}
+                        caption={`🎮 Check out my amazing AI-generated image by Grandia Granaria! ${userName ? `Featuring ${userName}!` : ''} Create yours now and start earning! 💰 ${referralLink ? `\n\nJoin here: ${referralLink}` : ''} #GrandiaGranaria #AIArt #${userName?.replace(/\s+/g, '')}`}
                       />
                     </div>
                   </motion.div>

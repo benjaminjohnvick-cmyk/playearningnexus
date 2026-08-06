@@ -20,7 +20,7 @@ export default function AgeVerificationModal({ onVerified }) {
       if (onVerified) onVerified();
       else if (typeof window !== 'undefined') window.location.reload();
     } catch (err) {
-      setError(err?.data?.error || err?.message || 'Verification failed. You must be 18 or older to use GamerGain.');
+      setError(err?.data?.error || err?.message || 'Verification failed. You must be 18 or older to use Grandia Granaria.');
     } finally {
       setSubmitting(false);
     }
@@ -31,7 +31,7 @@ export default function AgeVerificationModal({ onVerified }) {
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
         <h2 className="mb-1 text-xl font-bold text-zinc-900">Confirm your age</h2>
         <p className="mb-4 text-sm text-zinc-600">
-          GamerGain is for adults 18 and older. Please confirm your date of birth to continue —
+          Grandia Granaria is for adults 18 and older. Please confirm your date of birth to continue —
           you only need to do this once.
         </p>
         <form onSubmit={submit}>

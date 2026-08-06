@@ -102,7 +102,7 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
             <div className="space-y-3">
               <h3 className="font-semibold text-gray-800 flex items-center gap-2"><Info className="w-4 h-4 text-blue-600" /> How It Works</h3>
               {[
-                { icon: '💳', title: '$1,080 per person credit', desc: `You're automatically issued $1,080 in site credit — yours to spend on anything on GamerGain.` },
+                { icon: '💳', title: '$1,080 per person credit', desc: `You're automatically issued $1,080 in site credit — yours to spend on anything on Grandia Granaria.` },
                 { icon: '💰', title: 'Pay it back by earning', desc: `Earn $3/day completing surveys. That's $90/month — paid off in 12 months automatically.` },
                 { icon: '👨‍👩‍👧‍👦', title: 'Grow with a group', desc: `Add up to 9 friends or family. Each adds $1,080 to your shared credit pool (up to $10,800 for 10 people).` },
                 { icon: '⚠️', title: 'Missed day penalty', desc: `If a group member misses their $3/day, your card on file is charged the shortfall (e.g., 10 people miss = $30 charge).` },

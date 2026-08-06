@@ -202,7 +202,7 @@ export default function ContestEntries() {
               <p>• Contest entries are earned by hitting referral milestones. More entries = better odds.</p>
               <p>• Prize pool = 10% of quarterly after-tax profits, distributed to the winner.</p>
               <p>• Winner is drawn randomly at end of quarter — higher entry count increases your chance.</p>
-              <p>• Prize must be used for GamerGain store credit or survey creation.</p>
+              <p>• Prize must be used for Grandia Granaria store credit or survey creation.</p>
               <p>• Contest resets quarterly. Previous entries do not carry over.</p>
             </div>
           </CardContent>

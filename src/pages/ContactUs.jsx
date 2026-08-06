@@ -39,7 +39,7 @@ export default function ContactUs() {
     try {
       await base44.integrations.Core.SendEmail({
         to: CONTACT_INFO.email,
-        subject: `[GamerGain Support] ${form.category ? `[${form.category}] ` : ''}${form.subject || 'New Message'}`,
+        subject: `[Grandia Granaria Support] ${form.category ? `[${form.category}] ` : ''}${form.subject || 'New Message'}`,
         body: `From: ${form.name} <${form.email}>\nCategory: ${form.category || 'General'}\n\n${form.message}`,
       });
 

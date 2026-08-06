@@ -56,7 +56,7 @@ export default function RecommendedSurveys({ user, compact = false }) {
       setAiLoading(true);
       try {
         const resp = await base44.integrations.Core.InvokeLLM({
-          prompt: `A GamerGain user has completed ${dailyEarnings.length} survey sessions and earned $${dailyEarnings.reduce((s, e) => s + (e.total_earned || 0), 0).toFixed(2)} total. Their daily goal is $3. Write ONE short motivational sentence (max 15 words) encouraging them to complete more surveys today. Be specific about earning potential.`
+          prompt: `A Grandia Granaria user has completed ${dailyEarnings.length} survey sessions and earned $${dailyEarnings.reduce((s, e) => s + (e.total_earned || 0), 0).toFixed(2)} total. Their daily goal is $3. Write ONE short motivational sentence (max 15 words) encouraging them to complete more surveys today. Be specific about earning potential.`
         });
         setAiInsight(typeof resp === 'string' ? resp : null);
       } catch { /* silent */ }

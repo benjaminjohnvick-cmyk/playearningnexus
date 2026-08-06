@@ -82,7 +82,7 @@ export default function CompleteProfile() {
             disabled={saving}
             className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3 rounded-lg transition-all disabled:opacity-60 mt-2"
           >
-            {saving ? 'Saving...' : 'Continue to GamerGain →'}
+            {saving ? 'Saving...' : 'Continue to Grandia Granaria →'}
           </button>
         </form>
 

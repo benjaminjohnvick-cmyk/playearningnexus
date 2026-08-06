@@ -56,13 +56,13 @@ export default function LogoutPromptModal({ isOpen, onClose, onLogout, user, con
   // Generate suggested message based on context
   const getSuggestedMessage = () => {
     if (completedActivity === 'survey') {
-      return `Just completed a survey on GamerGain and earned ${points} points! 💰 Join me and start earning while gaming! #GamerGain #EarnMoney #Gaming`;
+      return `Just completed a survey on Grandia Granaria and earned ${points} points! 💰 Join me and start earning while gaming! #GrandiaGranaria #EarnMoney #Gaming`;
     } else if (completedActivity === 'game') {
-      return `Had an amazing gaming session playing ${activityName} on GamerGain! 🎮 Earning rewards while playing my favorite games! #GamerGain #Gaming`;
+      return `Had an amazing gaming session playing ${activityName} on Grandia Granaria! 🎮 Earning rewards while playing my favorite games! #GrandiaGranaria #Gaming`;
     } else if (completedActivity === 'achievement') {
-      return `Unlocked the "${activityName}" achievement on GamerGain! 🏆 Leveling up and earning rewards! #GamerGain #Achievement #Gaming`;
+      return `Unlocked the "${activityName}" achievement on Grandia Granaria! 🏆 Leveling up and earning rewards! #GrandiaGranaria #Achievement #Gaming`;
     }
-    return `Just had a great session on GamerGain! 🎮 Playing games, completing surveys, and earning real rewards. Check it out! #GamerGain #Gaming #EarnWhileYouPlay`;
+    return `Just had a great session on Grandia Granaria! 🎮 Playing games, completing surveys, and earning real rewards. Check it out! #GrandiaGranaria #Gaming #EarnWhileYouPlay`;
   };
 
   const suggestedMessage = getSuggestedMessage();
@@ -76,7 +76,7 @@ export default function LogoutPromptModal({ isOpen, onClose, onLogout, user, con
             Share Your Success!
           </DialogTitle>
           <DialogDescription>
-            Before you go, share your GamerGain experience with your friends!
+            Before you go, share your Grandia Granaria experience with your friends!
           </DialogDescription>
         </DialogHeader>
 

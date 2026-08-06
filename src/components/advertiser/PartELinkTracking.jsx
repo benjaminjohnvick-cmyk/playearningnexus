@@ -78,7 +78,7 @@ Campaign Stats (7 days):
 - ROI: ${roi}%
 - Platform breakdown: ${platformData.map(p => `${p.platform}: ${p.clicks} clicks, ${p.views} views, ${p.engagementRate}% engagement`).join('; ')}
 
-GamerGain model: Each $0.50 click generates 20 social posts. Platform earns $0.25, user earns $0.25.
+Grandia Granaria model: Each $0.50 click generates 20 social posts. Platform earns $0.25, user earns $0.25.
 Campaign runs until sales = 2× ad budget.
 
 Provide a brief, actionable 2-3 sentence analysis of campaign performance, which platform is performing best, and one specific optimization recommendation. Be direct and data-driven.`,

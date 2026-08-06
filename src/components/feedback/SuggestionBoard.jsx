@@ -87,7 +87,7 @@ export default function SuggestionBoard({ user }) {
                 ))}
               </div>
               <Textarea
-                placeholder="What would make GamerGain better? Your idea may appear in tomorrow's survey!"
+                placeholder="What would make Grandia Granaria better? Your idea may appear in tomorrow's survey!"
                 value={text}
                 onChange={e => setText(e.target.value)}
                 className="min-h-[70px] resize-none text-sm"

@@ -34,7 +34,7 @@ export default function AIFinancialSuggestionsButton() {
       const scheduledPosts = socialPosts.filter(p => p.status === 'scheduled' || p.status === 'draft').length;
       const pendingDisputes = disputes.filter(d => ['submitted', 'analyzing', 'pending_human'].includes(d.status)).length;
 
-      const prompt = `You are a financial advisor AI for GamerGain, a platform where users earn through surveys, referrals, and AI social media ads.
+      const prompt = `You are a financial advisor AI for Grandia Granaria, a platform where users earn through surveys, referrals, and AI social media ads.
 
 USER DATA:
 - Total lifetime earnings: $${totalEarnings.toFixed(2)}

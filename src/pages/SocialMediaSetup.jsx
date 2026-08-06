@@ -310,7 +310,7 @@ export default function SocialMediaSetup() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">🤖 AI Social Engine Activated!</h2>
               <p className="text-gray-600 mb-4 text-sm">
-                Your accounts are connected. Now GamerGain's AI will automatically:
+                Your accounts are connected. Now Grandia Granaria's AI will automatically:
               </p>
               <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border-2 border-purple-200 p-5 mb-5 text-left space-y-3">
                 {[

@@ -116,7 +116,7 @@ export default function AISupportChatbot({ user, isOpen, onClose, initialMessage
       }
       
       // Use AI for complex queries
-      const context = `You are a helpful support agent for GamerGain, a referral platform. 
+      const context = `You are a helpful support agent for Grandia Granaria, a referral platform. 
       
 User asking: ${user.full_name} (${user.email})
 User stats: ${user.total_referrals || 0} referrals, $${user.total_earnings || 0} earned

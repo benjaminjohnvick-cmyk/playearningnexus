@@ -43,9 +43,9 @@ export default function AdminClaimsPanel() {
       if (email && claim) {
         const subject = status === 'approved' ? `✅ Your claim has been approved!` : `Your claim decision: ${status}`;
         const body = status === 'approved'
-          ? `Hi ${claim.user_name || 'there'},\n\nGreat news! Your claim for "${claim.item_name}" has been APPROVED.\n\nCredit issued: $${credit || 0}\nAdmin notes: ${notes || 'N/A'}\n\nThe credit has been added to your account balance.\n\nThank you for your patience!\n\nGamerGain Team`
-          : `Hi ${claim.user_name || 'there'},\n\nWe've reviewed your claim for "${claim.item_name}".\n\nDecision: ${status.toUpperCase()}\nAdmin notes: ${notes || 'N/A'}\n\nIf you believe this is incorrect, please contact support.\n\nGamerGain Team`;
-        await base44.integrations.Core.SendEmail({ to: email, subject, body, from_name: 'GamerGain Support' });
+          ? `Hi ${claim.user_name || 'there'},\n\nGreat news! Your claim for "${claim.item_name}" has been APPROVED.\n\nCredit issued: $${credit || 0}\nAdmin notes: ${notes || 'N/A'}\n\nThe credit has been added to your account balance.\n\nThank you for your patience!\n\nGrandia Granaria Team`
+          : `Hi ${claim.user_name || 'there'},\n\nWe've reviewed your claim for "${claim.item_name}".\n\nDecision: ${status.toUpperCase()}\nAdmin notes: ${notes || 'N/A'}\n\nIf you believe this is incorrect, please contact support.\n\nGrandia Granaria Team`;
+        await base44.integrations.Core.SendEmail({ to: email, subject, body, from_name: 'Grandia Granaria Support' });
       }
     },
     onSuccess: () => {

@@ -41,7 +41,7 @@ export default function SessionRatingModal({ onClose }) {
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
         <h2 className="mb-1 text-xl font-bold text-zinc-900">How was your session?</h2>
         <p className="mb-4 text-sm text-zinc-500">Your ratings help us improve. It only takes a moment.</p>
-        <Stars value={appStore} onChange={setAppStore} label="Rate GamerGain (app store)" />
+        <Stars value={appStore} onChange={setAppStore} label="Rate Grandia Granaria (app store)" />
         <Stars value={site} onChange={setSite} label="Rate your experience today" />
         <textarea
           value={comments}
