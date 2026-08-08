@@ -551,6 +551,18 @@ export const REGISTRY: SettingDef[] = [
   { key: "LOYALTY_UPFRONT_GRANT_USD", label: "Upfront grant amount", category: "Loyalty & Rewards", type: "number", default: "1460", unit: "$", min: 0, help: "How much reward value is escrowed up front (defaults to the annual cap).", sensitive: true },
   { key: "LOYALTY_UPFRONT_MULTIPLE", label: "Commission multiple to fully release", category: "Loyalty & Rewards", type: "number", default: "2", unit: "×", min: 1, help: "Real affiliate commission the member must generate to release the full grant (2× = double the value, keeping the platform margin-positive).", sensitive: true },
   { key: "LOYALTY_UPFRONT_MILESTONES", label: "Release milestones", category: "Loyalty & Rewards", type: "number", default: "4", unit: "steps", min: 1, help: "Number of incremental release steps toward the 2× target (4 = 25% released at each quarter)." },
+
+  // 9. Goods Advance (consumer credit — DEFAULT OFF, provider + legal sign-off gated).
+  //    See GET-GOODS-ADVANCE-PROGRAM-COMPLIANCE.md. Origination is impossible until the
+  //    `goods_advance` flag is ON, ADVANCE_PROVIDER != "none", and ADVANCE_LEGAL_SIGNOFF = true.
+  { key: "ADVANCE_MAX_CAP_USD", label: "Goods Advance — max cap", category: "Goods Advance (credit — OFF)", type: "number", default: "2920", unit: "$", help: "Program ceiling per member. Per-member limit is set by ability-to-repay, not granted flat.", sensitive: true, min: 0, max: 2920 },
+  { key: "ADVANCE_APR_PCT", label: "Goods Advance — APR", category: "Goods Advance (credit — OFF)", type: "number", default: "0", unit: "%", help: "Must be 0 in this build — no interest, no fees, no markup (avoids finance-charge/usury exposure).", sensitive: true, min: 0, max: 0 },
+  { key: "ADVANCE_TERM_MONTHS", label: "Goods Advance — term", category: "Goods Advance (credit — OFF)", type: "number", default: "12", unit: "months", help: "Repayment window from the member's own earnings.", min: 1, max: 12 },
+  { key: "ADVANCE_MIN_HISTORY_DAYS", label: "Goods Advance — min earning history", category: "Goods Advance (credit — OFF)", type: "number", default: "60", unit: "days", help: "Ability-to-repay gate: minimum active earning days before an offer. Underwrites on the PAST, never compels the future.", min: 0 },
+  { key: "ADVANCE_NONRECOURSE", label: "Goods Advance — non-recourse", category: "Goods Advance (credit — OFF)", type: "boolean", default: "true", help: "Must be true: repay only from in-app earnings; if not earned, the balance is written off. No cash balloon, no card charge, no collections.", sensitive: true },
+  { key: "ADVANCE_REQUIRE_ABILITY_TO_REPAY", label: "Goods Advance — require ability-to-repay", category: "Goods Advance (credit — OFF)", type: "boolean", default: "true", help: "Require demonstrated earning history sufficient to plausibly repay within the term.", sensitive: true },
+  { key: "ADVANCE_PROVIDER", label: "Goods Advance — lender of record", category: "Goods Advance (credit — OFF)", type: "select", default: "none", options: ["none", "bank_sponsored", "licensed_self"], help: "MUST be set to a real licensed provider before origination. 'none' keeps the program OFF. bank_sponsored = partner bank is lender (platform funds & bears loss); licensed_self = platform holds state lending/retail-installment licenses.", sensitive: true },
+  { key: "ADVANCE_LEGAL_SIGNOFF", label: "Goods Advance — counsel sign-off", category: "Goods Advance (credit — OFF)", type: "boolean", default: "false", help: "MUST be true (set only after a consumer-finance attorney approves the full program + disclosures). Hard gate on origination.", sensitive: true },
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

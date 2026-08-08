@@ -3620,3 +3620,14 @@ CREATE TABLE IF NOT EXISTS "SponsoredPlacement" (
 );
 CREATE INDEX IF NOT EXISTS "SponsoredPlacement_data_gin" ON "SponsoredPlacement" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "SponsoredPlacement_created" ON "SponsoredPlacement" (created_date DESC);
+
+-- GoodsAdvance: optional 0% non-recourse in-store advance ledger (owner-scoped)
+CREATE TABLE IF NOT EXISTS "GoodsAdvance" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GoodsAdvance_data_gin" ON "GoodsAdvance" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GoodsAdvance_created" ON "GoodsAdvance" (created_date DESC);

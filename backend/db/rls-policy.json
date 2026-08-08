@@ -1,998 +1,1002 @@
 {
-  "ABTest": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AIAgentTask": {
-    "scope": "owner",
-    "owner_field": "created_by"
-  },
-  "AIEarningsMonitor": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AIFeedbackAnalysis": {
-    "scope": "global"
-  },
-  "APIAccessKey": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "Achievement": {
-    "scope": "global"
-  },
-  "ActivityFeedItem": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AdAsset": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "AdCampaign": {
-    "scope": "global"
-  },
-  "AdCreativeTest": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "AdGridAd": {
-    "scope": "global"
-  },
-  "AdGridResponse": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AdGridSession": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AdGridSlotGrant": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AdImpression": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AdLearningMemory": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "AdListing": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "AdSchedule": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "AdTargetingRule": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "AdTemplateMarketplace": {
-    "scope": "global"
-  },
-  "AdTemplatePurchase": {
-    "scope": "global"
-  },
-  "AdTransaction": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "AdminAuditLog": {
-    "scope": "global"
-  },
-  "AdminCredential": {
-    "scope": "owner",
-    "owner_field": "created_by"
-  },
-  "AffiliateAdPost": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AffiliateChurnPrediction": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AffiliateContentSchedule": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AffiliateDispute": {
-    "scope": "global"
-  },
-  "AffiliateGrowthCampaign": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AffiliateOnboarding": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AffiliatePerformanceSnapshot": {
-    "scope": "global"
-  },
-  "AffiliateProduct": {
-    "scope": "global"
-  },
-  "AffiliatePurchase": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AffiliateSale": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AffiliateTier": {
-    "scope": "global"
-  },
-  "AgentConversation": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AgentLearningMemory": {
-    "scope": "global"
-  },
-  "AgentMessage": {
-    "scope": "owner",
-    "owner_field": "created_by"
-  },
-  "AgentPerformanceLog": {
-    "scope": "global"
-  },
-  "AnalyticsEvent": {
-    "scope": "global"
-  },
-  "AppLog": {
-    "scope": "global"
-  },
-  "AppStorePrice": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AutomatedPayment": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "AutomationReview": {
-    "scope": "global"
-  },
-  "BNPLFamilyMember": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "Badge": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "BuddyMessage": {
-    "scope": "global"
-  },
-  "BuddyPair": {
-    "scope": "global"
-  },
-  "BuddyVoiceClip": {
-    "scope": "global"
-  },
-  "BugReport": {
-    "scope": "global"
-  },
-  "BurstSession": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "BusinessAccount": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "BusinessClient": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "BusinessSubscription": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "BuyingDeskTask": {
-    "scope": "admin"
-  },
-  "CRMAutomation": {
-    "scope": "global"
-  },
-  "CRMLead": {
-    "scope": "global"
-  },
-  "CRMLeadConversion": {
-    "scope": "owner",
-    "owner_field": "owner_id"
-  },
-  "CRMOutreach": {
-    "scope": "global"
-  },
-  "CRMProspect": {
-    "scope": "global"
-  },
-  "CRMSegment": {
-    "scope": "global"
-  },
-  "ChatMessage": {
-    "scope": "global"
-  },
-  "CloudSave": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "CompetitorAlert": {
-    "scope": "global"
-  },
-  "CompetitorTrendAnalysis": {
-    "scope": "global"
-  },
-  "ContentLibraryTemplate": {
-    "scope": "global"
-  },
-  "ContestParticipation": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ContestPowerUp": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ContestVerification": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "CosmeticItem": {
-    "scope": "global"
-  },
-  "CreatorPayout": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "CreatorProfile": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "CreatorSubscriptionTier": {
-    "scope": "global"
-  },
-  "CrowdfundingCampaign": {
-    "scope": "global"
-  },
-  "CustomReferralLink": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "CustomSubdomain": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "DailyAISurvey": {
-    "scope": "global"
-  },
-  "DailyChallenge": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "DailyEarnings": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "DailyFeedbackSurvey": {
-    "scope": "global"
-  },
-  "DeveloperApplication": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "DeveloperFollow": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "DeveloperInstallCost": {
-    "scope": "global"
-  },
-  "DeveloperPayout": {
-    "scope": "global"
-  },
-  "DeveloperSupportTicket": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "DisputeClaim": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "DisputeNegotiationChat": {
-    "scope": "global"
-  },
-  "DisputeNegotiationSettings": {
-    "scope": "owner",
-    "owner_field": "created_by"
-  },
-  "DynamicPricing": {
-    "scope": "global"
-  },
-  "EarnBackLedger": {
-    "scope": "global"
-  },
-  "EarnBackPlan": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "EarnedAdvertiser": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "EcosystemConfig": {
-    "scope": "global"
-  },
-  "EcosystemRunLog": {
-    "scope": "global"
-  },
-  "EmailMarketingFlow": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "EmailSequence": {
-    "scope": "owner",
-    "owner_field": "owner_id"
-  },
-  "Expense": {
-    "scope": "admin"
-  },
-  "FeatureMockup": {
-    "scope": "global"
-  },
-  "FeatureVoteSurvey": {
-    "scope": "global"
-  },
-  "FeedbackSurveyResponse": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "FlaggedResponse": {
-    "scope": "global"
-  },
-  "ForumPost": {
-    "scope": "global"
-  },
-  "FoundingAdvertiser": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "FraudReport": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "FriendRequest": {
-    "scope": "global"
-  },
-  "Game": {
-    "scope": "global"
-  },
-  "GameEngagement": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GameGuide": {
-    "scope": "global"
-  },
-  "GameRating": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GameReview": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GameVote": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GameVoteSurvey": {
-    "scope": "global"
-  },
-  "GeneratedImage": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GiftCardRedemption": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GiftCardStock": {
-    "scope": "admin"
-  },
-  "GiftTransaction": {
-    "scope": "owner",
-    "owner_field": "recipient_user_id"
-  },
-  "GlobalPrestige": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GlobalSettings": {
-    "scope": "global"
-  },
-  "GroupContribution": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GroupGoal": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "GroupGoalReward": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GroupMessage": {
-    "scope": "global"
-  },
-  "GroupSession": {
-    "scope": "global"
-  },
-  "GroupSpendRequest": {
-    "scope": "owner",
-    "owner_field": "recipient_user_id"
-  },
-  "GrowthHeatmapData": {
-    "scope": "global"
-  },
-  "GrowthPlan": {
-    "scope": "admin"
-  },
-  "Guild": {
-    "scope": "global"
-  },
-  "GuildChallenge": {
-    "scope": "global"
-  },
-  "GuildMember": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "GuildReward": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "HeadToHeadContest": {
-    "scope": "global"
-  },
-  "IAPAdvertisingCredit": {
-    "scope": "global"
-  },
-  "InAppPurchase": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "InfluencerDeal": {
-    "scope": "global"
-  },
-  "IntegrationConfig": {
-    "scope": "global"
-  },
-  "ItemSavingsGoal": {
-    "scope": "owner",
-    "owner_field": "created_by"
-  },
-  "LeaderboardEntry": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "LiveEvent": {
-    "scope": "global"
-  },
-  "LocalizationString": {
-    "scope": "global"
-  },
-  "LockoutSession": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "MLMNode": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "MarketResearchReport": {
-    "scope": "global"
-  },
-  "MarketTrendReport": {
-    "scope": "global"
-  },
-  "MarketingAsset": {
-    "scope": "global"
-  },
-  "MarketingCampaign": {
-    "scope": "global"
-  },
-  "MarketplaceStore": {
-    "scope": "global"
-  },
-  "MockupVoteSurvey": {
-    "scope": "global"
-  },
-  "MoneyLedgerEntry": {
-    "scope": "admin"
-  },
-  "MoneyTransfer": {
-    "scope": "global"
-  },
-  "Notification": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "OnboardingProgress": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "OpsShift": {
-    "scope": "global"
-  },
-  "Order": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PPCAbTest": {
-    "scope": "global"
-  },
-  "PPCSession": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PPCSurvey": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PPCSurveyResponse": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PPCTransaction": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PPCUserTier": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PartnerTier": {
-    "scope": "global"
-  },
-  "PayPalAccount": {
-    "scope": "global"
-  },
-  "Payout": {
-    "scope": "owner",
-    "owner_field": "recipient_user_id"
-  },
-  "PayoutPreference": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PayoutRecommendation": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PayoutRequest": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PendingProduct": {
-    "scope": "global"
-  },
-  "PerformanceAlert": {
-    "scope": "global"
-  },
-  "PersonalizedOffer": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PlatformCredit": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PremiumFinancePlan": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PremiumMembership": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PremiumPlan": {
-    "scope": "global"
-  },
-  "Product": {
-    "scope": "global"
-  },
-  "ProductAnalyticsReport": {
-    "scope": "global"
-  },
-  "ProductWebsiteAnalytics": {
-    "scope": "global"
-  },
-  "ProductWishlistItem": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "PromoCode": {
-    "scope": "global"
-  },
-  "ProviderUsage": {
-    "scope": "global"
-  },
-  "PushSubscription": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReconciliationReport": {
-    "scope": "global"
-  },
-  "RedemptionRecord": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "Referral": {
-    "scope": "owner",
-    "owner_field": "referrer_user_id"
-  },
-  "ReferralAchievement": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralAnomalyFlag": {
-    "scope": "owner",
-    "owner_field": "referrer_user_id"
-  },
-  "ReferralAutomation": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralBadge": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralCampaign": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralContentAsset": {
-    "scope": "global"
-  },
-  "ReferralContest": {
-    "scope": "global"
-  },
-  "ReferralEmailLog": {
-    "scope": "global"
-  },
-  "ReferralEmailSequence": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralFollowUp": {
-    "scope": "owner",
-    "owner_field": "referrer_user_id"
-  },
-  "ReferralInviteBatch": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralJackpot": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralLifetimeValue": {
-    "scope": "owner",
-    "owner_field": "referrer_user_id"
-  },
-  "ReferralMilestone": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralPayout": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralPostEntry": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralPrediction": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ReferralRiskFlag": {
-    "scope": "owner",
-    "owner_field": "referrer_user_id"
-  },
-  "ReferralSquad": {
-    "scope": "global"
-  },
-  "ReferralTier": {
-    "scope": "global"
-  },
-  "RespondentProfile": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "RespondentTrustScore": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "RetentionCampaign": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "RetentionRisk": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "RevenueEvent": {
-    "scope": "admin"
-  },
-  "RevenueProduct": {
-    "scope": "global"
-  },
-  "RewardPerk": {
-    "scope": "global"
-  },
-  "RewardTier": {
-    "scope": "global"
-  },
-  "SavedSurveySearch": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "ScreenOutEvent": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "Season": {
-    "scope": "global"
-  },
-  "SeasonRank": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SellerMarketplaceListing": {
-    "scope": "global"
-  },
-  "SharedWalletGroup": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "SmartNotificationRule": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SocialConnection": {
-    "scope": "global"
-  },
-  "SocialMediaConnection": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SocialMediaPost": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SourcedOrder": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SponsoredContent": {
-    "scope": "global"
-  },
-  "SponsoredListing": {
-    "scope": "global"
-  },
-  "SponsoredPlacement": {
-    "scope": "owner",
-    "owner_field": "owner_user_id"
-  },
-  "SquadActivityFeed": {
-    "scope": "global"
-  },
-  "SquadMember": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "Streak": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "StreamSession": {
-    "scope": "global"
-  },
-  "StreamerSubscription": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "StreamerTip": {
-    "scope": "global"
-  },
-  "Subscription": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "Supplier": {
-    "scope": "admin"
-  },
-  "SupportTicket": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SupportTicketDossier": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "Survey": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SurveyABTest": {
-    "scope": "global"
-  },
-  "SurveyCollabSession": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SurveyDispute": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SurveyHeatmapData": {
-    "scope": "global"
-  },
-  "SurveyMarketplaceListing": {
-    "scope": "global"
-  },
-  "SurveyProfile": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SurveyRecommendation": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "SurveySchedule": {
-    "scope": "global"
-  },
-  "SurveyTemplate": {
-    "scope": "global"
-  },
-  "Tenant": {
-    "scope": "global"
-  },
-  "TieredMembership": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "Tournament": {
-    "scope": "owner",
-    "owner_field": "created_by"
-  },
-  "TournamentAIInsight": {
-    "scope": "global"
-  },
-  "TournamentChallenge": {
-    "scope": "global"
-  },
-  "TournamentLeaderboard": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "TournamentMatch": {
-    "scope": "global"
-  },
-  "TournamentParticipant": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "Transaction": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "TransferRequest": {
-    "scope": "global"
-  },
-  "UXSessionRecording": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "User": {
-    "scope": "self",
-    "owner_field": "id"
-  },
-  "UserAchievement": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserAchievementBadge": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserActivity": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserBadge": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserGroup": {
-    "scope": "global"
-  },
-  "UserInventory": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserJourneyEvent": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserLevel": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserPlatformStats": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserProductProfile": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserRecommendation": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserSubscription": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "UserSuggestion": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "VerifiedSurveyMedia": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "VirtualCurrency": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "WeeklyEvent": {
-    "scope": "global"
-  },
-  "WeeklyReferralCampaign": {
-    "scope": "global"
-  },
-  "WhiteLabelLicense": {
-    "scope": "global"
-  },
-  "WhiteLabelPartner": {
-    "scope": "global"
-  },
-  "WishlistShareReferral": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "WithdrawalRequest": {
-    "scope": "global"
-  },
-  "YouTubeEmbedAnalytics": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  },
-  "YouTubeVideoSession": {
-    "scope": "owner",
-    "owner_field": "user_id"
-  }
+ "ABTest": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "Achievement": {
+  "scope": "global"
+ },
+ "ActivityFeedItem": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AdAsset": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "AdCampaign": {
+  "scope": "global"
+ },
+ "AdCreativeTest": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "AdGridAd": {
+  "scope": "global"
+ },
+ "AdGridResponse": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AdGridSession": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AdGridSlotGrant": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AdImpression": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AdLearningMemory": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "AdListing": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "AdminAuditLog": {
+  "scope": "global"
+ },
+ "AdminCredential": {
+  "scope": "owner",
+  "owner_field": "created_by"
+ },
+ "AdSchedule": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "AdTargetingRule": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "AdTemplateMarketplace": {
+  "scope": "global"
+ },
+ "AdTemplatePurchase": {
+  "scope": "global"
+ },
+ "AdTransaction": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "AffiliateAdPost": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AffiliateChurnPrediction": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AffiliateContentSchedule": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AffiliateDispute": {
+  "scope": "global"
+ },
+ "AffiliateGrowthCampaign": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AffiliateOnboarding": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AffiliatePerformanceSnapshot": {
+  "scope": "global"
+ },
+ "AffiliateProduct": {
+  "scope": "global"
+ },
+ "AffiliatePurchase": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AffiliateSale": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AffiliateTier": {
+  "scope": "global"
+ },
+ "AgentConversation": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AgentLearningMemory": {
+  "scope": "global"
+ },
+ "AgentMessage": {
+  "scope": "owner",
+  "owner_field": "created_by"
+ },
+ "AgentPerformanceLog": {
+  "scope": "global"
+ },
+ "AIAgentTask": {
+  "scope": "owner",
+  "owner_field": "created_by"
+ },
+ "AIEarningsMonitor": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AIFeedbackAnalysis": {
+  "scope": "global"
+ },
+ "AnalyticsEvent": {
+  "scope": "global"
+ },
+ "APIAccessKey": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AppLog": {
+  "scope": "global"
+ },
+ "AppStorePrice": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AutomatedPayment": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "AutomationReview": {
+  "scope": "global"
+ },
+ "Badge": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "BNPLFamilyMember": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "BuddyMessage": {
+  "scope": "global"
+ },
+ "BuddyPair": {
+  "scope": "global"
+ },
+ "BuddyVoiceClip": {
+  "scope": "global"
+ },
+ "BugReport": {
+  "scope": "global"
+ },
+ "BurstSession": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "BusinessAccount": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "BusinessClient": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "BusinessSubscription": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "BuyingDeskTask": {
+  "scope": "admin"
+ },
+ "ChatMessage": {
+  "scope": "global"
+ },
+ "CloudSave": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "CompetitorAlert": {
+  "scope": "global"
+ },
+ "CompetitorTrendAnalysis": {
+  "scope": "global"
+ },
+ "ContentLibraryTemplate": {
+  "scope": "global"
+ },
+ "ContestParticipation": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ContestPowerUp": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ContestVerification": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "CosmeticItem": {
+  "scope": "global"
+ },
+ "CreatorPayout": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "CreatorProfile": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "CreatorSubscriptionTier": {
+  "scope": "global"
+ },
+ "CRMAutomation": {
+  "scope": "global"
+ },
+ "CRMLead": {
+  "scope": "global"
+ },
+ "CRMLeadConversion": {
+  "scope": "owner",
+  "owner_field": "owner_id"
+ },
+ "CRMOutreach": {
+  "scope": "global"
+ },
+ "CRMProspect": {
+  "scope": "global"
+ },
+ "CRMSegment": {
+  "scope": "global"
+ },
+ "CrowdfundingCampaign": {
+  "scope": "global"
+ },
+ "CustomReferralLink": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "CustomSubdomain": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "DailyAISurvey": {
+  "scope": "global"
+ },
+ "DailyChallenge": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "DailyEarnings": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "DailyFeedbackSurvey": {
+  "scope": "global"
+ },
+ "DeveloperApplication": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "DeveloperFollow": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "DeveloperInstallCost": {
+  "scope": "global"
+ },
+ "DeveloperPayout": {
+  "scope": "global"
+ },
+ "DeveloperSupportTicket": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "DisputeClaim": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "DisputeNegotiationChat": {
+  "scope": "global"
+ },
+ "DisputeNegotiationSettings": {
+  "scope": "owner",
+  "owner_field": "created_by"
+ },
+ "DynamicPricing": {
+  "scope": "global"
+ },
+ "EarnBackLedger": {
+  "scope": "global"
+ },
+ "EarnBackPlan": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "EarnedAdvertiser": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "EcosystemConfig": {
+  "scope": "global"
+ },
+ "EcosystemRunLog": {
+  "scope": "global"
+ },
+ "EmailMarketingFlow": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "EmailSequence": {
+  "scope": "owner",
+  "owner_field": "owner_id"
+ },
+ "Expense": {
+  "scope": "admin"
+ },
+ "FeatureMockup": {
+  "scope": "global"
+ },
+ "FeatureVoteSurvey": {
+  "scope": "global"
+ },
+ "FeedbackSurveyResponse": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "FlaggedResponse": {
+  "scope": "global"
+ },
+ "ForumPost": {
+  "scope": "global"
+ },
+ "FoundingAdvertiser": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "FraudReport": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "FriendRequest": {
+  "scope": "global"
+ },
+ "Game": {
+  "scope": "global"
+ },
+ "GameEngagement": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GameGuide": {
+  "scope": "global"
+ },
+ "GameRating": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GameReview": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GameVote": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GameVoteSurvey": {
+  "scope": "global"
+ },
+ "GeneratedImage": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GiftCardRedemption": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GiftCardStock": {
+  "scope": "admin"
+ },
+ "GiftTransaction": {
+  "scope": "owner",
+  "owner_field": "recipient_user_id"
+ },
+ "GlobalPrestige": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GlobalSettings": {
+  "scope": "global"
+ },
+ "GoodsAdvance": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GroupContribution": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GroupGoal": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "GroupGoalReward": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GroupMessage": {
+  "scope": "global"
+ },
+ "GroupSession": {
+  "scope": "global"
+ },
+ "GroupSpendRequest": {
+  "scope": "owner",
+  "owner_field": "recipient_user_id"
+ },
+ "GrowthHeatmapData": {
+  "scope": "global"
+ },
+ "GrowthPlan": {
+  "scope": "admin"
+ },
+ "Guild": {
+  "scope": "global"
+ },
+ "GuildChallenge": {
+  "scope": "global"
+ },
+ "GuildMember": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "GuildReward": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "HeadToHeadContest": {
+  "scope": "global"
+ },
+ "IAPAdvertisingCredit": {
+  "scope": "global"
+ },
+ "InAppPurchase": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "InfluencerDeal": {
+  "scope": "global"
+ },
+ "IntegrationConfig": {
+  "scope": "global"
+ },
+ "ItemSavingsGoal": {
+  "scope": "owner",
+  "owner_field": "created_by"
+ },
+ "LeaderboardEntry": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "LiveEvent": {
+  "scope": "global"
+ },
+ "LocalizationString": {
+  "scope": "global"
+ },
+ "LockoutSession": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "MarketingAsset": {
+  "scope": "global"
+ },
+ "MarketingCampaign": {
+  "scope": "global"
+ },
+ "MarketplaceStore": {
+  "scope": "global"
+ },
+ "MarketResearchReport": {
+  "scope": "global"
+ },
+ "MarketTrendReport": {
+  "scope": "global"
+ },
+ "MLMNode": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "MockupVoteSurvey": {
+  "scope": "global"
+ },
+ "MoneyLedgerEntry": {
+  "scope": "admin"
+ },
+ "MoneyTransfer": {
+  "scope": "global"
+ },
+ "Notification": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "OnboardingProgress": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "OpsShift": {
+  "scope": "global"
+ },
+ "Order": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PartnerTier": {
+  "scope": "global"
+ },
+ "Payout": {
+  "scope": "owner",
+  "owner_field": "recipient_user_id"
+ },
+ "PayoutPreference": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PayoutRecommendation": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PayoutRequest": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PayPalAccount": {
+  "scope": "global"
+ },
+ "PendingProduct": {
+  "scope": "global"
+ },
+ "PerformanceAlert": {
+  "scope": "global"
+ },
+ "PersonalizedOffer": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PlatformCredit": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PPCAbTest": {
+  "scope": "global"
+ },
+ "PPCSession": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PPCSurvey": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PPCSurveyResponse": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PPCTransaction": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PPCUserTier": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PremiumFinancePlan": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PremiumMembership": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PremiumPlan": {
+  "scope": "global"
+ },
+ "Product": {
+  "scope": "global"
+ },
+ "ProductAnalyticsReport": {
+  "scope": "global"
+ },
+ "ProductWebsiteAnalytics": {
+  "scope": "global"
+ },
+ "ProductWishlistItem": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "PromoCode": {
+  "scope": "global"
+ },
+ "ProviderUsage": {
+  "scope": "global"
+ },
+ "PushSubscription": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReconciliationReport": {
+  "scope": "global"
+ },
+ "RedemptionRecord": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "Referral": {
+  "scope": "owner",
+  "owner_field": "referrer_user_id"
+ },
+ "ReferralAchievement": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralAnomalyFlag": {
+  "scope": "owner",
+  "owner_field": "referrer_user_id"
+ },
+ "ReferralAutomation": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralBadge": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralCampaign": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralContentAsset": {
+  "scope": "global"
+ },
+ "ReferralContest": {
+  "scope": "global"
+ },
+ "ReferralEmailLog": {
+  "scope": "global"
+ },
+ "ReferralEmailSequence": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralFollowUp": {
+  "scope": "owner",
+  "owner_field": "referrer_user_id"
+ },
+ "ReferralInviteBatch": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralJackpot": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralLifetimeValue": {
+  "scope": "owner",
+  "owner_field": "referrer_user_id"
+ },
+ "ReferralMilestone": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralPayout": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralPostEntry": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralPrediction": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ReferralRiskFlag": {
+  "scope": "owner",
+  "owner_field": "referrer_user_id"
+ },
+ "ReferralSquad": {
+  "scope": "global"
+ },
+ "ReferralTier": {
+  "scope": "global"
+ },
+ "RespondentProfile": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "RespondentTrustScore": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "RetentionCampaign": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "RetentionRisk": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "RevenueEvent": {
+  "scope": "admin"
+ },
+ "RevenueProduct": {
+  "scope": "global"
+ },
+ "RewardPerk": {
+  "scope": "global"
+ },
+ "RewardTier": {
+  "scope": "global"
+ },
+ "SavedSurveySearch": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "ScreenOutEvent": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "Season": {
+  "scope": "global"
+ },
+ "SeasonRank": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SellerMarketplaceListing": {
+  "scope": "global"
+ },
+ "SharedWalletGroup": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "SmartNotificationRule": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SocialConnection": {
+  "scope": "global"
+ },
+ "SocialMediaConnection": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SocialMediaPost": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SourcedOrder": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SponsoredContent": {
+  "scope": "global"
+ },
+ "SponsoredListing": {
+  "scope": "global"
+ },
+ "SponsoredPlacement": {
+  "scope": "owner",
+  "owner_field": "owner_user_id"
+ },
+ "SquadActivityFeed": {
+  "scope": "global"
+ },
+ "SquadMember": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "Streak": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "StreamerSubscription": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "StreamerTip": {
+  "scope": "global"
+ },
+ "StreamSession": {
+  "scope": "global"
+ },
+ "Subscription": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "Supplier": {
+  "scope": "admin"
+ },
+ "SupportTicket": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SupportTicketDossier": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "Survey": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SurveyABTest": {
+  "scope": "global"
+ },
+ "SurveyCollabSession": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SurveyDispute": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SurveyHeatmapData": {
+  "scope": "global"
+ },
+ "SurveyMarketplaceListing": {
+  "scope": "global"
+ },
+ "SurveyProfile": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SurveyRecommendation": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "SurveySchedule": {
+  "scope": "global"
+ },
+ "SurveyTemplate": {
+  "scope": "global"
+ },
+ "Tenant": {
+  "scope": "global"
+ },
+ "TieredMembership": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "Tournament": {
+  "scope": "owner",
+  "owner_field": "created_by"
+ },
+ "TournamentAIInsight": {
+  "scope": "global"
+ },
+ "TournamentChallenge": {
+  "scope": "global"
+ },
+ "TournamentLeaderboard": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "TournamentMatch": {
+  "scope": "global"
+ },
+ "TournamentParticipant": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "Transaction": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "TransferRequest": {
+  "scope": "global"
+ },
+ "User": {
+  "scope": "self",
+  "owner_field": "id"
+ },
+ "UserAchievement": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserAchievementBadge": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserActivity": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserBadge": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserGroup": {
+  "scope": "global"
+ },
+ "UserInventory": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserJourneyEvent": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserLevel": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserPlatformStats": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserProductProfile": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserRecommendation": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserSubscription": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UserSuggestion": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "UXSessionRecording": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "VerifiedSurveyMedia": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "VirtualCurrency": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "WeeklyEvent": {
+  "scope": "global"
+ },
+ "WeeklyReferralCampaign": {
+  "scope": "global"
+ },
+ "WhiteLabelLicense": {
+  "scope": "global"
+ },
+ "WhiteLabelPartner": {
+  "scope": "global"
+ },
+ "WishlistShareReferral": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "WithdrawalRequest": {
+  "scope": "global"
+ },
+ "YouTubeEmbedAnalytics": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "YouTubeVideoSession": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ }
 }

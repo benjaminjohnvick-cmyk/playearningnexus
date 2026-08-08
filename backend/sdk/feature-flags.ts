@@ -20,7 +20,8 @@ export type FlagName =
   | "live_experiments" | "personalized_learning" | "experiments_paused" | "ux_heatmap"
   | "points_boost" | "physical_store" | "local_pickup" | "layaway" | "purchase_payback"
   | "digital_store" | "teen_accounts" | "kyc_survey_ai_autopublish" | "ai_paused"
-  | "loyalty_program" | "group_goals" | "verified_surveys";
+  | "loyalty_program" | "group_goals" | "verified_surveys"
+  | "goods_advance";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -63,7 +64,8 @@ const DEFAULTS: Record<FlagName, boolean> = {
   ai_paused: false,              // GLOBAL AI KILL SWITCH — OFF = all AI runs. Flip ON (the "stop" button) to instantly halt AI-driven changes (optimizer pass, self-learning, autonomous auto-apply). Human corrections still work while paused; flip OFF to resume.
   loyalty_program: true,         // Retail-loyalty rewards program: earned, non-cashable, closed-loop points + a 10% member discount FUNDED FROM the member's generated-revenue pool (store margin untouched), capped at a back-end annual value. 1:1 rewarded-members-to-advertisers. ON by default.
   group_goals: true,             // Friends work toward a big-ticket item TOGETHER with NO shared wallet: each member keeps their own points, the platform sums individual progress, and at the shared milestone the PLATFORM funds a capped, non-cashable points reward each member claims for their OWN account (value flows platform→member only — loyalty-promo structure, not money transmission). ON by default.
-  verified_surveys: true,        // OWN PPC surveys answered by voice/video: record→transcribe(Whisper)→AI-autofill→respondent CONFIRMS→submit, with an AI "valid response" score, capture/heatmap trace, and a per-kind BIOMETRIC consent gate (voice/face data). Recording is always OPTIONAL (tap-to-answer fallback). ON by default; voice transcription lights up once OPENAI_API_KEY is set (degrades gracefully otherwise). NEVER used on third-party walls (e.g. BitLabs).
+  verified_surveys: true,
+  goods_advance: false,        // OFF — optional 0% non-recourse in-store advance; provider + legal sign-off gated (see GET-GOODS-ADVANCE-PROGRAM-COMPLIANCE.md)        // OWN PPC surveys answered by voice/video: record→transcribe(Whisper)→AI-autofill→respondent CONFIRMS→submit, with an AI "valid response" score, capture/heatmap trace, and a per-kind BIOMETRIC consent gate (voice/face data). Recording is always OPTIONAL (tap-to-answer fallback). ON by default; voice transcription lights up once OPENAI_API_KEY is set (degrades gracefully otherwise). NEVER used on third-party walls (e.g. BitLabs).
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];
