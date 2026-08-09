@@ -37,13 +37,36 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 earn-to-unlock counts toward parity, the revenue-share only has to recover $4,000 — so a $6,667/mo
 advertiser clears in ~6 months, and a $20k/mo advertiser clears the $4,000 in ~2 months.)*
 
+## Business revenue = platform-attributed sales (the measured, enforceable definition)
+
+**Decision:** "business revenue" is **platform-attributed sales** — the sales the advertiser actually makes
+*through the platform*, recorded by us. It is **not** their self-reported total company revenue and **not**
+any off-platform sales. This is the version we can measure, audit, and enforce without trusting a number
+the advertiser types in.
+
+**How it's measured in code.** The revenue-share reads finalized sales rows the platform already stores,
+stamped with the advertiser, and sums the ones in a "counted" (paid/fulfilled) status:
+
+- Source is config-driven so the mapping can change without a redeploy. Defaults:
+  - `FREE_ADVERTISER_REVSHARE_SOURCE = platform_attributed` (set to `off` to disable the share entirely)
+  - `REVSHARE_SALES_ENTITY = Order` — the entity that holds sales
+  - `REVSHARE_SALES_ADVERTISER_FIELD = advertiser_id` — the field on that row identifying the advertiser
+  - `REVSHARE_SALES_AMOUNT_FIELD = amount` — the sale amount to sum
+  - `REVSHARE_SALES_COUNTED_STATUSES = awaiting_shipment,shipped,delivered,fulfilled,completed,paid`
+- Logic: `attributedSalesUsd()` and `computeFreeAdvertiserRevenueShare()` in
+  `backend/sdk/earned-advertiser.ts` sum those rows and apply the tiered cut (10% then 5%).
+- **Attribution is required, and the default is safe.** A sale only counts toward an advertiser's business
+  revenue if its row is **stamped with that advertiser's id** (`advertiser_id`). Orders that aren't stamped
+  read as **$0** — the share silently collects nothing rather than guessing. So the one integration step to
+  make this real is: **stamp the advertiser id on Orders that came from that advertiser's placement** (their
+  storefront, sponsored listing, or attributed click). Until orders carry that field, the free tier costs the
+  advertiser nothing.
+
 ## Keep it a revenue-share, not a loan
 
-- **Non-recourse.** Taken **only** from business revenue that actually occurs. No revenue → nothing taken,
-  nothing owed. No fixed balance, no debt, no charge, no collections.
-- Measure the share on **revenue** (verifiable), not "profit." Define **how** business revenue is measured
-  (attributed orders through the platform/store is the clean, auditable source; off-platform self-reported
-  revenue is not).
+- **Non-recourse.** Taken **only** from platform-attributed sales that actually occur. No sales → nothing
+  taken, nothing owed. No fixed balance, no debt, no charge, no collections.
+- Measured on **revenue** (verifiable platform sales), never "profit," and never a self-reported figure.
 - For business advertisers this is commercial revenue-based financing (far lighter than consumer credit) —
-  but the moment it becomes a fixed amount owed regardless of revenue, it's a loan. Do not cross that line.
+  but the moment it becomes a fixed amount owed regardless of sales, it's a loan. Do not cross that line.
 - Have commercial-finance counsel review the revenue-share terms + disclosures before enabling.

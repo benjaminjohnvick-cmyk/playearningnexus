@@ -36,6 +36,51 @@ export const freeAdvEarnUnlockCreditUsd = () => Math.max(0, snapNumber("FREE_ADV
 export const freeAdvRevshareRecoverUsd = () => Math.max(0, freeAdvRevshareTargetUsd() - freeAdvEarnUnlockCreditUsd());
 export const freeAdvRevsharePct = () => Math.min(1, Math.max(0, snapNumber("FREE_ADVERTISER_REVSHARE_PCT", 0.10)));
 export const freeAdvRevsharePostPct = () => Math.min(1, Math.max(0, snapNumber("FREE_ADVERTISER_REVSHARE_POST_PCT", 0.05)));
+// Revenue-share SOURCE = platform-attributed sales only (measurable + enforceable). Config-driven so
+// the entity/field mapping can be adjusted without a deploy. Off-platform/self-reported revenue is NOT used.
+export const revshareSource = () => snapString("FREE_ADVERTISER_REVSHARE_SOURCE", "platform_attributed") || "platform_attributed";
+export const revshareSalesEntity = () => snapString("REVSHARE_SALES_ENTITY", "Order") || "Order";
+export const revshareSalesAdvertiserField = () => snapString("REVSHARE_SALES_ADVERTISER_FIELD", "advertiser_id") || "advertiser_id";
+export const revshareSalesAmountField = () => snapString("REVSHARE_SALES_AMOUNT_FIELD", "amount") || "amount";
+export const revshareSalesCountedStatuses = () =>
+  (snapString("REVSHARE_SALES_COUNTED_STATUSES", "awaiting_shipment,shipped,delivered,fulfilled,completed,paid") || "")
+    .split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
+
+/** Sum of PLATFORM-ATTRIBUTED, finalized sales for this advertiser (their measurable "business revenue").
+ *  Reads real sales rows stamped with the advertiser field; counts only finalized/paid statuses. Best-effort:
+ *  returns 0 if the source is off or nothing is attributed yet (safe). sinceISO optionally bounds the window. */
+export async function attributedSalesUsd(dbi: Dbi, advertiserUserId: string, sinceISO?: string): Promise<number> {
+  if (revshareSource() !== "platform_attributed") return 0;
+  const entity = revshareSalesEntity();
+  const advField = revshareSalesAdvertiserField();
+  const amtField = revshareSalesAmountField();
+  const counted = new Set(revshareSalesCountedStatuses());
+  const sinceTs = sinceISO ? Date.parse(sinceISO) : 0;
+  let rows: Record<string, unknown>[] = [];
+  try { rows = await dbi.filter(entity, { [advField]: advertiserUserId }, "-created_date", 5000) as Record<string, unknown>[]; }
+  catch { return 0; }
+  let total = 0;
+  for (const r of rows || []) {
+    const status = String((r as Record<string, unknown>).status ?? "").toLowerCase();
+    if (counted.size && !counted.has(status)) continue;
+    if (sinceTs) {
+      const ts = Date.parse(String((r as Record<string, unknown>).created_date ?? (r as Record<string, unknown>).created_at ?? ""));
+      if (Number.isFinite(ts) && ts < sinceTs) continue;
+    }
+    const amt = Number((r as Record<string, unknown>)[amtField] ?? 0);
+    if (Number.isFinite(amt) && amt > 0) total += amt;
+  }
+  return Math.round(total * 100) / 100;
+}
+
+/** Compute the platform's revenue-share cut for a free-tier advertiser from their ATTRIBUTED platform sales.
+ *  Non-recourse: only ever applied to sales that actually occurred through the platform. */
+export async function computeFreeAdvertiserRevenueShare(dbi: Dbi, advertiserUserId: string, rsRecoveredUsd: number, sinceISO?: string) {
+  const sales = await attributedSalesUsd(dbi, advertiserUserId, sinceISO);
+  const cut = freeAdvertiserRevenueShareCut(Number(rsRecoveredUsd) || 0, sales);
+  return { source: revshareSource(), attributed_sales_usd: sales, ...cut };
+}
+
 /** Tiered, non-recourse revenue-share rate given how much has already been recovered from this member.
  *  10% until the $12,000 target, then 5% ongoing. Returns a fraction (0.10 / 0.05). */
 export function freeAdvertiserRevenueSharePct(rsRecoveredUsd: number): number {
