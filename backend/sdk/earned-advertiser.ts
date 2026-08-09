@@ -26,6 +26,30 @@ export const earnUnlockThreshold = (level: number) =>
 export const freeTierSurveySharePct = () => Math.min(1, Math.max(0, snapNumber("FREE_TIER_SURVEY_SHARE_PCT", 0.75)));
 export const freeTierTermYears = () => Math.max(0, snapNumber("FREE_TIER_TERM_YEARS", 4));
 export const targetUserLtvUsd = () => Math.max(0, snapNumber("TARGET_USER_LTV_USD", 8000)); // INTERNAL only
+// Free earn-to-unlock ADVERTISER cost recovery via NON-RECOURSE revenue-share.
+// After the $8,000 earn-to-unlock value, recover the rest of the package value ($12,000 target) from a
+// share of the member's generated revenue: 10% until the target is reached, then 5% ongoing. Taken only
+// from revenue that actually occurs — never a debt, balance, or charge.
+export const freeAdvRevshareTargetUsd = () => Math.max(0, snapNumber("FREE_ADVERTISER_REVSHARE_TARGET_USD", 12000));
+export const freeAdvRevsharePct = () => Math.min(1, Math.max(0, snapNumber("FREE_ADVERTISER_REVSHARE_PCT", 0.10)));
+export const freeAdvRevsharePostPct = () => Math.min(1, Math.max(0, snapNumber("FREE_ADVERTISER_REVSHARE_POST_PCT", 0.05)));
+/** Tiered, non-recourse revenue-share rate given how much has already been recovered from this member.
+ *  10% until the $12,000 target, then 5% ongoing. Returns a fraction (0.10 / 0.05). */
+export function freeAdvertiserRevenueSharePct(recoveredUsd: number): number {
+  return (Number(recoveredUsd) || 0) >= freeAdvRevshareTargetUsd() ? freeAdvRevsharePostPct() : freeAdvRevsharePct();
+}
+/** The platform's cut of a new revenue amount for a free-tier advertiser, respecting the tier boundary
+ *  (revenue that crosses the $12,000 target is split: the portion below at 10%, the portion above at 5%).
+ *  NON-RECOURSE: this only ever applies to revenue that actually occurs. */
+export function freeAdvertiserRevenueShareCut(recoveredUsd: number, newRevenueUsd: number) {
+  const target = freeAdvRevshareTargetUsd();
+  const before = Math.max(0, Number(recoveredUsd) || 0);
+  const rev = Math.max(0, Number(newRevenueUsd) || 0);
+  const belowTarget = Math.max(0, Math.min(rev, target - before));
+  const aboveTarget = Math.max(0, rev - belowTarget);
+  const cut = Math.round((belowTarget * freeAdvRevsharePct() + aboveTarget * freeAdvRevsharePostPct()) * 100) / 100;
+  return { cut_usd: cut, at_pct_below: freeAdvRevsharePct(), at_pct_above: freeAdvRevsharePostPct(), target_usd: target, recovered_after: Math.round((before + cut) * 100) / 100 };
+}
 export const noUpfrontEnabled = () => snapBool("TIER1_NOUPFRONT_ENABLED", true);
 export const noUpfrontTermYears = () => Math.max(1, snapNumber("TIER1_NOUPFRONT_TERM_YEARS", 4));
 export const noUpfrontActiveWindowDays = () => Math.max(1, snapNumber("TIER1_NOUPFRONT_ACTIVE_WINDOW_DAYS", 30));

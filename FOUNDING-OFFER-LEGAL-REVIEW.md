@@ -19,7 +19,7 @@ A limited **"Tier 1"** introductory offer on a closed-loop, 18+ play-to-earn / s
 
 1. **An advertising product**, sold on its own merits: a fixed, stated allotment of ~200,000 between-survey
    (and, if enabled, social-feed) ad impressions per year, for a 4-year term, with priority placement, at a
-   locked-in introductory price (default $8,000, paid once, upfront, **non-refundable** presale).
+   locked-in introductory price (default **$12,000/yr, or $1,000/mo, paid upfront**, non-refundable).
 
 2. **A standalone membership perk**: as a member, a Tier 1 buyer keeps **100% of what they themselves earn**
    from **third-party** surveys for a **4-year window**, paid **only as Site Cash** (closed-loop, non-cashable
@@ -51,7 +51,7 @@ earlier buyers** — it is a pure availability/scarcity threshold, not a payout 
 
 ## 3. The mechanics that carry the most legal weight
 
-1. **Non-refundable presale.** The $8,000 is not held in escrow and is not refundable. The offer page shows a
+1. **Non-refundable presale.** The $12,000/yr ($1,000/mo) is not held in escrow and is not refundable. The offer page shows a
    prominent red **non-refundable risk warning** and requires an explicit acceptance checkbox; acceptance is
    recorded in an append-only consent ledger (`kind: "tier1_advertiser_terms"`).
 

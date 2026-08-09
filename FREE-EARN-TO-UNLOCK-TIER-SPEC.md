@@ -1,7 +1,7 @@
 # Free "Earn-to-Unlock" Advertiser Tier — Design Spec
 
 **Status: SPEC for review (not yet built). Counsel-gated before launch.**
-The compliant path to the same goal: open the platform to the mass market of users who can't pay $8,000
+The compliant path to the same goal: open the platform to the mass market of users who can't pay $12,000/yr
 upfront, let them reach advertiser status over time, and still have the platform generate ~$8,000 of value
 per engaged user — **without anyone owing anything.**
 
@@ -9,9 +9,16 @@ per engaged user — **without anyone owing anything.**
 
 ## 1. The core reframe
 
+> **PRICING UPDATE (2026):** The paid advertiser price is now **$12,000/yr (or $1,000/mo), paid upfront**.
+> The FREE earn-to-unlock tier is unchanged in spirit: a member still **earns the ~$8,000 unlock over the
+> 4-year term**, and the platform then recovers the remainder of the $12,000 package value via a
+> **NON-RECOURSE revenue-share — 10% of the member's generated revenue until $12,000 is recovered, then 5%
+> ongoing.** It is taken only from revenue that actually occurs; nothing is ever owed as a debt or charged.
+> See ADVERTISER-PRICING-2026.md and the FREE_ADVERTISER_REVSHARE_* / *_PRICE_USD settings.
+
 The $8,000 changes meaning depending on which side it sits on:
 
-- **Paid Tier 1 (existing):** the user *pays* $8,000 cash upfront. It's a price.
+- **Paid Tier 1 (existing):** the user *pays* $12,000/yr (or $1,000/mo) upfront. It's a price.
 - **Free Earn-to-Unlock (this spec):** the user *pays nothing and owes nothing.* The $8,000 becomes the
   platform's **lifetime-value (LTV) target** — the revenue you earn by monetizing that user's activity over
   their tenure. **You generate it; they never owe it.**
@@ -145,7 +152,7 @@ their activity. Each unlock is a grant with a consent/record entry; there is no 
 
 ## 7. No-upfront Tier 1 — advertiser status for $0, on a 4-year PARTICIPATION basis (not a debt)
 
-A third on-ramp, for people who want **advertiser status from day one** without paying $8,000:
+A third on-ramp, for people who want **advertiser status from day one** without paying $12,000/yr:
 
 - **$0 upfront. Nothing owed. Ever.** No balance, no charge, no penalty.
 - The advertiser gets the **full package granted immediately**, but the **advertising is delivered over a
@@ -169,7 +176,7 @@ A third on-ramp, for people who want **advertiser status from day one** without 
 
 | | **Paid Tier 1** | **No-upfront Tier 1** | **Free Earn-to-Unlock** |
 |---|---|---|---|
-| Upfront cost | $8,000 (non-refundable) | $0 | $0 |
+| Upfront cost | $12,000/yr ($1,000/mo, non-refundable) | $0 | $0 |
 | Owes anything? | No | **No** | **No** |
 | Condition | — | Participate over ~4 yrs (delivery term, not a debt) | — |
 | Survey share | Keeps 100% in-window | Standard share | Standard share |

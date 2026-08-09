@@ -75,7 +75,8 @@ export function tier1Perks(): Record<string, unknown> {
 
 export const foundingEnabled = () => snapBool("FOUNDING_ADVERTISER_ENABLED", true);
 export const foundingSlots = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_SLOTS", 100000));
-export const foundingPriceUsd = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_PRICE_USD", 8000));
+export const foundingPriceUsd = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_PRICE_USD", 12000));
+export const foundingMonthlyPriceUsd = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_MONTHLY_PRICE_USD", 1000));
 export const foundingTermYears = () => Math.max(1, snapNumber("FOUNDING_ADVERTISER_TERM_YEARS", 4));
 export const foundingImpressionsPerYear = () => Math.max(0, snapNumber("FOUNDING_INTERSTITIAL_IMPRESSIONS_PER_YEAR", 200000));
 export const foundingInterstitialPriority = () => snapBool("FOUNDING_INTERSTITIAL_PRIORITY", true);
