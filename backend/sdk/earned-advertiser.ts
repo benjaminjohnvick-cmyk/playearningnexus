@@ -31,24 +31,38 @@ export const targetUserLtvUsd = () => Math.max(0, snapNumber("TARGET_USER_LTV_US
 // share of the member's generated revenue: 10% until the target is reached, then 5% ongoing. Taken only
 // from revenue that actually occurs — never a debt, balance, or charge.
 export const freeAdvRevshareTargetUsd = () => Math.max(0, snapNumber("FREE_ADVERTISER_REVSHARE_TARGET_USD", 12000));
+export const freeAdvEarnUnlockCreditUsd = () => Math.max(0, snapNumber("FREE_ADVERTISER_EARN_UNLOCK_CREDIT_USD", 8000));
+/** How much the revenue-share actually needs to recover: parity target minus the earn-to-unlock credit. */
+export const freeAdvRevshareRecoverUsd = () => Math.max(0, freeAdvRevshareTargetUsd() - freeAdvEarnUnlockCreditUsd());
 export const freeAdvRevsharePct = () => Math.min(1, Math.max(0, snapNumber("FREE_ADVERTISER_REVSHARE_PCT", 0.10)));
 export const freeAdvRevsharePostPct = () => Math.min(1, Math.max(0, snapNumber("FREE_ADVERTISER_REVSHARE_POST_PCT", 0.05)));
 /** Tiered, non-recourse revenue-share rate given how much has already been recovered from this member.
  *  10% until the $12,000 target, then 5% ongoing. Returns a fraction (0.10 / 0.05). */
-export function freeAdvertiserRevenueSharePct(recoveredUsd: number): number {
-  return (Number(recoveredUsd) || 0) >= freeAdvRevshareTargetUsd() ? freeAdvRevsharePostPct() : freeAdvRevsharePct();
+export function freeAdvertiserRevenueSharePct(rsRecoveredUsd: number): number {
+  // 10% until the revenue-share has recovered its portion (~$4,000 = target − $8k credit), then 5% forever.
+  return (Number(rsRecoveredUsd) || 0) >= freeAdvRevshareRecoverUsd() ? freeAdvRevsharePostPct() : freeAdvRevsharePct();
 }
 /** The platform's cut of a new revenue amount for a free-tier advertiser, respecting the tier boundary
  *  (revenue that crosses the $12,000 target is split: the portion below at 10%, the portion above at 5%).
  *  NON-RECOURSE: this only ever applies to revenue that actually occurs. */
-export function freeAdvertiserRevenueShareCut(recoveredUsd: number, newRevenueUsd: number) {
-  const target = freeAdvRevshareTargetUsd();
-  const before = Math.max(0, Number(recoveredUsd) || 0);
+export function freeAdvertiserRevenueShareCut(rsRecoveredUsd: number, newRevenueUsd: number) {
+  // rsRecoveredUsd = how much the REVENUE-SHARE has collected so far (the $8k earn-to-unlock is already
+  // credited toward parity and is NOT part of this counter). 10% applies until the revenue-share portion
+  // (~$4,000) is collected, then 5% forever. Non-recourse: only ever applied to revenue that occurs.
+  const recoverPortion = freeAdvRevshareRecoverUsd();            // e.g. 12000 - 8000 = 4000
+  const before = Math.max(0, Number(rsRecoveredUsd) || 0);
   const rev = Math.max(0, Number(newRevenueUsd) || 0);
-  const belowTarget = Math.max(0, Math.min(rev, target - before));
-  const aboveTarget = Math.max(0, rev - belowTarget);
-  const cut = Math.round((belowTarget * freeAdvRevsharePct() + aboveTarget * freeAdvRevsharePostPct()) * 100) / 100;
-  return { cut_usd: cut, at_pct_below: freeAdvRevsharePct(), at_pct_above: freeAdvRevsharePostPct(), target_usd: target, recovered_after: Math.round((before + cut) * 100) / 100 };
+  const remainingAt10 = Math.max(0, recoverPortion - before);   // revenue still eligible for 10%
+  const revAt10 = Math.min(rev, remainingAt10 / freeAdvRevsharePct());
+  const revAt5 = Math.max(0, rev - revAt10);
+  const cut = Math.round((revAt10 * freeAdvRevsharePct() + revAt5 * freeAdvRevsharePostPct()) * 100) / 100;
+  return {
+    cut_usd: cut,
+    at_pct_below: freeAdvRevsharePct(), at_pct_above: freeAdvRevsharePostPct(),
+    recover_portion_usd: recoverPortion, parity_target_usd: freeAdvRevshareTargetUsd(),
+    earn_unlock_credit_usd: freeAdvEarnUnlockCreditUsd(),
+    rs_recovered_after: Math.round((before + cut) * 100) / 100,
+  };
 }
 export const noUpfrontEnabled = () => snapBool("TIER1_NOUPFRONT_ENABLED", true);
 export const noUpfrontTermYears = () => Math.max(1, snapNumber("TIER1_NOUPFRONT_TERM_YEARS", 4));
