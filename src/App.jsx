@@ -176,6 +176,7 @@ const GameMonetizationDashboard = lazy(() => import('./pages/GameMonetizationDas
 const DeveloperEarningsDashboard = lazy(() => import('./pages/DeveloperEarningsDashboard'));
 const AffiliateMarketingPage = lazy(() => import('./pages/AffiliateMarketingPage'));
 const AIRevenueTracker = lazy(() => import('./pages/AIRevenueTracker'));
+const RevenueStack = lazy(() => import('./pages/RevenueStack'));
 const FeaturedGameDashboard = lazy(() => import('@/modules/marketplace/games/FeaturedGameDashboard'));
 const ThirdPartySellerMarketplace = lazy(() => import('./pages/ThirdPartySellerMarketplace'));
 const SocialMediaAdPoster = lazy(() => import('./pages/SocialMediaAdPoster'));
@@ -444,6 +445,7 @@ const AuthenticatedApp = () => {
       <Route path="/DeveloperEarningsDashboard" element={<LayoutWrapper currentPageName="DeveloperEarningsDashboard"><DeveloperEarningsDashboard /></LayoutWrapper>} />
       <Route path="/AffiliateMarketingPage" element={<LayoutWrapper currentPageName="AffiliateMarketingPage"><AffiliateMarketingPage /></LayoutWrapper>} />
       <Route path="/AIRevenueTracker" element={<LayoutWrapper currentPageName="AIRevenueTracker"><AIRevenueTracker /></LayoutWrapper>} />
+      <Route path="/RevenueStack" element={<LayoutWrapper currentPageName="RevenueStack"><RevenueStack /></LayoutWrapper>} />
       <Route path="/FeaturedGameDashboard" element={<LayoutWrapper currentPageName="FeaturedGameDashboard"><FeaturedGameDashboard /></LayoutWrapper>} />
       <Route path="/ThirdPartySellerMarketplace" element={<LayoutWrapper currentPageName="ThirdPartySellerMarketplace"><ThirdPartySellerMarketplace /></LayoutWrapper>} />
       <Route path="/SocialMediaAdPoster" element={<LayoutWrapper currentPageName="SocialMediaAdPoster"><SocialMediaAdPoster /></LayoutWrapper>} />

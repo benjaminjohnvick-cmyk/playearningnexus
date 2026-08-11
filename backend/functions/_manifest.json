@@ -665,6 +665,7 @@
   "retentionCampaignEngine",
   "revenueHubOrchestrator",
   "revenueReport",
+  "revenueStackReport",
   "roasBiddingEngine",
   "runAdCreativeABTest",
   "runDailyFeedbackAnalysis",
