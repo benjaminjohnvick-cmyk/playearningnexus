@@ -34,13 +34,19 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 - **This is regulated credit** and is **disabled by default**, hard-gated behind a licensed creditor
   (`TIER1_FINANCED_PROVIDER`) + counsel sign-off (`TIER1_FINANCED_LEGAL_SIGNOFF`) + the `tier1_financed` flag.
   It is heavier than the non-recourse Goods Advance and must not launch without counsel + licensing.
-- Distinct from the **free earn-to-unlock** tier below (which is non-recourse — nothing is ever owed). One
-  toggle (`TIER1_FINANCED_RECOURSE = false`) converts the financed option to a non-recourse earnings-share.
 - Full write-up: **TIER1-FINANCED-PAY-FROM-EARNINGS.md**.
 
-## Free earn-to-unlock advertiser — reconciled model
+## ~~Free earn-to-unlock advertiser~~ — DISCONTINUED
 
-- **Still free. Nobody owes anything. Non-recourse throughout.**
+> **Removed per owner decision — the free earn-to-unlock tier is no longer offered.**
+> `FREE_ADVERTISER_TIER_ENABLED` now defaults to **0 (off)**: the tier is not shown and the join endpoint
+> refuses `free_earn` mode. The code and the settings below are **retained but inactive** (set the flag to 1
+> to bring it back). The associated revenue-share only ever applied to free-tier advertisers, so it is moot
+> while the tier is off. The separate **no-upfront Tier 1** option (`TIER1_NOUPFRONT_ENABLED`) is unaffected.
+>
+> The mechanics below are kept for reference only.
+
+- **(Inactive) Still free. Nobody owes anything. Non-recourse throughout.**
 - **Step 1 — earn the ~$8,000 unlock over the 4-year term** (`TARGET_USER_LTV_USD = 8000`,
   `FREE_TIER_TERM_YEARS = 4`). This $8,000 **counts toward parity** with a paid $12,000 advertiser.
 - **Step 2 — revenue-share recovers only the REMAINING $4,000** ( = $12,000 parity target − $8,000

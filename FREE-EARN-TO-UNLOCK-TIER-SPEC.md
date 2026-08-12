@@ -1,5 +1,10 @@
 # Free "Earn-to-Unlock" Advertiser Tier — Design Spec
 
+> **⛔ DISCONTINUED (owner decision): the earn-to-unlock tier is no longer offered.**
+> `FREE_ADVERTISER_TIER_ENABLED` defaults to **0 (off)** — the tier is not shown and the join endpoint
+> refuses `free_earn` mode. This spec is retained for historical reference and in case it is ever revived
+> (set the flag to 1). Nothing below is active.
+
 **Status: SPEC for review (not yet built). Counsel-gated before launch.**
 The compliant path to the same goal: open the platform to the mass market of users who can't pay $12,000/yr
 upfront, let them reach advertiser status over time, and still have the platform generate ~$8,000 of value
