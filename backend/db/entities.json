@@ -282,6 +282,7 @@
   "SurveyTemplate",
   "TaxProfile",
   "Tenant",
+  "Tier1FinancedPlan",
   "TieredMembership",
   "Tournament",
   "TournamentAIInsight",

@@ -3631,3 +3631,16 @@ CREATE TABLE IF NOT EXISTS "GoodsAdvance" (
 );
 CREATE INDEX IF NOT EXISTS "GoodsAdvance_data_gin" ON "GoodsAdvance" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "GoodsAdvance_created" ON "GoodsAdvance" (created_date DESC);
+
+-- Tier1FinancedPlan: Tier 1 "pay-from-earnings" FINANCED package ledger (owner-scoped).
+-- RECOURSE credit — the $12,000 is owed; earnings are swept toward it; remainder due at term end.
+-- DISABLED by default and provider+counsel gated (see TIER1-FINANCED-PAY-FROM-EARNINGS.md).
+CREATE TABLE IF NOT EXISTS "Tier1FinancedPlan" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "Tier1FinancedPlan_data_gin" ON "Tier1FinancedPlan" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "Tier1FinancedPlan_created" ON "Tier1FinancedPlan" (created_date DESC);

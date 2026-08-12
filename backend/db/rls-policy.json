@@ -873,6 +873,10 @@
  "Tenant": {
   "scope": "global"
  },
+ "Tier1FinancedPlan": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
  "TieredMembership": {
   "scope": "owner",
   "owner_field": "user_id"
