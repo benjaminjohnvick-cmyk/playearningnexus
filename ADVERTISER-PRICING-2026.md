@@ -9,20 +9,22 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 - Settings: `PPC_GRID_ANNUAL_PRICE = 12000`, `PPC_GRID_MONTHLY_PRICE = 1000`,
   `FOUNDING_ADVERTISER_PRICE_USD = 12000`, `FOUNDING_ADVERTISER_MONTHLY_PRICE_USD = 1000`.
 
-### Founding rollover credit → upgrade, + sign-up credit
+### Founding upgrade discount + sign-up credit
 
-- Pay **$12,000 upfront**, receive a **$12,000 store credit** to roll into an **upgrade** (default **"Tier 2 —
-  Scale," $200,000**) within **12 months** → net upgrade price **$188,000**. Credit is non-cashable,
-  upgrade-only, and expires if unused.
+- Pay **$12,000 upfront**. Founding advertisers then get a **discount on an upgrade** (default **"Tier 2 —
+  Scale," $200,000**): a promotional **6% off** the upgrade price → **$12,000 off → net $188,000**, available
+  for a 12-month window. The discount is defined as a **% of the upgrade price — decoupled from the amount
+  paid** (no "credit," no "return your $12k"), which removes the return-of-capital signal the founding packet
+  flagged.
 - **Sign-up credit: $1,000** in Site Cash, vesting over 12 months (~$83.33/mo), conditional on **12 months
   active use + feedback + 1 fraud-screened referral**. Unmet conditions forfeit the unvested part — nothing
   owed.
-- Settings: `FOUNDING_ROLLOVER_CREDIT_USD = 12000`, `FOUNDING_UPGRADE_PRICE_USD = 200000`,
+- Settings: `FOUNDING_UPGRADE_DISCOUNT_PCT = 0.06`, `FOUNDING_UPGRADE_PRICE_USD = 200000`,
   `FOUNDING_SIGNUP_CREDIT_USD = 1000` (+ condition keys). Code: `backend/sdk/founding-rollover.ts`,
   functions `foundingRolloverStatus` / `foundingUpgradeQuote`, page `/FoundingUpgrade`.
-- **⚠️ Counsel flag:** a credit **equal to the amount paid** reads as return-of-capital (the signal the
-  founding packet disabled). Scoped tightly (non-cashable, upgrade-only, expiring) but review the framing;
-  the $200k upgrade must be a real product. Full write-up: **FOUNDING-ROLLOVER-AND-SIGNUP-CREDIT.md**.
+- **Note:** for maximum daylight from the return-of-capital signal, set the discount % so its dollar result
+  isn't exactly $12,000. The $200k upgrade must be a real product before it's sold. Full write-up:
+  **FOUNDING-ROLLOVER-AND-SIGNUP-CREDIT.md**.
 
 ### Tier 1 "pay-from-earnings" — FINANCED (recourse credit — OFF by default)
 

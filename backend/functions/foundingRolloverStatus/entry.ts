@@ -2,11 +2,11 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { qualifiedReferrals } from "../../sdk/earned-advertiser.ts";
-import { rolloverState, upgradeQuote, signupCreditState, foundingCreditDisclosures } from "../../sdk/founding-rollover.ts";
+import { upgradeDiscountState, upgradeQuote, signupCreditState, foundingCreditDisclosures } from "../../sdk/founding-rollover.ts";
 
 // foundingRolloverStatus (read-only) — the caller's founding-advertiser credit picture:
-//   • the $12,000 ROLLOVER credit and its window toward the upgrade,
-//   • a QUOTE for the upgrade with the credit applied (net price), and
+//   • the founding UPGRADE DISCOUNT (a % off the upgrade, decoupled from what they paid) and its window,
+//   • a QUOTE for the upgrade with the discount applied (net price), and
 //   • the conditional $1,000 SIGN-UP credit vesting (feedback + 1 referral + active months).
 // Never moves money. All credit is non-cashable Site Cash; nothing is ever owed.
 export default __handler(async (req) => {
@@ -20,7 +20,6 @@ export default __handler(async (req) => {
     const recRows = await db.filter("FoundingAdvertiser", { user_id: uid }, "-created_date", 1).catch(() => []) as Record<string, unknown>[];
     const rec = recRows && recRows[0] ? recRows[0] : null;
     const purchasedISO = String((rec?.purchased_at ?? rec?.credit_start ?? rec?.created_date ?? todayISO));
-    const appliedUsd = Number(rec?.rollover_credit_applied_usd) || 0;
 
     // Sign-up conditions: qualified referrals, feedback given, distinct active months.
     const referrals = (await qualifiedReferrals(db, uid).catch(() => [])).length;
@@ -47,17 +46,17 @@ export default __handler(async (req) => {
       monthsActive = months.size;
     } catch { monthsActive = 0; }
 
-    const roll = rolloverState(purchasedISO, todayISO, appliedUsd);
-    const quote = upgradeQuote(roll);
+    const discount = upgradeDiscountState(purchasedISO, todayISO);
+    const quote = upgradeQuote(discount);
     const signup = signupCreditState({ startISO: purchasedISO, todayISO, monthsActive, feedbackGiven, referralsQualified: referrals });
 
     return Response.json({
       has_founding_seat: !!rec,
-      rollover: roll,
+      upgrade_discount: discount,
       upgrade_quote: quote,
       signup_credit: signup,
       disclosures: foundingCreditDisclosures(),
-      note: "All figures are store credit (non-cashable Site Cash) or quotes. No charge is made here and nothing is ever owed.",
+      note: "All figures are store credit (non-cashable Site Cash) or quotes. The upgrade discount is a promo % off the upgrade, decoupled from the amount paid. No charge is made here and nothing is ever owed.",
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

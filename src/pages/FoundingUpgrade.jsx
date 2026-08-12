@@ -40,7 +40,7 @@ export default function FoundingUpgrade() {
   if (loading) return <div className="flex items-center justify-center py-24"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>;
   if (err) return <div className="max-w-xl mx-auto py-24 text-center text-red-600">{err}</div>;
 
-  const roll = data?.rollover;
+  const discount = data?.upgrade_discount;
   const quote = data?.upgrade_quote;
   const signup = data?.signup_credit;
 
@@ -82,19 +82,19 @@ export default function FoundingUpgrade() {
         </CardContent></Card>
       )}
 
-      {/* Rollover credit + upgrade quote */}
-      {roll && quote && (
+      {/* Founding upgrade discount + quote */}
+      {discount && quote && (
         <Card><CardContent className="p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-gray-900 flex items-center gap-2"><ArrowUpRight className="w-4 h-4" style={{ color: NAVY }} />Roll into the upgrade</h3>
-            <Badge variant="outline" className={roll.within_window ? 'border-emerald-300 text-emerald-700' : 'border-gray-300 text-gray-500'}>
-              {roll.within_window ? 'window open' : 'window closed'}
+            <h3 className="font-bold text-gray-900 flex items-center gap-2"><ArrowUpRight className="w-4 h-4" style={{ color: NAVY }} />Founding upgrade discount</h3>
+            <Badge variant="outline" className={discount.within_window ? 'border-emerald-300 text-emerald-700' : 'border-gray-300 text-gray-500'}>
+              {discount.within_window ? 'available' : 'window ended'}
             </Badge>
           </div>
-          <p className="text-sm text-gray-600">Rollover credit available: <strong>{money(roll.remaining_credit_usd)}</strong> of {money(roll.credit_usd)}</p>
+          <p className="text-sm text-gray-600">Founding advertisers get <strong>{Math.round((discount.discount_pct || 0) * 100)}% off</strong> the upgrade{discount.available_until ? '' : ''}.</p>
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center justify-between text-sm"><span className="text-gray-600">{quote.upgrade_name}</span><span className="tabular-nums">{money(quote.upgrade_price_usd)}</span></div>
-            <div className="flex items-center justify-between text-sm text-emerald-700"><span>Credit applied</span><span className="tabular-nums">− {money(quote.credit_applied_usd)}</span></div>
+            <div className="flex items-center justify-between text-sm text-emerald-700"><span>Founding discount ({Math.round((quote.discount_pct || 0) * 100)}%)</span><span className="tabular-nums">− {money(quote.discount_usd)}</span></div>
             <div className="border-t mt-2 pt-2 flex items-center justify-between font-bold" style={{ color: INK }}><span>Net price</span><span className="tabular-nums">{money(quote.net_price_usd)}</span></div>
           </div>
           <p className="text-xs text-gray-400">{quote.note}</p>

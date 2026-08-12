@@ -1,11 +1,11 @@
-// founding-rollover.ts — the founding advertiser's ROLLOVER CREDIT → upgrade, plus the conditional SIGN-UP
-// store credit. All credit here is NON-CASHABLE closed-loop Site Cash. Nothing is ever owed: unmet
-// conditions simply forfeit the unvested remainder — there is never a charge or a balance.
+// founding-rollover.ts — the founding advertiser's UPGRADE DISCOUNT (decoupled from the payment) plus the
+// conditional SIGN-UP store credit. All credit here is NON-CASHABLE closed-loop Site Cash. Nothing is ever
+// owed: unmet conditions simply forfeit the unvested remainder — there is never a charge or a balance.
 //
-// COUNSEL NOTE (carried in code on purpose): the rollover credit is set EQUAL to the amount paid ($12,000
-// paid → $12,000 credit). A credit pegged to the amount paid reads as return-of-capital — the exact signal
-// FOUNDING_FULLKEEP_CAP_TO_PRICE was disabled to avoid. It is scoped as tightly as possible (non-cashable,
-// usable ONLY toward the defined upgrade, and expiring if unused) but the framing must be reviewed. See
+// REFRAMED PER COUNSEL: the upgrade benefit is no longer a "credit equal to the amount paid" (that read as
+// return-of-capital, the exact signal FOUNDING_FULLKEEP_CAP_TO_PRICE was disabled to avoid). It is now a plain
+// promotional DISCOUNT for founding advertisers, defined as a % of the UPGRADE price — it makes no reference
+// to, and is not derived from, what the advertiser paid. (Filename kept for continuity.) See
 // FOUNDING-ROLLOVER-AND-SIGNUP-CREDIT.md.
 import { snapBool, snapNumber, snapString } from "./settings.ts";
 
@@ -13,9 +13,10 @@ const r2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 const MS_PER_DAY = 86400000;
 
 // ── Settings getters ────────────────────────────────────────────────────────────────────────────────────
-export const rolloverCreditEnabled = () => snapBool("FOUNDING_ROLLOVER_CREDIT_ENABLED", true);
-export const rolloverCreditUsd = () => Math.max(0, snapNumber("FOUNDING_ROLLOVER_CREDIT_USD", 12000));
-export const rolloverCreditWindowMonths = () => Math.max(1, snapNumber("FOUNDING_ROLLOVER_CREDIT_WINDOW_MONTHS", 12));
+export const upgradeDiscountEnabled = () => snapBool("FOUNDING_UPGRADE_DISCOUNT_ENABLED", true);
+export const upgradeDiscountPct = () => Math.min(1, Math.max(0, snapNumber("FOUNDING_UPGRADE_DISCOUNT_PCT", 0.06)));
+export const upgradeDiscountMaxUsd = () => Math.max(0, snapNumber("FOUNDING_UPGRADE_DISCOUNT_MAX_USD", 0));
+export const upgradeDiscountWindowMonths = () => Math.max(1, snapNumber("FOUNDING_UPGRADE_DISCOUNT_WINDOW_MONTHS", 12));
 export const upgradeName = () => snapString("FOUNDING_UPGRADE_NAME", "Tier 2 — Scale") || "Tier 2 — Scale";
 export const upgradePriceUsd = () => Math.max(0, snapNumber("FOUNDING_UPGRADE_PRICE_USD", 200000));
 
@@ -37,68 +38,68 @@ function addMonthsISO(startISO: string, months: number): string {
   return new Date(s + months * 30 * MS_PER_DAY).toISOString();
 }
 
-// ── Rollover credit → upgrade ───────────────────────────────────────────────────────────────────────────
-export interface RolloverState {
+// ── Founding upgrade DISCOUNT (decoupled from payment) ───────────────────────────────────────────────────
+export interface UpgradeDiscountState {
   enabled: boolean;
-  credit_usd: number;              // the granted credit (=$12,000)
+  discount_pct: number;            // % off the upgrade price (e.g. 0.06)
+  discount_usd: number;            // the dollar value of that % (capped if a cap is set)
   window_months: number;
-  purchased_at: string;
-  expires_at: string;
+  eligible_since: string;
+  available_until: string;
   within_window: boolean;
-  applied_usd: number;             // how much of the credit has already been applied
-  remaining_credit_usd: number;    // credit still available to roll into the upgrade
   note: string;
 }
 
-/** Compute the rollover-credit state for a founding record. `appliedUsd` is what's already been applied
- *  (read from the record); we never move money here. Non-cashable, upgrade-only, expiring. */
-export function rolloverState(purchasedISO: string, todayISO: string, appliedUsd = 0): RolloverState {
-  const enabled = rolloverCreditEnabled();
-  const credit = rolloverCreditUsd();
-  const win = rolloverCreditWindowMonths();
-  const elapsed = monthsBetween(purchasedISO, todayISO);
+/** The founding upgrade discount state. Derived ONLY from the upgrade price and the promo %, never from what
+ *  the advertiser paid. A limited-time founding promo — when the window closes, the promo simply ends
+ *  (there is no "balance" or "their money" that expires). */
+export function upgradeDiscountState(eligibleSinceISO: string, todayISO: string): UpgradeDiscountState {
+  const enabled = upgradeDiscountEnabled();
+  const pct = upgradeDiscountPct();
+  const win = upgradeDiscountWindowMonths();
+  const price = upgradePriceUsd();
+  const cap = upgradeDiscountMaxUsd();
+  let discount = price * pct;
+  if (cap > 0) discount = Math.min(discount, cap);
+  const elapsed = monthsBetween(eligibleSinceISO, todayISO);
   const within = enabled && elapsed < win;
-  const applied = Math.min(credit, Math.max(0, Number(appliedUsd) || 0));
-  const remaining = within ? r2(Math.max(0, credit - applied)) : 0;
   return {
     enabled,
-    credit_usd: r2(credit),
+    discount_pct: pct,
+    discount_usd: within ? r2(discount) : 0,
     window_months: win,
-    purchased_at: purchasedISO,
-    expires_at: addMonthsISO(purchasedISO, win),
+    eligible_since: eligibleSinceISO,
+    available_until: addMonthsISO(eligibleSinceISO, win),
     within_window: within,
-    applied_usd: r2(applied),
-    remaining_credit_usd: remaining,
     note: within
-      ? "Non-cashable store credit, usable only toward the upgrade; expires at the end of the window."
-      : (enabled ? "The rollover credit window has closed; unused credit has expired (nothing owed either way)." : "Rollover credit is disabled."),
+      ? "A limited-time founding-advertiser discount on the upgrade, set as a % of the upgrade price — not tied to, or a return of, what you paid."
+      : (enabled ? "The founding upgrade-discount window has ended." : "Founding upgrade discount is disabled."),
   };
 }
 
 export interface UpgradeQuote {
   upgrade_name: string;
   upgrade_price_usd: number;
-  credit_available_usd: number;
-  credit_applied_usd: number;
-  net_price_usd: number;           // price − applied credit
+  discount_pct: number;
+  discount_usd: number;
+  net_price_usd: number;           // price − founding discount
   within_window: boolean;
   note: string;
 }
 
-/** A QUOTE (never a charge) for the upgrade with the rollover credit applied. `requestedApplyUsd` defaults
- *  to all available credit. Net price = upgrade price − applied credit (e.g. $200,000 − $12,000 = $188,000). */
-export function upgradeQuote(roll: RolloverState, requestedApplyUsd?: number): UpgradeQuote {
+/** A QUOTE (never a charge) for the upgrade with the founding discount applied.
+ *  Net price = upgrade price − discount (e.g. $200,000 − 6% = $188,000). */
+export function upgradeQuote(state: UpgradeDiscountState): UpgradeQuote {
   const price = upgradePriceUsd();
-  const avail = roll.within_window ? roll.remaining_credit_usd : 0;
-  const apply = Math.min(avail, price, requestedApplyUsd == null ? avail : Math.max(0, Number(requestedApplyUsd) || 0));
+  const discount = state.within_window ? state.discount_usd : 0;
   return {
     upgrade_name: upgradeName(),
     upgrade_price_usd: r2(price),
-    credit_available_usd: r2(avail),
-    credit_applied_usd: r2(apply),
-    net_price_usd: r2(Math.max(0, price - apply)),
-    within_window: roll.within_window,
-    note: "Quote only — no charge. Credit is non-cashable and applies solely to this upgrade. A real product must back this price before it is sold.",
+    discount_pct: state.discount_pct,
+    discount_usd: r2(discount),
+    net_price_usd: r2(Math.max(0, price - discount)),
+    within_window: state.within_window,
+    note: "Quote only — no charge. A founding-advertiser discount on the upgrade, decoupled from the amount paid. A real product must back this price before it is sold.",
   };
 }
 
@@ -164,13 +165,13 @@ export function signupCreditState(opts: {
   };
 }
 
-/** Disclosure lines for the sign-up credit + rollover, kept honest (conditions, non-cashable, FTC referral). */
+/** Disclosure lines for the sign-up credit + upgrade discount, kept honest (conditions, non-cashable, FTC). */
 export function foundingCreditDisclosures(): string[] {
   return [
     `Sign-up bonus: $${signupCreditUsd().toLocaleString()} in store credit, vesting over ${signupCreditWindowMonths()} months as you use the app.`,
     `To unlock it you must stay active, submit feedback${signupRequireReferrals() > 0 ? `, and refer ${signupRequireReferrals()} person who becomes an active user` : ""}.`,
     "The bonus is non-cashable store credit (Site Cash), spendable only on this site. If conditions aren't met, the unvested part is forfeited — you never owe anything.",
-    `Rollover credit: your $${rolloverCreditUsd().toLocaleString()} applies toward the ${upgradeName()} upgrade within ${rolloverCreditWindowMonths()} months; it is non-cashable, upgrade-only, and expires if unused.`,
+    `Founding upgrade discount: founding advertisers get ${Math.round(upgradeDiscountPct() * 100)}% off the ${upgradeName()} upgrade for ${upgradeDiscountWindowMonths()} months. It is a discount on the upgrade — not tied to, or a return of, what you paid.`,
     "Referral rewards: referrals must be genuine; this is a paid referral incentive and is disclosed as such.",
   ];
 }
