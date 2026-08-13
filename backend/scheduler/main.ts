@@ -8,19 +8,20 @@ const BACKEND = (Deno.env.get("BACKEND_URL") ?? "http://localhost:8000").replace
 const SERVICE_USER_ID = Deno.env.get("SCHEDULER_SERVICE_USER_ID") ?? "00000000-0000-0000-0000-000000000001"; // seed admin
 const cfg = JSON.parse(await Deno.readTextFile(new URL("./schedules.json", import.meta.url)));
 
-async function invoke(fnName: string) {
+async function invoke(fnName: string, extraBody?: Record<string, unknown>) {
   const token = await signJwt(SERVICE_USER_ID, { service: true });
   const res = await fetch(`${BACKEND}/functions/${fnName}`, {
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
-    body: JSON.stringify({ scheduled: true, action: "run" }),
+    // A job may carry an optional `body` in schedules.json (e.g. { "dry_run": true }); it is merged in here.
+    body: JSON.stringify({ scheduled: true, action: "run", ...(extraBody ?? {}) }),
   });
   console.log(`[cron] ${fnName} → ${res.status}`);
 }
 
 for (const job of cfg.jobs) {
   // Deno.cron registers a named cron trigger; the runtime fires the handler on schedule.
-  Deno.cron(job.name, job.cron, () => invoke(job.function));
+  Deno.cron(job.name, job.cron, () => invoke(job.function, job.body));
   console.log(`registered ${job.name}: "${job.cron}" → ${job.function}`);
 }
 

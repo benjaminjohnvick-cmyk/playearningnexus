@@ -229,6 +229,13 @@
       "cron": "0 16 * * *",
       "function": "adGridReallocateSlots",
       "_comment": "Daily (REALLOC_CUTOFF_HOUR_UTC): hands unused premium AdGrid slots to high-value non-premium earners as one-day passes."
+    },
+    {
+      "name": "funnel-reengage-sweep-daily",
+      "cron": "0 15 * * *",
+      "function": "funnelReengageSweep",
+      "body": { "dry_run": true },
+      "_comment": "Daily AI-concierge Gate-2 re-engagement. STARTS IN DRY-RUN (counts who WOULD be emailed, sends nothing) so you can check volumes first. To go live, set \"body\" to { \"dry_run\": false } (or remove it). Sends stay consent-gated (canEmailMarket), frequency-capped, and bounded by FUNNEL_SWEEP_MAX_PER_RUN."
     }
   ]
 }
