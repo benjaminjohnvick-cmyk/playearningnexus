@@ -50,8 +50,16 @@ export function buildReengageEmail(user: Record<string, unknown>, rec: Recommend
     }
   }
 
+  // Pre-results (fit) emails may carry a clearly-labeled illustration. Never a "typical return."
+  let illustrationBlock = "";
+  if (rec.gate === "fit" && rec.illustration) {
+    const ill = rec.illustration;
+    const ex = ill.example_usd != null ? ` (e.g. ${money(ill.example_usd)} in ${String(ill.metric || "").replace(/_/g, " ")})` : "";
+    illustrationBlock = `\n\n${ill.label}${ex}${ill.basis ? ` — ${ill.basis}` : ""}\n${ill.disclaimer}`;
+  }
+
   const body =
-    `Hi ${name},\n\n${lead}\n\n` +
+    `Hi ${name},\n\n${lead}${illustrationBlock}\n\n` +
     `You can reply straight to this email, or pick up where we left off here: ${url}\n\n` +
     `No pressure at all — if now isn't the time, just ignore this.\n\n— The plan concierge` +
     emailUnsubscribeFooter(user);

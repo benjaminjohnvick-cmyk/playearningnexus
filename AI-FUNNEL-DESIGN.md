@@ -103,6 +103,54 @@ of the plan they were looking at (Gate 1) or nudging on their results (Gate 2) a
   GDPR/ePrivacy (EU) require opt-IN.** For those recipients, only email with prior consent. Sending is gated
   on your consent flags, so keep those accurate per jurisdiction.
 
+## Pre-results illustration — hypothetical, NOT "typical return"
+
+Before a customer has their own results, the concierge can show an example of how the product works — but it
+is deliberately **not** framed as a "typical return." That distinction is the whole compliance point:
+
+- A **"typical" / "average" / "expected" return** is a regulated earnings claim. It must be backed by
+  **competent, reliable evidence** (real data across actual customers), and — critically — **a disclaimer does
+  not cure an unsubstantiated claim.** "Results not typical / just an example" language does not make an
+  unsupported earnings figure lawful. So a "typical return with a disclaimer," taken literally, is the *risky*
+  version.
+- What we show instead, from day one, is a **clearly hypothetical "how it works" illustration** — a round,
+  made-up figure that demonstrates the mechanics ("e.g. if this drove $X in attributed sales…"), always
+  labeled hypothetical, always carrying `AI_FUNNEL_EXAMPLE_DISCLAIMER`: *not a prediction, not a promise, not
+  typical, and results may be $0.* This is legal to show with no customer data because it claims nothing about
+  what anyone will actually earn.
+- When you eventually **do** have real evidence, flip to substantiated figures the honest way: set
+  `AI_FUNNEL_BENCHMARKS_SUBSTANTIATED = true` (an attestation that you hold the evidence) and put the numbers
+  **with their basis** in `AI_FUNNEL_SUBSTANTIATED_BENCHMARKS` (`{ productKey: { value, basis } }`). A figure
+  without a basis is never shown. The engine never fabricates a typical/average.
+
+Settings: `AI_FUNNEL_SHOW_ILLUSTRATIVE_EXAMPLE`, `AI_FUNNEL_EXAMPLE_DISCLAIMER`,
+`AI_FUNNEL_BENCHMARKS_SUBSTANTIATED`, `AI_FUNNEL_SUBSTANTIATED_BENCHMARKS`. Logic: `productIllustration()` in
+`backend/sdk/ai-funnel.ts`. The illustration rides on Gate-1 recommendations and appears in the concierge
+widget, the demo page, and the fit-gate re-engagement email (with the disclaimer attached every time).
+
+### Self-substantiating results (auto-compiled)
+
+`funnelBenchmarkCompile` (scheduled daily) keeps the "results information" current on its own. It aggregates
+**real per-customer results** per product — only from customers who have **completed** that product's window —
+and, once a product's sample reaches `AI_FUNNEL_BENCHMARK_MIN_SAMPLE` (default 30), **publishes a
+substantiated benchmark automatically**: the **median** (default; less outlier-skew than the mean) with a
+self-describing **basis** ("median result of N customers over their first W days, as of DATE"). It writes
+these into the same `AI_FUNNEL_SUBSTANTIATED_BENCHMARKS` / `AI_FUNNEL_BENCHMARKS_SUBSTANTIATED` settings the
+concierge already reads, so the display flips from hypothetical example → real substantiated figure the moment
+there's enough data, and updates every day thereafter.
+
+This is what keeps the "typical" claim lawful **automatically**: it is real platform data, only shown at an
+adequate sample size, always carrying its basis, and never fabricated. Every computation is also written to
+the `FunnelBenchmark` audit entity. Controls:
+
+- `AI_FUNNEL_AUTO_BENCHMARKS` — master on/off for the compiler.
+- `AI_FUNNEL_BENCHMARK_MIN_SAMPLE` — how many completed-window customers before a product publishes.
+- `AI_FUNNEL_BENCHMARK_METHOD` — `median` (recommended) or `average`.
+- `AI_FUNNEL_BENCHMARK_REQUIRE_APPROVAL` — ON records benchmarks as **pending** for admin sign-off instead of
+  auto-publishing (extra caution). OFF auto-publishes once the threshold is met.
+
+Run it with `{ "dry_run": true }` to see what it *would* publish (sample sizes per product) without writing.
+
 ## Scheduled sweep (runs itself)
 
 `funnelReengageSweep` (INTERNAL/ADMIN, meant to be **scheduled** — e.g. once daily) automates Gate 2: it

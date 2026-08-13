@@ -42,6 +42,63 @@ export const weakResultMult = () => Math.max(0, snapNumber("AI_FUNNEL_WEAK_RESUL
 export const maxUpsellAttempts = () => Math.max(0, snapNumber("AI_FUNNEL_MAX_UPSELL_ATTEMPTS", 2));
 export const requireSuitabilityForFinancial = () => snapBool("AI_FUNNEL_REQUIRE_SUITABILITY_FOR_FINANCIAL", true);
 
+// ── Illustrative example (pre-results). NOT a "typical return" — that would be a regulated earnings claim
+// needing real substantiation, and a disclaimer does NOT cure an unsubstantiated claim. So before we have a
+// customer's own data we show a clearly HYPOTHETICAL "how it works" illustration, or — only if the owner has
+// attested to real evidence AND supplied a basis — a substantiated figure. We never fabricate a typical/average.
+export const showIllustrativeExample = () => snapBool("AI_FUNNEL_SHOW_ILLUSTRATIVE_EXAMPLE", true);
+export const exampleDisclaimer = () => snapString("AI_FUNNEL_EXAMPLE_DISCLAIMER",
+  "Example only — hypothetical, to show how this works. It is NOT a prediction, a promise, or a typical result. Actual results vary widely and may be $0.") ||
+  "Example only — hypothetical. Not a prediction or typical result; actual results vary and may be $0.";
+export const benchmarksSubstantiated = () => snapBool("AI_FUNNEL_BENCHMARKS_SUBSTANTIATED", false);
+export function substantiatedBenchmarks(): Record<string, { value: number; basis: string }> {
+  const raw = snapString("AI_FUNNEL_SUBSTANTIATED_BENCHMARKS", "");
+  if (!raw) return {};
+  try {
+    const obj = JSON.parse(raw) as Record<string, unknown>;
+    const out: Record<string, { value: number; basis: string }> = {};
+    for (const [k, v] of Object.entries(obj)) {
+      const val = Number((v as Record<string, unknown>)?.value);
+      const basis = String((v as Record<string, unknown>)?.basis ?? "");
+      if (Number.isFinite(val) && basis.trim()) out[k] = { value: val, basis: basis.trim() };
+    }
+    return out;
+  } catch { return {}; }
+}
+
+function niceRound(n: number): number {
+  const x = Math.max(0, Number(n) || 0);
+  if (x <= 0) return 0;
+  const mag = Math.pow(10, Math.floor(Math.log10(x)));
+  return Math.round(x / mag) * mag;
+}
+
+export interface Illustration {
+  kind: "hypothetical" | "substantiated";
+  metric: string;
+  example_usd: number | null;   // a round HYPOTHETICAL amount to show mechanics — not an expected value
+  label: string;
+  basis?: string | null;        // present only for substantiated
+  disclaimer: string;
+}
+
+/** A pre-results illustration for a product. Substantiated (real evidence + basis, attested) if available;
+ *  otherwise a clearly hypothetical "how it works" example. Never a fabricated "typical return." */
+export function productIllustration(product: FunnelProduct | null): Illustration | null {
+  if (!product) return null;
+  if (benchmarksSubstantiated()) {
+    const b = substantiatedBenchmarks()[product.key];
+    if (b && b.basis && Number.isFinite(b.value)) {
+      return { kind: "substantiated", metric: product.metric, example_usd: r2(b.value), basis: b.basis,
+        label: "Based on real results", disclaimer: `Basis: ${b.basis}. Individual results still vary and are not guaranteed.` };
+    }
+  }
+  if (!showIllustrativeExample()) return null;
+  const ex = niceRound(product.price_usd * strongResultMult());
+  return { kind: "hypothetical", metric: product.metric, example_usd: ex > 0 ? ex : null,
+    label: "Illustrative example — hypothetical", disclaimer: exampleDisclaimer() };
+}
+
 export function findProduct(key: string | null | undefined): FunnelProduct | null {
   if (!key) return null;
   return productGraph().find((p) => p.key === key) ?? null;
@@ -76,6 +133,7 @@ export interface Recommendation {
   reason: string;
   blocked_reason?: string;      // set when an intended upsell was blocked by suitability
   disclosures: string[];
+  illustration?: Illustration | null;  // pre-results "how it works" example (Gate 1); null when unavailable
 }
 
 function leanScore(s: FunnelSignals): number {
@@ -93,7 +151,7 @@ export function recommendAtPurchase(signals: FunnelSignals, currentKey: string |
     gate: "fit", direction: "same",
     current_key: current?.key ?? null,
     recommend_key: current?.key ?? null, recommend_name: current?.name ?? null, recommend_price_usd: current?.price_usd ?? null,
-    reason: "", disclosures: funnelDisclosures(),
+    reason: "", disclosures: funnelDisclosures(), illustration: productIllustration(current),
   };
   if (!current) return { ...base, reason: "No catalog configured." };
 
@@ -104,6 +162,7 @@ export function recommendAtPurchase(signals: FunnelSignals, currentKey: string |
       const suit = suitabilityAllows(target, signals, isLive);
       if (suit.ok) {
         return { ...base, direction: "up", recommend_key: target.key, recommend_name: target.name, recommend_price_usd: target.price_usd,
+          illustration: productIllustration(target),
           reason: `Your goal and capacity point to ${target.name} — it fits what you're trying to do better than ${current.name}.` };
       }
       // Intended upsell blocked by suitability → stay put, explain honestly, never push the credit product.
@@ -115,6 +174,7 @@ export function recommendAtPurchase(signals: FunnelSignals, currentKey: string |
     const target = findProduct(current.down);
     if (target) {
       return { ...base, direction: "down", recommend_key: target.key, recommend_name: target.name, recommend_price_usd: target.price_usd,
+        illustration: productIllustration(target),
         reason: `${target.name} is a better-sized start than ${current.name} given your budget and where you are — you can always move up once it's working.` };
     }
   }

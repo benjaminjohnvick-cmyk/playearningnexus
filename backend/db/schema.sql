@@ -3668,3 +3668,15 @@ CREATE TABLE IF NOT EXISTS "FunnelEmailLog" (
 );
 CREATE INDEX IF NOT EXISTS "FunnelEmailLog_data_gin" ON "FunnelEmailLog" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "FunnelEmailLog_created" ON "FunnelEmailLog" (created_date DESC);
+
+-- FunnelBenchmark: history/audit of AI-compiled "results" benchmarks per product (admin/global). Each row is
+-- a real, substantiated figure (median/avg of N customers over their window) with its basis. See AI-FUNNEL-DESIGN.md.
+CREATE TABLE IF NOT EXISTS "FunnelBenchmark" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "FunnelBenchmark_data_gin" ON "FunnelBenchmark" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "FunnelBenchmark_created" ON "FunnelBenchmark" (created_date DESC);

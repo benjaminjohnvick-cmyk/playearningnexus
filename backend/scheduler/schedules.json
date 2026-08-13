@@ -231,6 +231,12 @@
       "_comment": "Daily (REALLOC_CUTOFF_HOUR_UTC): hands unused premium AdGrid slots to high-value non-premium earners as one-day passes."
     },
     {
+      "name": "funnel-benchmark-compile-daily",
+      "cron": "0 14 * * *",
+      "function": "funnelBenchmarkCompile",
+      "_comment": "Daily: aggregates real customer results per product and auto-publishes substantiated 'typical' benchmarks (median + basis) once each product's sample passes AI_FUNNEL_BENCHMARK_MIN_SAMPLE. Below threshold, the concierge keeps showing the hypothetical example. Set AI_FUNNEL_BENCHMARK_REQUIRE_APPROVAL to gate publishing behind admin sign-off."
+    },
+    {
       "name": "funnel-reengage-sweep-daily",
       "cron": "0 15 * * *",
       "function": "funnelReengageSweep",

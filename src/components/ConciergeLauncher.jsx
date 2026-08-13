@@ -117,6 +117,16 @@ export default function ConciergeLauncher() {
               {rec.recommend_price_usd != null && <span className="text-gray-500 font-normal">({money(rec.recommend_price_usd)})</span>}
             </div>
             <p className="text-sm text-gray-700">{rec.reason}</p>
+            {rec.illustration && (
+              <div className="rounded-lg bg-gray-50 p-2.5">
+                <p className="text-xs text-gray-700">
+                  <span className="font-semibold">{rec.illustration.label}</span>
+                  {rec.illustration.example_usd != null && <> — e.g. {money(rec.illustration.example_usd)} in {String(rec.illustration.metric || '').replace(/_/g, ' ')}</>}
+                  {rec.illustration.basis && <span className="text-gray-500"> ({rec.illustration.basis})</span>}
+                </p>
+                <p className="text-[11px] text-gray-400 mt-1">{rec.illustration.disclaimer}</p>
+              </div>
+            )}
             {rec.blocked_reason && <p className="text-[11px] text-amber-700 flex items-start gap-1"><ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0" />{rec.blocked_reason}</p>}
             <div className="flex gap-2 pt-1">
               <Button size="sm" variant="outline" onClick={() => setRec(null)}>Change answers</Button>

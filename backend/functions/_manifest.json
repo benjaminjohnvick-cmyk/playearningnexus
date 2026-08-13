@@ -477,6 +477,7 @@
   "fraudDetector",
   "fraudPayoutMonitor",
   "fraudScanEngine",
+  "funnelBenchmarkCompile",
   "funnelReengageEmail",
   "funnelReengageSweep",
   "gameSentimentReport",
