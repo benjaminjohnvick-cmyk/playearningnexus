@@ -628,6 +628,13 @@ export const REGISTRY: SettingDef[] = [
   { key: "AI_FUNNEL_WEAK_RESULT_MULT", label: "AI funnel — weak-result multiple", category: "AI Funnel", type: "number", default: "0.25", unit: "×", help: "Gate 2: results ≤ this × the product price count as WEAK → proactive downsell/right-size to retain the customer. Between weak and strong = hold + optimize.", min: 0 },
   { key: "AI_FUNNEL_MAX_UPSELL_ATTEMPTS", label: "AI funnel — max upsell attempts", category: "AI Funnel", type: "number", default: "2", unit: "attempts", help: "Anti-dark-pattern cap: after this many declined upsells the concierge stops pitching up and only right-sizes/holds. A decline is always respected.", min: 0 },
   { key: "AI_FUNNEL_REQUIRE_SUITABILITY_FOR_FINANCIAL", label: "AI funnel — require suitability for financial products", category: "AI Funnel", type: "boolean", default: "true", help: "Do not disable. When true, the concierge will NOT recommend a financial/credit product as an upsell unless the customer passes ability-to-repay AND the product is live. Downsell toward cheaper/free is always allowed.", sensitive: true },
+  // Email re-engagement: turn a concierge recommendation into a compliant email. HARD-GATED by consent —
+  // funnelReengageEmail only sends when canEmailMarket() passes (email_marketing flag ON + not opted out +
+  // has email) and appends the required CAN-SPAM unsubscribe + postal footer (BUSINESS_MAILING_ADDRESS).
+  { key: "FUNNEL_EMAIL_ENABLED", label: "AI funnel — email re-engagement", category: "AI Funnel", type: "boolean", default: "1", help: "Allow the concierge to send re-engagement emails. Still requires per-recipient marketing consent (canEmailMarket) and the email_marketing flag; this is an additional on/off for the funnel channel specifically." },
+  { key: "FUNNEL_EMAIL_MIN_DAYS_BETWEEN", label: "AI funnel — min days between emails", category: "AI Funnel", type: "number", default: "7", unit: "days", help: "Frequency cap: do not send a funnel re-engagement email to the same person more often than this. Anti-spam / anti-fatigue.", min: 0 },
+  { key: "FUNNEL_EMAIL_FROM", label: "AI funnel — email From", category: "AI Funnel", type: "string", default: "", help: "From address/name for funnel emails. Blank = use the platform default (EMAIL_FROM). Must be a real, monitored address so replies (the 'conversation') reach you." },
+  { key: "FUNNEL_EMAIL_CTA_PATH", label: "AI funnel — email CTA path", category: "AI Funnel", type: "string", default: "/AIFunnelConcierge", help: "Where the email's 'pick up where we left off' link points (relative to FRONTEND_URL)." },
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

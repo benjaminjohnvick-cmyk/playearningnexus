@@ -371,6 +371,9 @@
  "FriendRequest": {
   "scope": "global"
  },
+ "FunnelEmailLog": {
+  "scope": "global"
+ },
  "FunnelJourney": {
   "scope": "owner",
   "owner_field": "user_id"

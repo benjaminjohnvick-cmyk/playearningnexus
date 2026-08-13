@@ -79,3 +79,26 @@ a projection or a "customers like you" claim.
   which routes trigger it.
 
 The concierge recommends and logs. It does not charge, and it cannot push anyone into a credit product.
+
+## Email re-engagement (opt-in only)
+
+The same recommendation can be sent as a **re-engagement email** the customer can reply to — reminding them
+of the plan they were looking at (Gate 1) or nudging on their results (Gate 2) and inviting a conversation.
+
+- Function: `funnelReengageEmail` (INTERNAL/ADMIN — a CRM/scheduled job triggers it per customer; a customer
+  can't trigger emails to others). SDK: `backend/sdk/funnel-email.ts` builds the subject/body.
+- **Consent is a hard gate.** It sends only when `canEmailMarket(user)` passes — the `email_marketing` flag is
+  ON, the recipient hasn't opted out, and they have an email on file. No consent → it **skips**, never sends.
+  So it works for existing opted-in customers; a raw lead whose email you just captured needs a consent
+  record first (capture opt-in before emailing).
+- **CAN-SPAM built in.** Every body appends `emailUnsubscribeFooter()` — a working unsubscribe link plus your
+  physical mailing address (`BUSINESS_MAILING_ADDRESS`). Subjects are honest (no bait). Set `FUNNEL_EMAIL_FROM`
+  to a real, monitored address so replies (the "conversation") actually reach you.
+- **Frequency cap:** `FUNNEL_EMAIL_MIN_DAYS_BETWEEN` (default 7) — one funnel email per recipient per window,
+  logged to `FunnelEmailLog`. Anti-fatigue / anti-spam.
+- Same suitability guard applies to the recommendation, so an email never pitches a credit product to someone
+  who isn't eligible.
+- Settings: `FUNNEL_EMAIL_ENABLED`, `FUNNEL_EMAIL_MIN_DAYS_BETWEEN`, `FUNNEL_EMAIL_FROM`, `FUNNEL_EMAIL_CTA_PATH`.
+- **Jurisdiction note:** CAN-SPAM (US) allows opt-out marketing to existing contacts; **CASL (Canada) and
+  GDPR/ePrivacy (EU) require opt-IN.** For those recipients, only email with prior consent. Sending is gated
+  on your consent flags, so keep those accurate per jurisdiction.

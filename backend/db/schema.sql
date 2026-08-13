@@ -3656,3 +3656,15 @@ CREATE TABLE IF NOT EXISTS "FunnelJourney" (
 );
 CREATE INDEX IF NOT EXISTS "FunnelJourney_data_gin" ON "FunnelJourney" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "FunnelJourney_created" ON "FunnelJourney" (created_date DESC);
+
+-- FunnelEmailLog: audit + frequency-cap log for AI-concierge re-engagement emails (admin/global).
+-- Sending is HARD-GATED by canEmailMarket() (consent) in funnelReengageEmail. See AI-FUNNEL-DESIGN.md.
+CREATE TABLE IF NOT EXISTS "FunnelEmailLog" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "FunnelEmailLog_data_gin" ON "FunnelEmailLog" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "FunnelEmailLog_created" ON "FunnelEmailLog" (created_date DESC);
