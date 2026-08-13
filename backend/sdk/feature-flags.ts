@@ -21,7 +21,7 @@ export type FlagName =
   | "points_boost" | "physical_store" | "local_pickup" | "layaway" | "purchase_payback"
   | "digital_store" | "teen_accounts" | "kyc_survey_ai_autopublish" | "ai_paused"
   | "loyalty_program" | "group_goals" | "verified_surveys"
-  | "goods_advance" | "tier1_financed";
+  | "goods_advance" | "tier1_financed" | "ai_funnel";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -67,6 +67,7 @@ const DEFAULTS: Record<FlagName, boolean> = {
   verified_surveys: true,
   goods_advance: false,        // OFF — optional 0% non-recourse in-store advance; provider + legal sign-off gated (see GET-GOODS-ADVANCE-PROGRAM-COMPLIANCE.md)
   tier1_financed: false,       // OFF — Tier 1 "pay-from-earnings" is RECOURSE consumer/commercial CREDIT (a real $12k owed). Provider + counsel + licensing gated; must never originate until TIER1_FINANCED_PROVIDER != none AND TIER1_FINANCED_LEGAL_SIGNOFF = true (see TIER1-FINANCED-PAY-FROM-EARNINGS.md).
+  ai_funnel: true,             // ON — AI concierge that recommends up/down across the catalog at purchase (fit) and after a commitment window (results). Decisions are DETERMINISTIC + logged; a hard suitability guard blocks upselling anyone into a financial/credit product. See AI-FUNNEL-DESIGN.md.
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];

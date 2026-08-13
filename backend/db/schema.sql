@@ -3644,3 +3644,15 @@ CREATE TABLE IF NOT EXISTS "Tier1FinancedPlan" (
 );
 CREATE INDEX IF NOT EXISTS "Tier1FinancedPlan_data_gin" ON "Tier1FinancedPlan" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "Tier1FinancedPlan_created" ON "Tier1FinancedPlan" (created_date DESC);
+
+-- FunnelJourney: per-customer AI-funnel state (owner-scoped) — current product, gate, window start,
+-- results, decision log. Drives Gate 1 (fit) and Gate 2 (results) recommendations. See AI-FUNNEL-DESIGN.md.
+CREATE TABLE IF NOT EXISTS "FunnelJourney" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "FunnelJourney_data_gin" ON "FunnelJourney" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "FunnelJourney_created" ON "FunnelJourney" (created_date DESC);

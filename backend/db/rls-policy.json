@@ -371,6 +371,10 @@
  "FriendRequest": {
   "scope": "global"
  },
+ "FunnelJourney": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
  "Game": {
   "scope": "global"
  },
