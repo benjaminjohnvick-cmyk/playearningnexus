@@ -102,3 +102,25 @@ of the plan they were looking at (Gate 1) or nudging on their results (Gate 2) a
 - **Jurisdiction note:** CAN-SPAM (US) allows opt-out marketing to existing contacts; **CASL (Canada) and
   GDPR/ePrivacy (EU) require opt-IN.** For those recipients, only email with prior consent. Sending is gated
   on your consent flags, so keep those accurate per jurisdiction.
+
+## Scheduled sweep (runs itself)
+
+`funnelReengageSweep` (INTERNAL/ADMIN, meant to be **scheduled** — e.g. once daily) automates Gate 2: it
+walks the **active** `FunnelJourney` records whose commitment window has **closed** and fires the results
+email to each eligible customer, so re-engagement runs on its own.
+
+- **Every send obeys the same gates** as the single-send function — `canEmailMarket` (consent), the frequency
+  cap, and the suitability guard — so the sweep can't email anyone it shouldn't, and it dedupes to one email
+  per customer per run.
+- **Actionable by default.** It only emails when there's a real move — an **upsell** (strong results) or a
+  **right-size downsell** (weak results). Middling "hold" results are skipped unless
+  `FUNNEL_SWEEP_SEND_ON_HOLD` is on, so you're not sending "nothing changed" mail.
+- **Bounded.** At most `FUNNEL_SWEEP_MAX_PER_RUN` (default 200) emails per run to protect deliverability; the
+  rest are picked up next run (`more_remaining` flags when there's overflow). Pass `{ "dry_run": true }` to
+  count who *would* be emailed without sending.
+- **Returns a summary:** `scanned`, `window_closed`, `sent`, and a `skips` breakdown (window_open, no_consent,
+  frequency_cap, hold_no_action, …) so you can see exactly what it did.
+
+**To schedule it:** wire `funnelReengageSweep` into your platform's scheduled-function / cron mechanism (the
+same way the other periodic jobs like the weekly reports run) — a daily invocation is a sensible cadence.
+Start with `dry_run:true` for a run or two to sanity-check volumes before it sends for real.

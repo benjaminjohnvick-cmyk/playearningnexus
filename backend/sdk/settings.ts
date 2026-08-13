@@ -635,6 +635,8 @@ export const REGISTRY: SettingDef[] = [
   { key: "FUNNEL_EMAIL_MIN_DAYS_BETWEEN", label: "AI funnel — min days between emails", category: "AI Funnel", type: "number", default: "7", unit: "days", help: "Frequency cap: do not send a funnel re-engagement email to the same person more often than this. Anti-spam / anti-fatigue.", min: 0 },
   { key: "FUNNEL_EMAIL_FROM", label: "AI funnel — email From", category: "AI Funnel", type: "string", default: "", help: "From address/name for funnel emails. Blank = use the platform default (EMAIL_FROM). Must be a real, monitored address so replies (the 'conversation') reach you." },
   { key: "FUNNEL_EMAIL_CTA_PATH", label: "AI funnel — email CTA path", category: "AI Funnel", type: "string", default: "/AIFunnelConcierge", help: "Where the email's 'pick up where we left off' link points (relative to FRONTEND_URL)." },
+  { key: "FUNNEL_SWEEP_MAX_PER_RUN", label: "AI funnel — max emails per sweep", category: "AI Funnel", type: "number", default: "200", unit: "emails", help: "Batch cap: the scheduled re-engagement sweep sends at most this many emails per run (protects deliverability/reputation). Remaining eligible customers are picked up on the next run.", min: 0 },
+  { key: "FUNNEL_SWEEP_SEND_ON_HOLD", label: "AI funnel — email on 'hold' results too", category: "AI Funnel", type: "boolean", default: "0", help: "OFF (default) = the sweep only emails when there's an actionable move (upsell or right-size). ON = also send a check-in when results are middling ('hold'). Off keeps the inbox quieter." },
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));
