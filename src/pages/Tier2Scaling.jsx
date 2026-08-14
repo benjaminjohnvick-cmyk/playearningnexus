@@ -95,6 +95,35 @@ export default function Tier2Scaling() {
         </CardContent></Card>
       )}
 
+      {/* Deliverables — what Tier 2 includes, scaled to parts bought */}
+      {status.deliverables && (
+        <Card><CardContent className="p-5 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">What Tier 2 includes</p>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="bg-gray-50 rounded-lg p-2.5">
+              <p className="text-lg font-bold" style={{ color: INK }}>{Number(status.deliverables.impressions_delivered).toLocaleString()}</p>
+              <p className="text-[11px] text-gray-500">of {Number(status.deliverables.impressions_per_year_full).toLocaleString()} impressions/yr</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-2.5">
+              <p className="text-lg font-bold" style={{ color: INK }}>{status.deliverables.social_posts_active ? status.deliverables.social_posts_per_month : 0}</p>
+              <p className="text-[11px] text-gray-500">AI social posts/mo</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-2.5">
+              <p className="text-lg font-bold" style={{ color: INK }}>{status.deliverables.audience_panels_delivered}</p>
+              <p className="text-[11px] text-gray-500">of {status.deliverables.audience_panels_per_year_full} audience panels/yr</p>
+            </div>
+          </div>
+          <ul className="space-y-1">
+            {(status.deliverables.perks_unlocked || []).map((p) => (
+              <li key={p.key} className="flex items-start gap-2 text-sm text-gray-700"><CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />{p.label}</li>
+            ))}
+            {(status.deliverables.perks_locked || []).map((p) => (
+              <li key={p.key} className="flex items-start gap-2 text-sm text-gray-400"><Lock className="w-4 h-4 text-gray-300 mt-0.5 shrink-0" />{p.label} <span className="text-[11px]">(unlocks at part {p.unlocks_at_part})</span></li>
+            ))}
+          </ul>
+        </CardContent></Card>
+      )}
+
       {/* Ladder */}
       <Card><CardContent className="p-5">
         <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">The scale-up ladder</p>

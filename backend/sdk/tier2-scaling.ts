@@ -22,6 +22,66 @@ export const tier2TotalUsd = () => upgradePriceUsd();       // $200,000
 export const tier2Name = () => upgradeName();               // "Tier 2 — Scale"
 export const tier2DiscountPct = () => upgradeDiscountPct(); // 6%
 
+// ── Deliverables ────────────────────────────────────────────────────────────────────────────────────────
+export const tier2ImpressionsPerYear = () => Math.max(0, snapNumber("TIER2_IMPRESSIONS_PER_YEAR", 3000000));
+export const tier2SocialPostsPerMonth = () => Math.max(0, snapNumber("TIER2_AI_SOCIAL_POSTS_PER_MONTH", 100));
+export const tier2AudiencePanelsPerYear = () => Math.max(0, snapNumber("TIER2_AUDIENCE_PANELS_PER_YEAR", 4));
+
+const TIER2_PERK_LABELS: Record<string, string> = {
+  premier_placement: "Premier between-survey placement (top priority, above Tier 1)",
+  managed_ai_creative: "Managed AI ad creative — built & refreshed for you",
+  advanced_analytics: "Advanced analytics dashboard (cohorts, real-time)",
+  sentiment_insights_plus: "Enhanced sentiment insights",
+  multivariate_testing: "Multivariate A/B testing",
+  audience_panel_research: "Included audience-panel research",
+  dedicated_success_manager: "Dedicated success manager / managed campaigns",
+  homepage_featured: "Homepage & category featured placement + premier sponsor wall",
+  api_data_feed: "API access + data feed",
+};
+function humanizePerk(key: string): string {
+  return TIER2_PERK_LABELS[key] || key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export interface Tier2Perk { key: string; label: string; unlocks_at_part: number; }
+export function tier2PerkUnlocks(): Tier2Perk[] {
+  const raw = snapString("TIER2_PERK_UNLOCKS", "");
+  let map: Record<string, number> = {};
+  if (raw) { try { const o = JSON.parse(raw); if (o && typeof o === "object") map = o; } catch { map = {}; } }
+  if (!Object.keys(map).length) {
+    map = { premier_placement: 1, managed_ai_creative: 1, advanced_analytics: 1, sentiment_insights_plus: 2, multivariate_testing: 2, audience_panel_research: 3, dedicated_success_manager: 3, homepage_featured: 6, api_data_feed: 9 };
+  }
+  return Object.entries(map)
+    .map(([key, part]) => ({ key, label: humanizePerk(key), unlocks_at_part: Math.max(1, Math.round(Number(part) || 1)) }))
+    .sort((a, b) => a.unlocks_at_part - b.unlocks_at_part);
+}
+
+export interface Tier2Deliverables {
+  impressions_per_year_full: number; impressions_delivered: number;
+  social_posts_per_month: number; social_posts_active: boolean;
+  audience_panels_per_year_full: number; audience_panels_delivered: number;
+  perks_unlocked: Tier2Perk[]; perks_locked: Tier2Perk[]; perks_all: Tier2Perk[];
+}
+
+/** The Tier 2 package scaled to how many parts have been bought. Quantities pro-rate by parts; perks unlock
+ *  at their thresholds. `partsCompleted` = parts purchased so far. */
+export function tier2Deliverables(partsCompleted: number): Tier2Deliverables {
+  const parts = tier2Parts();
+  const done = Math.max(0, Math.min(parts, Math.floor(Number(partsCompleted) || 0)));
+  const frac = parts > 0 ? done / parts : 0;
+  const perks = tier2PerkUnlocks();
+  return {
+    impressions_per_year_full: tier2ImpressionsPerYear(),
+    impressions_delivered: Math.round(tier2ImpressionsPerYear() * frac),
+    social_posts_per_month: tier2SocialPostsPerMonth(),
+    social_posts_active: done >= 1,
+    audience_panels_per_year_full: tier2AudiencePanelsPerYear(),
+    audience_panels_delivered: Math.round(tier2AudiencePanelsPerYear() * frac),
+    perks_unlocked: perks.filter((p) => done >= p.unlocks_at_part),
+    perks_locked: perks.filter((p) => done < p.unlocks_at_part),
+    perks_all: perks,
+  };
+}
+
 // ── The discount rule ───────────────────────────────────────────────────────────────────────────────────
 /** The discount rate that applies right now. Founding members keep it forever (if perpetual is on); everyone
  *  else gets it only within the first year of Tier 2 (if first-year-only is on). */
@@ -71,6 +131,7 @@ export interface Tier2Status {
   results_gate_met: boolean;
   reason: string;
   ladder: Tier2Part[];
+  deliverables: Tier2Deliverables;
 }
 
 /** Compute the status/next-part decision for a member's Tier 2 scaling plan.
@@ -127,5 +188,6 @@ export function tier2Status(
     results_gate_met: resultsMet,
     reason: complete ? "Tier 2 complete — all parts purchased." : (eligible ? "Ready to buy the next part." : (gateReason || "Not eligible yet.")),
     ladder,
+    deliverables: tier2Deliverables(partsCompleted),
   };
 }

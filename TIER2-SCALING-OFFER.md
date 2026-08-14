@@ -13,6 +13,29 @@ one part at a time:
   fraction of its cost before scaling up (`TIER2_PART_MIN_RESULTS_MULT`; 0 = 30-day pacing only).
 - **12 parts × ~30 days ≈ one year → Tier 2 complete.**
 
+## What $200k actually buys (the deliverables)
+
+Tier 2 is a scaled-up version of Tier 1, delivered **as parts are bought** — quantities pro-rate across the
+12 parts, and richer perks unlock as the advertiser climbs the ladder:
+
+**Quantities (full-year package, delivered proportionally — 1/12 per part):**
+- **3,000,000 ad impressions/year** between-survey + featured (vs 200,000 at Tier 1) — `TIER2_IMPRESSIONS_PER_YEAR`
+- **100 AI social posts/month** (vs ~30 at Tier 1) — `TIER2_AI_SOCIAL_POSTS_PER_MONTH`
+- **4 included audience-panel studies/year** (aggregate, consented) — `TIER2_AUDIENCE_PANELS_PER_YEAR`
+
+**Perks (unlock as you scale — `TIER2_PERK_UNLOCKS`, part thresholds shown):**
+- Part 1: Premier between-survey placement (top priority, above Tier 1); managed AI ad creative; advanced
+  analytics dashboard
+- Part 2: Multivariate A/B testing; enhanced sentiment insights
+- Part 3: Included audience-panel research; dedicated success manager / managed campaigns
+- Part 6: Homepage & category featured placement + premier sponsor wall
+- Part 9: API access + data feed
+- Part 12: full package complete
+
+All of it is admin-tunable — the quantities are settings and the perk unlock thresholds are a JSON map, so you
+can reorder, add, or re-gate perks without a deploy. `tier2Deliverables(partsCompleted)` computes the full
+package and what's delivered/unlocked so far; the `/Tier2Scaling` page shows both.
+
 ## Why this is NOT credit (and needs no lending gate)
 
 Each part is a **separate upfront purchase** — the advertiser pays for a part when they buy it, then decides
