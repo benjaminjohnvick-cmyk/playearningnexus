@@ -753,6 +753,8 @@
   "tier1FinancedAccept",
   "tier1FinancedEligibility",
   "tier1FinancedTracker",
+  "tier2BuyPart",
+  "tier2ScalingStatus",
   "tournamentMatchmaker",
   "trackABTestMetrics",
   "trackAdClick",

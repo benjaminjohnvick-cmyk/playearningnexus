@@ -3693,3 +3693,16 @@ CREATE TABLE IF NOT EXISTS "FlexPayPlan" (
 );
 CREATE INDEX IF NOT EXISTS "FlexPayPlan_data_gin" ON "FlexPayPlan" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "FlexPayPlan_created" ON "FlexPayPlan" (created_date DESC);
+
+-- Tier2ScalingPlan: pay-as-you-go Tier 2 "Scale" progression (owner-scoped). NOT credit — each part is a
+-- separate upfront purchase; this row tracks how many 30-day parts are done and when the current one started.
+-- See TIER2-SCALING-OFFER.md.
+CREATE TABLE IF NOT EXISTS "Tier2ScalingPlan" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "Tier2ScalingPlan_data_gin" ON "Tier2ScalingPlan" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "Tier2ScalingPlan_created" ON "Tier2ScalingPlan" (created_date DESC);

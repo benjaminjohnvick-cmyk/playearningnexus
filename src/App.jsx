@@ -97,6 +97,7 @@ const GetGoodsAdvance = lazy(() => import('./pages/GetGoodsAdvance'));
 const Tier1Financed = lazy(() => import('./pages/Tier1Financed'));
 const FoundingUpgrade = lazy(() => import('./pages/FoundingUpgrade'));
 const AIFunnelConcierge = lazy(() => import('./pages/AIFunnelConcierge'));
+const Tier2Scaling = lazy(() => import('./pages/Tier2Scaling'));
 import ConciergeLauncher from './components/ConciergeLauncher';
 const ReferralInvite = lazy(() => import('./pages/ReferralInvite'));
 const EarnedAdvertiserLedger = lazy(() => import('./pages/EarnedAdvertiserLedger'));
@@ -370,6 +371,7 @@ const AuthenticatedApp = () => {
       <Route path="/Tier1Financed" element={<LayoutWrapper currentPageName="Tier1Financed"><Tier1Financed /></LayoutWrapper>} />
       <Route path="/FoundingUpgrade" element={<LayoutWrapper currentPageName="FoundingUpgrade"><FoundingUpgrade /></LayoutWrapper>} />
       <Route path="/AIFunnelConcierge" element={<LayoutWrapper currentPageName="AIFunnelConcierge"><AIFunnelConcierge /></LayoutWrapper>} />
+      <Route path="/Tier2Scaling" element={<LayoutWrapper currentPageName="Tier2Scaling"><Tier2Scaling /></LayoutWrapper>} />
       <Route path="/ReferralInvite" element={<LayoutWrapper currentPageName="ReferralInvite"><ReferralInvite /></LayoutWrapper>} />
       <Route path="/EarnedAdvertiserLedger" element={<LayoutWrapper currentPageName="EarnedAdvertiserLedger"><EarnedAdvertiserLedger /></LayoutWrapper>} />
       <Route path="/CompleteProfile" element={<CompleteProfile />} />

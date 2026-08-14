@@ -668,6 +668,17 @@ export const REGISTRY: SettingDef[] = [
   { key: "FUNNEL_EMAIL_CTA_PATH", label: "AI funnel — email CTA path", category: "AI Funnel", type: "string", default: "/AIFunnelConcierge", help: "Where the email's 'pick up where we left off' link points (relative to FRONTEND_URL)." },
   { key: "FUNNEL_SWEEP_MAX_PER_RUN", label: "AI funnel — max emails per sweep", category: "AI Funnel", type: "number", default: "200", unit: "emails", help: "Batch cap: the scheduled re-engagement sweep sends at most this many emails per run (protects deliverability/reputation). Remaining eligible customers are picked up on the next run.", min: 0 },
   { key: "FUNNEL_SWEEP_SEND_ON_HOLD", label: "AI funnel — email on 'hold' results too", category: "AI Funnel", type: "boolean", default: "0", help: "OFF (default) = the sweep only emails when there's an actionable move (upsell or right-size). ON = also send a check-in when results are middling ('hold'). Off keeps the inbox quieter." },
+
+  // ── Tier 2 "Scale" — bought in 30-day PARTS (pay-as-you-go, NOT credit). The $200k is divided into equal
+  // monthly parts; each part runs ≥30 days, then the advertiser buys the next part and scales up based on
+  // results. 12 parts = one year = Tier 2 complete. A 6% Tier 1→Tier 2 rollover discount applies in the first
+  // year for anyone rolling up; FOUNDING members keep the 6% in perpetuity.
+  { key: "TIER2_PARTS", label: "Tier 2 — number of parts", category: "Tier 2 Scaling", type: "number", default: "12", unit: "parts", help: "The Tier 2 total is split into this many equal monthly parts. 12 = one part per month over a year.", min: 1, max: 24 },
+  { key: "TIER2_PART_MIN_DAYS", label: "Tier 2 — minimum days per part", category: "Tier 2 Scaling", type: "number", default: "30", unit: "days", help: "Each part must run at least this long before the next part can be bought. Paces the scale-up.", min: 1 },
+  { key: "TIER2_TERM_MONTHS", label: "Tier 2 — completion term", category: "Tier 2 Scaling", type: "number", default: "12", unit: "months", help: "Completing all parts within this term finishes the Tier 2 offer (12 = a year). Also the first-year window for the rollover discount.", min: 1, max: 36 },
+  { key: "TIER2_PART_MIN_RESULTS_MULT", label: "Tier 2 — results gate for next part", category: "Tier 2 Scaling", type: "number", default: "0", unit: "×", help: "To buy the next part, the current part's real attributed results must be at least this × the part price. 0 = no results threshold (30-day pacing only); e.g. 0.5 = the part must have returned at least half its cost. 'Scale based on results.'", min: 0 },
+  { key: "TIER2_DISCOUNT_FIRST_YEAR_ONLY", label: "Tier 2 — rollover discount first year only", category: "Tier 2 Scaling", type: "boolean", default: "true", help: "The 6% Tier 1→Tier 2 rollover discount applies during the first year of Tier 2. After that it does NOT continue — unless the advertiser is a founding member (see below)." },
+  { key: "TIER2_FOUNDING_DISCOUNT_PERPETUAL", label: "Tier 2 — founding members keep discount forever", category: "Tier 2 Scaling", type: "boolean", default: "true", help: "Founding members (holders of a founding Tier 1 seat) keep the 6% Tier 2 discount in perpetuity, even after the first year. Everyone else loses it after year one." },
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

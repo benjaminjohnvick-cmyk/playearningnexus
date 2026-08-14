@@ -891,6 +891,10 @@
   "scope": "owner",
   "owner_field": "user_id"
  },
+ "Tier2ScalingPlan": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
  "TieredMembership": {
   "scope": "owner",
   "owner_field": "user_id"
