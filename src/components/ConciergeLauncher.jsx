@@ -42,6 +42,7 @@ export default function ConciergeLauncher() {
   const [open, setOpen] = useState(false);
   const [signals, setSignals] = useState({ goal: 'grow', capacity: 'high', hesitation: 'none', ability_to_repay: false });
   const [rec, setRec] = useState(null);
+  const [flex, setFlex] = useState(null);      // last-resort flexible-terms offer (only after a decline)
   const [loading, setLoading] = useState(false);
   const [hidden, setHidden] = useState(false); // funnel disabled → stay quiet
 
@@ -132,6 +133,29 @@ export default function ConciergeLauncher() {
               <Button size="sm" variant="outline" onClick={() => setRec(null)}>Change answers</Button>
               <Button size="sm" onClick={close} style={{ background: NAVY }} className="text-white">Got it</Button>
             </div>
+            {/* Last-resort: flexible payment terms, offered only after the customer isn't sold on the above. */}
+            <button onClick={async () => {
+              setLoading(true);
+              try {
+                const res = await base44.functions.invoke('flexPayOffer', { product_key: productKey, last_resort: true, ability_to_repay: signals.ability_to_repay });
+                setFlex(res?.offer ?? { available: false, reason: 'Not available right now.' });
+              } catch { setFlex({ available: false, reason: 'Not available right now.' }); }
+              finally { setLoading(false); }
+            }} className="text-[11px] text-gray-500 underline">None of these work for you?</button>
+            {flex && (
+              <div className="rounded-lg bg-gray-50 p-2.5 mt-1">
+                {flex.available && flex.plan ? (
+                  <>
+                    <p className="text-xs font-semibold text-gray-700">Flexible terms: {flex.plan.installments} payments of {money(flex.plan.per_payment_usd)}, one every {flex.plan.interval_months} months</p>
+                    <ul className="mt-1 space-y-0.5 text-[11px] text-gray-500">
+                      {(flex.disclosures || []).slice(0, 5).map((d, i) => <li key={i}>• {d}</li>)}
+                    </ul>
+                  </>
+                ) : (
+                  <p className="text-[11px] text-gray-500">{flex.reason}</p>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -3680,3 +3680,16 @@ CREATE TABLE IF NOT EXISTS "FunnelBenchmark" (
 );
 CREATE INDEX IF NOT EXISTS "FunnelBenchmark_data_gin" ON "FunnelBenchmark" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "FunnelBenchmark_created" ON "FunnelBenchmark" (created_date DESC);
+
+-- FlexPayPlan: last-resort installment "flexible payment terms" ledger (owner-scoped). INSTALLMENT CREDIT —
+-- DISABLED by default, provider+counsel gated. Next-tier upsell is opt-in only, never a condition.
+-- See FLEXIBLE-PAYMENT-TERMS-COMPLIANCE.md.
+CREATE TABLE IF NOT EXISTS "FlexPayPlan" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "FlexPayPlan_data_gin" ON "FlexPayPlan" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "FlexPayPlan_created" ON "FlexPayPlan" (created_date DESC);

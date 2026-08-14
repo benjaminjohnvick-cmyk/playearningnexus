@@ -357,6 +357,10 @@
  "FlaggedResponse": {
   "scope": "global"
  },
+ "FlexPayPlan": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
  "ForumPost": {
   "scope": "global"
  },

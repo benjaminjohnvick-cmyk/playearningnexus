@@ -467,6 +467,8 @@
   "featureMockupPipeline",
   "fetchAutomatedBills",
   "flagSuspiciousReferrals",
+  "flexPayAccept",
+  "flexPayOffer",
   "foundingAdvertiserOffer",
   "foundingAdvertiserSignup",
   "foundingPerksRelease",
