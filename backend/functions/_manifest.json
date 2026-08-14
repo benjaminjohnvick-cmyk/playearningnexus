@@ -638,6 +638,8 @@
   "processWithdrawalRequest",
   "productBestPrice",
   "productSearch",
+  "productStats",
+  "productStatsCompile",
   "profitSummary",
   "promoValue",
   "providerAdvisor",

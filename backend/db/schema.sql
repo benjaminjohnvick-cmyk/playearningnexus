@@ -3706,3 +3706,15 @@ CREATE TABLE IF NOT EXISTS "Tier2ScalingPlan" (
 );
 CREATE INDEX IF NOT EXISTS "Tier2ScalingPlan_data_gin" ON "Tier2ScalingPlan" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "Tier2ScalingPlan_created" ON "Tier2ScalingPlan" (created_date DESC);
+
+-- ProductStat: AI-compiled statistics on ANY product sold (admin/global). One row per product, refreshed by
+-- productStatsCompile; published=true once the sample passes the threshold. See PRODUCT-STATS.md.
+CREATE TABLE IF NOT EXISTS "ProductStat" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ProductStat_data_gin" ON "ProductStat" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ProductStat_created" ON "ProductStat" (created_date DESC);

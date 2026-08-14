@@ -208,6 +208,7 @@
   "PricingFeedback",
   "Product",
   "ProductAnalyticsReport",
+  "ProductStat",
   "ProductWebsiteAnalytics",
   "ProductWishlistItem",
   "PromoCode",

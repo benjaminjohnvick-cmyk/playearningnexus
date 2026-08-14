@@ -240,8 +240,16 @@
       "name": "funnel-reengage-sweep-daily",
       "cron": "0 15 * * *",
       "function": "funnelReengageSweep",
-      "body": { "dry_run": true },
+      "body": {
+        "dry_run": true
+      },
       "_comment": "Daily AI-concierge Gate-2 re-engagement. STARTS IN DRY-RUN (counts who WOULD be emailed, sends nothing) so you can check volumes first. To go live, set \"body\" to { \"dry_run\": false } (or remove it). Sends stay consent-gated (canEmailMarket), frequency-capped, and bounded by FUNNEL_SWEEP_MAX_PER_RUN."
+    },
+    {
+      "name": "product-stats-compile-daily",
+      "cron": "30 13 * * *",
+      "function": "productStatsCompile",
+      "_comment": "Daily: aggregates real Orders per product into ProductStat (units, buyers, median/avg revenue). Publishes results once a product passes PRODUCT_STATS_MIN_SAMPLE; below that it stays 'gathering data' (show how it works). Run with {dry_run:true} to preview."
     }
   ]
 }

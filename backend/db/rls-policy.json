@@ -631,6 +631,9 @@
  "ProductAnalyticsReport": {
   "scope": "global"
  },
+ "ProductStat": {
+  "scope": "global"
+ },
  "ProductWebsiteAnalytics": {
   "scope": "global"
  },
