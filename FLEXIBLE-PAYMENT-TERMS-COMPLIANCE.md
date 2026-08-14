@@ -44,6 +44,21 @@ pay-in-4 as regulated credit, and these amounts ($12k Tier 1, up to $200k) are s
 licensed creditor originates, services, bills, and collects under counsel-approved terms. No lockout, no
 backup-card charge, no in-app collections.
 
+### "Can we run this without a third-party lender?" — the self-financed path
+
+Because payment is by **credit card** in **four or fewer, 0% installments**, you may be able to **self-finance**
+the plan (no BNPL/bank lender) under the **four-installment exemption** — the merchant lets the buyer pay over
+≤4 installments with no finance charge, running the charges through its normal card processor. The provider
+setting now includes **`self_financed`** for exactly this.
+
+This is **not** a green light to turn it on. "Paid by credit card" does not remove the credit — the *deferral*
+of payment is the credit — so the counsel gate stays. Whether the four-installment exemption actually applies
+is a legal determination that depends on: your **states**, whether buyers are **consumers or businesses**, the
+**amounts** ($12k–$200k is significant), the CFPB's tightening treatment of **pay-in-4**, and getting the
+**recurring-card authorization** right (card-network + Reg E rules). So `self_financed` **still requires
+`FLEXPAY_LEGAL_SIGNOFF = true`** — a lawyer's confirmation, not a lender's. Once counsel confirms, you can go
+live self-financed with no outside provider.
+
 ## Open items for counsel
 
 - **Licensing / disclosures** for installment credit in the jurisdictions you'll offer it (TILA/Reg Z for
