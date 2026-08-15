@@ -4,9 +4,11 @@
 >
 > **All GamerGain / Get Goods Gratis launch-cost docs use these figures. Where an older number appears
 > anywhere below, this banner supersedes it.** (Reflects everything built through 2026-08-15: the AI concierge
-> funnel + auto-launch, the results/benchmark auto-compilers and per-product stats, the Tier 2 "Scale"
-> pay-as-you-go ladder + deliverables, the founding rollover/upgrade discount + sign-up credit, and the
-> stronger cost floor — one-click in-app + `AI_FORCE_CHEAP_TIER` that dumps every AI call onto the small Llama.)
+> funnel + auto-launch, the public `/Apply` page marketing the Founding offer + "coming soon" financing, the
+> results/benchmark auto-compilers and per-product stats, the Tier 2 "Scale" pay-as-you-go ladder +
+> deliverables, the founding rollover/upgrade discount + sign-up credit, and the stronger cost floor —
+> one-click in-app + `AI_FORCE_CHEAP_TIER` that dumps every AI call onto the small Llama. The `/Apply` page is a
+> read + a lead form, so it adds capability, not launch or runtime cost.)
 >
 > - **The launch number did NOT rise.** Every feature added this session ships **prebuilt and ON**, so it adds
 >   capability, not launch cost. The credit features (flexpay / financed Tier 1 / goods advance) ship **OFF by

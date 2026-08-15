@@ -3,6 +3,13 @@
 *Authoritative summary of the current advertiser pricing. Admin-tunable via settings; nothing here is a
 promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 
+> **Reconciled 2026-08-15.** Consistent with the other Get Goods Gratis docs as of this date. The Founding
+> Tier 1 offer, the 6% decoupled upgrade discount, the $1,000 sign-up credit, Tier 2 pay-as-you-go, the
+> discontinued free earn-to-unlock tier, and the three OFF-by-default credit products all match
+> `RECONCILED-STATE-2026-08-15.md`. There is now a public **`/Apply`** page that markets this pricing —
+> Founding Tier 1 as the prominent offer, Tier 2 as available, and the three credit products as "coming soon."
+> See `APPLY-AND-COMING-SOON.md`.
+
 ## Paid advertiser (PPC / Tier 1)
 
 - **Price: $12,000 per year, or $1,000 per month — paid upfront.**

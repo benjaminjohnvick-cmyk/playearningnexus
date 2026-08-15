@@ -78,6 +78,13 @@ a projection or a "customers like you" claim.
   flag is off the backend returns `funnel_off` and the launcher hides itself. Edit `BUSINESS_PAGES` to change
   which routes trigger it.
 
+- **Founding CTA → `/Apply`.** The launcher panel also carries an always-visible gold bar — "Founding
+  advertiser spots are limited — see the offer & apply →" — linking to the public **`/Apply`** page. That page
+  is the top-of-funnel capture: it markets the Founding Tier 1 offer prominently, shows Tier 2 as available,
+  and lists the three credit products as **"coming soon / apply now"** with their live gate status. Applying
+  captures a lead (`AdvertiserApplication`) and never charges or originates credit. See
+  `APPLY-AND-COMING-SOON.md`.
+
 The concierge recommends and logs. It does not charge, and it cannot push anyone into a credit product.
 
 ## Email re-engagement (opt-in only)
