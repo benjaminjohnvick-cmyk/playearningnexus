@@ -8,10 +8,13 @@ upgrade — it never moves money and nothing is ever owed. Not legal advice.*
 1. **Pay $12,000 upfront** for the founding/Tier 1 seat (unchanged).
 2. **Founding upgrade discount (decoupled from the payment).** Founding advertisers get a **promotional
    discount** on a bigger **upgrade** (default **"Tier 2 — Scale," $200,000**). The discount is defined as a
-   **percentage of the upgrade price** (default **6% → $12,000 off → net $188,000**), available for a
-   **12-month** promo window. It is **not** a "credit equal to what you paid," makes **no reference** to the
-   amount paid, and is **not derived from it** — it's a straightforward founding-advertiser discount on the
-   upgrade.
+   **percentage of the upgrade price** (default **6% → $12,000 off → net $188,000**). A founding member can
+   **claim** it within a **12-month** promo window after joining, and it then **rolls over for life**: because
+   they hold a founding Tier 1 seat, the 6% comes off **every Tier 2 part in perpetuity**
+   (`TIER2_FOUNDING_DISCOUNT_PERPETUAL`), whereas a non-founding Tier 1→Tier 2 rollover keeps the 6% only
+   through the first year (`TIER2_DISCOUNT_FIRST_YEAR_ONLY`). It is **not** a "credit equal to what you paid,"
+   makes **no reference** to the amount paid, and is **not derived from it** — it's a straightforward
+   founding-advertiser discount on the upgrade.
 3. **Sign-up store credit.** **$1,000** in store credit, vesting in equal monthly tranches over **12 months**
    (~$83.33/mo), **conditional** on the advertiser: (a) **using the app for 12 months**, (b) **submitting
    feedback**, and (c) **bringing 1 fraud-screened referral**. Feedback + referral are unlock gates; until

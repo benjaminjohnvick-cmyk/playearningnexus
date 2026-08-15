@@ -19,15 +19,20 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 ### Founding upgrade discount + sign-up credit
 
 - Pay **$12,000 upfront**. Founding advertisers then get a **discount on an upgrade** (default **"Tier 2 —
-  Scale," $200,000**): a promotional **6% off** the upgrade price → **$12,000 off → net $188,000**, available
-  for a 12-month window. The discount is defined as a **% of the upgrade price — decoupled from the amount
-  paid** (no "credit," no "return your $12k"), which removes the return-of-capital signal the founding packet
-  flagged.
+  Scale," $200,000**): a promotional **6% off** the upgrade price → **$12,000 off → net $188,000**. A founding
+  Tier 1 member can **claim** it within a **12-month window** after they join — and, unlike the general Tier 1→
+  Tier 2 rollover (which keeps the 6% only through the first year), **founding members keep the 6% for life**:
+  it comes off **every Tier 2 part in perpetuity** (`TIER2_FOUNDING_DISCOUNT_PERPETUAL = true`). The discount
+  is defined as a **% of the upgrade price — decoupled from the amount paid** (no "credit," no "return your
+  $12k"), which removes the return-of-capital signal the founding packet flagged.
 - **Sign-up credit: $1,000** in Site Cash, vesting over 12 months (~$83.33/mo), conditional on **12 months
   active use + feedback + 1 fraud-screened referral**. Unmet conditions forfeit the unvested part — nothing
   owed.
 - Settings: `FOUNDING_UPGRADE_DISCOUNT_PCT = 0.06`, `FOUNDING_UPGRADE_PRICE_USD = 200000`,
-  `FOUNDING_SIGNUP_CREDIT_USD = 1000` (+ condition keys). Code: `backend/sdk/founding-rollover.ts`,
+  `FOUNDING_UPGRADE_DISCOUNT_WINDOW_MONTHS = 12` (window to claim), `TIER2_FOUNDING_DISCOUNT_PERPETUAL = true`
+  (founding members keep it for life) / `TIER2_DISCOUNT_FIRST_YEAR_ONLY = true` (non-founding loses it after
+  year one), `FOUNDING_SIGNUP_CREDIT_USD = 1000` (+ condition keys). Code: `backend/sdk/founding-rollover.ts`
+  (claim window) + `backend/sdk/tier2-scaling.ts` (`tier2DiscountRate` applies the per-part rate),
   functions `foundingRolloverStatus` / `foundingUpgradeQuote`, page `/FoundingUpgrade`.
 - **Note:** for maximum daylight from the return-of-capital signal, set the discount % so its dollar result
   isn't exactly $12,000. The $200k upgrade must be a real product before it's sold. Full write-up:
