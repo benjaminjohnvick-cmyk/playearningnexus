@@ -78,14 +78,14 @@ export default function GetGoodsAdvance() {
         </CardContent></Card>
       )}
 
-      {/* Not available yet (default state until provider + counsel sign-off) */}
+      {/* Retired / superseded (default state — the program is no longer offered) */}
       {!live && (
         <Card><CardContent className="p-5">
           <div className="flex items-start gap-3">
             <Info className="w-5 h-5 text-blue-500 mt-0.5" />
             <div>
-              <p className="font-semibold text-gray-900">Not available yet</p>
-              <p className="text-sm text-gray-600 mt-1">The Goods Advance is being finalized with our lending partner and legal review. In the meantime, you can always shop with the balance you've already earned.</p>
+              <p className="font-semibold text-gray-900">This program has been replaced</p>
+              <p className="text-sm text-gray-600 mt-1">The Goods Advance is no longer offered. Instead, everyone can use <a href="/SaveToGet" className="text-[#16264f] font-semibold underline">Save-to-Get</a> to set aside your own earnings toward an item — no advance, no balance owed — and premium members can claim the <a href="/PremiumBoost" className="text-[#16264f] font-semibold underline">advertiser-funded gift boost</a>. You can also always shop with the balance you've already earned.</p>
             </div>
           </div>
         </CardContent></Card>

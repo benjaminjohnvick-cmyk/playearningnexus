@@ -5,7 +5,6 @@ import { upgradeDiscountPct } from "../../sdk/founding-rollover.ts";
 import { tier2Name, tier2TotalUsd, tier2Parts } from "../../sdk/tier2-scaling.ts";
 import { flexPayLive } from "../../sdk/flexpay.ts";
 import { tier1FinancedLive } from "../../sdk/tier1-financed.ts";
-import { advanceProgramLive } from "../../sdk/goods-advance.ts";
 
 // advertiserApplyInfo (public read) — the content for the /Apply page: the prominent Founding Advertiser
 // (Tier 1) offer with its live benefits + availability, and the three financing options with their real
@@ -41,7 +40,6 @@ export default __handler(async () => {
     const gates = [
       { key: "flexpay", name: "Flexible Payment Terms", tagline: "Split a package into 4 quarterly credit-card payments.", live: await flexPayLive(null) },
       { key: "tier1_financed", name: "Tier 1 — Pay From Results", tagline: "Start advertising now and pay across the year as results come in.", live: await tier1FinancedLive(null) },
-      { key: "goods_advance", name: "Goods Advance", tagline: "A store advance to spend now, repaid from your earnings.", live: await advanceProgramLive(null) },
     ];
     const coming_soon = gates.map((g) => ({ key: g.key, name: g.name, tagline: g.tagline, status: g.live ? "available" : "coming_soon" }));
 

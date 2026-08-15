@@ -4,7 +4,6 @@ import { db } from "../../sdk/db.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { recommendAtPurchase, type FunnelSignals } from "../../sdk/ai-funnel.ts";
 import { tier1FinancedLive } from "../../sdk/tier1-financed.ts";
-import { advanceProgramLive } from "../../sdk/goods-advance.ts";
 
 // aiFunnelRecommend (Gate 1 — fit) — a recommendation from the conversation signals, BEFORE purchase.
 // Deterministic + logged. The suitability guard means a financial product is never recommended as an upsell
@@ -26,7 +25,6 @@ export default __handler(async (req) => {
     // Which financial products are actually live right now (all default OFF).
     const liveKeys = new Set<string>();
     if (await tier1FinancedLive(jurisdiction)) liveKeys.add("tier1_financed");
-    if (await advanceProgramLive(jurisdiction)) liveKeys.add("goods_advance");
     const isLive = (key: string) => liveKeys.has(key);
 
     const rec = recommendAtPurchase(signals, currentKey, isLive);

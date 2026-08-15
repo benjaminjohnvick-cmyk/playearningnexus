@@ -66,7 +66,7 @@ export default function Apply() {
   const t1 = info?.tier1, t2 = info?.tier2, coming = info?.coming_soon || [];
   const interestLabel = {
     founding_tier1: 'Founding Advertiser (Tier 1)', tier2: 'Tier 2 — Scale',
-    flexpay: 'Flexible Payment Terms', tier1_financed: 'Tier 1 — Pay From Results', goods_advance: 'Goods Advance',
+    flexpay: 'Flexible Payment Terms', tier1_financed: 'Tier 1 — Pay From Results',
   };
 
   return (

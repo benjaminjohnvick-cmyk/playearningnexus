@@ -8,7 +8,6 @@ import { reviewOnResults, findProduct, type FunnelSignals } from "../../sdk/ai-f
 import { attributedSalesUsd } from "../../sdk/earned-advertiser.ts";
 import { earnHistory } from "../../sdk/goods-advance.ts";
 import { tier1FinancedLive } from "../../sdk/tier1-financed.ts";
-import { advanceProgramLive } from "../../sdk/goods-advance.ts";
 import { buildReengageEmail, funnelEmailEnabled, funnelEmailMinDaysBetween, funnelEmailFrom } from "../../sdk/funnel-email.ts";
 import { snapNumber, snapBool } from "../../sdk/settings.ts";
 
@@ -41,7 +40,6 @@ export default __handler(async (req) => {
     // Live financial products for the suitability guard (all default OFF).
     const liveKeys = new Set<string>();
     if (await tier1FinancedLive(null)) liveKeys.add("tier1_financed");
-    if (await advanceProgramLive(null)) liveKeys.add("goods_advance");
     const isLive = (key: string) => liveKeys.has(key);
 
     const journeys = await db.filter("FunnelJourney", { kind: "active" }, "-created_date", 5000).catch(() => []) as Record<string, unknown>[];

@@ -165,13 +165,22 @@ export function signupCreditState(opts: {
   };
 }
 
-/** Disclosure lines for the sign-up credit + upgrade discount, kept honest (conditions, non-cashable, FTC). */
+/** Disclosure lines for the sign-up credit + upgrade discount, kept honest (conditions, non-cashable, FTC).
+ *  The old $1,000 vesting sign-up credit is RETIRED (FOUNDING_SIGNUP_CREDIT_USD default 0), replaced by the
+ *  $2,000 premium gift boost. Its lines are only emitted if it's revived (set > 0), so we never surface a
+ *  stale "$0 sign-up bonus". */
 export function foundingCreditDisclosures(): string[] {
-  return [
-    `Sign-up bonus: $${signupCreditUsd().toLocaleString()} in store credit, vesting over ${signupCreditWindowMonths()} months as you use the app.`,
-    `To unlock it you must stay active, submit feedback${signupRequireReferrals() > 0 ? `, and refer ${signupRequireReferrals()} person who becomes an active user` : ""}.`,
-    "The bonus is non-cashable store credit (Site Cash), spendable only on this site. If conditions aren't met, the unvested part is forfeited — you never owe anything.",
+  const lines: string[] = [];
+  if (signupCreditUsd() > 0) {
+    lines.push(
+      `Sign-up bonus: $${signupCreditUsd().toLocaleString()} in store credit, vesting over ${signupCreditWindowMonths()} months as you use the app.`,
+      `To unlock it you must stay active, submit feedback${signupRequireReferrals() > 0 ? `, and refer ${signupRequireReferrals()} person who becomes an active user` : ""}.`,
+      "The bonus is non-cashable store credit (Site Cash), spendable only on this site. If conditions aren't met, the unvested part is forfeited — you never owe anything.",
+    );
+  }
+  lines.push(
     `Founding upgrade discount: founding advertisers get ${Math.round(upgradeDiscountPct() * 100)}% off the ${upgradeName()} upgrade — claim it within ${upgradeDiscountWindowMonths()} months of joining, and as a founding member you keep the ${Math.round(upgradeDiscountPct() * 100)}% on every ${upgradeName()} part for life (it does not expire after year one). It is a discount on the upgrade — not tied to, or a return of, what you paid.`,
     "Referral rewards: referrals must be genuine; this is a paid referral incentive and is disclosed as such.",
-  ];
+  );
+  return lines;
 }

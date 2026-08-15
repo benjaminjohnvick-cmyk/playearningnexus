@@ -6,7 +6,6 @@ import { reviewOnResults, findProduct, type FunnelSignals } from "../../sdk/ai-f
 import { attributedSalesUsd } from "../../sdk/earned-advertiser.ts";
 import { earnHistory } from "../../sdk/goods-advance.ts";
 import { tier1FinancedLive } from "../../sdk/tier1-financed.ts";
-import { advanceProgramLive } from "../../sdk/goods-advance.ts";
 
 // aiFunnelResultsReview (Gate 2 — results) — after the commitment window, recommend up / down / hold from
 // the customer's REAL results on the product's metric (attributed sales / earnings / engagement value).
@@ -50,7 +49,6 @@ export default __handler(async (req) => {
 
     const liveKeys = new Set<string>();
     if (await tier1FinancedLive(jurisdiction)) liveKeys.add("tier1_financed");
-    if (await advanceProgramLive(jurisdiction)) liveKeys.add("goods_advance");
     const isLive = (key: string) => liveKeys.has(key);
 
     const rec = reviewOnResults({ currentKey, resultsUsd, windowMet, upsellAttempts, signals }, isLive);

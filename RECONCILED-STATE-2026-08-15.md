@@ -14,7 +14,7 @@ legal advice.*
 | **Premium gift boost** | up to $2,000 store credit | Premium-member benefit; collective advertiser pool, **decoupled from the fee** (not a rebate), member-directed, non-cashable, subject to availability | No (non-cashable) | **Live** (replaces the old $1,000 sign-up credit) |
 | **Flexible Payment Terms** | splits a price into 4 quarterly card charges | Credit card only, 0%, ≤12 mo | **Yes — installment credit** | **OFF** — "coming soon" on `/Apply` |
 | **Tier 1 "Pay From Results" (Financed)** | $0 down, $12,000 swept from earnings, balance DUE at term | Recourse | **Yes — recourse credit** | **OFF** — "coming soon" on `/Apply` |
-| **Goods Advance** | store advance spent now, repaid from earnings | Non-recourse | **Yes — advance credit** | **OFF** — "coming soon" on `/Apply` |
+| **Goods Advance** | store advance spent now, repaid from earnings | Non-recourse | **Yes — advance credit** | **RETIRED / superseded** — replaced by **Save-to-Get** (no-debt) for everyone and the **premium Boost** for premium members; stays OFF and is no longer featured in the Legal & Compliance docs (code retained, gated) |
 | **Free earn-to-unlock advertiser** | — | earn ~$8k unlock + revenue-share | Non-recourse | **DISCONTINUED** (`FREE_ADVERTISER_TIER_ENABLED` OFF) |
 
 ## Flag posture

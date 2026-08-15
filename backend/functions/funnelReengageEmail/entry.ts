@@ -8,7 +8,6 @@ import { recommendAtPurchase, reviewOnResults, findProduct, type FunnelSignals }
 import { attributedSalesUsd } from "../../sdk/earned-advertiser.ts";
 import { earnHistory } from "../../sdk/goods-advance.ts";
 import { tier1FinancedLive } from "../../sdk/tier1-financed.ts";
-import { advanceProgramLive } from "../../sdk/goods-advance.ts";
 import { buildReengageEmail, funnelEmailEnabled, funnelEmailMinDaysBetween, funnelEmailFrom } from "../../sdk/funnel-email.ts";
 
 // funnelReengageEmail (INTERNAL/ADMIN) — sends ONE compliant AI-concierge re-engagement email to a customer.
@@ -55,7 +54,6 @@ export default __handler(async (req) => {
     // Live financial products (for the suitability guard) — all default OFF.
     const liveKeys = new Set<string>();
     if (await tier1FinancedLive(null)) liveKeys.add("tier1_financed");
-    if (await advanceProgramLive(null)) liveKeys.add("goods_advance");
     const isLive = (key: string) => liveKeys.has(key);
 
     // The customer's active journey (what they were looking at / committed to).

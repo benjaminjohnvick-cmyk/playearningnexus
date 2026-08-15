@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { qualifiedReferrals } from "../../sdk/earned-advertiser.ts";
-import { upgradeDiscountState, upgradeQuote, signupCreditState, foundingCreditDisclosures } from "../../sdk/founding-rollover.ts";
+import { upgradeDiscountState, upgradeQuote, signupCreditState, signupCreditUsd, foundingCreditDisclosures } from "../../sdk/founding-rollover.ts";
 
 // foundingRolloverStatus (read-only) — the caller's founding-advertiser credit picture:
 //   • the founding UPGRADE DISCOUNT (a % off the upgrade, decoupled from what they paid) and its window,
@@ -48,7 +48,12 @@ export default __handler(async (req) => {
 
     const discount = upgradeDiscountState(purchasedISO, todayISO);
     const quote = upgradeQuote(discount);
-    const signup = signupCreditState({ startISO: purchasedISO, todayISO, monthsActive, feedbackGiven, referralsQualified: referrals });
+    // The $1,000 vesting sign-up credit is RETIRED (replaced by the $2,000 premium gift boost). Only surface
+    // its vesting state if it's been revived (FOUNDING_SIGNUP_CREDIT_USD > 0); otherwise return null so no
+    // stale "$0 credit" widget shows.
+    const signup = signupCreditUsd() > 0
+      ? signupCreditState({ startISO: purchasedISO, todayISO, monthsActive, feedbackGiven, referralsQualified: referrals })
+      : null;
 
     return Response.json({
       has_founding_seat: !!rec,
