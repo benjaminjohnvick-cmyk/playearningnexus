@@ -6,7 +6,8 @@
 > coded now:
 >
 > - **Two things, kept DELIBERATELY SEPARATE.** (1) An **advertising product** — ~200,000 between-survey
->   impressions/year for a 4-year term at a locked-in introductory price ($8,000, non-refundable presale),
+>   impressions/year for a 4-year term at a locked-in introductory price (**$12,000/yr — or $1,000/mo over 12
+>   months** — non-refundable),
 >   sold on its own merits. (2) A **standalone membership perk** — keep **100% of what YOU earn** from
 >   **third-party** surveys for **4 years**, paid only as **Site Cash** (closed-loop, non-cashable). It's a
 >   better **SHARE**, with **NO promised amount, NO cap**, and it is **not a return of / offset to** the ad
@@ -44,8 +45,9 @@ program keeps the appeal and drops the guarantee:
 
 - **Founding Advertiser tier** — limited to `FOUNDING_ADVERTISER_SLOTS` (100,000) seats. Scarcity is a
   marketing lever, not a promise.
-- **One-time price** `FOUNDING_ADVERTISER_PRICE_USD` ($8,000) for a `FOUNDING_ADVERTISER_TERM_YEARS` (4)-year
-  package.
+- **Price** `FOUNDING_ADVERTISER_PRICE_USD` ($12,000/yr) — payable upfront, or as
+  `FOUNDING_ADVERTISER_MONTHLY_PRICE_USD` ($1,000)/mo over 12 months — for a `FOUNDING_ADVERTISER_TERM_YEARS`
+  (4)-year package.
 - **Fixed, stated ad allotment** — `FOUNDING_INTERSTITIAL_IMPRESSIONS_PER_YEAR` (200,000) between-survey
   interstitial impressions per year, served with **priority** over house ads. A concrete deliverable, not an
   open-ended "until you recoup Nx."
@@ -53,8 +55,9 @@ program keeps the appeal and drops the guarantee:
   earn **variable** Site Cash from surveys like any member. This is the honest version of "earn your cost
   back": it genuinely offsets real-world cost, but it is **disclosed as variable, not guaranteed, and not a
   repayment** of the advertising fee. Site Cash is closed-loop, non-cashable.
-- **Funds model — `FOUNDING_FUNDS_MODEL` (default `presale`).** Chosen: **presale** — the full $8,000 is
-  **non-refundable founding revenue** that funds the ramp-up, crowdfunding-style. `escrow` (fully refundable,
+- **Funds model — `FOUNDING_FUNDS_MODEL` (default `presale`).** Chosen: **presale** — the $12,000 (whether
+  paid upfront or as $1,000/mo over 12 months) is **non-refundable founding revenue** that funds the ramp-up,
+  crowdfunding-style. `escrow` (fully refundable,
   not spendable) and `hybrid` (a non-refundable deposit spendable now + the rest escrowed/refundable) are also
   supported by the same code, switched by this setting. `signupFinancials()` splits every payment into a
   spendable (non-refundable) portion and an escrowed (refundable) portion per the model, and the code keeps the
