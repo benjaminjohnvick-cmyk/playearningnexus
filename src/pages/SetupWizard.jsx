@@ -12,6 +12,8 @@ import { CheckCircle2, AlertCircle, Loader2, Rocket, Zap } from 'lucide-react';
 export default function SetupWizard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [flooring, setFlooring] = useState(false);
+  const [floorMsg, setFloorMsg] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -19,6 +21,17 @@ export default function SetupWizard() {
     catch { /* ignore */ } finally { setLoading(false); }
   };
   useEffect(() => { load(); }, []);
+
+  const applyFloor = async () => {
+    setFlooring(true); setFloorMsg(null);
+    try {
+      const res = await base44.functions.invoke('costFloorProfile', {});
+      if (res?.error) setFloorMsg({ ok: false, text: res.error });
+      else setFloorMsg({ ok: true, text: `Applied — ${Array.isArray(res.applied) ? res.applied.length : 0} setting(s) dropped to the floor. ${res.note || ''}` });
+      await load();
+    } catch (e) { setFloorMsg({ ok: false, text: e?.message || 'Failed.' }); }
+    finally { setFlooring(false); }
+  };
 
   const Row = ({ it }) => (
     <div className="flex items-start gap-3 py-2 border-b last:border-0">
@@ -62,6 +75,15 @@ export default function SetupWizard() {
               </CardContent>
             </Card>
           )}
+
+          <Card className="mb-4 border-indigo-200 bg-indigo-50/40">
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><Zap className="w-4 h-4 text-indigo-600" />One-click cost floor</CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+              <p className="text-sm text-slate-600">Routes AI, transcription, and voice to the cheapest backend (your self-hosted server if set, else free tiers), forces every LLM call onto the small Llama model, and sets a daily AI spend cap. Reversible — only changes settings.</p>
+              <Button size="sm" onClick={applyFloor} disabled={flooring} className="bg-indigo-600 hover:bg-indigo-700 text-white">{flooring ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Drop cost to the floor'}</Button>
+              {floorMsg && <div className={`text-xs rounded-md p-2 ${floorMsg.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>{floorMsg.text}</div>}
+            </CardContent>
+          </Card>
 
           <Card className="mb-4">
             <CardHeader><CardTitle className="text-base">Free provider stack — drives AI/media cost to $0</CardTitle></CardHeader>

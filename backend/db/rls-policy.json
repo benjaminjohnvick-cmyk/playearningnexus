@@ -73,6 +73,9 @@
   "scope": "owner",
   "owner_field": "owner_user_id"
  },
+ "AdvertiserApplication": {
+  "scope": "global"
+ },
  "AffiliateAdPost": {
   "scope": "owner",
   "owner_field": "user_id"

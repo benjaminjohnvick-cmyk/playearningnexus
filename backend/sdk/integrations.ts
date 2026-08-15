@@ -27,7 +27,7 @@ type LLMArgs = {
   add_context_from_internet?: boolean;
 };
 
-import { snapString, snapNumber } from "./settings.ts";
+import { snapString, snapNumber, snapBool } from "./settings.ts";
 const LLM_PROVIDER = Deno.env.get("LLM_PROVIDER") ?? "openai"; // openai | anthropic (env fallback; live via snapString)
 
 // ---- AI daily spend guardrail (AI_DAILY_SPEND_CAP_USD; 0 = no cap) --------------------------------
@@ -111,7 +111,12 @@ const CLAUDE_MODEL_MAP: Record<string, string> = {
 
 /** Resolve a Base44 alias (or raw model id) to a real model id for the active provider. */
 function resolveModelId(alias?: string, providerOverride?: string): string {
-  const key = alias ?? "default";
+  let key = alias ?? "default";
+  // Cost floor: dump EVERYTHING into the cheap tier (small Llama). Only downgrades the known tier aliases —
+  // raw model ids (llama…, claude…, contains "/") pass through untouched.
+  if ((key === "gpt_5" || key === "gpt_5_mini" || key === "default") && snapBool("AI_FORCE_CHEAP_TIER", false)) {
+    key = "gpt_5_mini";
+  }
   // Provider + per-tier model IDs are admin-adjustable live (DB override → env → default).
   const provider = providerOverride ?? snapString("LLM_PROVIDER", LLM_PROVIDER);
   if (provider === "groq") {

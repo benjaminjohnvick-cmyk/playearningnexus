@@ -3718,3 +3718,15 @@ CREATE TABLE IF NOT EXISTS "ProductStat" (
 );
 CREATE INDEX IF NOT EXISTS "ProductStat_data_gin" ON "ProductStat" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "ProductStat_created" ON "ProductStat" (created_date DESC);
+
+-- AdvertiserApplication: lead capture from the public /Apply page (Founding advertiser + "coming soon"
+-- financing interest). Marketing/CRM only — captures interest, NEVER originates credit. See Apply page.
+CREATE TABLE IF NOT EXISTS "AdvertiserApplication" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdvertiserApplication_data_gin" ON "AdvertiserApplication" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdvertiserApplication_created" ON "AdvertiserApplication" (created_date DESC);

@@ -230,6 +230,56 @@ gross survey revenue, since you hold no inventory), and the opt-in **shopping-ex
 (your share of commission on purchases anywhere). See `SCALE-TO-AMAZON-STRATEGY.md` +
 `SHOPPING-EXTENSION-AND-SERVICES.md`.
 
+**NEW — one-click floor, in the app.** Beyond the deploy-time script, admins can now drop cost to the floor
+live from the **Setup Wizard** ("Drop cost to the floor" button) or the `costFloorProfile` function. It routes
+every capability to the cheapest backend — your **self-hosted server if a `SELF_*_URL` is set, otherwise the
+free tiers** — sets a daily AI spend cap, and flips the new **`AI_FORCE_CHEAP_TIER`** so **every LLM call runs
+on the small Llama model** (even calls that asked for the 70B reasoning tier). Reversible; it only changes
+settings and reports exactly what it changed.
+
+**Dumping more into Llama.** With `AI_FORCE_CHEAP_TIER` on, the ~190 AI call sites all resolve to
+`llama-3.1-8b-instant` on Groq's free tier — the biggest single AI lever. What can move to Llama safely: the
+AI concierge/funnel copy, moderation, ranking, survey autofill assist, translation, ad-copy drafting,
+sentiment, support triage, catalog text. What benefits from the 70B (turn the force off if a task needs it):
+multi-step reasoning, dispute adjudication, and anything doing careful math. Image generation is separate —
+it's already on Cloudflare FLUX free tier; set a `SELF_IMAGE_URL` (SDXL/FLUX) to take it to $0 on your own GPU.
+
+## Lowest legal & compliance cost — launch on the "straightforward" versions
+
+The cheapest way to keep legal spend near zero at launch is the same trick we used on Tier 2 (pay-as-you-go,
+not credit) and Flexible Payments (credit-card only, which removed the money-transmission question): **launch
+with only the features that don't require a lawyer or a license, and leave the counsel-gated ones OFF until
+revenue justifies them.**
+
+- **Keep OFF at launch (each needs counsel + licensing before it can bill):** `flexpay` (installment credit),
+  `tier1_financed` (recourse credit), `goods_advance` (advance credit). All three default OFF and refuse to
+  originate — so they cost you nothing legally until you choose to engage a finance attorney.
+- **Launch ON (no lender, no counsel gate — "straightforward" by design):**
+  - **Tier 1** — a normal upfront advertising purchase.
+  - **Tier 2 "Scale"** — bought in 30-day pay-as-you-go parts; each part is a separate purchase, nothing
+    deferred, so it is **not credit** and needs no lending gate.
+  - **Flexible Payments in `self_financed` mode** — a 0%, 4-installment, credit-card plan *may* qualify for the
+    four-installment exemption (no third-party lender). This one still needs a **one-time** attorney
+    confirmation, but not an ongoing licensed-lender relationship — the cheapest path into "pay over time."
+  - **Rollover/upgrade discount, sign-up store credit, Tier 2 scaling** — promotions and store credit, not
+    securities or credit.
+- **Earnings/results claims cost nothing to run compliantly** thanks to the hypothetical→substantiated
+  pattern: the concierge and product pages show a clearly-labeled *hypothetical example* until real data
+  passes the sample threshold, then auto-publish the *substantiated* figure with its basis. No counsel review
+  is needed to show a hypothetical, and the substantiated numbers are your own real data — so the whole
+  "show how it works and the results" story runs at $0 legal cost.
+- **Standing invariants that keep you out of trouble for free:** customers never pay a markup
+  (`customer_paid_usd = 0`), points stay non-cashable/closed-loop (money-transmission shield), referral and
+  ad content carry FTC disclosures, and email is consent-gated with a CAN-SPAM footer. These are enforced in
+  code, not by a law firm.
+
+**Net:** launch on Tier 1 + Tier 2 + the non-credit promotions + consent-gated marketing, keep the three
+credit products OFF, and your only near-term legal cost is a single attorney read of the `self_financed`
+four-installment plan **if** you want pay-over-time on day one. Everything else is already structured to avoid
+the spend. (Full detail per feature in the Lawyer Packet docs: `TIER2-SCALING-OFFER.md`,
+`FLEXIBLE-PAYMENT-TERMS-COMPLIANCE.md`, `TIER1-FINANCED-PAY-FROM-EARNINGS.md`, `GET-GOODS-ADVANCE-PROGRAM-COMPLIANCE.md`,
+`AI-FUNNEL-DESIGN.md`, `PRODUCT-STATS.md`.)
+
 ## The free provider stack — AI/media/email at $0 (no GPU)
 
 Every external AI/media service now defaults to a free (or free-tier) hosted provider, each with graceful
@@ -255,9 +305,11 @@ searches + translations cached; (2) **free tiers first, paid fallback** — wire
 
 ## Cost estimate (everything on, from day one)
 
-**Recurring:** the AI/media/email layer runs at **$0/mo** on the free tiers above. The only recurring cost is
-**hosting** — Railway all-in-one at **~$5–$20/mo** (web + Postgres; add ~$5 for Redis if you want a shared
-cache). SMS is pay-per-use and starts effectively $0 (marketing SMS is held off until TCPA opt-in).
+**Recurring:** the AI/media/email layer runs at **$0/mo** on the free tiers above (with the cost floor's
+`AI_FORCE_CHEAP_TIER`, even the LLM line is ~$0–20/mo — all calls on Llama-8B). The recurring cost is
+**hosting** — Railway for the backend + Postgres **+ the always-on scheduler service** (the daily jobs),
+**~$10–$35/mo** total (add ~$5 for Redis if you want a shared cache). **Legal cost is $0 at launch** — the
+credit features ship off behind their counsel gate. SMS is pay-per-use, effectively $0 (held off until TCPA opt-in).
 
 **One-off to launch:** Google Play **$25** (one-time) + a domain **~$15/yr**; add Apple **$99/yr** only if you
 ship native iOS. So the **hard cash floor is ~$40** (web + Android) or **~$139** (with iOS).

@@ -19,6 +19,7 @@
   "AdTemplateMarketplace",
   "AdTemplatePurchase",
   "AdTransaction",
+  "AdvertiserApplication",
   "AffiliateAccount",
   "AffiliateAdPost",
   "AffiliateChurnPrediction",

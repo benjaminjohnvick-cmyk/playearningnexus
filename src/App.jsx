@@ -99,6 +99,7 @@ const FoundingUpgrade = lazy(() => import('./pages/FoundingUpgrade'));
 const AIFunnelConcierge = lazy(() => import('./pages/AIFunnelConcierge'));
 const Tier2Scaling = lazy(() => import('./pages/Tier2Scaling'));
 const ProductResults = lazy(() => import('./pages/ProductResults'));
+const Apply = lazy(() => import('./pages/Apply'));
 import ConciergeLauncher from './components/ConciergeLauncher';
 const ReferralInvite = lazy(() => import('./pages/ReferralInvite'));
 const EarnedAdvertiserLedger = lazy(() => import('./pages/EarnedAdvertiserLedger'));
@@ -208,7 +209,7 @@ const AuthenticatedApp = () => {
 
   // Public auth pages must render outside the auth gate (otherwise redirecting to /login
   // while unauthenticated would loop). Login/signup/legal are reachable without a session.
-  const publicPaths = ['/login', '/signup', '/forgot-password', '/reset-password', '/PrivacyPolicy', '/TermsOfService'];
+  const publicPaths = ['/login', '/signup', '/forgot-password', '/reset-password', '/PrivacyPolicy', '/TermsOfService', '/Apply'];
   const isPublicPage = publicPaths.includes(window.location.pathname);
   if (isPublicPage) {
     return (
@@ -220,6 +221,7 @@ const AuthenticatedApp = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
           <Route path="/TermsOfService" element={<TermsOfService />} />
+          <Route path="/Apply" element={<Apply />} />
         </Routes>
       </Suspense>
     );
@@ -374,6 +376,7 @@ const AuthenticatedApp = () => {
       <Route path="/AIFunnelConcierge" element={<LayoutWrapper currentPageName="AIFunnelConcierge"><AIFunnelConcierge /></LayoutWrapper>} />
       <Route path="/Tier2Scaling" element={<LayoutWrapper currentPageName="Tier2Scaling"><Tier2Scaling /></LayoutWrapper>} />
       <Route path="/ProductResults" element={<LayoutWrapper currentPageName="ProductResults"><ProductResults /></LayoutWrapper>} />
+      <Route path="/Apply" element={<LayoutWrapper currentPageName="Apply"><Apply /></LayoutWrapper>} />
       <Route path="/ReferralInvite" element={<LayoutWrapper currentPageName="ReferralInvite"><ReferralInvite /></LayoutWrapper>} />
       <Route path="/EarnedAdvertiserLedger" element={<LayoutWrapper currentPageName="EarnedAdvertiserLedger"><EarnedAdvertiserLedger /></LayoutWrapper>} />
       <Route path="/CompleteProfile" element={<CompleteProfile />} />
