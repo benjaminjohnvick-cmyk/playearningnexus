@@ -12,6 +12,7 @@
 import { isEnabled } from "./feature-flags.ts";
 import { getNumber, getBool } from "./settings.ts";
 import { db } from "./db.ts";
+import { adjustUserBalance } from "./balance.ts";
 
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 export const MEMBER_CREDIT_FIELD = "gift_boost_credit_usd"; // non-cashable, item-directed boost credit on User
@@ -62,6 +63,43 @@ export async function consumeFunding(amountUsd: number): Promise<{ consumed: num
     need = round2(need - take);
   }
   return { consumed: round2(amountUsd - need), funding_refs: refs };
+}
+
+// Integration helper: call this when a PPC / Tier 1 advertiser payment is recorded. Adds one funded
+// contribution (PREMIUM_BOOST_PER_ADVERTISER_USD, capped by what they actually paid) to the member-boost
+// pool. Safe no-op when the feature is off. Returns how much was funded.
+export async function fundBoostPoolFromAdvertiser(advertiserId: string, amountPaidUsd?: number): Promise<{ funded_usd: number } | null> {
+  const cfg = await premiumBoostConfig();
+  if (!cfg.enabled || !advertiserId) return null;
+  const paid = amountPaidUsd == null ? Infinity : Math.max(0, Number(amountPaidUsd));
+  const amount = round2(Math.min(cfg.perAdvertiserUsd, paid));
+  if (amount <= 0) return null;
+  await db.create("PremiumBoostFunding", {
+    advertiser_id: String(advertiserId), amount_usd: amount, remaining_usd: amount,
+    source: "advertiser_fee", created_at: new Date().toISOString(),
+  });
+  return { funded_usd: amount };
+}
+
+// Directly grant a member their boost credit (used for the Tier 1 signup benefit, which is self-funded by
+// the member's own advertising fee — so it does NOT draw the shared pool). Capped at the per-member max, and
+// bounded by whatever the member has already been granted. Non-cashable; nothing owed.
+export async function grantMemberBoost(memberId: string, amountUsd: number, source: string): Promise<{ granted_usd: number } | null> {
+  const cfg = await premiumBoostConfig();
+  if (!cfg.enabled || !memberId) return null;
+  const grant = await memberGrant(memberId);
+  const already = Math.max(0, Number(grant?.granted_usd) || 0);
+  const room = Math.max(0, cfg.maxUsd - already);
+  const give = round2(Math.min(Math.max(0, Number(amountUsd) || 0), room));
+  if (give <= 0) return { granted_usd: 0 };
+  await adjustUserBalance(memberId, give, { field: MEMBER_CREDIT_FIELD });
+  const fields = {
+    member_id: memberId, granted_usd: round2(already + give),
+    used_usd: Math.max(0, Number(grant?.used_usd) || 0), source, updated_at: new Date().toISOString(),
+  };
+  if (grant?.id) await db.update("PremiumBoostGrant", String(grant.id), fields, memberId);
+  else await db.create("PremiumBoostGrant", { ...fields, created_at: new Date().toISOString() }, memberId);
+  return { granted_usd: give };
 }
 
 export async function memberGrant(memberId: string): Promise<Record<string, unknown> | null> {

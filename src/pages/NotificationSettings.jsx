@@ -10,6 +10,7 @@ import {
   Target, Trophy, Megaphone, Zap, ShoppingBag, Users, Save
 } from "lucide-react";
 import { toast } from "sonner";
+import SmsOptInButton from '@/components/SmsOptInButton';
 
 const DEFAULT_PREFS = {
   // Delivery methods
@@ -227,6 +228,9 @@ export default function NotificationSettings() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Verifiable SMS marketing opt-in (double opt-in consent capture) */}
+          <SmsOptInButton />
 
           {/* Quick summary */}
           <Card className="border-2 border-red-100 bg-red-50">

@@ -11,7 +11,7 @@ legal advice.*
 | **Founding Advertiser — Tier 1** | $12,000/yr or $1,000/mo | Upfront (normal purchase) | No | **Live** — the prominent offer on `/Apply` |
 | **Tier 2 "Scale"** | $200,000 | 12 × 30-day pay-as-you-go parts, results-paced | No | **Live / available** |
 | **Founding upgrade discount** | 6% off Tier 2 → $12,000 off → net $188,000 | Decoupled from what was paid (not a "credit") | No | **Live**, 12-month window; perpetual for founding |
-| **Sign-up store credit** | $1,000 Site Cash | Vests over 12 mo; needs 12 mo active + feedback + 1 referral | No (non-cashable) | **Live** |
+| **Premium gift boost** | up to $2,000 store credit | Tier 1 sign-up benefit; advertiser-funded, member-directed, non-cashable | No (non-cashable) | **Live** (replaces the old $1,000 sign-up credit) |
 | **Flexible Payment Terms** | splits a price into 4 quarterly card charges | Credit card only, 0%, ≤12 mo | **Yes — installment credit** | **OFF** — "coming soon" on `/Apply` |
 | **Tier 1 "Pay From Results" (Financed)** | $0 down, $12,000 swept from earnings, balance DUE at term | Recourse | **Yes — recourse credit** | **OFF** — "coming soon" on `/Apply` |
 | **Goods Advance** | store advance spent now, repaid from earnings | Non-recourse | **Yes — advance credit** | **OFF** — "coming soon" on `/Apply` |
@@ -20,7 +20,7 @@ legal advice.*
 ## Flag posture
 
 - **ON by default (launch with these, no lender/counsel gate):** `ai_funnel` (concierge + auto-launch + the
-  `/Apply` founding CTA), Tier 2 pay-as-you-go, the founding upgrade discount, the $1,000 sign-up credit,
+  `/Apply` founding CTA), Tier 2 pay-as-you-go, the founding upgrade discount, the $2,000 premium gift boost,
   product-stats + benchmark compilers, consent-gated email re-engagement, and the public `/Apply` page.
 - **OFF by design (each a one-line flip once its external prerequisite lands):** `flexpay`, `tier1_financed`,
   `goods_advance` — every one needs its flag ON **+** a licensed/attorney-confirmed provider **+** a legal

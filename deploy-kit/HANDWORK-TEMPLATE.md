@@ -81,7 +81,7 @@ offset by the revenue levers (interstitial ad + survey hold + shopping cashback)
 ## D. Database 🛠  (one command each)
 
 - ☐ `psql "$DATABASE_URL" -f backend/db/schema.sql`   (creates the tables — includes all new entities:
-  FunnelJourney, FunnelEmailLog, FunnelBenchmark, ProductStat, Tier1FinancedPlan, Tier2ScalingPlan, FlexPayPlan, GoodsAdvance)
+  FunnelJourney, FunnelEmailLog, FunnelBenchmark, ProductStat, Tier1FinancedPlan, Tier2ScalingPlan, FlexPayPlan, GoodsAdvance, AdvertiserApplication)
 - ☐ `psql "$DATABASE_URL" -f backend/db/seed.sql`      (optional starter data)
 
 ---
@@ -127,8 +127,8 @@ These are yours to confirm/change in the admin Settings panel. Defaults in paren
 - ☐ **Tier 1 advertiser price** ($12,000/yr · $1,000/mo upfront): __________
 - ☐ **Tier 1 deliverables** (200k impressions/yr, 4-yr term, featured placement, AI creative, ~30 social
   posts/mo, A/B + analytics + sentiment; keep-100% survey window 4 yrs): confirm ☐
-- ☐ **Founding sign-up credit** ($1,000 store credit over 12 mo; conditions: 12 mo active + feedback + 1
-  referral): confirm ☐
+- ☐ **Founding premium gift boost** (up to $2,000 non-cashable store credit — Tier 1 sign-up benefit,
+  granted at signup, member-directed; replaces the old $1,000 credit): confirm ☐
 - ☐ **Founding → Tier 2 upgrade discount** (6% off; first year for all, perpetual for founding members): __________
 - ☐ **Tier 2 "Scale"** total ($200,000), parts (12 × 30-day), results gate (`TIER2_PART_MIN_RESULTS_MULT`, 0=off): __________
 - ☐ **Tier 2 deliverables** (3,000,000 impressions/yr, 100 social posts/mo, 4 audience panels/yr, perk unlock
@@ -138,6 +138,9 @@ These are yours to confirm/change in the admin Settings panel. Defaults in paren
 - ☐ **Benchmark / product-stats sample thresholds** (`AI_FUNNEL_BENCHMARK_MIN_SAMPLE` 30,
   `PRODUCT_STATS_MIN_SAMPLE` 30) — how many real results before a "typical" figure publishes: __________
 - ☐ **Earn-to-unlock free advertiser tier** — DISCONTINUED (`FREE_ADVERTISER_TIER_ENABLED` OFF). Leave off unless reviving.
+- ☐ **Public `/Apply` page** — live and reachable pre-login; markets Founding Tier 1 (prominent), Tier 2
+  (available), and the three credit products as "coming soon." Set `FOUNDING_ADVERTISER_SLOTS` (the "limited
+  space" cap) and review the leads it captures (`AdvertiserApplication`). See `APPLY-AND-COMING-SOON.md`. Confirm ☐
 
 ---
 
@@ -192,9 +195,10 @@ real. Compliance guardrails, not budget cuts.
 - ☐ `teen_accounts` → parental consent + counsel
 - ☐ SMS marketing → TCPA opt-in
 
-**Already ON and needing NO gate (launch with these):** `ai_funnel`, Tier 2 scaling (pay-as-you-go, not
-credit), the rollover/upgrade discount, sign-up store credit, product-stats + benchmark compilers, and the
-consent-gated email re-engagement.
+**Already ON and needing NO gate (launch with these):** `ai_funnel`, the public `/Apply` page (markets the
+three credit products as "coming soon" while they stay gated), Tier 2 scaling (pay-as-you-go, not credit), the
+rollover/upgrade discount, premium gift boost, product-stats + benchmark compilers, and the consent-gated
+email re-engagement.
 
 ---
 

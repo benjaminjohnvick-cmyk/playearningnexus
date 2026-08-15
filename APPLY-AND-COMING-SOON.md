@@ -23,7 +23,7 @@ offer, which needs no lender or counsel, is the **prominent** offer on the page 
   - ~30 AI social ad posts/month (clearly labeled)
   - A/B testing, analytics & sentiment insights
   - keep 100% of your own survey earnings for 4 years (as Site Cash)
-  - $1,000 sign-up store credit
+  - up to $2,000 premium gift boost — non-cashable store credit, applied to items you choose
   - 6% off the Tier 2 "Scale" upgrade — kept for life as a founding member
 - **Tier 2 "Scale" — available now.** Shown as a live option: buy the $200,000 upgrade in 30-day
   pay-as-you-go parts. (See `TIER2-SCALING-OFFER.md`.)

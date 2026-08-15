@@ -261,7 +261,7 @@ revenue justifies them.**
   - **Flexible Payments in `self_financed` mode** — a 0%, 4-installment, credit-card plan *may* qualify for the
     four-installment exemption (no third-party lender). This one still needs a **one-time** attorney
     confirmation, but not an ongoing licensed-lender relationship — the cheapest path into "pay over time."
-  - **Rollover/upgrade discount, sign-up store credit, Tier 2 scaling** — promotions and store credit, not
+  - **Rollover/upgrade discount, premium gift boost, Tier 2 scaling** — promotions and store credit, not
     securities or credit.
 - **Earnings/results claims cost nothing to run compliantly** thanks to the hypothetical→substantiated
   pattern: the concierge and product pages show a clearly-labeled *hypothetical example* until real data

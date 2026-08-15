@@ -14,7 +14,7 @@ export default __handler(async () => {
   try {
     const impressions = foundingImpressionsPerYear();
     const term = foundingTermYears();
-    const signup = Math.max(0, snapNumber("FOUNDING_SIGNUP_CREDIT_USD", 1000));
+    const boost = Math.max(0, snapNumber("PREMIUM_GIFT_BOOST_MAX_USD", 2000));
     const discPct = Math.round(upgradeDiscountPct() * 100);
     const slots = Math.max(0, snapNumber("FOUNDING_ADVERTISER_SLOTS", 100000));
 
@@ -30,7 +30,7 @@ export default __handler(async () => {
         `~${tier1AiSocialPostsPerMonth()} AI social ad posts per month (clearly labeled)`,
         "A/B testing, analytics & sentiment insights included",
         "Keep 100% of your own survey earnings for 4 years (as Site Cash)",
-        `$${signup.toLocaleString()} sign-up store credit`,
+        `$${boost.toLocaleString()} premium gift boost — non-cashable store credit you apply to any items you choose`,
         `${discPct}% off the Tier 2 "Scale" upgrade — kept for life as a founding member`,
       ],
     };

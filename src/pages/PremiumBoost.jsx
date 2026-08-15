@@ -48,6 +48,18 @@ export default function PremiumBoost() {
       </div>
       <p className="text-sm text-gray-600">A gift boost for premium members — up to {money(s.max_usd)} in store credit, <strong>funded by our advertisers</strong>, not by you or anyone else. Claim what you want and spend it on the items you choose. It's non-cashable store credit; nothing is owed.</p>
 
+      {/* Clear-and-conspicuous disclosure — sits directly under the claim. Keep in sync with PREMIUM-BOOST-ADVERTISING.md. */}
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-[11px] leading-relaxed text-gray-500">
+        <span className="font-semibold text-gray-600">About the premium gift boost.</span> The gift boost is
+        {' '}<strong>up to {money(s.max_usd)}</strong> in <strong>non-cashable store credit</strong> for{' '}
+        <strong>premium members</strong> — it is <strong>not cash</strong> and cannot be withdrawn or transferred.
+        It is <strong>funded by our advertisers</strong> and is a promotional benefit, <strong>not earnings</strong>.
+        The amount available depends on your eligibility and on how much advertiser funding is currently available,
+        so <strong>individual amounts vary and the boost is subject to availability (while funds last)</strong>. A
+        <strong> premium membership is required</strong>. You choose how much to use and which items to apply it to;
+        you owe nothing, and unused credit stays available for later.
+      </div>
+
       {/* Boost balances */}
       <Card><CardContent className="p-5 space-y-3">
         <div className="grid grid-cols-3 gap-2 text-center">

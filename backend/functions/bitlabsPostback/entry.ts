@@ -6,6 +6,8 @@ import { adjustUserBalance } from "../../sdk/balance.ts";
 import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
 import { db } from "../../sdk/db.ts";
 import { foundingFullKeepActive, recordFoundingFullKeepEarning } from "../../sdk/founding-advertiser.ts";
+import { applyEarningSetAside } from "../../sdk/earnings-setaside.ts";
+import { applyEarningToGoals } from "../../sdk/save-to-get.ts";
 import { payReferralSignupBonusOnce, creditReferralOverrideOnEarn } from "../../sdk/referral-rewards.ts";
 
 // HMAC-SHA256 of the callback URL (signature param stripped), hex, constant-time compared.
@@ -126,6 +128,9 @@ export default __handler(async (req) => {
     // Credit the user: points (non-premium) or cash back (premium). Atomic CAS. Platform keeps the pool.
     if (rw.isPremium && creditCash > 0) {
       await adjustUserBalance(uid, creditCash, { field: "current_balance" });
+      // Auto-route the user's chosen shares of this earning: set-aside bucket + Save-to-Get goals. Best-effort.
+      await applyEarningSetAside(uid, creditCash).catch(() => null);
+      await applyEarningToGoals(uid, creditCash).catch(() => null);
     } else if (creditPoints > 0) {
       await adjustUserBalance(uid, creditPoints, { field: "points" });
     }

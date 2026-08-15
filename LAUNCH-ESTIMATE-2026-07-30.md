@@ -6,7 +6,7 @@
 > anywhere below, this banner supersedes it.** (Reflects everything built through 2026-08-15: the AI concierge
 > funnel + auto-launch, the public `/Apply` page marketing the Founding offer + "coming soon" financing, the
 > results/benchmark auto-compilers and per-product stats, the Tier 2 "Scale" pay-as-you-go ladder +
-> deliverables, the founding rollover/upgrade discount + sign-up credit, and the stronger cost floor —
+> deliverables, the founding rollover/upgrade discount + $2,000 premium gift boost, and the stronger cost floor —
 > one-click in-app + `AI_FORCE_CHEAP_TIER` that dumps every AI call onto the small Llama. The `/Apply` page is a
 > read + a lead form, so it adds capability, not launch or runtime cost.)
 >
@@ -79,7 +79,7 @@ save money, and each is a one-line flip once its prerequisite exists.
 | **AI concierge funnel + auto-launch on business pages** (`ai_funnel`) | Teen accounts — needs verifiable parental consent + counsel |
 | **Results/benchmark auto-compilers + per-product stats** | Store-credit purchase & P2P transfers — money-transmission risk |
 | **Tier 2 "Scale" pay-as-you-go ladder + deliverables** (not credit) | Earnings projections — FTC earnings-claims review |
-| **Founding rollover/upgrade discount + $1,000 sign-up credit** | **`flexpay` (installment credit)** — licensed provider *or* attorney-confirmed self-financed |
+| **Founding rollover/upgrade discount + $2,000 premium gift boost** | **`flexpay` (installment credit)** — licensed provider *or* attorney-confirmed self-financed |
 | KYC survey · welcome rewards · Daily/Points Boost · layaway · purchase-payback | **`tier1_financed` (recourse credit)** — licensed creditor + counsel |
 | Referrals · jackpots · social posting · **consent-gated email re-engagement** · telemetry · UX heatmap | **`goods_advance` (advance credit)** — licensed provider + counsel |
 | **Partner cash-out** (closed-loop for regular users, ON) | |

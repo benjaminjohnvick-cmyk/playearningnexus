@@ -1,4 +1,4 @@
-# Founding Advertiser — Upgrade Discount + Sign-up Store Credit
+# Founding Advertiser — Upgrade Discount + Premium Gift Boost
 
 *Reporting/quoting layer on the founding offer. It grants and vests NON-CASHABLE store credit and PRICES an
 upgrade — it never moves money and nothing is ever owed. Not legal advice.*
@@ -15,11 +15,12 @@ upgrade — it never moves money and nothing is ever owed. Not legal advice.*
    through the first year (`TIER2_DISCOUNT_FIRST_YEAR_ONLY`). It is **not** a "credit equal to what you paid,"
    makes **no reference** to the amount paid, and is **not derived from it** — it's a straightforward
    founding-advertiser discount on the upgrade.
-3. **Sign-up store credit.** **$1,000** in store credit, vesting in equal monthly tranches over **12 months**
-   (~$83.33/mo), **conditional** on the advertiser: (a) **using the app for 12 months**, (b) **submitting
-   feedback**, and (c) **bringing 1 fraud-screened referral**. Feedback + referral are unlock gates; until
-   both are met, nothing vests. Unmet conditions forfeit the unvested remainder — **never a charge, never a
-   debt**.
+3. **Premium gift boost (replaces the old sign-up credit).** Up to **$2,000** in **non-cashable store
+   credit** — the Tier 1 sign-up benefit. Since Tier 1 includes premium, the member is granted their boost
+   at sign-up, self-funded by their own advertising fee; they choose how much to apply and to which items.
+   It is a promotional bonus (not a refund, not earnings, not credit), **never a charge, never a debt**. The
+   earlier $1,000 vesting sign-up credit is **retired** (`FOUNDING_SIGNUP_CREDIT_USD = 0`). See
+   `PREMIUM-GIFT-BOOST.md`.
 
 All amounts are closed-loop **Site Cash** (non-cashable). The member never owes anything.
 

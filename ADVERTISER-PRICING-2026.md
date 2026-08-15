@@ -4,7 +4,7 @@
 promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 
 > **Reconciled 2026-08-15.** Consistent with the other Get Goods Gratis docs as of this date. The Founding
-> Tier 1 offer, the 6% decoupled upgrade discount, the $1,000 sign-up credit, Tier 2 pay-as-you-go, the
+> Tier 1 offer, the 6% decoupled upgrade discount, the $2,000 premium gift boost, Tier 2 pay-as-you-go, the
 > discontinued free earn-to-unlock tier, and the three OFF-by-default credit products all match
 > `RECONCILED-STATE-2026-08-15.md`. There is now a public **`/Apply`** page that markets this pricing —
 > Founding Tier 1 as the prominent offer, Tier 2 as available, and the three credit products as "coming soon."
@@ -16,7 +16,7 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 - Settings: `PPC_GRID_ANNUAL_PRICE = 12000`, `PPC_GRID_MONTHLY_PRICE = 1000`,
   `FOUNDING_ADVERTISER_PRICE_USD = 12000`, `FOUNDING_ADVERTISER_MONTHLY_PRICE_USD = 1000`.
 
-### Founding upgrade discount + sign-up credit
+### Founding upgrade discount + premium gift boost
 
 - Pay **$12,000 upfront**. Founding advertisers then get a **discount on an upgrade** (default **"Tier 2 —
   Scale," $200,000**): a promotional **6% off** the upgrade price → **$12,000 off → net $188,000**. A founding
@@ -25,9 +25,10 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
   it comes off **every Tier 2 part in perpetuity** (`TIER2_FOUNDING_DISCOUNT_PERPETUAL = true`). The discount
   is defined as a **% of the upgrade price — decoupled from the amount paid** (no "credit," no "return your
   $12k"), which removes the return-of-capital signal the founding packet flagged.
-- **Sign-up credit: $1,000** in Site Cash, vesting over 12 months (~$83.33/mo), conditional on **12 months
-  active use + feedback + 1 fraud-screened referral**. Unmet conditions forfeit the unvested part — nothing
-  owed.
+- **Premium gift boost: up to $2,000** in **non-cashable store credit** — the Tier 1 sign-up benefit
+  (replaces the old $1,000 vesting credit). Because Tier 1 includes premium, the member is granted their
+  boost at sign-up, funded by their own advertising fee; they choose how much to apply and to which items.
+  Nothing is owed. See `PREMIUM-GIFT-BOOST.md` and `PREMIUM-BOOST-ADVERTISING.md`.
 - Settings: `FOUNDING_UPGRADE_DISCOUNT_PCT = 0.06`, `FOUNDING_UPGRADE_PRICE_USD = 200000`,
   `FOUNDING_UPGRADE_DISCOUNT_WINDOW_MONTHS = 12` (window to claim), `TIER2_FOUNDING_DISCOUNT_PERPETUAL = true`
   (founding members keep it for life) / `TIER2_DISCOUNT_FIRST_YEAR_ONLY = true` (non-founding loses it after

@@ -5,6 +5,8 @@ import { adjustUserBalance } from "../../sdk/balance.ts";
 import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
 import { db } from "../../sdk/db.ts";
 import { foundingFullKeepActive, recordFoundingFullKeepEarning } from "../../sdk/founding-advertiser.ts";
+import { applyEarningSetAside } from "../../sdk/earnings-setaside.ts";
+import { applyEarningToGoals } from "../../sdk/save-to-get.ts";
 
 // cpxPostback — MONEY-IN endpoint for CPX Research survey completions (the second survey network). Mirrors
 // bitlabsPostback's reward path so every provider shares one payout rule: platform keeps the network cash,
@@ -81,6 +83,9 @@ export default __handler(async (req) => {
 
     if (rw.isPremium && creditCash > 0) {
       await adjustUserBalance(uid, creditCash, { field: "current_balance" });
+      // Auto-route the user's chosen shares of this earning: set-aside bucket + Save-to-Get goals. Best-effort.
+      await applyEarningSetAside(uid, creditCash).catch(() => null);
+      await applyEarningToGoals(uid, creditCash).catch(() => null);
     } else if (creditPoints > 0) {
       await adjustUserBalance(uid, creditPoints, { field: "points" });
     }

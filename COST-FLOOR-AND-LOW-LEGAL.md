@@ -35,7 +35,7 @@ features that need no lawyer or license; leave the counsel-gated ones OFF until 
 **ON at launch — straightforward by design, no lender/counsel gate:**
 - Tier 1 (normal upfront purchase)
 - Tier 2 "Scale" (30-day pay-as-you-go parts → not credit)
-- Rollover/upgrade discount, sign-up store credit (promotions/store credit, not securities/credit)
+- Rollover/upgrade discount, premium gift boost (advertiser-funded store credit, not securities/credit)
 - Flexible Payments in **`self_financed`** mode — a 0%/4-installment/credit-card plan that *may* fit the
   four-installment exemption; needs a **one-time** attorney read, not an ongoing lender.
 
