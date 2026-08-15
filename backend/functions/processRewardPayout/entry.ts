@@ -1,6 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { isPartnerPayout } from "../../sdk/payout-policy.ts";
+import { isPartnerPayout, cashDisbursementHold } from "../../sdk/payout-policy.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
@@ -76,7 +76,7 @@ export default __handler(async (req) => {
 
     // Closed-loop policy: cash only leaves the system for business-partner payouts, and only while
     // the cash_out kill-switch is ON. Regular-user earnings stay as on-site credit.
-    const cashOutOn = await isEnabled("cash_out");
+    const cashOutOn = !(await cashDisbursementHold());
 
     // ── Process all pending rewards automatically ──────────────────────────────
     if (action === 'process_all') {

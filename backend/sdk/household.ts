@@ -43,6 +43,33 @@ export async function householdMaxMembers(): Promise<number> {
   return await getNumber("HOUSEHOLD_MAX_MEMBERS", 6);
 }
 
+/** Minimum age for a teen household member (13–17 band; teens below this can't be enrolled). */
+export async function householdTeenMinAge(): Promise<number> {
+  return await getNumber("HOUSEHOLD_TEEN_MIN_AGE", 13);
+}
+
+/** Whole-years age from a date-of-birth string, or null if unparseable/absent. */
+export function ageFromDob(dob?: string | null): number | null {
+  if (!dob) return null;
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
+  return age >= 0 && age < 130 ? age : null;
+}
+
+/** Known age of a User row from age_verified_18plus + date_of_birth. Returns { known, adult, age }.
+ *  `adult` is only true when we AFFIRMATIVELY know they're 18+ (verified flag or a DOB that computes 18+).
+ *  `known: false` means we have no age signal (they still passed the 18+ signup gate). */
+export function ageStatus(user: Record<string, unknown> | null | undefined): { known: boolean; adult: boolean; age: number | null } {
+  const age = ageFromDob((user?.date_of_birth ?? user?.dob) as string | null | undefined);
+  if (user?.age_verified_18plus === true) return { known: true, adult: true, age };
+  if (age != null) return { known: true, adult: age >= 18, age };
+  return { known: false, adult: false, age: null };
+}
+
 /**
  * Purchase-time gate. Given the buying user (with its stamped household fields) and the order's USD
  * total, decide whether the order must wait for an adult's approval.

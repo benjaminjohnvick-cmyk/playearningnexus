@@ -8,10 +8,10 @@ upgrade — it never moves money and nothing is ever owed. Not legal advice.*
 1. **Pay $12,000 upfront** for the founding/Tier 1 seat (unchanged).
 2. **Founding upgrade discount (decoupled from the payment).** Founding advertisers get a **promotional
    discount** on a bigger **upgrade** (default **"Tier 2 — Scale," $200,000**). The discount is defined as a
-   **percentage of the upgrade price** (default **6% → $12,000 off → net $188,000**). A founding member can
+   **percentage of the upgrade price** (default **5.5% → $11,000 off → net $189,000**). A founding member can
    **claim** it within a **12-month** promo window after joining, and it then **rolls over for life**: because
-   they hold a founding Tier 1 seat, the 6% comes off **every Tier 2 part in perpetuity**
-   (`TIER2_FOUNDING_DISCOUNT_PERPETUAL`), whereas a non-founding Tier 1→Tier 2 rollover keeps the 6% only
+   they hold a founding Tier 1 seat, the 5.5% comes off **every Tier 2 part in perpetuity**
+   (`TIER2_FOUNDING_DISCOUNT_PERPETUAL`), whereas a non-founding Tier 1→Tier 2 rollover keeps the 5.5% only
    through the first year (`TIER2_DISCOUNT_FIRST_YEAR_ONLY`). It is **not** a "credit equal to what you paid,"
    makes **no reference** to the amount paid, and is **not derived from it** — it's a straightforward
    founding-advertiser discount on the upgrade.
@@ -38,7 +38,7 @@ source:
   enters the calculation.
 - There is **no "get your $12k back," no "credit," no "rollover," no recoup framing** anywhere in the code,
   disclosures, or UI.
-- The economics can still land at a $12,000 reduction (6% of $200,000) **without** the return-of-capital
+- The economics land at an $11,000 reduction (5.5% of $200,000) **without** the return-of-capital
   signal, because the derivation and the language are decoupled from what was paid.
 
 If counsel wants even more daylight, set `FOUNDING_UPGRADE_DISCOUNT_PCT` to a value whose dollar result is

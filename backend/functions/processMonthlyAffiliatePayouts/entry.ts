@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
+import { isPartnerUserId, cashDisbursementHold } from "../../sdk/payout-policy.ts";
 
 export default __handler(async (req) => {
   try {
@@ -9,8 +10,9 @@ export default __handler(async (req) => {
     if (user?.role !== 'admin') return Response.json({ error: 'Admin only' }, { status: 403 });
     // Respect the global cash kill-switch: even an admin batch can't disburse cash while cash_out is OFF.
     // (This rail pays partner affiliates; it must still honor the same emergency brake as every other rail.)
-    if (!(await isEnabled('cash_out'))) {
-      return Response.json({ blocked: true, cash_out_disabled: true, message: 'Cash payouts are currently disabled (cash_out kill-switch).' }, { status: 403 });
+    const __hold = await cashDisbursementHold();
+    if (__hold) {
+      return Response.json({ blocked: true, cash_out_disabled: true, message: __hold }, { status: 403 });
     }
 
     const { payout_month, test_mode } = await req.json();
@@ -26,6 +28,20 @@ export default __handler(async (req) => {
 
     for (const payout of pendingPayouts) {
       try {
+        // Closed-loop wall (same rule as every cash rail): only a verified business PARTNER may be
+        // paid cash. This rail talks to Stripe/PayPal DIRECTLY, so it must enforce the wall itself —
+        // a stray PayoutRequest for a regular user must never disburse. Non-partners are skipped and
+        // left as on-site store credit.
+        if (!(await isPartnerUserId(payout.affiliate_user_id))) {
+          await base44.asServiceRole.entities.PayoutRequest.update(payout.id, {
+            status: 'blocked_closed_loop',
+            processing_notes: 'Closed-loop: recipient is not a verified business partner; earnings remain as on-site store credit.',
+          }).catch(() => null);
+          skipped++;
+          results.push({ id: payout.id, status: 'skipped_closed_loop' });
+          continue;
+        }
+
         // Check tax form status
         if (payout.tax_form_status !== 'verified' && payout.tax_form_status !== 'exempted') {
           // Send tax form reminder

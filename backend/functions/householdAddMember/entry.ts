@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { memberStamp, teenAccountsEnabled, householdMaxMembers } from "../../sdk/household.ts";
+import { memberStamp, teenAccountsEnabled, householdMaxMembers, householdTeenMinAge, ageStatus } from "../../sdk/household.ts";
+import { recordConsent } from "../../sdk/consent-ledger.ts";
 
 // householdAddMember (holder only) — add an existing member by email as an adult or teen.
 // Body: { email, role: "adult"|"teen", spend_limit_usd? }. TEEN role requires the teen_accounts flag
@@ -29,6 +30,27 @@ export default __handler(async (req) => {
     if (!target) return Response.json({ error: "No account found with that email. They need to sign up first." }, { status: 404 });
     if (target.id === user.id) return Response.json({ error: "You're already the account holder." }, { status: 400 });
     if (target.household_id) return Response.json({ error: "That person is already in a household." }, { status: 409 });
+
+    // Age wall. A KNOWN minor can never be added as an "adult" member (no slipping a minor past the
+    // teen gate). When teen accounts are enabled, a "teen" must verify inside the 13–17 band and the
+    // holder must record parental/guardian consent — the COPPA/minor-contract prerequisites.
+    const status = ageStatus(target);
+    if (role === "adult" && status.known && !status.adult) {
+      return Response.json({ error: "That account is under 18 and can't be added as an adult member. Under-18 members require teen accounts (verified parental consent + legal sign-off)." }, { status: 403 });
+    }
+    if (role === "teen") {
+      const teenMin = await householdTeenMinAge();
+      if (status.age != null && (status.age < teenMin || status.age >= 18)) {
+        return Response.json({ error: `A teen member must be between ${teenMin} and 17. This account's age (${status.age}) is outside that range.` }, { status: 403 });
+      }
+      // Verifiable parental/guardian consent by the account holder — recorded as append-only evidence.
+      await recordConsent({
+        user_id: target.id, kind: "household_teen_parental_consent", version: "2026-01", accepted: true,
+        shown: ["The account holder affirms they are the parent/legal guardian and consent to this under-18 member participating under adult supervision and spending limits."],
+        ip: (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || null,
+        meta: { holder_id: user.id, teen_user_id: target.id },
+      }).catch(() => null);
+    }
 
     const limit = role === "teen" ? Math.max(0, Number(spend_limit_usd) || 0) : 0;
     const newMember = { user_id: target.id, email: target.email || email, role, spend_limit_usd: limit, status: "active", added_at: new Date().toISOString() };

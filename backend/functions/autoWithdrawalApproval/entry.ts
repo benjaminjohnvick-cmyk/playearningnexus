@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
+import { isPartnerUserId } from "../../sdk/payout-policy.ts";
 
 // Auto-approves or denies withdrawal requests using AI fraud scoring
 export default __handler(async (req) => {
@@ -24,6 +25,16 @@ export default __handler(async (req) => {
     const user = request.user_id
       ? (await base44.asServiceRole.entities.User.filter({ id: request.user_id }))[0]
       : null;
+
+    // Closed-loop wall: a withdrawal (cash out) is only ever valid for a verified business PARTNER.
+    // Regular users are closed-loop — block the request rather than approving it.
+    if (!(await isPartnerUserId(request.user_id))) {
+      await base44.asServiceRole.entities.WithdrawalRequest.update(requestId, {
+        status: 'blocked_closed_loop',
+        review_notes: 'Closed-loop: not a business partner; earnings remain as on-site store credit and are not cashed out.',
+      }).catch(() => null);
+      return Response.json({ success: true, action: 'blocked_closed_loop' });
+    }
 
     // Fast auto-approve: small amounts from users with clean history
     const amount = request.amount || 0;

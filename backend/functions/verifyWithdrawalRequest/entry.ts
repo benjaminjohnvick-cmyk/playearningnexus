@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
+import { isPartnerUserId } from "../../sdk/payout-policy.ts";
 
 export default __handler(async (req) => {
   try {
@@ -34,6 +35,12 @@ export default __handler(async (req) => {
 
     if (withdrawal.developer_id !== user.id) {
       return Response.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    // Closed-loop wall: only a verified business PARTNER (e.g. developer) can approve a cash withdrawal.
+    // A regular user is closed-loop — their earnings stay as on-site store credit and can't be verified out.
+    if (!(await isPartnerUserId(user.id))) {
+      return Response.json({ closed_loop: true, error: 'Closed-loop: cash withdrawals are for business partners only; your earnings remain as on-site store credit.' }, { status: 403 });
     }
 
     // Check code expiration

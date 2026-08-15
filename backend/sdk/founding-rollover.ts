@@ -14,7 +14,7 @@ const MS_PER_DAY = 86400000;
 
 // ── Settings getters ────────────────────────────────────────────────────────────────────────────────────
 export const upgradeDiscountEnabled = () => snapBool("FOUNDING_UPGRADE_DISCOUNT_ENABLED", true);
-export const upgradeDiscountPct = () => Math.min(1, Math.max(0, snapNumber("FOUNDING_UPGRADE_DISCOUNT_PCT", 0.06)));
+export const upgradeDiscountPct = () => Math.min(1, Math.max(0, snapNumber("FOUNDING_UPGRADE_DISCOUNT_PCT", 0.055)));
 export const upgradeDiscountMaxUsd = () => Math.max(0, snapNumber("FOUNDING_UPGRADE_DISCOUNT_MAX_USD", 0));
 export const upgradeDiscountWindowMonths = () => Math.max(1, snapNumber("FOUNDING_UPGRADE_DISCOUNT_WINDOW_MONTHS", 12));
 export const upgradeName = () => snapString("FOUNDING_UPGRADE_NAME", "Tier 2 — Scale") || "Tier 2 — Scale";
@@ -41,7 +41,7 @@ function addMonthsISO(startISO: string, months: number): string {
 // ── Founding upgrade DISCOUNT (decoupled from payment) ───────────────────────────────────────────────────
 export interface UpgradeDiscountState {
   enabled: boolean;
-  discount_pct: number;            // % off the upgrade price (e.g. 0.06)
+  discount_pct: number;            // % off the upgrade price (e.g. 0.055)
   discount_usd: number;            // the dollar value of that % (capped if a cap is set)
   window_months: number;
   eligible_since: string;
@@ -88,7 +88,7 @@ export interface UpgradeQuote {
 }
 
 /** A QUOTE (never a charge) for the upgrade with the founding discount applied.
- *  Net price = upgrade price − discount (e.g. $200,000 − 6% = $188,000). */
+ *  Net price = upgrade price − discount (e.g. $200,000 − 5.5% = $189,000). */
 export function upgradeQuote(state: UpgradeDiscountState): UpgradeQuote {
   const price = upgradePriceUsd();
   const discount = state.within_window ? state.discount_usd : 0;

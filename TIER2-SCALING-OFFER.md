@@ -47,11 +47,11 @@ processor.
 
 ## The rollover discount (and the founding perk)
 
-A **6% Tier 1 → Tier 2 rollover discount** (`FOUNDING_UPGRADE_DISCOUNT_PCT`) comes off each part:
+A **5.5% Tier 1 → Tier 2 rollover discount** (`FOUNDING_UPGRADE_DISCOUNT_PCT`) comes off each part:
 
-- **First year:** anyone who rolls up from Tier 1 gets the 6% on their parts during the first year of Tier 2.
+- **First year:** anyone who rolls up from Tier 1 gets the 5.5% on their parts during the first year of Tier 2.
 - **After the first year:** the discount **stops** — the parts are full price.
-- **Founding members** (holders of a founding Tier 1 seat): keep the **6% in perpetuity**, even beyond year
+- **Founding members** (holders of a founding Tier 1 seat): keep the **5.5% in perpetuity**, even beyond year
   one. `TIER2_FOUNDING_DISCOUNT_PERPETUAL` = true.
 
 The effective rate is computed live: `tier2DiscountRate(isFounding, monthsSinceStart)` → founding-perpetual,

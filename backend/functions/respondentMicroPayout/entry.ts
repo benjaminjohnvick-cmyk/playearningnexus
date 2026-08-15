@@ -1,6 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { isPartnerPayout } from "../../sdk/payout-policy.ts";
+import { isPartnerPayout, cashDisbursementHold } from "../../sdk/payout-policy.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { allowedEarn } from "../../sdk/earn-cap.ts";
@@ -183,7 +183,7 @@ export default __handler(async (req) => {
     const payoutPrefs = await base44.asServiceRole.entities.PayoutPreference.filter({ user_id: respondent_user_id });
     const pref = payoutPrefs[0];
     const cashAllowed = isPartnerPayout({ role: respondent.role, payout_type: "survey_payout" })
-      && await isEnabled("cash_out", respondent.jurisdiction ?? respondent.state ?? null);
+      && !(await cashDisbursementHold(respondent.jurisdiction ?? respondent.state ?? null));
     if (cashAllowed && pref?.paypal_email && newBalance >= 10) {
       try {
         const accessToken = await getPayPalAccessToken();

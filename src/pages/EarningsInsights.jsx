@@ -22,6 +22,13 @@ export default function EarningsInsights() {
     base44.auth.me().then(setUser).catch(() => base44.auth.redirectToLogin());
   }, []);
 
+  // Platform hold on gross survey revenue — disclosed on the earning screen (Terms §3).
+  const { data: holdInfo } = useQuery({
+    queryKey: ['earn-rate-disclosure'],
+    queryFn: () => base44.functions.invoke('earnRateDisclosure', {}),
+    enabled: !!user,
+  });
+
   const { data: dailyEarnings = [] } = useQuery({
     queryKey: ['dailyEarnings', user?.id],
     queryFn: () => base44.entities.DailyEarnings.filter({ user_id: user.id }, '-date', 30),
@@ -119,6 +126,13 @@ export default function EarningsInsights() {
           <h1 className="text-3xl font-bold text-gray-900">Earnings Insights</h1>
           <p className="text-gray-500 mt-1">Visualize your income history and predict future growth</p>
         </div>
+
+        {/* Platform-hold disclosure (Terms: the retained % is shown on the earning screens) */}
+        {holdInfo?.marketplace_hold_enabled && (
+          <div className="rounded-lg border border-indigo-100 bg-indigo-50/60 px-4 py-3 text-sm text-gray-600">
+            {holdInfo.disclosure}
+          </div>
+        )}
 
         {/* KPI Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

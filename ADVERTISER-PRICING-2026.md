@@ -4,7 +4,7 @@
 promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 
 > **Reconciled 2026-08-15.** Consistent with the other Get Goods Gratis docs as of this date. The Founding
-> Tier 1 offer, the 6% decoupled upgrade discount, the $2,000 premium gift boost, Tier 2 pay-as-you-go, the
+> Tier 1 offer, the 5.5% decoupled upgrade discount, the $2,000 premium gift boost, Tier 2 pay-as-you-go, the
 > discontinued free earn-to-unlock tier, and the three OFF-by-default credit products all match
 > `RECONCILED-STATE-2026-08-15.md`. There is now a public **`/Apply`** page that markets this pricing —
 > Founding Tier 1 as the prominent offer, Tier 2 as available, and the three credit products as "coming soon."
@@ -19,9 +19,9 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 ### Founding upgrade discount + premium gift boost
 
 - Pay **$12,000 upfront**. Founding advertisers then get a **discount on an upgrade** (default **"Tier 2 —
-  Scale," $200,000**): a promotional **6% off** the upgrade price → **$12,000 off → net $188,000**. A founding
+  Scale," $200,000**): a promotional **5.5% off** the upgrade price → **$11,000 off → net $189,000**. A founding
   Tier 1 member can **claim** it within a **12-month window** after they join — and, unlike the general Tier 1→
-  Tier 2 rollover (which keeps the 6% only through the first year), **founding members keep the 6% for life**:
+  Tier 2 rollover (which keeps the 5.5% only through the first year), **founding members keep the 5.5% for life**:
   it comes off **every Tier 2 part in perpetuity** (`TIER2_FOUNDING_DISCOUNT_PERPETUAL = true`). The discount
   is defined as a **% of the upgrade price — decoupled from the amount paid** (no "credit," no "return your
   $12k"), which removes the return-of-capital signal the founding packet flagged.

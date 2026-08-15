@@ -1,6 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { recordEvents, telemetryEnabled, mapJourneyToEvents } from "../../sdk/telemetry.ts";
+import { recordEvents, telemetryEnabled, mapJourneyToEvents, trackingOptedOut } from "../../sdk/telemetry.ts";
 
 // telemetryIngest (authenticated) — ONE coalesced write for the client. It (1) always persists the raw
 // journey rows (UserJourneyEvent — the existing journey log, independent of the telemetry flag), and
@@ -17,7 +17,13 @@ export default __handler(async (req) => {
     const body = await req.json().catch(() => ({}));
     const journey = Array.isArray(body?.journey) ? body.journey.slice(0, 200) : [];
 
-    // (1) Journey log — always best-effort (this is the pre-existing UserJourneyEvent stream).
+    // Behavioral opt-out is a HARD stop for every capture surface — including the raw journey log, not
+    // just the sampled aggregate. If the user opted out, we persist nothing about their navigation.
+    if (trackingOptedOut(user)) {
+      return Response.json({ ok: true, recorded: 0, journey: 0, opted_out: true });
+    }
+
+    // (1) Journey log — best-effort (the pre-existing UserJourneyEvent stream), now gated by opt-out above.
     if (journey.length) {
       const rows = journey.map((e: any) => ({ ...e, user_id: user.id, session_id: String(body?.session_id || e?.session_id || "") }));
       await base44.entities.UserJourneyEvent.bulkCreate(rows).catch(() => {});

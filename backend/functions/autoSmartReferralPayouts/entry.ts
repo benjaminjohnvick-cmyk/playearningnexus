@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { isPartnerUserId } from "../../sdk/payout-policy.ts";
 
 export default __handler(async (req) => {
   try {
@@ -27,6 +28,10 @@ export default __handler(async (req) => {
         );
 
         if (!referrer || referrer.length === 0) continue;
+
+        // Closed-loop wall: referral CASH payouts are only for verified affiliate/business PARTNERS.
+        // A regular referrer's reward stays as on-site store credit — skip the cash path entirely.
+        if (!(await isPartnerUserId(referral.referrer_id))) continue;
 
         // Use AI to validate and determine optimal payout timing/amount
         const payoutAnalysis = await base44.integrations.Core.InvokeLLM({

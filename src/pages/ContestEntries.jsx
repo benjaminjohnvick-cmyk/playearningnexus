@@ -34,6 +34,21 @@ export default function ContestEntries() {
     enabled: !!user,
   });
 
+  // Official Rules + no-purchase-necessary disclosure (built server-side from settings + jurisdiction).
+  const { data: rules } = useQuery({
+    queryKey: ['contest-rules'],
+    queryFn: () => base44.functions.invoke('contestOfficialRules', {}),
+    enabled: !!user,
+  });
+  const [showRules, setShowRules] = useState(false);
+  const [freeMsg, setFreeMsg] = useState(null);
+  const claimFreeEntry = async () => {
+    try {
+      const res = await base44.functions.invoke('sweepstakesFreeEntry', {});
+      setFreeMsg(res?.error ? res.error : (res?.note || 'Free entry recorded.'));
+    } catch (e) { setFreeMsg(e?.message || 'Could not record your free entry.'); }
+  };
+
   const jackpot = jackpots[0] || { jackpot_amount: 2840, total_entries: 342, period: '2026-Q2' };
 
   // Calculate entries: 1 per active referral milestone hit + bonus for streak
@@ -79,8 +94,30 @@ export default function ContestEntries() {
           <h1 className="text-4xl font-black text-gray-900 mb-2">
             Your Contest <span className="text-purple-600">Entries</span>
           </h1>
-          <p className="text-gray-500">Earn contest entries by hitting referral milestones. Most entries wins the prize pool!</p>
+          <p className="text-gray-500">Earn contest entries by hitting referral milestones. Winners are ranked by skill/verified merit — not chance.</p>
         </div>
+
+        {/* Sweepstakes compliance: no-purchase-necessary disclosure + free entry + Official Rules */}
+        <Card className="border-purple-200 bg-purple-50/60">
+          <CardContent className="p-4 space-y-3">
+            <p className="text-sm text-gray-700">
+              {rules?.disclosure || 'No purchase necessary. Open to eligible residents 18+. Winners determined by skill/verified merit, not chance. Void where prohibited.'}
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button size="sm" variant="outline" onClick={claimFreeEntry}>Free entry (no purchase necessary)</Button>
+              <Button size="sm" variant="ghost" onClick={() => setShowRules((v) => !v)}>{showRules ? 'Hide' : 'Official Rules'}</Button>
+              {freeMsg && <span className="text-xs text-gray-600">{freeMsg}</span>}
+            </div>
+            {showRules && rules?.official_rules?.sections && (
+              <div className="text-xs text-gray-600 space-y-2 border-t border-purple-200 pt-3">
+                {rules.official_rules.sections.map((s, i) => (
+                  <p key={i}><strong className="text-gray-800">{s.heading}.</strong> {s.body}</p>
+                ))}
+                <p className="text-[11px] text-gray-400">These rules are provided for transparency and are not legal advice.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Live Prize Pool */}
         <motion.div

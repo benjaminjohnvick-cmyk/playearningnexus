@@ -1,7 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
-import { isPartnerPayout } from "../../sdk/payout-policy.ts";
+import { isPartnerPayout, cashDisbursementHold } from "../../sdk/payout-policy.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { applyBackupWithholding } from "../../sdk/tax.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
@@ -52,10 +52,10 @@ export default __handler(async (req) => {
       }, { status: 200 });
     }
 
-    // --- cash_out kill-switch: an emergency brake on ALL cash disbursement (safe-default OFF) ---
-    if (!(await isEnabled('cash_out', user?.jurisdiction ?? user?.state ?? null))) {
-      return Response.json({ blocked: true, cash_out_disabled: true, cash_sent: false,
-        message: 'Cash payouts are currently disabled.' }, { status: 403 });
+    // --- cash disbursement brakes: operational kill-switch + legal sign-off hold (both must be clear) ---
+    {
+      const __hold = await cashDisbursementHold(user?.jurisdiction ?? user?.state ?? null);
+      if (__hold) return Response.json({ blocked: true, cash_out_disabled: true, cash_sent: false, message: __hold }, { status: 403 });
     }
 
     if (!payoutId || !venmoContact || !amount) {

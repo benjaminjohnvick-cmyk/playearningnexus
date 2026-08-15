@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
+import { isPartnerUserId } from "../../sdk/payout-policy.ts";
 
 export default __handler(async (req) => {
   const base44 = createClientFromRequest(req);
@@ -18,6 +19,16 @@ export default __handler(async (req) => {
     if (!wr?.id) return Response.json({ ok: true });
 
     const user = wr.user_id ? (await base44.asServiceRole.entities.User.filter({ id: wr.user_id }))[0] : null;
+
+    // Closed-loop wall: cash withdrawals are partner-only. A regular user's request is blocked and
+    // their earnings stay as on-site store credit — never auto-approved into a cash flow.
+    if (event?.type === 'create' && !(await isPartnerUserId(wr.user_id))) {
+      await base44.asServiceRole.entities.WithdrawalRequest.update(wr.id, {
+        status: 'blocked_closed_loop',
+        ai_notes: 'Closed-loop: not a business partner; earnings remain as on-site store credit.',
+      }).catch(() => null);
+      return Response.json({ ok: true, closed_loop: true });
+    }
 
     if (event?.type === 'create') {
       // AI risk scoring

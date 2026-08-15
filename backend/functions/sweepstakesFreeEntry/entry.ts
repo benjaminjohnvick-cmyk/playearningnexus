@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { featureAllowed } from "../../sdk/jurisdiction.ts";
+import { contestDisclosure } from "../../sdk/contest-rules.ts";
 
 // sweepstakesFreeEntry — the NO-PURCHASE-NECESSARY (AMOE) path into the current weekly prize pool.
 // Grants ONE free entry per period per user, with the SAME eligibility and odds as a paid entry.
@@ -41,6 +42,8 @@ export default __handler(async (req) => {
     return Response.json({
       success: true, free_entry: true,
       note: "Free entry recorded (no purchase necessary). Same odds and eligibility as a paid entry; winners are ranked by performance.",
+      disclosure: contestDisclosure(__jur),
+      official_rules_url: "/functions/contestOfficialRules",
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

@@ -62,6 +62,13 @@ export function scrubEvent(e: RawEvent): Record<string, unknown> {
   return out;
 }
 
+/** Has this user opted out of ALL behavioral capture (telemetry, journey log, session capture)? The UI
+ *  sets `tracking_opt_out`; the legacy `behavioral_opt_out` is honored too. A single source of truth so
+ *  every capture surface (not just the sampled aggregate) respects one switch. */
+export function trackingOptedOut(user: any): boolean {
+  return user?.tracking_opt_out === true || user?.behavioral_opt_out === true;
+}
+
 /** Should telemetry be recorded at all right now, for this user? Honors the UI's `tracking_opt_out`
  *  (and legacy `behavioral_opt_out`). */
 export async function telemetryEnabled(user: any, jurisdiction?: string | null): Promise<boolean> {

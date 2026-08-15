@@ -10,7 +10,7 @@ legal advice.*
 |---|---|---|---|---|
 | **Founding Advertiser — Tier 1** | $12,000/yr or $1,000/mo | Upfront (normal purchase) | No | **Live** — the prominent offer on `/Apply` |
 | **Tier 2 "Scale"** | $200,000 | 12 × 30-day pay-as-you-go parts, results-paced | No | **Live / available** |
-| **Founding upgrade discount** | 6% off Tier 2 → $12,000 off → net $188,000 | Decoupled from what was paid (not a "credit") | No | **Live**, 12-month window; perpetual for founding |
+| **Founding upgrade discount** | 5.5% off Tier 2 → $11,000 off → net $189,000 | Decoupled from what was paid (not a "credit"); dollar amount deliberately ≠ the $12,000 price | No | **Live**, 12-month window; perpetual for founding |
 | **Premium gift boost** | up to $2,000 store credit | Premium-member benefit; collective advertiser pool, **decoupled from the fee** (not a rebate), member-directed, non-cashable, subject to availability | No (non-cashable) | **Live** (replaces the old $1,000 sign-up credit) |
 | **Flexible Payment Terms** | splits a price into 4 quarterly card charges | Credit card only, 0%, ≤12 mo | **Yes — installment credit** | **OFF** — "coming soon" on `/Apply` |
 | **Tier 1 "Pay From Results" (Financed)** | $0 down, $12,000 swept from earnings, balance DUE at term | Recourse | **Yes — recourse credit** | **OFF** — "coming soon" on `/Apply` |
@@ -54,8 +54,8 @@ legal $0 at launch. Everything built this session ships prebuilt + ON, so the la
 | `ADVERTISER-PRICING-2026.md` | Tier 1 price, upgrade discount, sign-up credit, revenue-share, discontinued free tier | Reconciled (banner added, `/Apply` cross-ref) |
 | `APPLY-AND-COMING-SOON.md` | Public `/Apply` page, coming-soon financing, lead capture | New this session |
 | `AI-FUNNEL-DESIGN.md` | Concierge two-gate funnel, email re-engagement, benchmarks | Reconciled (`/Apply` CTA noted) |
-| `TIER2-SCALING-OFFER.md` | $200k in 30-day pay-as-you-go parts, deliverables, 6% discount | Current |
-| `FOUNDING-ROLLOVER-AND-SIGNUP-CREDIT.md` | Decoupled 6% upgrade discount + $1,000 store credit | Current |
+| `TIER2-SCALING-OFFER.md` | $200k in 30-day pay-as-you-go parts, deliverables, 5.5% discount | Current |
+| `FOUNDING-ROLLOVER-AND-SIGNUP-CREDIT.md` | Decoupled 5.5% upgrade discount + retired $1,000 store credit | Current |
 | `FLEXIBLE-PAYMENT-TERMS-COMPLIANCE.md` | Flex pay (installment credit, OFF), self-financed path | Current — marketed "coming soon" on `/Apply` |
 | `TIER1-FINANCED-PAY-FROM-EARNINGS.md` | Recourse "pay from earnings" (OFF) | Current — marketed "coming soon" on `/Apply` |
 | `PRODUCT-STATS.md` | Per-product real results, published at sample threshold | Current |
@@ -63,11 +63,13 @@ legal $0 at launch. Everything built this session ships prebuilt + ON, so the la
 | `HANDWORK-TEMPLATE.md` | The only manual steps, fill-in-the-blank | Reconciled (`AdvertiserApplication` + `/Apply` added) |
 | `LAUNCH-ESTIMATE-2026-07-30.md` | Reconciled launch cost (2026-08-15 banner) | Reconciled (`/Apply` in banner list) |
 
-## Two open decisions (yours, not blockers)
+## Two open decisions (status)
 
-1. **Upgrade-discount daylight.** Default is 6% of $200k = exactly $12,000, which numerically equals the Tier 1
-   price. Both pricing docs note that for maximum distance from any "return of capital" reading, counsel may
-   prefer `FOUNDING_UPGRADE_DISCOUNT_PCT` set so its dollar result is **not** exactly $12,000. Decision pending.
-2. **Which credit product (if any) to unlock first**, and by which path — e.g. the `self_financed`
-   four-installment flex-pay (one-time attorney read) vs a licensed provider. All three stay "coming soon"
-   until you decide with your lawyer.
+1. **Upgrade-discount daylight — RESOLVED (2026-08-15).** `FOUNDING_UPGRADE_DISCOUNT_PCT` is now **5.5%**
+   (default), so the discount is **$11,000 off → net $189,000** — deliberately **not** the $12,000 that equals
+   the Tier 1 price, removing the "return of capital" numeric coincidence. Still fully admin-tunable; just avoid
+   setting it back to exactly $12,000.
+2. **Which credit product (if any) to unlock first — still a COUNSEL DECISION (unchanged).** `flexpay`,
+   `tier1_financed`, and the retired `goods_advance` all stay OFF behind flag **+** licensed provider **+**
+   `*_LEGAL_SIGNOFF`. Nothing originates until you pick a path with your lawyer; the no-debt Save-to-Get and the
+   premium Boost cover the member-facing need in the meantime, so this is not a launch blocker.

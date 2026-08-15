@@ -24,7 +24,7 @@ offer, which needs no lender or counsel, is the **prominent** offer on the page 
   - A/B testing, analytics & sentiment insights
   - keep 100% of your own survey earnings for 4 years (as Site Cash)
   - Premium membership — premium members get the advertiser-funded gift boost (up to $2,000 in non-cashable store credit, subject to availability), a benefit decoupled from the price paid
-  - 6% off the Tier 2 "Scale" upgrade — kept for life as a founding member
+  - 5.5% off the Tier 2 "Scale" upgrade — kept for life as a founding member
 - **Tier 2 "Scale" — available now.** Shown as a live option: buy the $200,000 upgrade in 30-day
   pay-as-you-go parts. (See `TIER2-SCALING-OFFER.md`.)
 - **Three financing options — "Coming soon."** Flexible Payment Terms, Tier 1 "Pay From Results," and Goods

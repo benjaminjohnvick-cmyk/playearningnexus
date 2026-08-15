@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
 import { releaseReservation } from "../../sdk/payout-reservation.ts";
+import { isPartnerUserId } from "../../sdk/payout-policy.ts";
 
 export default __handler(async (req) => {
   const base44 = createClientFromRequest(req);
@@ -18,6 +19,16 @@ export default __handler(async (req) => {
     if (event?.type === 'create') {
       const pr = data;
       if (!pr?.id) return Response.json({ ok: true });
+
+      // Closed-loop wall: only a verified business PARTNER can ever be auto-approved for a cash payout.
+      // A regular user's request is left as store credit (blocked), never auto-approved into the cash flow.
+      if (!(await isPartnerUserId(pr.user_id))) {
+        await base44.asServiceRole.entities.PayoutRequest.update(pr.id, {
+          status: 'blocked_closed_loop',
+          review_notes: 'Closed-loop: not a business partner; earnings remain as on-site store credit.',
+        }).catch(() => null);
+        return Response.json({ ok: true, closed_loop: true });
+      }
 
       // AI fraud check on new payout request
       const user = pr.user_id ? (await base44.asServiceRole.entities.User.filter({ id: pr.user_id }))[0] : null;

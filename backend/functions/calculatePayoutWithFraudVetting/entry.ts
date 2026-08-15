@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { isPartnerUserId } from "../../sdk/payout-policy.ts";
 
 export default __handler(async (req) => {
   try {
@@ -14,6 +15,12 @@ export default __handler(async (req) => {
 
     if (!recipient_user_id || !earnings_source || !gross_earnings) {
       return Response.json({ success: false, message: 'Missing required fields: recipient_user_id, earnings_source, gross_earnings' }, { status: 200 });
+    }
+
+    // Closed-loop wall: cash payout records are only for verified business PARTNERS (affiliate/developer
+    // revenue shares). A regular user's earnings stay as on-site store credit — no cash Payout is created.
+    if (!(await isPartnerUserId(recipient_user_id))) {
+      return Response.json({ success: false, closed_loop: true, message: 'Closed-loop: recipient is not a business partner; earnings remain as on-site store credit and are not paid out as cash.' }, { status: 200 });
     }
 
     // Calculate commission (default 15%)

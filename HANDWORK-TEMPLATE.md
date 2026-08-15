@@ -130,7 +130,7 @@ These are yours to confirm/change in the admin Settings panel. Defaults in paren
 - ☐ **Premium gift boost** (up to $2,000 non-cashable store credit — a premium-member benefit from a
   collective advertiser pool, **decoupled from the $12k fee**, claimed by members, subject to availability;
   replaces the old $1,000 credit): confirm ☐
-- ☐ **Founding → Tier 2 upgrade discount** (6% off; first year for all, perpetual for founding members): __________
+- ☐ **Founding → Tier 2 upgrade discount** (5.5% off; first year for all, perpetual for founding members): __________
 - ☐ **Tier 2 "Scale"** total ($200,000), parts (12 × 30-day), results gate (`TIER2_PART_MIN_RESULTS_MULT`, 0=off): __________
 - ☐ **Tier 2 deliverables** (3,000,000 impressions/yr, 100 social posts/mo, 4 audience panels/yr, perk unlock
   ladder `TIER2_PERK_UNLOCKS`): confirm/tune ☐

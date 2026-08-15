@@ -3,7 +3,8 @@
 // parts; each part runs at least TIER2_PART_MIN_DAYS, then the advertiser buys the next part and scales up
 // based on results. Completing all parts within the term finishes Tier 2 (12 parts ≈ one year).
 //
-// Rollover discount: 6% (FOUNDING_UPGRADE_DISCOUNT_PCT) off each part. It applies in the FIRST YEAR for anyone
+// Rollover discount: 5.5% (FOUNDING_UPGRADE_DISCOUNT_PCT) off each part — deliberately not 6% so the dollar
+// discount ($11,000) doesn't exactly equal the $12,000 Tier 1 price. It applies in the FIRST YEAR for anyone
 // rolling up from Tier 1; FOUNDING members (holders of a founding Tier 1 seat) keep it in PERPETUITY.
 import { snapBool, snapNumber } from "./settings.ts";
 import { upgradePriceUsd, upgradeName, upgradeDiscountPct } from "./founding-rollover.ts";
