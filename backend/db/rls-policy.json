@@ -417,6 +417,10 @@
   "scope": "owner",
   "owner_field": "user_id"
  },
+ "GiftBoost": {
+  "scope": "owner",
+  "owner_field": "sender_id"
+ },
  "GiftCardRedemption": {
   "scope": "owner",
   "owner_field": "user_id"
@@ -617,6 +621,13 @@
   "scope": "owner",
   "owner_field": "user_id"
  },
+ "PremiumBoostFunding": {
+  "scope": "global"
+ },
+ "PremiumBoostGrant": {
+  "scope": "owner",
+  "owner_field": "member_id"
+ },
  "PremiumFinancePlan": {
   "scope": "owner",
   "owner_field": "user_id"
@@ -768,6 +779,10 @@
  "RewardTier": {
   "scope": "global"
  },
+ "SaveToGetGoal": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
  "SavedSurveySearch": {
   "scope": "owner",
   "owner_field": "user_id"
@@ -894,6 +909,10 @@
   "scope": "global"
  },
  "Tier1FinancedPlan": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "Tier1SelfPacedPlan": {
   "scope": "owner",
   "owner_field": "user_id"
  },

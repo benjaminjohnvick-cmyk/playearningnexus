@@ -1,5 +1,11 @@
 # Tier 1 Financed — "Pay From Earnings" (RECOURSE credit — OFF by default)
 
+> **⭐ SUPERSEDED as the pay-over-time option by the no-debt model.** The compliant way to let a buyer spread
+> the $12,000 over the year is **`TIER1-SELF-PACED-NO-DEBT.md`** — pay-as-you-go, benefits proportional to
+> what's paid, nothing ever owed, and therefore not credit (ships ON, no gate). This recourse-credit version
+> stays in the codebase OFF and counsel-gated only for if you ever license lending; lead with the self-paced
+> model instead.
+
 **Prepared for review by qualified consumer-/commercial-finance + FTC counsel. This is NOT legal advice.**
 Nothing in this program may launch, and no plan may be originated, until counsel has reviewed the full
 recourse structure, the disclosures, the earnings-sweep authorization, and the licensing posture.

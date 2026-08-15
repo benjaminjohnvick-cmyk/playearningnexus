@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, ShieldCheck, Megaphone, Gift, CheckCircle2, Info, AlertTriangle, Timer } from 'lucide-react';
+import EarningsSetAsideButton from '@/components/EarningsSetAsideButton';
 
 // FoundingAdvertiser — the clean "Tier 1" introductory offer. TWO things, kept DELIBERATELY SEPARATE:
 //   1) an ADVERTISING product (impressions/term/priority), sold on its own merits; and
@@ -297,6 +298,9 @@ export default function FoundingAdvertiser() {
           </CardContent>
         </Card>
       )}
+
+      {/* Optional: set aside part of your earnings — your choice, nothing owed */}
+      <div className="mt-4"><EarningsSetAsideButton /></div>
     </div>
   );
 }

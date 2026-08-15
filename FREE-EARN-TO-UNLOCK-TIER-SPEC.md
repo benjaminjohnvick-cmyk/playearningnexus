@@ -15,11 +15,13 @@ per engaged user — **without anyone owing anything.**
 ## 1. The core reframe
 
 > **PRICING UPDATE (2026):** The paid advertiser price is now **$12,000/yr (or $1,000/mo), paid upfront**.
-> The FREE earn-to-unlock tier is unchanged in spirit: a member still **earns the ~$8,000 unlock over the
-> 4-year term**, and the platform then recovers the remainder of the $12,000 package value via a
-> **NON-RECOURSE revenue-share — 10% of the member's generated revenue until $12,000 is recovered, then 5%
-> ongoing.** It is taken only from revenue that actually occurs; nothing is ever owed as a debt or charged.
-> See ADVERTISER-PRICING-2026.md and the FREE_ADVERTISER_REVSHARE_* / *_PRICE_USD settings.
+> The FREE earn-to-unlock tier described in this spec is **DISCONTINUED** (`FREE_ADVERTISER_TIER_ENABLED` = OFF)
+> and is **no longer offered** — everything below is retained for historical reference only. As it was
+> designed (had it run), a member would have **earned the ~$8,000 unlock over the 4-year term**, with the
+> platform recovering the remainder of the $12,000 package value via a **NON-RECOURSE revenue-share — 10% of
+> the member's generated revenue until $12,000 is recovered, then 5% ongoing** — taken only from revenue that
+> actually occurred, never owed as a debt. See ADVERTISER-PRICING-2026.md and the
+> FREE_ADVERTISER_REVSHARE_* / *_PRICE_USD settings.
 
 The $8,000 changes meaning depending on which side it sits on:
 

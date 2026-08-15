@@ -95,6 +95,11 @@ const Services = lazy(() => import('./pages/Services'));
 const FoundingAdvertiser = lazy(() => import('./pages/FoundingAdvertiser'));
 const GetGoodsAdvance = lazy(() => import('./pages/GetGoodsAdvance'));
 const Tier1Financed = lazy(() => import('./pages/Tier1Financed'));
+const Tier1SelfPaced = lazy(() => import('./pages/Tier1SelfPaced'));
+const SaveToGet = lazy(() => import('./pages/SaveToGet'));
+const EarningsWhatIf = lazy(() => import('./pages/EarningsWhatIf'));
+const GiftBoost = lazy(() => import('./pages/GiftBoost'));
+const PremiumBoost = lazy(() => import('./pages/PremiumBoost'));
 const FoundingUpgrade = lazy(() => import('./pages/FoundingUpgrade'));
 const AIFunnelConcierge = lazy(() => import('./pages/AIFunnelConcierge'));
 const Tier2Scaling = lazy(() => import('./pages/Tier2Scaling'));
@@ -372,6 +377,11 @@ const AuthenticatedApp = () => {
       <Route path="/FoundingAdvertiser" element={<LayoutWrapper currentPageName="FoundingAdvertiser"><FoundingAdvertiser /></LayoutWrapper>} />
       <Route path="/GetGoodsAdvance" element={<LayoutWrapper currentPageName="GetGoodsAdvance"><GetGoodsAdvance /></LayoutWrapper>} />
       <Route path="/Tier1Financed" element={<LayoutWrapper currentPageName="Tier1Financed"><Tier1Financed /></LayoutWrapper>} />
+      <Route path="/Tier1SelfPaced" element={<LayoutWrapper currentPageName="Tier1SelfPaced"><Tier1SelfPaced /></LayoutWrapper>} />
+      <Route path="/SaveToGet" element={<LayoutWrapper currentPageName="SaveToGet"><SaveToGet /></LayoutWrapper>} />
+      <Route path="/EarningsWhatIf" element={<LayoutWrapper currentPageName="EarningsWhatIf"><EarningsWhatIf /></LayoutWrapper>} />
+      <Route path="/GiftBoost" element={<LayoutWrapper currentPageName="GiftBoost"><GiftBoost /></LayoutWrapper>} />
+      <Route path="/PremiumBoost" element={<LayoutWrapper currentPageName="PremiumBoost"><PremiumBoost /></LayoutWrapper>} />
       <Route path="/FoundingUpgrade" element={<LayoutWrapper currentPageName="FoundingUpgrade"><FoundingUpgrade /></LayoutWrapper>} />
       <Route path="/AIFunnelConcierge" element={<LayoutWrapper currentPageName="AIFunnelConcierge"><AIFunnelConcierge /></LayoutWrapper>} />
       <Route path="/Tier2Scaling" element={<LayoutWrapper currentPageName="Tier2Scaling"><Tier2Scaling /></LayoutWrapper>} />

@@ -699,6 +699,39 @@ export const REGISTRY: SettingDef[] = [
   { key: "PRODUCT_STATS_STATUS_FIELD", label: "Product stats — status field", category: "Product Stats", type: "string", default: "status", help: "Field with the order status (used to exclude cancelled/refunded)." },
   { key: "PRODUCT_STATS_EXCLUDED_STATUSES", label: "Product stats — excluded statuses", category: "Product Stats", type: "string", default: "cancelled,refunded,rejected,failed,void,pending_approval", help: "Comma-separated statuses that do NOT count toward stats (returns, cancellations, unpaid)." },
   { key: "PRODUCT_STATS_DISCLAIMER", label: "Product stats — results disclaimer", category: "Product Stats", type: "string", default: "Based on real orders to date. Individual results vary and are not a guarantee of future performance.", help: "Shown alongside published results. Keep it honest: real orders, results vary, not a guarantee." },
+
+  // Tier 1 Self-Paced (no-debt subscription) — the COMPLIANT pay-over-time option. Pay-as-you-go, benefits
+  // accrue in proportion to what's paid, nothing ever owed. Not credit → ON by default, no lender/counsel gate.
+  { key: "TIER1_SELFPACED_TERM_MONTHS", label: "Tier 1 Self-Paced — annual term (informational)", category: "Tier 1 Self-Paced (no-debt)", type: "number", default: "12", unit: "months", help: "The year the $12,000 full-package target maps to. Informational only — the buyer is never obligated to finish it and never owes a balance.", min: 1, max: 60 },
+  { key: "TIER1_SELFPACED_MIN_PAYMENT_USD", label: "Tier 1 Self-Paced — minimum single payment", category: "Tier 1 Self-Paced (no-debt)", type: "number", default: "50", unit: "$", help: "Smallest single voluntary payment accepted. The buyer chooses the amount; this is just a floor.", min: 0 },
+  { key: "TIER1_SELFPACED_MAX_PAYMENT_USD", label: "Tier 1 Self-Paced — maximum single payment", category: "Tier 1 Self-Paced (no-debt)", type: "number", default: "12000", unit: "$", help: "Largest single voluntary payment accepted (0 = no cap). Lets a buyer pay the whole year at once if they want.", min: 0 },
+  { key: "TIER1_SELFPACED_ALLOW_PAUSE", label: "Tier 1 Self-Paced — allow pause/resume", category: "Tier 1 Self-Paced (no-debt)", type: "boolean", default: "true", help: "Let buyers pause and resume anytime. Since nothing is owed, pausing simply stops new impressions until they resume." },
+  { key: "TIER1_SELFPACED_PRORATE_BENEFITS", label: "Tier 1 Self-Paced — prorate benefits to paid", category: "Tier 1 Self-Paced (no-debt)", type: "boolean", default: "true", help: "Deliver impressions in proportion to paid-to-date vs the annual target. This is what keeps it a fair pay-as-you-go exchange (not a deferral of the full package) — keep ON." },
+
+  // Earnings Set-Aside — user-controlled allocation of their OWN closed-loop Site Cash. Off per-user by
+  // default; the user picks the percentage. Not credit, not cashable — a savings/allocation convenience.
+  { key: "EARNINGS_SETASIDE_MAX_PCT", label: "Earnings set-aside — max percentage", category: "Earnings Set-Aside", type: "number", default: "1", unit: "×", help: "Largest share of earnings a user may choose to set aside (1 = up to 100%). The user picks any amount up to this; default per user is 0 (off).", min: 0, max: 1 },
+
+  // Save-to-Get — no-debt item savings goal (user reserves their own Site Cash toward an item).
+  { key: "SAVE_TO_GET_MAX_GOALS", label: "Save-to-Get — max active goals", category: "Save-to-Get", type: "number", default: "10", unit: "goals", help: "How many item savings goals a user can have open at once.", min: 1 },
+  { key: "SAVE_TO_GET_MIN_PRICE_USD", label: "Save-to-Get — minimum item price", category: "Save-to-Get", type: "number", default: "1", unit: "$", help: "Smallest item price a savings goal can target.", min: 0 },
+
+  // Earnings What-If — user-driven scenario calculator (own history only; no platform earnings claim).
+  { key: "EARNINGS_WHATIF_WINDOW_DAYS", label: "Earnings what-if — history window", category: "Earnings What-If", type: "number", default: "90", unit: "days", help: "How far back to read the user's OWN earning history to base their scenario on.", min: 7, max: 365 },
+  { key: "EARNINGS_WHATIF_DISCLAIMER", label: "Earnings what-if — disclaimer", category: "Earnings What-If", type: "string", default: "This is your own what-if scenario based on your past activity — not a prediction, promise, or guarantee of future earnings. Results vary.", help: "Shown with every scenario. Keep it clear that the platform is making no earnings claim." },
+
+  // Gift/Boost — user-triggered, platform-funded, non-cashable. Value flows platform→recipient only.
+  { key: "GIFT_BOOST_MAX_USD", label: "Gift/boost — max per gift", category: "Gift & Boost", type: "number", default: "5", unit: "$", help: "Cap on the platform-funded, non-cashable bonus a user can send someone in one gift.", min: 0 },
+  { key: "GIFT_BOOST_DAILY_CAP", label: "Gift/boost — sender daily cap", category: "Gift & Boost", type: "number", default: "3", unit: "gifts", help: "How many boosts one user can send per day (anti-abuse).", min: 0 },
+  { key: "GIFT_BOOST_POINT_COST", label: "Gift/boost — sender point cost", category: "Gift & Boost", type: "number", default: "0", unit: "points", help: "Optional: non-cashable points the sender spends of their OWN to trigger a platform gift (0 = free). The sender never transfers value to the recipient; the platform funds the bonus.", min: 0 },
+
+  // SMS opt-in capture — verifiable double-opt-in consent record (sending still needs sms_marketing + provider).
+  { key: "SMS_OPTIN_DISCLOSURE", label: "SMS opt-in — consent disclosure", category: "SMS Opt-In", type: "string", default: "By opting in you agree to receive recurring marketing text messages at the number provided. Consent is not a condition of purchase. Msg & data rates may apply. Reply STOP to opt out, HELP for help.", help: "The exact consent language shown at opt-in and stored with the consent record. Have counsel confirm for your jurisdictions (TCPA)." },
+
+  // Premium gift boost — advertiser-funded, non-cashable store credit for premium members (member-directed).
+  { key: "PREMIUM_GIFT_BOOST_MAX_USD", label: "Premium gift boost — max per member", category: "Premium Gift Boost", type: "number", default: "2000", unit: "$", help: "Cap on the advertiser-funded, non-cashable store credit a premium member can claim in total. Funded from advertiser fees; the member chooses how much to claim and which items to use it on.", min: 0 },
+  { key: "PREMIUM_BOOST_PER_ADVERTISER_USD", label: "Premium gift boost — funded per advertiser", category: "Premium Gift Boost", type: "number", default: "2000", unit: "$", help: "How much each PPC/Tier 1 advertiser payment ($12,000) contributes to the member-boost pool. Default $2,000 = 1:1 advertiser→member, well within the fee. Call premiumBoostFund when an advertiser pays.", min: 0 },
+  { key: "PREMIUM_BOOST_REQUIRE_PREMIUM", label: "Premium gift boost — require premium", category: "Premium Gift Boost", type: "boolean", default: "true", help: "Only premium members may claim the boost. Turn off to open it to all members (not recommended — it's positioned as a premium benefit)." },
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

@@ -3645,6 +3645,19 @@ CREATE TABLE IF NOT EXISTS "Tier1FinancedPlan" (
 CREATE INDEX IF NOT EXISTS "Tier1FinancedPlan_data_gin" ON "Tier1FinancedPlan" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "Tier1FinancedPlan_created" ON "Tier1FinancedPlan" (created_date DESC);
 
+-- Tier1SelfPacedPlan: Tier 1 SELF-PACED advertising subscription ledger (owner-scoped).
+-- NO DEBT — pay-as-you-go; benefits accrue in proportion to what's actually paid; nothing is ever owed.
+-- Not credit, so it is ON by default and needs no provider/counsel gate (see TIER1-SELF-PACED-NO-DEBT.md).
+CREATE TABLE IF NOT EXISTS "Tier1SelfPacedPlan" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "Tier1SelfPacedPlan_data_gin" ON "Tier1SelfPacedPlan" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "Tier1SelfPacedPlan_created" ON "Tier1SelfPacedPlan" (created_date DESC);
+
 -- FunnelJourney: per-customer AI-funnel state (owner-scoped) — current product, gate, window start,
 -- results, decision log. Drives Gate 1 (fit) and Gate 2 (results) recommendations. See AI-FUNNEL-DESIGN.md.
 CREATE TABLE IF NOT EXISTS "FunnelJourney" (
@@ -3730,3 +3743,50 @@ CREATE TABLE IF NOT EXISTS "AdvertiserApplication" (
 );
 CREATE INDEX IF NOT EXISTS "AdvertiserApplication_data_gin" ON "AdvertiserApplication" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AdvertiserApplication_created" ON "AdvertiserApplication" (created_date DESC);
+
+-- SaveToGetGoal: "Save-to-Get" item savings goal (owner-scoped). NO DEBT — the user reserves their OWN
+-- Site Cash toward an item and claims it when funded; canceling returns the savings. Not credit. See SAVE-TO-GET.md.
+CREATE TABLE IF NOT EXISTS "SaveToGetGoal" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SaveToGetGoal_data_gin" ON "SaveToGetGoal" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SaveToGetGoal_created" ON "SaveToGetGoal" (created_date DESC);
+
+-- GiftBoost: user-triggered, PLATFORM-funded, non-cashable boost (owner-scoped by sender). Value flows
+-- platform → recipient only (no wallet-to-wallet transfer), so it is not money transmission. See GIFT-BOOST.md.
+CREATE TABLE IF NOT EXISTS "GiftBoost" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GiftBoost_data_gin" ON "GiftBoost" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GiftBoost_created" ON "GiftBoost" (created_date DESC);
+
+-- PremiumBoostFunding: advertiser contributions to the premium-member boost pool (global). Each row is one
+-- advertiser's funded amount; remaining_usd is drawn down as members claim. Funds the gift boost. See PREMIUM-GIFT-BOOST.md.
+CREATE TABLE IF NOT EXISTS "PremiumBoostFunding" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PremiumBoostFunding_data_gin" ON "PremiumBoostFunding" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "PremiumBoostFunding_created" ON "PremiumBoostFunding" (created_date DESC);
+
+-- PremiumBoostGrant: per-member record of advertiser-funded boost claimed/used (owner-scoped by member_id).
+CREATE TABLE IF NOT EXISTS "PremiumBoostGrant" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PremiumBoostGrant_data_gin" ON "PremiumBoostGrant" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "PremiumBoostGrant_created" ON "PremiumBoostGrant" (created_date DESC);

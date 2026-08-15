@@ -1,5 +1,10 @@
 # Flexible Payment Terms — Compliance Write-up (CREDIT — OFF by default)
 
+> **⭐ The compliant "pay over time" option is the no-debt self-paced model** (`TIER1-SELF-PACED-NO-DEBT.md`):
+> pay-as-you-go, benefits proportional to what's paid, nothing owed — not credit, so it's ON with no gate.
+> This installment-credit product stays OFF and counsel-gated; the concierge now leads with the self-paced
+> option and only surfaces this plan if/when it's licensed and switched on.
+
 **Prepared for consumer-/commercial-finance + FTC counsel. Not legal advice.** Nothing here may originate a
 plan until counsel has reviewed the installment program, disclosures, and licensing.
 

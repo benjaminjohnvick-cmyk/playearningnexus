@@ -139,26 +139,32 @@ export default function ConciergeLauncher() {
               <Button size="sm" variant="outline" onClick={() => setRec(null)}>Change answers</Button>
               <Button size="sm" onClick={close} style={{ background: NAVY }} className="text-white">Got it</Button>
             </div>
-            {/* Last-resort: flexible payment terms, offered only after the customer isn't sold on the above. */}
+            {/* Pay-over-time: lead with the compliant NO-DEBT self-paced option; the credit installment plan
+                only appears if flexpay is actually licensed + live. */}
             <button onClick={async () => {
               setLoading(true);
               try {
                 const res = await base44.functions.invoke('flexPayOffer', { product_key: productKey, last_resort: true, ability_to_repay: signals.ability_to_repay });
-                setFlex(res?.offer ?? { available: false, reason: 'Not available right now.' });
-              } catch { setFlex({ available: false, reason: 'Not available right now.' }); }
+                setFlex(res?.offer ?? { available: false });
+              } catch { setFlex({ available: false }); }
               finally { setLoading(false); }
-            }} className="text-[11px] text-gray-500 underline">None of these work for you?</button>
+            }} className="text-[11px] text-gray-500 underline">Want to pay over time?</button>
             {flex && (
-              <div className="rounded-lg bg-gray-50 p-2.5 mt-1">
-                {flex.available && flex.plan ? (
-                  <>
-                    <p className="text-xs font-semibold text-gray-700">Flexible terms: {flex.plan.installments} payments of {money(flex.plan.per_payment_usd)}, one every {flex.plan.interval_months} months</p>
+              <div className="rounded-lg bg-gray-50 p-2.5 mt-1 space-y-2">
+                {/* Always available — pay-as-you-go, nothing owed */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-700">Pay your own way — no debt</p>
+                  <p className="text-[11px] text-gray-500">Pay whatever you like, whenever you like; you get advertising in proportion to what you pay and never owe a balance. Cancel anytime.</p>
+                  <a href="/Tier1SelfPaced" className="text-[11px] font-medium underline" style={{ color: NAVY }}>See self-paced Tier 1 →</a>
+                </div>
+                {/* Installment CREDIT plan — only if licensed + live */}
+                {flex.available && flex.plan && (
+                  <div className="border-t pt-2">
+                    <p className="text-xs font-semibold text-gray-700">Or an installment plan: {flex.plan.installments} payments of {money(flex.plan.per_payment_usd)}, one every {flex.plan.interval_months} months</p>
                     <ul className="mt-1 space-y-0.5 text-[11px] text-gray-500">
                       {(flex.disclosures || []).slice(0, 5).map((d, i) => <li key={i}>• {d}</li>)}
                     </ul>
-                  </>
-                ) : (
-                  <p className="text-[11px] text-gray-500">{flex.reason}</p>
+                  </div>
                 )}
               </div>
             )}

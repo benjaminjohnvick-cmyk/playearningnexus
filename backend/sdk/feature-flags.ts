@@ -21,7 +21,9 @@ export type FlagName =
   | "points_boost" | "physical_store" | "local_pickup" | "layaway" | "purchase_payback"
   | "digital_store" | "teen_accounts" | "kyc_survey_ai_autopublish" | "ai_paused"
   | "loyalty_program" | "group_goals" | "verified_surveys"
-  | "goods_advance" | "tier1_financed" | "ai_funnel" | "flexpay";
+  | "goods_advance" | "tier1_financed" | "ai_funnel" | "flexpay" | "tier1_selfpaced"
+  | "earnings_setaside" | "save_to_get" | "earnings_whatif" | "gift_boost" | "sms_optin_capture"
+  | "premium_gift_boost";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -69,6 +71,13 @@ const DEFAULTS: Record<FlagName, boolean> = {
   tier1_financed: false,       // OFF — Tier 1 "pay-from-earnings" is RECOURSE consumer/commercial CREDIT (a real $12k owed). Provider + counsel + licensing gated; must never originate until TIER1_FINANCED_PROVIDER != none AND TIER1_FINANCED_LEGAL_SIGNOFF = true (see TIER1-FINANCED-PAY-FROM-EARNINGS.md).
   ai_funnel: true,             // ON — AI concierge that recommends up/down across the catalog at purchase (fit) and after a commitment window (results). Decisions are DETERMINISTIC + logged; a hard suitability guard blocks upselling anyone into a financial/credit product. See AI-FUNNEL-DESIGN.md.
   flexpay: false,              // OFF — "flexible payment terms" is an INSTALLMENT CREDIT product (4 quarterly payments, balance owed). Provider + counsel + licensing gated exactly like tier1_financed; never originates until FLEXPAY_PROVIDER != none AND FLEXPAY_LEGAL_SIGNOFF = true. The next-tier upsell is OPTIONAL/opt-in, never a condition. See FLEXIBLE-PAYMENT-TERMS-COMPLIANCE.md.
+  tier1_selfpaced: true,       // ON — Tier 1 SELF-PACED subscription: pay-as-you-go, benefits accrue in proportion to what's paid, NOTHING ever owed. Not credit (no deferral, no balance, no recourse), so it needs no lender/counsel gate — it's the compliant "pay over time" alternative to the gated credit products. See TIER1-SELF-PACED-NO-DEBT.md.
+  earnings_setaside: true,     // ON — user-controlled "set aside part of my earnings" allocation. The USER picks a % (0 = off, off by default) of their OWN closed-loop Site Cash to park in a separate bucket they can spend later or move back anytime. Their own money the whole time — no debt, no lock, non-cashable, no third party. A savings/allocation convenience, not credit and not an auto debt-sweep. See EARNINGS-SET-ASIDE.md.
+  save_to_get: true,           // ON — "Save-to-Get": user saves their OWN Site Cash toward a chosen item and claims it when funded. No advance, no balance owed, reversible (cancel returns savings). The no-debt replacement for goods_advance. See SAVE-TO-GET.md.
+  earnings_whatif: true,       // ON — user-driven "what-if" earnings calculator. The USER inputs their own target/effort; the scenario is built ONLY from their own actual history and labeled "not a prediction or promise." The platform makes NO earnings claim. Distinct from earnings_projections (platform-made claims) which stays OFF. See EARNINGS-WHATIF.md.
+  gift_boost: true,            // ON — user-triggered, PLATFORM-funded gift/boost. A user can send someone a capped, non-cashable bonus the PLATFORM funds (value flows platform→recipient, never wallet-to-wallet), optionally spending their own non-cashable points as the trigger. No money transmission. The compliant alternative to p2p_transfers (which stays OFF). See GIFT-BOOST.md.
+  sms_optin_capture: true,     // ON — capture of verifiable SMS marketing consent (double opt-in) + revoke, storing a consent record. This is the compliant path's front door; actual SMS sending still requires sms_marketing (OFF) + a provider. See SMS-OPTIN.md.
+  premium_gift_boost: true,    // ON — advertiser-funded gift boost for PREMIUM members: up to $2,000 of NON-CASHABLE store credit, funded from PPC/Tier 1 advertiser fees (1:1 advertiser→member, pool-tracked so you can't grant more than advertisers funded). Value flows advertiser/platform→member only; member chooses how much to claim and which items to apply it to. A promotional/loyalty benefit — not earnings, not credit, not user-to-user. See PREMIUM-GIFT-BOOST.md.
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];

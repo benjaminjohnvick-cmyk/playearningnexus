@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Loader2, TrendingUp, Lock, CheckCircle2, Clock, Crown } from 'lucide-react';
+import EarningsSetAsideButton from '@/components/EarningsSetAsideButton';
 
 // Tier2Scaling — the Tier 2 "Scale" ladder: buy the $200k in 30-day parts, pay-as-you-go, scaling on results.
 // 6% rollover discount (first year for all; perpetual for founding members). Each part is a separate purchase.
@@ -140,6 +141,9 @@ export default function Tier2Scaling() {
           })}
         </div>
       </CardContent></Card>
+
+      {/* Optional: set aside part of your earnings toward your parts (or anything) — your choice, nothing owed */}
+      <EarningsSetAsideButton />
 
       {msg && <div className={`text-sm rounded-lg p-3 ${msg.type === 'error' ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}`}>{msg.text}</div>}
     </div>
