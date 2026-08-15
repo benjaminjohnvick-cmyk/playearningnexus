@@ -168,7 +168,7 @@ Every item below ships switched **on** by default (flag/setting defaults enforce
 developer only deploys and tests:
 
 - **Economics:** no customer markup for anyone; **50/50 survey split** (users accrue 50% as non-cashable
-  points); **12%/24%-of-balance per-transaction spend cap**; PPC AdGrid **$8,000**; double-ROI free-social
+  points); **12%/24%-of-balance per-transaction spend cap**; PPC AdGrid **$12,000**; double-ROI free-social
   guarantee **$16,000**; referral **300-point** activation bonus + 10% single-level override.
 - **Premium tier scale-up:** earned upgrade (survey-days **+ 3 referrals**) → one-tap opt-in + affiliate;
   **free founding cohort** so premium revenue starts day one.
