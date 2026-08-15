@@ -81,9 +81,10 @@ export async function fundBoostPoolFromAdvertiser(advertiserId: string, amountPa
   return { funded_usd: amount };
 }
 
-// Directly grant a member their boost credit (used for the Tier 1 signup benefit, which is self-funded by
-// the member's own advertising fee — so it does NOT draw the shared pool). Capped at the per-member max, and
-// bounded by whatever the member has already been granted. Non-cashable; nothing owed.
+// Admin/utility helper to grant a member boost credit directly (e.g. a manual/promotional grant), WITHOUT
+// drawing the shared pool. NOTE: this is intentionally NOT used at Tier 1 sign-up — the boost is decoupled
+// from any individual's payment (advertiser signups fund the shared pool via fundBoostPoolFromAdvertiser, and
+// premium members claim from it). Capped at the per-member max and bounded by prior grants. Nothing owed.
 export async function grantMemberBoost(memberId: string, amountUsd: number, source: string): Promise<{ granted_usd: number } | null> {
   const cfg = await premiumBoostConfig();
   if (!cfg.enabled || !memberId) return null;

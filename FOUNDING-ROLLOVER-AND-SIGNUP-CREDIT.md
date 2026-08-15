@@ -15,12 +15,14 @@ upgrade — it never moves money and nothing is ever owed. Not legal advice.*
    through the first year (`TIER2_DISCOUNT_FIRST_YEAR_ONLY`). It is **not** a "credit equal to what you paid,"
    makes **no reference** to the amount paid, and is **not derived from it** — it's a straightforward
    founding-advertiser discount on the upgrade.
-3. **Premium gift boost (replaces the old sign-up credit).** Up to **$2,000** in **non-cashable store
-   credit** — the Tier 1 sign-up benefit. Since Tier 1 includes premium, the member is granted their boost
-   at sign-up, self-funded by their own advertising fee; they choose how much to apply and to which items.
-   It is a promotional bonus (not a refund, not earnings, not credit), **never a charge, never a debt**. The
-   earlier $1,000 vesting sign-up credit is **retired** (`FOUNDING_SIGNUP_CREDIT_USD = 0`). See
-   `PREMIUM-GIFT-BOOST.md`.
+3. **Premium gift boost (replaces the old sign-up credit) — decoupled from the payment.** Up to **$2,000**
+   in **non-cashable store credit**, offered as a **premium-member benefit** funded by a **collective advertiser
+   pool**. It is deliberately **not tied to, granted from, or a return of** any member's $12,000 fee — the same
+   decoupling used for the upgrade discount, so there is no return-of-capital signal. Tier 1 includes premium, so
+   Tier 1 members qualify like any premium member; they **claim** the boost from the pool (subject to
+   availability) and choose how much to apply and to which items. A promotional bonus — not a refund, not
+   earnings, not credit — **never a charge, never a debt**. The earlier $1,000 vesting credit is **retired**
+   (`FOUNDING_SIGNUP_CREDIT_USD = 0`). See `PREMIUM-GIFT-BOOST.md`.
 
 All amounts are closed-loop **Site Cash** (non-cashable). The member never owes anything.
 

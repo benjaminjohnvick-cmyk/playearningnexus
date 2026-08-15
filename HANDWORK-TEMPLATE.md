@@ -127,8 +127,9 @@ These are yours to confirm/change in the admin Settings panel. Defaults in paren
 - ☐ **Tier 1 advertiser price** ($12,000/yr · $1,000/mo upfront): __________
 - ☐ **Tier 1 deliverables** (200k impressions/yr, 4-yr term, featured placement, AI creative, ~30 social
   posts/mo, A/B + analytics + sentiment; keep-100% survey window 4 yrs): confirm ☐
-- ☐ **Founding premium gift boost** (up to $2,000 non-cashable store credit — Tier 1 sign-up benefit,
-  granted at signup, member-directed; replaces the old $1,000 credit): confirm ☐
+- ☐ **Premium gift boost** (up to $2,000 non-cashable store credit — a premium-member benefit from a
+  collective advertiser pool, **decoupled from the $12k fee**, claimed by members, subject to availability;
+  replaces the old $1,000 credit): confirm ☐
 - ☐ **Founding → Tier 2 upgrade discount** (6% off; first year for all, perpetual for founding members): __________
 - ☐ **Tier 2 "Scale"** total ($200,000), parts (12 × 30-day), results gate (`TIER2_PART_MIN_RESULTS_MULT`, 0=off): __________
 - ☐ **Tier 2 deliverables** (3,000,000 impressions/yr, 100 social posts/mo, 4 audience panels/yr, perk unlock

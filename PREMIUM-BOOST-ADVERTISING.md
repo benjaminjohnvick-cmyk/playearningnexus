@@ -15,6 +15,9 @@ wording, and confirm each ad platform's own incentive-advertising policies, befo
   keeps it clear of FTC earnings-claim rules. Never say "earn $2,000."
 - **Not "free."** It's a premium-member benefit (requires a paid membership), so we don't call it "free"; the
   premium condition is disclosed with the claim.
+- **Never a rebate or "money back."** The boost is a premium-member benefit funded by a collective advertiser
+  pool — it is **not** tied to, granted from, or a return of any member's purchase (including the $12,000 Tier 1
+  fee). Don't imply "buy X, get $2,000 back." It's a premium perk, decoupled from what anyone paid.
 - **Only advertise what we can deliver.** The boost is funded by advertisers into a tracked pool; copy is
   paired with an availability disclosure so it isn't bait advertising.
 

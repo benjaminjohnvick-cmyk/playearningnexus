@@ -6,10 +6,13 @@ to spend it on. Value flows advertiser/platform → member only; nothing is owed
 
 ## The idea
 
-Advertisers pay their $12,000 Tier 1 / PPC fee. A slice of each fee (default $2,000 — a 1:1 advertiser→member
-match, well within the fee) funds a **member-boost pool**. A **premium** member can claim up to **$2,000** of
-that pool as non-cashable store credit, then apply as much or as little of it as they like to the items they
-choose. It's a loyalty/promotional benefit tied to real advertiser revenue.
+The premium gift boost is a **premium-member benefit**: up to **$2,000** in non-cashable store credit that a
+premium member can claim from a **collective, advertiser-funded pool** and apply to the items they choose. It is
+**decoupled** from any individual's payment — it is **not** granted from, earmarked to, or a return of a member's
+own fee (no return-of-capital signal). Advertisers collectively fund the pool as part of their spend; the platform
+sizes the pool so it can honor the benefit. Tier 1 members qualify because Tier 1 **includes premium**, exactly
+like any other premium member — not because they bought Tier 1. It's a loyalty/promotional benefit funded by real
+advertiser revenue, subject to availability.
 
 ## Why it's compliant
 
@@ -19,7 +22,7 @@ choose. It's a loyalty/promotional benefit tied to real advertiser revenue.
 - **Not earnings / not an earnings claim.** It's a promotional boost, not something the member "earned" by
   activity, so it carries no FTC earnings-claim risk.
 - **Closed-loop, non-cashable.** The boost credit spends only on-platform items; it never converts to cash.
-- **Solvent by construction.** Grants are drawn from discrete advertiser funding contributions (consumed 1:1),
+- **Solvent by construction.** Grants are drawn from the pooled advertiser funding contributions (consumed as members claim),
   so the platform can never gift more boost than advertisers have actually funded.
 - **User-controlled.** Off unless the member claims it; they pick the claim amount and which items to apply it
   to; unused credit simply stays theirs.

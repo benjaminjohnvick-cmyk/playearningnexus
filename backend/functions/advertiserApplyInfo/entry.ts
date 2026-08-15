@@ -30,7 +30,7 @@ export default __handler(async () => {
         `~${tier1AiSocialPostsPerMonth()} AI social ad posts per month (clearly labeled)`,
         "A/B testing, analytics & sentiment insights included",
         "Keep 100% of your own survey earnings for 4 years (as Site Cash)",
-        `$${boost.toLocaleString()} premium gift boost — non-cashable store credit you apply to any items you choose`,
+        `Premium membership — premium members get the advertiser-funded gift boost (up to $${boost.toLocaleString()} in non-cashable store credit, subject to availability), a benefit decoupled from the price you pay`,
         `${discPct}% off the Tier 2 "Scale" upgrade — kept for life as a founding member`,
       ],
     };

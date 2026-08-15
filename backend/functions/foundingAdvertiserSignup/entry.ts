@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { recordConsent } from "../../sdk/consent-ledger.ts";
-import { grantMemberBoost } from "../../sdk/premium-boost.ts";
+import { fundBoostPoolFromAdvertiser } from "../../sdk/premium-boost.ts";
 import {
   foundingEnabled, foundingProgramOpen, foundingPriceUsd, foundingTermYears,
   foundingImpressionsPerYear, foundingAutoEnrollMember, signupFinancials,
@@ -88,10 +88,11 @@ export default __handler(async (req) => {
       purchased_at: now,
     }).catch(() => null);
 
-    // Tier 1 sign-up benefit: grant this member their $2,000 premium gift boost directly (self-funded by
-    // their own advertising fee; capped at PREMIUM_GIFT_BOOST_MAX_USD). Replaces the old $1,000 sign-up
-    // credit. Non-cashable store credit, member-directed, nothing owed. Best-effort; safe no-op if off.
-    const boost = await grantMemberBoost(String(user.id), 1_000_000, "tier1_signup").catch(() => null);
+    // Advertiser contribution to the SHARED premium member-boost pool. DECOUPLED from this member's own
+    // payment: it is not earmarked to them and is not a rebate of the fee. Premium members (Tier 1 includes
+    // premium) claim the advertiser-funded gift boost from this collective pool as a premium benefit, subject
+    // to availability — never "get part of your $12k back." Best-effort; safe no-op if the program is off.
+    await fundBoostPoolFromAdvertiser(String(user.id), fin.price_usd).catch(() => null);
 
     const note = isTier1
       ? "Tier 1 confirmed. You've bought the advertising package, and as a Tier 1 member you keep 100% of what " +
@@ -103,14 +104,13 @@ export default __handler(async (req) => {
         Math.round((1 - sharePct) * 100) + "%), paid as Site Cash. " +
         (fin.model === "presale" ? "Your payment is NON-REFUNDABLE." : "");
 
-    const boostNote = boost && boost.granted_usd > 0
-      ? ` Plus your premium gift boost: $${boost.granted_usd.toLocaleString()} in non-cashable store credit to apply to any items you choose.`
-      : "";
+    const boostNote = " As a premium member you can claim the advertiser-funded gift boost — up to $2,000 in " +
+      "non-cashable store credit for premium members, subject to availability. It's a premium benefit, not a " +
+      "return of what you paid.";
 
     return Response.json({
       ok: true,
       tier1: isTier1,
-      boost_granted_usd: boost?.granted_usd ?? 0,
       status: rec ? (rec as Record<string, unknown>).status : FA_STATUS.ACTIVE,
       survey_earn_share_pct: sharePct,
       record: rec,

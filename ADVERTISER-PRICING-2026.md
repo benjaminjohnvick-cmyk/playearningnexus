@@ -25,10 +25,12 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
   it comes off **every Tier 2 part in perpetuity** (`TIER2_FOUNDING_DISCOUNT_PERPETUAL = true`). The discount
   is defined as a **% of the upgrade price — decoupled from the amount paid** (no "credit," no "return your
   $12k"), which removes the return-of-capital signal the founding packet flagged.
-- **Premium gift boost: up to $2,000** in **non-cashable store credit** — the Tier 1 sign-up benefit
-  (replaces the old $1,000 vesting credit). Because Tier 1 includes premium, the member is granted their
-  boost at sign-up, funded by their own advertising fee; they choose how much to apply and to which items.
-  Nothing is owed. See `PREMIUM-GIFT-BOOST.md` and `PREMIUM-BOOST-ADVERTISING.md`.
+- **Premium gift boost: up to $2,000** in **non-cashable store credit** — a **premium-member benefit**,
+  funded by a **collective advertiser pool** and **decoupled from the price you pay**. Tier 1 includes premium,
+  so Tier 1 members qualify like any premium member; the boost is **not** granted from, tied to, or a return of
+  their $12,000 fee (no return-of-capital signal, same as the upgrade discount). Members claim it from the pool,
+  **subject to availability**, and choose how much to apply and to which items. Nothing is owed. (Replaces the
+  old $1,000 vesting credit.) See `PREMIUM-GIFT-BOOST.md` and `PREMIUM-BOOST-ADVERTISING.md`.
 - Settings: `FOUNDING_UPGRADE_DISCOUNT_PCT = 0.06`, `FOUNDING_UPGRADE_PRICE_USD = 200000`,
   `FOUNDING_UPGRADE_DISCOUNT_WINDOW_MONTHS = 12` (window to claim), `TIER2_FOUNDING_DISCOUNT_PERPETUAL = true`
   (founding members keep it for life) / `TIER2_DISCOUNT_FIRST_YEAR_ONLY = true` (non-founding loses it after
