@@ -3,6 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { recordConsent } from "../../sdk/consent-ledger.ts";
 import { fundBoostPoolFromAdvertiser } from "../../sdk/premium-boost.ts";
+import { inventorySaleBlock } from "../../sdk/inventory-governor.ts";
 import {
   foundingEnabled, foundingProgramOpen, foundingPriceUsd, foundingTermYears,
   foundingImpressionsPerYear, foundingAutoEnrollMember, signupFinancials,
@@ -41,6 +42,10 @@ export default __handler(async (req) => {
     if (existing[0] && ![FA_STATUS.REFUNDED, FA_STATUS.CANCELLED].includes(existing[0].status as never)) {
       return Response.json({ error: "You already hold a Tier 1 seat.", record: existing[0] }, { status: 409 });
     }
+
+    // Inventory governor: never sell a Tier 1 seat the current audience can't serve impressions for.
+    const invBlock = await inventorySaleBlock("tier1").catch(() => null);
+    if (invBlock) return Response.json({ error: invBlock, inventory_full: true }, { status: 409 });
 
     // Tier assignment by AVAILABILITY: while the introductory offer is open, the member keeps 100% in-window;
     // once the advertiser cap is reached the offer has closed and new members keep the post-Tier-1 share.

@@ -5,6 +5,7 @@ import { upgradeDiscountPct } from "../../sdk/founding-rollover.ts";
 import { tier2Name, tier2TotalUsd, tier2Parts } from "../../sdk/tier2-scaling.ts";
 import { flexPayLive } from "../../sdk/flexpay.ts";
 import { tier1FinancedLive } from "../../sdk/tier1-financed.ts";
+import { publicSeatAvailability } from "../../sdk/inventory-governor.ts";
 
 // advertiserApplyInfo (public read) — the content for the /Apply page: the prominent Founding Advertiser
 // (Tier 1) offer with its live benefits + availability, and the three financing options with their real
@@ -34,8 +35,17 @@ export default __handler(async () => {
       ],
     };
 
+    const seats = await publicSeatAvailability().catch(() => null);
+    const tier2SeatLine = seats
+      ? (seats.tier2_always_open
+          ? (seats.tier2_seats_available > 0
+              ? `${seats.tier2_seats_available.toLocaleString()} seats available now for immediate full delivery — and Tier 2 is always open to join (additional seats deliver as our audience grows).`
+              : `Always open to join — your impressions are guaranteed over your term and deliver as our audience grows.`)
+          : (seats.tier2_seats_available >= 0 ? `${seats.tier2_seats_available.toLocaleString()} seats available now.` : "Available now."))
+      : "Scale up in monthly, pay-as-you-go parts — available now.";
     const tier2 = { name: tier2Name(), total_usd: tier2TotalUsd(), parts: tier2Parts(), available: true,
-      tagline: "Scale up in monthly, pay-as-you-go parts — available now." };
+      seats_available: seats?.tier2_seats_available ?? null, always_open: seats?.tier2_always_open ?? true,
+      tagline: tier2SeatLine };
 
     const gates = [
       { key: "flexpay", name: "Flexible Payment Terms", tagline: "Split a package into 4 quarterly credit-card payments.", live: await flexPayLive(null) },
@@ -45,6 +55,11 @@ export default __handler(async () => {
 
     return Response.json({
       tier1, tier2, coming_soon,
+      seats: seats ? {
+        tier1_available: seats.tier1_seats_available,
+        tier2_available: seats.tier2_seats_available,
+        tier2_always_open: seats.tier2_always_open,
+      } : null,
       scarcity: `Limited space for advertisers — the Founding tier is open until ${slots.toLocaleString()} advertisers enroll, then it closes.`,
       disclaimer: "Applying does not commit you to anything. Options marked “coming soon” are financing products that are subject to approval and availability and are not offered yet.",
     });

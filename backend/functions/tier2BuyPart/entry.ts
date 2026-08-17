@@ -3,6 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { tier2Status, tier2Ladder } from "../../sdk/tier2-scaling.ts";
 import { attributedSalesUsd } from "../../sdk/earned-advertiser.ts";
+import { inventoryPlacement } from "../../sdk/inventory-governor.ts";
 
 // tier2BuyPart — advance the Tier 2 scale-up by ONE 30-day part. Pay-as-you-go: each part is a separate
 // upfront purchase (NOT credit). Buying the first part starts the plan; each later part requires ≥30 days on
@@ -39,6 +40,19 @@ export default __handler(async (req) => {
       return Response.json({ error: status.reason, status }, { status: 400 });
     }
 
+    // Inventory governor: on the FIRST part (starting a new Tier 2 seat), place it against inventory. Tier 2 is
+    // ALWAYS OPEN — accepted "immediate" when it can be fully served now, else "capacity_paced" (allotment
+    // guaranteed over the term, delivered as the audience grows). Only "blocked" if always-open is turned off.
+    let deliveryMode = "immediate", deliveryNote = "";
+    if (partsDone === 0) {
+      const placement = await inventoryPlacement("tier2").catch(() => null);
+      if (placement) {
+        if (placement.mode === "blocked") return Response.json({ error: placement.reason, inventory_full: true, status }, { status: 409 });
+        deliveryMode = placement.mode;
+        deliveryNote = placement.reason;
+      }
+    }
+
     const ladder = tier2Ladder();
     const partIndex = partsDone;                 // 0-based index of the part being bought now
     const part = ladder[partIndex];
@@ -47,7 +61,7 @@ export default __handler(async (req) => {
     const newPaid = Math.round(((Number(rec?.paid_usd) || 0) + netDue) * 100) / 100;
     const complete = newPartsDone >= ladder.length;
 
-    const doc = {
+    const doc: Record<string, unknown> = {
       user_id: uid,
       started_at: rec?.started_at ?? nowISO,
       parts: ladder.length,
@@ -60,6 +74,8 @@ export default __handler(async (req) => {
       last_discount_pct: status.discount_pct,
       status: complete ? "complete" : "active",
     };
+    // Stamp the delivery mode when the seat is created (first part).
+    if (partsDone === 0) { doc.delivery_mode = deliveryMode; doc.current_year_started_at = nowISO; }
     if (rec) rec = await db.update("Tier2ScalingPlan", String(rec.id), doc);
     else rec = await db.create("Tier2ScalingPlan", doc, uid);
 
@@ -70,8 +86,9 @@ export default __handler(async (req) => {
       discount_pct: status.discount_pct,
       parts_completed: newPartsDone,
       complete,
+      delivery_mode: partsDone === 0 ? deliveryMode : (rec as Record<string, unknown>)?.delivery_mode ?? "immediate",
       plan: rec,
-      note: "Part recorded. Charge the amount_due_usd through the normal checkout flow — this function does not move money. The next part unlocks after the 30-day window (and results, if gated).",
+      note: "Part recorded. Charge the amount_due_usd through the normal checkout flow — this function does not move money. The next part unlocks after the 30-day window (and results, if gated)." + (deliveryNote ? " " + deliveryNote : ""),
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

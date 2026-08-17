@@ -118,6 +118,12 @@ export default function Apply() {
                   <Sparkles className="w-4 h-4" style={{ color: NAVY }} />
                   <h3 className="font-bold text-gray-900">{t2.name}</h3>
                   <Badge variant="outline" className="border-emerald-300 text-emerald-700">Available now</Badge>
+                  {typeof t2.seats_available === 'number' && t2.seats_available > 0 && (
+                    <Badge style={{ background: GOLD, color: INK }}>{t2.seats_available.toLocaleString()} seats available</Badge>
+                  )}
+                  {t2.always_open && (typeof t2.seats_available !== 'number' || t2.seats_available <= 0) && (
+                    <Badge variant="outline" className="border-emerald-300 text-emerald-700">Always open</Badge>
+                  )}
                 </div>
                 <p className="text-sm text-gray-500 mt-1">{t2.tagline}{t2.total_usd ? ` · ${money(t2.total_usd)} in ${t2.parts} parts` : ''}</p>
               </div>
