@@ -78,6 +78,29 @@ progress, and dispatches each to its engine by emitting a `tier2.deliverable.due
 existing scheduler consumes. No human is in the per-advertiser loop. `aiAdManagerStatus` shows any advertiser
 their rate card and exactly what has been delivered to date.
 
+## How it improves itself (self-learning loop)
+
+The manager doesn't just serve the package — it gets better at it. Each `aiAdManagerRun` closes a
+**measure → learn → improve → dispatch** loop, using the *same* learning primitives the platform's
+self-learning system already consumes (`OptimizationSignal` + `AgentLearningMemory`), so `aiOptimizerRun`,
+`learningInsights`, and `applyApprovedLearnings` pick it up automatically — no new tables, and it plugs into
+the existing AI-oversight feed under the agent `tier2_ad_manager`.
+
+1. **Measure.** It reads each advertiser's real attributed ROAS for the period and records it as a learning
+   signal (`recordDeliverableOutcome`). Individual delivery engines record their own finer metrics the same
+   way (creative CTR, email open rate, panel completion, placement performance) as they measure them.
+2. **Learn.** `deliverableLearning` rolls recent outcomes into a per-deliverable performance ranking.
+3. **Improve.** `optimizeDeliveryMix` re-weights and reorders the next dispatch — deliverables that beat their
+   benchmark get **boosted** (more budget/impressions/frequency), persistent underperformers get flagged
+   **vary** (new creative/cadence), everything else stays **steady**.
+4. **Dispatch.** Each due deliverable goes to its engine carrying the learned weight and action.
+
+Because it grounds every adjustment in *real* measured results (never a self-reported or fabricated number)
+and rides the platform's existing human-oversight/self-learning rails, the manager is self-improving within
+the same guardrails as the rest of the system: money and compliance changes stay human-gated; only delivery
+weighting and creative/cadence choices auto-tune. Run it on a schedule (daily is typical) so the loop keeps
+turning.
+
 ## The two constraints that still apply
 
 - **Inventory (DAU).** The impression and real-respondent research lines are capped by your daily-active-user

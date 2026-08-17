@@ -10,6 +10,7 @@
 //      assumes optional human escalation is available; pure-AI-only would carry a lower value.
 import { snapNumber, snapString, snapBool } from "./settings.ts";
 import { isEnabled } from "./feature-flags.ts";
+import { db } from "./db.ts";
 
 export const aiAdManagerEnabled = () => snapBool("AI_AD_MANAGER_ENABLED", true);
 export async function aiAdManagerLive(jurisdiction?: string | null): Promise<boolean> {
@@ -123,4 +124,72 @@ export function dispatchManifest(partsCompleted: number, parts: number): { key: 
   const done = Math.max(0, Math.floor(Number(partsCompleted) || 0));
   if (done < 1) return [];
   return catalog().map((d) => ({ key: d.key, engine: d.engine, cadence: d.cadence, real_respondents: !!d.real_respondents }));
+}
+
+// ── Self-learning & self-improving ──────────────────────────────────────────────────────────────────────
+// The manager closes a measure → learn → improve loop using the SAME primitives the platform's self-learning
+// loop already consumes (OptimizationSignal + AgentLearningMemory), so aiOptimizerRun / learningInsights /
+// applyApprovedLearnings pick it up automatically — no new tables. Individual delivery engines call
+// recordDeliverableOutcome as they measure real metrics (CTR, open rate, panel completion, attributed ROAS);
+// deliverableLearning rolls those up, and optimizeDeliveryMix biases the NEXT run toward what's working.
+export const TIER2_AD_MANAGER_AGENT = "tier2_ad_manager";
+
+/** Record how a delivered A-D line actually performed as learning signals. value vs benchmark → a ratio
+ *  (≥1 is a win); the weight (-3..3) is what the ranking and the platform optimizer read. Best-effort. */
+export async function recordDeliverableOutcome(opts: {
+  advertiserId: string; deliverableKey: string; metric: string; value: number; benchmark?: number;
+}): Promise<void> {
+  const value = Number(opts.value) || 0;
+  const benchmark = opts.benchmark != null ? Number(opts.benchmark) : 1;
+  const ratio = benchmark > 0 ? value / benchmark : (value > 0 ? 2 : 0);
+  const success = ratio >= 1;
+  const weight = Math.max(-3, Math.min(3, Math.round((ratio - 1) * 3)));
+  const key = `tier2:${opts.deliverableKey}:${opts.metric}`;
+  const at = new Date().toISOString();
+  await db.create("OptimizationSignal", {
+    kind: "tier2_deliverable", key, deliverable: opts.deliverableKey, metric: opts.metric,
+    advertiser_id: opts.advertiserId, value, benchmark, ratio: round2(ratio), weight,
+    note: `Tier2 ${opts.deliverableKey} ${opts.metric}=${value} vs bench ${benchmark}`, created_at: at,
+  }).catch(() => null);
+  await db.create("AgentLearningMemory", {
+    agent_name: TIER2_AD_MANAGER_AGENT, type: "deliverable_outcome", target: key,
+    success, provisional: true,
+    improvement_notes: success
+      ? `Tier2 ${opts.deliverableKey} beat benchmark on ${opts.metric} — bias more budget/impressions/frequency here.`
+      : `Tier2 ${opts.deliverableKey} underperformed on ${opts.metric} — vary creative/cadence or reallocate away.`,
+    deliverable: opts.deliverableKey, metric: opts.metric, ratio: round2(ratio), recorded_at: at, created_at: at,
+  }).catch(() => null);
+}
+
+export interface DeliverableLearning { score: Record<string, number>; ranked: string[]; sampled: number; }
+
+/** Read recent deliverable outcomes back into a per-deliverable performance ranking. Best-effort. */
+export async function deliverableLearning(lookbackDays = 30): Promise<DeliverableLearning> {
+  try {
+    const since = new Date(Date.now() - Math.max(1, lookbackDays) * 86400000).toISOString();
+    const rows = (await db.filter("OptimizationSignal", { kind: "tier2_deliverable" }, "-created_date", 5000).catch(() => [])) as Record<string, unknown>[];
+    const recent = rows.filter((r) => String(r.created_at ?? r.created_date ?? "") >= since);
+    const score: Record<string, number> = {};
+    for (const r of recent) {
+      const k = String(r.deliverable ?? "");
+      if (k) score[k] = (score[k] ?? 0) + (Number(r.weight) || 0);
+    }
+    const ranked = Object.entries(score).sort((a, b) => b[1] - a[1]).map(([k]) => k);
+    return { score, ranked, sampled: recent.length };
+  } catch { return { score: {}, ranked: [], sampled: 0 }; }
+}
+
+export interface OptimizedDeliverable { key: string; engine: string; cadence: string; real_respondents: boolean; weight: number; action: "boost" | "steady" | "vary"; }
+
+/** Self-improving step: re-weight & reorder the dispatch by learned performance. Winners get a higher weight
+ *  (more budget/impressions/frequency); persistent underperformers are flagged "vary" (new creative/cadence). */
+export function optimizeDeliveryMix(partsCompleted: number, parts: number, learning: DeliverableLearning): OptimizedDeliverable[] {
+  return dispatchManifest(partsCompleted, parts)
+    .map((d) => {
+      const s = learning.score[d.key] ?? 0;
+      const action: OptimizedDeliverable["action"] = s > 1 ? "boost" : (s < -1 ? "vary" : "steady");
+      const weight = Math.round(Math.max(0.25, Math.min(3, 1 + s * 0.25)) * 100) / 100;
+      return { ...d, weight, action };
+    })
+    .sort((a, b) => b.weight - a.weight);
 }

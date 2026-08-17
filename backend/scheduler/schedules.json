@@ -136,6 +136,12 @@
       "function": "aiPricingOptimizer"
     },
     {
+      "name": "daily-tier2-ai-ad-manager",
+      "cron": "40 7 * * *",
+      "function": "aiAdManagerRun",
+      "_comment": "Self-learning Tier 2 ad manager: measures each advertiser's real attributed ROAS, records learning signals (OptimizationSignal + AgentLearningMemory under agent tier2_ad_manager), re-weights the A-D delivery mix toward what's working, and dispatches each deliverable to its AI engine. No per-advertiser human. Respects the ai_ad_manager flag."
+    },
+    {
       "name": "weekly-pricing-survey",
       "cron": "0 16 * * 1",
       "function": "generatePricingSurvey"
