@@ -57,6 +57,30 @@ price into owed installments and is gated off behind a provider + counsel.) The 
 the progression and returns the amount due; the actual charge for each part runs through the normal checkout
 processor.
 
+## The 5-year results-gated continuation ("stay in while it's working")
+
+A successful advertiser can continue Tier 2 year over year, up to **`TIER2_TERM_YEARS` (5)** — one 12-part
+cycle per year, up to ~$1M of scaling over five years. Three rules keep a multi-year "stay" a defensible
+enterprise agreement rather than a coercive lock:
+
+- **Results-gated.** A year only continues when that year's **real attributed results ≥
+  `TIER2_CONTINUATION_RESULTS_MULT` × the year's cost** (default 1× — the year at least paid for itself). If
+  results fall short, the advertiser can **always exit** — you never hold a losing advertiser in. That's the
+  fairness protection that makes the whole thing defensible.
+- **Consent-gated for "binding."** A results-warranted year is only **binding** if the advertiser
+  **voluntarily opted into the multi-year term up front** (`tier2AcceptMultiYear`, recorded consent) in
+  exchange for consideration — the locked founding discount / bonus inventory for the term. Without that
+  opt-in, a warranted year is merely **offered** (they can decline). A binding stay is never imposed
+  unilaterally; it requires their up-front agreement (`TIER2_MULTIYEAR_COMMITMENT_OPTIN`).
+- **Renewal notice.** `TIER2_RENEWAL_NOTICE_DAYS` (30) of advance notice before each annual renewal charges,
+  with a cancel window — for auto-renewal-law compliance (e.g. CA ARL, FTC negative-option rule).
+
+So the only case where an advertiser "has to stay" is: they voluntarily committed **and** the results warrant
+it **and** they're still inside the 5 years. A losing year, or an advertiser who never committed, can always
+walk. `tier2ContinuationStatus` computes this live from real attributed sales; `tier2AcceptMultiYear` records
+the voluntary opt-in. **Not legal advice** — have counsel confirm the multi-year terms + auto-renewal
+disclosures for your states.
+
 ## The rollover discount (and the founding perk)
 
 A **5.5% Tier 1 → Tier 2 rollover discount** (`FOUNDING_UPGRADE_DISCOUNT_PCT`) comes off each part:

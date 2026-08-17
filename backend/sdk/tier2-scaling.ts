@@ -17,6 +17,10 @@ export const tier2Parts = () => Math.max(1, Math.round(snapNumber("TIER2_PARTS",
 export const tier2PartMinDays = () => Math.max(1, snapNumber("TIER2_PART_MIN_DAYS", 30));
 export const tier2TermMonths = () => Math.max(1, snapNumber("TIER2_TERM_MONTHS", 12));
 export const tier2PartMinResultsMult = () => Math.max(0, snapNumber("TIER2_PART_MIN_RESULTS_MULT", 0));
+export const tier2TermYears = () => Math.max(1, Math.round(snapNumber("TIER2_TERM_YEARS", 5)));
+export const tier2ContinuationResultsMult = () => Math.max(0, snapNumber("TIER2_CONTINUATION_RESULTS_MULT", 1));
+export const tier2MultiYearCommitmentOptin = () => snapBool("TIER2_MULTIYEAR_COMMITMENT_OPTIN", true);
+export const tier2RenewalNoticeDays = () => Math.max(0, Math.round(snapNumber("TIER2_RENEWAL_NOTICE_DAYS", 30)));
 export const tier2DiscountFirstYearOnly = () => snapBool("TIER2_DISCOUNT_FIRST_YEAR_ONLY", true);
 export const tier2FoundingDiscountPerpetual = () => snapBool("TIER2_FOUNDING_DISCOUNT_PERPETUAL", true);
 export const tier2TotalUsd = () => upgradePriceUsd();       // $200,000
@@ -100,6 +104,66 @@ export function tier2Deliverables(partsCompleted: number): Tier2Deliverables {
     perks_unlocked: perks.filter((p) => done >= p.unlocks_at_part),
     perks_locked: perks.filter((p) => done < p.unlocks_at_part),
     perks_all: perks,
+  };
+}
+
+// ── Multi-year (up to 5) results-gated continuation ─────────────────────────────────────────────────────
+// A successful Tier 2 advertiser can continue year over year, up to TIER2_TERM_YEARS. The rules that keep a
+// multi-year "stay" DEFENSIBLE rather than a coercive lock:
+//   • RESULTS-GATED: a year continues only when that year's real attributed results ≥ mult × the year's cost.
+//     If results fall short, the advertiser can ALWAYS exit — you never hold a losing advertiser in.
+//   • CONSENT-GATED for binding: continuation is BINDING only if the advertiser voluntarily opted into the
+//     multi-year term up front (recorded consent) in exchange for consideration (the locked founding discount
+//     / bonus inventory). Without that opt-in, a results-warranted year is only OFFERED (declinable).
+//   • NOTICE: advance renewal notice (TIER2_RENEWAL_NOTICE_DAYS) before each year renews (auto-renewal law).
+export interface Tier2Continuation {
+  term_years: number;
+  years_completed: number;
+  in_term: boolean;                 // still within the 5-year program
+  results_warrant: boolean;         // last year's results ≥ mult × cost
+  results_needed_usd: number;
+  last_year_results_usd: number;
+  committed: boolean;               // advertiser opted into the multi-year term up front (recorded consent)
+  binding: boolean;                 // continuation is contractually due (committed + warranted + in term)
+  offered: boolean;                 // continuation available but declinable (warranted + in term + not committed)
+  may_exit: boolean;                // advertiser can stop now (never trapped)
+  renewal_notice_days: number;
+  next_year_number: number | null;  // the year they'd continue into (null if term done)
+  reason: string;
+}
+
+/** Compute the continuation state at a YEAR boundary. `yearCostUsd` defaults to the Tier 2 year price. */
+export function tier2ContinuationStatus(opts: {
+  yearsCompleted: number;
+  lastYearResultsUsd: number;
+  committed: boolean;
+  yearCostUsd?: number;
+}): Tier2Continuation {
+  const termYears = tier2TermYears();
+  const yearsCompleted = Math.max(0, Math.floor(Number(opts.yearsCompleted) || 0));
+  const cost = r2(opts.yearCostUsd != null ? Number(opts.yearCostUsd) : tier2TotalUsd());
+  const mult = tier2ContinuationResultsMult();
+  const results = r2(Number(opts.lastYearResultsUsd) || 0);
+  const needed = r2(cost * mult);
+  const inTerm = yearsCompleted < termYears;
+  const warrant = mult <= 0 ? true : results >= needed;
+  // Binding only with a real, voluntary up-front commitment AND results that warrant it AND still in term.
+  const committed = tier2MultiYearCommitmentOptin() && !!opts.committed;
+  const binding = committed && inTerm && warrant;
+  const offered = inTerm && warrant && !committed;
+  // The advertiser can always stop when results don't warrant it, when the term is done, or (if they never
+  // committed) at any renewal. A binding, results-warranted year is the only case where they're held in.
+  const mayExit = !binding;
+  let reason: string;
+  if (!inTerm) reason = `The ${termYears}-year Tier 2 program is complete.`;
+  else if (!warrant) reason = `Last year returned $${results.toLocaleString()} vs the $${needed.toLocaleString()} needed to warrant continuing — you're free to continue, adjust, or stop.`;
+  else if (binding) reason = `Results warrant continuing (returned $${results.toLocaleString()} ≥ $${needed.toLocaleString()}). Per your multi-year agreement, year ${yearsCompleted + 1} continues; you'll get ${tier2RenewalNoticeDays()} days' notice before it renews.`;
+  else reason = `Results warrant continuing (returned $${results.toLocaleString()} ≥ $${needed.toLocaleString()}). Year ${yearsCompleted + 1} is available — it's your choice to continue.`;
+  return {
+    term_years: termYears, years_completed: yearsCompleted, in_term: inTerm,
+    results_warrant: warrant, results_needed_usd: needed, last_year_results_usd: results,
+    committed, binding, offered, may_exit: mayExit, renewal_notice_days: tier2RenewalNoticeDays(),
+    next_year_number: inTerm ? yearsCompleted + 1 : null, reason,
   };
 }
 
