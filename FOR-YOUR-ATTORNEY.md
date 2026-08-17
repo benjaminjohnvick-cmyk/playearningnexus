@@ -83,7 +83,24 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
 - **For counsel to confirm:** that the decoupled discount + boost read as promotional benefits, not returns
   of the amount paid. Knob: `FOUNDING_UPGRADE_DISCOUNT_PCT` (avoid setting back to exactly $12,000).
 
-## 8. Blanks to fill before launch
+## 8. Tier 2 multi-year continuation (auto-renewal / commitment)
+
+- **Current posture.** Tier 2 "Scale" can continue year over year up to **5 years** (`TIER2_TERM_YEARS`). A
+  year is **binding** only when three things all hold: the advertiser **voluntarily opted in** up front to the
+  multi-year term (recorded consent via `tier2AcceptMultiYear`, for consideration = the locked founding
+  discount / bonus inventory), the year's **real attributed results ≥ `TIER2_CONTINUATION_RESULTS_MULT` × the
+  year's cost** (default 1×), and they're still in term. A losing year — or an advertiser who never opted in —
+  can **always exit** (never a coercive lock). Each annual renewal carries `TIER2_RENEWAL_NOTICE_DAYS` (30) of
+  advance notice with a cancel window. The base Tier 2 remains pay-as-you-go (each part a separate purchase,
+  nothing owed) — the commitment is a separate, opt-in overlay, not credit.
+- **For counsel to confirm:** (a) the multi-year commitment agreement + its consideration are enforceable
+  commercial terms in your states; (b) the auto-renewal mechanics (advance notice, cancel window, disclosure
+  of the recurring charge) satisfy state auto-renewal laws (e.g. CA ARL) and the FTC negative-option rule;
+  (c) that results-gated exit + up-front consent adequately avoid any unfair/UDAAP "lock-in" reading. Knobs:
+  `TIER2_TERM_YEARS`, `TIER2_CONTINUATION_RESULTS_MULT`, `TIER2_MULTIYEAR_COMMITMENT_OPTIN`,
+  `TIER2_RENEWAL_NOTICE_DAYS`.
+
+## 9. Blanks to fill before launch
 
 - `BUSINESS_MAILING_ADDRESS` (CAN-SPAM footer + winner-list/rules requests) — currently empty.
 - `DMCA_AGENT_EMAIL` (designated agent) — currently empty.
@@ -95,5 +112,5 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
 Everything money-, credit-, minor-, or chance-related ships in the conservative/off position behind a named
 switch; we are asking you to (1) confirm the closed-loop + partner-payout posture, (2) approve the sweepstakes
 Official Rules and any state registrations, (3) approve the boost advertising/disclosures, (4) confirm the
-privacy/session-analytics disclosures, and (5) tell us whether to ever unlock any credit product — and if so,
-by which licensed path.
+privacy/session-analytics disclosures, (5) tell us whether to ever unlock any credit product — and if so, by
+which licensed path — and (6) confirm the Tier 2 multi-year commitment + auto-renewal terms for your states.
