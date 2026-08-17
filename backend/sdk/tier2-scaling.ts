@@ -6,7 +6,7 @@
 // Rollover discount: 5.5% (FOUNDING_UPGRADE_DISCOUNT_PCT) off each part — deliberately not 6% so the dollar
 // discount ($11,000) doesn't exactly equal the $12,000 Tier 1 price. It applies in the FIRST YEAR for anyone
 // rolling up from Tier 1; FOUNDING members (holders of a founding Tier 1 seat) keep it in PERPETUITY.
-import { snapBool, snapNumber } from "./settings.ts";
+import { snapBool, snapNumber, snapString } from "./settings.ts";
 import { upgradePriceUsd, upgradeName, upgradeDiscountPct } from "./founding-rollover.ts";
 
 const r2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
@@ -27,6 +27,11 @@ export const tier2DiscountPct = () => upgradeDiscountPct(); // 6%
 export const tier2ImpressionsPerYear = () => Math.max(0, snapNumber("TIER2_IMPRESSIONS_PER_YEAR", 3000000));
 export const tier2SocialPostsPerMonth = () => Math.max(0, snapNumber("TIER2_AI_SOCIAL_POSTS_PER_MONTH", 100));
 export const tier2AudiencePanelsPerYear = () => Math.max(0, snapNumber("TIER2_AUDIENCE_PANELS_PER_YEAR", 4));
+export const tier2VideoViewsPerYear = () => Math.max(0, snapNumber("TIER2_VIDEO_VIEWS_PER_YEAR", 500000));
+export const tier2EmailCampaignsPerYear = () => Math.max(0, snapNumber("TIER2_EMAIL_CAMPAIGNS_PER_YEAR", 12));
+export const tier2SponsoredNewslettersPerYear = () => Math.max(0, snapNumber("TIER2_SPONSORED_NEWSLETTERS_PER_YEAR", 6));
+export const tier2BrandLiftStudiesPerYear = () => Math.max(0, snapNumber("TIER2_BRAND_LIFT_STUDIES_PER_YEAR", 2));
+export const tier2CompetitiveReportsPerYear = () => Math.max(0, snapNumber("TIER2_COMPETITIVE_REPORTS_PER_YEAR", 4));
 
 const TIER2_PERK_LABELS: Record<string, string> = {
   premier_placement: "Premier between-survey placement (top priority, above Tier 1)",
@@ -35,7 +40,7 @@ const TIER2_PERK_LABELS: Record<string, string> = {
   sentiment_insights_plus: "Enhanced sentiment insights",
   multivariate_testing: "Multivariate A/B testing",
   audience_panel_research: "Included audience-panel research",
-  dedicated_success_manager: "Dedicated success manager / managed campaigns",
+  ai_campaign_manager: "Always-on AI campaign manager + optimization (human escalation available)",
   homepage_featured: "Homepage & category featured placement + premier sponsor wall",
   api_data_feed: "API access + data feed",
 };
@@ -49,7 +54,7 @@ export function tier2PerkUnlocks(): Tier2Perk[] {
   let map: Record<string, number> = {};
   if (raw) { try { const o = JSON.parse(raw); if (o && typeof o === "object") map = o; } catch { map = {}; } }
   if (!Object.keys(map).length) {
-    map = { premier_placement: 1, managed_ai_creative: 1, advanced_analytics: 1, sentiment_insights_plus: 2, multivariate_testing: 2, audience_panel_research: 3, dedicated_success_manager: 3, homepage_featured: 6, api_data_feed: 9 };
+    map = { premier_placement: 1, managed_ai_creative: 1, advanced_analytics: 1, sentiment_insights_plus: 2, multivariate_testing: 2, audience_panel_research: 3, ai_campaign_manager: 3, homepage_featured: 6, api_data_feed: 9 };
   }
   return Object.entries(map)
     .map(([key, part]) => ({ key, label: humanizePerk(key), unlocks_at_part: Math.max(1, Math.round(Number(part) || 1)) }))
@@ -58,8 +63,13 @@ export function tier2PerkUnlocks(): Tier2Perk[] {
 
 export interface Tier2Deliverables {
   impressions_per_year_full: number; impressions_delivered: number;
+  video_views_per_year_full: number; video_views_delivered: number;
   social_posts_per_month: number; social_posts_active: boolean;
+  email_campaigns_per_year_full: number; email_campaigns_delivered: number;
+  sponsored_newsletters_per_year_full: number; sponsored_newsletters_delivered: number;
   audience_panels_per_year_full: number; audience_panels_delivered: number;
+  brand_lift_studies_per_year_full: number; brand_lift_studies_delivered: number;
+  competitive_reports_per_year_full: number; competitive_reports_delivered: number;
   perks_unlocked: Tier2Perk[]; perks_locked: Tier2Perk[]; perks_all: Tier2Perk[];
 }
 
@@ -73,10 +83,20 @@ export function tier2Deliverables(partsCompleted: number): Tier2Deliverables {
   return {
     impressions_per_year_full: tier2ImpressionsPerYear(),
     impressions_delivered: Math.round(tier2ImpressionsPerYear() * frac),
+    video_views_per_year_full: tier2VideoViewsPerYear(),
+    video_views_delivered: Math.round(tier2VideoViewsPerYear() * frac),
     social_posts_per_month: tier2SocialPostsPerMonth(),
     social_posts_active: done >= 1,
+    email_campaigns_per_year_full: tier2EmailCampaignsPerYear(),
+    email_campaigns_delivered: Math.round(tier2EmailCampaignsPerYear() * frac),
+    sponsored_newsletters_per_year_full: tier2SponsoredNewslettersPerYear(),
+    sponsored_newsletters_delivered: Math.round(tier2SponsoredNewslettersPerYear() * frac),
     audience_panels_per_year_full: tier2AudiencePanelsPerYear(),
     audience_panels_delivered: Math.round(tier2AudiencePanelsPerYear() * frac),
+    brand_lift_studies_per_year_full: tier2BrandLiftStudiesPerYear(),
+    brand_lift_studies_delivered: Math.round(tier2BrandLiftStudiesPerYear() * frac),
+    competitive_reports_per_year_full: tier2CompetitiveReportsPerYear(),
+    competitive_reports_delivered: Math.round(tier2CompetitiveReportsPerYear() * frac),
     perks_unlocked: perks.filter((p) => done >= p.unlocks_at_part),
     perks_locked: perks.filter((p) => done < p.unlocks_at_part),
     perks_all: perks,

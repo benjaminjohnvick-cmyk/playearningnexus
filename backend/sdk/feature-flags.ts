@@ -23,7 +23,7 @@ export type FlagName =
   | "loyalty_program" | "group_goals" | "verified_surveys"
   | "goods_advance" | "tier1_financed" | "ai_funnel" | "flexpay" | "tier1_selfpaced"
   | "earnings_setaside" | "save_to_get" | "earnings_whatif" | "gift_boost" | "sms_optin_capture"
-  | "premium_gift_boost";
+  | "premium_gift_boost" | "ai_ad_manager";
 
 // SAFE DEFAULTS: anything legally sensitive defaults to the SAFER state (off) so a missing config
 // never leaves a risky feature silently enabled.
@@ -78,6 +78,7 @@ const DEFAULTS: Record<FlagName, boolean> = {
   gift_boost: true,            // ON — user-triggered, PLATFORM-funded gift/boost. A user can send someone a capped, non-cashable bonus the PLATFORM funds (value flows platform→recipient, never wallet-to-wallet), optionally spending their own non-cashable points as the trigger. No money transmission. The compliant alternative to p2p_transfers (which stays OFF). See GIFT-BOOST.md.
   sms_optin_capture: true,     // ON — capture of verifiable SMS marketing consent (double opt-in) + revoke, storing a consent record. This is the compliant path's front door; actual SMS sending still requires sms_marketing (OFF) + a provider. See SMS-OPTIN.md.
   premium_gift_boost: true,    // ON — advertiser-funded gift boost for PREMIUM members: up to $2,000 of NON-CASHABLE store credit, funded from PPC/Tier 1 advertiser fees (1:1 advertiser→member, pool-tracked so you can't grant more than advertisers funded). Value flows advertiser/platform→member only; member chooses how much to claim and which items to apply it to. A promotional/loyalty benefit — not earnings, not credit, not user-to-user. See PREMIUM-GIFT-BOOST.md.
+  ai_ad_manager: true,         // ON — the dedicated AI system that DELIVERS the Tier 2 (A–D) package with no per-advertiser human staffing: ad serving, AI creative, automated email/social/newsletter, real-respondent audience/brand-lift panels, competitive insights, data feed/API, analytics, and always-on AI campaign optimization. Near-zero marginal cost. Honesty rules: research uses REAL consented respondents; the manager line is an AI campaign manager (with optional human escalation), never sold as a "dedicated human." See TIER2-AI-MANAGEMENT-AND-RATE-CARD.md.
 };
 
 export const KNOWN_FLAGS = Object.keys(DEFAULTS) as FlagName[];

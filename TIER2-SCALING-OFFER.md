@@ -32,9 +32,21 @@ Tier 2 is a scaled-up version of Tier 1, delivered **as parts are bought** — q
 - Part 9: API access + data feed
 - Part 12: full package complete
 
+Plus, in the expanded conventional rate card: **500,000 rewarded/in-survey video views/yr**, **12 email
+campaigns/yr** to the opted-in audience, **6 sponsored newsletter placements/yr**, **2 brand-lift studies/yr**,
+and **4 category/competitive insights reports/yr** — all fielded from the same audience.
+
 All of it is admin-tunable — the quantities are settings and the perk unlock thresholds are a JSON map, so you
 can reorder, add, or re-gate perks without a deploy. `tier2Deliverables(partsCompleted)` computes the full
 package and what's delivered/unlocked so far; the `/Tier2Scaling` page shows both.
+
+**AI-managed delivery.** Every A–D deliverable is served by the platform's AI system with **no per-advertiser
+human staffing** (flag `ai_ad_manager`) — ad serving, AI creative, automated email/social/newsletter,
+real-respondent audience & brand-lift panels, competitive insights, data feed/API, analytics, and always-on
+AI campaign optimization. The conventional list value totals **~$282,400**, bundled at **$200,000** (~29% off
+rate card). Two honesty rules keep that value real: research is fielded to REAL consented respondents, and the
+account line is an **AI campaign manager** (human escalation available), never sold as a dedicated human. Full
+breakdown, per-line values, and the engine each maps to: **`TIER2-AI-MANAGEMENT-AND-RATE-CARD.md`**.
 
 ## Why this is NOT credit (and needs no lending gate)
 
