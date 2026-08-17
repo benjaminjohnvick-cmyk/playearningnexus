@@ -100,7 +100,22 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   `TIER2_TERM_YEARS`, `TIER2_CONTINUATION_RESULTS_MULT`, `TIER2_MULTIYEAR_COMMITMENT_OPTIN`,
   `TIER2_RENEWAL_NOTICE_DAYS`.
 
-## 9. Blanks to fill before launch
+## 9. Tier 2 upfront deposits (prepayment / unearned revenue)
+
+- **Current posture.** An advertiser may **prepay a full year (or term)** of Tier 2 upfront
+  (`TIER2_DEPOSIT_ENABLED`). This is a **prepayment** — they pay the platform now, so it is **not credit, not a
+  loan, not money transmission** (the opposite of the retired pay-at-year-end idea). Because delivery is
+  capacity-paced, the deposit is treated as **unearned revenue**: it's recognized only as impressions actually
+  deliver, and any allotment still undelivered at term end is **made good** (delivery extended until served) or
+  **refunded pro-rata** (`TIER2_DEPOSIT_MAKEGOOD_MODE` = extend | refund). The advertiser always gets every
+  impression paid for, or their money back for the shortfall. Terms are disclosed and consent recorded at
+  purchase (`tier2Deposit`); delivered-vs-paid and any refund owed are shown by `tier2DepositStatus`.
+- **For counsel to confirm:** (a) the unearned-revenue treatment and the make-good/refund terms are adequate
+  for your states; (b) any large-prepayment / advance-fee rules that could apply to taking a full year upfront;
+  (c) the deposit disclosure is clear and conspicuous. Knobs: `TIER2_DEPOSIT_ENABLED`, `TIER2_DEPOSIT_MONTHS`,
+  `TIER2_DEPOSIT_MAKEGOOD_MODE`, `TIER2_DEPOSIT_REFUND_UNDELIVERED`.
+
+## 10. Blanks to fill before launch
 
 - `BUSINESS_MAILING_ADDRESS` (CAN-SPAM footer + winner-list/rules requests) — currently empty.
 - `DMCA_AGENT_EMAIL` (designated agent) — currently empty.
@@ -113,4 +128,5 @@ Everything money-, credit-, minor-, or chance-related ships in the conservative/
 switch; we are asking you to (1) confirm the closed-loop + partner-payout posture, (2) approve the sweepstakes
 Official Rules and any state registrations, (3) approve the boost advertising/disclosures, (4) confirm the
 privacy/session-analytics disclosures, (5) tell us whether to ever unlock any credit product — and if so, by
-which licensed path — and (6) confirm the Tier 2 multi-year commitment + auto-renewal terms for your states.
+which licensed path — (6) confirm the Tier 2 multi-year commitment + auto-renewal terms for your states — and
+(7) confirm the Tier 2 upfront-deposit prepayment/unearned-revenue treatment and make-good/refund terms.
