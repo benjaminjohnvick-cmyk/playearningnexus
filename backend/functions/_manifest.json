@@ -789,6 +789,8 @@
   "tier2AcceptMultiYear",
   "tier2BuyPart",
   "tier2ContinuationStatus",
+  "tier2Deposit",
+  "tier2DepositStatus",
   "tier2ScalingStatus",
   "tournamentMatchmaker",
   "trackABTestMetrics",
