@@ -17,6 +17,13 @@ function hitMilestone(oldInstalls, newInstalls) {
 
 export default __handler(async (req) => {
   try {
+    // Optional shared-secret guard: when PARTNER_WEBHOOK_SECRET is set, callers must send it as
+    // x-partner-webhook-secret so this internal notification hook can't be spoofed. Unset = open (dev).
+    const webhookSecret = Deno.env.get('PARTNER_WEBHOOK_SECRET');
+    if (webhookSecret && req.headers.get('x-partner-webhook-secret') !== webhookSecret) {
+      return Response.json({ error: 'Invalid webhook signature' }, { status: 401 });
+    }
+
     const base44 = createClientFromRequest(req);
     const body = await req.json();
     const { event, data, old_data } = body;

@@ -1,5 +1,24 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-18 — Launch-backlog Section A close-out
+
+Swept the remaining "Section A" engineering items from `WHATS-LEFT-BEFORE-LAUNCH.md`. Most were already built
+and were verified done; the genuine gaps were closed:
+
+- **DMCA content-license-at-upload** (new) — uploaders now certify they own/are licensed to their content and
+  grant a display license before it's hosted. Required on the ad-creative paths (`createAdGridAd` server-side +
+  the AdSignupForm checkbox), logged to the consent ledger via `recordContentLicense` (+ `content-license.ts`),
+  and stamped on the ad record. Completes the DMCA trio (takedown + counter-notice already existed).
+- **partnerNotificationWebhook hardening** (new) — optional `PARTNER_WEBHOOK_SECRET` shared-secret guard so the
+  internal notification hook can't be spoofed (matches the IAP-webhook pattern).
+- **Automated a11y gate** (new) — a `lint:a11y` script promoting the key jsx-a11y rules to errors, on top of the
+  existing eslint-plugin-jsx-a11y config.
+- **Verified already-done (no change needed):** idempotency-key UNIQUE index (strict exactly-once) on the money
+  ledger; `jurisdictionCheck` + `age_verified_18plus` gating on prize/contest entry; sweepstakes free-entry
+  (AMOE) + official-rules/odds screen; inbound webhook signature verification (BitLabs HMAC-SHA256, IAP secret);
+  no raw card data stored (PCI SAQ-A posture). MLMNode field rename is the backlog's explicitly-optional
+  back-compat cleanup and was left as-is. `FOR-YOUR-ATTORNEY.md` notes the content-license/DMCA posture.
+
 ## 2026-08-18 — Tax / 1099 pipeline completion (partner cash payouts)
 
 Completed the launch-list Tax/1099 item for real-cash partner payouts (developers/affiliates/creators; users

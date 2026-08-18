@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { InvokeLLM } from "../../sdk/integrations.ts";
 import { adgridQuestionsPerThumbnail } from "../../sdk/adgrid.ts";
+import { recordContentLicense, contentLicenseVersion } from "../../sdk/content-license.ts";
 
 // createAdGridAd (authenticated advertiser) — create a PPC AdGrid ad: a product thumbnail + 2 survey
 // questions (A-D options) + a product page (name, image, Buy Now). The advertiser writes it by hand, or sets
@@ -16,6 +17,11 @@ export default __handler(async (req) => {
 
     const b = await req.json().catch(() => ({}));
     if (!b.product_name) return Response.json({ error: "product_name required" }, { status: 400 });
+
+    // DMCA: capture the uploader's rights attestation + license grant before we host their content.
+    if (b.rights_attestation !== true) {
+      return Response.json({ error: "rights_attestation required: certify you own or are licensed to use this content.", needs_attestation: true }, { status: 400 });
+    }
 
     const needQ = adgridQuestionsPerThumbnail();
     let questions = Array.isArray(b.questions) ? b.questions.slice(0, needQ) : [];
@@ -58,8 +64,13 @@ export default __handler(async (req) => {
       product_page: { description: String(productPage?.description || "").slice(0, 2000) },
       questions,
       status: "active",
+      rights_attested: true,
+      rights_attested_at: new Date().toISOString(),
+      content_license_version: contentLicenseVersion(),
       created_at: new Date().toISOString(),
     });
+
+    await recordContentLicense({ userId: String(user.id), contentType: "ad_creative", contentRef: String((ad as any).id) });
 
     return Response.json({ success: true, ad_id: (ad as any).id, questions, product_page: (ad as any).product_page });
   } catch (error) {

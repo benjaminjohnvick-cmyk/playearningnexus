@@ -16,6 +16,7 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(prefillData?.image_url || null);
   const [loading, setLoading] = useState(false);
+  const [rightsAttested, setRightsAttested] = useState(false);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -28,6 +29,10 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
     e.preventDefault();
     if (!form.brand_name || !form.landing_url) {
       toast.error('Brand name and landing URL are required');
+      return;
+    }
+    if (!rightsAttested) {
+      toast.error('Please confirm you have the rights to this content.');
       return;
     }
     setLoading(true);
@@ -53,7 +58,7 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
         businessId = newClient.id;
       }
 
-      await base44.entities.AdListing.create({
+      const listing = await base44.entities.AdListing.create({
         business_id: businessId,
         owner_user_id: user.id,
         brand_name: form.brand_name,
@@ -62,8 +67,13 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
         image_url,
         budget_limit: Number(form.budget_limit),
         status: 'pending',
+        rights_attested: true,
+        rights_attested_at: new Date().toISOString(),
         submitted_at: new Date().toISOString(),
       });
+
+      // Log the content-license grant (DMCA record). Best-effort; doesn't block the submission.
+      base44.functions.invoke('recordContentLicense', { accepted: true, content_type: 'ad_creative', content_ref: listing?.id }).catch(() => {});
 
       toast.success('Ad submitted for review!');
       onSuccess();
@@ -164,9 +174,15 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
         </ul>
       </div>
 
+      {/* DMCA content-license / rights attestation — required before we host uploaded creatives. */}
+      <label className="flex items-start gap-2 text-xs text-gray-400">
+        <input type="checkbox" checked={rightsAttested} onChange={(e) => setRightsAttested(e.target.checked)} className="mt-0.5" />
+        <span>I own or am licensed to use this content, and I grant Get Goods Gratis (Free) a license to display it for advertising. It doesn't infringe anyone's rights. (Infringing content is removed under the DMCA.)</span>
+      </label>
+
       <Button
         type="submit"
-        disabled={loading}
+        disabled={loading || !rightsAttested}
         className="w-full h-12 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-black text-sm rounded-xl gap-2"
       >
         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}

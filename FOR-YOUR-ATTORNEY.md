@@ -169,7 +169,18 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   (d) whether any payout types beyond the reportable set should be included/excluded. Knobs: `TAX_1099_THRESHOLD`,
   `TAX_BACKUP_WITHHOLDING_RATE`.
 
-## 13. Blanks to fill before launch
+## 13. DMCA + user-uploaded content license
+
+- **Current posture.** Rights-holders can file a §512(c)(3) takedown (`dmcaTakedownRequest`, public); admins
+  resolve (`dmcaResolve`); a user whose content was removed can file a §512(g) counter-notice
+  (`dmcaCounterNotice`). At upload, users now certify they own/are licensed to their content and grant a
+  display-only license (`content-license.ts` / `recordContentLicense`), captured on the ad-creative paths and
+  logged to the consent ledger. Full DMCA safe-harbor still requires the registered designated agent (a
+  YOU/LAWYER item — Copyright Office registration).
+- **For counsel to confirm:** the takedown/counter-notice copy and the upload license-grant wording, and that
+  the designated-agent registration is filed so the safe harbor attaches.
+
+## 14. Blanks to fill before launch
 
 - `BUSINESS_MAILING_ADDRESS` (CAN-SPAM footer + winner-list/rules requests) — currently empty.
 - `DMCA_AGENT_EMAIL` (designated agent) — currently empty.
