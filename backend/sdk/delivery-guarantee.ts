@@ -19,6 +19,7 @@
 import { snapBool, snapNumber } from "./settings.ts";
 import { tier1Allotment, tier2Allotment } from "./inventory-governor.ts";
 import { tier1ValueMatchBonusImpressions } from "./tier1-value-stack.ts";
+import { tier2ValueMatchBonusImpressions } from "./tier2-value-stack.ts";
 
 export type GuaranteeTier = "tier1" | "tier2";
 
@@ -37,9 +38,12 @@ export function guaranteedUnits(tier: GuaranteeTier): number {
     ? snapNumber("DELIVERY_GUARANTEE_TIER1_IMPRESSIONS", 0)
     : snapNumber("DELIVERY_GUARANTEE_TIER2_IMPRESSIONS", 0);
   if (override > 0) return Math.round(override);
-  // Tier 1's guaranteed volume includes any "value-match" bonus impressions the value stack added to reach the
-  // "$12k → $24k in advertising value" target — so the advertised value is actually backed by the guarantee.
-  const annual = tier === "tier1" ? (tier1Allotment() + tier1ValueMatchBonusImpressions()) : tier2Allotment();
+  // Each tier's guaranteed volume includes any "value-match" bonus impressions its value stack added to reach
+  // the target ("$12k → $24k" for Tier 1, "$200k → $400k" for Tier 2) — so the advertised value is actually
+  // backed by the guarantee, not just asserted.
+  const annual = tier === "tier1"
+    ? (tier1Allotment() + tier1ValueMatchBonusImpressions())
+    : (tier2Allotment() + tier2ValueMatchBonusImpressions());
   return Math.round(annual * (guaranteeTermMonths() / 12));
 }
 

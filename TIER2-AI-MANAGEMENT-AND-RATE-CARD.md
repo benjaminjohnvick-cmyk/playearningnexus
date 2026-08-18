@@ -67,9 +67,13 @@ Values are admin-tunable via `TIER2_RATE_CARD_JSON`.
 
 ### Total
 
-**List value $282,400 → bundled at $200,000 (≈29% bundle discount off rate card).** The list comfortably
-covers the price, so even trimming the two softest lines (competitive reports, sponsored newsletters) still
-clears $200k. Everything pro-rates across the 12 Tier 2 parts, so a partial buyer gets a proportional slice.
+**List value ~$404,300 → bundled at $200,000 (≈2.02× / ~50% off rate card).** The rate card is sized so the
+delivered advertising value is a conservative **2× the price** ("$200k → $400k in advertising value" — see
+TIER2-VALUE-STACK.md), reached with a balanced mix of more media (5M impressions/yr, 1M video views/yr) and more
+research/service (5 audience panels, 3 brand-lift studies, 6 competitive reports, expanded managed service). The
+list comfortably clears the price. Everything pro-rates across the 12 Tier 2 parts, so a partial buyer gets a
+proportional slice. This is advertising VALUE delivered (backed by the delivery guarantee), never a promise of a
+return or ROI.
 
 ## How it serves itself
 

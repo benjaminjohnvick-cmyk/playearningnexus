@@ -1,5 +1,23 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-18 — Tier 2 value stack ($200k → $400k in advertising value)
+
+Applied the Tier 1 value-stack pattern to Tier 2 "Scale". Same compliance spine: $400,000 is advertising VALUE
+delivered, never a $400,000 return/revenue/ROI claim.
+
+- **Rate card raised to a conservative 2×** — the A–D `CATALOG` went from ~$282,400 to **~$404,300** at
+  conventional rates via a balanced mix: more media (between-survey impressions 3M→5M/yr, video 500k→1M/yr) AND
+  more research/service (audience panels 4→5, brand-lift 2→3, competitive reports 4→6, expanded managed
+  creative/social/email/newsletter and AI campaign management). The delivery-driving `TIER2_*` settings were
+  bumped in lockstep, so what's valued is what's delivered and guaranteed.
+- **tier2-value-stack.ts + endpoint** — `tier2ValueStack()` wraps the rate card with the 2×/$400k target and a
+  value-match top-up (guaranteed bonus impressions) if the card is ever trimmed below target; `tier2ValueStack`
+  read endpoint surfaces it on `/Apply` (Tier 2 card shows "$200k → $400k in advertising value" with A–D group
+  subtotals and the guarantee note).
+- **Backed by the delivery guarantee** — `guaranteedUnits("tier2")` now folds in the value-match bonus, so the
+  advertised $400k is actually backed by delivery + make-good. Deno tests for the math; `TIER2-VALUE-STACK.md`,
+  rate-card/offer docs, and `FOR-YOUR-ATTORNEY.md` (value-claim item now covers both tiers) updated.
+
 ## 2026-08-18 — Launch-backlog Section A close-out
 
 Swept the remaining "Section A" engineering items from `WHATS-LEFT-BEFORE-LAUNCH.md`. Most were already built

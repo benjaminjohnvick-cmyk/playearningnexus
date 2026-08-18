@@ -19,6 +19,7 @@ export default function Apply() {
   const [loading, setLoading] = useState(true);
   const [info, setInfo] = useState(null);
   const [valueStack, setValueStack] = useState(null);
+  const [valueStackT2, setValueStackT2] = useState(null);
   const [form, setForm] = useState({ name: '', company: '', email: '', website: '', monthly_budget_usd: '', interest: 'founding_tier1', notes: '' });
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -28,13 +29,15 @@ export default function Apply() {
     (async () => {
       setLoading(true);
       try {
-        const [res, vs] = await Promise.all([
+        const [res, vs, vs2] = await Promise.all([
           base44.functions.invoke('advertiserApplyInfo', {}),
           base44.functions.invoke('tier1ValueStack', {}).catch(() => null),
+          base44.functions.invoke('tier2ValueStack', {}).catch(() => null),
         ]);
         if (res?.error) setMsg({ type: 'error', text: res.error });
         else setInfo(res);
         if (vs && vs.enabled !== false && !vs.error) setValueStack(vs);
+        if (vs2 && vs2.enabled !== false && !vs2.error) setValueStackT2(vs2);
       } catch (e) { setMsg({ type: 'error', text: e?.message || 'Could not load the offer.' }); }
       finally { setLoading(false); }
     })();
@@ -171,6 +174,42 @@ export default function Apply() {
               </div>
               <Button variant="outline" onClick={() => applyFor('tier2')}>Ask about Tier 2</Button>
             </CardContent>
+
+            {/* Tier 2 value stack — $200k → $400k in advertising VALUE (delivered), backed by the guarantee. */}
+            {valueStackT2 && valueStackT2.total_value_usd > 0 && (
+              <div className="px-5 pb-5">
+                <div className="rounded-xl border p-4" style={{ borderColor: NAVY, background: '#f4f6fb' }}>
+                  <div className="flex items-baseline justify-between flex-wrap gap-1">
+                    <span className="text-sm font-bold" style={{ color: INK }}>What your {money(valueStackT2.price_usd)} delivers</span>
+                    <span className="text-sm font-extrabold" style={{ color: NAVY }}>
+                      {money(valueStackT2.total_value_usd)} in advertising value
+                      {valueStackT2.multiple_actual ? ` · ${valueStackT2.multiple_actual}×` : ''}
+                    </span>
+                  </div>
+                  <ul className="mt-3 space-y-1.5">
+                    {(valueStackT2.rate_card?.groups || []).map((g) => (
+                      <li key={g.group} className="flex items-center justify-between text-xs text-gray-700">
+                        <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" style={{ color: NAVY }} />{g.label}</span>
+                        <span className="font-semibold text-gray-600">{money(g.subtotal_usd)}</span>
+                      </li>
+                    ))}
+                    {valueStackT2.value_match_bonus_impressions > 0 && (
+                      <li className="flex items-center justify-between text-xs text-gray-700">
+                        <span className="flex items-center gap-1.5"><Gift className="w-3.5 h-3.5" style={{ color: NAVY }} />
+                          {valueStackT2.value_match_bonus_impressions.toLocaleString()} guaranteed value-match impressions
+                        </span>
+                        <span className="font-semibold text-gray-600">{money(valueStackT2.value_match_value_usd)}</span>
+                      </li>
+                    )}
+                  </ul>
+                  <p className="text-[11px] text-gray-500 mt-3 flex items-start gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: NAVY }} />
+                    Impression delivery is guaranteed — under-delivery is made up with free inventory. This is
+                    advertising value delivered, not a promise about your revenue or ROI.
+                  </p>
+                </div>
+              </div>
+            )}
           </Card>
         )}
 

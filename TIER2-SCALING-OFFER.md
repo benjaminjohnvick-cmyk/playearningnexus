@@ -43,7 +43,8 @@ package and what's delivered/unlocked so far; the `/Tier2Scaling` page shows bot
 **AI-managed delivery.** Every A–D deliverable is served by the platform's AI system with **no per-advertiser
 human staffing** (flag `ai_ad_manager`) — ad serving, AI creative, automated email/social/newsletter,
 real-respondent audience & brand-lift panels, competitive insights, data feed/API, analytics, and always-on
-AI campaign optimization. The conventional list value totals **~$282,400**, bundled at **$200,000** (~29% off
+AI campaign optimization. The conventional list value totals **~$404,300** (a conservative **2× / "$200k →
+$400k in advertising value"** — see TIER2-VALUE-STACK.md), bundled at **$200,000** (~50% off
 rate card). Two honesty rules keep that value real: research is fielded to REAL consented respondents, and the
 account line is an **AI campaign manager** (human escalation available), never sold as a dedicated human. Full
 breakdown, per-line values, and the engine each maps to: **`TIER2-AI-MANAGEMENT-AND-RATE-CARD.md`**.

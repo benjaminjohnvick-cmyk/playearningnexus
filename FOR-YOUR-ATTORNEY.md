@@ -134,7 +134,7 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   `DELIVERY_GUARANTEE_MAX_EXTENSION_MONTHS`, `DELIVERY_GUARANTEE_TIER1_IMPRESSIONS`,
   `DELIVERY_GUARANTEE_TIER2_IMPRESSIONS`.
 
-## 11. Tier 1 value-stack claim ("$12,000 → $24,000 in advertising value")
+## 11. Value-stack claims — Tier 1 ("$12k → $24k") and Tier 2 ("$200k → $400k") in advertising value
 
 - **Current posture.** The Tier 1 / founding offer is marketed as **$12,000 buys ≥ $24,000 of advertising
   value** (`TIER1_VALUE_STACK_ENABLED`, default 2× target). The $24,000 is placed **entirely on the
@@ -151,6 +151,15 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   (b) the per-line conventional values are supportable (esp. the CPM and the managed-service lines); (c) the
   approved copy never crosses into an implied revenue/ROI promise. Knobs: `TIER1_VALUE_STACK_ENABLED`,
   `TIER1_VALUE_MULTIPLE_TARGET`, `TIER1_VALUE_CPM_USD`, and the per-line `TIER1_VALUE_*` values.
+- **Tier 2 — same posture, larger ticket.** Tier 2 "Scale" is marketed as **$200,000 buys ≥ $400,000 of
+  advertising value** (`TIER2_VALUE_STACK_ENABLED`, 2× target). The $400,000 is the A–D rate card at
+  conventional rates (now ~$404,300, up from ~$282,400 via a balanced mix of more media + research/service —
+  see `TIER2-VALUE-STACK.md`); the delivery-driving settings were raised in lockstep so what's valued is what's
+  delivered and guaranteed. It is **not** a $400,000 return/revenue/ROI claim (we did **not** build "a $400k
+  return"). Same value-match safeguard and delivery-guarantee backing as Tier 1. Given the six-figure ticket,
+  have counsel specifically confirm the value substantiation (esp. the CPM and managed-service line values) and
+  that no Tier 2 sales copy implies a financial return. Knobs: `TIER2_VALUE_STACK_ENABLED`,
+  `TIER2_VALUE_MULTIPLE_TARGET`, `TIER2_VALUE_CPM_USD`, and the `TIER2_*` quantity settings.
 
 ## 12. Tax / 1099 reporting on partner cash payouts
 
