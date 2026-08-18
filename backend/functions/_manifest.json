@@ -20,6 +20,8 @@
   "adminSettingsCatalog",
   "adminSettingsUpdate",
   "advertiserApplyInfo",
+  "advertiserPerformance",
+  "advertiserWeeklyReport",
   "affiliatePerformanceMonitoring",
   "affiliateReferralFraudDetector",
   "affirmCheckoutConfig",

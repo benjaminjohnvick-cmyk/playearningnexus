@@ -80,6 +80,12 @@
       "function": "autoWeeklyReportsEngine"
     },
     {
+      "name": "weekly-advertiser-ai-report",
+      "cron": "0 14 * * 1",
+      "function": "advertiserWeeklyReport",
+      "_comment": "Automatic weekly AI performance report for EVERY advertiser across ALL tiers/offers: measures the conventional PPC metric set (impressions, clicks, CTR, CPC, conversions, CPA, revenue, ROAS/ROI) + social/engagement-driven traffic and revenue from REAL activity, benchmarks it against standard PPC norms, has the AI write recommendations, stores an AdvertiserReport, and emails the advertiser. Never guarantees an ROI; below the data threshold it reports 'still gathering data'. Respects AI_ADVERTISER_REPORTS_ENABLED."
+    },
+    {
       "name": "orchestrator-master-6h",
       "cron": "0 */6 * * *",
       "function": "masterOrchestrator"
