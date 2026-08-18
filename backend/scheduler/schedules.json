@@ -80,6 +80,12 @@
       "function": "autoWeeklyReportsEngine"
     },
     {
+      "name": "daily-delivery-makegood-sweep",
+      "cron": "0 11 * * *",
+      "function": "deliveryMakeGoodSweep",
+      "_comment": "All-tiers DELIVERY make-good true-up. For every active advertising seat past its guarantee term, compares delivered impressions to the guaranteed volume and, on a shortfall, grants a FREE make-good (extends delivery at no charge until the guaranteed volume is served — bounded, never more than what was sold), records an AdvertiserMakeGood, and emails the advertiser. Closes out make-goods once met/expired. Guarantees delivery we control, never revenue/ROI. Respects DELIVERY_GUARANTEE_ENABLED."
+    },
+    {
       "name": "weekly-advertiser-ai-report",
       "cron": "0 14 * * 1",
       "function": "advertiserWeeklyReport",

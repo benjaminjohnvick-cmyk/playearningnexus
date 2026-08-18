@@ -76,6 +76,16 @@ export const REGISTRY: SettingDef[] = [
   { key: "PREMIUM_DOUBLING_MULTIPLE", label: "Doubling multiple (free social stops at N× grid)", category: "Premium PPC", type: "number", default: "2", unit: "×" },
   { key: "PREMIUM_BUSINESS_REFUND_PER_DAY", label: "Advertiser store-credit rebate / active day", category: "Premium PPC", type: "number", default: "0", unit: "$", help: "$0 keeps the full user offer AND ~$3,540 margin per $5,000 advertiser." },
 
+  // 2b. Delivery guarantee + make-good (ALL tiers). Guarantees the ADVERTISING we deliver (a defined impression
+  //     volume per seat), NOT revenue/ROI. Any shortfall at term end is made up with FREE inventory, bounded to
+  //     never exceed what was sold. See DELIVERY-GUARANTEE-MAKEGOOD.md.
+  { key: "DELIVERY_GUARANTEE_ENABLED", label: "Delivery guarantee + make-good", category: "Premium PPC", type: "boolean", default: "1", help: "Master switch for the all-tiers DELIVERY make-good: guarantee a defined impression volume per seat and top up any shortfall at term end with FREE inventory. Guarantees delivery we control, never revenue or ROI." },
+  { key: "DELIVERY_GUARANTEE_TERM_MONTHS", label: "Delivery guarantee — term length", category: "Premium PPC", type: "number", default: "12", unit: "months", help: "How long each guarantee/true-up period runs before a shortfall is made good. 12 = one year.", min: 1 },
+  { key: "DELIVERY_GUARANTEE_GRACE_DAYS", label: "Delivery guarantee — grace before true-up", category: "Premium PPC", type: "number", default: "0", unit: "days", help: "Days after term end before the make-good true-up runs. 0 = right at term end.", min: 0 },
+  { key: "DELIVERY_GUARANTEE_MAX_EXTENSION_MONTHS", label: "Delivery guarantee — max make-good extension", category: "Premium PPC", type: "number", default: "12", unit: "months", help: "How long a granted make-good may keep delivering free inventory before it's closed out. Bounds the top-up in time as well as in volume.", min: 1 },
+  { key: "DELIVERY_GUARANTEE_TIER1_IMPRESSIONS", label: "Delivery guarantee — Tier 1 volume override", category: "Premium PPC", type: "number", default: "0", unit: "impr", help: "Guaranteed impression volume for a Tier 1 / founding seat over the term. 0 = derive from the tier's annual allotment (recommended).", min: 0 },
+  { key: "DELIVERY_GUARANTEE_TIER2_IMPRESSIONS", label: "Delivery guarantee — Tier 2 volume override", category: "Premium PPC", type: "number", default: "0", unit: "impr", help: "Guaranteed impression volume for a Tier 2 seat over the term. 0 = derive from the tier's annual allotment (recommended).", min: 0 },
+
   // 3. Premium membership & points
   { key: "MEMBERSHIP_DAILY_FEE", label: "Membership daily fee", category: "Membership", type: "number", default: "1", unit: "$", help: "Taken ONLY from that day's earnings — never a card, never a debt." },
   { key: "MEMBERSHIP_AUTO_UPGRADE_AFTER_DAYS", label: "Auto-upgrade to premium after N days", category: "Membership", type: "number", default: "1", unit: "days" },
