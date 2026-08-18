@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Loader2, Crown, CheckCircle2, Clock, Sparkles, ArrowRight } from 'lucide-react';
+import { Loader2, Crown, CheckCircle2, Clock, Sparkles, ArrowRight, ShieldCheck, Gift } from 'lucide-react';
 
 // Apply — the public "limited space for advertisers, apply now" page. The Founding Advertiser (Tier 1) offer
 // is the prominent hero with its full benefit list; Tier 2 "Scale" is shown as available; the three financing
@@ -18,6 +18,7 @@ const NAVY = '#16264f', INK = '#0a142e', GOLD = '#e8c766';
 export default function Apply() {
   const [loading, setLoading] = useState(true);
   const [info, setInfo] = useState(null);
+  const [valueStack, setValueStack] = useState(null);
   const [form, setForm] = useState({ name: '', company: '', email: '', website: '', monthly_budget_usd: '', interest: 'founding_tier1', notes: '' });
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -27,9 +28,13 @@ export default function Apply() {
     (async () => {
       setLoading(true);
       try {
-        const res = await base44.functions.invoke('advertiserApplyInfo', {});
+        const [res, vs] = await Promise.all([
+          base44.functions.invoke('advertiserApplyInfo', {}),
+          base44.functions.invoke('tier1ValueStack', {}).catch(() => null),
+        ]);
         if (res?.error) setMsg({ type: 'error', text: res.error });
         else setInfo(res);
+        if (vs && vs.enabled !== false && !vs.error) setValueStack(vs);
       } catch (e) { setMsg({ type: 'error', text: e?.message || 'Could not load the offer.' }); }
       finally { setLoading(false); }
     })();
@@ -105,6 +110,43 @@ export default function Apply() {
                   </li>
                 ))}
               </ul>
+
+              {/* Value stack — $12k → $24k in advertising VALUE (delivered), backed by the delivery guarantee. */}
+              {valueStack && valueStack.total_value_usd > 0 && (
+                <div className="mt-6 rounded-xl border p-4" style={{ borderColor: GOLD, background: '#fbf7ea' }}>
+                  <div className="flex items-baseline justify-between flex-wrap gap-1">
+                    <span className="text-sm font-bold" style={{ color: INK }}>What your {money(valueStack.price_usd)} delivers</span>
+                    <span className="text-sm font-extrabold" style={{ color: NAVY }}>
+                      {money(valueStack.total_value_usd)} in advertising value
+                      {valueStack.multiple_actual ? ` · ${valueStack.multiple_actual}×` : ''}
+                    </span>
+                  </div>
+                  <ul className="mt-3 space-y-1.5">
+                    {(valueStack.lines || []).map((l) => (
+                      <li key={l.key} className="flex items-center justify-between text-xs text-gray-700">
+                        <span className="flex items-center gap-1.5">
+                          {l.delivery_guaranteed && <ShieldCheck className="w-3.5 h-3.5" style={{ color: NAVY }} />}
+                          {l.name}
+                        </span>
+                        <span className="font-semibold text-gray-600">{money(l.value_usd)}</span>
+                      </li>
+                    ))}
+                    {valueStack.value_match_bonus_impressions > 0 && (
+                      <li className="flex items-center justify-between text-xs text-gray-700">
+                        <span className="flex items-center gap-1.5"><Gift className="w-3.5 h-3.5" style={{ color: NAVY }} />
+                          {valueStack.value_match_bonus_impressions.toLocaleString()} guaranteed value-match impressions
+                        </span>
+                        <span className="font-semibold text-gray-600">{money(valueStack.value_match_value_usd)}</span>
+                      </li>
+                    )}
+                  </ul>
+                  <p className="text-[11px] text-gray-500 mt-3 flex items-start gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: NAVY }} />
+                    Impression delivery is guaranteed — if we fall short, we make it up with free inventory. This
+                    is advertising value delivered, not a promise about your revenue or ROI.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

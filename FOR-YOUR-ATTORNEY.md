@@ -115,7 +115,44 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   (c) the deposit disclosure is clear and conspicuous. Knobs: `TIER2_DEPOSIT_ENABLED`, `TIER2_DEPOSIT_MONTHS`,
   `TIER2_DEPOSIT_MAKEGOOD_MODE`, `TIER2_DEPOSIT_REFUND_UNDELIVERED`.
 
-## 10. Blanks to fill before launch
+## 10. Delivery guarantee & make-good (all tiers)
+
+- **Current posture.** Each advertising seat carries a **delivery guarantee**: a defined volume of ad
+  impressions the platform commits to serving over the seat's term (defaulting to the tier's inventory-governor
+  allotment, so we never guarantee more than we can serve). This guarantees the **advertising we deliver** —
+  which we measure on our own surfaces — and is **explicitly not** a guarantee of the advertiser's revenue,
+  sales, conversions, or ROI. If delivery falls short at term end, a **make-good** tops it up with **free
+  inventory** until the guaranteed volume is served. The make-good is **bounded two ways**: by volume (never
+  more than what was sold) and by time (`DELIVERY_GUARANTEE_MAX_EXTENSION_MONTHS`). It moves no money — a
+  shortfall is remedied with advertising, not a cash payment. On by default (`DELIVERY_GUARANTEE_ENABLED`);
+  status shown by `deliveryGuaranteeStatus`, trued-up by the daily `deliveryMakeGoodSweep`.
+- **For counsel to confirm:** (a) that a delivery/impression guarantee with a free make-good is a clean
+  service-level commitment and reads clearly as guaranteeing *delivery, not results*; (b) the customer-facing
+  wording ("we guarantee your ad delivery… if we fall short we make it up free") carries no implied
+  performance/ROI promise; (c) whether any make-good terms should be in the written advertising agreement.
+  Knobs: `DELIVERY_GUARANTEE_ENABLED`, `DELIVERY_GUARANTEE_TERM_MONTHS`, `DELIVERY_GUARANTEE_GRACE_DAYS`,
+  `DELIVERY_GUARANTEE_MAX_EXTENSION_MONTHS`, `DELIVERY_GUARANTEE_TIER1_IMPRESSIONS`,
+  `DELIVERY_GUARANTEE_TIER2_IMPRESSIONS`.
+
+## 11. Tier 1 value-stack claim ("$12,000 → $24,000 in advertising value")
+
+- **Current posture.** The Tier 1 / founding offer is marketed as **$12,000 buys ≥ $24,000 of advertising
+  value** (`TIER1_VALUE_STACK_ENABLED`, default 2× target). The $24,000 is placed **entirely on the
+  value-delivered side** — the conventional market value of real deliverables (impressions at ~$22 CPM,
+  placements, creative, managed service), itemized by `tier1ValueStack` and rendered on the `/Apply` page. It
+  is **not** tied to the advertiser's revenue (we deliberately did **not** build "free ads until you earn
+  $24k," which would be an unbounded, unmeasurable performance guarantee). At default settings the honestly
+  valued lines total ~$25,500 (~2.1×); if an admin trims values below target, the stack **adds guaranteed
+  value-match impressions** (real advertising) to reach the number rather than inflating a rate, and those
+  impressions are folded into the delivery guarantee (§10). Approved positioning language and prohibited
+  phrasings are in `TIER1-VALUE-STACK.md`.
+- **For counsel to confirm:** (a) that a "$X in advertising value" claim, substantiated by conventional rate
+  card values and backed by the delivery guarantee, is defensible under FTC value/comparative-price guidance;
+  (b) the per-line conventional values are supportable (esp. the CPM and the managed-service lines); (c) the
+  approved copy never crosses into an implied revenue/ROI promise. Knobs: `TIER1_VALUE_STACK_ENABLED`,
+  `TIER1_VALUE_MULTIPLE_TARGET`, `TIER1_VALUE_CPM_USD`, and the per-line `TIER1_VALUE_*` values.
+
+## 12. Blanks to fill before launch
 
 - `BUSINESS_MAILING_ADDRESS` (CAN-SPAM footer + winner-list/rules requests) — currently empty.
 - `DMCA_AGENT_EMAIL` (designated agent) — currently empty.
@@ -128,5 +165,8 @@ Everything money-, credit-, minor-, or chance-related ships in the conservative/
 switch; we are asking you to (1) confirm the closed-loop + partner-payout posture, (2) approve the sweepstakes
 Official Rules and any state registrations, (3) approve the boost advertising/disclosures, (4) confirm the
 privacy/session-analytics disclosures, (5) tell us whether to ever unlock any credit product — and if so, by
-which licensed path — (6) confirm the Tier 2 multi-year commitment + auto-renewal terms for your states — and
-(7) confirm the Tier 2 upfront-deposit prepayment/unearned-revenue treatment and make-good/refund terms.
+which licensed path — (6) confirm the Tier 2 multi-year commitment + auto-renewal terms for your states — (7)
+confirm the Tier 2 upfront-deposit prepayment/unearned-revenue treatment and make-good/refund terms — (8)
+confirm the all-tiers delivery guarantee + free make-good reads as a delivery (not results) commitment — and
+(9) confirm the Tier 1 "$12k → $24k in advertising value" claim is substantiated and carries no implied
+revenue/ROI promise.
