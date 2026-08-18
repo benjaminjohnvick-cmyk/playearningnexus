@@ -4,6 +4,7 @@ import {
   deliveryGuaranteeEnabled,
   guaranteedUnits,
   guaranteeMaxExtensionMonths,
+  guaranteeTermMonths,
   makeGoodStatus,
   fractionElapsed,
   termEnded,
@@ -37,7 +38,9 @@ export default __handler(async (req) => {
       // Tier: a live Tier 2 plan makes this a tier2 seat; otherwise tier1/founding.
       const t2 = (await svc.entities.Tier2ScalingPlan.filter({ user_id: uid, status: "active" }).catch(() => [])) as Record<string, unknown>[];
       const tier: GuaranteeTier = (t2 && t2[0]) ? "tier2" : "tier1";
-      const guaranteed = guaranteedUnits(tier);
+      // A Tier 3 Unlimited plan carries a custom guaranteed volume; back exactly that (scaled to the guarantee term).
+      const planVol = Number(t2?.[0]?.guaranteed_impressions_per_year) || 0;
+      const guaranteed = planVol > 0 ? Math.round(planVol * (guaranteeTermMonths() / 12)) : guaranteedUnits(tier);
       const startISO = String(seat.purchased_at ?? seat.credit_start ?? seat.created_date ?? "");
 
       // Existing make-good record for this seat (idempotency + baseline).

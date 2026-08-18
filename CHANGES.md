@@ -1,5 +1,20 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-18 — Tier 3 Unlimited (uncapped scaling above $200k)
+
+Added a scaling tier above the $200k Tier 2 base: an advertiser names any budget they can afford and the package
+scales proportionally from the A–D rate card, keeping the same ~2× advertising-value ratio (advertising VALUE
+delivered, never a return).
+
+- **tier3-unlimited.ts + tier3UnlimitedQuote endpoint** — `tier3UnlimitedQuote(budgetUsd)` scales deliverables, value, and
+  guaranteed impressions linearly (e.g. $400k → ~$808.6k value / 12M impressions/yr; $1M → ~$2.02M / 30M).
+- **Two guardrails:** prepaid upfront (not credit) and capacity-paced (guaranteed as a total, delivered as the
+  audience grows via the inventory governor — never oversold), backed by the delivery guarantee.
+- **Delivery guarantee honors custom volumes** — `computeSeatGuarantees` + `deliveryMakeGoodSweep` now read a
+  per-plan `guaranteed_impressions_per_year`, so a Tier 3 Unlimited seat's custom guaranteed volume is made good if short.
+- **/Apply** — a Tier 3 Unlimited card with a budget input and live scaled-value preview. Settings `TIER3_UNLIMITED_*`;
+  Deno tests; `TIER3-UNLIMITED-SPEC.md`; `FOR-YOUR-ATTORNEY.md` gains a Tier 3 Unlimited item.
+
 ## 2026-08-18 — Tier 2 value stack ($200k → $400k in advertising value)
 
 Applied the Tier 1 value-stack pattern to Tier 2 "Scale". Same compliance spine: $400,000 is advertising VALUE

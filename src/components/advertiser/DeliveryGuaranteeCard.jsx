@@ -60,7 +60,7 @@ export default function DeliveryGuaranteeCard() {
             <div key={s.seat_id || i} className="bg-black/30 rounded-xl p-4 border border-gray-800">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                  {s.tier === 'tier2' ? 'Tier 2 — Scale' : 'Tier 1 — Founding'}
+                  {s.tier === 'tier2' ? 'Tier 2 — Scaling' : 'Tier 1 — Founding'}
                 </span>
                 <span className={`text-xs font-bold flex items-center gap-1 ${meta.color}`}>
                   <Icon className="w-3.5 h-3.5" /> {meta.label}

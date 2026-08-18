@@ -24,7 +24,7 @@ export const tier2RenewalNoticeDays = () => Math.max(0, Math.round(snapNumber("T
 export const tier2DiscountFirstYearOnly = () => snapBool("TIER2_DISCOUNT_FIRST_YEAR_ONLY", true);
 export const tier2FoundingDiscountPerpetual = () => snapBool("TIER2_FOUNDING_DISCOUNT_PERPETUAL", true);
 export const tier2TotalUsd = () => upgradePriceUsd();       // $200,000
-export const tier2Name = () => upgradeName();               // "Tier 2 — Scale"
+export const tier2Name = () => upgradeName();               // "Tier 2 — Scaling"
 export const tier2DiscountPct = () => upgradeDiscountPct(); // 6%
 
 // ── Deliverables ────────────────────────────────────────────────────────────────────────────────────────

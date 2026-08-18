@@ -17,7 +17,7 @@ export const upgradeDiscountEnabled = () => snapBool("FOUNDING_UPGRADE_DISCOUNT_
 export const upgradeDiscountPct = () => Math.min(1, Math.max(0, snapNumber("FOUNDING_UPGRADE_DISCOUNT_PCT", 0.055)));
 export const upgradeDiscountMaxUsd = () => Math.max(0, snapNumber("FOUNDING_UPGRADE_DISCOUNT_MAX_USD", 0));
 export const upgradeDiscountWindowMonths = () => Math.max(1, snapNumber("FOUNDING_UPGRADE_DISCOUNT_WINDOW_MONTHS", 12));
-export const upgradeName = () => snapString("FOUNDING_UPGRADE_NAME", "Tier 2 — Scale") || "Tier 2 — Scale";
+export const upgradeName = () => snapString("FOUNDING_UPGRADE_NAME", "Tier 2 — Scaling") || "Tier 2 — Scaling";
 export const upgradePriceUsd = () => Math.max(0, snapNumber("FOUNDING_UPGRADE_PRICE_USD", 200000));
 
 export const signupCreditUsd = () => Math.max(0, snapNumber("FOUNDING_SIGNUP_CREDIT_USD", 1000));

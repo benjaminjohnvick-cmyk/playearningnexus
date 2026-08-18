@@ -20,6 +20,9 @@ export default function Apply() {
   const [info, setInfo] = useState(null);
   const [valueStack, setValueStack] = useState(null);
   const [valueStackT2, setValueStackT2] = useState(null);
+  const [plusBudget, setPlusBudget] = useState('400000');
+  const [plusQuote, setPlusQuote] = useState(null);
+  const [plusBusy, setPlusBusy] = useState(false);
   const [form, setForm] = useState({ name: '', company: '', email: '', website: '', monthly_budget_usd: '', interest: 'founding_tier1', notes: '' });
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -44,6 +47,14 @@ export default function Apply() {
   }, []);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const getPlusQuote = async () => {
+    setPlusBusy(true);
+    try {
+      const res = await base44.functions.invoke('tier3UnlimitedQuote', { budget_usd: Number(plusBudget) || 0 });
+      setPlusQuote(res && res.enabled !== false && !res.error ? res : null);
+    } catch { setPlusQuote(null); } finally { setPlusBusy(false); }
+  };
 
   const applyFor = (interest) => {
     setForm((f) => ({ ...f, interest }));
@@ -73,7 +84,7 @@ export default function Apply() {
 
   const t1 = info?.tier1, t2 = info?.tier2, coming = info?.coming_soon || [];
   const interestLabel = {
-    founding_tier1: 'Founding Advertiser (Tier 1)', tier2: 'Tier 2 — Scale',
+    founding_tier1: 'Founding Advertiser (Tier 1)', tier2: 'Tier 2 — Scaling', tier3_unlimited: 'Tier 3 Unlimited — Uncapped',
     flexpay: 'Flexible Payment Terms', tier1_financed: 'Tier 1 — Pay From Results',
   };
 
@@ -212,6 +223,58 @@ export default function Apply() {
             )}
           </Card>
         )}
+
+        {/* Tier 3 Unlimited — uncapped scaling above $200k, priced from the rate card, capacity-paced + guaranteed. */}
+        <Card className="border-2" style={{ borderColor: NAVY }}>
+          <CardContent className="p-5 space-y-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4" style={{ color: NAVY }} />
+              <h3 className="font-bold text-gray-900">Tier 3 Unlimited — scale beyond {money(200000)}</h3>
+              <Badge style={{ background: GOLD, color: INK }}>Uncapped</Badge>
+            </div>
+            <p className="text-sm text-gray-500">
+              Scale as big as you want and can afford. Your budget scales the whole package proportionally — more
+              impressions, research, creative, and managed service — at the same ~2× value. Paid upfront, delivered
+              capacity-paced (guaranteed as a total, served as the audience grows), and backed by our delivery guarantee.
+            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-gray-500">Your annual budget</span>
+              <Input type="number" min="200000" step="50000" value={plusBudget}
+                onChange={(e) => setPlusBudget(e.target.value)} className="w-40" />
+              <Button variant="outline" onClick={getPlusQuote} disabled={plusBusy}>
+                {plusBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : 'See what it delivers'}
+              </Button>
+            </div>
+            {plusQuote && plusQuote.value_usd > 0 && (
+              <div className="rounded-xl border p-4" style={{ borderColor: NAVY, background: '#f4f6fb' }}>
+                <div className="flex items-baseline justify-between flex-wrap gap-1">
+                  <span className="text-sm font-bold" style={{ color: INK }}>What your {money(plusQuote.budget_usd)} delivers</span>
+                  <span className="text-sm font-extrabold" style={{ color: NAVY }}>
+                    {money(plusQuote.value_usd)} in advertising value{plusQuote.multiple ? ` · ${plusQuote.multiple}×` : ''}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">
+                  {plusQuote.guaranteed_impressions_per_year?.toLocaleString()} guaranteed impressions/yr · {plusQuote.scale_factor}× the Tier 2 base
+                </p>
+                <ul className="mt-3 space-y-1.5">
+                  {(plusQuote.groups || []).map((g) => (
+                    <li key={g.group} className="flex items-center justify-between text-xs text-gray-700">
+                      <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" style={{ color: NAVY }} />{g.label}</span>
+                      <span className="font-semibold text-gray-600">{money(g.subtotal_usd)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-[11px] text-gray-500 mt-3 flex items-start gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: NAVY }} />
+                  Advertising value delivered, guaranteed and capacity-paced — not a promise about your revenue or ROI. Paid upfront; no credit.
+                </p>
+                <Button variant="ghost" size="sm" className="px-0 h-auto text-xs mt-2" style={{ color: NAVY }} onClick={() => applyFor('tier3_unlimited')}>
+                  Talk to us about Tier 3 Unlimited <ArrowRight className="w-3 h-3 ml-1" />
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Coming soon — the three financing options */}
         {coming.length > 0 && (

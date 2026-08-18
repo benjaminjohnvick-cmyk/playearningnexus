@@ -802,6 +802,7 @@
   "tier2DepositStatus",
   "tier2ScalingStatus",
   "tier2ValueStack",
+  "tier3UnlimitedQuote",
   "tournamentMatchmaker",
   "trackABTestMetrics",
   "trackAdClick",

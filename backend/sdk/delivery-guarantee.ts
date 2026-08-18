@@ -142,6 +142,9 @@ export async function computeSeatGuarantees(dbi: Dbi, advertiserUserId: string, 
   const t2 = (await dbi.filter("Tier2ScalingPlan", { user_id: uid, status: "active" }, "-created_date", 1).catch(() => [])) as Record<string, unknown>[];
   const isTier2 = !!(t2 && t2[0]);
   const tier: GuaranteeTier = isTier2 ? "tier2" : "tier1";
+  // A Tier 3 Unlimited plan carries a custom guaranteed volume; back exactly that (scaled to the guarantee term).
+  const planVol = Number(t2?.[0]?.guaranteed_impressions_per_year) || 0;
+  const seatGuaranteedUnits = planVol > 0 ? Math.round(planVol * (guaranteeTermMonths() / 12)) : guaranteedUnits(tier);
 
   const seats = (await dbi.filter("FoundingAdvertiser", { user_id: uid, status: "active" }, "-created_date", 20).catch(() => [])) as Record<string, unknown>[];
   for (const seat of seats) {
@@ -157,7 +160,7 @@ export async function computeSeatGuarantees(dbi: Dbi, advertiserUserId: string, 
 
     const st = makeGoodStatus({
       tier,
-      guaranteedUnits: guaranteedUnits(tier),
+      guaranteedUnits: seatGuaranteedUnits,
       deliveredUnits: delivered,
       fractionElapsed: fractionElapsed(startISO, nowMs),
       termEnded: termEnded(startISO, nowMs),

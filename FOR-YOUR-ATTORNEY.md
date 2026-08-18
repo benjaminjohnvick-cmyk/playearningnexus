@@ -160,6 +160,13 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   have counsel specifically confirm the value substantiation (esp. the CPM and managed-service line values) and
   that no Tier 2 sales copy implies a financial return. Knobs: `TIER2_VALUE_STACK_ENABLED`,
   `TIER2_VALUE_MULTIPLE_TARGET`, `TIER2_VALUE_CPM_USD`, and the `TIER2_*` quantity settings.
+- **Tier 3 Unlimited — uncapped scaling.** Advertisers can scale above the $200k base to any budget; the package
+  scales proportionally at the same ~2× advertising-value ratio (`TIER3_UNLIMITED_ENABLED`, see `TIER3-UNLIMITED-SPEC.md`).
+  Two guardrails keep it safe: it's **prepaid upfront** (not credit) and **capacity-paced** (guaranteed as a
+  total, delivered as the audience grows, backed by the delivery guarantee — never oversold). Still advertising
+  value delivered, never a return. For counsel: confirm the uncapped-scaling copy carries no revenue/ROI
+  implication, and that prepaid + capacity-paced delivery of a large custom package is a clean advertising sale
+  (not an investment/return product). Knobs: `TIER3_UNLIMITED_ENABLED`, `TIER3_UNLIMITED_MIN_USD`, `TIER3_UNLIMITED_MAX_USD`.
 
 ## 12. Tax / 1099 reporting on partner cash payouts
 

@@ -7,7 +7,7 @@ upgrade — it never moves money and nothing is ever owed. Not legal advice.*
 
 1. **Pay $12,000 upfront** for the founding/Tier 1 seat (unchanged).
 2. **Founding upgrade discount (decoupled from the payment).** Founding advertisers get a **promotional
-   discount** on a bigger **upgrade** (default **"Tier 2 — Scale," $200,000**). The discount is defined as a
+   discount** on a bigger **upgrade** (default **"Tier 2 — Scaling," $200,000**). The discount is defined as a
    **percentage of the upgrade price** (default **5.5% → $11,000 off → net $189,000**). A founding member can
    **claim** it within a **12-month** promo window after joining, and it then **rolls over for life**: because
    they hold a founding Tier 1 seat, the 5.5% comes off **every Tier 2 part in perpetuity**
