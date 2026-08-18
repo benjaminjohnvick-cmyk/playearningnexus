@@ -152,7 +152,24 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   approved copy never crosses into an implied revenue/ROI promise. Knobs: `TIER1_VALUE_STACK_ENABLED`,
   `TIER1_VALUE_MULTIPLE_TARGET`, `TIER1_VALUE_CPM_USD`, and the per-line `TIER1_VALUE_*` values.
 
-## 12. Blanks to fill before launch
+## 12. Tax / 1099 reporting on partner cash payouts
+
+- **Current posture.** Business partners paid real cash (developers, affiliates, creators) run through a 1099
+  pipeline: W-9 collection (`submitTaxInfo` → owner-scoped `TaxProfile`, certification logged to the consent
+  ledger), per-payee annual reportable-payout tracking from the money ledger, **24% backup withholding**
+  (`TAX_BACKUP_WITHHOLDING_RATE`) auto-applied on every payout rail when no W-9 is on file at/over the **$600**
+  threshold (`TAX_1099_THRESHOLD`), a self-service status page (`taxProfileStatus` + Tax Center UI), and a
+  filing-ready 1099-NEC export (`tax1099Export`, box 1 gross + box 4 withheld). Users (closed-loop, non-cashable)
+  generate no 1099s. Raw TINs are masked everywhere except an explicit admin full-TIN export for the filing
+  provider. See `TAX-1099-PIPELINE.md`.
+- **For counsel/tax pro to confirm:** (a) the $600 1099-NEC threshold and 24% backup-withholding rate/mechanics
+  are correctly applied for your facts; (b) TIN handling/storage meets your security + state obligations (this
+  build masks and flags for provider hand-off — confirm encryption-at-rest or provider custody before real
+  TINs are collected); (c) which 1099 filing provider and any state filing/TIN-matching requirements;
+  (d) whether any payout types beyond the reportable set should be included/excluded. Knobs: `TAX_1099_THRESHOLD`,
+  `TAX_BACKUP_WITHHOLDING_RATE`.
+
+## 13. Blanks to fill before launch
 
 - `BUSINESS_MAILING_ADDRESS` (CAN-SPAM footer + winner-list/rules requests) — currently empty.
 - `DMCA_AGENT_EMAIL` (designated agent) — currently empty.
@@ -167,6 +184,6 @@ Official Rules and any state registrations, (3) approve the boost advertising/di
 privacy/session-analytics disclosures, (5) tell us whether to ever unlock any credit product — and if so, by
 which licensed path — (6) confirm the Tier 2 multi-year commitment + auto-renewal terms for your states — (7)
 confirm the Tier 2 upfront-deposit prepayment/unearned-revenue treatment and make-good/refund terms — (8)
-confirm the all-tiers delivery guarantee + free make-good reads as a delivery (not results) commitment — and
-(9) confirm the Tier 1 "$12k → $24k in advertising value" claim is substantiated and carries no implied
-revenue/ROI promise.
+confirm the all-tiers delivery guarantee + free make-good reads as a delivery (not results) commitment — (9)
+confirm the Tier 1 "$12k → $24k in advertising value" claim is substantiated and carries no implied revenue/ROI
+promise — and (10) confirm the 1099/backup-withholding pipeline and TIN handling on partner cash payouts.

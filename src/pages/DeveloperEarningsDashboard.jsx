@@ -7,6 +7,7 @@ import { DollarSign, TrendingUp, Clock, AlertTriangle, CheckCircle, Zap, ShieldC
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import TaxCenter from '@/components/payout/TaxCenter';
 
 export default function DeveloperEarningsDashboard() {
   const [loading, setLoading] = useState(true);
@@ -294,6 +295,11 @@ export default function DeveloperEarningsDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Tax Center — W-9 status + submission so payouts are sent in full (no backup withholding). */}
+        <div className="mt-6">
+          <TaxCenter />
+        </div>
       </div>
     </div>
   );

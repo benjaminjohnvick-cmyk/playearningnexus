@@ -1,5 +1,22 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-18 — Tax / 1099 pipeline completion (partner cash payouts)
+
+Completed the launch-list Tax/1099 item for real-cash partner payouts (developers/affiliates/creators; users
+stay closed-loop and generate no 1099s). W-9 collection, backup withholding, and admin aggregation already
+existed; this adds the missing pieces end to end:
+
+- **Self-service W-9 status** — `taxProfileStatus` (YTD reportable vs the $600 threshold, W-9 on file, backup
+  withholding, masked TIN) surfaced in a new **Tax Center** on the developer earnings dashboard, with a W-9
+  submission form (`submitTaxInfo`). Partners can see when they must file a W-9 to stop 24% withholding.
+- **Filing-ready 1099-NEC export** — `tax1099Export` (admin) produces per-recipient 1099-NEC rows (box 1
+  nonemployee comp, box 4 federal tax withheld) as JSON or CSV for a filing provider; over-threshold recipients
+  without a W-9 return as `blocked`. Full TIN only in an explicit admin export, masked everywhere else.
+- **Helpers + security** — `ytdReportable`, `ytdWithheld`, `hasW9OnFile`, `w9Requirement`, and the 1099-NEC
+  row/CSV builders in `tax.ts`; `TaxProfile` given owner-scoped RLS (previously unscoped PII). Deno unit tests
+  for withholding, thresholds, and the CSV builder. Backup withholding confirmed wired across all payout rails.
+  See `TAX-1099-PIPELINE.md`; `FOR-YOUR-ATTORNEY.md` gains a 1099/withholding review item.
+
 ## 2026-08-18 — Advertiser analytics, delivery guarantee & Tier 1 value stack
 
 **Compliance spine throughout: we measure/benchmark/guarantee-delivery, we never guarantee revenue or ROI.**

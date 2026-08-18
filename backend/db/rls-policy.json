@@ -917,6 +917,10 @@
  "SurveyTemplate": {
   "scope": "global"
  },
+ "TaxProfile": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
  "Tenant": {
   "scope": "global"
  },
