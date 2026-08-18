@@ -790,6 +790,7 @@
   "tier1SelfPacedCancel",
   "tier1SelfPacedPay",
   "tier1SelfPacedStatus",
+  "tier1ValueStack",
   "tier2AcceptMultiYear",
   "tier2BuyPart",
   "tier2ContinuationStatus",
