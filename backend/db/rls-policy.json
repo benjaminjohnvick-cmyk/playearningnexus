@@ -163,6 +163,9 @@
  "AppLog": {
   "scope": "global"
  },
+ "AppLog": {
+  "scope": "global"
+ },
  "AppStorePrice": {
   "scope": "owner",
   "owner_field": "user_id"
@@ -314,6 +317,10 @@
   "scope": "global"
  },
  "DeveloperSupportTicket": {
+  "scope": "owner",
+  "owner_field": "user_id"
+ },
+ "DeviceToken": {
   "scope": "owner",
   "owner_field": "user_id"
  },

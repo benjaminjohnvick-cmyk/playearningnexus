@@ -27,7 +27,8 @@ export default __handler(async (req) => {
     const dimension = ["country", "tier", "activity"].includes(String(body.dimension)) ? String(body.dimension) : "country";
 
     // Consent gate: only users who opted into research use are counted. Aggregate their bucket, nothing else.
-    const consents = await db.filter("ConsentLedger", { purpose: "research", granted: true }, "-created_date", 200000).catch(() => []) as Record<string, unknown>[];
+    // Consent lives in the canonical ConsentRecord ledger (kind-based, `accepted`), not a separate table.
+    const consents = await db.filter("ConsentRecord", { kind: "research", accepted: true }, "-created_date", 200000).catch(() => []) as Record<string, unknown>[];
     const consentedIds = new Set((consents || []).map((c) => String(c.user_id)));
 
     const buckets: Record<string, number> = {};

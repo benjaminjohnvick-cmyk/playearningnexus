@@ -3829,3 +3829,26 @@ CREATE TABLE IF NOT EXISTS "AdvertiserReportedRevenue" (
 );
 CREATE INDEX IF NOT EXISTS "AdvertiserReportedRevenue_data_gin" ON "AdvertiserReportedRevenue" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AdvertiserReportedRevenue_created" ON "AdvertiserReportedRevenue" (created_date DESC);
+
+-- AppLog: application/oversight log entries written by the oversight SDK. data: { level, source, message, meta }
+CREATE TABLE IF NOT EXISTS "AppLog" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AppLog_data_gin" ON "AppLog" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AppLog_created" ON "AppLog" (created_date DESC);
+
+-- DeviceToken: a registered push-notification device token for a user (registerPushToken). data:
+-- { user_id, token, platform, last_seen }
+CREATE TABLE IF NOT EXISTS "DeviceToken" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "DeviceToken_data_gin" ON "DeviceToken" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "DeviceToken_created" ON "DeviceToken" (created_date DESC);
