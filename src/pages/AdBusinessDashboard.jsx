@@ -203,9 +203,11 @@ export default function AdBusinessDashboard() {
 
   const handleSendReport = async () => {
     setSendingReport(true);
-    await base44.functions.invoke('sendWeeklyAdReport', {});
+    // Use the benchmarked AI performance report (conventional PPC metrics vs standard norms + AI
+    // recommendations, no ROI guarantee) rather than the older basic stub. {self:true} = just this advertiser.
+    const res = await base44.functions.invoke('advertiserWeeklyReport', { self: true });
     setSendingReport(false);
-    alert('Weekly report sent to your email!');
+    alert(res?.emailed ? 'Your performance report was emailed to you.' : 'Report generated — check your email shortly.');
   };
 
   useEffect(() => {

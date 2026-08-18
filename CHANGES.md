@@ -1,5 +1,34 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-18 — Advertiser analytics, delivery guarantee & Tier 1 value stack
+
+**Compliance spine throughout: we measure/benchmark/guarantee-delivery, we never guarantee revenue or ROI.**
+
+- **AI advertiser performance engine** — the conventional PPC metric set (impressions, clicks, CTR, CPC,
+  conversions, CPA, revenue, ROAS/ROI) + social/engagement attribution, computed from REAL activity and
+  benchmarked against standard PPC norms, with AI-written recommendations. Automatic weekly report for every
+  advertiser across all tiers (`advertiserWeeklyReport`, Mondays), an on-demand read (`advertiserPerformance`),
+  and a dashboard card. Never guarantees an ROI; below a data threshold it says "still gathering data" instead
+  of fabricating numbers. Off-platform revenue is only counted when the advertiser reports it
+  (`advertiserReportRevenue`), stored flagged/unverified. (`advertiser-metrics.ts`; `AdvertiserReport`,
+  `AdvertiserReportedRevenue` entities; `AI_ADVERTISER_REPORTS_ENABLED`, `PPC_BENCH_*`.) See
+  `ADVERTISER-AI-REPORTS.md`.
+- **All-tiers delivery guarantee + make-good** — each seat is guaranteed a defined impression volume; any
+  term-end shortfall is topped up with FREE inventory until the guarantee is met. Bounded by volume (never more
+  than sold) and time (`DELIVERY_GUARANTEE_MAX_EXTENSION_MONTHS`). Runs automatically: daily sweep
+  (`deliveryMakeGoodSweep`) grants make-goods, the interstitial serving path delivers them as a residual tier,
+  and delivery meters them to fulfillment. Read via `deliveryGuaranteeStatus` + dashboard card. Guarantees
+  delivery we control, never results. (`delivery-guarantee.ts`; `AdvertiserMakeGood` entity;
+  `DELIVERY_GUARANTEE_*`.) See `DELIVERY-GUARANTEE-MAKEGOOD.md`.
+- **Tier 1 value stack ("$12,000 → $24,000 in advertising value")** — the compliant 2× headline: the $24k is
+  advertising VALUE delivered (impressions at conventional CPM, placements, creative, managed service),
+  itemized and rendered on `/Apply`, backed by the delivery guarantee. If included lines fall below target, the
+  stack adds guaranteed value-match impressions (real advertising) rather than inflating a rate — never tied to
+  the advertiser's revenue. (`tier1-value-stack.ts`; `TIER1_VALUE_*`.) See `TIER1-VALUE-STACK.md`.
+- **Supporting** — new entity tables + owner-scoped RLS registered; Deno unit tests for the make-good bounding
+  and value-stack math; `FOR-YOUR-ATTORNEY.md` gains review items for the delivery guarantee and the value
+  claim.
+
 ## 2026-07-30 — New features + platform-wide cost levers
 
 **Five features (all prebuilt, ON by default):**
