@@ -17,19 +17,38 @@ const unitFmt = (v, unit) => (unit === '$' ? `$${Number(v).toLocaleString()}` : 
 export default function AdvertiserPerformanceCard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [revAmount, setRevAmount] = useState('');
+  const [revBusy, setRevBusy] = useState(false);
+  const [revMsg, setRevMsg] = useState(null);
+  const [showRev, setShowRev] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await base44.functions.invoke('advertiserPerformance', {});
-        setData(res || null);
-      } catch {
-        setData(null);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  const load = async () => {
+    try {
+      const res = await base44.functions.invoke('advertiserPerformance', {});
+      setData(res || null);
+    } catch {
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const submitRevenue = async () => {
+    const amt = Number(revAmount);
+    if (!Number.isFinite(amt) || amt <= 0) { setRevMsg({ type: 'error', text: 'Enter a positive amount.' }); return; }
+    setRevBusy(true); setRevMsg(null);
+    try {
+      const res = await base44.functions.invoke('advertiserReportRevenue', { amount_usd: amt });
+      if (res?.error) setRevMsg({ type: 'error', text: res.error });
+      else { setRevMsg({ type: 'ok', text: 'Added — it will show in your metrics, flagged as reported.' }); setRevAmount(''); load(); }
+    } catch (e) {
+      setRevMsg({ type: 'error', text: e?.message || 'Could not save.' });
+    } finally {
+      setRevBusy(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -90,6 +109,38 @@ export default function AdvertiserPerformanceCard() {
           )}
         </>
       )}
+
+      {/* Report off-platform revenue — the write path so ROAS/ROI can include the advertiser's own attested,
+          flagged off-platform sales. */}
+      <div className="mt-4 pt-3 border-t border-gray-800">
+        {!showRev ? (
+          <button onClick={() => setShowRev(true)} className="text-[11px] text-blue-400 hover:text-blue-300">
+            + Report off-platform revenue
+          </button>
+        ) : (
+          <div className="space-y-2">
+            <label className="text-[11px] text-gray-400 block">
+              Report off-platform revenue you attribute to these ads (counted in your metrics, flagged as reported)
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="number" min="0" value={revAmount} onChange={(e) => setRevAmount(e.target.value)}
+                placeholder="Amount (USD)"
+                className="w-36 bg-black/40 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white"
+              />
+              <button
+                onClick={submitRevenue} disabled={revBusy}
+                className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold rounded-lg px-3 py-1.5">
+                {revBusy ? '…' : 'Add'}
+              </button>
+              <button onClick={() => { setShowRev(false); setRevMsg(null); }} className="text-[11px] text-gray-500">Cancel</button>
+            </div>
+            {revMsg && (
+              <p className={`text-[11px] ${revMsg.type === 'error' ? 'text-red-400' : 'text-emerald-400'}`}>{revMsg.text}</p>
+            )}
+          </div>
+        )}
+      </div>
 
       <p className="text-[11px] text-gray-500 mt-3">{data.disclaimer}</p>
     </div>
