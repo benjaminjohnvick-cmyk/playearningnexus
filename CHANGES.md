@@ -1,5 +1,15 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-18 — Tier 3 Unlimited wired into the marketing funnel
+
+The AI marketing-funnel product graph (`AI_FUNNEL_PRODUCT_GRAPH`) now carries the full advertiser ladder end to
+end: **sponsored placement → Tier 1 → Tier 2 → Tier 3 Unlimited**. Added a `tier3_unlimited` node (top of the
+ladder, `down → tier2`, `financial:false` since it's prepaid advertising, not credit) and set `tier2.up →
+tier3_unlimited` (was null). So a maxed-out Tier 2 advertiser with strong on-platform attributed results is now
+recommended up to Tier 3 Unlimited through the same engine (`aiFunnelRecommend`/`aiFunnelCommit`), daily
+re-engagement sweep (`funnelReengageSweep`/`funnelReengageEmail`), suitability guard, and benchmark loop as every
+other product — connecting the tiers to the broader consumer + email/CRM funnels. `AI-FUNNEL-DESIGN.md` updated.
+
 ## 2026-08-18 — Tier 3 Unlimited: match a budget bigger than inventory over time
 
 When a Tier 3 Unlimited budget buys more impressions than the current audience can serve in a year, we now

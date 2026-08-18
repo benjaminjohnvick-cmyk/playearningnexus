@@ -29,8 +29,12 @@ instead of prompts.
 `AI_FUNNEL_PRODUCT_GRAPH` (JSON, admin-editable) is a list of nodes; each has `key`, `name`, `price_usd`,
 `up`, `down`, `window_days`, `metric` (`attributed_sales` | `earnings` | `engagement`), and `financial`.
 `up`/`down` are the upsell/downsell edges, so "recommend up" is just "traverse the up edge." Default graph
-covers both the **business path** (free no-upfront → sponsored placement → Tier 1 → Tier 2) and the
-**consumer path** (free member → premium → points boost), plus the gated financial products.
+covers both the **business path** (free no-upfront → sponsored placement → Tier 1 → Tier 2 → Tier 3 Unlimited)
+and the **consumer path** (free member → premium → points boost), plus the gated financial products. Tier 3
+Unlimited is the top of the advertiser ladder (uncapped scaling above the $200k Tier 2 base; advertising value
+delivered, not credit — `financial:false`), so a maxed-out Tier 2 advertiser with strong on-platform attributed
+results is recommended up to it through the same engine, re-engagement sweep, and suitability logic as every
+other product.
 
 ## Gate 2 thresholds
 
