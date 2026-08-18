@@ -76,6 +76,18 @@
  "AdvertiserApplication": {
   "scope": "global"
  },
+ "AdvertiserMakeGood": {
+  "scope": "owner",
+  "owner_field": "advertiser_id"
+ },
+ "AdvertiserReport": {
+  "scope": "owner",
+  "owner_field": "advertiser_id"
+ },
+ "AdvertiserReportedRevenue": {
+  "scope": "owner",
+  "owner_field": "advertiser_id"
+ },
  "AffiliateAdPost": {
   "scope": "owner",
   "owner_field": "user_id"

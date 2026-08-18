@@ -1,0 +1,97 @@
+import React, { useEffect, useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { BarChart3, Loader2, TrendingUp, TrendingDown, Minus, Sparkles } from 'lucide-react';
+
+// AdvertiserPerformanceCard — the AI performance report surfaced for the advertiser: the conventional PPC metric
+// set measured from real activity, each benchmarked against standard PPC norms, plus the latest AI summary +
+// recommendations. Reads the read-only advertiserPerformance endpoint. It measures and benchmarks actual
+// performance; it NEVER guarantees an ROI, and below the data threshold it says "still gathering data".
+const VERDICT = {
+  above: { color: 'text-emerald-400', Icon: TrendingUp, label: 'above benchmark' },
+  below: { color: 'text-red-400', Icon: TrendingDown, label: 'below benchmark' },
+  at: { color: 'text-gray-300', Icon: Minus, label: 'at benchmark' },
+  'n/a': { color: 'text-gray-500', Icon: Minus, label: 'gathering data' },
+};
+const unitFmt = (v, unit) => (unit === '$' ? `$${Number(v).toLocaleString()}` : unit === 'x' ? `${v}×` : `${v}${unit}`);
+
+export default function AdvertiserPerformanceCard() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await base44.functions.invoke('advertiserPerformance', {});
+        setData(res || null);
+      } catch {
+        setData(null);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-5 flex items-center gap-2 text-gray-400 text-sm">
+        <Loader2 className="w-4 h-4 animate-spin" /> Loading performance report…
+      </div>
+    );
+  }
+  if (!data || data.enabled === false || !data.metrics) return null;
+
+  const m = data.metrics;
+  const rep = data.latest_report;
+  const substantiated = m.substantiated;
+
+  return (
+    <div className="bg-gray-900 border border-gray-700 rounded-2xl p-5">
+      <div className="flex items-center gap-2 mb-1">
+        <BarChart3 className="w-5 h-5 text-blue-400" />
+        <h3 className="font-black text-white text-sm">Performance report</h3>
+        <span className="text-[11px] text-gray-500">last {m.window_days || 7}d</span>
+      </div>
+
+      {!substantiated ? (
+        <p className="text-xs text-gray-400 mt-2">{m.basis}</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
+            {(data.comparison || []).map((c) => {
+              const meta = VERDICT[c.verdict] || VERDICT['n/a'];
+              const Icon = meta.Icon;
+              return (
+                <div key={c.metric} className="bg-black/30 rounded-xl p-3 border border-gray-800">
+                  <div className="text-[11px] uppercase tracking-wider text-gray-500">{c.metric}</div>
+                  <div className="text-white font-black text-base">{unitFmt(c.value, c.unit)}</div>
+                  <div className={`text-[11px] flex items-center gap-1 ${meta.color}`}>
+                    <Icon className="w-3 h-3" /> vs {unitFmt(c.benchmark, c.unit)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {rep && (rep.summary || (rep.recommendations && rep.recommendations.length > 0)) && (
+            <div className="mt-4 bg-black/30 rounded-xl p-3 border border-gray-800">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">AI recommendations</span>
+              </div>
+              {rep.summary && <p className="text-xs text-gray-300 mb-2">{rep.summary}</p>}
+              <ul className="space-y-1">
+                {(rep.recommendations || []).map((r, i) => (
+                  <li key={i} className="text-xs text-gray-400 flex gap-1.5">
+                    <span className="text-yellow-400 font-bold">•</span> {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
+      )}
+
+      <p className="text-[11px] text-gray-500 mt-3">{data.disclaimer}</p>
+    </div>
+  );
+}

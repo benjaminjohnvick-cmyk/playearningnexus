@@ -3790,3 +3790,42 @@ CREATE TABLE IF NOT EXISTS "PremiumBoostGrant" (
 );
 CREATE INDEX IF NOT EXISTS "PremiumBoostGrant_data_gin" ON "PremiumBoostGrant" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "PremiumBoostGrant_created" ON "PremiumBoostGrant" (created_date DESC);
+
+-- AdvertiserReport: a stored weekly AI advertiser performance report (advertiserWeeklyReport). data:
+-- { advertiser_id, window_days, generated_at, metrics, benchmarks, comparison, summary, recommendations,
+--   substantiated, disclaimer }
+CREATE TABLE IF NOT EXISTS "AdvertiserReport" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdvertiserReport_data_gin" ON "AdvertiserReport" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdvertiserReport_created" ON "AdvertiserReport" (created_date DESC);
+
+-- AdvertiserMakeGood: a granted delivery make-good (deliveryMakeGoodSweep) — a free-inventory top-up owed on a
+-- term-end delivery shortfall. data: { advertiser_id, seat_id, tier, guaranteed_units, delivered_at_grant,
+-- shortfall_units, target_impressions, make_good_active, status, granted_at, expires_at, closed_at,
+-- delivered_final, basis }
+CREATE TABLE IF NOT EXISTS "AdvertiserMakeGood" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdvertiserMakeGood_data_gin" ON "AdvertiserMakeGood" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdvertiserMakeGood_created" ON "AdvertiserMakeGood" (created_date DESC);
+
+-- AdvertiserReportedRevenue: off-platform revenue an advertiser connected/reported, counted (flagged) in the
+-- performance metrics. data: { advertiser_id, amount_usd, source, period_start, period_end }
+CREATE TABLE IF NOT EXISTS "AdvertiserReportedRevenue" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdvertiserReportedRevenue_data_gin" ON "AdvertiserReportedRevenue" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdvertiserReportedRevenue_created" ON "AdvertiserReportedRevenue" (created_date DESC);
