@@ -28,6 +28,25 @@ delivered advertising value stays at the same **~2×** ratio ("$X buys ~$2X in a
   capacity-paced mode). We never promise a volume the audience can't eventually serve, and the **delivery
   guarantee** backs it: if we under-deliver the guaranteed volume, we make it up with free inventory (bounded).
 
+## When a budget is bigger than current inventory — matched over time
+
+If an advertiser's budget buys more impressions than the current audience can serve in a year, we don't turn
+them away and we don't oversell. We **deliver the full purchased volume over time — matched to their number as
+the audience grows** (`TIER3_UNLIMITED_MATCH_OVER_TIME`, default ON). Two properties make this safe:
+
+- **Bounded by volume, not by time.** For a match-over-time plan the delivery make-good has **no expiry** — it
+  keeps delivering until the exact purchased volume is served, however many years that takes, then closes. It
+  can never deliver *more* than what was bought (still bounded by volume).
+- **Honest outlook up front.** The quote returns a `delivery` object comparing the guaranteed volume to the
+  current annual capacity: whether it `exceeds_current_inventory`, an `est_min_years_to_match` (an optimistic
+  floor at today's audience, which shortens as DAU grows), and plain-language framing. The `/Apply` card shows
+  this whenever the budget outpaces current inventory, so the advertiser sees "delivered over ~N years, matched
+  to your number" before they buy — no surprise, no oversell.
+
+Mechanically: `computeSeatGuarantees` and `deliveryMakeGoodSweep` read the plan's
+`guaranteed_impressions_per_year`; when the plan is flagged `matched_over_time`, the make-good's `expires_at` is
+left null and the sweep closes it only when the number is matched (never on the clock).
+
 ## Compliance framing (unchanged from Tier 1/Tier 2)
 
 The scaled number is **advertising VALUE delivered** at conventional rates — never a claim about the

@@ -15,6 +15,9 @@ import { tier2TotalUsd, tier2ImpressionsPerYear, tier2VideoViewsPerYear } from "
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 
 export const tier3UnlimitedEnabled = () => snapBool("TIER3_UNLIMITED_ENABLED", true);
+/** When a budget exceeds what the audience can serve now, deliver the FULL purchased volume over time (no time
+ *  cap on the make-good) until their number is matched. Bounded by volume (never more than sold), not by time. */
+export const tier3UnlimitedMatchOverTime = () => snapBool("TIER3_UNLIMITED_MATCH_OVER_TIME", true);
 /** Floor for Tier 3 Unlimited — at/above the base Tier 2 price. Default = the live Tier 2 price ($200,000). */
 export const tier3UnlimitedMinUsd = () => Math.max(0, snapNumber("TIER3_UNLIMITED_MIN_USD", tier2TotalUsd()));
 /** Optional ceiling (0 = uncapped). A safety cap admins can set; 0 means scale as big as they can afford. */
@@ -72,5 +75,42 @@ export function tier3UnlimitedQuote(budgetUsd: number): Tier3UnlimitedQuote {
       `(${budget > 0 ? round2(value / budget) : 0}×) and ${guaranteedImpr.toLocaleString()} guaranteed impressions/yr. Paid upfront; ` +
       `delivered capacity-paced (guaranteed as a total over your term, served as the audience grows) and backed by the delivery ` +
       `guarantee. This is advertising value delivered, not a promise of revenue or ROI.`,
+  };
+}
+
+export interface DeliveryOutlook {
+  guaranteed_total: number;         // the full purchased volume we commit to deliver
+  current_annual_capacity: number;  // what the audience can serve per year right now
+  exceeds_current_inventory: boolean;
+  est_min_years_to_match: number;   // optimistic floor (assumes full capacity); shrinks as the audience grows
+  matched_over_time: boolean;
+  note: string;
+}
+
+/** How a Tier 3 Unlimited package delivers against current inventory. If the guaranteed volume is larger than
+ *  the audience can serve in a year, it's delivered CAPACITY-PACED over multiple years — matched to their number
+ *  over time — never oversold and never time-capped. `annualCapacity` is the live platform capacity (0 = unknown).
+ *  Pure so it's testable; the endpoint passes the live capacity from the inventory governor. */
+export function tier3UnlimitedDeliveryOutlook(guaranteedTotal: number, annualCapacity: number): DeliveryOutlook {
+  const total = Math.max(0, Math.round(guaranteedTotal));
+  const cap = Math.max(0, Math.round(annualCapacity));
+  const exceeds = cap > 0 && total > cap;
+  const estYears = cap > 0 ? Math.max(1, Math.ceil(total / cap)) : 0;
+  const matched = tier3UnlimitedMatchOverTime();
+  return {
+    guaranteed_total: total,
+    current_annual_capacity: cap,
+    exceeds_current_inventory: exceeds,
+    est_min_years_to_match: estYears,
+    matched_over_time: matched,
+    note: !exceeds
+      ? "Your guaranteed volume fits within what the current audience serves — delivered across your term."
+      : matched
+        ? `Your ${total.toLocaleString()} impressions are more than the current audience serves in a year ` +
+          `(~${cap.toLocaleString()}/yr). We deliver the full amount CAPACITY-PACED over time — matched to your ` +
+          `number as the audience grows, however long it takes (at least ~${estYears} year${estYears === 1 ? "" : "s"} ` +
+          `at today's audience, shorter as it grows). You get every impression you paid for; nothing is oversold.`
+        : `Your ${total.toLocaleString()} impressions exceed current annual capacity (~${cap.toLocaleString()}/yr); ` +
+          `enable match-over-time to deliver the full amount across multiple years.`,
   };
 }

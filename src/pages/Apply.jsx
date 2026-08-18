@@ -264,6 +264,12 @@ export default function Apply() {
                     </li>
                   ))}
                 </ul>
+                {plusQuote.delivery?.exceeds_current_inventory && (
+                  <p className="text-[11px] mt-3 flex items-start gap-1.5 rounded-lg p-2" style={{ background: '#eef2fb', color: INK }}>
+                    <Clock className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: NAVY }} />
+                    {plusQuote.delivery.note}
+                  </p>
+                )}
                 <p className="text-[11px] text-gray-500 mt-3 flex items-start gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: NAVY }} />
                   Advertising value delivered, guaranteed and capacity-paced — not a promise about your revenue or ROI. Paid upfront; no credit.

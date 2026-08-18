@@ -3,7 +3,7 @@
 // Verifies: the budget floor is enforced, deliverables/value/impressions scale linearly from the rate card,
 // and the ~2× value ratio holds at every budget (advertising VALUE, never a return).
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import { tier3UnlimitedQuote, tier3UnlimitedMinUsd } from "./tier3-unlimited.ts";
+import { tier3UnlimitedQuote, tier3UnlimitedMinUsd, tier3UnlimitedDeliveryOutlook } from "./tier3-unlimited.ts";
 
 Deno.test("budget below the floor is raised to the minimum", () => {
   const q = tier3UnlimitedQuote(50000);
@@ -32,4 +32,23 @@ Deno.test("delivery is always capacity-paced and prepaid (never credit)", () => 
   const q = tier3UnlimitedQuote(1000000);
   assertEquals(q.delivery_mode, "capacity_paced");
   assertEquals(q.prepay, true);
+});
+
+Deno.test("delivery outlook: volume within capacity is not over-time", () => {
+  const o = tier3UnlimitedDeliveryOutlook(6_000_000, 40_000_000);
+  assertEquals(o.exceeds_current_inventory, false);
+  assertEquals(o.est_min_years_to_match, 1);
+});
+
+Deno.test("delivery outlook: volume beyond capacity is matched over multiple years", () => {
+  const o = tier3UnlimitedDeliveryOutlook(120_000_000, 40_000_000);
+  assertEquals(o.exceeds_current_inventory, true);
+  assertEquals(o.est_min_years_to_match, 3); // 120M / 40M/yr
+  assertEquals(o.guaranteed_total, 120_000_000);
+});
+
+Deno.test("delivery outlook: unknown capacity (0) does not claim an over-time shortfall", () => {
+  const o = tier3UnlimitedDeliveryOutlook(120_000_000, 0);
+  assertEquals(o.exceeds_current_inventory, false);
+  assertEquals(o.est_min_years_to_match, 0);
 });

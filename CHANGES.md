@@ -1,5 +1,19 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-18 — Tier 3 Unlimited: match a budget bigger than inventory over time
+
+When a Tier 3 Unlimited budget buys more impressions than the current audience can serve in a year, we now
+deliver the FULL purchased volume **over time — matched to their number as the audience grows** — instead of
+turning them away or overselling.
+
+- **No time cap on the make-good** for match-over-time plans (`TIER3_UNLIMITED_MATCH_OVER_TIME`, default ON):
+  `deliveryMakeGoodSweep` leaves the make-good's `expires_at` null and closes it only when the exact purchased
+  volume is matched (still bounded by volume — never more than sold, never oversold).
+- **Honest over-time outlook in the quote** — `tier3UnlimitedDeliveryOutlook()` compares the guaranteed volume
+  to live inventory capacity (`inventoryStatus`): `exceeds_current_inventory`, `est_min_years_to_match` (a floor
+  at today's audience, shorter as DAU grows), and plain-language framing. The `/Apply` Tier 3 Unlimited card
+  shows it whenever the budget outpaces current inventory. Deno tests; `TIER3-UNLIMITED-SPEC.md` updated.
+
 ## 2026-08-18 — Tier 3 Unlimited (uncapped scaling above $200k)
 
 Added a scaling tier above the $200k Tier 2 base: an advertiser names any budget they can afford and the package

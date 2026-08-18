@@ -41,6 +41,9 @@ export default __handler(async (req) => {
       // A Tier 3 Unlimited plan carries a custom guaranteed volume; back exactly that (scaled to the guarantee term).
       const planVol = Number(t2?.[0]?.guaranteed_impressions_per_year) || 0;
       const guaranteed = planVol > 0 ? Math.round(planVol * (guaranteeTermMonths() / 12)) : guaranteedUnits(tier);
+      // Tier 3 Unlimited "match over time": when a budget exceeds inventory, keep delivering the full volume with
+      // NO time cap — the make-good closes only when the number is matched, never on the extension window.
+      const matchOverTime = !!t2?.[0]?.matched_over_time;
       const startISO = String(seat.purchased_at ?? seat.credit_start ?? seat.created_date ?? "");
 
       // Existing make-good record for this seat (idempotency + baseline).
@@ -61,7 +64,8 @@ export default __handler(async (req) => {
       // ── Case A: an active make-good — close it out if met or expired ────────────────────────────────
       if (active && mg) {
         const targetMet = deliveredTotal >= (Number(mg.target_impressions) || (baseline + guaranteed));
-        const expired = mg.expires_at ? now >= Date.parse(String(mg.expires_at)) : false;
+        // Match-over-time plans never expire on the clock — they close only when the volume is matched.
+        const expired = (mg.expires_at && !matchOverTime) ? now >= Date.parse(String(mg.expires_at)) : false;
         if (targetMet || expired) {
           await svc.entities.AdvertiserMakeGood.update(String(mg.id), {
             make_good_active: false,
@@ -80,7 +84,9 @@ export default __handler(async (req) => {
 
       // ── Case C: term ended, shortfall → GRANT a free make-good (bounded) ────────────────────────────
       if (st.make_good_units > 0 && !st.fulfilled) {
-        const expiresAt = new Date(now + guaranteeMaxExtensionMonths() * 30 * 86400000).toISOString();
+        // Match-over-time (Tier 3 Unlimited): no expiry — deliver until the number is matched. Else the standard
+        // bounded extension window.
+        const expiresAt = matchOverTime ? null : new Date(now + guaranteeMaxExtensionMonths() * 30 * 86400000).toISOString();
         const record = {
           advertiser_id: uid,
           seat_id: String(seat.id),
