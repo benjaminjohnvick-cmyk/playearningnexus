@@ -159,3 +159,20 @@ export async function computeSeatGuarantees(dbi: Dbi, advertiserUserId: string, 
   }
   return out;
 }
+
+/** User-ids of advertisers with an ACTIVE delivery make-good that still owes impressions (served below the
+ *  make-good target). The ad-serving path serves these as RESIDUAL free inventory — after paying/priority
+ *  advertisers, before the house ad — so the free top-up delivers on spare capacity without displacing revenue.
+ *  Each served impression increments the seat's `impressions_served`, so delivery here drives the make-good to
+ *  fulfillment and the sweep closes it out. Returns empty when the guarantee is disabled. */
+export async function activeMakeGoodOwners(dbi: Dbi): Promise<Set<string>> {
+  const owners = new Set<string>();
+  if (!deliveryGuaranteeEnabled()) return owners;
+  const rows = (await dbi.filter("FoundingAdvertiser", { makegood_active: true }, "-created_date", 5000).catch(() => [])) as Record<string, unknown>[];
+  for (const r of (rows || [])) {
+    const target = Number(r.makegood_target_impressions) || 0;
+    const served = Number(r.impressions_served) || 0;
+    if (target <= 0 || served < target) owners.add(String(r.user_id));
+  }
+  return owners;
+}

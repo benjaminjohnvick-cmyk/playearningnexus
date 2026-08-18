@@ -5,6 +5,7 @@ import { isPremiumUser } from "../../sdk/survey-reward.ts";
 import { db } from "../../sdk/db.ts";
 import { foundingInterstitialPriority, activeFoundingAdOwners, noteFoundingImpression } from "../../sdk/founding-advertiser.ts";
 import { activeEarnedAdOwners } from "../../sdk/earned-advertiser.ts";
+import { activeMakeGoodOwners } from "../../sdk/delivery-guarantee.ts";
 
 // surveyInterstitialGate (authenticated) — the mandatory ~30s ad BETWEEN surveys for non-premium users
 // (flywheel #3 addition). Premium is exempt (an upgrade incentive). The ad is served from your OWN inventory
@@ -32,6 +33,9 @@ export default __handler(async (req) => {
         seconds, day: new Date().toISOString().slice(0, 10),
       }).catch(() => null);
       if (body.founding_owner_id) await noteFoundingImpression(db, String(body.founding_owner_id)).catch(() => {});
+      // Make-good delivery meters against the SAME served counter, so the free top-up drives itself to
+      // fulfillment (the daily sweep closes it out once the target is reached).
+      if (body.makegood_owner_id) await noteFoundingImpression(db, String(body.makegood_owner_id)).catch(() => {});
       return Response.json({ ok: true });
     }
 
@@ -70,8 +74,19 @@ export default __handler(async (req) => {
         if (epick) { pick = epick; earnedAdvertiser = true; }
       }
     }
+    // Finally, RESIDUAL make-good delivery: an advertiser owed a free delivery top-up (their guarantee fell
+    // short at term end) serves here on spare capacity — after every paying/priority advertiser, before house.
+    // Each impression meters against their served counter, driving the make-good to fulfillment.
+    let makegoodOwnerId: string | null = null;
+    if (!foundingOwnerId && !ppcAdvertiser && !earnedAdvertiser && (slots || []).length) {
+      const mgOwners = await activeMakeGoodOwners(db).catch(() => new Set<string>());
+      if (mgOwners.size) {
+        const mpick = (slots || []).find((s) => mgOwners.has(String(s.advertiser_user_id)) || mgOwners.has(String(s.created_by)));
+        if (mpick) { pick = mpick; makegoodOwnerId = String(mpick.advertiser_user_id ?? mpick.created_by); }
+      }
+    }
     const ad = pick
-      ? { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser, earned_advertiser: earnedAdvertiser }
+      ? { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser, earned_advertiser: earnedAdvertiser, makegood: !!makegoodOwnerId, makegood_owner_id: makegoodOwnerId }
       : { ad_id: "house", title: "Upgrade to Premium — skip the ads", image_url: "", url: "/Pricing" };
 
     return Response.json({ required: true, seconds, premium, ad });

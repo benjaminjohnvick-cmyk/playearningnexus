@@ -59,10 +59,14 @@ guarantees more than it can actually serve.
 ## How delivery is measured & served
 
 Delivered impressions come from the seat's `impressions_served` counter — the same counter the between-survey
-ad-serving path already increments (`noteFoundingImpression`). A granted make-good sets `makegood_active` and
-`makegood_target_impressions` on the seat; the serving path treats make-good delivery as continued (residual)
-free inventory until the target is reached. Because make-good impressions are served after paid/priority
-advertisers, they use spare capacity and don't displace revenue delivery.
+ad-serving path increments (`noteFoundingImpression`). A granted make-good sets `makegood_active` and
+`makegood_target_impressions` on the seat, and the serving path (`surveyInterstitialGate`) is wired to honor
+them: `activeMakeGoodOwners()` surfaces any advertiser still owed delivery, and their ad is served as a
+**residual tier** — after every founding / paid-PPC / earned advertiser, before the house ad — so the free
+top-up runs on spare capacity and never displaces revenue delivery. Each residual impression meters back
+through `makegood_owner_id`, incrementing `impressions_served`, which drives the make-good toward its target;
+the daily sweep then closes it out once the target is met (or the extension window expires). The loop is fully
+automatic — no manual step to start or stop a make-good.
 
 ## Gating
 
