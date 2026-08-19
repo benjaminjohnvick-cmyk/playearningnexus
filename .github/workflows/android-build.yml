@@ -55,10 +55,25 @@ jobs:
             echo "Set Android versionCode to ${GITHUB_RUN_NUMBER}"
           fi
 
+      # Detect whether the signing keystore secret is configured. If it isn't, we still build a
+      # downloadable UNSIGNED bundle instead of hard-failing the whole run (mirrors the Deploy workflow,
+      # which skips gracefully when its secrets aren't wired yet).
+      - name: Check for signing keystore
+        id: signing
+        run: |
+          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Unsigned Android build::No ANDROID_KEYSTORE_BASE64 secret set, so this run builds an UNSIGNED .aab you can download from the run's Artifacts. To produce a Play-ready SIGNED bundle (and optional auto-publish), add the ANDROID_KEYSTORE_* secrets described at the top of this workflow file."
+          fi
+
       - name: Decode the upload keystore
+        if: steps.signing.outputs.ready == 'true'
         run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > $RUNNER_TEMP/upload.keystore
 
-      - name: Build signed AAB (release)
+      - name: Build SIGNED AAB (release)
+        if: steps.signing.outputs.ready == 'true'
         working-directory: android
         run: |
           chmod +x ./gradlew
@@ -68,16 +83,24 @@ jobs:
             -Pandroid.injected.signing.key.alias="${{ secrets.ANDROID_KEY_ALIAS }}" \
             -Pandroid.injected.signing.key.password="${{ secrets.ANDROID_KEY_PASSWORD }}"
 
+      - name: Build UNSIGNED AAB (release) — no keystore configured
+        if: steps.signing.outputs.ready != 'true'
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bundleRelease
+
       - name: Upload the .aab as a build artifact (download & submit manually if you prefer)
         uses: actions/upload-artifact@v4
         with:
           name: android-aab
-          path: android/app/build/outputs/bundle/release/app-release.aab
+          path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
 
-      # ── OPTIONAL: auto-publish to Google Play (needs PLAY_SERVICE_ACCOUNT_JSON + the app already
-      #    created once in Play Console). Remove this step to just download the .aab and upload by hand. ──
+      # ── OPTIONAL: auto-publish to Google Play (needs a SIGNED build + PLAY_SERVICE_ACCOUNT_JSON + the app
+      #    already created once in Play Console). Skipped automatically unless both are present. ──
       - name: Publish to Google Play (internal track)
-        if: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
+        if: ${{ steps.signing.outputs.ready == 'true' && secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
