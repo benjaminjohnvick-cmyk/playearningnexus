@@ -33,7 +33,7 @@ export default function EarningsWhatIf() {
     } catch (e) { setMsg({ type: 'error', text: e?.message || 'Could not calculate.' }); }
     finally { setBusy(false); setLoading(false); }
   };
-  useEffect(() => { run(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { run();   }, []);
 
   if (loading) return <div className="flex items-center justify-center py-24"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>;
   if (!enabled) return <div className="max-w-xl mx-auto py-24 text-center text-gray-500">The what-if calculator is unavailable.</div>;

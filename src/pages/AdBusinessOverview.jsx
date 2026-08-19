@@ -9,8 +9,8 @@ import {
 } from 'recharts';
 import {
   BarChart2, DollarSign, MousePointerClick, CheckSquare, TrendingUp,
-  Brain, Sparkles, Loader2, ArrowRight, Grid2x2, Trophy, Wallet,
-  PauseCircle, PlayCircle, Zap
+  Brain, Sparkles, Loader2, ArrowRight, Grid2x2,
+  PauseCircle, PlayCircle
 } from 'lucide-react';
 
 function StatCard({ icon, label, value, sub, color = 'yellow' }) {

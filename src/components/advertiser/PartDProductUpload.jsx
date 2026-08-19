@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Link2, CheckCircle, Loader2, DollarSign, TrendingUp, BarChart2, Eye, MousePointerClick, Target, Zap, ArrowRight } from 'lucide-react';
+import { Upload, Link2, CheckCircle, Loader2, DollarSign, BarChart2, Eye, MousePointerClick, Target, Zap, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 

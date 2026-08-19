@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShieldCheck, ShieldAlert, AlertTriangle, Zap, Eye, Monitor, Clock, TrendingDown, Loader2, RefreshCw, Pause, MapPin } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, Zap, Eye, Monitor, TrendingDown, Loader2, RefreshCw, Pause, MapPin } from 'lucide-react';
 import FraudClusterMap from '@/components/advertiser/FraudClusterMap';
 
 const RISK_LEVELS = {

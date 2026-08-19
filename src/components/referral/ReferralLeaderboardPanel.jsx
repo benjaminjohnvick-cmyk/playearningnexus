@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Crown, Medal, Star, TrendingUp } from 'lucide-react';
+import { Trophy, Crown, Medal, TrendingUp } from 'lucide-react';
 
 const RANK_STYLES = [
   { bg: 'bg-gradient-to-r from-yellow-400 to-amber-500', text: 'text-white', icon: Crown, label: '1st' },

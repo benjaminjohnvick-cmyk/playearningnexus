@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PayoutTrendsChart, ReferralSuccessChart, EngagementMetricsChart, PlatformHealthChart, GameCategoryBreakdownChart } from '@/components/analytics/DeveloperAnalyticsCharts';
-import { Calendar, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 
 export default function DeveloperAnalyticsDashboard() {
   const [timeRange, setTimeRange] = useState('30d');

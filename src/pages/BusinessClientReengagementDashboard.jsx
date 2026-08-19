@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Zap, TrendingUp, Mail, DollarSign, Target } from 'lucide-react';
+import { Zap, TrendingUp, Mail, Target } from 'lucide-react';
 
 export default function BusinessClientReengagementDashboard() {
   const [user, setUser] = useState(null);

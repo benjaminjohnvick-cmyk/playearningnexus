@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Trophy, TrendingUp, Star } from "lucide-react";
 import { pointsAsCash, SITE_CASH_NOTE } from "@/lib/siteCash";
 

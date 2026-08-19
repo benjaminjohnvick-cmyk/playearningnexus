@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Share2, Eye, TrendingUp, DollarSign, Twitter, Wifi, RefreshCw } from 'lucide-react';
+import { Share2, Eye, TrendingUp, DollarSign, Wifi } from 'lucide-react';
 
 const PLATFORM_CONFIG = {
   twitter:   { label: 'X / Twitter', icon: '𝕏', color: 'text-blue-400',   valuePer: 0.18, viewPer: 850 },

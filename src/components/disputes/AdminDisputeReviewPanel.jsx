@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   CheckCircle, XCircle, Clock, ChevronDown, ChevronUp,
-  Bot, Loader2, AlertTriangle, ExternalLink, RefreshCw, Shield
+  Bot, Loader2, AlertTriangle, ExternalLink, Shield
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

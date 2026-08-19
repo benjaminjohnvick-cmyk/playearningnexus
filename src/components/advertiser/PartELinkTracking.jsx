@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, MousePointerClick, TrendingUp, Share2, DollarSign, RefreshCw, Loader2, Zap, Globe, BarChart2, Target } from 'lucide-react';
+import { Eye, MousePointerClick, Share2, DollarSign, RefreshCw, Loader2, Zap, Globe, BarChart2, Target } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';

@@ -9,11 +9,11 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
-  PieChart, Pie, Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis, LineChart, Line
+  PieChart, Pie, LineChart, Line
 } from 'recharts';
 import {
   Loader2, Sparkles, BarChart2, TrendingUp, MessageSquare,
-  RefreshCw, Globe, Shield, Clock, Users, Star, AlertCircle, Tag, AlertTriangle
+  RefreshCw, Globe, Shield, Clock, Users, Star, AlertCircle, Tag
 } from 'lucide-react';
 import ResponseReviewPanel from '@/components/surveys/ResponseReviewPanel';
 import SurveyScheduleBuilder from '@/components/surveys/SurveyScheduleBuilder';

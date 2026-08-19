@@ -28,7 +28,7 @@ export default function EarningsSetAsideButton() {
     } catch { setData(null); }
     finally { setLoading(false); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load();   }, []);
 
   const call = async (fn, payload, okText) => {
     setBusy(true); setMsg(null);

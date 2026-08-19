@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Legend, ReferenceLine } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Legend } from 'recharts';
 import {
-  Loader2, TestTube, Plus, TrendingUp, Trophy, Clock,
+  Loader2, TestTube, Plus, TrendingUp, Trophy,
   Eye, ShoppingCart, Percent, CheckCircle, Pause, Play, X
 } from 'lucide-react';
 import { toast } from 'sonner';

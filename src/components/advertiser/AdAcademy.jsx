@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { GraduationCap, CheckCircle, Lock, PlayCircle, Trophy, Zap, Star, BookOpen, ChevronDown, ChevronUp, Award } from 'lucide-react';
+import { CheckCircle, Lock, PlayCircle, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
 const MODULES = [

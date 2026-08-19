@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sparkles, Loader2, Check, ExternalLink, Zap, ShoppingCart, Coins } from 'lucide-react';
+import { Sparkles, Loader2, ExternalLink, Zap, ShoppingCart, Coins } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**

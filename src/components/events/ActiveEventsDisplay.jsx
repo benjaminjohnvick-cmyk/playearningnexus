@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Users, Trophy, Gift, Clock, Calendar } from 'lucide-react';
+import { Zap, Users, Trophy, Gift, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ActiveEventsDisplay({ compact = false }) {

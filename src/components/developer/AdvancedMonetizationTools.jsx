@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DollarSign, TrendingUp, Sparkles, Plus, Percent, Calendar, Loader2 } from "lucide-react";
+import { DollarSign, TrendingUp, Sparkles, Plus, Calendar, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdvancedMonetizationTools({ game, developer }) {

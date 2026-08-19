@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, TrendingUp, DollarSign, Target, AlertCircle } from 'lucide-react';
+import { Loader2, TrendingUp, DollarSign, Target } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function DynamicPricingAI({ game, developerId }) {

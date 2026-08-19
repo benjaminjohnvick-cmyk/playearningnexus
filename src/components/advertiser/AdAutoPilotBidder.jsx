@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Zap, Target, TrendingDown, TrendingUp, Play, Pause, CheckCircle, Activity } from 'lucide-react';
+import { Bot, TrendingDown, TrendingUp, Play, Pause, Activity } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TIER_MINS = { Premium: 0.70, High: 0.50, Standard: 0.35, Economy: 0.20 };

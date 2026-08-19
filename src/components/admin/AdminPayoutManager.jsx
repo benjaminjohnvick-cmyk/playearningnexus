@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   DollarSign, CheckCircle2, XCircle, Clock, RefreshCw,
   Search, Play, AlertTriangle, Loader2, Building2, CreditCard,
-  ChevronDown, ChevronUp, User, Calendar
+  ChevronDown, ChevronUp, Calendar
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

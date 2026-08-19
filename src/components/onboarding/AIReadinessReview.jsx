@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Loader2, CheckCircle, XCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { Bot, Loader2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
 const SCORE_COLOR = (n) => n >= 80 ? 'text-green-600' : n >= 55 ? 'text-yellow-600' : 'text-red-500';
 const SCORE_BG = (n) => n >= 80 ? 'bg-green-100' : n >= 55 ? 'bg-yellow-100' : 'bg-red-100';

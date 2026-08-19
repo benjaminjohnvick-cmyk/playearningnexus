@@ -19,7 +19,6 @@ import SurveyGate, { isSurveyGoalMet } from '@/components/surveys/SurveyGate';
 import BitLabsSurveys from '@/components/surveys/BitLabsSurveys';
 import GameCheckoutModal from '@/components/store/GameCheckoutModal';
 import ReviewSection from '@/components/reviews/ReviewSection';
-import { Dialog } from '@/components/ui/dialog';
 import GameAssistantWidget from '@/components/games/GameAssistantWidget';
 import PPCAdSearchWidget from '@/components/ppc/PPCAdSearchWidget';
 

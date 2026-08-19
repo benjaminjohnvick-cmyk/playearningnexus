@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Building2, CreditCard, FileText, CheckCircle2, ArrowRight, Loader2,
-  Shield, Star, Zap, Globe, Mail, Phone, Lock, ChevronRight
+  Shield, Star, Lock, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';

@@ -31,7 +31,7 @@ export default function GrowthEngine() {
       setLoading(false);
     }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load();   }, []);
 
   const logExpense = async () => {
     const amt = Number(exp.amount_usd);

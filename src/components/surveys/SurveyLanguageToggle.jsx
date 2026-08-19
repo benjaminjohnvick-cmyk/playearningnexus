@@ -1,9 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { base44 } from '@/api/base44Client';
-import { Languages, Loader2, CheckCircle2, RotateCcw } from 'lucide-react';
-import { SUPPORTED_LANGUAGES } from '@/components/locale/LocaleContext';
+import { Languages, CheckCircle2 } from 'lucide-react';
 import { useLocale } from '@/components/locale/LocaleContext';
 import { motion, AnimatePresence } from 'framer-motion';
 

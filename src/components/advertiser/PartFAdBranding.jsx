@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Globe, ExternalLink, CheckCircle, Image, Smartphone, Monitor, Eye } from 'lucide-react';
-import GamerGainLogo from '@/components/branding/GamerGainLogo';
+import { Globe, ExternalLink, CheckCircle, Smartphone, Monitor, Eye } from 'lucide-react';
 
 const SIGNUP_URL = 'https://gamergain.app/signup';
 const SITE_URL = 'https://gamergain.app';

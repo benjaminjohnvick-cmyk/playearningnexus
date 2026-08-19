@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { AlertTriangle, ShieldCheck, ShieldX, Clock, Eye, RefreshCw, Loader2, TrendingUp, Users } from 'lucide-react';
+import { AlertTriangle, ShieldCheck, ShieldX, Clock, Eye, RefreshCw, Loader2, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SEVERITY_COLOR = {

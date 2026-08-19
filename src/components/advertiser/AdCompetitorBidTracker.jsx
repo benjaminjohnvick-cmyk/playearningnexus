@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Bell, BellOff, Zap, TrendingUp, TrendingDown, Minus, RefreshCw, Mail, Loader2, AlertTriangle, Target, Eye } from 'lucide-react';
+import { Bell, BellOff, Zap, TrendingUp, TrendingDown, Minus, RefreshCw, Mail, Loader2, AlertTriangle } from 'lucide-react';
 
 // Simulate competitor bid data
 function generateCompetitorData(myAds) {

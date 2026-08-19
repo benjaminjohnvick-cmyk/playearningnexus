@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import RewardMarketplace from '@/components/rewards/RewardMarketplace';
 import PayoutRequestForm from '@/components/payout/PayoutRequestForm';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, ShoppingBag, TrendingUp } from 'lucide-react';
 

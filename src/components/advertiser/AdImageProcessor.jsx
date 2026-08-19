@@ -1,10 +1,10 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  Upload, ImageIcon, CheckCircle2, Loader2, Download, RefreshCw,
-  AlertCircle, Sparkles, ZoomIn, Crop
+  Upload, CheckCircle2, Loader2, Download,
+  AlertCircle, Sparkles, Crop
 } from 'lucide-react';
 
 const PLATFORM_SPECS = [

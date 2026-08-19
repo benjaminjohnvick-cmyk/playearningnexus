@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Bell, BellOff, MapPin, Clock, Zap, DollarSign, Target,
   Settings, TrendingUp, CheckCircle, Mail, Smartphone, MessageSquare,
-  Loader2, Star, Filter, RefreshCw, BarChart2, Users
+  Loader2, Star, Filter, RefreshCw, BarChart2
 } from 'lucide-react';
 
 const CATEGORIES = ['Gaming', 'Finance', 'Health', 'Technology', 'Food', 'Travel', 'Sports', 'Shopping', 'Education', 'Entertainment'];

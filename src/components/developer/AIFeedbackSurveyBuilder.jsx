@@ -3,9 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, MessageSquare, CheckCircle2, TrendingUp, Lightbulb, Bot, BarChart2 } from 'lucide-react';
+import { Loader2, MessageSquare, CheckCircle2, Bot, BarChart2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const priorityColors = {

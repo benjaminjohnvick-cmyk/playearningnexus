@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Settings, Palette, Bell, AlertTriangle, Save, Loader2, Shield } from 'lucide-react';
+import { Settings, Palette, Bell, AlertTriangle, Save, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const DEFAULT_SETTINGS = [

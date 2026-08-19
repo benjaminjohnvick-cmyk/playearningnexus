@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { FlaskConical, Trophy, TrendingUp, ArrowRight, CheckCircle, Loader2, RefreshCw, AlertCircle } from 'lucide-react';
+import { FlaskConical, Trophy, CheckCircle, Loader2, RefreshCw, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Simple z-test for two proportions to check statistical significance

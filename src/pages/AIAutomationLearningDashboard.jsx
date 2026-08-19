@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import {
   Brain, Activity, TrendingUp, AlertTriangle, CheckCircle2,
-  Zap, RefreshCw, BarChart2, ChevronRight, Cpu, Database, Clock
+  Zap, RefreshCw, BarChart2, Cpu, Database, Clock
 } from 'lucide-react';
 
 const PRIORITY_COLORS = {

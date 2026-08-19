@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Plus, Bot, AlertCircle, CheckCircle, Clock, Scale, FileText, ChevronRight, DollarSign, ShieldAlert, User } from 'lucide-react';
 import { toast } from 'sonner';
 

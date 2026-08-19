@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Brain, TrendingUp, Target, Users, Lightbulb, BarChart3 } from 'lucide-react';
+import { Brain, Target, Users, Lightbulb, BarChart3 } from 'lucide-react';
 
 export default function AITournamentInsights({ tournamentId }) {
   const { data: insights = [], isLoading } = useQuery({

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Download, Calendar, Play, Gamepad2 } from "lucide-react";
+import { Star, Download, Play, Gamepad2 } from "lucide-react";
 import { motion } from "framer-motion";
 import GameLauncher from './GameLauncher';
 import { base44 } from '@/api/base44Client';

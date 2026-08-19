@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Zap, TrendingUp, BarChart2, Target, DollarSign, Bot, Play, RefreshCw, AlertTriangle, Edit2, Save, X } from 'lucide-react';
+import { Zap, TrendingUp, Target, DollarSign, Bot, RefreshCw, AlertTriangle, Edit2, Save, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 // AppLovin-comparable pricing (industry standard)

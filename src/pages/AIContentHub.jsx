@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { BarChart3, Globe, Mic, Download, AlertCircle, Eye } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 export default function AIContentHub() {
   const [activeTab, setActiveTab] = useState('surveys');

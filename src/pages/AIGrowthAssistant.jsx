@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Loader2, Brain, TrendingUp, Sparkles, RefreshCw, ChevronRight,
-  Target, Users, DollarSign, Zap, Clock, CheckCircle, AlertCircle
+  Target, Users, DollarSign, Zap, Clock, AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 

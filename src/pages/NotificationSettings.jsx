@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
-  Bell, Mail, Smartphone, DollarSign, ClipboardList,
+  Bell, Mail, Smartphone, ClipboardList,
   Target, Trophy, Megaphone, Zap, ShoppingBag, Users, Save
 } from "lucide-react";
 import { toast } from "sonner";

@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { DollarSign, Loader2, Play, Eye, CheckCircle, Clock, Users, TrendingDown, Zap } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { DollarSign, Loader2, Play, Eye, CheckCircle, Clock, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 
 const METHOD_COLORS = { paypal: '#0070ba', stripe: '#6772e5', bank_transfer: '#10b981', cashapp: '#00d632', venmo: '#3d95ce' };

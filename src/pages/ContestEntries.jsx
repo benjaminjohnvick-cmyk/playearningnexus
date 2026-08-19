@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Trophy, Ticket, Star, Users, TrendingUp, Gift, Zap, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
 
 export default function ContestEntries() {
   const [user, setUser] = useState(null);

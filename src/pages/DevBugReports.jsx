@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Loader2, Bug, Play, Clock, AlertTriangle, CheckCircle,
-  ChevronDown, ChevronUp, Monitor, Smartphone, Globe, RefreshCw,
-  Camera, Info, X
+  ChevronDown, ChevronUp, Monitor, Smartphone, RefreshCw,
+  Camera, Info
 } from 'lucide-react';
 import { toast } from 'sonner';
 

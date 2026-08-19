@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  Users, Zap, TrendingUp, TrendingDown, Bell, CheckCircle2,
-  Clock, AlertCircle, Crown, DollarSign, Loader2, Search, Filter
+  Users, TrendingUp, TrendingDown, Bell, CheckCircle2,
+  Clock, AlertCircle, Crown, DollarSign, Loader2, Search
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatDistanceToNow, differenceInDays } from 'date-fns';
+import { differenceInDays } from 'date-fns';
 
 const STALL_THRESHOLD_DAYS = 7; // inactive for 7+ days = stalled
 

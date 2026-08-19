@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Users } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 const trustTierInfo = {
   low: { color: 'bg-red-100 text-red-800', icon: '⚠️', label: 'Low Trust' },

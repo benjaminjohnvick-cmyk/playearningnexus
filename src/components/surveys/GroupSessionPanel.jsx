@@ -45,7 +45,7 @@ export default function GroupSessionPanel({ autoJoin }) {
   // Auto-fallback: when dropped in with autoJoin (no 1:1 buddy was found), join a group immediately.
   useEffect(() => {
     if (autoJoin && !joined && !autoJoinedRef.current) { autoJoinedRef.current = true; quickJoin(); }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [autoJoin]);
 
   const create = async () => {

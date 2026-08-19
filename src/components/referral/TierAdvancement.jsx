@@ -3,8 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, Lock, TrendingUp, Trophy, Star, Zap, ArrowRight } from 'lucide-react';
-import {
-  RadialBarChart, RadialBar, ResponsiveContainer, Tooltip,
+import { ResponsiveContainer, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell, LabelList
 } from 'recharts';
 

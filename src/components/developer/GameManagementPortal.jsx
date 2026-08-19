@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Edit, DollarSign, TrendingUp, Users, Star, MessageSquare, BarChart3 } from "lucide-react";
+import { Edit, DollarSign, TrendingUp, Users, Star } from "lucide-react";
 import { toast } from "sonner";
 
 export default function GameManagementPortal({ game, developer }) {

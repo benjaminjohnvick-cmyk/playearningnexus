@@ -9,8 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import {
-  CreditCard, Building2, CheckCircle2, AlertCircle, DollarSign,
-  Clock, Shield, Info, Landmark, Save, Eye, EyeOff, ArrowRight
+  CreditCard, CheckCircle2, AlertCircle, DollarSign, Shield, Info, Landmark, Save, Eye, EyeOff, ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';

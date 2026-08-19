@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, AlertTriangle, TrendingDown, DollarSign, Zap, CheckCircle, X, Settings, Mail, BellOff } from 'lucide-react';
+import { Bell, TrendingDown, DollarSign, Zap, CheckCircle, X, Settings, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 
 const CTR_THRESHOLD = 2.0; // percent

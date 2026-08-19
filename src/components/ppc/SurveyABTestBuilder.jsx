@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
-  Loader2, FlaskConical, Trophy, AlertCircle, TrendingUp,
-  Users, CheckCircle2, DollarSign, ChevronRight, BarChart2, Pause, Play
+  Loader2, FlaskConical,
+  Users, CheckCircle2, BarChart2, Pause, Play
 } from "lucide-react";
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';

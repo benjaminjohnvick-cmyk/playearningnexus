@@ -4,12 +4,10 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   DollarSign, 
   Download, 
-  Calendar, 
-  TrendingUp,
+  Calendar,
   CheckCircle2,
   Clock,
   AlertCircle

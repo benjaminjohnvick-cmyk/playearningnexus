@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trophy, Crown, Flame, Star, Edit3, Save } from 'lucide-react';
+import { Trophy, Flame, Star, Edit3, Save } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,8 +11,7 @@ import {
   Trophy, 
   Target, 
   CheckCircle2,
-  ArrowRight,
-  Play
+  ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 

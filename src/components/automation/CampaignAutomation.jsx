@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, TrendingUp, AlertTriangle, Zap } from 'lucide-react';
 import { toast } from 'sonner';
-import moment from 'moment';
 
 export default function CampaignAutomation({ user }) {
   const queryClient = useQueryClient();

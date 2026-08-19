@@ -3,9 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { base44 } from '@/api/base44Client';
 import {
-  CheckCircle2, Loader2, Zap, ShieldCheck, Info,
-  Facebook, Twitter, Instagram, CreditCard, DollarSign,
-  Users, Bot, TrendingUp, Lock, Star
+  CheckCircle2, Loader2, Zap, ShieldCheck, Info, Instagram, CreditCard, DollarSign,
+  Users, Bot, TrendingUp, Lock
 } from 'lucide-react';
 
 const PLATFORMS = ['facebook', 'twitter', 'instagram', 'snapchat', 'tiktok'];

@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Users, DollarSign, Eye, Download, Star, Clock } from 'lucide-react';
+import { DollarSign, Eye, Download, Star } from 'lucide-react';
 
 export default function GamePerformanceAnalytics({ user }) {
   const { data: creatorGames = [] } = useQuery({

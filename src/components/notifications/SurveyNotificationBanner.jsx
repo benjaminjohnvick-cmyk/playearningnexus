@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Bell, X, FileText, DollarSign, Trophy, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 
 const TYPE_ICONS = {
   survey_available: FileText,

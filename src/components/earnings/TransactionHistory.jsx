@@ -6,8 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
-  DollarSign, TrendingUp, Users, Award, RefreshCw,
-  ArrowUpCircle, ArrowDownCircle, Minus, Filter
+  DollarSign, TrendingUp, Users, Award, RefreshCw, ArrowDownCircle, Minus, Filter
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';

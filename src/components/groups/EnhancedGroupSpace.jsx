@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MessageCircle, Calendar, Users, Image, Sparkles, Send, Plus, Loader2 } from "lucide-react";
+import { Calendar, Image, Sparkles, Send, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function EnhancedGroupSpace({ group, user }) {

@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Brain, ShieldAlert, TrendingUp, Play, Loader2,
-  AlertTriangle, CheckCircle2, XCircle, Clock,
-  DollarSign, Calendar, User, ChevronDown, ChevronUp, Zap
+  AlertTriangle, CheckCircle2, XCircle, Clock, Calendar, ChevronDown, ChevronUp, Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
 

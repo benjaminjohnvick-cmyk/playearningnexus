@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DollarSign, Gamepad2, TrendingUp, Bot, Zap, RefreshCw, CheckCircle, AlertTriangle, Clock, BarChart2, Target, ShieldCheck } from 'lucide-react';
+import { DollarSign, Gamepad2, TrendingUp, Bot, Zap, RefreshCw, AlertTriangle, Clock, BarChart2, Target, ShieldCheck } from 'lucide-react';
 import AppLovinStyleMonetization from '@/components/monetization/AppLovinStyleMonetization';
 
 export default function GameMonetizationDashboard() {

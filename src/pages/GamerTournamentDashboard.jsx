@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import {
   Trophy, Users, Zap, DollarSign, Loader2, Plus, Play,
-  Crown, Target, Clock, CheckCircle, Shield, AlertCircle, Swords
+  Crown, Target, Clock, CheckCircle, Shield, Swords
 } from 'lucide-react';
 import { toast } from 'sonner';
 

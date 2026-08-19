@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock, Unlock, Zap, Star, Trophy, Crown, Gift } from 'lucide-react';
+import { Lock, Unlock, Trophy, Gift } from 'lucide-react';
 
 const MILESTONES = [
   {

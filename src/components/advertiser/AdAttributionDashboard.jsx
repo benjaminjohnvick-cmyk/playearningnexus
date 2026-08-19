@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Share2, MousePointerClick, Grid2x2, CheckSquare, ShoppingCart, Zap, RefreshCw, ChevronRight } from 'lucide-react';
+import { Share2, MousePointerClick, Grid2x2, CheckSquare, ShoppingCart, Zap } from 'lucide-react';
 
 // Proprietary Get Goods Gratis (Free) Lift Score formula
 function calcLiftScore({ socialShares, clicks, gridVisits, completions, sales, spend }) {

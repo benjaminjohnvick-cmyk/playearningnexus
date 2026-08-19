@@ -5,9 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import {
-  DollarSign, Zap, CheckCircle2, Clock, Bell, CreditCard,
+  DollarSign, Zap, CheckCircle2, Bell, CreditCard,
   TrendingUp, Save, AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';

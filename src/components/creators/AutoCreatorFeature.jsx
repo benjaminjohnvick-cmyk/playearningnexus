@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Copy, Share2, RefreshCw, Loader2, TrendingUp, CheckCircle, Film, Camera, Video } from 'lucide-react';
 import { toast } from 'sonner';

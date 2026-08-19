@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import {
   Loader2, Users, Clock, TrendingUp, Activity, Globe,
-  ArrowUpRight, ArrowDownRight, Gamepad2, RefreshCw
+  ArrowUpRight, ArrowDownRight, Gamepad2
 } from 'lucide-react';
 
 const COLORS = ['#dc2626', '#2563eb', '#059669', '#d97706', '#7c3aed', '#ec4899', '#14b8a6'];

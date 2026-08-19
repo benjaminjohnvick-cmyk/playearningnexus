@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, Pause, BarChart2, Zap, Trash2, Loader2 } from 'lucide-react';
+import { Play, Pause, BarChart2, Trash2, Loader2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
 const STATUS_COLORS = {

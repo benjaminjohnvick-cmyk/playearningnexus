@@ -3,10 +3,9 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
   Image, Tag, Plus, Clock, TrendingUp, MousePointerClick,
-  CheckSquare, ChevronDown, ChevronUp, Pencil, Trash2, Copy, Loader2, Upload
+  CheckSquare, ChevronDown, ChevronUp, Trash2, Copy, Loader2, Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

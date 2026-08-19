@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Globe, Check } from 'lucide-react';
 
 // Static exchange rates relative to USD (approximated for demo)

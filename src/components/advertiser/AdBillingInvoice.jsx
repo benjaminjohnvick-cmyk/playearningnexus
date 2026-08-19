@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Mail, Download, Calendar, DollarSign, TrendingUp, Loader2, Plus, Trash2, Clock } from 'lucide-react';
+import { FileText, Mail, Loader2, Plus, Trash2, Clock } from 'lucide-react';
 
 const TAX_RATES = { 'US': 0, 'GB': 0.20, 'EU': 0.21, 'CA': 0.13, 'AU': 0.10, 'None': 0 };
 

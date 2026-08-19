@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Video, Twitch, Youtube, Users, Eye, DollarSign, Link as LinkIcon } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Video, Twitch, Youtube, Eye, DollarSign, Link as LinkIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export default function StreamIntegration({ user }) {

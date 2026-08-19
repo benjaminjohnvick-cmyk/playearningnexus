@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Sparkles, TrendingUp, Target, CheckCircle2, AlertTriangle, Zap, BarChart2 } from 'lucide-react';
+import { Loader2, Sparkles, CheckCircle2, AlertTriangle, Zap } from 'lucide-react';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 const TIERS = ['Economy', 'Standard', 'High', 'Premium'];

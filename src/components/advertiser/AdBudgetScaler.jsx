@@ -3,8 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  ArrowRight, TrendingUp, TrendingDown, Zap, Loader2,
-  Play, Pause, RefreshCw, AlertTriangle, CheckCircle2, DollarSign, Target
+  ArrowRight, TrendingUp, TrendingDown, Zap, Loader2, CheckCircle2, Target
 } from 'lucide-react';
 
 function calcAdROI(ad) {

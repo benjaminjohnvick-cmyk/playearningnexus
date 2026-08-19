@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, DollarSign, Users, TrendingUp, Medal, Crown, Star, Flame, Award, Zap, Calendar } from "lucide-react";
+import { Trophy, DollarSign, Users, Medal, Crown, Star, Flame, Award, Zap, Calendar } from "lucide-react";
 import { format } from 'date-fns';
 import InspireShareButton from '@/components/leaderboard/InspireShareButton';
 import GlobalLeaderboardPanel from '@/components/leaderboard/GlobalLeaderboardPanel';

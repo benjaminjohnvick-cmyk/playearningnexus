@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useNotifications } from '@/hooks/useNotifications';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Bell, CheckCheck, DollarSign, Trophy, Zap, ShoppingBag, Star, TrendingUp, Clock, Info, Loader2, Gamepad2, Rocket, Crown } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Bell, CheckCheck, DollarSign, Trophy, Zap, ShoppingBag, Star, TrendingUp, Clock, Info, Loader2, Rocket, Crown } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const TYPE_CONFIG = {

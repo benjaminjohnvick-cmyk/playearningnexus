@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
-import { PiggyBank, Gift, Zap, Lock, Unlock, TrendingUp, Settings } from 'lucide-react';
+import { PiggyBank, Gift, Lock, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
 const VAULT_TIERS = [

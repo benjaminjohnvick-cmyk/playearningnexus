@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Brain, RefreshCw, Loader2, Edit2, Check, X, TrendingUp, Users, Star } from 'lucide-react';
+import { Brain, Loader2, Edit2, Check, X, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TIER_COLORS = {

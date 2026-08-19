@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Calendar, TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Calendar, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function SmartPayoutScheduler({ userId }) {

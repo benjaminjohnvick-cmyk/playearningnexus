@@ -27,7 +27,7 @@ export default function Tier2Scaling() {
     } catch (e) { setMsg({ type: 'error', text: e?.message || 'Could not load Tier 2.' }); }
     finally { setLoading(false); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load();   }, []);
 
   const buyPart = async () => {
     setBuying(true); setMsg(null);

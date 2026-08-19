@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Link2, Copy, Check, Gift, Star, Users, DollarSign, Trophy, Sparkles, TrendingUp } from 'lucide-react';
+import { Link2, Copy, Check, Star, Users, DollarSign, Trophy, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BONUS_THRESHOLD = 20; // $20 spend to qualify

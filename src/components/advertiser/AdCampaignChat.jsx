@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Send, Loader2, Mic, MicOff, BarChart2, TrendingUp, Target, Zap, ChevronRight, RefreshCw, Download, Trash2 } from 'lucide-react';
+import { Bot, Send, Loader2, Mic, MicOff, ChevronRight, Download, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 const COMPLEX_QUESTIONS = [

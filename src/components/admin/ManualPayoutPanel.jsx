@@ -8,8 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { DollarSign, Send, Users, Settings2, Loader2, CheckCircle2, AlertCircle, Brain, Sparkles } from 'lucide-react';
+import { Send, Users, Settings2, Loader2, CheckCircle2, AlertCircle, Brain, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 const FREQ_OPTIONS = ['weekly', 'biweekly', 'monthly', 'net_30', 'net_60', 'net_90', 'on_demand'];

@@ -25,7 +25,7 @@ export default function SaveToGet() {
     try { const res = await base44.functions.invoke('saveToGetStatus', {}); setData(res || null); }
     catch { setData(null); } finally { setLoading(false); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load();   }, []);
 
   const call = async (fn, payload, ok) => {
     setBusy(true); setMsg(null);

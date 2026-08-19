@@ -8,15 +8,14 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   DollarSign, TrendingUp, Zap, Clock, CheckCircle2, ArrowRight,
-  BarChart2, Target, Wallet, Star, CreditCard, Calendar, Flame, AlertCircle
+  BarChart2, Target, Wallet, Star, Flame, AlertCircle
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { format, subDays, startOfWeek, eachDayOfInterval } from 'date-fns';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { format, subDays, eachDayOfInterval } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import DailyLoginStreak from '@/components/streaks/DailyLoginStreak';
 import ReferralConquestLeaderboard from '@/components/referral/ReferralConquestLeaderboard';
-import { toast } from 'sonner';
 
 export default function SmartPayoutDashboard() {
   const [user, setUser] = useState(null);

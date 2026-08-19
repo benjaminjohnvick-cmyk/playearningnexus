@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Zap, CheckCircle2, Lock, Shield, ShoppingBag, Calendar, TrendingUp, Star } from 'lucide-react';
-import { format, subDays, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth } from 'date-fns';
+import { motion } from 'framer-motion';
+import { Flame, CheckCircle2, Lock, Shield, ShoppingBag, Calendar, TrendingUp, Star } from 'lucide-react';
+import { format, subDays, addDays, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 

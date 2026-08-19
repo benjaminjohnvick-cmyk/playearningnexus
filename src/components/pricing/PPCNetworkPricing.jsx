@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, CheckCircle, Play, ArrowRight, RefreshCw, Mail, CreditCard } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ShieldCheck, CheckCircle, Play, ArrowRight, Mail, CreditCard } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import StripePaymentModal from '@/components/payments/StripePaymentModal';
 

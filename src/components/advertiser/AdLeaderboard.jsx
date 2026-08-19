@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, TrendingUp, Grid2x2, MousePointerClick, Medal, Crown, Star } from 'lucide-react';
+import { Trophy, TrendingUp, Grid2x2, MousePointerClick, Medal, Crown } from 'lucide-react';
 
 const SORT_MODES = [
   { key: 'roi', label: 'ROI', icon: TrendingUp },

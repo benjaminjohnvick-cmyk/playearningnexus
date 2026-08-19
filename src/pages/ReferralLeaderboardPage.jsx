@@ -1,17 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Trophy, Users, DollarSign, Link2, Copy, TrendingUp, Crown, Medal,
-  Loader2, Star, Zap, Target, Calendar, Gift
+  Trophy, Users, Link2, Copy, TrendingUp, Crown, Medal,
+  Loader2, Star, Zap, Calendar
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format, startOfMonth } from 'date-fns';
+import { startOfMonth } from 'date-fns';
 import JackpotWidget from '@/components/leaderboard/JackpotWidget';
 import RecentWinnersPanel from '@/components/leaderboard/RecentWinnersPanel';
 

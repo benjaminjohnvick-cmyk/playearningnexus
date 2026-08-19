@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Crown, Medal, Star, TrendingUp } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 
 const RANK_CONFIG = {
   1: { icon: '🥇', color: 'text-yellow-600', bg: 'bg-yellow-50 border-yellow-300', perk: 'Priority Survey Access + $5 Bonus' },

@@ -3,7 +3,6 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, Clock, PiggyBank, CreditCard } from 'lucide-react';
-import { toast } from 'sonner';
 
 /**
  * OwnershipCheckout — the percentage-first checkout. The buyer chooses how much to pay out of pocket; the

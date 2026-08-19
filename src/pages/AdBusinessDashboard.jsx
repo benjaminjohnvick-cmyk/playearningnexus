@@ -9,7 +9,7 @@ import {
   MousePointerClick, CheckSquare, Wallet, History, AlertTriangle, PieChart,
   Gavel, Sparkles, FlaskConical, Trophy, Mail, Loader2,
   Globe, Image, ImageIcon, Brain, ShoppingBag, Calendar, Monitor, Wand2, FileText, TrendingUp,
-  MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu, X,
+  MapPin, Layers, Star, Bot, Share2, GraduationCap, ChevronDown, ChevronUp, Menu,
   Users, Link2, ShieldAlert, GitMerge, Coins, LayoutTemplate, Gauge, RefreshCw, Zap, Eye, Upload
 } from 'lucide-react';
 import AdSignupForm from '@/components/advertiser/AdSignupForm';
@@ -49,7 +49,7 @@ import AdTeamManager from '@/components/advertiser/AdTeamManager';
 import AdReferralProgram from '@/components/advertiser/AdReferralProgram';
 import AdFraudDetection from '@/components/advertiser/AdFraudDetection';
 import AdAttributionDashboard from '@/components/advertiser/AdAttributionDashboard';
-import AdCurrencySettings, { CurrencyProvider, useCurrency } from '@/components/advertiser/AdCurrencySettings';
+import AdCurrencySettings, { CurrencyProvider } from '@/components/advertiser/AdCurrencySettings';
 import AdTemplateHub from '@/components/advertiser/AdTemplateHub';
 import AdCreativeForecast from '@/components/advertiser/AdCreativeForecast';
 import AdBudgetPacing from '@/components/advertiser/AdBudgetPacing';

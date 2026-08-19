@@ -1,25 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { 
-  MessageCircle, 
   Send, 
   Bot, 
   User, 
   X, 
   AlertCircle,
-  CheckCircle2,
   Loader2,
   Minimize2,
   Maximize2
 } from 'lucide-react';
 import { toast } from 'sonner';
-import moment from 'moment';
 
 const FAQ_DATABASE = {
   referrals: [

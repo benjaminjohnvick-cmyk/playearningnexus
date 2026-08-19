@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { X, CheckCircle2, AlertTriangle, Users, DollarSign, Clock, Zap, Trophy, TrendingUp } from "lucide-react";
+import { X, CheckCircle2, Zap, Trophy, TrendingUp } from "lucide-react";
 
 const tierData = {
   1: {

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { DollarSign, TrendingUp, BarChart2, RefreshCw } from 'lucide-react';
+import { BarChart2 } from 'lucide-react';
 
 // ─── SURVEY PRICING CONSTANTS ───────────────────────────────────────────────
 const SURVEY_COST_PER_RESPONSE = 0.95;

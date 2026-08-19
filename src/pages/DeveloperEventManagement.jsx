@@ -9,7 +9,6 @@ import { Calendar, Trophy, Users, TrendingUp, Zap } from 'lucide-react';
 import CreateEventModal from '../components/events/CreateEventModal';
 import AIEventSuggestions from '../components/events/AIEventSuggestions';
 import EventLeaderboard from '../components/events/EventLeaderboard';
-import { toast } from 'sonner';
 
 export default function DeveloperEventManagement() {
   const [user, setUser] = useState(null);

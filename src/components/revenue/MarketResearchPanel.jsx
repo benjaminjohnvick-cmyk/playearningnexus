@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BarChart2, Download, Lock, Sparkles, TrendingUp, Users } from 'lucide-react';
+import { Download, Lock, Sparkles, TrendingUp, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function MarketResearchPanel({ userTier = 'free' }) {

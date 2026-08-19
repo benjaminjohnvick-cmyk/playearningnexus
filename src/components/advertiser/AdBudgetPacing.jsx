@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Zap, TrendingUp, Save, RotateCcw, Info, Loader2, CheckCircle2 } from 'lucide-react';
+import { Clock, Zap, Save, RotateCcw, Info, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);

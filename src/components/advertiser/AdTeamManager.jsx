@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, UserPlus, Shield, Eye, Edit3, Trash2, Crown, Copy, Check, Mail, X } from 'lucide-react';
+import { Users, UserPlus, Eye, Edit3, Trash2, Crown, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
 const ROLES = {

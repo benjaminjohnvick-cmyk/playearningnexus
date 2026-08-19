@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import EnhancedPayoutDashboard from '../components/payout/EnhancedPayoutDashboard';
-import CampaignAutomation from '../components/automation/CampaignAutomation';
-import AutomatedFollowUps from '../components/automation/AutomatedFollowUps';
 import PayoutTaxDocs from '../components/payout/PayoutTaxDocs';
 import PendingPayoutSchedule from '../components/payout/PendingPayoutSchedule';
 import TierAdvancement from '../components/referral/TierAdvancement';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -20,7 +17,6 @@ import {
   XCircle,
   AlertCircle,
   FileText,
-  Users,
   Trophy
 } from 'lucide-react';
 import { format } from 'date-fns';

@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Plus, Trash2, GripVertical, Type, ToggleLeft, Star, List, ChevronUp, ChevronDown,
-  Save, Eye, Loader2, ClipboardList
+  Save, Loader2, ClipboardList
 } from 'lucide-react';
 import { toast } from 'sonner';
 

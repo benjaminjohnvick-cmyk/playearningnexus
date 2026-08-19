@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Gavel, Zap, TrendingUp, MapPin, Brain, ToggleLeft, ToggleRight, Info, ChevronUp, ChevronDown, Target, RefreshCw } from 'lucide-react';
+import { Gavel, Zap, TrendingUp, MapPin, Brain, ChevronUp, ChevronDown, Target, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 const GRID_TIERS = [

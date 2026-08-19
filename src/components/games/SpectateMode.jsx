@@ -3,11 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, EyeOff, Users, MessageSquare, Trophy } from 'lucide-react';
+import { Eye, EyeOff, Users, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
-import SupportStreamerButton from '../streaming/SupportStreamerButton';
-import SubscriptionManager from '../streaming/SubscriptionManager';
-import VirtualGiftsPanel from '../streaming/VirtualGiftsPanel';
 import StreamNotifications from '../streaming/StreamNotifications';
 
 export default function SpectateMode({ game, user, onSpectatorUpdate, tournamentMatch = null }) {

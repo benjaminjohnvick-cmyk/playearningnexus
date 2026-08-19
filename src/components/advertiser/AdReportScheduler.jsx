@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Mail, Calendar, BarChart2, Sparkles, Loader2, CheckCircle,
+import { Sparkles, Loader2,
   Send, ChevronDown, ChevronUp, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';

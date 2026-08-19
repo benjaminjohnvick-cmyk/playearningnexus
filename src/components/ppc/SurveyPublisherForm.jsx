@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DollarSign, Info, CheckCircle2, Loader2, Image } from "lucide-react";
+import { Info, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
 import AISurveyBuilder from '@/components/ppc/AISurveyBuilder';
 import AIQuestionGenerator from '@/components/ppc/AIQuestionGenerator';
 import SkipLogicBuilder from '@/components/ppc/SkipLogicBuilder';
-import { useCollabSession, CollabAvatars, CollabFieldHighlight } from '@/components/ppc/CollabCursors';
-import SurveyTargetingFilter from '@/components/ppc/SurveyTargetingFilter';
+import { useCollabSession, CollabFieldHighlight } from '@/components/ppc/CollabCursors';
 
 const SURVEY_TYPES = {
   data_collection: {

@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Zap, Coffee, Loader2, Timer, CheckCircle2, ArrowRight, WifiOff } from 'lucide-react';
 import { toast } from 'sonner';
-import { enqueue, flush, onReconnect } from '@/lib/offlineQueue';
+import { enqueue, onReconnect } from '@/lib/offlineQueue';
 import { pingSurveyActivity } from '@/lib/activityPing';
 
 /**

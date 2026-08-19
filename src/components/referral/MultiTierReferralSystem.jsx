@@ -8,10 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import { 
   Trophy, 
   Star, 
-  TrendingUp, 
   Copy,
-  Plus,
-  ExternalLink
+  Plus
 } from "lucide-react";
 import { toast } from "sonner";
 

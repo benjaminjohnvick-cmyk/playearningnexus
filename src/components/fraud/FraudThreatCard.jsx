@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Ban, DollarSign, X, ChevronDown, ChevronUp, AlertTriangle, ShieldCheck, Clock } from 'lucide-react';
+import { Ban, DollarSign, X, ChevronDown, ChevronUp, Clock } from 'lucide-react';
 
 const SIGNAL_ICONS = {
   'click-spam': '🖱️',

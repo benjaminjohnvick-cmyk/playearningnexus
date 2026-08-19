@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Zap, Loader2, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
+import { Zap, Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 
 const STRATEGIES = [
   { id: 'manual_cpc', label: 'Manual CPC', desc: 'Set your own bid per click' },

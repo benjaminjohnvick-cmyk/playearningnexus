@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ShieldCheck, ShieldAlert, AlertTriangle, Activity, Eye, Clock, MapPin, Zap, Bot, RefreshCw, TrendingDown, CheckCircle } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, AlertTriangle, Activity, Eye, Zap, Bot, CheckCircle } from 'lucide-react';
 
 // ML-style anomaly scoring: returns 0-100 risk score
 function scoreClick(click) {

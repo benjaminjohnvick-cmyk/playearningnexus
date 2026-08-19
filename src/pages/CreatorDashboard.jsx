@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { BarChart3, DollarSign, Users, TrendingUp, Activity } from 'lucide-react';
+import { BarChart3, DollarSign, TrendingUp, Activity } from 'lucide-react';
 import ContentCreatorMonetization from '@/components/creators/ContentCreatorMonetization';
 import CreatorAnalytics from '@/components/creators/CreatorAnalytics';
 import CreatorPayouts from '@/components/creators/CreatorPayouts';

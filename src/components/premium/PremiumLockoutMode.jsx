@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Clock, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { Loader2, Clock, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 // PremiumLockoutMode — for up-front PPC survey members. Lets them set a daily "lockout" time: a local

@@ -10,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import {
-  Gamepad2, Users, Star, Trophy, Loader2, Plus, Bot, Zap,
-  ThumbsUp, CheckCircle, Clock, Send, BarChart2, ChevronRight
+  Gamepad2, Star, Loader2, Plus, Bot, Zap,
+  ThumbsUp, CheckCircle, Clock, Send, BarChart2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

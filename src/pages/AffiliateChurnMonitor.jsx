@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { AlertTriangle, TrendingDown, Zap, Mail, GiftIcon, RefreshCw } from 'lucide-react';
+import { AlertTriangle, TrendingDown, Mail, GiftIcon, RefreshCw } from 'lucide-react';
 
 const RISK_COLORS = {
   low: 'bg-green-100 text-green-800',

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { X, ArrowRight, ArrowLeft, CheckCircle2, Gamepad2, DollarSign, Trophy, Gift } from 'lucide-react';
+import { X, ArrowRight, ArrowLeft, CheckCircle2, Gamepad2, DollarSign, Trophy } from 'lucide-react';
 
 const tutorialSteps = [
   {

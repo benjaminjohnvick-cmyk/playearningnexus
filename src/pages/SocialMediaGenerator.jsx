@@ -3,15 +3,13 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Sparkles, Copy, Calendar, Check, Twitter, Facebook, Instagram, Linkedin, RefreshCw, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Sparkles, Copy, Check, Twitter, Facebook, Instagram, Linkedin, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function SocialMediaGenerator() {

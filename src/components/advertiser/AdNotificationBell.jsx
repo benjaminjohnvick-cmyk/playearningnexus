@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, BellRing, X, Wallet, Trophy, PauseCircle, CheckCircle, Info } from 'lucide-react';
+import { Bell, BellRing, X, Wallet, Trophy, PauseCircle, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const BUDGET_WARN_THRESHOLD = 10; // dollars

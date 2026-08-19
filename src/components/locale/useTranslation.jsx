@@ -30,7 +30,7 @@ export function useTranslation(strings) {
       setTranslated(result);
       setLoading(false);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [language, strings.join('|||')]);
 
   return { t: translated, loading };

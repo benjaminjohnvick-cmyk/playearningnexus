@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trophy, Gift, Ticket, Lock, CheckCircle, ChevronRight, Star, Zap, Crown } from 'lucide-react';
+import { Gift, Ticket, Lock, CheckCircle, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
 const MILESTONES = [

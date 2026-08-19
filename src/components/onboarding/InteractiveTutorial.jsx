@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Home, DollarSign, TrendingUp, Trophy, Users, Star, 
-  Gamepad2, Gift, MessageCircle, Settings, CheckCircle2, ArrowRight
+  Home, DollarSign, Trophy, Users, Star, 
+  Gamepad2, MessageCircle, Settings, CheckCircle2, ArrowRight
 } from 'lucide-react';
 
 const TUTORIAL_STEPS = [

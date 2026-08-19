@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Crown, Medal, Star, Flame, Trophy, DollarSign, Award, Zap, TrendingUp, Calendar } from 'lucide-react';
+import { Crown, Medal, Flame, Trophy, Zap, Calendar } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { motion } from 'framer-motion';
 import SeasonPanel from '@/components/leaderboard/SeasonPanel';

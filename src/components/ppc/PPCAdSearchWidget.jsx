@@ -13,7 +13,6 @@ import { toast } from 'sonner';
 import { usePushNotificationTriggers } from '@/hooks/usePushNotificationTriggers';
 import AnimatedJackpotCounter from '@/components/jackpot/AnimatedJackpotCounter';
 import SocialMediaConnectionManager from '@/components/social/SocialMediaConnectionManager';
-import ProductSearchResults from '@/components/store/ProductSearchResults';
 
 export default function PPCAdSearchWidget({ variant = 'compact' }) {
   const [user, setUser] = useState(null);

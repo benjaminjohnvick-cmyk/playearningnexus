@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BarChart2, Loader2, Zap, TrendingUp, Target, Eye, RefreshCw, Sparkles } from 'lucide-react';
+import { BarChart2, Loader2, TrendingUp, Target, Eye, RefreshCw, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TIER_COLORS = { Premium: 'text-yellow-400', High: 'text-orange-400', Standard: 'text-blue-400', Economy: 'text-gray-400' };

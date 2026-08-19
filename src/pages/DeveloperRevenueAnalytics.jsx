@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
-  PieChart, Pie, LineChart, Line, AreaChart, Area, Legend, CartesianGrid
+  PieChart, Pie, AreaChart, Area, Legend, CartesianGrid
 } from 'recharts';
 import {
   Loader2, DollarSign, TrendingUp, Users, BarChart2,

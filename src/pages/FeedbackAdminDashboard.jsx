@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,8 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { 
   ClipboardList, Brain, CheckCircle, XCircle, Clock, 
-  Loader2, Play, RefreshCw, AlertTriangle, TrendingUp,
-  Users, Star, Lightbulb, ChevronDown, ChevronUp, PenLine
+  Loader2, Play, AlertTriangle,
+  Users, Lightbulb, ChevronDown, ChevronUp, PenLine
 } from 'lucide-react';
 import ManualFeedbackSurveyBuilder from '@/components/feedback/ManualFeedbackSurveyBuilder';
 import { toast } from 'sonner';

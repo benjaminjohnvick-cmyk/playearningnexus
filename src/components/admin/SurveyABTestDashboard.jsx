@@ -5,11 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { FlaskConical, Loader2, Plus, Play, Pause, RefreshCw, TrendingUp, Trophy, Zap } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { FlaskConical, Loader2, Plus, Play, Pause, Trophy, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 
 function StatCompare({ labelA, labelB, valA, valB, format = v => v, higherIsBetter = true }) {

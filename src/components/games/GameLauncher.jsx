@@ -10,26 +10,21 @@ import {
   Save, 
   X, 
   Maximize, 
-  Minimize, 
-  RotateCcw,
+  Minimize,
   Cloud,
   Volume2,
   VolumeX,
   ShoppingCart,
-  Eye,
-  Zap,
   Trophy
 } from 'lucide-react';
 import InGameStore from './InGameStore';
 import SpectateMode from './SpectateMode';
 import ActiveEventsDisplay from '../events/ActiveEventsDisplay';
-import ViewerMonetizationPanel from '../streaming/ViewerMonetizationPanel';
 import InGameTournamentOverlay from '../tournaments/InGameTournamentOverlay';
 import VirtualCurrencyWidget from '../monetization/VirtualCurrencyWidget';
 import DeveloperSupportPanel from '../monetization/DeveloperSupportPanel';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 
 export default function GameLauncher({ game, user, isOpen, onClose }) {
   const [isPlaying, setIsPlaying] = useState(false);

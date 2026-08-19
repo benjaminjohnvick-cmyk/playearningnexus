@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Loader2, Bot, Send, Zap, Shield, TrendingUp, Users, DollarSign, Megaphone, BarChart2, Trophy, ShoppingCart, Star, Brain, Activity, CheckCircle, AlertTriangle, MessageSquare } from 'lucide-react';
+import { Loader2, Bot, Send, Zap, Shield, TrendingUp, Users, DollarSign, Megaphone, BarChart2, Trophy, Star, Brain, Activity, CheckCircle, MessageSquare } from 'lucide-react';
 import MessageBubble from '@/components/agents/AgentMessageBubble';
 import { toast } from 'sonner';
 

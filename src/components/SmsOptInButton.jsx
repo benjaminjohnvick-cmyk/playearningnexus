@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, MessageSquare, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { MessageSquare, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 // SmsOptInButton — verifiable SMS marketing consent capture (double opt-in). Drop onto a settings/profile
 // page. Records real, auditable consent; actual SMS sending stays gated on a provider + the sms_marketing
@@ -22,7 +22,7 @@ export default function SmsOptInButton() {
     try { const r = await base44.functions.invoke('smsOptInStatus', {}); setData(r || null); if (r?.consent?.phone) setPhone(r.consent.phone); }
     catch { setData(null); } finally { setLoading(false); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load();   }, []);
 
   const call = async (fn, payload, ok) => {
     setBusy(true); setMsg(null);

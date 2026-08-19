@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
   Sparkles, Loader2, Copy, CheckCircle, RefreshCw, Tag,
-  MessageSquare, Zap, TrendingUp, Brain
+  MessageSquare, Zap, Brain
 } from 'lucide-react';
 import { toast } from 'sonner';
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, Eye, MousePointer, DollarSign, Gift, TrendingUp, Tv } from 'lucide-react';
+import { Play, Eye, MousePointer, Gift, Tv } from 'lucide-react';
 import { toast } from 'sonner';
 
 const AD_FORMATS = [

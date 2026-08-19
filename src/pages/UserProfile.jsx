@@ -17,14 +17,13 @@ import {
 import AboutMeEditor from '../components/profile/AboutMeEditor';
 import PayoutInsightWidget from '../components/profile/PayoutInsightWidget';
 import AchievementBadgeSystem, { useAchievements } from '@/components/achievements/AchievementBadgeSystem';
-import { BadgeDisplay, useBadgeAwarder } from '@/components/achievements/BadgeSystem';
+import { useBadgeAwarder } from '@/components/achievements/BadgeSystem';
 import MilestoneAchievements, { useMilestoneAwarder } from '@/components/achievements/MilestoneAchievements';
 import SocialLinksEditor from '../components/profile/SocialLinksEditor';
 import FeaturedBadges from '../components/profile/FeaturedBadges';
 import SurveyInterestPicker from '../components/profile/SurveyInterestPicker';
 import SurveyNotificationSettings from '../components/profile/SurveyNotificationSettings';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Star, Zap, TrendingUp, Award, CheckCircle2, Clock, Target, Crown } from 'lucide-react';
+import { Zap, TrendingUp, Award, CheckCircle2, Clock, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const LEVELS = [

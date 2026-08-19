@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, TrendingUp, DollarSign, Clock, CheckCircle2, AlertCircle, Zap, Calendar } from 'lucide-react';
+import { Loader2, TrendingUp, DollarSign, CheckCircle2, AlertCircle, Zap, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AIPayoutAdvanceDashboard({ user }) {

@@ -22,7 +22,7 @@ export default function GiftBoost() {
     try { const r = await base44.functions.invoke('giftBoostStatus', {}); setData(r || null); if (r?.config && !amt) setAmt(String(r.config.max_usd || '')); }
     catch { setData(null); } finally { setLoading(false); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load();   }, []);
 
   const send = async () => {
     setBusy(true); setMsg(null);

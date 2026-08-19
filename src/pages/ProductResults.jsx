@@ -25,7 +25,7 @@ export default function ProductResults() {
     } catch (e) { setErr(e?.message || 'Could not load product stats.'); }
     finally { setLoading(false); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [onlyPublished]);
+  useEffect(() => { load();   }, [onlyPublished]);
 
   if (loading) return <div className="flex items-center justify-center py-24"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>;
 

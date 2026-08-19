@@ -12,7 +12,6 @@ import {
   Zap,
   Lock,
   Star,
-  DollarSign,
   Gem
 } from 'lucide-react';
 import { toast } from 'sonner';

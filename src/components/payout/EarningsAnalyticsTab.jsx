@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Legend, LineChart, Line
+  BarChart, Bar, LineChart, Line
 } from 'recharts';
 import { TrendingUp, DollarSign, Users, Zap } from 'lucide-react';
 import { format, subDays, startOfWeek, eachDayOfInterval } from 'date-fns';

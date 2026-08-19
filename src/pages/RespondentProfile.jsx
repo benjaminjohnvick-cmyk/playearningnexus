@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, User, CheckCircle2, Plus, X, Shield, Star, Target, Briefcase, BookOpen, DollarSign, Home, Heart } from 'lucide-react';
+import { Loader2, User, CheckCircle2, Shield, Star, Target, Briefcase, Home, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 
 const INTERESTS = [

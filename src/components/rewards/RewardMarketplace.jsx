@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Zap, Clock, ShoppingBag, Sparkles, AlertCircle } from 'lucide-react';
+import { Star, Zap, Clock, ShoppingBag, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function RewardMarketplace({ user }) {

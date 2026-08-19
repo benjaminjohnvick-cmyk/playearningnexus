@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react';
+import { TrendingDown, AlertTriangle } from 'lucide-react';
 
 export default function SurveyFunnelAnalysis({ ads }) {
   // Aggregate funnel data from all ads

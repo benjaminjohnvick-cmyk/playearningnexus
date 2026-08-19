@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Zap, CheckCircle2, ChevronRight, Lock } from "lucide-react";
+import { Zap, CheckCircle2, ChevronRight } from "lucide-react";
 
 export default function Tier1Overview({ currentTier, onViewDetails }) {
   return (

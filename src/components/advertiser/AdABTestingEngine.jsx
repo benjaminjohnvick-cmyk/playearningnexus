@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Sparkles, RotateCcw, TrendingUp, CheckCircle2, Loader2, Play, Pause } from 'lucide-react';
+import { Sparkles, RotateCcw, CheckCircle2, Loader2 } from 'lucide-react';
 
 export default function AdABTestingEngine({ ads }) {
   const [selectedAd, setSelectedAd] = useState(null);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, DollarSign, ShieldCheck } from 'lucide-react';
+import { CheckCircle, ShieldCheck } from 'lucide-react';
 
 const tiers = [
   {

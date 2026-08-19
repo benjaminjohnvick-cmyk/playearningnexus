@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Twitter, Facebook, Linkedin, Share2, X } from 'lucide-react';
+import { Twitter, Facebook, Linkedin, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function SocialSharePrompt({ isOpen, onClose, game, action = "purchased" }) {

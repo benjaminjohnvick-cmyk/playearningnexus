@@ -2,7 +2,6 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Trophy, Crown, Gift } from 'lucide-react';
-import { format } from 'date-fns';
 
 // Static historical winners to supplement real data
 const STATIC_WINNERS = [

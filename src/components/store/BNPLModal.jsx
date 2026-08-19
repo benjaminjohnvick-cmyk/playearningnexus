@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { CreditCard, Users, DollarSign, AlertCircle, CheckCircle2, Info, X, Plus, Trash2, Shield } from 'lucide-react';
+import { CreditCard, Users, AlertCircle, CheckCircle2, Info, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PayPalCardCapture from './PayPalCardCapture';

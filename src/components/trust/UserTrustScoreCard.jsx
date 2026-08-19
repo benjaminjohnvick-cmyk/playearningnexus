@@ -1,10 +1,9 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Shield, RefreshCw, TrendingUp, CheckCircle, XCircle, Users, Loader2 } from 'lucide-react';
+import { Shield, RefreshCw, TrendingUp, CheckCircle, Users, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 
 const TIER_CONFIG = {

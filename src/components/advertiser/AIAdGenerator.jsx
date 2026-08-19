@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sparkles, Globe, Loader2, RefreshCw, CheckCircle, Image, Tag, Copy, Download } from 'lucide-react';
+import { Sparkles, Globe, Loader2, RefreshCw, CheckCircle, Image, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AIAdGenerator({ onApply }) {

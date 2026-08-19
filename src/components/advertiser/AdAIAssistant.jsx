@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Bot, Send, Loader2, Lightbulb, TrendingUp, HelpCircle, ChevronRight } from 'lucide-react';
+import { Bot, Send, Loader2, HelpCircle, ChevronRight } from 'lucide-react';
 
 const SUGGESTED_QUESTIONS = [
   'Why did my CTR drop recently?',

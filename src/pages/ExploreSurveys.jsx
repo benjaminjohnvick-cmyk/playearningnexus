@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
@@ -10,18 +10,17 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
-  MapPin, DollarSign, Loader2, Lock, Zap, Navigation,
-  X, Star, Clock, TrendingUp, CheckCircle2, Filter,
+  MapPin, Loader2, Lock, Zap, Navigation,
+  X, Star, Clock, TrendingUp, CheckCircle2,
   Globe, RefreshCw, Flame, Package, Coffee, Heart,
-  ShoppingBag, Car, Briefcase, Activity, ChevronRight,
+  ShoppingBag, Car, Briefcase, Activity,
   AlertCircle, CheckCheck, Timer, Bell, List
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import SurveySearchBar from '@/components/surveys/SurveySearchBar';
 import AISurveyCoach from '@/components/surveys/AISurveyCoach';
 import { computeMatchScore, MatchScoreBadge } from '@/components/surveys/SurveyMatchScore';
-import TrustGate from '@/components/trust/TrustGate';
 import { useTrustScore } from '@/components/trust/UserTrustScoreCard';
 
 // Fix Leaflet icon paths

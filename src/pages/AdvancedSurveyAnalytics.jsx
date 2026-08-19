@@ -6,12 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
-  LineChart, Line, ScatterChart, Scatter, ZAxis, PieChart, Pie, Legend
+  LineChart, Line, Legend
 } from 'recharts';
-import { Loader2, Sparkles, BarChart2, TrendingUp, MessageSquare, RefreshCw, Layers, Brain, Clock } from 'lucide-react';
+import { Loader2, Sparkles, TrendingUp, MessageSquare, Layers, Brain, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
 const COLORS = ['#7c3aed', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];

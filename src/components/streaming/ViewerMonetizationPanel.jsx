@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gift, Heart, Crown } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import SupportStreamerButton from './SupportStreamerButton';
 import SubscriptionManager from './SubscriptionManager';
 import VirtualGiftsPanel from './VirtualGiftsPanel';

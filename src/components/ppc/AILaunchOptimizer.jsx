@@ -6,12 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
-  Brain, Clock, TrendingUp, Globe, Users, Zap, CheckCircle2, Loader2,
-  Star, AlertTriangle, ChevronDown, ChevronUp, Calendar, Target,
+  Brain, TrendingUp, Globe, Users, CheckCircle2, Loader2, AlertTriangle, ChevronDown, ChevronUp, Calendar, Target,
   BarChart2, Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 
 const DEMOGRAPHICS = [
   'Ages 18–24 (Gen Z)',

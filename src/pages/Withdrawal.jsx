@@ -7,8 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  DollarSign, Clock, CheckCircle2, XCircle,
+import { Clock, CheckCircle2, XCircle,
   Loader2, Send, ArrowDownCircle, RefreshCw, Info,
   CreditCard, Wallet, Copy, ChevronDown, ChevronUp, Shield,
   TrendingUp, Zap, BarChart2, ShoppingBag, Search, ArrowRight, Lock

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Package, DollarSign, Tag, Link, Image, Loader2, CheckCircle2, Trash2 } from 'lucide-react';
+import { Upload, Package, DollarSign, Link, Image, Loader2, CheckCircle2, Trash2 } from 'lucide-react';
 
 const CATEGORIES = ['electronics', 'gaming', 'fashion', 'home', 'beauty', 'sports', 'books', 'other'];
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  TrendingDown, Zap, ShoppingBag, ExternalLink,
+import { Zap, ShoppingBag, ExternalLink,
   CheckCircle, XCircle, Star, Award, Info
 } from 'lucide-react';
 

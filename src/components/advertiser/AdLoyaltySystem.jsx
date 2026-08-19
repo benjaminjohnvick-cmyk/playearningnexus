@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Trophy, Zap, Gift, CheckCircle, Lock, TrendingUp, Award } from 'lucide-react';
+import { Star, Trophy, Zap, Gift, CheckCircle, Lock, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 
 const MILESTONES = [

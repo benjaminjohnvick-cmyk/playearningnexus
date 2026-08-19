@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Flame, Star, Shield, Trophy, Zap, Lock, Crown, Award, CheckCircle2 } from 'lucide-react';
-import { format, subDays, isSameDay, parseISO } from 'date-fns';
+import { format, subDays, isSameDay } from 'date-fns';
 
 const BADGES = [
   { id: 'first_survey', icon: Star, label: 'First Survey', desc: 'Complete your first survey', req: 1, color: 'from-yellow-400 to-yellow-600', unlockDays: 1 },

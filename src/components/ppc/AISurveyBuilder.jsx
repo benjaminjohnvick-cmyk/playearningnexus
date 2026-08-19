@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
-  Loader2, Sparkles, CheckCircle2, Edit3, Save,
-  AlertCircle, DollarSign, Users, ChevronRight, FlaskConical
+  Loader2, Sparkles, CheckCircle2, Edit3, Save, DollarSign, Users, ChevronRight, FlaskConical
 } from "lucide-react";
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';

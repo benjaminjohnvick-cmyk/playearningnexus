@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Info } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 

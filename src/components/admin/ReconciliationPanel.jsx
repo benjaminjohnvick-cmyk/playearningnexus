@@ -7,12 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import {
-  RefreshCw, AlertTriangle, CheckCircle2, DollarSign, Mail,
-  ChevronDown, ChevronUp, Loader2, BarChart2, Clock, Shield,
+  RefreshCw, AlertTriangle, CheckCircle2, DollarSign,
+  ChevronDown, ChevronUp, Loader2, BarChart2, Shield,
   FileText, Send, Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
 const DISCREPANCY_TYPE_LABELS = {
   payout_exceeds_earnings: { label: 'Payout > Earnings', color: 'bg-orange-100 text-orange-700' },

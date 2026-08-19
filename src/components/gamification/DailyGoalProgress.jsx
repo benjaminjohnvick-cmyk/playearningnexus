@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Target, Zap, Star } from 'lucide-react';
 
 export default function DailyGoalProgress({ earned = 0, goal = 3, surveysToday = 0 }) {

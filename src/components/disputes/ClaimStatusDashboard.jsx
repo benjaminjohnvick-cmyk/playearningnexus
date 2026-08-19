@@ -4,11 +4,10 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import {
   Clock, CheckCircle2, XCircle, AlertCircle, Eye,
-  ChevronDown, ChevronUp, Upload, FileText, DollarSign,
-  Loader2, Shield, RefreshCw, Bell
+  ChevronDown, ChevronUp, Upload, FileText,
+  Loader2, Shield, RefreshCw
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { toast } from 'sonner';

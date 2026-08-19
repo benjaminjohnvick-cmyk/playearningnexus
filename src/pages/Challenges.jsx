@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Trophy, Flame, Users, DollarSign, Star, Zap, Target,
-  Gift, Lock, CheckCircle2, Clock, Loader2, Crown, Award
+  Trophy, Flame, Users, DollarSign, Star, Target,
+  Gift, Lock, CheckCircle2, Loader2, Crown, Award
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { differenceInDays, format, subDays } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import confetti from 'canvas-confetti';
 import DailyChallengeBanner from '@/components/challenges/DailyChallengeBanner';
 

@@ -1,13 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  LineChart, Line, AreaChart, Area, BarChart, Bar,
+import { AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
-import { TrendingUp, TrendingDown, Brain, Loader2, Calendar, AlertTriangle, CheckCircle2, Sparkles } from 'lucide-react';
+import { TrendingUp, Loader2, Calendar, AlertTriangle, CheckCircle2, Sparkles } from 'lucide-react';
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 

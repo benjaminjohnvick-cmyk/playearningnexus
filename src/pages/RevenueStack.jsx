@@ -34,7 +34,7 @@ export default function RevenueStack() {
     }
   };
 
-  useEffect(() => { load(90); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load(90);   }, []);
 
   if (loading) return <div className="flex items-center justify-center py-24"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>;
   if (notAdmin) return <div className="max-w-xl mx-auto py-24 text-center text-gray-500">Admin only.</div>;

@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
-  Copy, Check, Share2, Instagram, Twitter, Facebook, Mail,
-  Image, FileText, Hash, Search, ExternalLink
+  Copy, Check, Share2, Instagram, Twitter, Facebook, Mail, Hash, Search, ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
 

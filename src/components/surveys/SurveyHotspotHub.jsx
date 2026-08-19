@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import {
-  Zap, DollarSign, Clock, TrendingUp, Star, Lock, Unlock,
+  Zap, DollarSign, Clock, Star, Lock, Unlock,
   Flame, Target, ShoppingBag, Heart, Car, Tv, Utensils,
-  Laptop, Globe, Users, Home, Leaf, GraduationCap, ChevronRight
+  Laptop, Globe, Home, Leaf, GraduationCap, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';

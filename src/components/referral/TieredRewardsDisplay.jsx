@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Award, Star, Crown, Zap } from "lucide-react";
+import { Star } from "lucide-react";
 
 export default function TieredRewardsDisplay({ user, referralStats }) {
   const tiers = [

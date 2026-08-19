@@ -4,11 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Users, DollarSign, TrendingUp, Share2, Zap, Globe,
-  CheckCircle2, AlertCircle, Clock, ChevronRight, Instagram,
+  CheckCircle2, Instagram,
   Twitter, Facebook
 } from 'lucide-react';
 import { toast } from 'sonner';

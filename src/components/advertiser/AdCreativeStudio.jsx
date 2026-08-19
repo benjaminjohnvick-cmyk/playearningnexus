@@ -1,13 +1,12 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import VoiceCommandBar from '@/components/advertiser/VoiceCommandBar';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
-  Image, Tag, Plus, Clock, TrendingUp, MousePointerClick, CheckSquare,
-  ChevronDown, ChevronUp, Pencil, Trash2, Copy, Loader2, Upload, Mic, MicOff,
-  Sparkles, Search, Filter, Eye, Download, Layers, Type, Wand2, X, Check,
+  Image, Plus, TrendingUp, MousePointerClick, CheckSquare,
+  ChevronDown, ChevronUp, Trash2, Copy, Loader2, Upload, Mic, MicOff,
+  Sparkles, Search, Filter, Eye, Layers, Type, Wand2, X, Check,
   GitBranch, Hash
 } from 'lucide-react';
 import { toast } from 'sonner';

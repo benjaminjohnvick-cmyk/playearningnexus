@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Users, MousePointer, Globe, Mail, Share2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, Users, MousePointer, Globe, Share2 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend, PieChart, Pie, Cell
 } from 'recharts';
-import { format, subDays, parseISO } from 'date-fns';
+import { format, subDays } from 'date-fns';
 
 const SOURCE_META = {
   facebook:  { label: 'Facebook',  color: '#1877F2', icon: '📘' },

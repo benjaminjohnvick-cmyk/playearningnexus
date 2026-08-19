@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Loader2, CheckCircle, Image, FileText, X } from 'lucide-react';
+import { Upload, Loader2, CheckCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function EvidenceUploader({ onUpload, existingUrl }) {

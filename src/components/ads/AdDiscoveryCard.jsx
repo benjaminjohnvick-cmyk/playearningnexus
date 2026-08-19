@@ -1,7 +1,6 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Zap, Clock, TrendingUp, Star } from "lucide-react";
+import { Zap, TrendingUp } from "lucide-react";
 
 const difficultyColor = {
   Easy: "bg-green-100 text-green-700",

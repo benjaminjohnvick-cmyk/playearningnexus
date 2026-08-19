@@ -3,9 +3,9 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Layers, Type, Image, Square, Circle, Download, Upload,
-  Trash2, Move, Plus, CheckCircle, Loader2, Eye, AlignCenter,
-  Bold, Palette
+  Layers, Type, Square, Download, Upload,
+  Trash2, Plus, CheckCircle, Loader2, Eye,
+  Bold
 } from 'lucide-react';
 import { toast } from 'sonner';
 

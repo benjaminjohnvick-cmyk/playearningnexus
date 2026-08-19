@@ -4,8 +4,8 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { DollarSign, TrendingUp, Zap, CheckCircle2, Clock, AlertCircle, Target } from 'lucide-react';
-import { format, addDays, subDays } from 'date-fns';
+import { DollarSign, TrendingUp, Zap, Clock, AlertCircle, Target } from 'lucide-react';
+import { format, addDays } from 'date-fns';
 
 const PAYOUT_METHODS = [
   {

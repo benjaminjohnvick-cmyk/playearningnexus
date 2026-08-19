@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { TestTube, Plus, Zap, Loader2, Bot, Wand2, LayoutGrid, ChevronDown } from 'lucide-react';
+import { TestTube, Plus, Zap, Loader2, Bot, LayoutGrid, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import FeatureSurveyForm from '@/components/abtesting/FeatureSurveyForm';
 import FeatureSurveyVoteCard from '@/components/abtesting/FeatureSurveyVoteCard';

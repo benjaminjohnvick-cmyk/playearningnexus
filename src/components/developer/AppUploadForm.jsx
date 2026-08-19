@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { base44 } from '@/api/base44Client';
-import { Upload, X, CheckCircle2, Image, Film, FileArchive, Smartphone } from "lucide-react";
+import { Upload, X, CheckCircle2, Image, Film, FileArchive } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AppUploadForm({ onSuccess, onCancel, businessClient }) {

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, SlidersHorizontal, Bell, BellOff, Save, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, SlidersHorizontal, Bell, BellOff, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SORT_OPTIONS = [

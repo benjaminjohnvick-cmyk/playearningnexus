@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Cell } from 'recharts';
 import {
   Users, Zap, Mail, Ticket, TrendingUp, DollarSign, Loader2,
-  Send, CheckCircle, RefreshCw, Star, Clock, Bot
+  Send, CheckCircle, Star, Clock, Bot
 } from 'lucide-react';
 import { toast } from 'sonner';
 

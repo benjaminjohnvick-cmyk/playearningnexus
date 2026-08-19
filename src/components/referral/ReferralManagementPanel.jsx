@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Users, DollarSign, TrendingUp, Copy, Check, Twitter, Linkedin,
+  Users, Copy, Check, Twitter, Linkedin,
   Facebook, Mail, MessageSquare, Search, ExternalLink, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { format } from 'date-fns';

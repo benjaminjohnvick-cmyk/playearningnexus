@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const CURSOR_COLORS = ['#7c3aed', '#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed'];
 

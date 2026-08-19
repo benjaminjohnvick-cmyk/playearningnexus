@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Target, Calendar, Zap } from 'lucide-react';
+import { TrendingUp, Target, Zap } from 'lucide-react';
 
 export default function EarningsPotentialCalculator({ currentBalance = 0, nextPayoutThreshold = 50 }) {
   const [surveysPerWeek, setSurveysPerWeek] = useState(10);

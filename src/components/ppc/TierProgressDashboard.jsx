@@ -1,9 +1,9 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Lock, Zap, TrendingUp, Trophy, Star, ArrowRight, Info } from "lucide-react";
+import { CheckCircle2, Lock, Zap, TrendingUp, Trophy, Star, Info } from "lucide-react";
 
 const TIERS = [
   {

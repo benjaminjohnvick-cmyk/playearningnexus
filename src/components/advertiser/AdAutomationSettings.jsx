@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import {
   Bot, Mail, RefreshCw, DollarSign, Brain, Zap, CheckCircle2,
-  Loader2, Info, Clock, Sparkles, ShieldCheck, FileText, TrendingUp, ChevronDown, ChevronUp
+  Loader2, Info, Clock, Sparkles, ShieldCheck, FileText, TrendingUp
 } from 'lucide-react';
 import { toast } from 'sonner';
 

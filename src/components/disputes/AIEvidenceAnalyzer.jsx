@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  Zap, CheckCircle2, AlertCircle, Loader2, Brain, Sparkles,
-  TrendingUp, Flag, Shield
+import { CheckCircle2, AlertCircle, Loader2, Brain, Sparkles, Flag, Shield
 } from 'lucide-react';
 import { toast } from 'sonner';
 

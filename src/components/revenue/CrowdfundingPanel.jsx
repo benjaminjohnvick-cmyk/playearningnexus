@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Users, Heart, Zap, Target, Plus, Sparkles } from 'lucide-react';
+import { Users, Target, Plus, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 const DEMO_CAMPAIGNS = [

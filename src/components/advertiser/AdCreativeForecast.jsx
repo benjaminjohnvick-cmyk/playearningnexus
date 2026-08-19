@@ -3,7 +3,6 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, TrendingUp, Target, Loader2, CheckCircle, AlertTriangle, Info, BarChart2, Zap } from 'lucide-react';
-import { toast } from 'sonner';
 
 // Heuristic benchmark scores by industry keyword
 const INDUSTRY_BENCHMARKS = {

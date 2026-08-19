@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,12 +8,12 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Mail, Eye, MousePointer, UserCheck, TrendingUp, Send,
-  Loader2, RefreshCw, AlertTriangle, CheckCircle2, BarChart2
+  Loader2, RefreshCw, AlertTriangle, BarChart2
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatDistanceToNow, differenceInHours, format } from 'date-fns';
+import { formatDistanceToNow, differenceInHours } from 'date-fns';
 import {
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import moment from 'moment';

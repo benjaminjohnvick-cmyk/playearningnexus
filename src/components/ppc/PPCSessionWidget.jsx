@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  Zap, Clock, DollarSign, CheckCircle2, Play, Pause, Trophy, Loader2, Star
+  Zap, Clock, CheckCircle2, Play, Pause, Trophy, Loader2
 } from "lucide-react";
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';

@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Trophy, Gift, CheckCircle, Lock } from 'lucide-react';
+import { Trophy, CheckCircle, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const MILESTONES = [

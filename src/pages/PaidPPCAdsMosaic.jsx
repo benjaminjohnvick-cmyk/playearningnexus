@@ -7,7 +7,7 @@ import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe, ArrowRig
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
-import { InteractionTracker, buildFingerprint, hasAlreadyCompleted, markCompleted } from '@/lib/clickVerification';
+import { InteractionTracker, markCompleted } from '@/lib/clickVerification';
 import SocialAdCreator from '@/components/ppc/SocialAdCreator';
 
 const REQUIRED_DAILY_CLICKS = 16;

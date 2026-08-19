@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Search, Zap, Copy, TrendingUp, BarChart2 } from 'lucide-react';
+import { Upload, Search, Zap, Copy, TrendingUp } from 'lucide-react';
 
 const CATEGORIES = ['all', 'banner', 'social_post', 'video', 'email_template', 'logo', 'infographic', 'copy_template'];
 const PLATFORMS = ['twitter', 'instagram', 'tiktok', 'facebook', 'linkedin', 'email'];

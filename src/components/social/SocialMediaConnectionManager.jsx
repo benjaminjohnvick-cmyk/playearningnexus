@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Facebook, Twitter, Instagram, Zap, Trash2, Plus, CheckCircle2, AlertCircle, Gift } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Zap, Trash2, CheckCircle2, Gift } from 'lucide-react';
 
 const PLATFORMS = {
   facebook: {

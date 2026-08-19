@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Gift, Loader2, CheckCircle2, Flame, Bell } from 'lucide-react';
+import { AlertTriangle, Gift, CheckCircle2, Flame } from 'lucide-react';
 
 const riskColors = {
   low: 'bg-green-100 text-green-700 border-green-200',

@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Clock, Eye, Mail, Loader2, AlertTriangle, Filter } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Eye, Loader2, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 
 const STATUS_COLORS = {

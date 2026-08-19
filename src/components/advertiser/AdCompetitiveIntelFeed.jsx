@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Sparkles, RefreshCw, Eye, TrendingUp, Users, Target, Zap } from 'lucide-react';
+import { Loader2, Sparkles, RefreshCw } from 'lucide-react';
 
 const COMPETITORS = [
   { name: 'GamePulse Ads', color: 'blue', bid: 0.72, tier: 'Premium', demos: ['18-24 Gaming', '25-34 Tech'], impressions: 84200, ctr: 4.8 },

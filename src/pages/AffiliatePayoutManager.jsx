@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, CheckCircle, Clock, DollarSign, FileText, Zap, TrendingUp } from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, DollarSign, FileText, Zap } from 'lucide-react';
 
 const STATUS_COLORS = {
   pending_validation: 'bg-yellow-100 text-yellow-800',

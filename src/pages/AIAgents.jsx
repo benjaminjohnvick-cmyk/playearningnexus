@@ -3,10 +3,9 @@ import { base44 } from '@/api/base44Client';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bot, MessageSquare, Zap, TrendingUp, Globe, Settings, TestTube, Store, DollarSign, Search, ShoppingBag, Brain } from "lucide-react";
+import { Bot, MessageSquare, Zap, TrendingUp, Settings, TestTube, DollarSign, Search, ShoppingBag, Brain } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { toast } from "sonner";
 
 export default function AIAgents() {
   const [user, setUser] = useState(null);

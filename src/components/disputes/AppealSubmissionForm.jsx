@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import {
-  AlertCircle, Upload, Image as ImageIcon, Loader2,
-  CheckCircle2, ChevronRight, FileText, Search, XCircle
+import { Upload, Image as ImageIcon, Loader2,
+  CheckCircle2, ChevronRight, Search
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatDistanceToNow, format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
 const APPEAL_REASONS = [
   { key: 'technical_error', label: 'Technical error occurred during survey' },

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from 'recharts';
-import { DollarSign, TrendingUp, TrendingDown, ShoppingCart, Search, Zap, Target } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Zap, Target } from 'lucide-react';
 
 const COLORS = ['#22c55e', '#ef4444', '#8b5cf6', '#f59e0b', '#3b82f6'];
 

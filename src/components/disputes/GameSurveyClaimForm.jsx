@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Loader2, Upload, CheckCircle, Gamepad2, FileText, DollarSign, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import AIEvidenceAnalyzer from './AIEvidenceAnalyzer';

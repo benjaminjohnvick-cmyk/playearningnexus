@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { CreditCard, Shield, Loader2, CheckCircle2 } from 'lucide-react';
+import { CreditCard, Shield, CheckCircle2 } from 'lucide-react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { toast } from 'sonner';
 

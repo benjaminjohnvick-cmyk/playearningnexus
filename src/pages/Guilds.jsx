@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Users, Crown, MessageSquare, TrendingUp, Shield, Plus, Send, Trophy } from 'lucide-react';
+import { Users, Crown, MessageSquare, Shield, Plus, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import AIGuildChallenge from '../components/guilds/AIGuildChallenge';

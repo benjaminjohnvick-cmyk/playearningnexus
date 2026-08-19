@@ -22,7 +22,7 @@ export default function Profit() {
     try { const res = await base44.functions.invoke('profitSummary', { days: Number(days) || 30 }); setData(res?.data || null); }
     catch { /* ignore */ } finally { setLoading(false); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load();   }, []);
 
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto">

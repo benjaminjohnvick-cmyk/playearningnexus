@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Video, Mic, Play, Download, Sparkles, Loader2, Link2, CheckCircle, Film, Share2, RefreshCw, Upload } from 'lucide-react';
+import { Video, Mic, Sparkles, Loader2, Link2, CheckCircle, Film, Share2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import GrowthContentEngineWidget from '@/components/growth/GrowthContentEngineWidget';

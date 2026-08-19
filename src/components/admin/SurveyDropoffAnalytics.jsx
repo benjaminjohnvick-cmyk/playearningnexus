@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, FunnelChart, Funnel, LabelList, Cell } from 'recharts';
-import { TrendingDown, AlertTriangle, Users, CheckCircle, Loader2, RefreshCw, Flame } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { TrendingDown, AlertTriangle, Loader2, RefreshCw, Flame } from 'lucide-react';
 
 const HEAT_COLORS = ['#dcfce7','#bbf7d0','#86efac','#4ade80','#22c55e','#fef9c3','#fef08a','#fde047','#facc15','#f97316','#ef4444','#dc2626'];
 

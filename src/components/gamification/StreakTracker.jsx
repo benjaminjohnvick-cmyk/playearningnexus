@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Flame, TrendingUp, Award, Zap } from "lucide-react";
+import { Flame, Award, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function StreakTracker({ streak }) {

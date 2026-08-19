@@ -10,7 +10,6 @@ import {
   Youtube, 
   Mail,
   Link as LinkIcon,
-  TrendingUp,
   Target
 } from 'lucide-react';
 import { 

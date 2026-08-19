@@ -1,10 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { CheckCircle, ShieldCheck, Users, Star, DollarSign, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
+import { CheckCircle, ShieldCheck } from 'lucide-react';
 
 export default function SocialMediaMarketingPricing() {
   return (

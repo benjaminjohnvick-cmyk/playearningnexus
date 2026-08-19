@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Zap, Trophy, TrendingUp, Info, Lock, CheckCircle2, Loader2, ShoppingBag, BarChart2, Search, Package, Sparkles } from "lucide-react";
+import { DollarSign, Zap, Trophy, TrendingUp, Info, Lock, CheckCircle2, Loader2, ShoppingBag, BarChart2, Package, Sparkles } from "lucide-react";
 import { Link } from 'react-router-dom';
 import ProductSearchBar from '@/components/store/ProductSearchBar';
 import PremiumPPCEnrollButton from '@/components/premium/PremiumPPCEnrollButton';

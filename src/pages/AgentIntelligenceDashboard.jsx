@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Brain, TrendingUp, CheckCircle, XCircle, Clock, Zap, 
-  RefreshCw, Play, Users, Mail, MessageSquare, Target, 
-  AlertTriangle, BarChart2, Shield, Star, Cpu, GitBranch,
-  ArrowRight, Activity, Database, Sparkles
+  Brain, TrendingUp, CheckCircle, XCircle, 
+  RefreshCw, Users, Mail, MessageSquare, BarChart2, Shield, Star, Cpu, GitBranch,
+  ArrowRight, Activity, Sparkles
 } from 'lucide-react';
 import { toast } from "sonner";
 import { format } from 'date-fns';

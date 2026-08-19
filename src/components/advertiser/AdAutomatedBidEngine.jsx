@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Plus, Trash2, Play, Pause, Clock, TrendingDown, TrendingUp, ToggleLeft, ToggleRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Zap, Plus, Trash2, Play, Pause, Clock, ToggleLeft, ToggleRight } from 'lucide-react';
 
 const TRIGGER_TYPES = [
   { value: 'ctr_below', label: 'CTR drops below', unit: '%', defaultVal: 1.5 },

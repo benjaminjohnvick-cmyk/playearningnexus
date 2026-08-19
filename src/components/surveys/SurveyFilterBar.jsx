@@ -1,6 +1,4 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { SlidersHorizontal, X } from 'lucide-react';
 
 const CATEGORIES = ['All', 'Gaming', 'Tech', 'Lifestyle', 'Finance', 'Health', 'Entertainment'];

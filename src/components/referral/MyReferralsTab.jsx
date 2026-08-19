@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import {
   Users, DollarSign, Copy, Check, Share2, Twitter, Link2,
-  TrendingUp, UserCheck, Clock, ExternalLink, ChevronRight
+  TrendingUp, UserCheck, Clock, ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

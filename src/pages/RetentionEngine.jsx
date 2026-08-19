@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Mail, MessageSquare, Users, TrendingUp, RefreshCw,
+  Mail, Users, TrendingUp, RefreshCw,
   Play, CheckCircle, AlertTriangle, DollarSign, Target,
   Zap, Clock, ArrowRight, BarChart2
 } from 'lucide-react';

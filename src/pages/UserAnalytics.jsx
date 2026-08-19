@@ -8,7 +8,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
 } from 'recharts';
 import { DollarSign, Star, TrendingUp, Clock, Loader2, Zap, Target } from 'lucide-react';
-import { format, subWeeks, startOfWeek, endOfWeek, eachWeekOfInterval, subDays, eachDayOfInterval } from 'date-fns';
+import { format, subWeeks, endOfWeek, eachWeekOfInterval, subDays, eachDayOfInterval } from 'date-fns';
 
 // ── Heatmap helpers ──────────────────────────────────────────────────────────
 

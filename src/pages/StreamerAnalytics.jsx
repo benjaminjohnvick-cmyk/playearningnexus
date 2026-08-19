@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Users, DollarSign, Eye, Clock, Gift, Crown, Heart, MapPin } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Clock, Crown, Heart, MapPin } from 'lucide-react';
 
 export default function StreamerAnalytics() {
   const [user, setUser] = useState(null);

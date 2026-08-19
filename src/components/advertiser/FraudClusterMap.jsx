@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShieldAlert, MapPin, Ban, CheckCircle2, Loader2, AlertTriangle, Info } from 'lucide-react';
+import { MapPin, Ban, CheckCircle2, Loader2, AlertTriangle, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Simulates origin cluster data derived from click patterns per ad

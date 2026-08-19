@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Bell, DollarSign, Target, ClipboardList, Megaphone,
+  Bell, DollarSign, ClipboardList, Megaphone,
   Users, Trophy, Trash2, CheckCheck, Star, Zap, Gift, Info
 } from 'lucide-react';
 import { toast } from 'sonner';

@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DollarSign, TrendingUp, BarChart2, ArrowRightLeft, Percent, FileText } from 'lucide-react';
+import { ArrowRightLeft } from 'lucide-react';
 
 const FEE_STRUCTURES = [
   { type: 'Marketplace Sale', fee: '5%', example: '$100 sale → $5 platform fee', volume: 892, revenue: 2341, icon: '🛒' },

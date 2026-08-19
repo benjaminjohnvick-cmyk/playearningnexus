@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, Sparkles, TrendingUp, Clock, DollarSign, ChevronRight, RefreshCw } from 'lucide-react';
+import { Loader2, Sparkles, Clock, DollarSign, ChevronRight, RefreshCw } from 'lucide-react';
 
 export default function RankedSurveyList({ user, onTakeSurvey }) {
   const [surveys, setSurveys] = useState([]);

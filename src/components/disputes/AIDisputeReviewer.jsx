@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Bot, CheckCircle, XCircle, AlertTriangle, Loader2, ArrowUpCircle } from 'lucide-react';
+import { Bot, CheckCircle, XCircle, Loader2, ArrowUpCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AIDisputeReviewer({ dispute, onResolved }) {

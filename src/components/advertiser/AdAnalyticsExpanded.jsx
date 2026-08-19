@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, LineChart, Line, Legend
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, LineChart, Line
 } from 'recharts';
-import { TrendingUp, Globe, Users, Sparkles, Loader2, RefreshCw, Brain, Trophy } from 'lucide-react';
+import { TrendingUp, Globe, Users, Sparkles, Loader2, Brain, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TIERS = ['Premium', 'High', 'Standard', 'Economy'];

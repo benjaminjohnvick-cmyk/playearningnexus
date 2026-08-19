@@ -8,13 +8,7 @@ import { Input } from '@/components/ui/input';
 import {
   Copy,
   Star,
-  TrendingUp,
-  Filter,
   Search,
-  Zap,
-  Heart,
-  MessageCircle,
-  Share2,
   Sparkles
 } from 'lucide-react';
 

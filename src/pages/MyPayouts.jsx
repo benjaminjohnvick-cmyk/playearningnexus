@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DollarSign, Clock, CheckCircle2, Settings, CreditCard, Calendar, TrendingUp, Send, Zap } from 'lucide-react';
+import { DollarSign, Clock, CheckCircle2, Settings, CreditCard, Calendar, TrendingUp, Send } from 'lucide-react';
 import PayoutOptimizer from '@/components/payout/PayoutOptimizer';
 import { format, addDays, addWeeks, addMonths, startOfMonth } from 'date-fns';
-import { Link } from 'react-router-dom';
 import ReferralLinkGenerator from '@/components/referral/ReferralLinkGenerator';
 import ReferralHistoryTable from '@/components/referral/ReferralHistoryTable';
 

@@ -5,9 +5,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { Zap, Target, TrendingUp, Gift, Flame, CheckCircle2, Lock } from 'lucide-react';
-import { toast } from 'sonner';
+import { Zap, Target, Gift, Flame, CheckCircle2, Lock } from 'lucide-react';
 
 export default function AIPersonalizedDailyGoal({ user }) {
   const today = new Date().toISOString().split('T')[0];

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Shield, AlertTriangle, Ban, RefreshCw, Zap, Eye, Clock, Activity } from 'lucide-react';
+import { AlertTriangle, Ban, RefreshCw, Zap, Eye, Clock, Activity } from 'lucide-react';
 
 const GRID_COLS = 12;
 const GRID_ROWS = 8;

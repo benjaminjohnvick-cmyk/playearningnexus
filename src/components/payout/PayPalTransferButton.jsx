@@ -3,8 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { DollarSign, Send, CheckCircle2, AlertCircle, Loader2, CreditCard } from 'lucide-react';
+import { Send, CheckCircle2, AlertCircle, Loader2, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function PayPalTransferButton({ user }) {

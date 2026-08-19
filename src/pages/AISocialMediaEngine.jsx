@@ -4,8 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Zap, TrendingUp, Share2, RefreshCw, CheckCircle, Clock, Play, Hash } from 'lucide-react';
+import { Zap, TrendingUp, Share2, RefreshCw, CheckCircle, Clock, Play } from 'lucide-react';
 import { toast } from 'sonner';
 
 const PLATFORM_CONFIG = {

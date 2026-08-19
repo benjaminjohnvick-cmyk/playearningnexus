@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Mail, Users, Clock, CheckCircle2, Send, RefreshCw,
-  AlertCircle, Loader2, TrendingUp, Eye, MousePointer, UserCheck
+  Mail, Clock, CheckCircle2, Send, Loader2, Eye, MousePointer
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatDistanceToNow, differenceInHours, format } from 'date-fns';
+import { formatDistanceToNow, differenceInHours } from 'date-fns';
 
 // 48-hour follow-up: find referred users who haven't completed a survey
 export default function ReferralFollowUpSystem({ user, isAdmin = false }) {

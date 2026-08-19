@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Lock, Unlock, CheckCircle2, XCircle, Zap, ArrowRight } from 'lucide-react';
+import { CheckCircle2, XCircle, Zap, ArrowRight } from 'lucide-react';
 
 const FEATURE_GATES = [
   { feature: 'Basic Surveys (5/day)', free: true, starter: true, pro: true, enterprise: true },

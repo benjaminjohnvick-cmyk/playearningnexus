@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  Share2, Twitter, Facebook, CheckCircle, Loader2, TrendingUp,
-  Eye, MousePointerClick, RefreshCw, Wifi, WifiOff, DollarSign
+  Share2, CheckCircle, Loader2,
+  Eye, MousePointerClick, Wifi
 } from 'lucide-react';
 import { toast } from 'sonner';
 

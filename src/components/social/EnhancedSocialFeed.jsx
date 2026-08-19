@@ -4,10 +4,9 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, Share2, Image, Video, Send, Sparkles } from "lucide-react";
+import { Heart, MessageCircle, Share2, Image, Send, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 export default function EnhancedSocialFeed({ user }) {

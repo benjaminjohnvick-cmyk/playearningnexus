@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Trash2, Bell, BellOff, ShoppingBag, ShoppingCart, Tag, CreditCard } from 'lucide-react';
+import { Heart, Trash2, Bell, BellOff, ShoppingBag, ShoppingCart, Tag } from 'lucide-react';
 import BNPLModal from '@/components/store/BNPLModal';
 import BNPLBanner from '@/components/store/BNPLBanner';
 import OrderViasite from '@/components/store/OrderViaSite';

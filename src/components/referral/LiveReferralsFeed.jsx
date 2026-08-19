@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Zap, DollarSign, Trophy, Star } from 'lucide-react';
+import { Users, Zap, DollarSign, Star } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const FEED_EVENTS = [

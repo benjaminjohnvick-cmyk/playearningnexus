@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Mic, MicOff, Loader2, Sparkles, Wand2, X, ChevronDown } from 'lucide-react';
+import { Mic, MicOff, Loader2, Sparkles, Wand2, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const COMMAND_MODES = [

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, Clock, RefreshCw, Bell, CheckCircle, Loader2, TrendingDown } from 'lucide-react';
+import { Clock, RefreshCw, Bell, CheckCircle, Loader2, TrendingDown } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function SurveyHealthAlerts({ user }) {

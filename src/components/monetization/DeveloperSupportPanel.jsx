@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Heart, DollarSign, Coffee, Gift, Star } from 'lucide-react';
+import { Heart, Coffee, Gift, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function DeveloperSupportPanel({ game, user }) {

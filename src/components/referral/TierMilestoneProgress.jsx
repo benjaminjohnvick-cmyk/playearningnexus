@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, Lock, Zap, TrendingUp, Trophy, Gift } from 'lucide-react';
+import { CheckCircle2, Lock, TrendingUp, Trophy, Gift } from 'lucide-react';
 
 const TIERS = [
   {

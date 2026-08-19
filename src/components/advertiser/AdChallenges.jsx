@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Trophy, Zap, Target, Clock, CheckCircle2, Star, Loader2,
-  TrendingUp, Percent, ShieldCheck, Gift, Lock
+  Trophy, Zap, Clock, CheckCircle2, Star, Loader2, Percent, ShieldCheck, Gift, Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 

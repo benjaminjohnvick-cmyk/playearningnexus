@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  MapPin, DollarSign, Loader2, Lock, Unlock, Zap,
-  Navigation, X, Star, Clock, TrendingUp, CheckCircle2
+  MapPin, DollarSign, Loader2, Lock, Unlock,
+  Navigation, X, Clock, TrendingUp, CheckCircle2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';

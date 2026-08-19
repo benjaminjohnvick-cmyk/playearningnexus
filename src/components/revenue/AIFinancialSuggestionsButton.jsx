@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import { Brain, Loader2, TrendingUp, AlertTriangle, Zap, DollarSign, RefreshCw, ChevronRight } from 'lucide-react';
+import { Brain, AlertTriangle, Zap, RefreshCw, ChevronRight } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 export default function AIFinancialSuggestionsButton() {

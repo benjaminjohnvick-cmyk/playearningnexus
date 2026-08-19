@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
-import { InteractionTracker, buildFingerprint, hasAlreadyCompleted, markCompleted } from '@/lib/clickVerification';
+import { InteractionTracker, hasAlreadyCompleted, markCompleted } from '@/lib/clickVerification';
 
 // ─── Business Ad Data ──────────────────────────────────────────────────────────
 // In production this would be fetched from the BusinessClient / PPCSurvey entity

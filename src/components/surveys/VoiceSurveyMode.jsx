@@ -30,7 +30,7 @@ export default function VoiceSurveyMode({ question, onAnswer, disabled, autoRead
   // Hands-free flow: auto-read each new question aloud.
   useEffect(() => {
     if (autoRead && question?.q) { setHeard(''); setMatch(null); readAloud(); }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [question?.q, autoRead]);
 
   // Map a spoken phrase to the closest option (exact text, or "option N", or contained words).

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { startSurvey, trackSurveyAnswer, finishSurvey } from '@/lib/uxTracker';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, CheckCircle2, DollarSign, Loader2, PiggyBank, Mic } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, PiggyBank, Mic } from "lucide-react";
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import VerifiedSurveyRecorder from './VerifiedSurveyRecorder';

@@ -15,7 +15,7 @@ export default function AIChatAssistant({ opener }) {
     if (open && messages.length === 0) {
       setMessages([{ role: 'assistant', content: opener || "Hi! I'm your Get Goods Gratis (Free) assistant. Want help earning faster today?" }]);
     }
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open]);  
 
   useEffect(() => { scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight); }, [messages, sending]);
 

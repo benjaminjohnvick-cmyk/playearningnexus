@@ -1,11 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Copy, Share2, Trophy, DollarSign, Users, Link2, CheckCircle, Loader2, ExternalLink } from 'lucide-react';
+import { Copy, Share2, Trophy, DollarSign, Users, Link2, CheckCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ShareableReferralCard({ user }) {

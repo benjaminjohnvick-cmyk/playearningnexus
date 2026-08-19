@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Play, Pause, RefreshCw, TrendingUp, TrendingDown, DollarSign, Target, Loader2, CheckCircle2, Brain } from 'lucide-react';
+import { Zap, RefreshCw, TrendingUp, TrendingDown, Loader2, CheckCircle2, Brain } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 function calcMetrics(ad) {

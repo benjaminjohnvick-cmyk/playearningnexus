@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Toggle } from '@/components/ui/toggle';
-import { Brain, Check, X, Settings, Zap, Globe, Mic, Eye, Download } from 'lucide-react';
+import { Brain, Check, X, Zap, Globe, Mic, Eye, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const AI_AGENTS = [

@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Search, CheckCircle2, Clock, XCircle, DollarSign } from 'lucide-react';
+import { Users, Search, CheckCircle2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
 const STATUS_CONFIG = {

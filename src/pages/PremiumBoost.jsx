@@ -25,7 +25,7 @@ export default function PremiumBoost() {
     try { const r = await base44.functions.invoke('premiumBoostStatus', {}); setData(r || null); }
     catch { setData(null); } finally { setLoading(false); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load();   }, []);
 
   const call = async (fn, payload, ok, after) => {
     setBusy(true); setMsg(null);

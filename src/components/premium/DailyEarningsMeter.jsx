@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, Target, TrendingUp } from "lucide-react";
+import { Target, TrendingUp } from "lucide-react";
 
 export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 8 }) {
   const percentage = Math.min((todaysEarnings / dailyGoal) * 100, 100);

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { FlaskConical, Trophy, TrendingUp, Target } from 'lucide-react';
+import { FlaskConical, Trophy } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { toast } from 'sonner';
 

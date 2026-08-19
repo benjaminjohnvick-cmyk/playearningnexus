@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   User, ImageIcon, CreditCard, Bot, ArrowRight, ArrowLeft, Loader2,
-  CheckCircle2, Upload, X, Shield, Lock, AlertCircle, Globe, Github
+  CheckCircle2, Upload, X, Shield, Lock, AlertCircle, Github
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';

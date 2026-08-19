@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, XCircle, AlertTriangle, DollarSign, Users, RefreshCw, Mail, ShieldAlert, TrendingUp, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, DollarSign, RefreshCw, Mail, ShieldAlert, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
 const STATUS_COLORS = {

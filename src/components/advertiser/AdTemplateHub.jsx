@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Rocket, ShoppingCart, Gamepad2, Coins, Heart, UtensilsCrossed, Shirt, Globe, Zap, Check, ChevronRight, Users, Target, DollarSign } from 'lucide-react';
+import { Rocket, ShoppingCart, Gamepad2, Coins, Heart, UtensilsCrossed, Shirt, Globe, Zap, Check, ChevronRight, Target, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TEMPLATES = [

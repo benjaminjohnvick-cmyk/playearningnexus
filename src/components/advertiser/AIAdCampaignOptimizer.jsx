@@ -3,9 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
-import { Loader2, TrendingUp, DollarSign, Zap, BarChart2, Target, ArrowUp, ArrowDown, Minus } from 'lucide-react';
+import { Loader2, Zap, Target, ArrowUp, ArrowDown, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 
 const actionConfig = {

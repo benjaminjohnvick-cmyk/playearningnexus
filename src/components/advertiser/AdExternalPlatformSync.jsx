@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Send, BarChart2, TrendingUp, Globe, CheckCircle2, AlertCircle, Loader2, ExternalLink, Zap } from 'lucide-react';
+import { RefreshCw, Send, Loader2 } from 'lucide-react';
 
 const PLATFORMS = [
   { id: 'meta', name: 'Meta Ads', icon: '📘', color: 'blue', description: 'Facebook & Instagram Ads' },

@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import {
   Loader2, DollarSign, TrendingUp, Clock, CreditCard,
   ArrowUpRight, ArrowDownRight, Wallet, CheckCircle, AlertCircle,
-  Building2, Smartphone, ChevronRight, Download, Zap, BarChart2,
+  Building2, Smartphone, Download, Zap, BarChart2,
   Scale, FlaskConical
 } from 'lucide-react';
 

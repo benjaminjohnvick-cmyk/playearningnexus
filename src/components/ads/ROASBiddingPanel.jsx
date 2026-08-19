@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Pause, Zap, Loader2, RefreshCw, DollarSign, BarChart2, CheckCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Pause, Zap, Loader2, BarChart2, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ROASBiddingPanel({ campaignId }) {

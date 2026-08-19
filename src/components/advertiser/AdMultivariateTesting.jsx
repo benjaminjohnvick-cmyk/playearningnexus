@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, Sparkles, Trophy, RotateCcw, TrendingUp, Eye, CheckCircle2, Play, Zap } from 'lucide-react';
+import { Loader2, Sparkles, Trophy, RotateCcw, CheckCircle2, Play, Zap } from 'lucide-react';
 
 const IMPRESSION_THRESHOLD = 500;
 

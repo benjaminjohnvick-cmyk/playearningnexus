@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Shield, Upload, Bot, CheckCircle, XCircle, Clock, FileText, DollarSign, RefreshCw, AlertTriangle, Loader2, History } from 'lucide-react';
+import { Shield, Upload, Bot, CheckCircle, XCircle, Clock, DollarSign, AlertTriangle, Loader2, History } from 'lucide-react';
 import { toast } from 'sonner';
 import EvidenceReviewDashboard from '@/components/disputes/EvidenceReviewDashboard';
 

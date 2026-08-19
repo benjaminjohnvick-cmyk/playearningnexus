@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
 import {
-  ShieldAlert, ShieldCheck, RefreshCw, Ban, DollarSign,
-  AlertTriangle, Activity, Loader2, Eye, Clock, Zap, CheckCircle,
-  Bot, Filter, ChevronDown, ChevronUp
+  ShieldAlert, ShieldCheck, RefreshCw, Ban,
+  AlertTriangle, Activity, Loader2, CheckCircle,
+  Bot
 } from 'lucide-react';
 import FraudThreatCard from '@/components/fraud/FraudThreatCard';
 import { toast } from 'sonner';

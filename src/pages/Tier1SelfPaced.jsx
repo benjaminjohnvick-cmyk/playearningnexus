@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, CheckCircle2, ShieldCheck, Wallet, Pause, Play, X } from 'lucide-react';
+import { Loader2, ShieldCheck, Wallet, Pause, Play, X } from 'lucide-react';
 import EarningsSetAsideButton from '@/components/EarningsSetAsideButton';
 
 // Tier1SelfPaced — the COMPLIANT pay-over-time option for Tier 1. Pay-as-you-go: the buyer chooses how much
@@ -29,7 +29,7 @@ export default function Tier1SelfPaced() {
     } catch (e) { setMsg({ type: 'error', text: e?.message || 'Could not load.' }); }
     finally { setLoading(false); }
   };
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load();   }, []);
 
   const pay = async () => {
     setBusy(true); setMsg(null);

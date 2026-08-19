@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Target, Flame, Gift, CheckCircle, Clock, Star, Zap } from 'lucide-react';
-import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+import { Target, CheckCircle, Clock } from 'lucide-react';
 
 const DAILY_GOALS = [
   { id: 'complete_survey',    label: 'Complete a Survey',    points: 100, icon: '📋', action: 'survey' },

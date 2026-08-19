@@ -3,10 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Bell, BellRing, Zap, TrendingUp, X, ChevronRight, DollarSign } from 'lucide-react';
+import { Bell, BellRing, Zap, X, ChevronRight, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 
 const SPIKE_THRESHOLD = 3; // surveys above this count = spike

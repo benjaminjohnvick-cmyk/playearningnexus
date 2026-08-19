@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Store, Plus, Tag, MapPin, Cpu, Users, DollarSign, Loader2, Search, ArrowLeftRight, Star, Lock, CheckCircle2 } from 'lucide-react';
+import { Store, Plus, Loader2, Search, ArrowLeftRight, Star, Lock, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 

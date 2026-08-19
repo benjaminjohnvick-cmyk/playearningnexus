@@ -7,12 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
-  PieChart, Pie, LineChart, Line, Legend
+  PieChart, Pie
 } from 'recharts';
 import { Link } from 'react-router-dom';
 import {
   Loader2, BarChart2, TrendingUp, Users, Shield,
-  Globe, ExternalLink, Clock, DollarSign, Star
+  Globe, ExternalLink, DollarSign, Star
 } from 'lucide-react';
 
 const COLORS = ['#7c3aed', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
