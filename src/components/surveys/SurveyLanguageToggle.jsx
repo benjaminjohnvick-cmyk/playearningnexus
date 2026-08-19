@@ -11,7 +11,7 @@ const translationCache = {};
 export function useSurveyTranslation() {
   const { language } = useLocale();
   const [translating, setTranslating] = useState(false);
-  const [translated, setTranslated] = useState({});
+  const [_translated, _setTranslated] = useState({});
 
   const translateTexts = useCallback(async (texts) => {
     if (language === 'en') return texts;

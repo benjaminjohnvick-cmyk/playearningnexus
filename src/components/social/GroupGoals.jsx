@@ -14,7 +14,7 @@ import { toast } from 'sonner';
  * claims for their own account. Value only ever flows platform → member. (createGroupGoal / joinGroupGoal
  * / groupGoalStatus / claimGroupGoalReward.)
  */
-export default function GroupGoals({ user }) {
+export default function GroupGoals({ user: _user }) {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [disclosure, setDisclosure] = useState('');

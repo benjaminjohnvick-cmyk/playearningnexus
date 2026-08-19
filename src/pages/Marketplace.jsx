@@ -221,7 +221,7 @@ export default function Marketplace() {
 
   // Pay by card AND apply points: points cover what the spend cap allows (funded by PayPal via AI
   // fulfillment), the card is charged only the remaining net.
-  async function hybridBuy(listing) {
+  async function _hybridBuy(listing) {
     setBusy(listing.id + 'hybrid');
     try {
       const res = await base44.functions.invoke('hybridCheckout', { listing_id: listing.id, apply_points: true });
@@ -389,7 +389,7 @@ export default function Marketplace() {
             <Input placeholder="Price in $ (card)" type="number" value={form.price_usd} onChange={(e) => setForm({ ...form, price_usd: e.target.value })} />
             <Input className="md:col-span-2" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
             <div className="md:col-span-2">
-              <label className="text-sm text-zinc-600">Photos</label>
+              <span className="text-sm text-zinc-600">Photos</span>
               <div className="flex items-center gap-2 flex-wrap mt-1">
                 {(form.images || []).map((url, i) => (
                   <img key={i} src={url} alt="" className="w-16 h-16 object-cover rounded border" />
@@ -592,7 +592,7 @@ export default function Marketplace() {
 
       {/* Affirm financing — collect shipping, then open Affirm.js (real shippable goods only). */}
       {affirm.open && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setAffirm((a) => ({ ...a, open: false }))}>
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" role="button" tabIndex={0} onClick={() => setAffirm((a) => ({ ...a, open: false }))} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setAffirm((a) => ({ ...a, open: false })); } }}>
           <Card className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-1">

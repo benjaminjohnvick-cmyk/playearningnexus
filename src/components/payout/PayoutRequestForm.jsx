@@ -116,11 +116,12 @@ export default function PayoutRequestForm({ user }) {
 
         {/* Amount Input */}
         <div>
-          <label className="text-sm font-semibold text-gray-700 block mb-2">Amount</label>
+          <label htmlFor="payout-amount" className="text-sm font-semibold text-gray-700 block mb-2">Amount</label>
           <div className="flex gap-2">
             <div className="flex-1 relative">
               <span className="absolute left-3 top-3 text-gray-500">$</span>
               <input
+                id="payout-amount"
                 type="number"
                 step="0.01"
                 min="5"
@@ -144,8 +145,9 @@ export default function PayoutRequestForm({ user }) {
 
         {/* Payment Method */}
         <div>
-          <label className="text-sm font-semibold text-gray-700 block mb-2">Payment Method</label>
+          <label htmlFor="payout-method" className="text-sm font-semibold text-gray-700 block mb-2">Payment Method</label>
           <select
+            id="payout-method"
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"

@@ -20,11 +20,11 @@ export default function MovieStarGenerator() {
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
   const [generatedImage, setGeneratedImage] = useState(null);
   const [generatedImageId, setGeneratedImageId] = useState(null);
-  const [captionCopied, setCaptionCopied] = useState(false);
+  const [_captionCopied, setCaptionCopied] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [editedImageUrl, setEditedImageUrl] = useState(null);
-  const [selectedGalleryImage, setSelectedGalleryImage] = useState(null);
+  const [_selectedGalleryImage, setSelectedGalleryImage] = useState(null);
   const [referralLink, setReferralLink] = useState(null);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function MovieStarGenerator() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -74,7 +74,7 @@ export default function MovieStarGenerator() {
       setReferralLink(fullReferralLink);
       
       toast.success('Image uploaded with referral link!');
-    } catch (error) {
+    } catch {
       toast.error('Failed to upload image');
     } finally {
       setIsUploading(false);
@@ -114,7 +114,7 @@ export default function MovieStarGenerator() {
       
       // Create referral link
       const linkCode = `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      const referralLinkData = await base44.entities.CustomReferralLink.create({
+      const _referralLinkData = await base44.entities.CustomReferralLink.create({
         user_id: user.id,
         link_code: linkCode,
         link_type: 'campaign',
@@ -173,7 +173,7 @@ export default function MovieStarGenerator() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       toast.success('Image downloaded!');
-    } catch (error) {
+    } catch {
       toast.error('Download failed');
     }
   };
@@ -191,7 +191,7 @@ Created with Get Goods Gratis (Free)'s AI Image Generator 🎮✨
     setTimeout(() => setCaptionCopied(false), 3000);
   };
 
-  const handleShareToSocial = (platform) => {
+  const _handleShareToSocial = (platform) => {
     handleCopyCaption();
     
     const urls = {
@@ -356,7 +356,7 @@ Created with Get Goods Gratis (Free)'s AI Image Generator 🎮✨
                   >
                     <img
                       src={generatedImage}
-                      alt="AI-generated image"
+                      alt="AI-generated result"
                       className="w-full rounded-lg shadow-lg"
                     />
 

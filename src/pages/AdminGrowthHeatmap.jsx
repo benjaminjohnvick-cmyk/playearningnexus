@@ -16,7 +16,7 @@ export default function AdminGrowthHeatmapPage() {
           return;
         }
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       } finally {
         setLoading(false);

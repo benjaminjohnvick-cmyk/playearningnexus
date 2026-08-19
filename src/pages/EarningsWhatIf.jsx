@@ -51,9 +51,9 @@ export default function EarningsWhatIf() {
 
       <Card><CardContent className="p-5 space-y-3">
         <div className="grid sm:grid-cols-3 gap-3">
-          <div><label className="text-xs text-gray-500">Minutes/day (optional)</label><Input type="number" min="0" value={mins} onChange={(e) => setMins(e.target.value)} placeholder="your recent pace" /></div>
-          <div><label className="text-xs text-gray-500">Over how many days</label><Input type="number" min="0" value={days} onChange={(e) => setDays(e.target.value)} /></div>
-          <div><label className="text-xs text-gray-500">Target (optional)</label><div className="flex items-center gap-1"><span className="text-gray-400">$</span><Input type="number" min="0" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="0" /></div></div>
+          <div><label htmlFor="whatif-mins" className="text-xs text-gray-500">Minutes/day (optional)</label><Input id="whatif-mins" type="number" min="0" value={mins} onChange={(e) => setMins(e.target.value)} placeholder="your recent pace" /></div>
+          <div><label htmlFor="whatif-days" className="text-xs text-gray-500">Over how many days</label><Input id="whatif-days" type="number" min="0" value={days} onChange={(e) => setDays(e.target.value)} /></div>
+          <div><label htmlFor="whatif-target" className="text-xs text-gray-500">Target (optional)</label><div className="flex items-center gap-1"><span className="text-gray-400">$</span><Input id="whatif-target" type="number" min="0" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="0" /></div></div>
         </div>
         <Button onClick={run} disabled={busy} className="bg-[#16264f] hover:bg-[#0a142e]">{busy ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Calculate my scenario'}</Button>
       </CardContent></Card>

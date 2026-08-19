@@ -25,7 +25,7 @@ function calcFraudScore(userId, { referralLinks, referrals, allUsers }) {
 
   const userLinks = referralLinks.filter(l => l.user_id === userId);
   const userReferrals = referrals.filter(r => r.referrer_user_id === userId);
-  const user = allUsers.find(u => u.id === userId);
+  const _user = allUsers.find(u => u.id === userId);
 
   // 1. Conversion rate across all links (0% = +35)
   const totalClicks = userLinks.reduce((s, l) => s + (l.clicks || 0), 0);
@@ -160,7 +160,7 @@ export default function ComplianceReview() {
     onSuccess: () => { queryClient.invalidateQueries(['admin-pending-payouts']); toast.success('Payout rejected.'); },
   });
 
-  const isLoading = linksLoading || referralsLoading || payoutsLoading;
+  const _isLoading = linksLoading || referralsLoading || payoutsLoading;
 
   return (
     <div className="space-y-6">

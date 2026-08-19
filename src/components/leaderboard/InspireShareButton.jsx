@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Share2, Copy, CheckCircle2, Twitter, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function InspireShareButton({ user, rank, dailyEarned, weeklyEarned }) {
+export default function InspireShareButton({ user, rank, dailyEarned, weeklyEarned: _weeklyEarned }) {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -51,7 +51,8 @@ export default function InspireShareButton({ user, rank, dailyEarned, weeklyEarn
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0 z-40" role="button" tabIndex={0} aria-label="Close" onClick={() => setOpen(false)}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(false); } }} />
           <div className="absolute right-0 top-10 z-50 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 space-y-3">
             <div className="text-center">
               <p className="font-bold text-gray-900 text-sm">Share Your Achievement</p>

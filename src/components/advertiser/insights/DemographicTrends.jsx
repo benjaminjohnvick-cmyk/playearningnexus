@@ -4,7 +4,7 @@ import { Users, MapPin, Clock, Smartphone } from 'lucide-react';
 
 export default function DemographicTrends({ ads }) {
   // Simulated demographic data based on ad engagement
-  const totalEngagement = ads.reduce((sum, a) => sum + (a.surveys_completed || 0), 0) || 100;
+  const _totalEngagement = ads.reduce((sum, a) => sum + (a.surveys_completed || 0), 0) || 100;
 
   const ageData = [
     { name: '18-24', value: 35, color: '#3b82f6' },

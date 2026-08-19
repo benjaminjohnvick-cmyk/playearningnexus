@@ -16,7 +16,7 @@ export default function ContentLibraryBrowser() {
   const [user, setUser] = useState(null);
   const [filters, setFilters] = useState({ platform: 'all', category: 'all', search: '' });
   const [showTrendDrafter, setShowTrendDrafter] = useState(false);
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => setUser(null));
@@ -103,8 +103,9 @@ export default function ContentLibraryBrowser() {
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Search</label>
+                <label htmlFor="cl-search" className="block text-sm font-semibold text-slate-700 mb-2">Search</label>
                 <Input
+                  id="cl-search"
                   placeholder="Template name, type..."
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
@@ -112,8 +113,9 @@ export default function ContentLibraryBrowser() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Platform</label>
+                <label htmlFor="cl-platform" className="block text-sm font-semibold text-slate-700 mb-2">Platform</label>
                 <select
+                  id="cl-platform"
                   value={filters.platform}
                   onChange={(e) => setFilters({ ...filters, platform: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-md"
@@ -127,8 +129,9 @@ export default function ContentLibraryBrowser() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Category</label>
+                <label htmlFor="cl-category" className="block text-sm font-semibold text-slate-700 mb-2">Category</label>
                 <select
+                  id="cl-category"
                   value={filters.category}
                   onChange={(e) => setFilters({ ...filters, category: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-md"
@@ -273,6 +276,9 @@ function TrendDrafterPanel({ onClose }) {
               <div
                 key={idx}
                 onClick={() => setSelectedTrend(trend)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedTrend(trend); } }}
                 className="p-3 bg-white rounded border border-purple-200 cursor-pointer hover:border-purple-400 hover:shadow-md transition-all"
               >
                 <p className="font-semibold text-sm text-slate-900">{trend.trend_name}</p>

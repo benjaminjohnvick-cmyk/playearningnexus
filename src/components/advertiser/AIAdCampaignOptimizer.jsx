@@ -69,9 +69,10 @@ export default function AIAdCampaignOptimizer() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-gray-700 mb-1 block">Target ROI (%)</label>
+              <label htmlFor="target-roi-pct" className="text-xs font-semibold text-gray-700 mb-1 block">Target ROI (%)</label>
               <div className="flex items-center gap-3">
                 <Input
+                  id="target-roi-pct"
                   type="number"
                   value={targetROI}
                   onChange={e => setTargetROI(Number(e.target.value))}

@@ -67,7 +67,7 @@ export default function ReferralFraudDetectionDashboard() {
     low: 'bg-blue-100 text-blue-800 border-blue-300'
   };
 
-  const anomalyTypeDescriptions = {
+  const _anomalyTypeDescriptions = {
     velocity_spike: 'Abnormally high referral volume in short timeframe',
     suspicious_pattern: 'Traffic pattern differs significantly from typical user behavior',
     geographic_mismatch: 'Geographic inconsistencies in referral traffic',

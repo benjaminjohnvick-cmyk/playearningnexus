@@ -16,7 +16,7 @@ const STATUS_COLORS = {
   completed: 'bg-gray-100 text-gray-500',
 };
 
-function AIInsightPanel({ surveyId, survey }) {
+function AIInsightPanel({ surveyId, survey: _survey }) {
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const queryClient = useQueryClient();
@@ -169,7 +169,7 @@ function SurveyWalletCard({ survey, onStatusToggle, onFund }) {
   );
 }
 
-function FundWalletModal({ survey, onClose, onFunded }) {
+function FundWalletModal({ survey, onClose, onFunded: _onFunded }) {
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -206,10 +206,10 @@ function FundWalletModal({ survey, onClose, onFunded }) {
         <CardContent className="space-y-4">
           <p className="text-sm text-gray-600">Add budget to <strong>{survey.title}</strong></p>
           <div>
-            <label className="text-xs font-semibold text-gray-600 block mb-1">Amount (USD, min $10)</label>
+            <label htmlFor="wallet-fund-amount" className="text-xs font-semibold text-gray-600 block mb-1">Amount (USD, min $10)</label>
             <div className="flex items-center gap-2">
               <span className="text-gray-500 font-bold">$</span>
-              <Input type="number" min={10} step={10} placeholder="e.g. 200" value={amount} onChange={e => setAmount(e.target.value)} className="border-2" />
+              <Input id="wallet-fund-amount" type="number" min={10} step={10} placeholder="e.g. 200" value={amount} onChange={e => setAmount(e.target.value)} className="border-2" />
             </div>
             {amount && parseFloat(amount) >= 10 && (
               <p className="text-xs text-gray-400 mt-1">+{Math.floor(parseFloat(amount) / 4)} additional responses funded</p>

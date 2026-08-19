@@ -74,13 +74,13 @@ export default function DevFinancialDashboard() {
     enabled: !!user?.id,
   });
 
-  const { data: surveys = [] } = useQuery({
+  const { data: _surveys = [] } = useQuery({
     queryKey: ['fin-surveys', user?.id],
     queryFn: () => base44.entities.PPCSurvey.filter({ creator_user_id: user.id }, '-created_date', 200),
     enabled: !!user?.id,
   });
 
-  const isLoading = loadingTx || loadingPayouts;
+  const _isLoading = loadingTx || loadingPayouts;
 
   const now = Date.now();
   const day = 86400000;
@@ -521,10 +521,11 @@ export default function DevFinancialDashboard() {
                   </div>
 
                   <div>
-                    <label className="text-xs text-gray-500 font-medium mb-1 block">Amount to Withdraw</label>
+                    <label htmlFor="dev-withdraw-amount" className="text-xs text-gray-500 font-medium mb-1 block">Amount to Withdraw</label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
                       <input
+                        id="dev-withdraw-amount"
                         type="number"
                         value={withdrawAmount}
                         onChange={e => setWithdrawAmount(e.target.value)}

@@ -13,7 +13,7 @@ export default function BuyerBidDialog({ listing, user, onBidPlaced }) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState(listing.min_bid_price || listing.price * 0.8);
-  const [dailyPledge, setDailyPledge] = useState(4);
+  const [_dailyPledge, setDailyPledge] = useState(4);
 
   const handlePlaceBid = async () => {
     if (!user) {
@@ -26,7 +26,7 @@ export default function BuyerBidDialog({ listing, user, onBidPlaced }) {
     }
 
     const fee = Math.max(0.80, bidAmount * 0.10);
-    const totalCost = bidAmount + fee;
+    const _totalCost = bidAmount + fee;
 
     try {
       const existingBids = listing.buyer_bids || [];
@@ -51,7 +51,7 @@ export default function BuyerBidDialog({ listing, user, onBidPlaced }) {
   const fee = Math.max(0.80, bidAmount * 0.10);
   const totalCost = bidAmount + fee;
   const existingBids = listing.buyer_bids || [];
-  const userBids = existingBids.filter(b => b.bidder_user_id === user?.id);
+  const _userBids = existingBids.filter(b => b.bidder_user_id === user?.id);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

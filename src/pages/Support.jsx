@@ -14,7 +14,7 @@ export default function Support() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };

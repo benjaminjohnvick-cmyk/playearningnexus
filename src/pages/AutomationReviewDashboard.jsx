@@ -177,9 +177,9 @@ export default function AutomationReviewDashboard() {
                   <CardContent className="pt-6">
                     <div className="space-y-4">
                       <div>
-                        <label className="text-xs font-semibold text-slate-600 uppercase">
+                        <span className="text-xs font-semibold text-slate-600 uppercase block">
                           AI Recommendation
-                        </label>
+                        </span>
                         <pre className="mt-2 p-3 bg-slate-50 rounded text-xs overflow-x-auto max-h-40">
                           {JSON.stringify(selectedReview.ai_recommendation, null, 2)}
                         </pre>
@@ -187,17 +187,18 @@ export default function AutomationReviewDashboard() {
 
                       {modificationMode && (
                         <div>
-                          <label className="text-xs font-semibold text-slate-600 uppercase mb-2 block">
+                          <label htmlFor="edit-values-json" className="text-xs font-semibold text-slate-600 uppercase mb-2 block">
                             Edit Values (JSON)
                           </label>
                           <textarea
+                            id="edit-values-json"
                             className="w-full p-2 border border-slate-300 rounded text-xs font-mono"
                             rows="6"
                             value={JSON.stringify(modifiedData, null, 2)}
                             onChange={(e) => {
                               try {
                                 setModifiedData(JSON.parse(e.target.value));
-                              } catch (err) {
+                              } catch {
                                 // Invalid JSON, just update as-is for display
                               }
                             }}

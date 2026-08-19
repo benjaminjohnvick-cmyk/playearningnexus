@@ -15,7 +15,7 @@ const SEVERITY_CONFIG = {
 
 export default function SupportTicketDossierViewer() {
   const [selectedDossier, setSelectedDossier] = useState(null);
-  const [loadingDossier, setLoadingDossier] = useState(null);
+  const [_loadingDossier, setLoadingDossier] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -36,7 +36,7 @@ export default function SupportTicketDossierViewer() {
     enabled: !!user && user.role === 'admin'
   });
 
-  const generateDossierMutation = useMutation({
+  const _generateDossierMutation = useMutation({
     mutationFn: async (ticket_id) => {
       setLoadingDossier(ticket_id);
       try {

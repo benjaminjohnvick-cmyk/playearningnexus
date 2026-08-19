@@ -22,7 +22,7 @@ const SHARE_MESSAGES = {
   ],
 };
 
-function ShareCard({ platform, icon: Icon, color, bgColor, borderColor, message, link, onShareClick }) {
+function ShareCard({ platform, icon: Icon, color, bgColor, borderColor, message, link: _link, onShareClick }) {
   const [copied, setCopied] = useState(false);
 
   const copyText = async () => {

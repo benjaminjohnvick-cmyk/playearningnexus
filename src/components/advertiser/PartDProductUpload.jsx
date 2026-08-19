@@ -29,7 +29,7 @@ const GAMERGAIN = {
   clickCost: 0.50,
 };
 
-export default function PartDProductUpload({ ads = [], userId }) {
+export default function PartDProductUpload({ ads: _ads = [], userId }) {
   const [productUrl, setProductUrl] = useState('');
   const [productImage, setProductImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
@@ -140,7 +140,7 @@ Provide a structured analysis comparing Get Goods Gratis (Free) vs each platform
       });
       setAiAnalysis(result);
       setActiveTab('analysis');
-    } catch (e) {
+    } catch {
       toast.error('AI analysis failed. Please try again.');
     }
     setAiLoading(false);
@@ -188,10 +188,11 @@ Provide a structured analysis comparing Get Goods Gratis (Free) vs each platform
               <div className="space-y-4">
                 {/* Product URL */}
                 <div>
-                  <label className="text-xs text-gray-400 font-bold block mb-1.5 flex items-center gap-1">
+                  <label htmlFor="product-buy-url" className="text-xs text-gray-400 font-bold block mb-1.5 flex items-center gap-1">
                     <Link2 className="w-3 h-3" /> Product / Buy Page URL
                   </label>
                   <input
+                    id="product-buy-url"
                     type="url"
                     value={productUrl}
                     onChange={e => setProductUrl(e.target.value)}
@@ -203,9 +204,9 @@ Provide a structured analysis comparing Get Goods Gratis (Free) vs each platform
 
                 {/* Product Image */}
                 <div>
-                  <label className="text-xs text-gray-400 font-bold block mb-1.5 flex items-center gap-1">
+                  <span className="text-xs text-gray-400 font-bold block mb-1.5 flex items-center gap-1">
                     <Upload className="w-3 h-3" /> Product Image
-                  </label>
+                  </span>
                   <div className="flex gap-3 items-start">
                     <label className="flex-1 border-2 border-dashed border-gray-600 hover:border-yellow-500 rounded-xl p-4 text-center cursor-pointer transition-colors">
                       <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
@@ -280,8 +281,8 @@ Provide a structured analysis comparing Get Goods Gratis (Free) vs each platform
 
             {/* Budget input */}
             <div className="flex items-center gap-3 mb-5">
-              <label className="text-xs text-gray-400 font-bold whitespace-nowrap">Your ad budget ($)</label>
-              <input type="number" min={10} max={10000} step={10} value={budget}
+              <label htmlFor="ad-budget" className="text-xs text-gray-400 font-bold whitespace-nowrap">Your ad budget ($)</label>
+              <input id="ad-budget" type="number" min={10} max={10000} step={10} value={budget}
                 onChange={e => setBudget(Number(e.target.value))}
                 className="w-28 bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm" />
               <Button onClick={runAIAnalysis} disabled={aiLoading}

@@ -74,7 +74,7 @@ export default function TieredRewards({ userReferrals = 0, businessReferrals = 0
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
-            {userTiers.map((tier, index) => {
+            {userTiers.map((tier, _index) => {
               const isAchieved = userReferrals >= tier.minimum_referrals;
               const isCurrent = currentUserTier?.id === tier.id;
               const isMegaTier = tier.minimum_referrals === 7000000;

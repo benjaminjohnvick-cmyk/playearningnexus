@@ -13,7 +13,7 @@ import { ArrowLeft, Sparkles, Copy, Check, Twitter, Facebook, Instagram, Linkedi
 import { toast } from 'sonner';
 
 export default function SocialMediaGenerator() {
-  const [user, setUser] = useState(null);
+  const [_user, setUser] = useState(null);
   const [businessClient, setBusinessClient] = useState(null);
   const [selectedGame, setSelectedGame] = useState('');
   const [platform, setPlatform] = useState('twitter');
@@ -36,7 +36,7 @@ export default function SocialMediaGenerator() {
         if (clients.length > 0) {
           setBusinessClient(clients[0]);
         }
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -103,7 +103,7 @@ export default function SocialMediaGenerator() {
       toast.success('Post generated successfully!');
       setIsGenerating(false);
     },
-    onError: (error) => {
+    onError: (_error) => {
       toast.error('Failed to generate post');
       setIsGenerating(false);
     }

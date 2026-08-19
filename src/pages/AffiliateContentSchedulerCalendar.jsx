@@ -11,7 +11,7 @@ export default function AffiliateContentSchedulerCalendar() {
   const [user, setUser] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().substring(0, 7));
   const [showLibrary, setShowLibrary] = useState(false);
-  const [selectedPostIndex, setSelectedPostIndex] = useState(null);
+  const [_selectedPostIndex, _setSelectedPostIndex] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function AffiliateContentSchedulerCalendar() {
   });
 
   // Clone template mutation
-  const cloneMutation = useMutation({
+  const _cloneMutation = useMutation({
     mutationFn: async ({ templateId, postDate }) => {
       const response = await base44.functions.invoke('cloneTemplateToSchedule', {
         template_id: templateId,
@@ -81,7 +81,7 @@ export default function AffiliateContentSchedulerCalendar() {
 
   const currentSchedule = schedules.find(s => s.schedule_month === selectedMonth);
 
-  const getDaysInMonth = (monthStr) => {
+  const _getDaysInMonth = (monthStr) => {
     const [year, month] = monthStr.split('-').map(Number);
     return new Date(year, month, 0).getDate();
   };
@@ -276,7 +276,7 @@ export default function AffiliateContentSchedulerCalendar() {
 
                   {currentSchedule.scheduled_posts.map((post, idx) => {
                     const date = new Date(post.post_date);
-                    const dayOfWeek = date.getDay();
+                    const _dayOfWeek = date.getDay();
 
                     return (
                       <div
@@ -303,7 +303,7 @@ export default function AffiliateContentSchedulerCalendar() {
                               className="w-full text-xs mt-1 p-1 h-auto"
                               onClick={() => {
                                 // Show preview modal (would need modal component)
-                                const postData = JSON.stringify(post, null, 2);
+                                const _postData = JSON.stringify(post, null, 2);
                                 alert(`Post Preview:\n\n${post.post_content}\n\nHashtags: ${post.hashtags?.join(' ')}`);
                               }}
                             >
@@ -424,8 +424,9 @@ function TemplateLibraryPanel({ scheduleId, onClone }) {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Post Date</label>
+              <label htmlFor="clone-post-date" className="block text-sm font-semibold text-slate-700 mb-2">Post Date</label>
               <input
+                id="clone-post-date"
                 type="date"
                 value={cloneDate}
                 onChange={(e) => setCloneDate(e.target.value)}
@@ -449,7 +450,10 @@ function TemplateLibraryPanel({ scheduleId, onClone }) {
             {templates.map((template) => (
               <div
                 key={template.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => setSelectedTemplate(template)}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedTemplate(template); } }}
                 className="p-3 bg-white rounded border border-purple-200 cursor-pointer hover:border-purple-400 hover:shadow-md transition-all"
               >
                 <p className="font-semibold text-sm text-slate-900 mb-1">{template.template_name}</p>

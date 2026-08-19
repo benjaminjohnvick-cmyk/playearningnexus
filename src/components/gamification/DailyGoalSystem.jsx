@@ -13,8 +13,8 @@ const DAILY_GOALS = [
   { id: 'login',              label: 'Daily Login',          points: 25,  icon: '✅', action: 'login' },
 ];
 
-export default function DailyGoalSystem({ user, todayEarnings = 0, todaySurveys = 0, referrals = [] }) {
-  const today = new Date().toISOString().split('T')[0];
+export default function DailyGoalSystem({ user: _user, todayEarnings = 0, todaySurveys = 0, referrals = [] }) {
+  const _today = new Date().toISOString().split('T')[0];
 
   // Determine completed goals based on available data
   const completedGoals = DAILY_GOALS.filter(g => {

@@ -19,7 +19,7 @@ const THEME_COLORS = {
 };
 
 export default function EnhancedProfileHeader({ 
-  user, 
+  user: _user, 
   profileUser, 
   isOwnProfile, 
   stats,
@@ -127,9 +127,9 @@ export default function EnhancedProfileHeader({
             >
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Theme Color</label>
+                  <label htmlFor="profile-theme-color" className="text-sm font-medium mb-2 block">Theme Color</label>
                   <Select value={customization.theme_color} onValueChange={(v) => setCustomization({...customization, theme_color: v})}>
-                    <SelectTrigger className="bg-white/20 text-white border-white/30">
+                    <SelectTrigger id="profile-theme-color" className="bg-white/20 text-white border-white/30">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -142,8 +142,9 @@ export default function EnhancedProfileHeader({
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Banner URL</label>
+                  <label htmlFor="profile-banner-url" className="text-sm font-medium mb-2 block">Banner URL</label>
                   <Input
+                    id="profile-banner-url"
                     placeholder="https://example.com/banner.jpg"
                     value={customization.banner_url}
                     onChange={(e) => setCustomization({...customization, banner_url: e.target.value})}
@@ -151,8 +152,9 @@ export default function EnhancedProfileHeader({
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Custom Title</label>
+                  <label htmlFor="profile-custom-title" className="text-sm font-medium mb-2 block">Custom Title</label>
                   <Input
+                    id="profile-custom-title"
                     placeholder="Pro Gamer"
                     value={customization.custom_title}
                     onChange={(e) => setCustomization({...customization, custom_title: e.target.value})}

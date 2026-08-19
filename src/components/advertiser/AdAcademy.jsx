@@ -207,11 +207,11 @@ export default function AdAcademy({ userId }) {
             const done = completedModules.includes(mod.id);
             const locked = idx > 0 && !completedModules.includes(MODULES[idx - 1].id);
             return (
-              <div key={mod.id} className={`border rounded-xl p-4 transition-all ${
+              <div key={mod.id} role="button" tabIndex={0} className={`border rounded-xl p-4 transition-all ${
                 done ? 'border-green-500/20 bg-green-500/5' :
                 locked ? 'border-gray-700/30 opacity-50' :
                 'border-gray-700 hover:border-yellow-500/30 cursor-pointer'
-              }`} onClick={() => !done && !locked && startModule(mod)}>
+              }`} onClick={() => !done && !locked && startModule(mod)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!done && !locked) startModule(mod); } }}>
                 <div className="flex items-center gap-3">
                   <span className="text-2xl flex-shrink-0">{mod.emoji}</span>
                   <div className="flex-1 min-w-0">

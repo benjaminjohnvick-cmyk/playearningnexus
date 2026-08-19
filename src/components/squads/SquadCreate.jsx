@@ -39,8 +39,9 @@ export default function SquadCreate({ onSquadCreated }) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <label className="text-sm font-semibold block mb-2">Squad Name</label>
+          <label htmlFor="squad-name" className="text-sm font-semibold block mb-2">Squad Name</label>
           <input
+            id="squad-name"
             type="text"
             value={squadName}
             onChange={(e) => setSquadName(e.target.value)}
@@ -49,8 +50,9 @@ export default function SquadCreate({ onSquadCreated }) {
           />
         </div>
         <div>
-          <label className="text-sm font-semibold block mb-2">Description (optional)</label>
+          <label htmlFor="squad-description" className="text-sm font-semibold block mb-2">Description (optional)</label>
           <textarea
+            id="squad-description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What's your squad about?"

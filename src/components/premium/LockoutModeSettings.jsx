@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Lock, Shield, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function LockoutModeSettings({ user, membership }) {
+export default function LockoutModeSettings({ user: _user, membership }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const queryClient = useQueryClient();
 

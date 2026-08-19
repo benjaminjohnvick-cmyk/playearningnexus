@@ -126,7 +126,7 @@ export default function Categories() {
 
       {/* Product search results (real listings from across the web). */}
       {search.open && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setSearch((s) => ({ ...s, open: false }))}>
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setSearch((s) => ({ ...s, open: false }))} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSearch((s) => ({ ...s, open: false })); } }}>
           <Card className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-1">

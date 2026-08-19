@@ -25,7 +25,7 @@ export default function AdvancedMonetizationTools({ game, developer }) {
     enabled: !!game
   });
 
-  const { data: subscriptions = [] } = useQuery({
+  const { data: _subscriptions = [] } = useQuery({
     queryKey: ['subscriptions', game?.id],
     queryFn: async () => {
       return await base44.entities.Subscription.filter({ game_id: game.id });
@@ -164,7 +164,7 @@ Provide recommendations for:
       });
 
       setAiPricing(result);
-    } catch (error) {
+    } catch {
       toast.error('Failed to generate pricing');
     }
     setGeneratingPricing(false);

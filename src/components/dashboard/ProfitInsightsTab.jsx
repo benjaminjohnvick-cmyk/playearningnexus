@@ -14,7 +14,7 @@ const SEARCH_FEE = 0.05;
 const DAILY_SURVEY_GOAL = 3.00;
 const PPC_TASK_EARN = 0.40;
 
-function ProjectedMonthlyWidget({ user, completedTasksToday }) {
+function ProjectedMonthlyWidget({ user: _user, completedTasksToday }) {
   const totalTasks = 10; // approximate total daily tasks
   const completionRate = totalTasks > 0 ? completedTasksToday / totalTasks : 0;
   const dailyEarnings = (PPC_TASK_EARN + DAILY_SURVEY_GOAL - SEARCH_FEE) * completionRate;
@@ -84,7 +84,7 @@ export default function ProfitInsightsTab({ user }) {
   });
 
   // Task earnings breakdown
-  const taskBreakdown = [
+  const _taskBreakdown = [
     { name: 'PPC Ads', value: PPC_TASK_EARN, color: '#8b5cf6' },
     { name: 'Surveys', value: DAILY_SURVEY_GOAL, color: '#22c55e' },
     { name: 'Search Fee', value: -SEARCH_FEE, color: '#ef4444' },

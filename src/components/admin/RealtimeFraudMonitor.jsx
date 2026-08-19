@@ -206,8 +206,8 @@ export default function RealtimeFraudMonitor() {
         <CardContent>
           <div className="flex gap-3 items-end flex-wrap">
             <div className="flex-1 min-w-[220px]">
-              <label className="text-xs text-gray-500 block mb-1">Survey Response ID</label>
-              <Input placeholder="Paste response ID…" value={scanResponseId} onChange={e => setScanResponseId(e.target.value)} className="h-9" />
+              <label htmlFor="fraud-scan-response-id" className="text-xs text-gray-500 block mb-1">Survey Response ID</label>
+              <Input id="fraud-scan-response-id" placeholder="Paste response ID…" value={scanResponseId} onChange={e => setScanResponseId(e.target.value)} className="h-9" />
             </div>
             <Button onClick={handleManualScan} disabled={scanning || !scanResponseId.trim()} className="bg-purple-600 hover:bg-purple-700">
               {scanning ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Search className="w-4 h-4 mr-2" />} Scan

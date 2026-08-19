@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
 
-export default function SimilarProducts({ currentProduct, user }) {
+export default function SimilarProducts({ currentProduct, user: _user }) {
   const { data: allProducts = [] } = useQuery({
     queryKey: ['all-affiliate-products'],
     queryFn: async () => {

@@ -147,8 +147,8 @@ export default function AdCampaignScheduler({ ads, userId }) {
             className="bg-gray-800 border-gray-600 text-white text-sm placeholder-gray-600" />
 
           <div>
-            <label className="text-gray-500 text-xs mb-1 block">Campaign</label>
-            <select value={form.ad_id} onChange={e => setForm(f => ({ ...f, ad_id: e.target.value }))}
+            <label htmlFor="scheduler-campaign" className="text-gray-500 text-xs mb-1 block">Campaign</label>
+            <select id="scheduler-campaign" value={form.ad_id} onChange={e => setForm(f => ({ ...f, ad_id: e.target.value }))}
               className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm">
               {ads.map(ad => <option key={ad.id} value={ad.id}>{ad.brand_name}</option>)}
             </select>
@@ -156,18 +156,18 @@ export default function AdCampaignScheduler({ ads, userId }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-gray-500 text-xs mb-1 block flex items-center gap-1">
+              <label htmlFor="scheduler-start-date" className="text-gray-500 text-xs mb-1 block flex items-center gap-1">
                 <PlayCircle className="w-3 h-3 text-green-400" /> Start Date & Time
               </label>
-              <input type="datetime-local" value={form.start_date}
+              <input id="scheduler-start-date" type="datetime-local" value={form.start_date}
                 onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
                 className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm" />
             </div>
             <div>
-              <label className="text-gray-500 text-xs mb-1 block flex items-center gap-1">
+              <label htmlFor="scheduler-end-date" className="text-gray-500 text-xs mb-1 block flex items-center gap-1">
                 <PauseCircle className="w-3 h-3 text-orange-400" /> End Date & Time
               </label>
-              <input type="datetime-local" value={form.end_date}
+              <input id="scheduler-end-date" type="datetime-local" value={form.end_date}
                 onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
                 className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm" />
             </div>

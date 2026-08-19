@@ -73,7 +73,7 @@ const affiliateTiers = [
 
 export default function AffiliateMarketingPage() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [signupStatus, setSignupStatus] = useState({});
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function AffiliateMarketingPage() {
         step3: me?.affiliate_step3 || false,
         step4: me?.affiliate_step4 || false,
       });
-    } catch (e) {
+    } catch {
       // not logged in
     }
     setLoading(false);
@@ -106,7 +106,7 @@ export default function AffiliateMarketingPage() {
       const field = `affiliate_step${step}`;
       await base44.auth.updateMe({ [field]: true });
       setSignupStatus(prev => ({ ...prev, [field]: true }));
-    } catch (e) {
+    } catch {
       // proceed anyway for demo
       setSignupStatus(prev => ({ ...prev, [`step${step}`]: true }));
     }

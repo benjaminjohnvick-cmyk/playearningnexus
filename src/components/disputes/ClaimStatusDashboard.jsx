@@ -46,7 +46,7 @@ function ProgressStepper({ status }) {
   );
 }
 
-function ClaimCard({ claim, onAddEvidence }) {
+function ClaimCard({ claim, onAddEvidence: _onAddEvidence }) {
   const [expanded, setExpanded] = useState(false);
   const [uploading, setUploading] = useState(false);
   const qc = useQueryClient();

@@ -15,7 +15,7 @@ function getPrevThreshold(balance) {
   return passed.length > 0 ? passed[passed.length - 1] : 0;
 }
 
-export default function PayoutProgressDashboard({ user, transactions = [], payouts = [], dailyEarnings = [] }) {
+export default function PayoutProgressDashboard({ user, transactions: _transactions = [], payouts = [], dailyEarnings = [] }) {
   const balance = user?.current_balance || 0;
   const lifetimeEarned = user?.total_earnings || 0;
 

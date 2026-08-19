@@ -37,7 +37,7 @@ const offerIcons = {
 };
 
 export default function RetentionEngine() {
-  const [user, setUser] = useState(null);
+  const [_user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(null);
   const [campaigns, setCampaigns] = useState([]);

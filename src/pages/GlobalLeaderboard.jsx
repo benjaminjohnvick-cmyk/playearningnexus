@@ -34,7 +34,7 @@ function getRankIcon(i) {
   return <span className="text-gray-400 font-bold text-sm">#{i + 1}</span>;
 }
 
-function LeaderRow({ entry, index, currentUserId, valueLabel, valueKey }) {
+function LeaderRow({ entry, index, currentUserId, valueLabel, valueKey: _valueKey }) {
   const isMe = entry.user_id === currentUserId;
   const rankInfo = getRankInfo(index);
 
@@ -77,7 +77,7 @@ function LeaderRow({ entry, index, currentUserId, valueLabel, valueKey }) {
   );
 }
 
-function MiniPodium({ top3, currentUserId }) {
+function MiniPodium({ top3, currentUserId: _currentUserId }) {
   const order = [1, 0, 2]; // silver, gold, bronze
   const heights = ['h-20', 'h-28', 'h-16'];
   const colors = ['from-slate-300 to-gray-400', 'from-yellow-400 to-amber-500', 'from-amber-500 to-orange-500'];

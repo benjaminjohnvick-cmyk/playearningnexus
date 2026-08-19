@@ -49,7 +49,7 @@ export default function EarningsPotentialCalculator({ currentBalance = 0, nextPa
           {/* Surveys per week */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-900">Surveys Per Week</label>
+              <span className="text-sm font-medium text-gray-900">Surveys Per Week</span>
               <Badge className="bg-blue-100 text-blue-800 text-lg px-3 py-1">{surveysPerWeek}</Badge>
             </div>
             <Slider
@@ -66,7 +66,7 @@ export default function EarningsPotentialCalculator({ currentBalance = 0, nextPa
           {/* Average pay per survey */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-900">Avg Pay Per Survey</label>
+              <span className="text-sm font-medium text-gray-900">Avg Pay Per Survey</span>
               <Badge className="bg-green-100 text-green-800 text-lg px-3 py-1">${avgPayPerSurvey.toFixed(2)}</Badge>
             </div>
             <Slider
@@ -83,7 +83,7 @@ export default function EarningsPotentialCalculator({ currentBalance = 0, nextPa
           {/* Active referrals */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-900">Active Referrals</label>
+              <span className="text-sm font-medium text-gray-900">Active Referrals</span>
               <Badge className="bg-purple-100 text-purple-800 text-lg px-3 py-1">{referrals}</Badge>
             </div>
             <Slider
@@ -100,7 +100,7 @@ export default function EarningsPotentialCalculator({ currentBalance = 0, nextPa
           {/* Referral commission */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-900">Commission Per Active Referral</label>
+              <span className="text-sm font-medium text-gray-900">Commission Per Active Referral</span>
               <Badge className="bg-yellow-100 text-yellow-800 text-lg px-3 py-1">${referralCommission.toFixed(2)}</Badge>
             </div>
             <Slider

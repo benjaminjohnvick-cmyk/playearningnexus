@@ -18,7 +18,7 @@ function calcAdROI(ad) {
   return { spent, completions, clicks, ctr, cpc, roi, budgetUsed, budgetLeft };
 }
 
-function AdScalerRow({ ad, metrics, roiThreshold, classification, scalingAmount, onTransfer }) {
+function AdScalerRow({ ad, metrics, roiThreshold, classification, scalingAmount, onTransfer: _onTransfer }) {
   const isHigh = classification === 'high';
   const isLow = classification === 'low';
 
@@ -91,11 +91,11 @@ function AdScalerRow({ ad, metrics, roiThreshold, classification, scalingAmount,
   );
 }
 
-export default function AdBudgetScaler({ ads, adBalance, onRefresh }) {
+export default function AdBudgetScaler({ ads, adBalance: _adBalance, onRefresh }) {
   const [roiThreshold, setRoiThreshold] = useState(1.2);
   const [shiftPct, setShiftPct] = useState(20);
   const [minBudgetLeft, setMinBudgetLeft] = useState(5);
-  const [running, setRunning] = useState(false);
+  const [_running, _setRunning] = useState(false);
   const [scaling, setScaling] = useState(false);
   const [log, setLog] = useState([]);
   const [lastRun, setLastRun] = useState(null);
@@ -167,7 +167,7 @@ export default function AdBudgetScaler({ ads, adBalance, onRefresh }) {
 
   const logColor = { info: 'text-gray-400', success: 'text-green-400', warn: 'text-yellow-400', error: 'text-red-400' };
 
-  const totalBudget = ads.reduce((s, a) => s + (a.budget_limit || 0), 0);
+  const _totalBudget = ads.reduce((s, a) => s + (a.budget_limit || 0), 0);
   const avgROI = ads.length > 0 ? ads.reduce((s, a) => s + metricsMap[a.id].roi, 0) / ads.length : 0;
 
   return (
@@ -178,36 +178,36 @@ export default function AdBudgetScaler({ ads, adBalance, onRefresh }) {
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Scaling Parameters</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">
+            <label htmlFor="roi-threshold" className="text-xs text-gray-400 font-bold block mb-1">
               Target ROI Threshold
               <span className="text-gray-600 font-normal ml-1">(ads below = underperforming)</span>
             </label>
             <div className="flex items-center gap-2">
-              <input type="range" min="0.5" max="3" step="0.1" value={roiThreshold}
+              <input id="roi-threshold" type="range" min="0.5" max="3" step="0.1" value={roiThreshold}
                 onChange={e => setRoiThreshold(parseFloat(e.target.value))}
                 className="flex-1 accent-yellow-500" />
               <span className="text-yellow-400 font-black text-sm w-10">{roiThreshold}x</span>
             </div>
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">
+            <label htmlFor="budget-shift-pct" className="text-xs text-gray-400 font-bold block mb-1">
               Budget Shift %
               <span className="text-gray-600 font-normal ml-1">(% of underperformer budget to move)</span>
             </label>
             <div className="flex items-center gap-2">
-              <input type="range" min="5" max="50" step="5" value={shiftPct}
+              <input id="budget-shift-pct" type="range" min="5" max="50" step="5" value={shiftPct}
                 onChange={e => setShiftPct(parseInt(e.target.value))}
                 className="flex-1 accent-orange-500" />
               <span className="text-orange-400 font-black text-sm w-10">{shiftPct}%</span>
             </div>
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">
+            <label htmlFor="min-budget-floor" className="text-xs text-gray-400 font-bold block mb-1">
               Min Budget Floor $
               <span className="text-gray-600 font-normal ml-1">(don't pull below this)</span>
             </label>
             <div className="flex items-center gap-2">
-              <input type="range" min="1" max="30" step="1" value={minBudgetLeft}
+              <input id="min-budget-floor" type="range" min="1" max="30" step="1" value={minBudgetLeft}
                 onChange={e => setMinBudgetLeft(parseInt(e.target.value))}
                 className="flex-1 accent-blue-500" />
               <span className="text-blue-400 font-black text-sm w-10">${minBudgetLeft}</span>

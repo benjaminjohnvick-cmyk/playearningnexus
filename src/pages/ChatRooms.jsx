@@ -49,7 +49,7 @@ function ChatMessage({ msg }) {
   );
 }
 
-function DirectMessageModal({ user, onClose }) {
+function DirectMessageModal({ user: _user, onClose }) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(null);
   const [msg, setMsg] = useState('');

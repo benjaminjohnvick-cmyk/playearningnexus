@@ -113,3 +113,9 @@ export const useAuth = () => {
   }
   return context;
 };
+
+// Non-throwing variant: returns the auth context, or null if there's no AuthProvider
+// above this component. Lets a component render standalone (e.g. on a public /auth page)
+// without being wrapped in a provider. Always call it at the top level of a component —
+// it's a real hook, so it satisfies the rules-of-hooks (unlike a try/catch around useAuth()).
+export const useAuthOptional = () => useContext(AuthContext) ?? null;

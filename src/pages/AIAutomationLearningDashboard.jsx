@@ -37,7 +37,7 @@ export default function AIAutomationLearningDashboard() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [dashRes, memRes, logRes] = await Promise.all([
+      const [dashRes, _memRes, _logRes] = await Promise.all([
         base44.functions.invoke('aiAutomationLearningEngine', { action: 'get_dashboard' }),
         base44.asServiceRole
           ? Promise.resolve({ data: [] })

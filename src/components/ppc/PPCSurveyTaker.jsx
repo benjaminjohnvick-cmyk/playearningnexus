@@ -36,7 +36,7 @@ export default function PPCSurveyTaker({ survey, user, onClose }) {
     const inlineTranslation = survey.translations?.[userLang];
     if (inlineTranslation?.questions?.length) {
       activeQuestions = inlineTranslation.questions;
-      activeTitle = inlineTranslation.title || survey.title;
+      _activeTitle = inlineTranslation.title || survey.title;
       usedLanguage = userLang;
     }
   }

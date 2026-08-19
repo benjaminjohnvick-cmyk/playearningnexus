@@ -217,8 +217,9 @@ export default function DeveloperPayoutDashboard() {
                     <h3 className="font-semibold mb-3 text-slate-900">Request Withdrawal</h3>
                     <div className="space-y-3">
                       <div>
-                        <label className="text-sm font-medium text-slate-700">Amount (USD)</label>
+                        <label htmlFor="withdraw-amount" className="text-sm font-medium text-slate-700">Amount (USD)</label>
                         <input
+                          id="withdraw-amount"
                           type="number"
                           value={withdrawAmount}
                           onChange={(e) => setWithdrawAmount(e.target.value)}
@@ -229,8 +230,9 @@ export default function DeveloperPayoutDashboard() {
                         <p className="text-xs text-slate-500 mt-1">Available: ${availableBalance.toFixed(2)}</p>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-slate-700">Payment Method</label>
+                        <label htmlFor="withdraw-payment-method" className="text-sm font-medium text-slate-700">Payment Method</label>
                         <select
+                          id="withdraw-payment-method"
                           value={paymentMethod}
                           onChange={(e) => setPaymentMethod(e.target.value)}
                           className="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

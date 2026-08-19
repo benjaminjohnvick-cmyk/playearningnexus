@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Zap, TrendingUp, Share2, BarChart3, RefreshCw } from 'lucide-react';
 
 export default function ViralContentDashboard() {
-  const [user, setUser] = useState(null);
+  const [_user, setUser] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {

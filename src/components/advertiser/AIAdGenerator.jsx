@@ -40,7 +40,7 @@ Return a JSON with exactly these fields:
         },
       });
       setResult({ ...data, selectedTagline: data.taglines?.[0] || '', imageUrl: null });
-    } catch (err) {
+    } catch {
       toast.error('Could not analyze URL. Check the address and try again.');
     }
     setLoading(false);
@@ -55,7 +55,7 @@ Return a JSON with exactly these fields:
       });
       setResult(r => ({ ...r, imageUrl }));
       toast.success('Ad thumbnail generated!');
-    } catch (err) {
+    } catch {
       toast.error('Image generation failed. Try regenerating.');
     }
     setGenerating(false);

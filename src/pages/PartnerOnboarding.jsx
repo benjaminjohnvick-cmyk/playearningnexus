@@ -82,7 +82,7 @@ export default function PartnerOnboarding() {
 
   const [payoutMethod, setPayoutMethod] = useState('paypal');
   const [paypalEmail, setPaypalEmail] = useState('');
-  const [stripeConnected, setStripeConnected] = useState(false);
+  const [_stripeConnected, _setStripeConnected] = useState(false);
   const [bankHolder, setBankHolder] = useState('');
   const [bankRouting, setBankRouting] = useState('');
   const [bankAccount, setBankAccount] = useState('');
@@ -251,26 +251,26 @@ export default function PartnerOnboarding() {
                 <CardContent className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Company Name *</label>
-                      <Input value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Acme Corp" className="border-2" />
+                      <label htmlFor="partner-company-name" className="text-xs font-semibold text-gray-600 block mb-1">Company Name *</label>
+                      <Input id="partner-company-name" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Acme Corp" className="border-2" />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Contact Email *</label>
-                      <Input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="contact@company.com" className="border-2" />
+                      <label htmlFor="partner-contact-email" className="text-xs font-semibold text-gray-600 block mb-1">Contact Email *</label>
+                      <Input id="partner-contact-email" type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="contact@company.com" className="border-2" />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Phone Number</label>
-                      <Input value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="+1 (555) 000-0000" className="border-2" />
+                      <label htmlFor="partner-phone" className="text-xs font-semibold text-gray-600 block mb-1">Phone Number</label>
+                      <Input id="partner-phone" value={contactPhone} onChange={e => setContactPhone(e.target.value)} placeholder="+1 (555) 000-0000" className="border-2" />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Website</label>
-                      <Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://company.com" className="border-2" />
+                      <label htmlFor="partner-website" className="text-xs font-semibold text-gray-600 block mb-1">Website</label>
+                      <Input id="partner-website" value={website} onChange={e => setWebsite(e.target.value)} placeholder="https://company.com" className="border-2" />
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-1">Partner Type</label>
+                    <label htmlFor="partner-type" className="text-xs font-semibold text-gray-600 block mb-1">Partner Type</label>
                     <Select value={partnerType} onValueChange={setPartnerType}>
-                      <SelectTrigger className="border-2"><SelectValue placeholder="Select type…" /></SelectTrigger>
+                      <SelectTrigger id="partner-type" className="border-2"><SelectValue placeholder="Select type…" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="brand">Brand / Advertiser</SelectItem>
                         <SelectItem value="agency">Marketing Agency</SelectItem>
@@ -281,8 +281,8 @@ export default function PartnerOnboarding() {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-1">Company Bio / Description</label>
-                    <Textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us about your company and how you plan to use the Get Goods Gratis (Free) network…" rows={3} className="border-2 resize-none" />
+                    <label htmlFor="partner-bio" className="text-xs font-semibold text-gray-600 block mb-1">Company Bio / Description</label>
+                    <Textarea id="partner-bio" value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us about your company and how you plan to use the Get Goods Gratis (Free) network…" rows={3} className="border-2 resize-none" />
                   </div>
 
                   <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-3 flex items-start gap-2">
@@ -328,25 +328,25 @@ export default function PartnerOnboarding() {
 
                   {payoutMethod === 'paypal' && (
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">PayPal Email Address *</label>
-                      <Input type="email" value={paypalEmail} onChange={e => setPaypalEmail(e.target.value)} placeholder="paypal@company.com" className="border-2" />
+                      <label htmlFor="partner-paypal-email" className="text-xs font-semibold text-gray-600 block mb-1">PayPal Email Address *</label>
+                      <Input id="partner-paypal-email" type="email" value={paypalEmail} onChange={e => setPaypalEmail(e.target.value)} placeholder="paypal@company.com" className="border-2" />
                     </div>
                   )}
 
                   {payoutMethod === 'bank' && (
                     <div className="space-y-3">
                       <div>
-                        <label className="text-xs font-semibold text-gray-600 block mb-1">Account Holder Name *</label>
-                        <Input value={bankHolder} onChange={e => setBankHolder(e.target.value)} placeholder="John Doe / Acme Corp" className="border-2" />
+                        <label htmlFor="partner-bank-holder" className="text-xs font-semibold text-gray-600 block mb-1">Account Holder Name *</label>
+                        <Input id="partner-bank-holder" value={bankHolder} onChange={e => setBankHolder(e.target.value)} placeholder="John Doe / Acme Corp" className="border-2" />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-xs font-semibold text-gray-600 block mb-1">Routing Number *</label>
-                          <Input value={bankRouting} onChange={e => setBankRouting(e.target.value)} placeholder="021000021" className="border-2" />
+                          <label htmlFor="partner-bank-routing" className="text-xs font-semibold text-gray-600 block mb-1">Routing Number *</label>
+                          <Input id="partner-bank-routing" value={bankRouting} onChange={e => setBankRouting(e.target.value)} placeholder="021000021" className="border-2" />
                         </div>
                         <div>
-                          <label className="text-xs font-semibold text-gray-600 block mb-1">Account Number *</label>
-                          <Input type="password" value={bankAccount} onChange={e => setBankAccount(e.target.value)} placeholder="••••••••" className="border-2" />
+                          <label htmlFor="partner-bank-account" className="text-xs font-semibold text-gray-600 block mb-1">Account Number *</label>
+                          <Input id="partner-bank-account" type="password" value={bankAccount} onChange={e => setBankAccount(e.target.value)} placeholder="••••••••" className="border-2" />
                         </div>
                       </div>
                       <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2">
@@ -404,8 +404,9 @@ export default function PartnerOnboarding() {
 
                   <div className={`space-y-3 transition-all ${!agreementRead ? 'opacity-50 pointer-events-none' : ''}`}>
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Digital Signature (Full Name) *</label>
+                      <label htmlFor="partner-signature" className="text-xs font-semibold text-gray-600 block mb-1">Digital Signature (Full Name) *</label>
                       <Input
+                        id="partner-signature"
                         value={signatureName}
                         onChange={e => setSignatureName(e.target.value)}
                         placeholder="Type your full legal name"

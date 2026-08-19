@@ -59,7 +59,7 @@ export default function AchievementsDisplay({ achievements }) {
             Locked ({locked.length})
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {locked.map((achievement, index) => (
+            {locked.map((achievement, _index) => (
               <Card key={achievement.id} className="opacity-60">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">

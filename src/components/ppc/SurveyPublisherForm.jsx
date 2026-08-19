@@ -31,11 +31,11 @@ const SURVEY_TYPES = {
 
 export default function SurveyPublisherForm({ user }) {
   const [surveyType, setSurveyType] = useState('');
-  const [step, setStep] = useState(1);
+  const [_step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [collabSurveyId, setCollabSurveyId] = useState(null);
-  const [targeting, setTargeting] = useState({});
+  const [collabSurveyId, _setCollabSurveyId] = useState(null);
+  const [_targeting, _setTargeting] = useState({});
   const queryClient = useQueryClient();
 
   // Live collaboration (only active once a survey draft is created/selected)
@@ -52,7 +52,7 @@ export default function SurveyPublisherForm({ user }) {
   });
 
   const selectedType = SURVEY_TYPES[surveyType];
-  const totalCost = surveyType === 'data_collection'
+  const _totalCost = surveyType === 'data_collection'
     ? Math.max(formData.sampleSize, 100) * 4
     : null;
   const priceWithFee = formData.productPrice ? (parseFloat(formData.productPrice) * 1.10).toFixed(2) : null;
@@ -191,15 +191,15 @@ export default function SurveyPublisherForm({ user }) {
             <CardHeader><CardTitle>Step 2 — Survey Details</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Survey Title</label>
-                <Input placeholder="Enter survey title…" value={formData.title}
+                <label htmlFor="spf-title" className="text-sm font-medium text-gray-700 mb-1 block">Survey Title</label>
+                <Input id="spf-title" placeholder="Enter survey title…" value={formData.title}
                   onChange={e => setFormData(p => ({ ...p, title: e.target.value }))} className="border-2" />
               </div>
 
               {surveyType === 'data_collection' && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Sample Size (min. 100)</label>
-                  <Input type="number" min={100} value={formData.sampleSize}
+                  <label htmlFor="spf-sample-size" className="text-sm font-medium text-gray-700 mb-1 block">Sample Size (min. 100)</label>
+                  <Input id="spf-sample-size" type="number" min={100} value={formData.sampleSize}
                     onChange={e => setFormData(p => ({ ...p, sampleSize: parseInt(e.target.value) || 100 }))} className="border-2" />
                   <p className="text-xs text-gray-500 mt-1">
                     Estimated total cost: <strong>${(Math.max(formData.sampleSize, 100) * 4).toLocaleString()}</strong>
@@ -210,8 +210,8 @@ export default function SurveyPublisherForm({ user }) {
               {surveyType === 'product_listing' && (
                 <>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">Product Image URL</label>
-                    <Input placeholder="https://..." value={formData.productImageUrl}
+                    <label htmlFor="spf-product-image-url" className="text-sm font-medium text-gray-700 mb-1 block">Product Image URL</label>
+                    <Input id="spf-product-image-url" placeholder="https://..." value={formData.productImageUrl}
                       onChange={e => setFormData(p => ({ ...p, productImageUrl: e.target.value }))} className="border-2" />
                     {formData.productImageUrl && (
                       <img src={formData.productImageUrl} alt="Preview" className="mt-2 h-32 w-full object-contain rounded-xl border" />
@@ -231,10 +231,10 @@ export default function SurveyPublisherForm({ user }) {
                       className="w-full border-2 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-400" />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">Sale Price ($)</label>
+                    <label htmlFor="spf-sale-price" className="text-sm font-medium text-gray-700 mb-1 block">Sale Price ($)</label>
                     <div className="flex items-center gap-2">
                       <span className="text-gray-500 font-bold">$</span>
-                      <Input type="number" placeholder="0.00" value={formData.productPrice}
+                      <Input id="spf-sale-price" type="number" placeholder="0.00" value={formData.productPrice}
                         onChange={e => setFormData(p => ({ ...p, productPrice: e.target.value }))} className="border-2" />
                     </div>
                     {priceWithFee && (

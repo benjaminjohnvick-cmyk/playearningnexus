@@ -108,9 +108,9 @@ export default function WeeklyReferralContest() {
                 ) : null}
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Paste the link to your post</label>
+                  <label htmlFor="weekly-post-url" className="text-sm font-medium">Paste the link to your post</label>
                   <div className="flex gap-2">
-                    <Input value={postUrl} onChange={(e) => setPostUrl(e.target.value)} placeholder={`https://${campaign.platform}.com/your-post`} className="flex-1" />
+                    <Input id="weekly-post-url" value={postUrl} onChange={(e) => setPostUrl(e.target.value)} placeholder={`https://${campaign.platform}.com/your-post`} className="flex-1" />
                     <Button className="bg-emerald-600 hover:bg-emerald-700" disabled={!postUrl || submitMutation.isPending} onClick={() => submitMutation.mutate()}>
                       {submitMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit'}
                     </Button>

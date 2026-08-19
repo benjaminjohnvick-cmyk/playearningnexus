@@ -145,9 +145,9 @@ export default function SurveyTranslator({ user }) {
         <CardHeader><CardTitle>Select Survey & Target Language</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">Survey to Translate</label>
+            <label htmlFor="translator-survey" className="text-sm font-medium text-gray-700 block mb-1">Survey to Translate</label>
             <Select value={selectedSurveyId} onValueChange={v => { setSelectedSurveyId(v); setTranslatedSurvey(null); }}>
-              <SelectTrigger className="border-2">
+              <SelectTrigger id="translator-survey" className="border-2">
                 <SelectValue placeholder="Choose a survey…" />
               </SelectTrigger>
               <SelectContent>
@@ -159,7 +159,7 @@ export default function SurveyTranslator({ user }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">Target Language</label>
+            <span className="text-sm font-medium text-gray-700 block mb-1">Target Language</span>
             <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
               {LANGUAGES.map(lang => (
                 <button
@@ -180,7 +180,7 @@ export default function SurveyTranslator({ user }) {
           {selectedSurvey && targetLanguage && (
             <div className="p-3 bg-gray-50 rounded-xl text-sm text-gray-600">
               Translating: <strong>"{selectedSurvey.title}"</strong> →{' '}
-              <strong>{selectedLang?.label}</strong> ({selectedSurvey.questions?.length || 0} questions + {selectedSurvey.questions?.reduce((s, q) => s + 4, 0)} answer options)
+              <strong>{selectedLang?.label}</strong> ({selectedSurvey.questions?.length || 0} questions + {selectedSurvey.questions?.reduce((s, _q) => s + 4, 0)} answer options)
             </div>
           )}
 

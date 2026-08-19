@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 export default function ShareableReferralCard({ user }) {
   const [copied, setCopied] = useState(false);
-  const [trackingLinks, setTrackingLinks] = useState([]);
+  const [_trackingLinks, _setTrackingLinks] = useState([]);
   const [creatingLink, setCreatingLink] = useState(false);
   const [linkLabel, setLinkLabel] = useState('');
 

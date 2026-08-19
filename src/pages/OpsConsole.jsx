@@ -51,7 +51,7 @@ export default function OpsConsole() {
   const gaps = coverage?.gaps_today || [];
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto" tabIndex={0} onKeyDown={onKey}>
+    <div className="p-4 md:p-8 max-w-4xl mx-auto" role="group" tabIndex={0} onKeyDown={onKey}>
       <div className="mb-4 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2"><ShieldCheck className="w-7 h-7 text-indigo-600" /><h1 className="text-2xl font-bold">Operations Desk</h1></div>
         <Button size="sm" variant="outline" onClick={load} disabled={loading}>{loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Refresh'}</Button>

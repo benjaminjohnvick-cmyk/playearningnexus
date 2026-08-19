@@ -36,7 +36,7 @@ export default function ProfileCustomizer({ user }) {
         setBannerUrl(file_url);
       }
       toast.success(`${type === 'avatar' ? 'Avatar' : 'Banner'} uploaded!`);
-    } catch (error) {
+    } catch {
       toast.error('Upload failed');
     } finally {
       setUploading(false);
@@ -61,12 +61,13 @@ export default function ProfileCustomizer({ user }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Avatar</label>
+            <label htmlFor="profile-avatar-upload" className="block text-sm font-medium mb-2">Avatar</label>
             <div className="flex items-center gap-4">
               {avatarUrl && (
                 <img src={avatarUrl} alt="Avatar" className="w-20 h-20 rounded-full object-cover border-4 border-red-200" />
               )}
               <Input
+                id="profile-avatar-upload"
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleFileUpload(e.target.files[0], 'avatar')}
@@ -76,12 +77,13 @@ export default function ProfileCustomizer({ user }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Banner</label>
+            <label htmlFor="profile-banner-upload" className="block text-sm font-medium mb-2">Banner</label>
             <div className="space-y-2">
               {bannerUrl && (
                 <img src={bannerUrl} alt="Banner" className="w-full h-32 rounded-lg object-cover border-2 border-red-200" />
               )}
               <Input
+                id="profile-banner-upload"
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleFileUpload(e.target.files[0], 'banner')}

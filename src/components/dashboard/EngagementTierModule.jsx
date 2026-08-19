@@ -67,7 +67,7 @@ export default function EngagementTierModule({ user }) {
     enabled: !!user?.id,
   });
 
-  const { data: recentResponses = [] } = useQuery({
+  const { data: _recentResponses = [] } = useQuery({
     queryKey: ['recent-responses', user?.id],
     queryFn: () => base44.entities.PPCSurveyResponse.filter({ user_id: user.id }, '-created_date', 20),
     enabled: !!user?.id,

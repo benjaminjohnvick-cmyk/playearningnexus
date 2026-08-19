@@ -6,7 +6,7 @@ import { RefreshCw, Loader2, TrendingUp, Eye, MousePointer, Target, DollarSign }
 
 const COLORS = ['#8b5cf6', '#ec4899', '#06b6d4', '#10b981', '#f59e0b'];
 
-export default function CampaignAnalytics({ campaigns, selectedCampaign, onSelectCampaign }) {
+export default function CampaignAnalytics({ campaigns, selectedCampaign, onSelectCampaign: _onSelectCampaign }) {
   const [simulating, setSimulating] = useState(null);
   const [localSelected, setLocalSelected] = useState(selectedCampaign || campaigns[0]);
 
@@ -46,7 +46,7 @@ export default function CampaignAnalytics({ campaigns, selectedCampaign, onSelec
     { label: 'Revenue', value: `$${(perf.revenue_generated || 0).toFixed(0)}`, icon: DollarSign, color: 'text-pink-400', trend: '+22%' }
   ];
 
-  const platformData = (campaign?.demographics?.platforms || []).map((p, i) => ({
+  const platformData = (campaign?.demographics?.platforms || []).map((p, _i) => ({
     name: p, value: Math.floor(20 + Math.random() * 40)
   }));
 

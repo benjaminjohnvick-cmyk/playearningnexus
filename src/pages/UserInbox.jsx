@@ -19,7 +19,7 @@ export default function UserInbox() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -68,7 +68,7 @@ export default function UserInbox() {
     }
   });
 
-  const deleteNotificationMutation = useMutation({
+  const _deleteNotificationMutation = useMutation({
     mutationFn: async (notificationId) => {
       await base44.entities.Notification.delete(notificationId);
     },

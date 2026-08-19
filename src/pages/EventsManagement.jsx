@@ -34,7 +34,7 @@ export default function EventsManagement() {
           return;
         }
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -111,8 +111,9 @@ export default function EventsManagement() {
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Event Title</label>
+                  <label htmlFor="event-title" className="text-sm font-medium mb-2 block">Event Title</label>
                   <Input
+                    id="event-title"
                     placeholder="Weekend XP Bonanza"
                     value={newEvent.title}
                     onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
@@ -120,8 +121,9 @@ export default function EventsManagement() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Description</label>
+                  <label htmlFor="event-description" className="text-sm font-medium mb-2 block">Description</label>
                   <Textarea
+                    id="event-description"
                     placeholder="Earn double XP all weekend long!"
                     value={newEvent.description}
                     onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
@@ -131,9 +133,9 @@ export default function EventsManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Event Type</label>
+                    <label htmlFor="event-type" className="text-sm font-medium mb-2 block">Event Type</label>
                     <Select value={newEvent.event_type} onValueChange={(value) => setNewEvent({ ...newEvent, event_type: value })}>
-                      <SelectTrigger>
+                      <SelectTrigger id="event-type">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -148,8 +150,9 @@ export default function EventsManagement() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Reward Multiplier</label>
+                    <label htmlFor="event-reward-multiplier" className="text-sm font-medium mb-2 block">Reward Multiplier</label>
                     <Input
+                      id="event-reward-multiplier"
                       type="number"
                       min="1"
                       step="0.5"
@@ -161,8 +164,9 @@ export default function EventsManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Start Time</label>
+                    <label htmlFor="event-start-time" className="text-sm font-medium mb-2 block">Start Time</label>
                     <Input
+                      id="event-start-time"
                       type="datetime-local"
                       value={newEvent.start_time}
                       onChange={(e) => setNewEvent({ ...newEvent, start_time: e.target.value })}
@@ -170,8 +174,9 @@ export default function EventsManagement() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">End Time</label>
+                    <label htmlFor="event-end-time" className="text-sm font-medium mb-2 block">End Time</label>
                     <Input
+                      id="event-end-time"
                       type="datetime-local"
                       value={newEvent.end_time}
                       onChange={(e) => setNewEvent({ ...newEvent, end_time: e.target.value })}
@@ -180,8 +185,9 @@ export default function EventsManagement() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Bonus Credits (optional)</label>
+                  <label htmlFor="event-bonus-credits" className="text-sm font-medium mb-2 block">Bonus Credits (optional)</label>
                   <Input
+                    id="event-bonus-credits"
                     type="number"
                     min="0"
                     value={newEvent.reward_credits}

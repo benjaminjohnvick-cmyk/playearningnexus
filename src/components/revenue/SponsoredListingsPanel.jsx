@@ -17,13 +17,13 @@ const LISTING_TYPES = [
   { id: 'interstitial', label: 'Interstitial', price: 199, description: 'Full-screen transition ad' },
 ];
 
-export default function SponsoredListingsPanel({ isAdvertiser = false }) {
+export default function SponsoredListingsPanel({ isAdvertiser: _isAdvertiser = false }) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', cta_url: '', listing_type: 'native', budget_total: '' });
   const [submitting, setSubmitting] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
 
-  const { data: listings = [] } = useQuery({
+  const { data: _listings = [] } = useQuery({
     queryKey: ['sponsoredListings'],
     queryFn: () => base44.entities.SponsoredListing.filter({ status: 'active' }),
   });

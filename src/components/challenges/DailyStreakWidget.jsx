@@ -72,7 +72,7 @@ export default function DailyStreakWidget({ user }) {
   const { currentStreak, longestStreak, completedToday } = useMemo(() => {
     let streak = 0;
     const today = format(new Date(), 'yyyy-MM-dd');
-    const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
+    const _yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
     const earningDates = new Set(
       dailyEarnings.filter(e => e.total_surveys_completed > 0).map(e => e.date)
@@ -97,7 +97,7 @@ export default function DailyStreakWidget({ user }) {
   const progressPct = Math.min((currentStreak / nextMilestone.days) * 100, 100);
 
   // Streak reward earned
-  const highestEarned = [...STREAK_REWARDS].reverse().find(r => currentStreak >= r.days);
+  const _highestEarned = [...STREAK_REWARDS].reverse().find(r => currentStreak >= r.days);
 
   const claimRewardMutation = useMutation({
     mutationFn: async (reward) => {

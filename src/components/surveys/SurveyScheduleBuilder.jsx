@@ -69,9 +69,9 @@ export default function SurveyScheduleBuilder({ surveyId, onScheduled }) {
       <CardContent className="space-y-4">
         {/* Schedule Type */}
         <div>
-          <label className="text-sm font-medium text-gray-900 mb-2 block">Schedule Type</label>
+          <label htmlFor="ssb-schedule-type" className="text-sm font-medium text-gray-900 mb-2 block">Schedule Type</label>
           <Select value={scheduleType} onValueChange={setScheduleType}>
-            <SelectTrigger>
+            <SelectTrigger id="ssb-schedule-type">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -84,8 +84,9 @@ export default function SurveyScheduleBuilder({ surveyId, onScheduled }) {
         {/* Date & Time */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-sm font-medium text-gray-900 mb-2 block">Launch Date</label>
+            <label htmlFor="ssb-launch-date" className="text-sm font-medium text-gray-900 mb-2 block">Launch Date</label>
             <Input
+              id="ssb-launch-date"
               type="date"
               value={launchDate}
               onChange={(e) => setLaunchDate(e.target.value)}
@@ -93,8 +94,9 @@ export default function SurveyScheduleBuilder({ surveyId, onScheduled }) {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-900 mb-2 block">Time (24hr)</label>
+            <label htmlFor="ssb-launch-time" className="text-sm font-medium text-gray-900 mb-2 block">Time (24hr)</label>
             <Input
+              id="ssb-launch-time"
               type="time"
               value={launchTime}
               onChange={(e) => setLaunchTime(e.target.value)}
@@ -104,9 +106,9 @@ export default function SurveyScheduleBuilder({ surveyId, onScheduled }) {
 
         {/* Timezone */}
         <div>
-          <label className="text-sm font-medium text-gray-900 mb-2 block">Your Timezone</label>
+          <label htmlFor="ssb-timezone" className="text-sm font-medium text-gray-900 mb-2 block">Your Timezone</label>
           <Select value={timezone} onValueChange={setTimezone}>
-            <SelectTrigger>
+            <SelectTrigger id="ssb-timezone">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -126,9 +128,9 @@ export default function SurveyScheduleBuilder({ surveyId, onScheduled }) {
         {scheduleType === 'recurring' && (
           <div className="space-y-4 p-3 bg-white rounded-lg border border-cyan-200">
             <div>
-              <label className="text-sm font-medium text-gray-900 mb-2 block">Frequency</label>
+              <label htmlFor="ssb-frequency" className="text-sm font-medium text-gray-900 mb-2 block">Frequency</label>
               <Select value={frequency} onValueChange={setFrequency}>
-                <SelectTrigger>
+                <SelectTrigger id="ssb-frequency">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -151,8 +153,9 @@ export default function SurveyScheduleBuilder({ surveyId, onScheduled }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-900 mb-2 block">End Date (optional)</label>
+              <label htmlFor="ssb-end-date" className="text-sm font-medium text-gray-900 mb-2 block">End Date (optional)</label>
               <Input
+                id="ssb-end-date"
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}

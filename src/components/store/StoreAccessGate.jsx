@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Lock, TrendingUp, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function StoreAccessGate({ children, canAccessStore, onAccessGranted }) {
+export default function StoreAccessGate({ children, canAccessStore: _canAccessStore, onAccessGranted }) {
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
   const [todayEarnings, setTodayEarnings] = useState(0);

@@ -157,7 +157,7 @@ Provide:
       });
       
       setAiSuggestions(result);
-    } catch (error) {
+    } catch {
       toast.error('Failed to generate suggestions');
     }
     setGeneratingSuggestions(false);
@@ -255,7 +255,7 @@ Provide:
                     <p className="font-semibold text-sm mb-1">{msg.user_name}</p>
                     <p className="text-sm">{msg.message}</p>
                     {msg.attachments?.[0]?.file_url && (
-                      <img src={msg.attachments[0].file_url} className="mt-2 rounded-lg max-w-sm" />
+                      <img src={msg.attachments[0].file_url} alt="Message attachment" className="mt-2 rounded-lg max-w-sm" />
                     )}
                     <p className="text-xs text-gray-500 mt-1">{new Date(msg.created_date).toLocaleTimeString()}</p>
                   </div>
@@ -350,6 +350,7 @@ Provide:
                   <div key={msg.id} className="aspect-square rounded-lg overflow-hidden">
                     <img
                       src={msg.attachments?.[0]?.file_url}
+                      alt="Shared media"
                       className="w-full h-full object-cover"
                     />
                   </div>

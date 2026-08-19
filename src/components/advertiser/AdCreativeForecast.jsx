@@ -135,7 +135,7 @@ Predicted CTR: ${result.predictedCTR}% | ROI Score: ${result.predictedROI}
 In 2 short sentences (max 30 words total), give the single most impactful improvement this advertiser should make. Be specific and actionable.`,
         });
         setAiInsight(res);
-      } catch (e) {
+      } catch {
         // silently skip AI insight on error
       }
     }

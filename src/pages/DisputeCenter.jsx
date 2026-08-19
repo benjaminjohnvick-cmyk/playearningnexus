@@ -140,7 +140,7 @@ export default function DisputeCenter() {
                 <p className="text-xs text-gray-500">Submit a dispute and get an instant AI decision. High-quality users receive automatic goodwill credits.</p>
               </CardHeader>
               <CardContent className="space-y-4">
-                <EvidenceUploader onUpload={(data) => {}} />
+                <EvidenceUploader onUpload={(_data) => {}} />
                 <AutoDisputeWorkflow user={user} />
               </CardContent>
             </Card>

@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Edit, DollarSign, TrendingUp, Users, Star } from "lucide-react";
 import { toast } from "sonner";
 
-export default function GameManagementPortal({ game, developer }) {
+export default function GameManagementPortal({ game, developer: _developer }) {
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({});
   const queryClient = useQueryClient();
@@ -245,16 +245,16 @@ export default function GameManagementPortal({ game, developer }) {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Title</label>
-              <Input value={editData.title} onChange={(e) => setEditData({...editData, title: e.target.value})} />
+              <label htmlFor="game-edit-title" className="text-sm font-medium mb-2 block">Title</label>
+              <Input id="game-edit-title" value={editData.title} onChange={(e) => setEditData({...editData, title: e.target.value})} />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Description</label>
-              <Textarea value={editData.description} onChange={(e) => setEditData({...editData, description: e.target.value})} />
+              <label htmlFor="game-edit-description" className="text-sm font-medium mb-2 block">Description</label>
+              <Textarea id="game-edit-description" value={editData.description} onChange={(e) => setEditData({...editData, description: e.target.value})} />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Price ($)</label>
-              <Input type="number" step="0.01" value={editData.price} onChange={(e) => setEditData({...editData, price: parseFloat(e.target.value)})} />
+              <label htmlFor="game-edit-price" className="text-sm font-medium mb-2 block">Price ($)</label>
+              <Input id="game-edit-price" type="number" step="0.01" value={editData.price} onChange={(e) => setEditData({...editData, price: parseFloat(e.target.value)})} />
             </div>
             <Button className="w-full" onClick={() => updateGameMutation.mutate(editData)}>
               Save Changes

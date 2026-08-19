@@ -14,9 +14,9 @@ import { formatDistanceToNow, differenceInHours } from 'date-fns';
 // 48-hour follow-up: find referred users who haven't completed a survey
 export default function ReferralFollowUpSystem({ user, isAdmin = false }) {
   const queryClient = useQueryClient();
-  const [sending, setSending] = useState(false);
+  const [_sending, setSending] = useState(false);
 
-  const { data: myReferrals = [], isLoading: loadingRefs } = useQuery({
+  const { data: myReferrals = [], isLoading: _loadingRefs } = useQuery({
     queryKey: ['referrals-followup-system', user?.id],
     queryFn: () => isAdmin
       ? base44.entities.Referral.list('-created_date', 100)
@@ -107,7 +107,7 @@ export default function ReferralFollowUpSystem({ user, isAdmin = false }) {
   const totalSent = followUps.length;
   const opened = followUps.filter(f => f.status === 'opened').length;
   const clicked = followUps.filter(f => f.status === 'clicked').length;
-  const converted = followUps.filter(f => f.status === 'clicked').length; // proxy
+  const _converted = followUps.filter(f => f.status === 'clicked').length; // proxy
 
   const openRate = totalSent > 0 ? ((opened / totalSent) * 100).toFixed(1) : 0;
   const clickRate = totalSent > 0 ? ((clicked / totalSent) * 100).toFixed(1) : 0;

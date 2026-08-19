@@ -58,7 +58,7 @@ export default function SurveyAlertWatcher({ user }) {
   });
 
   // Poll DailyEarnings to approximate activity and simulate survey availability
-  const { data: recentActivity = [] } = useQuery({
+  const { data: _recentActivity = [] } = useQuery({
     queryKey: ['survey-watcher-activity', user?.id],
     queryFn: () => base44.entities.DailyEarnings.filter({ user_id: user.id }, '-date', 1),
     enabled: !!user,

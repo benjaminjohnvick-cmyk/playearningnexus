@@ -156,11 +156,11 @@ export default function InAppPurchaseModal({ item, game, open, onClose, onSucces
 
           {/* Payment Method Selection */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label htmlFor="iap-payment-method" className="text-sm font-medium text-gray-700 mb-2 block">
               Payment Method
             </label>
             <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-              <SelectTrigger>
+              <SelectTrigger id="iap-payment-method">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -185,10 +185,11 @@ export default function InAppPurchaseModal({ item, game, open, onClose, onSucces
             <>
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  <label htmlFor="iap-card-number" className="text-sm font-medium text-gray-700 mb-1 block">
                     Card Number
                   </label>
                   <Input
+                    id="iap-card-number"
                     placeholder="1234 5678 9012 3456"
                     value={cardNumber}
                     onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
@@ -197,10 +198,11 @@ export default function InAppPurchaseModal({ item, game, open, onClose, onSucces
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  <label htmlFor="iap-card-name" className="text-sm font-medium text-gray-700 mb-1 block">
                     Cardholder Name
                   </label>
                   <Input
+                    id="iap-card-name"
                     placeholder="John Doe"
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
@@ -209,10 +211,11 @@ export default function InAppPurchaseModal({ item, game, open, onClose, onSucces
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                    <label htmlFor="iap-expiry" className="text-sm font-medium text-gray-700 mb-1 block">
                       Expiry Date
                     </label>
                     <Input
+                      id="iap-expiry"
                       placeholder="MM/YY"
                       value={expiry}
                       onChange={(e) => setExpiry(formatExpiry(e.target.value))}
@@ -220,10 +223,11 @@ export default function InAppPurchaseModal({ item, game, open, onClose, onSucces
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                    <label htmlFor="iap-cvc" className="text-sm font-medium text-gray-700 mb-1 block">
                       CVC
                     </label>
                     <Input
+                      id="iap-cvc"
                       placeholder="123"
                       value={cvc}
                       onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').substring(0, 3))}

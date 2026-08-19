@@ -165,7 +165,7 @@ export default function FeedbackAdminDashboard({ embedded = false }) {
         toast.success("Today's survey generated successfully!");
         qc.invalidateQueries({ queryKey: ['feedback_surveys'] });
       }
-    } catch (e) {
+    } catch {
       toast.error('Failed to generate survey');
     } finally {
       setGeneratingSurvey(false);
@@ -181,7 +181,7 @@ export default function FeedbackAdminDashboard({ embedded = false }) {
         toast.success(`Analysis complete! ${res.data.changes_count} changes recommended.`);
         refetchAnalyses();
       }
-    } catch (e) {
+    } catch {
       toast.error('Analysis failed');
     } finally {
       setRunningAnalysis(false);

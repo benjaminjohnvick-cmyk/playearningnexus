@@ -95,7 +95,7 @@ export default function AICustomerSupport({ isOpen, onClose, user }) {
           timestamp: new Date()
         }]);
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to send message');
       setMessages(prev => [...prev, {
         role: 'assistant',

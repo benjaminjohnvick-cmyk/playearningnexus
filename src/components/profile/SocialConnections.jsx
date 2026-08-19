@@ -47,7 +47,7 @@ export default function SocialConnections({ userId, connections }) {
     .map(c => allUsers.find(u => u.id === c.connection_user_id))
     .filter(Boolean);
 
-  const pendingRequests = connections.filter(c => c.status === 'pending');
+  const _pendingRequests = connections.filter(c => c.status === 'pending');
 
   return (
     <div className="space-y-6">

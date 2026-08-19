@@ -8,7 +8,7 @@ import { AlertTriangle, Ban } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function RiskDashboard() {
-  const [selectedFlag, setSelectedFlag] = useState(null);
+  const [_selectedFlag, setSelectedFlag] = useState(null);
 
   const { data: flags = [], isLoading, refetch } = useQuery({
     queryKey: ['riskFlags'],

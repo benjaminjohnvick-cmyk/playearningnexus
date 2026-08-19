@@ -33,7 +33,7 @@ export default function AIEvidenceAnalyzer({ claim, proofUrls, onAnalysisComplet
         toast.success('✓ Looks good! Flagged for quick review.');
       }
     },
-    onError: (err) => {
+    onError: (_err) => {
       setIsAnalyzing(false);
       toast.error('Analysis failed. Please try again.');
     },

@@ -178,7 +178,7 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
               {availablePlatforms.map(platform => {
                 const config = PLATFORMS[platform];
                 const Icon = config.icon;
-                const entries = ['instagram', 'snapchat', 'tiktok'].includes(platform) ? 75 : 50;
+                const _entries = ['instagram', 'snapchat', 'tiktok'].includes(platform) ? 75 : 50;
                 
                 return (
                   <Button

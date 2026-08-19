@@ -50,8 +50,8 @@ export default function CrossGameTournamentSystem() {
   const balanceScoresWithAI = async (tournament) => {
     setBalancingScores(true);
     try {
-      const participants = await base44.entities.TournamentParticipant.filter({ tournament_id: tournament.id });
-      const matches = await base44.entities.TournamentMatch.filter({ tournament_id: tournament.id });
+      const _participants = await base44.entities.TournamentParticipant.filter({ tournament_id: tournament.id });
+      const _matches = await base44.entities.TournamentMatch.filter({ tournament_id: tournament.id });
       
       // Get game difficulties and player stats
       const gameStats = {};
@@ -106,7 +106,7 @@ Create a balanced scoring system that:
       });
 
       toast.success('AI balancing applied!');
-    } catch (error) {
+    } catch {
       toast.error('Failed to balance scores');
     }
     setBalancingScores(false);
@@ -306,7 +306,7 @@ Create a balanced scoring system that:
             <Input name="reg_end" type="datetime-local" required />
             
             <div>
-              <label className="text-sm font-medium mb-2 block">Select Games for Tournament Stages</label>
+              <span className="text-sm font-medium mb-2 block">Select Games for Tournament Stages</span>
               <div className="space-y-2 max-h-48 overflow-y-auto border rounded-lg p-3">
                 {availableGames.map((game) => (
                   <label key={game.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">

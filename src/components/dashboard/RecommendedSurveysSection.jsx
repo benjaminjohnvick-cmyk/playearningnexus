@@ -20,7 +20,7 @@ const INTEREST_TAG_MAP = {
   Business: ['business', 'entrepreneurship', 'marketing', 'leadership'],
 };
 
-function scoreForUser(survey, userInterests = [], userGeo = '', avgQuality = 70, pastCategories = []) {
+function scoreForUser(survey, userInterests = [], _userGeo = '', avgQuality = 70, pastCategories = []) {
   let score = 0;
 
   // Interest match
@@ -50,7 +50,7 @@ function scoreForUser(survey, userInterests = [], userGeo = '', avgQuality = 70,
   return score;
 }
 
-function SurveyCard({ survey, userInterests, isHighMatch, isQuickEarn }) {
+function SurveyCard({ survey, userInterests: _userInterests, isHighMatch, isQuickEarn }) {
   const reward = survey.cost_per_response ? (survey.cost_per_response * 0.5).toFixed(2) : '—';
   const mins = survey.estimated_time_minutes || '?';
 

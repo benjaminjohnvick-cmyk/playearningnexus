@@ -173,7 +173,7 @@ export default function DeveloperOnboarding() {
   };
 
   // ── Step 3: Pre-Launch Survey completion ──
-  const handlePreLaunchComplete = ({ skipped, survey_id, analysis }) => {
+  const handlePreLaunchComplete = ({ skipped: _skipped, survey_id, analysis: _analysis }) => {
     if (survey_id) toast.success('Pre-launch survey live! Proceed to revenue setup.');
     else toast.info('Skipped pre-launch survey.');
     setStep(4);
@@ -204,7 +204,7 @@ export default function DeveloperOnboarding() {
     setSaving(false);
   };
 
-  const [completionResult, setCompletionResult] = useState(null);
+  const [_completionResult, setCompletionResult] = useState(null);
 
   const finalize = async () => {
     setSaving(true);
@@ -235,7 +235,7 @@ export default function DeveloperOnboarding() {
           screenshot_urls: assets.screenshots,
           status: 'pending_review',
         });
-        appId = created.id;
+        _appId = created.id;
       }
 
       // Trigger AI business verification (runs async — will email result)
@@ -284,7 +284,8 @@ export default function DeveloperOnboarding() {
                 <CardContent className="space-y-4">
                   {/* Logo upload */}
                   <div className="flex items-center gap-4">
-                    <div
+                    <button
+                      type="button"
                       className="w-16 h-16 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-indigo-400 overflow-hidden bg-gray-50"
                       onClick={() => iconRef.current?.click()}
                     >
@@ -293,7 +294,7 @@ export default function DeveloperOnboarding() {
                         : profile.logo_url
                           ? <img src={profile.logo_url} className="w-full h-full object-cover" alt="logo" />
                           : <Upload className="w-5 h-5 text-gray-400" />}
-                    </div>
+                    </button>
                     <input ref={iconRef} type="file" accept="image/*" className="hidden" onChange={async e => {
                       const file = e.target.files[0]; if (!file) return;
                       setProfile(p => ({ ...p, logo_uploading: true }));
@@ -308,23 +309,23 @@ export default function DeveloperOnboarding() {
 
                   <div className="grid sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Studio / Company Name *</label>
-                      <Input value={profile.company_name} onChange={e => setProfile(p => ({ ...p, company_name: e.target.value }))} placeholder="Pixel Studios Inc." className="border-2" />
+                      <label htmlFor="studio-company-name" className="text-xs font-semibold text-gray-600 block mb-1">Studio / Company Name *</label>
+                      <Input id="studio-company-name" value={profile.company_name} onChange={e => setProfile(p => ({ ...p, company_name: e.target.value }))} placeholder="Pixel Studios Inc." className="border-2" />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Tagline</label>
-                      <Input value={profile.tagline} onChange={e => setProfile(p => ({ ...p, tagline: e.target.value }))} placeholder="Making games people love" className="border-2" />
+                      <label htmlFor="studio-tagline" className="text-xs font-semibold text-gray-600 block mb-1">Tagline</label>
+                      <Input id="studio-tagline" value={profile.tagline} onChange={e => setProfile(p => ({ ...p, tagline: e.target.value }))} placeholder="Making games people love" className="border-2" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-1">Studio Bio</label>
-                    <Textarea value={profile.bio} onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))} placeholder="Tell us about your studio, experience, and the types of games you build…" rows={3} className="border-2 resize-none" />
+                    <label htmlFor="studio-bio" className="text-xs font-semibold text-gray-600 block mb-1">Studio Bio</label>
+                    <Textarea id="studio-bio" value={profile.bio} onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))} placeholder="Tell us about your studio, experience, and the types of games you build…" rows={3} className="border-2 resize-none" />
                     <p className="text-xs text-gray-400 mt-1">{profile.bio.length}/500 chars</p>
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-1">Links & Social</label>
+                    <span className="text-xs font-semibold text-gray-600 block mb-1">Links & Social</span>
                     <div className="grid sm:grid-cols-2 gap-2">
                       {[
                         { key: 'website', placeholder: 'https://studio.com', icon: '🌐' },
@@ -375,21 +376,21 @@ export default function DeveloperOnboarding() {
 
                   <div className="grid sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Game Title *</label>
-                      <Input value={assets.game_title} onChange={e => setAssets(a => ({ ...a, game_title: e.target.value }))} placeholder="My Awesome Game" className="border-2" />
+                      <label htmlFor="game-title" className="text-xs font-semibold text-gray-600 block mb-1">Game Title *</label>
+                      <Input id="game-title" value={assets.game_title} onChange={e => setAssets(a => ({ ...a, game_title: e.target.value }))} placeholder="My Awesome Game" className="border-2" />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Category *</label>
+                      <label htmlFor="game-category" className="text-xs font-semibold text-gray-600 block mb-1">Category *</label>
                       <Select value={assets.game_category} onValueChange={v => setAssets(a => ({ ...a, game_category: v }))}>
-                        <SelectTrigger className="border-2"><SelectValue placeholder="Select…" /></SelectTrigger>
+                        <SelectTrigger id="game-category" className="border-2"><SelectValue placeholder="Select…" /></SelectTrigger>
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-1">Description * <span className="text-gray-400 font-normal">(min 80 chars)</span></label>
-                    <Textarea value={assets.game_description} onChange={e => setAssets(a => ({ ...a, game_description: e.target.value }))} placeholder="Describe your game's core mechanics, unique features, and target audience…" rows={3} className="border-2 resize-none" />
+                    <label htmlFor="game-description" className="text-xs font-semibold text-gray-600 block mb-1">Description * <span className="text-gray-400 font-normal">(min 80 chars)</span></label>
+                    <Textarea id="game-description" value={assets.game_description} onChange={e => setAssets(a => ({ ...a, game_description: e.target.value }))} placeholder="Describe your game's core mechanics, unique features, and target audience…" rows={3} className="border-2 resize-none" />
                     <p className={`text-xs mt-1 ${assets.game_description.length >= 80 ? 'text-green-600' : 'text-gray-400'}`}>
                       {assets.game_description.length}/80 min
                     </p>
@@ -397,7 +398,7 @@ export default function DeveloperOnboarding() {
 
                   <div className="grid sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Platforms *</label>
+                      <span className="text-xs font-semibold text-gray-600 block mb-1">Platforms *</span>
                       <div className="flex gap-2">
                         {PLATFORMS.map(p => (
                           <button key={p} onClick={() => setAssets(a => ({
@@ -411,23 +412,25 @@ export default function DeveloperOnboarding() {
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Age Rating *</label>
+                      <label htmlFor="age-rating" className="text-xs font-semibold text-gray-600 block mb-1">Age Rating *</label>
                       <Select value={assets.age_rating} onValueChange={v => setAssets(a => ({ ...a, age_rating: v }))}>
-                        <SelectTrigger className="border-2"><SelectValue placeholder="Select…" /></SelectTrigger>
+                        <SelectTrigger id="age-rating" className="border-2"><SelectValue placeholder="Select…" /></SelectTrigger>
                         <SelectContent>{AGE_RATINGS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-1">Demo / Store URL</label>
-                    <Input value={assets.demo_url} onChange={e => setAssets(a => ({ ...a, demo_url: e.target.value }))} placeholder="https://play.google.com/…" className="border-2" />
+                    <label htmlFor="demo-url" className="text-xs font-semibold text-gray-600 block mb-1">Demo / Store URL</label>
+                    <Input id="demo-url" value={assets.demo_url} onChange={e => setAssets(a => ({ ...a, demo_url: e.target.value }))} placeholder="https://play.google.com/…" className="border-2" />
                   </div>
 
                   {/* Icon upload */}
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-1">Game Icon *</label>
-                    <div
+                    <label htmlFor="game-icon" className="text-xs font-semibold text-gray-600 block mb-1">Game Icon *</label>
+                    <button
+                      id="game-icon"
+                      type="button"
                       className="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-indigo-400 overflow-hidden bg-gray-50"
                       onClick={() => ssRef.current?.click()}
                     >
@@ -436,7 +439,7 @@ export default function DeveloperOnboarding() {
                         : assets.icon_url
                           ? <img src={assets.icon_url} className="w-full h-full object-cover" alt="icon" />
                           : <Upload className="w-5 h-5 text-gray-400" />}
-                    </div>
+                    </button>
                     <input ref={ssRef} type="file" accept="image/*" className="hidden" onChange={async e => {
                       const file = e.target.files[0]; if (!file) return;
                       setAssets(a => ({ ...a, icon_uploading: true }));
@@ -446,7 +449,7 @@ export default function DeveloperOnboarding() {
 
                   {/* Screenshots */}
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-1">Screenshots * <span className="text-gray-400 font-normal">(min 1)</span></label>
+                    <span className="text-xs font-semibold text-gray-600 block mb-1">Screenshots * <span className="text-gray-400 font-normal">(min 1)</span></span>
                     <div className="flex flex-wrap gap-2">
                       {assets.screenshots.map((url, i) => (
                         <div key={i} className="relative w-20 h-14 rounded-lg overflow-hidden border">
@@ -510,7 +513,7 @@ export default function DeveloperOnboarding() {
                 <CardContent className="space-y-4">
                   {/* Revenue model */}
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-2">Revenue Model *</label>
+                    <span className="text-xs font-semibold text-gray-600 block mb-2">Revenue Model *</span>
                     <div className="grid grid-cols-2 gap-2">
                       {[
                         { id: 'per_install', label: '$0.50 per Install', desc: 'Earn per tracked install' },
@@ -530,7 +533,7 @@ export default function DeveloperOnboarding() {
 
                   {/* Payout method */}
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-2">Payout Method *</label>
+                    <span className="text-xs font-semibold text-gray-600 block mb-2">Payout Method *</span>
                     <div className="grid grid-cols-3 gap-2">
                       {[
                         { id: 'paypal', label: 'PayPal', icon: '🅿️' },
@@ -548,30 +551,30 @@ export default function DeveloperOnboarding() {
 
                   {revenue.payout_method === 'paypal' && (
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">PayPal Email *</label>
-                      <Input type="email" value={revenue.paypal_email} onChange={e => setRevenue(r => ({ ...r, paypal_email: e.target.value }))} placeholder="payouts@studio.com" className="border-2" />
+                      <label htmlFor="paypal-email" className="text-xs font-semibold text-gray-600 block mb-1">PayPal Email *</label>
+                      <Input id="paypal-email" type="email" value={revenue.paypal_email} onChange={e => setRevenue(r => ({ ...r, paypal_email: e.target.value }))} placeholder="payouts@studio.com" className="border-2" />
                     </div>
                   )}
                   {revenue.payout_method === 'cashapp' && (
                     <div>
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">Cash App $Cashtag *</label>
-                      <Input value={revenue.cashapp_tag} onChange={e => setRevenue(r => ({ ...r, cashapp_tag: e.target.value }))} placeholder="$StudioName" className="border-2" />
+                      <label htmlFor="cashapp-tag" className="text-xs font-semibold text-gray-600 block mb-1">Cash App $Cashtag *</label>
+                      <Input id="cashapp-tag" value={revenue.cashapp_tag} onChange={e => setRevenue(r => ({ ...r, cashapp_tag: e.target.value }))} placeholder="$StudioName" className="border-2" />
                     </div>
                   )}
                   {revenue.payout_method === 'bank_transfer' && (
                     <div className="space-y-2">
                       <div>
-                        <label className="text-xs font-semibold text-gray-600 block mb-1">Account Holder *</label>
-                        <Input value={revenue.bank_holder} onChange={e => setRevenue(r => ({ ...r, bank_holder: e.target.value }))} className="border-2" />
+                        <label htmlFor="bank-holder" className="text-xs font-semibold text-gray-600 block mb-1">Account Holder *</label>
+                        <Input id="bank-holder" value={revenue.bank_holder} onChange={e => setRevenue(r => ({ ...r, bank_holder: e.target.value }))} className="border-2" />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-xs font-semibold text-gray-600 block mb-1">Routing #</label>
-                          <Input value={revenue.bank_routing} onChange={e => setRevenue(r => ({ ...r, bank_routing: e.target.value }))} className="border-2" />
+                          <label htmlFor="bank-routing" className="text-xs font-semibold text-gray-600 block mb-1">Routing #</label>
+                          <Input id="bank-routing" value={revenue.bank_routing} onChange={e => setRevenue(r => ({ ...r, bank_routing: e.target.value }))} className="border-2" />
                         </div>
                         <div>
-                          <label className="text-xs font-semibold text-gray-600 block mb-1">Account #</label>
-                          <Input type="password" value={revenue.bank_account} onChange={e => setRevenue(r => ({ ...r, bank_account: e.target.value }))} className="border-2" />
+                          <label htmlFor="bank-account" className="text-xs font-semibold text-gray-600 block mb-1">Account #</label>
+                          <Input id="bank-account" type="password" value={revenue.bank_account} onChange={e => setRevenue(r => ({ ...r, bank_account: e.target.value }))} className="border-2" />
                         </div>
                       </div>
                       <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-2">
@@ -582,7 +585,7 @@ export default function DeveloperOnboarding() {
                   )}
 
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 block mb-1">Minimum Payout Threshold ($)</label>
+                    <span className="text-xs font-semibold text-gray-600 block mb-1">Minimum Payout Threshold ($)</span>
                     <div className="flex gap-2">
                       {[25, 50, 100, 250].map(v => (
                         <button key={v} onClick={() => setRevenue(r => ({ ...r, min_threshold: v }))}

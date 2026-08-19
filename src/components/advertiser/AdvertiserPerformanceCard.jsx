@@ -119,11 +119,12 @@ export default function AdvertiserPerformanceCard() {
           </button>
         ) : (
           <div className="space-y-2">
-            <label className="text-[11px] text-gray-400 block">
+            <label htmlFor="offplatform-revenue" className="text-[11px] text-gray-400 block">
               Report off-platform revenue you attribute to these ads (counted in your metrics, flagged as reported)
             </label>
             <div className="flex items-center gap-2">
               <input
+                id="offplatform-revenue"
                 type="number" min="0" value={revAmount} onChange={(e) => setRevAmount(e.target.value)}
                 placeholder="Amount (USD)"
                 className="w-36 bg-black/40 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white"

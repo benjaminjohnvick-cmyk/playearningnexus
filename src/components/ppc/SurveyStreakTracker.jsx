@@ -52,7 +52,7 @@ function BadgeCard({ badge, earned, streak }) {
   );
 }
 
-export default function SurveyStreakTracker({ user, currentTier }) {
+export default function SurveyStreakTracker({ user, currentTier: _currentTier }) {
   const { data: sessions = [] } = useQuery({
     queryKey: ['ppc-sessions-streak', user?.id],
     queryFn: () => base44.entities.PPCSession.filter({ user_id: user.id }, '-session_date', 400),

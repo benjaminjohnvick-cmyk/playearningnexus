@@ -17,7 +17,7 @@ export default function FeaturedGameDashboard() {
   const [surveysCompleted, setSurveysCompleted] = useState(0);
   const [adsWatched, setAdsWatched] = useState(0);
   const [featuredGame, setFeaturedGame] = useState(null);
-  const [gamePlayMinutes, setGamePlayMinutes] = useState(0);
+  const [gamePlayMinutes, _setGamePlayMinutes] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -45,7 +45,7 @@ export default function FeaturedGameDashboard() {
       if (games && games.length > 0) {
         setFeaturedGame(games[0]);
       }
-    } catch (e) {
+    } catch {
       // not logged in
     }
     setLoading(false);

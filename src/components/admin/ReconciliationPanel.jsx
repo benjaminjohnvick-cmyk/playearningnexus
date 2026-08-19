@@ -21,7 +21,7 @@ const DISCREPANCY_TYPE_LABELS = {
   overall_sum_mismatch: { label: 'Sum Mismatch', color: 'bg-purple-100 text-purple-700' },
 };
 
-function DiscrepancyRow({ d, index, reportId, onResolved }) {
+function DiscrepancyRow({ d, index, reportId: _reportId, onResolved }) {
   const [resolving, setResolving] = useState(false);
   const [emailing, setEmailing] = useState(false);
   const cfg = DISCREPANCY_TYPE_LABELS[d.type] || { label: d.type, color: 'bg-gray-100 text-gray-700' };
@@ -262,8 +262,9 @@ export default function ReconciliationPanel() {
         <CardContent className="space-y-4">
           <div className="grid sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Period (days back)</label>
+              <label htmlFor="recon-days-back" className="text-xs font-semibold text-gray-600 block mb-1">Period (days back)</label>
               <Input
+                id="recon-days-back"
                 type="number"
                 value={daysBack}
                 onChange={e => setDaysBack(Number(e.target.value))}
@@ -273,8 +274,9 @@ export default function ReconciliationPanel() {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Partner Email (optional)</label>
+              <label htmlFor="recon-partner-email" className="text-xs font-semibold text-gray-600 block mb-1">Partner Email (optional)</label>
               <Input
+                id="recon-partner-email"
                 type="email"
                 placeholder="partner@company.com"
                 value={partnerEmail}

@@ -94,10 +94,10 @@ export default function Tier1SelfPaced() {
           <h3 className="font-bold text-gray-900">Pay what you want</h3>
           <div className="flex items-end gap-3 flex-wrap">
             <div>
-              <label className="text-xs text-gray-500">Amount (USD)</label>
+              <label htmlFor="tier1-amount" className="text-xs text-gray-500">Amount (USD)</label>
               <div className="flex items-center gap-1">
                 <span className="text-gray-400">$</span>
-                <Input type="number" min={c.min_payment_usd} max={c.max_payment_usd || undefined} value={amount}
+                <Input id="tier1-amount" type="number" min={c.min_payment_usd} max={c.max_payment_usd || undefined} value={amount}
                   onChange={(e) => setAmount(e.target.value)} className="w-32" />
               </div>
             </div>

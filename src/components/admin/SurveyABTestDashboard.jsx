@@ -27,7 +27,7 @@ function StatCompare({ labelA, labelB, valA, valB, format = v => v, higherIsBett
   );
 }
 
-function TestCard({ test, onUpdate, onOptimize }) {
+function TestCard({ test, onUpdate, onOptimize: _onOptimize }) {
   const [optimizing, setOptimizing] = useState(false);
   const [toggling, setToggling] = useState(false);
 
@@ -187,13 +187,13 @@ function CreateTestForm({ onCreated, onCancel }) {
       <CardContent className="space-y-4">
         <div className="grid md:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1">Test Name</label>
-            <Input value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Headline Variant Test" />
+            <label htmlFor="abtest-test-name" className="text-xs font-medium text-gray-600 block mb-1">Test Name</label>
+            <Input id="abtest-test-name" value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Headline Variant Test" />
           </div>
           <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1">Test Type</label>
+            <label htmlFor="abtest-test-type" className="text-xs font-medium text-gray-600 block mb-1">Test Type</label>
             <Select value={form.test_type} onValueChange={v => set('test_type', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger id="abtest-test-type"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="survey_landing">Survey Landing Page</SelectItem>
                 <SelectItem value="ppc_questions">PPC Question Order</SelectItem>
@@ -230,7 +230,7 @@ export default function SurveyABTestDashboard() {
   const [showCreate, setShowCreate] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
   const [optimizingAll, setOptimizingAll] = useState(false);
-  const qc = useQueryClient();
+  const _qc = useQueryClient();
 
   const { data: tests = [], isLoading, refetch } = useQuery({
     queryKey: ['survey_ab_tests', filterStatus],

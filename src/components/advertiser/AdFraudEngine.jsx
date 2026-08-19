@@ -111,8 +111,9 @@ Provide:
       </div>
 
       {/* Cluster Map Toggle */}
-      <div
-        className="flex items-center justify-between bg-gray-900 border border-blue-500/20 rounded-xl px-4 py-3 cursor-pointer hover:border-blue-500/40 transition-all"
+      <button
+        type="button"
+        className="w-full flex items-center justify-between bg-gray-900 border border-blue-500/20 rounded-xl px-4 py-3 cursor-pointer hover:border-blue-500/40 transition-all"
         onClick={() => setShowClusterMap(v => !v)}
       >
         <div className="flex items-center gap-2">
@@ -123,7 +124,7 @@ Provide:
           </Badge>
         </div>
         <span className="text-gray-500 text-xs">{showClusterMap ? 'Hide ▲' : 'Show ▼'}</span>
-      </div>
+      </button>
       {showClusterMap && (
         <div className="border border-blue-500/10 rounded-2xl p-4 bg-blue-500/3">
           <FraudClusterMap ads={ads} onRefresh={onRefresh} />

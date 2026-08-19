@@ -67,7 +67,7 @@ const MILESTONES = [
 
 function MilestoneBadge({ milestone, totalEarned, isNext }) {
   const unlocked = totalEarned >= milestone.amount;
-  const pct = unlocked ? 100 : Math.min((totalEarned / milestone.amount) * 100, 99);
+  const _pct = unlocked ? 100 : Math.min((totalEarned / milestone.amount) * 100, 99);
 
   return (
     <div className={`relative flex flex-col items-center gap-2 ${isNext ? 'scale-105' : ''}`}>

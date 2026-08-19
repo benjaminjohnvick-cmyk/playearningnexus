@@ -158,7 +158,7 @@ function PublishForm({ userId, userName, onSuccess }) {
   );
 }
 
-export default function AdTemplateMarketplacePanel({ userId, userName, ads }) {
+export default function AdTemplateMarketplacePanel({ userId, userName, ads: _ads }) {
   const qc = useQueryClient();
   const [filterCat, setFilterCat] = useState('all');
   const [filterType, setFilterType] = useState('all');

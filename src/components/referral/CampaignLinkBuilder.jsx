@@ -223,8 +223,9 @@ export default function CampaignLinkBuilder({ user, referralLinks = [] }) {
               <CardContent className="space-y-4">
                 {/* Campaign name */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Campaign Name</label>
+                  <label htmlFor="campaign-link-name" className="text-sm font-medium text-gray-700 mb-1 block">Campaign Name</label>
                   <Input
+                    id="campaign-link-name"
                     placeholder="e.g. Instagram Spring Promo"
                     value={form.campaign_name}
                     onChange={e => setForm(f => ({ ...f, campaign_name: e.target.value }))}
@@ -233,7 +234,7 @@ export default function CampaignLinkBuilder({ user, referralLinks = [] }) {
 
                 {/* Link type */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Link Type</label>
+                  <span className="text-sm font-medium text-gray-700 mb-2 block">Link Type</span>
                   <div className="flex gap-2 flex-wrap">
                     {LINK_TYPES.map(t => (
                       <button
@@ -253,7 +254,7 @@ export default function CampaignLinkBuilder({ user, referralLinks = [] }) {
 
                 {/* Platform / source */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">Platform / Source</label>
+                  <span className="text-sm font-medium text-gray-700 mb-2 block">Platform / Source</span>
                   <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
                     {SOURCES.map(s => {
                       const Icon = s.icon;

@@ -15,7 +15,7 @@ export default function ReferralCompetition() {
   const [referralLink, setReferralLink] = useState('');
   const [emailShare, setEmailShare] = useState('');
   const [copied, setCopied] = useState(false);
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -73,7 +73,7 @@ export default function ReferralCompetition() {
       });
       toast.success('Invitation sent!');
       setEmailShare('');
-    } catch (err) {
+    } catch {
       toast.error('Failed to send email');
     }
   };
@@ -148,9 +148,9 @@ export default function ReferralCompetition() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Share Your Referral Link</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Your Link</label>
+                  <label htmlFor="refcomp-link" className="block text-sm font-semibold text-gray-700 mb-2">Your Link</label>
                   <div className="flex gap-2">
-                    <Input value={referralLink} readOnly className="bg-white" />
+                    <Input id="refcomp-link" value={referralLink} readOnly className="bg-white" />
                     <Button onClick={copyToClipboard} className="bg-purple-600 hover:bg-purple-700 px-6">
                       {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </Button>
@@ -159,10 +159,11 @@ export default function ReferralCompetition() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Or Send Direct Email Invites</label>
+                  <label htmlFor="refcomp-email" className="block text-sm font-semibold text-gray-700 mb-2">Or Send Direct Email Invites</label>
                   <div className="flex gap-2">
-                    <Input 
-                      placeholder="Enter friend's email..." 
+                    <Input
+                      id="refcomp-email"
+                      placeholder="Enter friend's email..."
                       value={emailShare}
                       onChange={(e) => setEmailShare(e.target.value)}
                       type="email"

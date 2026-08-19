@@ -30,8 +30,8 @@ function buildInvoiceText(transactions, dateFrom, dateTo, taxRegion, companyName
 function InvoicePreview({ data, onClose }) {
   if (!data) return null;
   return (
-    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white text-gray-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={onClose} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}>
+      <div className="bg-white text-gray-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8" onClick={e => e.stopPropagation()} role="presentation" onKeyDown={e => e.stopPropagation()}>
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-black text-gray-900">TAX INVOICE</h1>
@@ -173,28 +173,28 @@ Get Goods Gratis (Free) Ad Grid
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Invoice Settings</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Company / Billed To</label>
-            <input value={companyName} onChange={e => setCompanyName(e.target.value)}
+            <label htmlFor="invoice-company" className="text-xs text-gray-400 font-bold block mb-1">Company / Billed To</label>
+            <input id="invoice-company" value={companyName} onChange={e => setCompanyName(e.target.value)}
               placeholder="Your Company Name" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Recipient Email</label>
-            <input type="email" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)}
+            <label htmlFor="invoice-recipient-email" className="text-xs text-gray-400 font-bold block mb-1">Recipient Email</label>
+            <input id="invoice-recipient-email" type="email" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)}
               placeholder="accountant@company.com" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Date From</label>
-            <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+            <label htmlFor="invoice-date-from" className="text-xs text-gray-400 font-bold block mb-1">Date From</label>
+            <input id="invoice-date-from" type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
               className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Date To</label>
-            <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+            <label htmlFor="invoice-date-to" className="text-xs text-gray-400 font-bold block mb-1">Date To</label>
+            <input id="invoice-date-to" type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
               className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Tax Region</label>
-            <select value={taxRegion} onChange={e => setTaxRegion(e.target.value)}
+            <label htmlFor="invoice-tax-region" className="text-xs text-gray-400 font-bold block mb-1">Tax Region</label>
+            <select id="invoice-tax-region" value={taxRegion} onChange={e => setTaxRegion(e.target.value)}
               className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
               {Object.keys(TAX_RATES).map(r => <option key={r} value={r}>{r} ({(TAX_RATES[r] * 100).toFixed(0)}% VAT)</option>)}
             </select>
@@ -243,8 +243,8 @@ Get Goods Gratis (Free) Ad Grid
           <p className="text-xs font-bold text-yellow-400 uppercase tracking-wider">Set Up Recurring Invoice</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-xs text-gray-400 font-bold block mb-1">Frequency</label>
-              <select value={schedFreq} onChange={e => setSchedFreq(e.target.value)}
+              <label htmlFor="invoice-sched-freq" className="text-xs text-gray-400 font-bold block mb-1">Frequency</label>
+              <select id="invoice-sched-freq" value={schedFreq} onChange={e => setSchedFreq(e.target.value)}
                 className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
@@ -252,8 +252,8 @@ Get Goods Gratis (Free) Ad Grid
               </select>
             </div>
             <div>
-              <label className="text-xs text-gray-400 font-bold block mb-1">Send To</label>
-              <input type="email" value={schedEmail} onChange={e => setSchedEmail(e.target.value)}
+              <label htmlFor="invoice-sched-email" className="text-xs text-gray-400 font-bold block mb-1">Send To</label>
+              <input id="invoice-sched-email" type="email" value={schedEmail} onChange={e => setSchedEmail(e.target.value)}
                 placeholder="email@company.com" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
             </div>
             <div className="flex items-end">

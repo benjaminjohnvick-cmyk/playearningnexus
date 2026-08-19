@@ -168,7 +168,7 @@ export default function AdExternalPlatformSync({ ads }) {
         ) : (
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-gray-400 font-bold block mb-2">Select Ad to Push</label>
+              <span className="text-xs text-gray-400 font-bold block mb-2">Select Ad to Push</span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {ads.map(ad => (
                   <button key={ad.id} onClick={() => setSelectedAd(ad)}
@@ -180,7 +180,7 @@ export default function AdExternalPlatformSync({ ads }) {
               </div>
             </div>
             <div>
-              <label className="text-xs text-gray-400 font-bold block mb-2">Target Platforms</label>
+              <span className="text-xs text-gray-400 font-bold block mb-2">Target Platforms</span>
               <div className="flex flex-wrap gap-2">
                 {PLATFORMS.map(p => (
                   <button key={p.id} onClick={() => togglePlatform(p.id)}

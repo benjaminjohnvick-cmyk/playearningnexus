@@ -74,7 +74,7 @@ export default function DeveloperDisputeCenter() {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [form, setForm] = useState({ subject: '', description: '', category: 'billing', affected_amount: '' });
   const [submitting, setSubmitting] = useState(false);
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => base44.auth.redirectToLogin());

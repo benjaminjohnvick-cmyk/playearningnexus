@@ -141,14 +141,14 @@ export default function DevABTesting() {
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-gray-500 font-medium block mb-1">Test Name</label>
-                  <input value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))}
+                  <label htmlFor="devabtest-name" className="text-xs text-gray-500 font-medium block mb-1">Test Name</label>
+                  <input id="devabtest-name" value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))}
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-400"
                     placeholder="e.g. Hero Description Test" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 font-medium block mb-1">Test Type</label>
-                  <select value={form.test_type} onChange={e => setForm(f => ({...f, test_type: e.target.value}))}
+                  <label htmlFor="devabtest-type" className="text-xs text-gray-500 font-medium block mb-1">Test Type</label>
+                  <select id="devabtest-type" value={form.test_type} onChange={e => setForm(f => ({...f, test_type: e.target.value}))}
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-400 bg-white">
                     <option value="landing_page">Landing Page</option>
                     <option value="signup_copy">Description Copy</option>

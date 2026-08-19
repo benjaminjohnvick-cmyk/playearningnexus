@@ -9,7 +9,7 @@ const COMMAND_MODES = [
   { id: 'strategy', label: '🧠 Strategy', placeholder: 'Describe a campaign adjustment...' },
 ];
 
-export default function VoiceCommandBar({ onTagline, onImagePrompt, onStrategy }) {
+export default function VoiceCommandBar({ onTagline, onImagePrompt, onStrategy: _onStrategy }) {
   const [mode, setMode] = useState('tagline');
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('');

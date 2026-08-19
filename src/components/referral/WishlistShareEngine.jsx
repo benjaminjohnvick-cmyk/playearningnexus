@@ -27,7 +27,7 @@ export default function WishlistShareEngine({ userId }) {
     mutationFn: () => base44.functions.invoke('generateWishlistShareLink', {
       wishlist_item_ids: selectedItems.length > 0 ? selectedItems : wishlistItems.map(w => w.id),
     }),
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       queryClient.invalidateQueries(['wishlistReferrals', userId]);
       setSelectedItems([]);
       toast.success('🔗 Share link created!');
@@ -56,7 +56,7 @@ export default function WishlistShareEngine({ userId }) {
           {wishlistItems.length > 0 ? (
             <>
               <div className="space-y-2">
-                <label className="text-sm font-semibold">Select items to share (or leave blank for all):</label>
+                <span className="text-sm font-semibold">Select items to share (or leave blank for all):</span>
                 <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
                   {wishlistItems.map(item => (
                     <label key={item.id} className="flex items-center gap-2 p-2 border rounded hover:bg-gray-50 cursor-pointer">

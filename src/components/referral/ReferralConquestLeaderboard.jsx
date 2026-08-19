@@ -17,7 +17,7 @@ const WEEKLY_PRIZES = [
 const TROPHY_BADGES = ['👑 Top Recruiter', '🥈 Elite Referrer', '🥉 Pro Recruiter'];
 
 export default function ReferralConquestLeaderboard({ user }) {
-  const qc = useQueryClient();
+  const _qc = useQueryClient();
 
   const { data: allReferrals = [] } = useQuery({
     queryKey: ['conquest-referrals'],

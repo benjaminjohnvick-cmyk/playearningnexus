@@ -139,16 +139,16 @@ export default function GamerTournamentDashboard() {
             <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Plus className="w-4 h-4 text-yellow-600" />Create Tournament</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <div><label className="text-xs text-gray-500 mb-1 block">Tournament Name</label>
-                  <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Summer Showdown" className="h-8 text-sm" /></div>
-                <div><label className="text-xs text-gray-500 mb-1 block">Prize Pool ($)</label>
-                  <Input type="number" value={form.prizePool} onChange={e => setForm(f => ({ ...f, prizePool: e.target.value }))} className="h-8 text-sm" /></div>
-                <div><label className="text-xs text-gray-500 mb-1 block">Max Players</label>
-                  <Input type="number" value={form.maxPlayers} onChange={e => setForm(f => ({ ...f, maxPlayers: e.target.value }))} className="h-8 text-sm" /></div>
-                <div><label className="text-xs text-gray-500 mb-1 block">Entry Fee ($)</label>
-                  <Input type="number" value={form.entryFee} onChange={e => setForm(f => ({ ...f, entryFee: e.target.value }))} className="h-8 text-sm" /></div>
-                <div><label className="text-xs text-gray-500 mb-1 block">Game Type</label>
-                  <select value={form.gameType} onChange={e => setForm(f => ({ ...f, gameType: e.target.value }))} className="w-full h-8 text-sm border border-gray-200 rounded-md px-2">
+                <div><label htmlFor="tourn-name" className="text-xs text-gray-500 mb-1 block">Tournament Name</label>
+                  <Input id="tourn-name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Summer Showdown" className="h-8 text-sm" /></div>
+                <div><label htmlFor="tourn-prize-pool" className="text-xs text-gray-500 mb-1 block">Prize Pool ($)</label>
+                  <Input id="tourn-prize-pool" type="number" value={form.prizePool} onChange={e => setForm(f => ({ ...f, prizePool: e.target.value }))} className="h-8 text-sm" /></div>
+                <div><label htmlFor="tourn-max-players" className="text-xs text-gray-500 mb-1 block">Max Players</label>
+                  <Input id="tourn-max-players" type="number" value={form.maxPlayers} onChange={e => setForm(f => ({ ...f, maxPlayers: e.target.value }))} className="h-8 text-sm" /></div>
+                <div><label htmlFor="tourn-entry-fee" className="text-xs text-gray-500 mb-1 block">Entry Fee ($)</label>
+                  <Input id="tourn-entry-fee" type="number" value={form.entryFee} onChange={e => setForm(f => ({ ...f, entryFee: e.target.value }))} className="h-8 text-sm" /></div>
+                <div><label htmlFor="tourn-game-type" className="text-xs text-gray-500 mb-1 block">Game Type</label>
+                  <select id="tourn-game-type" value={form.gameType} onChange={e => setForm(f => ({ ...f, gameType: e.target.value }))} className="w-full h-8 text-sm border border-gray-200 rounded-md px-2">
                     <option value="survey_speed">Survey Speed</option>
                     <option value="earnings_race">Earnings Race</option>
                     <option value="referral_battle">Referral Battle</option>

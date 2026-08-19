@@ -56,7 +56,7 @@ export default function ThirdPartySellerMarketplace() {
       setUser(me);
       const items = await base44.entities.SellerMarketplaceListing.filter({ status: 'active' }, '-bid_amount', 50);
       setListings(items);
-    } catch (e) {
+    } catch {
       // not logged in
     }
     setLoading(false);

@@ -70,10 +70,10 @@ export default function AddStoreCredit() {
                 ))}
               </div>
               <div>
-                <label className="text-xs text-gray-500">Or enter a custom amount</label>
+                <label htmlFor="custom-credit-amount" className="text-xs text-gray-500">Or enter a custom amount</label>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-gray-500">$</span>
-                  <Input type="number" min="1" max="2000" value={amount} onChange={(e) => setAmount(e.target.value)} className="text-lg font-bold" />
+                  <Input id="custom-credit-amount" type="number" min="1" max="2000" value={amount} onChange={(e) => setAmount(e.target.value)} className="text-lg font-bold" />
                 </div>
               </div>
               {user?.current_balance != null && (

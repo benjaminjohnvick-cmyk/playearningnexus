@@ -61,7 +61,7 @@ export default function DeveloperRevenueAnalytics() {
     enabled: !!user?.id,
   });
 
-  const { data: responses = [], isLoading: loadingResp } = useQuery({
+  const { data: responses = [], isLoading: _loadingResp } = useQuery({
     queryKey: ['dev-responses', user?.id],
     queryFn: async () => {
       if (!surveys.length) return [];

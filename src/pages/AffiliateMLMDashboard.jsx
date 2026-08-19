@@ -90,7 +90,7 @@ export default function AffiliateMLMDashboard() {
       });
       await refetchNode();
       toast.success('🎉 You\'re now enrolled in the AI Affiliate Program!');
-    } catch (e) {
+    } catch {
       toast.error('Enrollment failed. Please try again.');
     }
     setEnrolling(false);

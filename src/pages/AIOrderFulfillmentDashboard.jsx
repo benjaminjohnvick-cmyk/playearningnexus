@@ -38,9 +38,11 @@ function OrderRow({ order, onRunFulfillment, onRunVetting, isRunning }) {
 
   return (
     <div className="border rounded-lg bg-white overflow-hidden">
-      <div 
+      <div
         className="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50"
+        role="button" tabIndex={0}
         onClick={() => setExpanded(!expanded)}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(x => !x); } }}
       >
         <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
           {order.product_image_url ? (

@@ -63,7 +63,7 @@ export default function EarningsBreakdownPanel({ transactions = [] }) {
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie data={chartData} cx="50%" cy="50%" outerRadius={75} dataKey="value"
-              label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+              label={({ name: _name, percent }) => `${(percent * 100).toFixed(0)}%`}
               labelLine={false}>
               {chartData.map((entry) => (
                 <Cell key={entry.key} fill={SOURCE_COLORS[entry.key] || SOURCE_COLORS.other} />

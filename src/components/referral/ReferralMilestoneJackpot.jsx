@@ -144,7 +144,7 @@ function MilestoneCard({ milestone, totalReferrals, achieved, userId, qc }) {
   );
 }
 
-function JackpotWidget({ userId, totalReferrals }) {
+function JackpotWidget({ userId, totalReferrals: _totalReferrals }) {
   const { data: jackpots = [] } = useQuery({
     queryKey: ['jackpots'],
     queryFn: () => base44.entities.ReferralJackpot.filter({ status: 'active' }),

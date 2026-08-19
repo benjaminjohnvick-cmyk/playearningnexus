@@ -13,7 +13,7 @@ export default function SupportChatButton() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         // User not logged in
       }
     };

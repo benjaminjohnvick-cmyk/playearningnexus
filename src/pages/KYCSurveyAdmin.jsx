@@ -130,12 +130,12 @@ export default function KYCSurveyAdmin() {
       <Card>
         <CardContent className="space-y-4 p-4">
           <div>
-            <label className="text-xs font-semibold text-gray-500">Title</label>
-            <Input value={survey.title} onChange={(e) => setSurvey((s) => ({ ...s, title: e.target.value }))} />
+            <label htmlFor="kyc-survey-title" className="text-xs font-semibold text-gray-500">Title</label>
+            <Input id="kyc-survey-title" value={survey.title} onChange={(e) => setSurvey((s) => ({ ...s, title: e.target.value }))} />
           </div>
           <div>
-            <label className="text-xs font-semibold text-gray-500">Description</label>
-            <textarea className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" rows={2} value={survey.description} onChange={(e) => setSurvey((s) => ({ ...s, description: e.target.value }))} />
+            <label htmlFor="kyc-survey-description" className="text-xs font-semibold text-gray-500">Description</label>
+            <textarea id="kyc-survey-description" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" rows={2} value={survey.description} onChange={(e) => setSurvey((s) => ({ ...s, description: e.target.value }))} />
           </div>
 
           {survey.questions.map((q, i) => (
@@ -158,10 +158,10 @@ export default function KYCSurveyAdmin() {
               </div>
               {(q.type === 'single' || q.type === 'multi') && (
                 <div>
-                  <label className="text-xs font-semibold text-gray-500">Options (one per line)</label>
+                  <label className="text-xs font-semibold text-gray-500">Options (one per line)
                   <textarea className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" rows={3}
                     value={(q.options || []).join('\n')}
-                    onChange={(e) => setQ(i, { options: e.target.value.split('\n').map((x) => x.trimEnd()) })} />
+                    onChange={(e) => setQ(i, { options: e.target.value.split('\n').map((x) => x.trimEnd()) })} /></label>
                 </div>
               )}
             </div>

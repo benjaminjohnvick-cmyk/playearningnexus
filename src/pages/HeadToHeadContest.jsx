@@ -21,7 +21,7 @@ export default function HeadToHeadContest() {
     base44.auth.me().then(u => setUser(u)).catch(() => {});
   }, []);
 
-  const { data: contests } = useQuery({
+  const { data: _contests } = useQuery({
     queryKey: ['contests'],
     queryFn: () => base44.entities.HeadToHeadContest.filter({ status: 'waiting' }),
     enabled: !!user
@@ -34,7 +34,7 @@ export default function HeadToHeadContest() {
     }
   });
 
-  const buyPowerUpMutation = useMutation({
+  const _buyPowerUpMutation = useMutation({
     mutationFn: (data) => base44.functions.invoke('buyContestPowerUp', data)
   });
 

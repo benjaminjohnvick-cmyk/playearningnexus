@@ -9,7 +9,7 @@ import { TrendingUp, Zap, Gift, Mail, RefreshCw } from 'lucide-react';
 
 export default function ReengagementMetricsWidget() {
   const queryClient = useQueryClient();
-  const [timeRange, setTimeRange] = useState('30d');
+  const [timeRange, _setTimeRange] = useState('30d');
 
   // Fetch campaign metrics
   const { data: metrics = null, isLoading } = useQuery({

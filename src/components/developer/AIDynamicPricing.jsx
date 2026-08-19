@@ -95,7 +95,7 @@ Based on these metrics, provide:
       });
 
       setAiRecommendations(result);
-    } catch (error) {
+    } catch {
       toast.error('Failed to generate pricing recommendations');
     }
     setLoading(false);

@@ -27,7 +27,7 @@ export default function UpfrontEarningsPage() {
         const res = await base44.functions.invoke('premiumPPCStatus', {});
         setStatus(res.data);
       }
-    } catch (e) { /* not signed in / status unavailable */ }
+    } catch { /* not signed in / status unavailable */ }
     setLoading(false);
   };
 

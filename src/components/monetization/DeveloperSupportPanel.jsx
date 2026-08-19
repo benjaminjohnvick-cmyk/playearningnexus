@@ -151,7 +151,7 @@ export default function DeveloperSupportPanel({ game, user }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Quick Tip</label>
+              <span className="block text-sm font-medium mb-2">Quick Tip</span>
               <div className="grid grid-cols-4 gap-2">
                 {quickTipAmounts.map((quick) => {
                   const Icon = quick.icon;
@@ -172,8 +172,9 @@ export default function DeveloperSupportPanel({ game, user }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Custom Amount</label>
+              <label htmlFor="custom-tip-amount" className="block text-sm font-medium mb-2">Custom Amount</label>
               <Input
+                id="custom-tip-amount"
                 type="number"
                 value={tipAmount}
                 onChange={(e) => setTipAmount(Number(e.target.value))}
@@ -183,8 +184,9 @@ export default function DeveloperSupportPanel({ game, user }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Message (Optional)</label>
+              <label htmlFor="tip-message" className="block text-sm font-medium mb-2">Message (Optional)</label>
               <Input
+                id="tip-message"
                 value={tipMessage}
                 onChange={(e) => setTipMessage(e.target.value)}
                 placeholder="Say something nice..."
@@ -193,7 +195,7 @@ export default function DeveloperSupportPanel({ game, user }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Pay with</label>
+              <span className="block text-sm font-medium mb-2">Pay with</span>
               <div className="grid grid-cols-3 gap-2">
                 <Button
                   variant={getCurrencyBalance('coins') >= tipAmount ? 'default' : 'outline'}

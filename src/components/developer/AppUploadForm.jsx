@@ -14,7 +14,7 @@ import { toast } from "sonner";
 export default function AppUploadForm({ onSuccess, onCancel, businessClient }) {
   const [step, setStep] = useState(1);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadProgress, _setUploadProgress] = useState(0);
   
   const [gameData, setGameData] = useState({
     title: '',
@@ -86,7 +86,7 @@ export default function AppUploadForm({ onSuccess, onCancel, businessClient }) {
       
       toast.success('App submitted successfully! Pending review.');
       onSuccess();
-    } catch (error) {
+    } catch {
       toast.error('Failed to submit app');
     } finally {
       setUploading(false);

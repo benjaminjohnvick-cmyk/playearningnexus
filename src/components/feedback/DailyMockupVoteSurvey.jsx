@@ -9,7 +9,7 @@ const STORAGE_KEY = 'gg_mockup_vote_date';
 
 export default function DailyMockupVoteSurvey({ user }) {
   const [survey, setSurvey] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [votes, setVotes] = useState({}); // { comparison_id: 'a' | 'b' }

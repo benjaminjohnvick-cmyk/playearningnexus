@@ -169,7 +169,7 @@ export default function MyOrders() {
   );
 
   const active = filtered.filter(o => !['delivered', 'cancelled'].includes(o.shipping_status));
-  const past = filtered.filter(o => ['delivered', 'cancelled'].includes(o.shipping_status));
+  const _past = filtered.filter(o => ['delivered', 'cancelled'].includes(o.shipping_status));
   const games = filtered.filter(o => o.product_type === 'game');
   const physical = filtered.filter(o => o.product_type === 'physical_product');
 

@@ -16,8 +16,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function DeveloperGameAnalytics({ game, developerId }) {
-  const { data: transactions = [] } = useQuery({
+export default function DeveloperGameAnalytics({ game, developerId: _developerId }) {
+  const { data: _transactions = [] } = useQuery({
     queryKey: ['gameTransactions', game.id],
     queryFn: async () => {
       const all = await base44.entities.Transaction.list();

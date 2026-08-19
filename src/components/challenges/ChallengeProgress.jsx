@@ -14,7 +14,7 @@ const TOP_CHALLENGES = [
   { id: 'first_100', title: '$100 Earned', icon: DollarSign, color: 'text-green-500', metric: 'earnings', target: 100, bonus: '$10' },
 ];
 
-export default function ChallengeProgress({ user, dailyEarnings = [], referrals = [] }) {
+export default function ChallengeProgress({ user: _user, dailyEarnings = [], referrals = [] }) {
   const metrics = useMemo(() => {
     let streak = 0;
     for (let i = 0; i < 30; i++) {

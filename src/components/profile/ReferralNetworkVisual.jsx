@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Users, TrendingUp, Award, Network } from "lucide-react";
 
 export default function ReferralNetworkVisual({ userId }) {
-  const { data: referrals = [] } = useQuery({
+  const { data: _referrals = [] } = useQuery({
     queryKey: ['user-referrals', userId],
     queryFn: async () => {
       return await base44.entities.Referral.filter({

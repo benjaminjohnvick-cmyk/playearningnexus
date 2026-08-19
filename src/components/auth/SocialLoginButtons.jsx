@@ -38,7 +38,7 @@ export default function SocialLoginButtons({ compact = false }) {
     }
   ];
 
-  const handleSocialLogin = (platformId) => {
+  const handleSocialLogin = (_platformId) => {
     // Mark that we should auto-run onboarding after login
     sessionStorage.setItem('auto_onboard_after_login', '1');
     base44.auth.redirectToLogin(window.location.href);

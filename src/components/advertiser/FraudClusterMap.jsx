@@ -40,7 +40,7 @@ const LEVEL_STYLES = {
   low: { dot: 'bg-green-400', ring: 'ring-green-400/30', label: 'text-green-400', bg: 'bg-green-500/10 border-green-500/30' },
 };
 
-export default function FraudClusterMap({ ads, onRefresh }) {
+export default function FraudClusterMap({ ads, onRefresh: _onRefresh }) {
   const clusters = useMemo(() => generateClusters(ads), [ads]);
   const [blocked, setBlocked] = useState(new Set());
   const [blocking, setBlocking] = useState(null);
@@ -205,7 +205,9 @@ export default function FraudClusterMap({ ads, onRefresh }) {
           const isBlocked = blocked.has(cluster.id);
           return (
             <div key={cluster.id} className={`flex items-center gap-3 bg-gray-900 border rounded-xl px-3 py-2.5 transition-all ${isBlocked ? 'opacity-40 border-gray-800' : 'border-gray-700 hover:border-gray-600 cursor-pointer'}`}
-              onClick={() => !isBlocked && setSelected(selected?.id === cluster.id ? null : cluster)}>
+              onClick={() => !isBlocked && setSelected(selected?.id === cluster.id ? null : cluster)}
+              role="button" tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!isBlocked) setSelected(selected?.id === cluster.id ? null : cluster); } }}>
               <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isBlocked ? 'bg-gray-600' : s.dot}`} />
               <span className="text-white text-xs font-bold flex-1">{cluster.label}</span>
               <span className="text-gray-500 text-xs">{cluster.clicks} clicks · {cluster.clickShare}%</span>

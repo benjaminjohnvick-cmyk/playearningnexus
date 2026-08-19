@@ -30,9 +30,12 @@ function NotificationItem({ n, onMarkRead }) {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       className={`flex gap-3 p-4 rounded-xl border transition-all cursor-pointer hover:shadow-sm
         ${isUnread ? 'bg-white border-blue-100 shadow-sm' : 'bg-gray-50/60 border-gray-100'}`}
       onClick={() => isUnread && onMarkRead(n.id)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (isUnread) onMarkRead(n.id); } }}
     >
       <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${cfg.bg}`}>
         <Icon className={`w-5 h-5 ${cfg.color}`} />

@@ -86,7 +86,7 @@ Rules:
       });
 
       setReport(result);
-    } catch (e) {
+    } catch {
       setReport({ error: 'Analysis failed. Please try again.' });
     }
     setLoading(false);

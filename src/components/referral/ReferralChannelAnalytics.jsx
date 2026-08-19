@@ -109,7 +109,7 @@ export default function ReferralChannelAnalytics({ user }) {
     toast.success(`${channelId} link generated!`);
   };
 
-  const pieData = displayStats.map(c => ({ name: c.label, value: c.conversions, fill: c.color }));
+  const _pieData = displayStats.map(c => ({ name: c.label, value: c.conversions, fill: c.color }));
 
   return (
     <div className="space-y-6">
@@ -193,9 +193,9 @@ export default function ReferralChannelAnalytics({ user }) {
         <CardContent className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Sign-up Bonus for Invitees</label>
+              <label htmlFor="referral-signup-bonus" className="text-xs font-semibold text-gray-600 block mb-1">Sign-up Bonus for Invitees</label>
               <Select value={bonus} onValueChange={setBonus}>
-                <SelectTrigger className="h-9 text-sm border-2">
+                <SelectTrigger id="referral-signup-bonus" className="h-9 text-sm border-2">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -204,8 +204,9 @@ export default function ReferralChannelAnalytics({ user }) {
               </Select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Custom Tag (optional)</label>
+              <label htmlFor="referral-custom-tag" className="text-xs font-semibold text-gray-600 block mb-1">Custom Tag (optional)</label>
               <Input
+                id="referral-custom-tag"
                 value={customTag}
                 onChange={e => setCustomTag(e.target.value.replace(/\s/g, '_'))}
                 placeholder="e.g. summer_promo"

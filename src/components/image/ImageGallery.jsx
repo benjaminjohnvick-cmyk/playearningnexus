@@ -33,12 +33,12 @@ export default function ImageGallery({ images, onImageSelect }) {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       toast.success('Image downloaded!');
-    } catch (error) {
+    } catch {
       toast.error('Download failed');
     }
   };
 
-  const handleShare = (image) => {
+  const handleShare = (_image) => {
     const shareCaption = `🌟 Check out my AI-generated image created with Get Goods Gratis (Free)! 🎮✨\n\n#GetGoodsGratis #AIArt #AIGenerated`;
     navigator.clipboard.writeText(shareCaption);
     toast.success('Caption copied! Share on social media');
@@ -85,7 +85,10 @@ export default function ImageGallery({ images, onImageSelect }) {
                 src={image.edited_image_url || image.image_url}
                 alt={image.description}
                 className="w-full h-40 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                role="button"
+                tabIndex={0}
                 onClick={() => onImageSelect(image)}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onImageSelect(image); } }}
               />
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
                 <Button

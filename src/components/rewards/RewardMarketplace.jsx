@@ -9,7 +9,7 @@ import { Star, Zap, Clock, ShoppingBag, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function RewardMarketplace({ user }) {
-  const [selectedPerk, setSelectedPerk] = useState(null);
+  const [_selectedPerk, setSelectedPerk] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: perks = [], isLoading } = useQuery({

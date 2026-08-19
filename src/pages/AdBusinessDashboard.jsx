@@ -1040,23 +1040,23 @@ function AdCreativeForecastForm({ ads }) {
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">New Ad Details</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Brand Name</label>
-            <input value={form.brand_name} onChange={e => setForm(f => ({...f, brand_name: e.target.value}))}
+            <label htmlFor="abd-brand-name" className="text-xs text-gray-400 font-bold block mb-1">Brand Name</label>
+            <input id="abd-brand-name" value={form.brand_name} onChange={e => setForm(f => ({...f, brand_name: e.target.value}))}
               placeholder="e.g. Nike, My App" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Tagline</label>
-            <input value={form.tagline} onChange={e => setForm(f => ({...f, tagline: e.target.value}))}
+            <label htmlFor="abd-tagline" className="text-xs text-gray-400 font-bold block mb-1">Tagline</label>
+            <input id="abd-tagline" value={form.tagline} onChange={e => setForm(f => ({...f, tagline: e.target.value}))}
               placeholder="e.g. Get 50% off — Limited Time!" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Bid Amount ($)</label>
-            <input type="number" step="0.05" min="0.20" max="1.50" value={form.bid}
+            <label htmlFor="abd-bid" className="text-xs text-gray-400 font-bold block mb-1">Bid Amount ($)</label>
+            <input id="abd-bid" type="number" step="0.05" min="0.20" max="1.50" value={form.bid}
               onChange={e => setForm(f => ({...f, bid: parseFloat(e.target.value) || 0.40}))}
               className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Grid Tier</label>
+            <span className="text-xs text-gray-400 font-bold block mb-1">Grid Tier</span>
             <div className="flex gap-1.5">
               {TIERS.map(t => (
                 <button key={t} onClick={() => setForm(f => ({...f, tier: t}))}

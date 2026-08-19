@@ -14,7 +14,7 @@ const DEMO_DEALS = [
   { id: 'd3', brand_name: 'StreamSetup.co', creator_user_id: 'u3', deal_type: 'product_review', deal_value: 300, platform_commission_pct: 15, platform_earnings: 45, status: 'completed', ai_match_score: 88 },
 ];
 
-export default function InfluencerDealsPanel({ user }) {
+export default function InfluencerDealsPanel({ user: _user }) {
   const [showPropose, setShowPropose] = useState(false);
   const [form, setForm] = useState({ brand_name: '', brand_contact_email: '', deal_type: 'sponsored_post', deal_value: '' });
   const [matching, setMatching] = useState(false);

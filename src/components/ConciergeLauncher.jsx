@@ -64,7 +64,7 @@ export default function ConciergeLauncher() {
       const res = await base44.functions.invoke('aiFunnelRecommend', { signals, current_key: productKey });
       if (res?.code === 'funnel_off' || res?.error === 'The concierge is not available.') { setHidden(true); return; }
       setRec(res?.recommendation ?? null);
-    } catch (e) {
+    } catch {
       // If the concierge isn't available, hide quietly rather than nag.
       setHidden(true);
     } finally { setLoading(false); }

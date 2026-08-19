@@ -8,7 +8,7 @@ import { toast } from 'sonner';
  * onSuccess(cardData) is called with { paypalOrderId, cardLast4, brand } when card is captured.
  * We use a $0 order-authorization (setup token pattern) — here simplified to a $1 auth that is voided.
  */
-export default function PayPalCardCapture({ onSuccess, onCancel, label = 'Save Card & Continue', amount = '1.00' }) {
+export default function PayPalCardCapture({ onSuccess, onCancel, label: _label = 'Save Card & Continue', amount = '1.00' }) {
   const [captured, setCaptured] = useState(false);
 
   const handleApprove = async (data) => {

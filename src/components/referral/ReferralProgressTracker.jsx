@@ -93,7 +93,7 @@ function OverallProgressBar({ totalReferrals }) {
         />
         {/* Milestone markers */}
         {MILESTONES.map((m, i) => {
-          const markerPct = i === 0 ? (5 / nextMilestone.count) * 100 : (m.count / MILESTONES[MILESTONES.length - 1].count) * 100;
+          const _markerPct = i === 0 ? (5 / nextMilestone.count) * 100 : (m.count / MILESTONES[MILESTONES.length - 1].count) * 100;
           return (
             <div key={m.count} className="absolute top-0 bottom-0 w-0.5 bg-white/40"
               style={{ left: `${(m.count / 100) * 100}%` }} />

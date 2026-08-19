@@ -11,7 +11,7 @@ const TIERS = ['Premium', 'High', 'Standard', 'Economy'];
 const TIER_COLORS = { Premium: '#f59e0b', High: '#3b82f6', Standard: '#8b5cf6', Economy: '#6b7280' };
 
 // Simulate competitor bid trend data based on real ads
-function generateBidTrends(ads) {
+function generateBidTrends(_ads) {
   const now = Date.now();
   return Array.from({ length: 12 }, (_, i) => {
     const hour = new Date(now - (11 - i) * 3600_000);

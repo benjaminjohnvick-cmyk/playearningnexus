@@ -10,7 +10,7 @@ import StreamNotifications from '../streaming/StreamNotifications';
 export default function SpectateMode({ game, user, onSpectatorUpdate, tournamentMatch = null }) {
   const [isSpectatable, setIsSpectatable] = useState(false);
   const [spectators, setSpectators] = useState([]);
-  const [isTournamentMatch, setIsTournamentMatch] = useState(!!tournamentMatch);
+  const [isTournamentMatch, _setIsTournamentMatch] = useState(!!tournamentMatch);
 
   // Subscribe to spectator updates
   useEffect(() => {

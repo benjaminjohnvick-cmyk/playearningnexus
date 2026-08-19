@@ -6,7 +6,7 @@ import { Share2, Sparkles, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 
-export default function LogoutPromptModal({ isOpen, onClose, onLogout, user, contextData = {} }) {
+export default function LogoutPromptModal({ isOpen, onClose, onLogout, user: _user, contextData = {} }) {
   const [message, setMessage] = useState('');
   const [isPosting, setIsPosting] = useState(false);
 
@@ -39,7 +39,7 @@ export default function LogoutPromptModal({ isOpen, onClose, onLogout, user, con
       
       onClose();
       onLogout();
-    } catch (error) {
+    } catch {
       toast.error('Failed to prepare share');
     } finally {
       setIsPosting(false);
@@ -100,10 +100,11 @@ export default function LogoutPromptModal({ isOpen, onClose, onLogout, user, con
           )}
 
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label htmlFor="logout-prompt-message" className="text-sm font-medium text-gray-700 mb-2 block">
               Your message
             </label>
             <Textarea
+              id="logout-prompt-message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder={suggestedMessage}

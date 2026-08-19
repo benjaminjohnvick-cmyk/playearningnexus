@@ -36,7 +36,7 @@ export default function MockupVoteCard({ record, user, onVoted }) {
       // First tally
       await base44.functions.invoke('featureMockupPipeline', { action: 'tally_votes', mockup_id: record.id });
       // Then implement
-      const res = await base44.functions.invoke('featureMockupPipeline', { action: 'implement_winner', mockup_id: record.id });
+      const _res = await base44.functions.invoke('featureMockupPipeline', { action: 'implement_winner', mockup_id: record.id });
       toast.success('AI is implementing the winning mockup!');
       onVoted?.();
     } catch (e) { toast.error(e.message || 'Implementation failed'); }

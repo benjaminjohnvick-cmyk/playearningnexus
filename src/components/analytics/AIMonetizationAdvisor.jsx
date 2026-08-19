@@ -15,7 +15,7 @@ export default function AIMonetizationAdvisor({ gameId, gameName }) {
   const analyzeMonetizationMutation = useMutation({
     mutationFn: async () => {
       // Gather comprehensive data
-      const [transactions, products, engagements, purchases, pricing] = await Promise.all([
+      const [transactions, products, engagements, purchases, _pricing] = await Promise.all([
         base44.entities.Transaction.filter({ game_id: gameId }),
         base44.entities.Product.filter({ game_id: gameId }),
         base44.entities.GameEngagement.filter({ game_id: gameId }, '-updated_date', 200),

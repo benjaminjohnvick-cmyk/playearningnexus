@@ -21,7 +21,7 @@ const CATEGORY_OPTIONS = [
 
 export default function DailyFeedbackModal({ user }) {
   const [survey, setSurvey] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});

@@ -10,7 +10,7 @@ import { Zap, Target, Gift, Flame, CheckCircle2, Lock } from 'lucide-react';
 export default function AIPersonalizedDailyGoal({ user }) {
   const today = new Date().toISOString().split('T')[0];
   const [earnedToday, setEarnedToday] = useState(0);
-  const [unlockedMilestones, setUnlockedMilestones] = useState([]);
+  const [_unlockedMilestones, _setUnlockedMilestones] = useState([]);
 
   useEffect(() => {
     // Simulate real-time earnings tracking
@@ -23,7 +23,7 @@ export default function AIPersonalizedDailyGoal({ user }) {
         if (dailyEarnings[0]) {
           setEarnedToday(dailyEarnings[0].total_earned || 0);
         }
-      } catch (e) {
+      } catch {
         // Silently fail
       }
     }, 5000);
@@ -46,7 +46,7 @@ export default function AIPersonalizedDailyGoal({ user }) {
     ],
   };
 
-  const { data: dailyGoal, isLoading, isError } = useQuery({
+  const { data: dailyGoal, isLoading, isError: _isError } = useQuery({
     queryKey: ['daily-goal', user?.id, today],
     queryFn: async () => {
       const res = await base44.functions.invoke('generateAIDailyGoal', {});

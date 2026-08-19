@@ -72,8 +72,9 @@ export default function InvitationLinkGenerator({ user }) {
 
         {/* Custom message */}
         <div>
-          <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">Customize Share Message</label>
+          <label htmlFor="invite-custom-message" className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-1.5">Customize Share Message</label>
           <textarea
+            id="invite-custom-message"
             rows={3}
             className="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
             value={customMessage}
@@ -87,7 +88,7 @@ export default function InvitationLinkGenerator({ user }) {
 
         {/* Share channels */}
         <div>
-          <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-2">Share Via</label>
+          <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-2">Share Via</span>
           <div className="grid grid-cols-4 gap-2">
             {SHARE_CHANNELS.map(ch => {
               const Icon = ch.icon;

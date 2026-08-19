@@ -37,7 +37,7 @@ export default function CreatorTippingPanel({ user }) {
       toast.success(`Tip of $${tipAmount} sent!`);
       setTipMessage('');
       setCustomAmount('');
-    } catch (e) {
+    } catch {
       toast.error('Failed to send tip');
     } finally {
       setLoading(false);

@@ -15,7 +15,7 @@ import {
 import { toast } from 'sonner';
 
 export default function CreatorPayouts({ user }) {
-  const [selectedPeriod, setSelectedPeriod] = useState('current');
+  const [_selectedPeriod, _setSelectedPeriod] = useState('current');
   const queryClient = useQueryClient();
 
   // Fetch payout history

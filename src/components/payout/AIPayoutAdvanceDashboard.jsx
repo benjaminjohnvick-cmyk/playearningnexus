@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, TrendingUp, DollarSign, CheckCircle2, AlertCircle, Zap, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function AIPayoutAdvanceDashboard({ user }) {
+export default function AIPayoutAdvanceDashboard({ user: _user }) {
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [requesting, setRequesting] = useState(false);

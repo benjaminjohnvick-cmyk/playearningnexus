@@ -56,7 +56,7 @@ const ANNOUNCEMENTS = [
   },
 ];
 
-export default function NotificationsTab({ notifications = [], userId }) {
+export default function NotificationsTab({ notifications = [], userId: _userId }) {
   const [filter, setFilter] = useState('all');
   const queryClient = useQueryClient();
 
@@ -120,7 +120,7 @@ export default function NotificationsTab({ notifications = [], userId }) {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex gap-2 flex-wrap">
           {FILTER_TABS.map(tab => {
-            const cfg = TYPE_CONFIG[tab.key];
+            const _cfg = TYPE_CONFIG[tab.key];
             const count = tab.key === 'all'
               ? unreadCount
               : notifications.filter(n => n.type === tab.key && n.status === 'unread').length;

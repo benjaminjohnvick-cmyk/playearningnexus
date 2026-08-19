@@ -260,7 +260,7 @@ export default function GoogleAdsOverlay() {
   const [earned, setEarned] = useState(0);
   const [unlockedAds, setUnlockedAds] = useState([]);
   const [referrerId, setReferrerId] = useState(null);
-  const [botBlocked, setBotBlocked] = useState(false);
+  const [_botBlocked, setBotBlocked] = useState(false);
   const trackerRef = useRef(null);
 
   useEffect(() => {
@@ -306,7 +306,7 @@ export default function GoogleAdsOverlay() {
     setSurveyDone(false);
   };
 
-  const handleAnswer = (questionIdx, answer) => {
+  const handleAnswer = (questionIdx, _answer) => {
     // Record click coords — use a placeholder since we don't have event here
     if (trackerRef.current) trackerRef.current.recordClick(0, questionIdx * 50);
     if (questionIdx < 5) {

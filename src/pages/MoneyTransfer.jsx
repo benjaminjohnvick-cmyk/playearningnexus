@@ -24,7 +24,7 @@ export default function MoneyTransfer() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -296,6 +296,9 @@ export default function MoneyTransfer() {
                                 key={contact.id}
                                 className="p-3 border rounded-lg hover:bg-blue-50 cursor-pointer"
                                 onClick={() => setSelectedUser(contact)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedUser(contact); } }}
                               >
                                 <p className="font-medium text-gray-900">{contact.full_name}</p>
                                 <p className="text-sm text-gray-600">{contact.email}</p>

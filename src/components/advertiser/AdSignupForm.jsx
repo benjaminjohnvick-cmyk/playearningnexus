@@ -86,12 +86,15 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Image upload */}
       <div>
-        <label className="block text-sm font-bold text-gray-300 mb-2 flex items-center gap-1">
+        <label htmlFor="ad-image-input" className="block text-sm font-bold text-gray-300 mb-2 flex items-center gap-1">
           <Image className="w-4 h-4" /> Ad Thumbnail Image
         </label>
         <div
           className="border-2 border-dashed border-gray-600 rounded-2xl p-6 text-center cursor-pointer hover:border-yellow-500 transition-colors"
           onClick={() => document.getElementById('ad-image-input').click()}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('ad-image-input').click(); } }}
         >
           {imagePreview ? (
             <img src={imagePreview} alt="preview" className="w-32 h-32 object-cover rounded-xl mx-auto" />
@@ -108,10 +111,11 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
 
       {/* Brand name */}
       <div>
-        <label className="block text-sm font-bold text-gray-300 mb-1 flex items-center gap-1">
+        <label htmlFor="ad-brand-name" className="block text-sm font-bold text-gray-300 mb-1 flex items-center gap-1">
           <Building2 className="w-4 h-4" /> Brand / Business Name *
         </label>
         <Input
+          id="ad-brand-name"
           value={form.brand_name}
           onChange={e => setForm(f => ({ ...f, brand_name: e.target.value }))}
           placeholder="e.g. Nike, My Coffee Shop"
@@ -122,10 +126,11 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
 
       {/* Tagline */}
       <div>
-        <label className="block text-sm font-bold text-gray-300 mb-1 flex items-center gap-1">
+        <label htmlFor="ad-tagline" className="block text-sm font-bold text-gray-300 mb-1 flex items-center gap-1">
           <Tag className="w-4 h-4" /> Tagline (shown on hover)
         </label>
         <Input
+          id="ad-tagline"
           value={form.tagline}
           onChange={e => setForm(f => ({ ...f, tagline: e.target.value }))}
           placeholder="e.g. Just Do It · The Future Is Now"
@@ -135,10 +140,11 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
 
       {/* Landing URL */}
       <div>
-        <label className="block text-sm font-bold text-gray-300 mb-1 flex items-center gap-1">
+        <label htmlFor="ad-landing-url" className="block text-sm font-bold text-gray-300 mb-1 flex items-center gap-1">
           <Globe className="w-4 h-4" /> Landing Page URL *
         </label>
         <Input
+          id="ad-landing-url"
           type="url"
           value={form.landing_url}
           onChange={e => setForm(f => ({ ...f, landing_url: e.target.value }))}
@@ -150,10 +156,11 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
 
       {/* Budget */}
       <div>
-        <label className="block text-sm font-bold text-gray-300 mb-1 flex items-center gap-1">
+        <label htmlFor="ad-budget-limit" className="block text-sm font-bold text-gray-300 mb-1 flex items-center gap-1">
           <DollarSign className="w-4 h-4" /> Total Budget Limit ($)
         </label>
         <Input
+          id="ad-budget-limit"
           type="number"
           min={10}
           value={form.budget_limit}

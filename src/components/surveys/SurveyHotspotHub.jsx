@@ -94,7 +94,7 @@ function HotspotCard({ cat, isMatched, isSelected, onClick }) {
   );
 }
 
-function DetailPanel({ cat, user, onClose, onUnlock }) {
+function DetailPanel({ cat, user: _user, onClose, onUnlock }) {
   const { count, baseValue, highValue, hot } = useMemo(() => seedData(cat.id), [cat.id]);
   const Icon = cat.icon;
 

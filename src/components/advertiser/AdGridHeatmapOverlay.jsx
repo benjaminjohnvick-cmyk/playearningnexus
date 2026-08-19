@@ -7,7 +7,7 @@ const GRID_ROWS = 10;
 
 // Deterministic attention model: centre + top-left get more eyeballs
 function buildHeatmap(ads) {
-  const totalCompletions = ads.reduce((s, a) => s + (a.surveys_completed || 0), 0) || 1;
+  const _totalCompletions = ads.reduce((s, a) => s + (a.surveys_completed || 0), 0) || 1;
   const grid = [];
   for (let r = 0; r < GRID_ROWS; r++) {
     for (let c = 0; c < GRID_COLS; c++) {
@@ -90,6 +90,8 @@ export default function AdGridHeatmapOverlay({ ads }) {
             return (
               <div
                 key={i}
+                role="button"
+                tabIndex={0}
                 className={`relative aspect-square rounded-sm cursor-pointer transition-all ${style.bg} ${style.opacity}
                   ${isHighlighted ? 'ring-2 ring-white scale-110 z-10 opacity-100' : ''}
                   ${isHovered ? 'opacity-100 scale-105 z-10' : ''}

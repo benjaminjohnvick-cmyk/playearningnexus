@@ -24,7 +24,7 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
         const { file_url } = await base44.integrations.Core.UploadFile({ file });
         setSearchImage(file_url);
         toast.success('Image uploaded');
-      } catch (error) {
+      } catch {
         toast.error('Failed to upload image');
       }
     }
@@ -116,7 +116,7 @@ Return AT LEAST 6 listings if they exist. Sort the listings array from lowest pr
       } else {
         toast.error('No products found');
       }
-    } catch (error) {
+    } catch {
       toast.error('Search failed. Please try again.');
       setEngineLoading(false);
     } finally {
@@ -172,7 +172,7 @@ Return AT LEAST 6 listings if they exist. Sort the listings array from lowest pr
         />
 
         <div className="flex items-center gap-2">
-          <label className="flex-1">
+          <label htmlFor="product-image-upload" aria-label="Upload image" className="flex-1">
             <Button
               variant="outline"
               className="w-full"
@@ -184,6 +184,7 @@ Return AT LEAST 6 listings if they exist. Sort the listings array from lowest pr
               </div>
             </Button>
             <input
+              id="product-image-upload"
               type="file"
               accept="image/*"
               onChange={handleImageUpload}

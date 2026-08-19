@@ -88,7 +88,7 @@ export default function WhiteLabelSetup() {
     logo_url: ''
   });
 
-  const stepNames = STEPS.map(s => s.id);
+  const _stepNames = STEPS.map(s => s.id);
 
   const handleInstall = async () => {
     if (!selectedTier) return;
@@ -182,7 +182,9 @@ Keep it under 150 words, friendly tone.`,
               {TIERS.map((tier, idx) => (
                 <div
                   key={idx}
+                  role="button" tabIndex={0}
                   onClick={() => setSelectedTier(idx)}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedTier(idx); } }}
                   className={`relative cursor-pointer rounded-2xl border-2 p-6 transition-all ${tier.color} ${
                     selectedTier === idx ? 'ring-4 ring-indigo-400 scale-105' : 'hover:scale-102'
                   }`}
@@ -260,8 +262,9 @@ Keep it under 150 words, friendly tone.`,
             <CardContent className="space-y-5">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-slate-300 text-sm font-semibold mb-2 block">Company Name *</label>
+                  <label htmlFor="wl-company-name" className="text-slate-300 text-sm font-semibold mb-2 block">Company Name *</label>
                   <Input
+                    id="wl-company-name"
                     value={form.company_name}
                     onChange={e => updateForm('company_name', e.target.value)}
                     placeholder="Acme Corp"
@@ -269,8 +272,9 @@ Keep it under 150 words, friendly tone.`,
                   />
                 </div>
                 <div>
-                  <label className="text-slate-300 text-sm font-semibold mb-2 block">Contact Email *</label>
+                  <label htmlFor="wl-contact-email" className="text-slate-300 text-sm font-semibold mb-2 block">Contact Email *</label>
                   <Input
+                    id="wl-contact-email"
                     value={form.contact_email}
                     onChange={e => updateForm('contact_email', e.target.value)}
                     placeholder="you@company.com"
@@ -278,7 +282,7 @@ Keep it under 150 words, friendly tone.`,
                   />
                 </div>
                 <div>
-                  <label className="text-slate-300 text-sm font-semibold mb-2 block">Primary Brand Color</label>
+                  <span className="text-slate-300 text-sm font-semibold mb-2 block">Primary Brand Color</span>
                   <div className="flex gap-2 items-center">
                     <input
                       type="color"
@@ -294,8 +298,9 @@ Keep it under 150 words, friendly tone.`,
                   </div>
                 </div>
                 <div>
-                  <label className="text-slate-300 text-sm font-semibold mb-2 block">Logo URL (optional)</label>
+                  <label htmlFor="wl-logo-url" className="text-slate-300 text-sm font-semibold mb-2 block">Logo URL (optional)</label>
                   <Input
+                    id="wl-logo-url"
                     value={form.logo_url}
                     onChange={e => updateForm('logo_url', e.target.value)}
                     placeholder="https://yoursite.com/logo.png"
@@ -327,8 +332,9 @@ Keep it under 150 words, friendly tone.`,
             </CardHeader>
             <CardContent className="space-y-5">
               <div>
-                <label className="text-slate-300 text-sm font-semibold mb-2 block">Custom Domain (optional)</label>
+                <label htmlFor="wl-custom-domain" className="text-slate-300 text-sm font-semibold mb-2 block">Custom Domain (optional)</label>
                 <Input
+                  id="wl-custom-domain"
                   value={form.domain}
                   onChange={e => updateForm('domain', e.target.value)}
                   placeholder="surveys.yourcompany.com"

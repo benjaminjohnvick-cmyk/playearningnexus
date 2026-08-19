@@ -35,8 +35,9 @@ export default function AgeVerificationModal({ onVerified }) {
           you only need to do this once.
         </p>
         <form onSubmit={submit}>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Date of birth</label>
+          <label htmlFor="age-dob" className="mb-1 block text-sm font-medium text-zinc-700">Date of birth</label>
           <input
+            id="age-dob"
             type="date"
             value={dob}
             onChange={(e) => setDob(e.target.value)}

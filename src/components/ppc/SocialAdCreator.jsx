@@ -74,7 +74,7 @@ Keep each post engaging, natural, and platform-friendly.`,
 
       setGeneratedAds(posts);
       setStep('review');
-    } catch (e) {
+    } catch {
       toast.error('AI generation failed. Please try again.');
       setStep('idle');
     }

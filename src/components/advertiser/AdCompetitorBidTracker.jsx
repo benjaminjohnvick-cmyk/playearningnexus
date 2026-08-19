@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Bell, BellOff, Zap, TrendingUp, TrendingDown, Minus, RefreshCw, Mail, Loader2, AlertTriangle } from 'lucide-react';
 
 // Simulate competitor bid data
-function generateCompetitorData(myAds) {
+function generateCompetitorData(_myAds) {
   const demographics = ['18-24 Gaming', '25-34 Tech', '13-17 Mobile', '35-44 Finance'];
   const competitors = [
     { name: 'GamePulse Ads', color: 'text-blue-400', border: 'border-blue-500/20', bg: 'bg-blue-500/5' },
@@ -176,8 +176,9 @@ ${autoAdjust ? `Your bids have been automatically adjusted to $${(primaryComp.cu
           const changed = Math.abs(diff) >= 0.01;
           const isPrimary = comp.name === primaryId;
           return (
-            <div key={comp.name} className={`border rounded-2xl p-4 cursor-pointer transition-all ${isPrimary ? 'border-yellow-500/40 ring-1 ring-yellow-500/20' : comp.border} ${comp.bg}`}
-              onClick={() => setPrimaryId(comp.name)}>
+            <div key={comp.name} role="button" tabIndex={0} className={`border rounded-2xl p-4 cursor-pointer transition-all ${isPrimary ? 'border-yellow-500/40 ring-1 ring-yellow-500/20' : comp.border} ${comp.bg}`}
+              onClick={() => setPrimaryId(comp.name)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPrimaryId(comp.name); } }}>
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
@@ -240,11 +241,11 @@ ${autoAdjust ? `Your bids have been automatically adjusted to $${(primaryComp.cu
 
         {autoAdjust && (
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">
+            <label htmlFor="outbid-margin" className="text-xs text-gray-400 font-bold block mb-1">
               Outbid Margin above competitor
             </label>
             <div className="flex items-center gap-3">
-              <input type="range" min="0.005" max="0.1" step="0.005" value={margin}
+              <input id="outbid-margin" type="range" min="0.005" max="0.1" step="0.005" value={margin}
                 onChange={e => setMargin(parseFloat(e.target.value))}
                 className="flex-1 accent-orange-500" />
               <span className="text-orange-400 font-black text-sm w-14">+${margin.toFixed(3)}</span>

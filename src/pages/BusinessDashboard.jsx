@@ -12,7 +12,7 @@ import GamePerformanceMetrics from '../components/developer/GamePerformanceMetri
 export default function BusinessDashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [revenueData, setRevenueData] = useState([
+  const [revenueData, _setRevenueData] = useState([
     { month: 'Jan', revenue: 4000, target: 3500 },
     { month: 'Feb', revenue: 5200, target: 3800 },
     { month: 'Mar', revenue: 4800, target: 4000 },

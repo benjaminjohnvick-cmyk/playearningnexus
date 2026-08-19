@@ -36,7 +36,7 @@ export default function EventMonetizationAI({ eventId, gameId }) {
 
       const playerSpendingPatterns = purchases.reduce((acc, p) => {
         const hour = new Date(p.created_date).getHours();
-        const dayOfWeek = new Date(p.created_date).getDay();
+        const _dayOfWeek = new Date(p.created_date).getDay();
         acc.totalRevenue = (acc.totalRevenue || 0) + (p.amount || 0);
         acc.avgPurchaseValue = acc.totalRevenue / purchases.length;
         acc.peakHours = acc.peakHours || {};

@@ -111,7 +111,7 @@ const tiers = [
 ];
 
 export default function BusinessSurveyTiers() {
-  const [openTier, setOpenTier] = useState(null);
+  const [_openTier, _setOpenTier] = useState(null);
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-12">

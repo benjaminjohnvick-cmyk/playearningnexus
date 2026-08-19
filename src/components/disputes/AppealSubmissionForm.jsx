@@ -243,8 +243,9 @@ export default function AppealSubmissionForm({ user, onSubmitted }) {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-gray-600 mb-1 block">Describe your appeal in detail <span className="text-red-500">*</span></label>
+            <label htmlFor="appeal-description" className="text-xs font-semibold text-gray-600 mb-1 block">Describe your appeal in detail <span className="text-red-500">*</span></label>
             <textarea
+              id="appeal-description"
               placeholder="Explain what happened during the survey and why the rejection was incorrect. Be as specific as possible..."
               value={description}
               onChange={e => setDescription(e.target.value)}
@@ -254,7 +255,7 @@ export default function AppealSubmissionForm({ user, onSubmitted }) {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-gray-600 mb-1 block">Supporting Evidence (screenshot, screen recording, etc.)</label>
+            <span className="text-xs font-semibold text-gray-600 mb-1 block">Supporting Evidence (screenshot, screen recording, etc.)</span>
             {evidenceUrl ? (
               <div className="flex items-center gap-3 p-3 bg-green-50 border-2 border-green-200 rounded-xl">
                 <img src={evidenceUrl} alt="evidence" className="w-14 h-10 object-cover rounded-lg border" />

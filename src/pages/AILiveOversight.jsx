@@ -202,8 +202,8 @@ export default function AILiveOversight() {
             ) : (
               <p className="mb-3 text-xs text-gray-500">This action isn’t a simple setting — your note is recorded and fed to the AI as a lesson.</p>
             )}
-            <label className="text-xs font-semibold text-gray-500">What was wrong / what it should do (the AI learns from this)</label>
-            <textarea className="mt-1 mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. That markup is too high for new users — keep it under 12%." />
+            <label htmlFor="ai-correction-note" className="text-xs font-semibold text-gray-500">What was wrong / what it should do (the AI learns from this)</label>
+            <textarea id="ai-correction-note" className="mt-1 mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. That markup is too high for new users — keep it under 12%." />
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setCorrect(null)}>Cancel</Button>
               <Button className="flex-1 bg-purple-600 hover:bg-purple-700" disabled={busy === 'correct'} onClick={submitCorrection}>

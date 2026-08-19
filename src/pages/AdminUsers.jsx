@@ -41,7 +41,7 @@ export default function AdminUsers() {
           return;
         }
         setCurrentUser(user);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -215,19 +215,20 @@ export default function AdminUsers() {
                           {editingUser && editingUser.id === user.id && (
                             <div className="space-y-4">
                               <div>
-                                <label className="text-sm font-medium">Full Name</label>
+                                <label htmlFor="edit-user-name" className="text-sm font-medium">Full Name</label>
                                 <Input
+                                  id="edit-user-name"
                                   value={editingUser.full_name || ''}
                                   onChange={(e) => setEditingUser({...editingUser, full_name: e.target.value})}
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium">Role</label>
-                                <Select 
-                                  value={editingUser.role} 
+                                <label htmlFor="edit-user-role" className="text-sm font-medium">Role</label>
+                                <Select
+                                  value={editingUser.role}
                                   onValueChange={(val) => setEditingUser({...editingUser, role: val})}
                                 >
-                                  <SelectTrigger>
+                                  <SelectTrigger id="edit-user-role">
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -237,8 +238,9 @@ export default function AdminUsers() {
                                 </Select>
                               </div>
                               <div>
-                                <label className="text-sm font-medium">Total Earnings</label>
+                                <label htmlFor="edit-user-earnings" className="text-sm font-medium">Total Earnings</label>
                                 <Input
+                                  id="edit-user-earnings"
                                   type="number"
                                   step="0.01"
                                   value={editingUser.total_earnings || 0}

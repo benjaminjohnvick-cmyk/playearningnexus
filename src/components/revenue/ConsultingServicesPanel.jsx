@@ -38,7 +38,7 @@ const SERVICES = [
   },
 ];
 
-export default function ConsultingServicesPanel({ user }) {
+export default function ConsultingServicesPanel({ user: _user }) {
   const [showBooking, setShowBooking] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', details: '' });
   const [submitting, setSubmitting] = useState(false);
@@ -152,7 +152,8 @@ export default function ConsultingServicesPanel({ user }) {
 
       {/* Booking Modal */}
       {showBooking && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowBooking(null)}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" role="button" tabIndex={0} aria-label="Close" onClick={() => setShowBooking(null)}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowBooking(null); } }}>
           <Card className="w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
             <CardHeader>
               <CardTitle className="text-base">Book: {showBooking.name}</CardTitle>

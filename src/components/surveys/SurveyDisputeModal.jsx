@@ -99,7 +99,7 @@ export default function SurveyDisputeModal({ user, isOpen, onClose }) {
     setSubmitting(false);
   };
 
-  const selectedTx = transactions.find(t => t.id === form.transaction_id);
+  const _selectedTx = transactions.find(t => t.id === form.transaction_id);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -118,17 +118,19 @@ export default function SurveyDisputeModal({ user, isOpen, onClose }) {
 
           {/* Transaction Selector */}
           <div>
-            <label className="text-xs font-semibold text-gray-600 block mb-2">
+            <span className="text-xs font-semibold text-gray-600 block mb-2">
               <Receipt className="w-3.5 h-3.5 inline mr-1" />
               Select Missing Transaction (optional)
-            </label>
+            </span>
             {surveyTransactions.length === 0 ? (
               <p className="text-xs text-gray-400 italic">No recent survey transactions found.</p>
             ) : (
               <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                 {surveyTransactions.map(tx => (
                   <div key={tx.id}
+                    role="button" tabIndex={0}
                     onClick={() => handleTransactionSelect(tx)}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleTransactionSelect(tx); } }}
                     className={`flex items-center justify-between px-3 py-2 rounded-lg border cursor-pointer transition-all text-sm ${
                       form.transaction_id === tx.id
                         ? 'border-amber-400 bg-amber-50'
@@ -149,20 +151,20 @@ export default function SurveyDisputeModal({ user, isOpen, onClose }) {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1">Survey Name / Topic</label>
-            <Input placeholder="e.g. Gaming habits survey" value={form.survey_title}
+            <label htmlFor="dispute-survey-title" className="text-xs font-medium text-gray-600 block mb-1">Survey Name / Topic</label>
+            <Input id="dispute-survey-title" placeholder="e.g. Gaming habits survey" value={form.survey_title}
               onChange={e => setForm(f => ({ ...f, survey_title: e.target.value }))} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1">Expected Amount (USD)</label>
-              <Input type="number" placeholder="e.g. 1.50" value={form.expected_amount}
+              <label htmlFor="dispute-expected-amount" className="text-xs font-medium text-gray-600 block mb-1">Expected Amount (USD)</label>
+              <Input id="dispute-expected-amount" type="number" placeholder="e.g. 1.50" value={form.expected_amount}
                 onChange={e => setForm(f => ({ ...f, expected_amount: e.target.value }))} />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1">Provider</label>
-              <select value={form.provider} onChange={e => setForm(f => ({ ...f, provider: e.target.value }))}
+              <label htmlFor="dispute-provider" className="text-xs font-medium text-gray-600 block mb-1">Provider</label>
+              <select id="dispute-provider" value={form.provider} onChange={e => setForm(f => ({ ...f, provider: e.target.value }))}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
                 <option value="bitlabs">BitLabs</option>
                 <option value="ppc">PPC Marketplace</option>
@@ -172,8 +174,8 @@ export default function SurveyDisputeModal({ user, isOpen, onClose }) {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-gray-600 block mb-1">Description *</label>
-            <textarea rows={3}
+            <label htmlFor="dispute-description" className="text-xs font-medium text-gray-600 block mb-1">Description *</label>
+            <textarea id="dispute-description" rows={3}
               placeholder="Describe what happened — when you took the survey, what it was about, and why you believe you didn't receive credit..."
               value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none" />
@@ -181,10 +183,10 @@ export default function SurveyDisputeModal({ user, isOpen, onClose }) {
 
           {/* Screenshot Upload */}
           <div>
-            <label className="text-xs font-semibold text-gray-600 block mb-2">
+            <span className="text-xs font-semibold text-gray-600 block mb-2">
               <Upload className="w-3.5 h-3.5 inline mr-1" />
               Completion Screenshot (recommended)
-            </label>
+            </span>
             {screenshotPreview ? (
               <div className="relative">
                 <img src={screenshotPreview} alt="Screenshot preview"

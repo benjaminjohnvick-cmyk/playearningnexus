@@ -8,7 +8,7 @@ import { TrendingUp, Users, DollarSign, Clock, Crown, Heart, MapPin } from 'luci
 
 export default function StreamerAnalytics() {
   const [user, setUser] = useState(null);
-  const [dateRange, setDateRange] = useState('week');
+  const [_dateRange, _setDateRange] = useState('week');
 
   useEffect(() => {
     const fetchUser = async () => {

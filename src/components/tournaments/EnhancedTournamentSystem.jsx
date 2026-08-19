@@ -8,7 +8,7 @@ import { Trophy, Crown, Medal, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 
 export default function EnhancedTournamentSystem({ tournament, user }) {
-  const [scoreUpdate, setScoreUpdate] = useState({ participantId: '', score: 0 });
+  const [_scoreUpdate, _setScoreUpdate] = useState({ participantId: '', score: 0 });
   const queryClient = useQueryClient();
 
   const { data: participants = [] } = useQuery({
@@ -61,7 +61,7 @@ export default function EnhancedTournamentSystem({ tournament, user }) {
     onError: (error) => toast.error(error.message)
   });
 
-  const updateScoreMutation = useMutation({
+  const _updateScoreMutation = useMutation({
     mutationFn: async ({ matchId, participant1Score, participant2Score }) => {
       const match = matches.find(m => m.id === matchId);
       if (!match) throw new Error('Match not found');

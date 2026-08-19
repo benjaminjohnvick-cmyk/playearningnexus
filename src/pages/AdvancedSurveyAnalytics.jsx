@@ -196,18 +196,18 @@ ${openTexts.map((t, i) => `${i + 1}. "${t}"`).join('\n')}`,
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 block mb-1">Row Question</label>
+                      <label htmlFor="crosstab-row-question" className="text-xs font-semibold text-gray-500 block mb-1">Row Question</label>
                       <Select value={crossTabQ1} onValueChange={setCrossTabQ1}>
-                        <SelectTrigger className="border-2 text-sm h-9"><SelectValue /></SelectTrigger>
+                        <SelectTrigger id="crosstab-row-question" className="border-2 text-sm h-9"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           {questions.map((q, i) => <SelectItem key={i} value={String(i)}>Q{i + 1}: {q.question.slice(0, 40)}</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 block mb-1">Column Question</label>
+                      <label htmlFor="crosstab-column-question" className="text-xs font-semibold text-gray-500 block mb-1">Column Question</label>
                       <Select value={crossTabQ2} onValueChange={setCrossTabQ2}>
-                        <SelectTrigger className="border-2 text-sm h-9"><SelectValue /></SelectTrigger>
+                        <SelectTrigger id="crosstab-column-question" className="border-2 text-sm h-9"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           {questions.map((q, i) => <SelectItem key={i} value={String(i)}>Q{i + 1}: {q.question.slice(0, 40)}</SelectItem>)}
                         </SelectContent>

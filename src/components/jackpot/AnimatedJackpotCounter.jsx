@@ -5,9 +5,9 @@ import { base44 } from '@/api/base44Client';
 import { Zap, TrendingUp } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export default function AnimatedJackpotCounter({ showAnimation = true }) {
+export default function AnimatedJackpotCounter({ showAnimation: _showAnimation = true }) {
   const [prevJackpot, setPrevJackpot] = useState(0);
-  const [animatingValue, setAnimatingValue] = useState(0);
+  const [_animatingValue, setAnimatingValue] = useState(0);
   const [earningEvent, setEarningEvent] = useState(null);
 
   const { data: jackpotData } = useQuery({

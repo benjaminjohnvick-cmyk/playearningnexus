@@ -55,7 +55,7 @@ export function computeMatchScore(survey, respondentProfile) {
   return Math.min(100, Math.max(0, Math.round(score)));
 }
 
-export function MatchScoreBadge({ score, size = 'sm' }) {
+export function MatchScoreBadge({ score, size: _size = 'sm' }) {
   if (score == null) return null;
 
   const config =

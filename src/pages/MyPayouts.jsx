@@ -250,12 +250,12 @@ export default function MyPayouts() {
             <CardContent className="space-y-4 max-w-md">
               <p className="text-sm text-gray-600">Request an immediate payout of your available balance. Subject to admin approval.</p>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">Amount ($)</label>
-                <Input type="number" min="1" step="0.01" placeholder="0.00" value={manualAmount} onChange={e => setManualAmount(e.target.value)} />
+                <label htmlFor="manual-amount" className="text-sm font-medium text-gray-700 block mb-1">Amount ($)</label>
+                <Input id="manual-amount" type="number" min="1" step="0.01" placeholder="0.00" value={manualAmount} onChange={e => setManualAmount(e.target.value)} />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">Notes (optional)</label>
-                <Input placeholder="Reason or reference" value={manualNotes} onChange={e => setManualNotes(e.target.value)} />
+                <label htmlFor="manual-notes" className="text-sm font-medium text-gray-700 block mb-1">Notes (optional)</label>
+                <Input id="manual-notes" placeholder="Reason or reference" value={manualNotes} onChange={e => setManualNotes(e.target.value)} />
               </div>
               <div className="flex items-center gap-3">
                 <Button
@@ -301,12 +301,12 @@ export default function MyPayouts() {
             <CardContent className="space-y-5">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Payment Method</label>
+                  <label htmlFor="payout-method" className="text-sm font-medium text-gray-700 block mb-1">Payment Method</label>
                   <Select
                     value={payoutForm.payout_method || ''}
                     onValueChange={v => setPayoutForm(f => ({ ...f, payout_method: v }))}
                   >
-                    <SelectTrigger><SelectValue placeholder="Select method" /></SelectTrigger>
+                    <SelectTrigger id="payout-method"><SelectValue placeholder="Select method" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="paypal">PayPal</SelectItem>
                       <SelectItem value="venmo">Venmo</SelectItem>
@@ -317,12 +317,12 @@ export default function MyPayouts() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Payout Frequency</label>
+                  <label htmlFor="payout-frequency" className="text-sm font-medium text-gray-700 block mb-1">Payout Frequency</label>
                   <Select
                     value={payoutForm.payout_frequency || 'monthly'}
                     onValueChange={v => setPayoutForm(f => ({ ...f, payout_frequency: v }))}
                   >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="payout-frequency"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="weekly">Weekly</SelectItem>
                       <SelectItem value="biweekly">Bi-Weekly</SelectItem>
@@ -335,8 +335,9 @@ export default function MyPayouts() {
 
               {payoutForm.payout_method === 'paypal' && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">PayPal Email</label>
+                  <label htmlFor="paypal-email" className="text-sm font-medium text-gray-700 block mb-1">PayPal Email</label>
                   <Input
+                    id="paypal-email"
                     type="email"
                     placeholder="you@example.com"
                     value={payoutForm.paypal_email || ''}
@@ -346,8 +347,9 @@ export default function MyPayouts() {
               )}
               {payoutForm.payout_method === 'venmo' && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Venmo Username</label>
+                  <label htmlFor="venmo-username" className="text-sm font-medium text-gray-700 block mb-1">Venmo Username</label>
                   <Input
+                    id="venmo-username"
                     placeholder="@username"
                     value={payoutForm.venmo_username || ''}
                     onChange={e => setPayoutForm(f => ({ ...f, venmo_username: e.target.value }))}
@@ -356,8 +358,9 @@ export default function MyPayouts() {
               )}
               {payoutForm.payout_method === 'cashapp' && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Cash App $Cashtag</label>
+                  <label htmlFor="cashapp-cashtag" className="text-sm font-medium text-gray-700 block mb-1">Cash App $Cashtag</label>
                   <Input
+                    id="cashapp-cashtag"
                     placeholder="$cashtag"
                     value={payoutForm.cashapp_username || ''}
                     onChange={e => setPayoutForm(f => ({ ...f, cashapp_username: e.target.value }))}
@@ -367,27 +370,28 @@ export default function MyPayouts() {
               {payoutForm.payout_method === 'bank_transfer' && (
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">Account Holder</label>
-                    <Input value={payoutForm.bank_account_holder || ''} onChange={e => setPayoutForm(f => ({ ...f, bank_account_holder: e.target.value }))} />
+                    <label htmlFor="bank-account-holder" className="text-sm font-medium text-gray-700 block mb-1">Account Holder</label>
+                    <Input id="bank-account-holder" value={payoutForm.bank_account_holder || ''} onChange={e => setPayoutForm(f => ({ ...f, bank_account_holder: e.target.value }))} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">Bank Name</label>
-                    <Input value={payoutForm.bank_name || ''} onChange={e => setPayoutForm(f => ({ ...f, bank_name: e.target.value }))} />
+                    <label htmlFor="bank-name" className="text-sm font-medium text-gray-700 block mb-1">Bank Name</label>
+                    <Input id="bank-name" value={payoutForm.bank_name || ''} onChange={e => setPayoutForm(f => ({ ...f, bank_name: e.target.value }))} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">Routing Number</label>
-                    <Input value={payoutForm.bank_routing_number || ''} onChange={e => setPayoutForm(f => ({ ...f, bank_routing_number: e.target.value }))} />
+                    <label htmlFor="bank-routing-number" className="text-sm font-medium text-gray-700 block mb-1">Routing Number</label>
+                    <Input id="bank-routing-number" value={payoutForm.bank_routing_number || ''} onChange={e => setPayoutForm(f => ({ ...f, bank_routing_number: e.target.value }))} />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">Account Number</label>
-                    <Input value={payoutForm.bank_account_number || ''} onChange={e => setPayoutForm(f => ({ ...f, bank_account_number: e.target.value }))} />
+                    <label htmlFor="bank-account-number" className="text-sm font-medium text-gray-700 block mb-1">Account Number</label>
+                    <Input id="bank-account-number" value={payoutForm.bank_account_number || ''} onChange={e => setPayoutForm(f => ({ ...f, bank_account_number: e.target.value }))} />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">Minimum Payout Threshold ($)</label>
+                <label htmlFor="minimum-payout-threshold" className="text-sm font-medium text-gray-700 block mb-1">Minimum Payout Threshold ($)</label>
                 <Input
+                  id="minimum-payout-threshold"
                   type="number"
                   min={1}
                   value={payoutForm.minimum_payout_threshold ?? 50}

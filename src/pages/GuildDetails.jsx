@@ -66,7 +66,7 @@ export default function GuildDetails() {
   }
 
   const isLeader = guild.leader_id === user.id;
-  const isMember = guild.member_ids?.includes(user.id);
+  const _isMember = guild.member_ids?.includes(user.id);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 p-6">

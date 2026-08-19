@@ -218,12 +218,13 @@ Respond helpfully and accurately. Keep it concise.`
                         ].map(({ key, label }) => (
                           <label key={key} className="flex items-center justify-between text-xs text-gray-700 cursor-pointer">
                             <span>{label}</span>
-                            <div
+                            <button
+                              type="button"
                               onClick={() => updatePref(key, !prefs[key])}
                               className={`w-8 h-4 rounded-full relative transition-colors ${prefs[key] ? 'bg-purple-600' : 'bg-gray-300'}`}
                             >
                               <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${prefs[key] ? 'translate-x-4' : 'translate-x-0.5'}`} />
-                            </div>
+                            </button>
                           </label>
                         ))}
                       </div>

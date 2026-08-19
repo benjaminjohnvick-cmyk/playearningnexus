@@ -20,7 +20,7 @@ export default function EnhancedPointsSystem({ user, recentActivities = [] }) {
   const pointsToNextLevel = pointsPerLevel - currentLevelPoints;
 
   // Define action points
-  const actionPoints = {
+  const _actionPoints = {
     game_played: 50,
     survey_completed: 100,
     user_referred: 250,

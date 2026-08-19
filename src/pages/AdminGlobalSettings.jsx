@@ -116,8 +116,8 @@ export default function AdminGlobalSettings() {
               <Switch checked={getBoolValue('maintenance_mode')} onCheckedChange={val => setValue('maintenance_mode', val)} />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">Maintenance Message</label>
-              <Input value={localValues['maintenance_message'] || ''} onChange={e => setValue('maintenance_message', e.target.value)} placeholder="Message shown during maintenance..." />
+              <label htmlFor="maintenance-message" className="text-sm font-medium text-gray-700 block mb-1">Maintenance Message</label>
+              <Input id="maintenance-message" value={localValues['maintenance_message'] || ''} onChange={e => setValue('maintenance_message', e.target.value)} placeholder="Message shown during maintenance..." />
             </div>
             <Button onClick={() => handleSave('maintenance')} disabled={saving} className="bg-orange-600 hover:bg-orange-700">
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
@@ -180,9 +180,9 @@ export default function AdminGlobalSettings() {
               );
             })}
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">Global Notification Banner</label>
+              <label htmlFor="global-notification-banner" className="text-sm font-medium text-gray-700 block mb-1">Global Notification Banner</label>
               <p className="text-xs text-gray-400 mb-1">Displayed to all users on every page. Leave empty to hide.</p>
-              <Input value={localValues['global_notification_banner'] || ''} onChange={e => setValue('global_notification_banner', e.target.value)} placeholder="e.g. New feature launched! Check your dashboard." />
+              <Input id="global-notification-banner" value={localValues['global_notification_banner'] || ''} onChange={e => setValue('global_notification_banner', e.target.value)} placeholder="e.g. New feature launched! Check your dashboard." />
             </div>
             <Button onClick={() => handleSave('notifications')} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}

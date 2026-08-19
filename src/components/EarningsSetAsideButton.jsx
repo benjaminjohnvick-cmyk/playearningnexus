@@ -82,7 +82,7 @@ export default function EarningsSetAsideButton() {
 
           {/* Choose the percentage of FUTURE earnings to set aside */}
           <div>
-            <label className="text-xs font-semibold text-gray-700">How much of new earnings to set aside</label>
+            <span className="text-xs font-semibold text-gray-700">How much of new earnings to set aside</span>
             <div className="flex gap-1.5 mt-1 flex-wrap items-center">
               {PRESETS.map((p) => (
                 <button key={p} disabled={busy} onClick={() => call('earningsSetAsideSetPct', { pct: p }, 'Updated.')}
@@ -98,9 +98,9 @@ export default function EarningsSetAsideButton() {
           {/* Move a specific amount now / release it back — proves nothing is locked */}
           <div className="flex items-end gap-2 flex-wrap">
             <div>
-              <label className="text-[11px] text-gray-500">Move an amount now</label>
+              <label htmlFor="setaside-move-amount" className="text-[11px] text-gray-500">Move an amount now</label>
               <div className="flex items-center gap-1"><span className="text-gray-400">$</span>
-                <Input type="number" min="0" value={moveAmt} onChange={(e) => setMoveAmt(e.target.value)} className="w-24 h-9" placeholder="0" />
+                <Input id="setaside-move-amount" type="number" min="0" value={moveAmt} onChange={(e) => setMoveAmt(e.target.value)} className="w-24 h-9" placeholder="0" />
               </div>
             </div>
             <Button size="sm" variant="outline" disabled={busy || !(Number(moveAmt) > 0)}

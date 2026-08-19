@@ -10,14 +10,14 @@ import { Loader2, Users, Trophy, Activity } from 'lucide-react';
 export default function ReferralSquadsPage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [createdSquad, setCreatedSquad] = useState(null);
+  const [_createdSquad, setCreatedSquad] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       } finally {
         setLoading(false);

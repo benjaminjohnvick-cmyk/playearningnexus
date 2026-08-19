@@ -59,8 +59,9 @@ export default function AISurveyGeneratorWizard({ onSurveyGenerated }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-900 mb-2 block">Survey Goal</label>
+            <label htmlFor="survey-goal" className="text-sm font-medium text-gray-900 mb-2 block">Survey Goal</label>
             <Textarea
+              id="survey-goal"
               placeholder="e.g., 'Understand customer preferences for our new product launch' or 'Test messaging effectiveness for a spring campaign'"
               value={surveyGoal}
               onChange={(e) => setSurveyGoal(e.target.value)}
@@ -69,8 +70,9 @@ export default function AISurveyGeneratorWizard({ onSurveyGenerated }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-900 mb-2 block">Target Audience</label>
+            <label htmlFor="target-audience" className="text-sm font-medium text-gray-900 mb-2 block">Target Audience</label>
             <Textarea
+              id="target-audience"
               placeholder="e.g., 'Women ages 25-35, interested in fitness and wellness, active on social media'"
               value={targetAudience}
               onChange={(e) => setTargetAudience(e.target.value)}
@@ -79,8 +81,9 @@ export default function AISurveyGeneratorWizard({ onSurveyGenerated }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-900 mb-2 block">Number of Questions</label>
+            <label htmlFor="num-questions" className="text-sm font-medium text-gray-900 mb-2 block">Number of Questions</label>
             <Input
+              id="num-questions"
               type="number"
               min="3"
               max="15"

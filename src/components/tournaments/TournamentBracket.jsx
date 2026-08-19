@@ -51,7 +51,7 @@ export default function TournamentBracket({ tournament, matches, participants })
   );
 }
 
-function MatchCard({ match, participants }) {
+function MatchCard({ match, participants: _participants }) {
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
 

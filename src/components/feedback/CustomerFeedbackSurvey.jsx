@@ -47,7 +47,7 @@ export default function CustomerFeedbackSurvey() {
         setFeedback('');
         setSubmitted(false);
       }, 2000);
-    } catch (e) {
+    } catch {
       toast.error('Failed to submit feedback');
     } finally {
       setSubmitting(false);
@@ -85,7 +85,7 @@ export default function CustomerFeedbackSurvey() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <label className="text-sm font-medium block mb-3">Rate your experience (1-5 stars)</label>
+          <span className="text-sm font-medium block mb-3">Rate your experience (1-5 stars)</span>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map(star => (
               <button
@@ -106,8 +106,9 @@ export default function CustomerFeedbackSurvey() {
         </div>
 
         <div>
-          <label className="text-sm font-medium block mb-2">Tell us more (optional)</label>
+          <label htmlFor="feedback-text" className="text-sm font-medium block mb-2">Tell us more (optional)</label>
           <Textarea
+            id="feedback-text"
             placeholder="What can we improve? What did you love? Any issues?"
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}

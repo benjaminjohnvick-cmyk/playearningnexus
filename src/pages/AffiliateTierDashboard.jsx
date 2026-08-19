@@ -89,7 +89,7 @@ export default function AffiliateTierDashboard() {
   const nextTierIndex = currentTierIndex + 1;
   const prevTierIndex = currentTierIndex - 1;
   const nextTierName = tierOrder[nextTierIndex];
-  const prevTierName = tierOrder[prevTierIndex];
+  const _prevTierName = tierOrder[prevTierIndex];
   const nextThreshold = TIER_THRESHOLDS.find(t => t.tier === nextTierName);
   const prevThreshold = TIER_THRESHOLDS.find(t => t.tier === currentTierName);
 

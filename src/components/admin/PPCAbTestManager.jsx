@@ -85,7 +85,7 @@ function CreateTestForm({ onCreated }) {
 
 function TestCard({ test, onUpdate }) {
   const [analyzing, setAnalyzing] = useState(false);
-  const qc = useQueryClient();
+  const _qc = useQueryClient();
 
   const aRate = test.variant_a_impressions > 0 ? (test.variant_a_completions / test.variant_a_impressions * 100) : 0;
   const bRate = test.variant_b_impressions > 0 ? (test.variant_b_completions / test.variant_b_impressions * 100) : 0;

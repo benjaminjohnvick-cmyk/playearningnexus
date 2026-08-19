@@ -334,8 +334,8 @@ export default function PPCMarketplace() {
 
       {/* Entry info modal */}
       {showEntryModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowEntryModal(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 text-center" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" role="button" tabIndex={0} onClick={() => setShowEntryModal(false)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowEntryModal(false); } }}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 text-center" role="button" tabIndex={0} onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <TrendingUp className="w-8 h-8 text-white" />
             </div>

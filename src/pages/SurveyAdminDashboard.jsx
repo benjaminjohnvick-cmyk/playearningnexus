@@ -46,7 +46,7 @@ export default function SurveyAdminDashboard() {
     enabled: !!user,
   });
 
-  const { data: users = [] } = useQuery({
+  const { data: _users = [] } = useQuery({
     queryKey: ['admin-users-demo'],
     queryFn: () => base44.entities.User.list(),
     enabled: user?.role === 'admin',

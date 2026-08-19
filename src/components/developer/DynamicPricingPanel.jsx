@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Zap, TrendingUp, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function DynamicPricingPanel({ businessClient, games, items, transactions }) {
+export default function DynamicPricingPanel({ businessClient, games, items, transactions: _transactions }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [priceAdjustment, setPriceAdjustment] = useState(0);
   const [targetSegment, setTargetSegment] = useState('all');
@@ -86,9 +86,9 @@ export default function DynamicPricingPanel({ businessClient, games, items, tran
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Select Item</label>
+            <label htmlFor="pricing-select-item" className="text-sm font-medium mb-2 block">Select Item</label>
             <Select value={selectedItem || ''} onValueChange={setSelectedItem}>
-              <SelectTrigger>
+              <SelectTrigger id="pricing-select-item">
                 <SelectValue placeholder="Choose an item" />
               </SelectTrigger>
               <SelectContent>
@@ -124,9 +124,9 @@ export default function DynamicPricingPanel({ businessClient, games, items, tran
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Target User Segment</label>
+                <label htmlFor="target-user-segment" className="text-sm font-medium mb-2 block">Target User Segment</label>
                 <Select value={targetSegment} onValueChange={setTargetSegment}>
-                  <SelectTrigger>
+                  <SelectTrigger id="target-user-segment">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

@@ -24,7 +24,7 @@ export default function UserLicenseAgreement({ isOpen, onAccept, onDecline }) {
         subscription_end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
       });
       onAccept();
-    } catch (error) {
+    } catch {
       toast.error('Failed to save agreement');
     }
   };

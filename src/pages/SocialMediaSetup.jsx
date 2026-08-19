@@ -73,7 +73,7 @@ export default function SocialMediaSetup() {
   const [loading, setLoading] = useState(false);
   const [posting, setPosting] = useState(false);
   const [step, setStep] = useState(1); // 1 = select, 2 = connecting, 3 = ai_engine, 4 = done
-  const [existingConnections, setExistingConnections] = useState([]);
+  const [_existingConnections, setExistingConnections] = useState([]);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -168,7 +168,7 @@ export default function SocialMediaSetup() {
           total_jackpot_entries: (user.total_jackpot_entries || 0) + entriesEarned,
           social_media_connected: true,
         });
-      } catch (e) {}
+      } catch {}
     }
 
     // Clear the signup redirect flag

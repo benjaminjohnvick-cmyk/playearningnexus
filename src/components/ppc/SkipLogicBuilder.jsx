@@ -21,7 +21,7 @@ const OPTION_LABELS = { a: 'A', b: 'B', c: 'C', d: 'D' };
 
 function RuleRow({ rule, questions, onChange, onDelete }) {
   const sourceQ = questions[rule.source_question_index];
-  const optionText = sourceQ?.[`option_${rule.selected_option}`];
+  const _optionText = sourceQ?.[`option_${rule.selected_option}`];
 
   return (
     <div className="flex items-center gap-2 flex-wrap p-3 bg-white rounded-xl border border-purple-100 shadow-sm">

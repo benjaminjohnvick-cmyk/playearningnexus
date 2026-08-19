@@ -129,8 +129,9 @@ Return a JSON decision.`,
 
           {/* Admin notes */}
           <div>
-            <label className="text-xs font-semibold text-gray-600 block mb-1">Admin Notes</label>
+            <label htmlFor="admin-notes" className="text-xs font-semibold text-gray-600 block mb-1">Admin Notes</label>
             <textarea
+              id="admin-notes"
               className="w-full border rounded-lg p-2 text-sm resize-none h-20 focus:outline-none focus:ring-2 focus:ring-indigo-300"
               value={adminNotes}
               onChange={e => setAdminNotes(e.target.value)}

@@ -27,7 +27,7 @@ export default function ContestEntries() {
     enabled: !!user,
   });
 
-  const { data: milestones = [] } = useQuery({
+  const { data: _milestones = [] } = useQuery({
     queryKey: ['contest-milestones', user?.id],
     queryFn: () => base44.entities.ReferralMilestone.filter({ user_id: user.id }),
     enabled: !!user,

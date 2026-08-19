@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-export default function ShareWishlistButton({ userId, size = 'sm' }) {
+export default function ShareWishlistButton({ userId: _userId, size = 'sm' }) {
   const [open, setOpen] = useState(false);
   const [shareLink, setShareLink] = useState(null);
 

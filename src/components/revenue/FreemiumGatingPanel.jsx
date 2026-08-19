@@ -29,7 +29,7 @@ const UPGRADE_NUDGES = [
   { trigger: 'AI feature gated', message: 'AI survey generation is a Pro feature. Upgrade now!', tier: 'pro' },
 ];
 
-export default function FreemiumGatingPanel({ currentTier = 'free', onUpgrade }) {
+export default function FreemiumGatingPanel({ currentTier: _currentTier = 'free', onUpgrade }) {
   const [showNudge, setShowNudge] = useState(null);
 
   return (
@@ -101,8 +101,8 @@ export default function FreemiumGatingPanel({ currentTier = 'free', onUpgrade })
 
       {/* Nudge Preview Modal */}
       {showNudge && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowNudge(null)}>
-          <div className="bg-white rounded-2xl p-6 max-w-sm mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" role="button" tabIndex={0} onClick={() => setShowNudge(null)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowNudge(null); } }}>
+          <div className="bg-white rounded-2xl p-6 max-w-sm mx-4 shadow-2xl" role="presentation" onClick={e => e.stopPropagation()}>
             <div className="text-center space-y-3">
               <div className="text-4xl">🚀</div>
               <h3 className="font-bold text-lg text-gray-900">Upgrade to {showNudge.tier.charAt(0).toUpperCase() + showNudge.tier.slice(1)}</h3>

@@ -119,7 +119,7 @@ export default function ProductSearchResults({ products, searchQuery, searchImag
       {/* Listings */}
       <div className="p-4 space-y-3 flex-1">
         {listings.map((product, index) => {
-          const priceWithMarkup = product.price * 1.1;
+          const _priceWithMarkup = product.price * 1.1;
           const isAdding = addingToWishlist === product.vendor + product.name;
           const isBestDeal = index === 0;
           const priceDiff = product.price - lowestPrice;

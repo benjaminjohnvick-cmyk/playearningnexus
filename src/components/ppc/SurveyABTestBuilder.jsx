@@ -26,8 +26,8 @@ function ABTestCard({ test, onToggle }) {
   const completionB = test.variant_b_completion_rate || 0;
   const qualityA = test.variant_a_quality_score || 0;
   const qualityB = test.variant_b_quality_score || 0;
-  const progressA = test.variant_a_responses > 0 ? Math.round((test.variant_a_completions / test.variant_a_responses) * 100) : 0;
-  const progressB = test.variant_b_responses > 0 ? Math.round((test.variant_b_completions / test.variant_b_responses) * 100) : 0;
+  const _progressA = test.variant_a_responses > 0 ? Math.round((test.variant_a_completions / test.variant_a_responses) * 100) : 0;
+  const _progressB = test.variant_b_responses > 0 ? Math.round((test.variant_b_completions / test.variant_b_responses) * 100) : 0;
 
   return (
     <Card className="border-2 border-indigo-100">
@@ -245,8 +245,9 @@ export default function SurveyABTestBuilder() {
       {(step === 'form' || step === 'payment') && (
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">Test Hypothesis</label>
+            <label htmlFor="abtest-hypothesis" className="text-sm font-medium text-gray-700 block mb-1">Test Hypothesis</label>
             <Input
+              id="abtest-hypothesis"
               placeholder="e.g. A shorter survey will have higher completion rates"
               value={hypothesis}
               onChange={e => setHypothesis(e.target.value)}
@@ -256,8 +257,9 @@ export default function SurveyABTestBuilder() {
 
           <div className="grid grid-cols-1 gap-3">
             <div className="bg-purple-50 border-2 border-purple-100 rounded-xl p-3">
-              <label className="text-xs font-bold text-purple-700 uppercase tracking-wide block mb-1.5">Variant A — Survey Prompt</label>
+              <label htmlFor="abtest-prompt-a" className="text-xs font-bold text-purple-700 uppercase tracking-wide block mb-1.5">Variant A — Survey Prompt</label>
               <textarea
+                id="abtest-prompt-a"
                 rows={2}
                 className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 placeholder='e.g. "Consumer attitudes toward EVs — broad questions"'
@@ -266,8 +268,9 @@ export default function SurveyABTestBuilder() {
               />
             </div>
             <div className="bg-blue-50 border-2 border-blue-100 rounded-xl p-3">
-              <label className="text-xs font-bold text-blue-700 uppercase tracking-wide block mb-1.5">Variant B — Survey Prompt</label>
+              <label htmlFor="abtest-prompt-b" className="text-xs font-bold text-blue-700 uppercase tracking-wide block mb-1.5">Variant B — Survey Prompt</label>
               <textarea
+                id="abtest-prompt-b"
                 rows={2}
                 className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 placeholder='e.g. "Consumer attitudes toward EVs — focused on price sensitivity"'

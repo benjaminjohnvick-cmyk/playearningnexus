@@ -9,7 +9,7 @@ import { Loader2, Users, TrendingUp, Target, AlertTriangle, DollarSign, BarChart
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { toast } from 'sonner';
 
-export default function AdvancedDeveloperInsights({ game, developerId }) {
+export default function AdvancedDeveloperInsights({ game, developerId: _developerId }) {
   const [insights, setInsights] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 

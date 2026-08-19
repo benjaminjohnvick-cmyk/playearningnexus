@@ -94,7 +94,7 @@ Focus on: timing optimization, demographic targeting, category selection, qualit
         }
       });
       setTips(result);
-    } catch (e) {
+    } catch {
       toast.error('Could not generate coaching tips. Try again.');
     }
     setLoading(false);

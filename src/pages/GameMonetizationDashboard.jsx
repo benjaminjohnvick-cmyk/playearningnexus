@@ -40,7 +40,7 @@ export default function GameMonetizationDashboard() {
         target_roas: 300,
       });
       setAiResult(res?.data);
-    } catch (e) {
+    } catch {
       setAiResult({ error: 'AI optimization requires active integration credits. Results will auto-run when credits reset on June 14, 2026.' });
     }
     setRunningAI(false);

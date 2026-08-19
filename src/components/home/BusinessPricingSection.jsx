@@ -190,8 +190,11 @@ export default function BusinessPricingSection() {
               <Card className={`border-2 transition-all cursor-pointer ${c.border} ${isOpen ? 'shadow-xl' : 'hover:shadow-lg'}`}>
                 {/* Summary Row */}
                 <div
+                  role="button"
+                  tabIndex={0}
                   className="p-6 flex items-start gap-4"
                   onClick={() => setExpanded(isOpen ? null : i)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(isOpen ? null : i); } }}
                 >
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${c.badge}`}>
                     <span className="text-2xl">{portal.emoji}</span>

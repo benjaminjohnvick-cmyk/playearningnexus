@@ -15,7 +15,7 @@ import { toast } from 'sonner';
  */
 const OPTION_KEYS = ['a', 'b', 'c', 'd'];
 
-export default function VerifiedSurveyTextAnswer({ survey, questions, user, startTime, getFingerprint, onDone, onCancel }) {
+export default function VerifiedSurveyTextAnswer({ survey, questions, user: _user, startTime, getFingerprint, onDone, onCancel }) {
   const [step, setStep] = useState('input');     // input | mapping | confirm | submitting | result
   const [text, setText] = useState('');
   const [transcript, setTranscript] = useState('');

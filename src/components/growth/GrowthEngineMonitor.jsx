@@ -8,7 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Zap, Twitter, Instagram, Youtube, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 
 export default function GrowthEngineMonitor() {
-  const [selectedPlatform, setSelectedPlatform] = useState('all');
+  const [_selectedPlatform, _setSelectedPlatform] = useState('all');
 
   // Fetch generated content
   const { data: generatedContent = [] } = useQuery({
@@ -18,7 +18,7 @@ export default function GrowthEngineMonitor() {
         return await base44.asServiceRole.entities.GeneratedImage.filter({
           status: { $in: ['scheduled', 'posted'] }
         }, '-created_date', 50);
-      } catch (e) {
+      } catch {
         return [];
       }
     },

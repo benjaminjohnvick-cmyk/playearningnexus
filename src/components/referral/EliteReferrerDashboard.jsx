@@ -124,7 +124,7 @@ export default function EliteReferrerDashboard({ user, referrals = [] }) {
     return true;
   });
 
-  const totalEarnings = referrals.reduce((s, r) => s + (r.total_earnings || 0), 0);
+  const _totalEarnings = referrals.reduce((s, r) => s + (r.total_earnings || 0), 0);
   const totalCommission = referrals.reduce((s, r) => s + (r.commission_earned || 0), 0);
 
   const handleNudge = async (referral) => {
@@ -143,7 +143,7 @@ export default function EliteReferrerDashboard({ user, referrals = [] }) {
 
       toast.success('✅ Nudge sent! Your referral will see a personalized notification.');
       queryClient.invalidateQueries(['referrals']);
-    } catch (e) {
+    } catch {
       toast.error('Failed to send nudge. Please try again.');
     } finally {
       setNudging(null);

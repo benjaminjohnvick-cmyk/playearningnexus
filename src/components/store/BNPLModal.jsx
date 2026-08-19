@@ -20,9 +20,9 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
   const [step, setStep] = useState('overview'); // overview | family | group | card | confirm
   const [groupMembers, setGroupMembers] = useState([]);
   const [newEmail, setNewEmail] = useState('');
-  const [paypalOrderId, setPaypalOrderId] = useState(null);
+  const [_paypalOrderId, _setPaypalOrderId] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [monthlyPayment, setMonthlyPayment] = useState(purchaseAmount || 0);
+  const [monthlyPayment, _setMonthlyPayment] = useState(purchaseAmount || 0);
 
   const { data: requirement = {} } = useQuery({
     queryKey: ['bnplRequirement', monthlyPayment],
@@ -34,7 +34,7 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
 
   const groupSize = groupMembers.length + 1; // +1 for primary user
   const totalCredit = groupSize * INDIVIDUAL_CREDIT;
-  const monthlyGroupEarn = groupSize * DAILY_EARN_PER_PERSON * 30;
+  const _monthlyGroupEarn = groupSize * DAILY_EARN_PER_PERSON * 30;
   const dailyGroupEarn = groupSize * DAILY_EARN_PER_PERSON;
 
   const addMember = () => {
@@ -45,7 +45,7 @@ export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
     setNewEmail('');
   };
 
-  const handleActivate = async (ppOrderId) => {
+  const handleActivate = async (_ppOrderId) => {
     setSaving(true);
     try {
       // Save BNPL credit to user — issued as site credit

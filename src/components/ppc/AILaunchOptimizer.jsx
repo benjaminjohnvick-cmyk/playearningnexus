@@ -242,9 +242,9 @@ export default function AILaunchOptimizer({ user, onWindowSelected }) {
         <CardContent className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Target Demographic *</label>
+              <label htmlFor="ppc-demographic" className="text-xs font-semibold text-gray-600 block mb-1">Target Demographic *</label>
               <Select value={demographic} onValueChange={setDemographic}>
-                <SelectTrigger className="border-2 h-9 text-sm">
+                <SelectTrigger id="ppc-demographic" className="border-2 h-9 text-sm">
                   <SelectValue placeholder="Select demographic…" />
                 </SelectTrigger>
                 <SelectContent>
@@ -253,9 +253,9 @@ export default function AILaunchOptimizer({ user, onWindowSelected }) {
               </Select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Survey Category</label>
+              <label htmlFor="ppc-category" className="text-xs font-semibold text-gray-600 block mb-1">Survey Category</label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="border-2 h-9 text-sm">
+                <SelectTrigger id="ppc-category" className="border-2 h-9 text-sm">
                   <SelectValue placeholder="Select category…" />
                 </SelectTrigger>
                 <SelectContent>
@@ -267,9 +267,9 @@ export default function AILaunchOptimizer({ user, onWindowSelected }) {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Specific Survey (optional)</label>
+              <label htmlFor="ppc-survey" className="text-xs font-semibold text-gray-600 block mb-1">Specific Survey (optional)</label>
               <Select value={surveyId} onValueChange={setSurveyId}>
-                <SelectTrigger className="border-2 h-9 text-sm">
+                <SelectTrigger id="ppc-survey" className="border-2 h-9 text-sm">
                   <SelectValue placeholder="Any survey (use all data)…" />
                 </SelectTrigger>
                 <SelectContent>
@@ -279,9 +279,9 @@ export default function AILaunchOptimizer({ user, onWindowSelected }) {
               </Select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Number of Windows</label>
+              <label htmlFor="ppc-num-windows" className="text-xs font-semibold text-gray-600 block mb-1">Number of Windows</label>
               <Select value={String(numWindows)} onValueChange={v => setNumWindows(Number(v))}>
-                <SelectTrigger className="border-2 h-9 text-sm">
+                <SelectTrigger id="ppc-num-windows" className="border-2 h-9 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -293,7 +293,7 @@ export default function AILaunchOptimizer({ user, onWindowSelected }) {
 
           {/* Region selector */}
           <div>
-            <label className="text-xs font-semibold text-gray-600 block mb-2">Target Regions *</label>
+            <span className="text-xs font-semibold text-gray-600 block mb-2">Target Regions *</span>
             <div className="flex flex-wrap gap-2">
               {REGIONS.map(r => {
                 const active = selectedRegions.includes(r.id);

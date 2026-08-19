@@ -130,7 +130,7 @@ function BidModal({ slot, user, games, onClose, onSuccess }) {
       });
       toast.success(`Bid of $${bidAmount} submitted! We'll review and confirm within 24h.`);
       onSuccess();
-    } catch (e) {
+    } catch {
       toast.error('Failed to submit bid. Please try again.');
     } finally {
       setSubmitting(false);
@@ -154,11 +154,12 @@ function BidModal({ slot, user, games, onClose, onSuccess }) {
         <div className="p-5 space-y-4">
           {/* Game Select */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-1.5 block">Select Game to Promote</label>
+            <label htmlFor="ad-select-game" className="text-sm font-medium text-gray-700 mb-1.5 block">Select Game to Promote</label>
             {games.length === 0 ? (
               <p className="text-sm text-red-500">No approved games found. Submit a game first.</p>
             ) : (
               <select
+                id="ad-select-game"
                 value={selectedGame}
                 onChange={e => setSelectedGame(e.target.value)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
@@ -170,10 +171,11 @@ function BidModal({ slot, user, games, onClose, onSuccess }) {
 
           {/* Bid Amount */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-1.5 block">Your Bid (USD)</label>
+            <label htmlFor="ad-bid-amount" className="text-sm font-medium text-gray-700 mb-1.5 block">Your Bid (USD)</label>
             <div className="flex items-center gap-2">
               <span className="text-gray-500 font-medium">$</span>
               <Input
+                id="ad-bid-amount"
                 type="number"
                 value={bidAmount}
                 onChange={e => setBidAmount(Number(e.target.value))}
@@ -235,7 +237,7 @@ export default function AdMarketplace() {
         setGames(g);
         const bids = await base44.entities.AdListing.filter({ developer_id: u.id }, '-created_date', 20);
         setMyBids(bids);
-      } catch (e) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };

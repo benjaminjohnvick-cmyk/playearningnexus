@@ -62,7 +62,7 @@ export default function SurveyQualityRewards({ user, stats = {} }) {
     : 100;
 
   const earnedBadges = QUALITY_BADGES.filter(b => b.threshold(stats));
-  const lockedBadges = QUALITY_BADGES.filter(b => !b.threshold(stats));
+  const _lockedBadges = QUALITY_BADGES.filter(b => !b.threshold(stats));
   const displayBadges = showAllBadges ? QUALITY_BADGES : QUALITY_BADGES.slice(0, 6);
 
   const financialPerks = [

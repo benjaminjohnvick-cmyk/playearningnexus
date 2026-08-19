@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 const CTR_THRESHOLD = 2.0; // percent
 const BUDGET_THRESHOLD = 0.80; // 80%
 
-function computeAlerts(ads, adBalance, budgetLimit) {
+function computeAlerts(ads, _adBalance, _budgetLimit) {
   const alerts = [];
 
   ads.forEach(ad => {

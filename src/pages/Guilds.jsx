@@ -26,7 +26,7 @@ export default function GuildsPage() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -55,7 +55,7 @@ export default function GuildsPage() {
     enabled: !!selectedGuild
   });
 
-  const { data: guildMessages = [] } = useQuery({
+  const { data: _guildMessages = [] } = useQuery({
     queryKey: ['guildMessages', selectedGuild?.id],
     queryFn: () => base44.entities.ChatMessage.filter({ 
       guild_id: selectedGuild.id 
@@ -112,7 +112,7 @@ export default function GuildsPage() {
     }
   });
 
-  const handleSendMessage = (e) => {
+  const _handleSendMessage = (e) => {
     e.preventDefault();
     if (chatMessage.trim()) {
       sendMessageMutation.mutate();
@@ -151,16 +151,18 @@ export default function GuildsPage() {
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Guild Name</label>
+                  <label htmlFor="guild-name" className="text-sm font-medium mb-2 block">Guild Name</label>
                   <Input
+                    id="guild-name"
                     placeholder="Enter guild name"
                     value={newGuildData.guild_name}
                     onChange={(e) => setNewGuildData({ ...newGuildData, guild_name: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Description</label>
+                  <label htmlFor="guild-description" className="text-sm font-medium mb-2 block">Description</label>
                   <Textarea
+                    id="guild-description"
                     placeholder="What's your guild about?"
                     value={newGuildData.description}
                     onChange={(e) => setNewGuildData({ ...newGuildData, description: e.target.value })}

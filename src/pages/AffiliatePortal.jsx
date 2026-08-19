@@ -7,7 +7,7 @@ import { TrendingUp, Zap, Target, Award } from 'lucide-react';
 
 export default function AffiliatePortal() {
   const [user, setUser] = useState(null);
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => setUser(null));
@@ -30,7 +30,7 @@ export default function AffiliatePortal() {
   });
 
   // Fetch optimization suggestions
-  const { data: optimization = null, isLoading: optimizationLoading } = useQuery({
+  const { data: optimization = null, isLoading: _optimizationLoading } = useQuery({
     queryKey: ['affiliateOptimization'],
     queryFn: async () => {
       const response = await base44.functions.invoke('aiAffiliateOptimizationEngine', {});

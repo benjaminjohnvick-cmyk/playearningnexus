@@ -107,7 +107,7 @@ function resizeAndCropImage(sourceImg, targetW, targetH, mimeType) {
   });
 }
 
-function FormatResult({ fmt, blob, platformColor }) {
+function FormatResult({ fmt, blob, platformColor: _platformColor }) {
   const [url, setUrl] = useState(null);
 
   React.useEffect(() => {
@@ -265,10 +265,13 @@ Keep each point concise (1 sentence). Return as JSON.`,
 
       {/* Upload zone */}
       <div
+        role="button"
+        tabIndex={0}
         onDrop={handleDrop}
         onDragOver={e => e.preventDefault()}
         className="border-2 border-dashed border-gray-700 hover:border-yellow-500/50 rounded-2xl p-8 text-center cursor-pointer transition-all"
         onClick={() => fileInputRef.current?.click()}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current?.click(); } }}
       >
         <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
           onChange={e => handleFileSelect(e.target.files?.[0])} />

@@ -10,7 +10,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 const PLATFORMS = ['Facebook', 'Instagram', 'TikTok', 'YouTube', 'X/Twitter', 'Snapchat'];
 
 // Simulated live tracking data (in production this comes from real link-tracking backend)
-function generateTrackingData(ads) {
+function generateTrackingData(_ads) {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   return days.map(day => ({
     day,
@@ -32,7 +32,7 @@ function generatePlatformData() {
   }));
 }
 
-export default function PartELinkTracking({ ads = [], userId }) {
+export default function PartELinkTracking({ ads = [], userId: _userId }) {
   const [trackingData, setTrackingData] = useState([]);
   const [platformData, setPlatformData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -84,7 +84,7 @@ Campaign runs until sales = 2× ad budget.
 Provide a brief, actionable 2-3 sentence analysis of campaign performance, which platform is performing best, and one specific optimization recommendation. Be direct and data-driven.`,
       });
       setAiInsight(result);
-    } catch (e) {
+    } catch {
       toast.error('AI analysis failed.');
     }
     setAiLoading(false);

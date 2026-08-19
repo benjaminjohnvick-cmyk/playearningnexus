@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
-export default function PerformanceAnalyticsDashboard({ game, developer }) {
+export default function PerformanceAnalyticsDashboard({ game, developer: _developer }) {
   const [generatingInsights, setGeneratingInsights] = useState(false);
   const [aiInsights, setAiInsights] = useState(null);
 
@@ -192,7 +192,7 @@ Provide specific, actionable recommendations for:
       
       setAiInsights(result);
       toast.success('AI insights generated!');
-    } catch (error) {
+    } catch {
       toast.error('Failed to generate insights');
     }
     setGeneratingInsights(false);

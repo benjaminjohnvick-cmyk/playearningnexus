@@ -112,8 +112,9 @@ export default function SurveyDisputeForm({ user }) {
 
             <div className="grid sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">Survey Name *</label>
+                <label htmlFor="dispute-survey-name" className="text-xs font-semibold text-gray-600 mb-1 block">Survey Name *</label>
                 <Input
+                  id="dispute-survey-name"
                   placeholder="e.g. Consumer Preferences Study"
                   value={surveyName}
                   onChange={e => setSurveyName(e.target.value)}
@@ -121,8 +122,9 @@ export default function SurveyDisputeForm({ user }) {
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">Date Completed</label>
+                <label htmlFor="dispute-survey-date" className="text-xs font-semibold text-gray-600 mb-1 block">Date Completed</label>
                 <Input
+                  id="dispute-survey-date"
                   type="date"
                   value={surveyDate}
                   onChange={e => setSurveyDate(e.target.value)}
@@ -132,10 +134,11 @@ export default function SurveyDisputeForm({ user }) {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-gray-600 mb-1 block">Expected Reward ($)</label>
+              <label htmlFor="dispute-expected-reward" className="text-xs font-semibold text-gray-600 mb-1 block">Expected Reward ($)</label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                 <Input
+                  id="dispute-expected-reward"
                   type="number"
                   placeholder="0.00"
                   value={expectedReward}
@@ -148,8 +151,9 @@ export default function SurveyDisputeForm({ user }) {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-gray-600 mb-1 block">Describe the Issue *</label>
+              <label htmlFor="dispute-description" className="text-xs font-semibold text-gray-600 mb-1 block">Describe the Issue *</label>
               <textarea
+                id="dispute-description"
                 placeholder="Explain what happened — e.g. 'I completed the full survey but was not credited. The survey was about household products and took approximately 12 minutes.'"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
@@ -160,7 +164,7 @@ export default function SurveyDisputeForm({ user }) {
 
             {/* Screenshot upload */}
             <div>
-              <label className="text-xs font-semibold text-gray-600 mb-1 block">Upload Screenshot / Proof</label>
+              <span className="text-xs font-semibold text-gray-600 mb-1 block">Upload Screenshot / Proof</span>
               {screenshotUrl ? (
                 <div className="flex items-center gap-3 p-3 bg-green-50 border-2 border-green-200 rounded-xl">
                   <img src={screenshotUrl} alt="proof" className="w-16 h-12 object-cover rounded-lg border" />

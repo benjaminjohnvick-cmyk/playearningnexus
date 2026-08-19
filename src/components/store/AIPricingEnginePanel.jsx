@@ -119,7 +119,7 @@ export default function AIPricingEnginePanel({ engineData, onOrderBestDeal, load
       <div className="divide-y max-h-72 overflow-y-auto">
         {listings.map((l, i) => {
           const isRec = l.vendor === recommended.vendor;
-          const savings = (price_range_high || 0) - (l.total_landed_cost || l.price || 0);
+          const _savings = (price_range_high || 0) - (l.total_landed_cost || l.price || 0);
           return (
             <div key={i} className={`flex items-center gap-3 px-4 py-2.5 text-sm ${isRec ? 'bg-green-50/60' : ''}`}>
               <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black ${isRec ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-500'}`}>

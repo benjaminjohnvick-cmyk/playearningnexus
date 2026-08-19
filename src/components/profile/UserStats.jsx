@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { TrendingUp, DollarSign, FileText, Gamepad2 } from 'lucide-react';
 import moment from 'moment';
 
-export default function UserStats({ user, transactions, ratings, achievements }) {
+export default function UserStats({ user, transactions, ratings, achievements: _achievements }) {
   // Calculate stats
   const surveyTransactions = transactions.filter(t => t.transaction_type === 'survey_completion');
   const gamesPurchased = transactions.filter(t => t.transaction_type === 'game_purchase').length;

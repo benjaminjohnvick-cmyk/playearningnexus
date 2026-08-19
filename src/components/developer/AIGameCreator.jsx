@@ -48,7 +48,7 @@ export default function AIGameCreator() {
 
   const toggleSection = (key) => setExpandedSection(s => s === key ? null : key);
 
-  const scoreColor = (s) => s >= 80 ? 'text-green-600' : s >= 60 ? 'text-yellow-600' : 'text-red-600';
+  const _scoreColor = (s) => s >= 80 ? 'text-green-600' : s >= 60 ? 'text-yellow-600' : 'text-red-600';
 
   return (
     <Card className="border-0 shadow-xl">

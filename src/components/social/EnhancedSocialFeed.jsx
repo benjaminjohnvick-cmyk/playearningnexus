@@ -116,7 +116,7 @@ export default function EnhancedSocialFeed({ user }) {
       const mediaType = file.type.startsWith('image/') ? 'image' : 'video';
       setNewPost({ ...newPost, media_url: file_url, media_type: mediaType });
       toast.success('Media uploaded!');
-    } catch (error) {
+    } catch {
       toast.error('Upload failed');
     }
   };
@@ -142,7 +142,7 @@ export default function EnhancedSocialFeed({ user }) {
         <CardContent>
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
-              <label>
+              <label aria-label="Upload photo or video">
                 <input type="file" accept="image/*,video/*" onChange={handleMediaUpload} className="hidden" />
                 <Button size="sm" variant="outline" type="button" asChild>
                   <span>

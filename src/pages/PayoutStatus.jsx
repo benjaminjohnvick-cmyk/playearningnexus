@@ -279,7 +279,7 @@ export default function PayoutStatus() {
       await base44.functions.invoke('processAutomatedPayouts', {});
       await qc.invalidateQueries(['payouts-status']);
       toast.success('Payout automation run complete!');
-    } catch (e) {
+    } catch {
       toast.error('Automation check failed');
     } finally {
       setRunning(false);

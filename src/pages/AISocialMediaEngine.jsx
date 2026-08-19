@@ -85,7 +85,7 @@ Make each one feel native to its platform. Mention Get Goods Gratis (Free), earn
       });
       setScripts(result);
       toast.success('✅ AI scripts generated for all platforms!');
-    } catch (e) {
+    } catch {
       toast.error('Script generation failed');
     }
     setGenerating(false);
@@ -108,7 +108,7 @@ Make each one feel native to its platform. Mention Get Goods Gratis (Free), earn
 
       setScheduledPosts(prev => [...prev, platform]);
       toast.success(`🚀 Scheduled for ${PLATFORM_CONFIG[platform]?.label}!`);
-    } catch (e) {
+    } catch {
       toast.error('Scheduling failed. Try again.');
     }
     setPublishing(null);
@@ -181,7 +181,10 @@ Make each one feel native to its platform. Mention Get Goods Gratis (Free), earn
               <div className="flex gap-3 overflow-x-auto pb-2">
                 {topPosts.slice(0, 3).map((post, i) => (
                   <div key={i}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setSelectedTemplate(post)}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedTemplate(post); } }}
                     className={`flex-shrink-0 w-64 bg-white rounded-xl border-2 p-3 cursor-pointer transition-all ${selectedTemplate?.id === post.id ? 'border-yellow-500 shadow-md' : 'border-yellow-200 hover:border-yellow-400'}`}>
                     <Badge className="bg-yellow-100 text-yellow-800 text-xs mb-2">{post.content_type || 'top post'}</Badge>
                     <p className="text-xs text-gray-700 line-clamp-3">{post.base_content}</p>

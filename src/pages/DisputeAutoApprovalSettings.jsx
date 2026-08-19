@@ -92,8 +92,9 @@ export default function DisputeAutoApprovalSettings() {
           <Card>
             <CardHeader><CardTitle className="text-lg">Auto-Approval Status</CardTitle></CardHeader>
             <CardContent>
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label htmlFor="auto-approve-enabled" className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
+                  id="auto-approve-enabled"
                   checked={settings.auto_approve_enabled}
                   onCheckedChange={checked => setSettings(prev => ({ ...prev, auto_approve_enabled: checked }))}
                 />

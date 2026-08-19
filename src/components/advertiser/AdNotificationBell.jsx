@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const BUDGET_WARN_THRESHOLD = 10; // dollars
 const BUDGET_CRITICAL_THRESHOLD = 3;
 
-function buildNotifications(ads, adBalance, prevAdsRef) {
+function buildNotifications(ads, adBalance, _prevAdsRef) {
   const notes = [];
   const now = Date.now();
 

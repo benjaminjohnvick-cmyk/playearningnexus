@@ -117,8 +117,11 @@ function DisputeAdminRow({ dispute, onResolve, onAIReview }) {
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden">
       <div
+        role="button"
+        tabIndex={0}
         className="flex items-center gap-3 px-4 py-3 bg-white cursor-pointer hover:bg-gray-50"
         onClick={() => setExpanded(e => !e)}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(v => !v); } }}
       >
         <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
         <div className="flex-1 min-w-0">
@@ -186,8 +189,9 @@ function DisputeAdminRow({ dispute, onResolve, onAIReview }) {
           {/* Manual override controls */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-gray-500 block mb-1">Resolved Amount ($)</label>
+              <label htmlFor="dispute-resolved-amount" className="text-xs font-medium text-gray-500 block mb-1">Resolved Amount ($)</label>
               <input
+                id="dispute-resolved-amount"
                 type="number"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
@@ -195,8 +199,9 @@ function DisputeAdminRow({ dispute, onResolve, onAIReview }) {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 block mb-1">Override Notes</label>
+              <label htmlFor="dispute-override-notes" className="text-xs font-medium text-gray-500 block mb-1">Override Notes</label>
               <input
+                id="dispute-override-notes"
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"

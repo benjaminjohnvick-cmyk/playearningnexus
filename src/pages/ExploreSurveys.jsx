@@ -154,7 +154,7 @@ function ClaimStatusTracker({ claims }) {
 
 // ─── Survey Card (list view) ───────────────────────────────────────────────────
 
-function SurveyCard({ survey, isUnlocked, onSelect, onClaim, isClaiming, respondentProfile, trustLocked }) {
+function SurveyCard({ survey, isUnlocked, onSelect, onClaim: _onClaim, isClaiming: _isClaiming, respondentProfile, trustLocked }) {
   const color = CATEGORY_COLORS[survey.category] || '#6366f1';
   const available = (!survey.locked || isUnlocked) && !trustLocked;
   const CatIcon = CATEGORIES.find(c => c.id === survey.category)?.icon || Globe;
@@ -162,7 +162,10 @@ function SurveyCard({ survey, isUnlocked, onSelect, onClaim, isClaiming, respond
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={() => onSelect(survey)}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(survey); } }}
       className={`flex items-center gap-3 rounded-xl p-3 border-2 cursor-pointer transition-all hover:shadow-md
         ${available ? 'border-gray-100 hover:border-green-300 bg-white' : 'border-gray-100 bg-gray-50/50'}
         ${survey.hot && available ? 'ring-1 ring-orange-300' : ''}`}
@@ -567,7 +570,10 @@ export default function ExploreSurveys() {
                       const isTrustLocked = getTrustLocked(h);
                       return (
                         <div key={h.id}
+                          role="button"
+                          tabIndex={0}
                           onClick={() => !isTrustLocked && setSelected({ ...h, locked: !isAvail })}
+                          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!isTrustLocked) setSelected({ ...h, locked: !isAvail }); } }}
                           className={`flex items-center gap-3 rounded-lg p-2 -mx-2 transition-colors ${isTrustLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'}`}>
                           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm"
                             style={{ background: isTrustLocked ? '#9ca3af' : color }}>

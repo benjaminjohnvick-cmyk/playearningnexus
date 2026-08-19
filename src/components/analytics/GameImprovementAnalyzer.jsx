@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Lightbulb, AlertTriangle, Wrench, Sparkles, TrendingUp, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function GameImprovementAnalyzer({ businessClient, games }) {
+export default function GameImprovementAnalyzer({ businessClient: _businessClient, games }) {
   const [selectedGame, setSelectedGame] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [recommendations, setRecommendations] = useState(null);

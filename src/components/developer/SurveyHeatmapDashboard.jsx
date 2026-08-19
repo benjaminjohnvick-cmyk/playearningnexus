@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 const priorityColor = { high: 'bg-red-100 text-red-700 border-red-300', medium: 'bg-yellow-100 text-yellow-700 border-yellow-300', low: 'bg-blue-100 text-blue-700 border-blue-300' };
 
-export default function SurveyHeatmapDashboard({ surveyId, gameTitle }) {
+export default function SurveyHeatmapDashboard({ surveyId, gameTitle: _gameTitle }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
 

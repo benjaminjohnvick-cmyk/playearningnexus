@@ -304,7 +304,7 @@ export default function EarningsSimulatorPage() {
                 <CardHeader><CardTitle className="text-white text-base">🎯 Set Your Target</CardTitle></CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <label className="text-xs text-slate-400 block mb-2">Target amount ($)</label>
+                    <span className="text-xs text-slate-400 block mb-2">Target amount ($)</span>
                     <SliderRow icon={Target} label="Goal" value={targetGoal} min={50} max={5000} step={50} onChange={setTargetGoal} color="text-yellow-400" format={v => `$${v}`} />
                   </div>
 

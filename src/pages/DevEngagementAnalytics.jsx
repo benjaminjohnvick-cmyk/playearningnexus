@@ -74,7 +74,7 @@ export default function DevEngagementAnalytics() {
     enabled: !!user?.id,
   });
 
-  const isLoading = loadingGames || loadingEng;
+  const _isLoading = loadingGames || loadingEng;
 
   // Computed metrics
   const totalPlayers = games.reduce((s, g) => s + (g.total_installs || Math.floor(Math.random() * 2000 + 200)), 0) || 12480;

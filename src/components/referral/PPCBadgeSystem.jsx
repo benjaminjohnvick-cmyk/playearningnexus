@@ -40,7 +40,7 @@ function calcStreak(dailyEarnings) {
   return streak;
 }
 
-export default function PPCBadgeSystem({ user, referrals = [], currentTier = 1, dailyEarnings = [] }) {
+export default function PPCBadgeSystem({ user: _user, referrals = [], currentTier = 1, dailyEarnings = [] }) {
   const streak = calcStreak(dailyEarnings);
   const activeRefs = referrals.filter(r => r.status === 'active').length;
   const commission = referrals.reduce((s, r) => s + (r.commission_earned || 0), 0);

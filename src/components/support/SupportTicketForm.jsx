@@ -33,7 +33,7 @@ export default function SupportTicketForm({ user, onSuccess }) {
         user_name: user.full_name,
       });
       setAiResponse(res.data?.data || null);
-    } catch (e) {
+    } catch {
       // silently fail, don't block ticket submission
     } finally {
       setGeneratingAI(false);
@@ -78,7 +78,7 @@ User ID: ${user.id}
       toast.success('Support ticket submitted! Generating AI response...');
       setFormData({ category: '', subject: '', description: '' });
       if (onSuccess) onSuccess();
-    } catch (error) {
+    } catch {
       toast.error('Failed to submit ticket');
     } finally {
       setSubmitting(false);
@@ -94,9 +94,9 @@ User ID: ${user.id}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-sm font-medium mb-2 block">Category</label>
+          <label htmlFor="support-category" className="text-sm font-medium mb-2 block">Category</label>
           <Select value={formData.category} onValueChange={(val) => setFormData({...formData, category: val})}>
-            <SelectTrigger>
+            <SelectTrigger id="support-category">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
@@ -113,8 +113,9 @@ User ID: ${user.id}
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-2 block">Subject</label>
+          <label htmlFor="support-subject" className="text-sm font-medium mb-2 block">Subject</label>
           <Input
+            id="support-subject"
             value={formData.subject}
             onChange={(e) => setFormData({...formData, subject: e.target.value})}
             placeholder="Brief description of your issue"
@@ -123,8 +124,9 @@ User ID: ${user.id}
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-2 block">Description</label>
+          <label htmlFor="support-description" className="text-sm font-medium mb-2 block">Description</label>
           <Textarea
+            id="support-description"
             value={formData.description}
             onChange={(e) => setFormData({...formData, description: e.target.value})}
             placeholder="Please provide detailed information about your issue"

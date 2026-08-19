@@ -19,7 +19,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
   const [step, setStep] = useState('address'); // address | review | card | done
   const [submitting, setSubmitting] = useState(false);
   const [oneClickSubmitting, setOneClickSubmitting] = useState(false);
-  const [paypalOrderId, setPaypalOrderId] = useState(null);
+  const [_paypalOrderId, setPaypalOrderId] = useState(null);
   const [payMethod, setPayMethod] = useState('survey_balance');
   const [showBNPL, setShowBNPL] = useState(false);
   const [address, setAddress] = useState({
@@ -43,7 +43,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
   const basePrice = isBusinessUser ? rawPrice : rawPrice * 1.1;
   // Single 10% markup applied ONCE at item purchase (already in basePrice). No extra card
   // surcharge — paying by card costs the same as paying by store credit.
-  const cardSurcharge = 0;
+  const _cardSurcharge = 0;
   const cardPrice = basePrice;
   const markupLabel = isBusinessUser ? '(no platform fee — business account)' : '(includes 10% platform fee)';
   const withdrawalFeeReserve = basePrice * 0.10;

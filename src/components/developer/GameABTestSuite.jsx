@@ -129,7 +129,7 @@ Return a JSON with this exact schema:
       setAbTest(updated);
       if (gameId) localStorage.setItem(`ab_test_${gameId}`, JSON.stringify(updated));
       toast.success('Metrics refreshed!');
-    } catch (e) {
+    } catch {
       toast.error('Failed to refresh');
     }
     setLoading(false);

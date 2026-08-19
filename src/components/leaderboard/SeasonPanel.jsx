@@ -41,7 +41,7 @@ export default function SeasonPanel({ currentUserId }) {
   const now = new Date();
   const seasonEnd = endOfMonth(now);
 
-  const { data: seasons = [], isLoading } = useQuery({
+  const { data: seasons = [], isLoading: _isLoading } = useQuery({
     queryKey: ['seasons'],
     queryFn: () => base44.entities.Season.filter({ status: 'active' }),
     staleTime: 60000,
@@ -67,7 +67,7 @@ export default function SeasonPanel({ currentUserId }) {
   const myRank = rankings.findIndex(r => r.user_id === currentUserId);
   const myEntry = rankings[myRank];
 
-  const createSeasonMutation = useMutation({
+  const _createSeasonMutation = useMutation({
     mutationFn: () => base44.entities.Season.create({
       season_number: (seasons.length || 0) + 1,
       name: `Season ${(seasons.length || 0) + 1}: ${['Genesis', 'Ascent', 'Eclipse', 'Nova', 'Apex'][seasons.length % 5]}`,

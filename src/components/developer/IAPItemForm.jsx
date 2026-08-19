@@ -34,7 +34,7 @@ export default function IAPItemForm({ item, games, onClose, onSuccess }) {
       toast.success(item ? 'Item updated!' : 'Item created!');
       onSuccess?.();
     },
-    onError: (error) => {
+    onError: (_error) => {
       toast.error('Failed to save item');
     }
   });

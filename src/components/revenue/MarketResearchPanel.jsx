@@ -7,10 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Download, Lock, Sparkles, TrendingUp, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function MarketResearchPanel({ userTier = 'free' }) {
+export default function MarketResearchPanel({ userTier: _userTier = 'free' }) {
   const [purchasing, setPurchasing] = useState(null);
 
-  const { data: reports = [], isLoading } = useQuery({
+  const { data: reports = [], isLoading: _isLoading } = useQuery({
     queryKey: ['marketResearchReports'],
     queryFn: () => base44.entities.MarketResearchReport.filter({ status: 'available' }),
   });

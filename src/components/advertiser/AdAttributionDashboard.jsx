@@ -79,7 +79,7 @@ function LiftScoreBadge({ score }) {
 
 export default function AdAttributionDashboard({ ads }) {
   const [selectedAd, setSelectedAd] = useState(null);
-  const [tick, setTick] = useState(0);
+  const [_tick, setTick] = useState(0);
 
   useEffect(() => {
     const iv = setInterval(() => setTick(t => t + 1), 12000);

@@ -37,8 +37,8 @@ export default function CompetitiveMonitoringDashboard() {
   const handleRunAnalysis = async () => {
     setRunning(true);
     try {
-      const response = await base44.functions.invoke('aiCompetitiveIntelligenceEngine', {});
-      const implResponse = await base44.functions.invoke('aiAutomaticFeatureImplementation', {});
+      const _response = await base44.functions.invoke('aiCompetitiveIntelligenceEngine', {});
+      const _implResponse = await base44.functions.invoke('aiAutomaticFeatureImplementation', {});
       
       setLastRun(new Date().toLocaleTimeString());
       toast.success('Competitive analysis complete! Generating implementation plan...');

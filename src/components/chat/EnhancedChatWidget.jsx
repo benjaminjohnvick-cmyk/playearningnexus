@@ -98,7 +98,7 @@ export default function EnhancedChatWidget({ recipientId, recipientName, current
 
       setAttachments([...attachments, ...uploadedFiles]);
       toast.success(`${files.length} file(s) uploaded`);
-    } catch (error) {
+    } catch {
       toast.error('Failed to upload files');
     } finally {
       setIsUploading(false);

@@ -18,7 +18,7 @@ const OBJ_ICONS = {
   app_installs: '📲', survey_completions: '📋'
 };
 
-export default function CampaignList({ campaigns, isLoading, selectedCampaign, onSelect, onRefresh }) {
+export default function CampaignList({ campaigns, isLoading, selectedCampaign, onSelect, onRefresh: _onRefresh }) {
   const [updating, setUpdating] = useState(null);
   const queryClient = useQueryClient();
 
@@ -60,7 +60,10 @@ export default function CampaignList({ campaigns, isLoading, selectedCampaign, o
         return (
           <div
             key={campaign.id}
+            role="button"
+            tabIndex={0}
             onClick={() => onSelect(campaign)}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(campaign); } }}
             className={`bg-slate-800/60 border rounded-xl p-4 cursor-pointer transition-all hover:border-purple-500/50 ${isSelected ? 'border-purple-500 bg-purple-900/20' : 'border-slate-700'}`}
           >
             <div className="flex flex-col md:flex-row md:items-center gap-3">
@@ -103,7 +106,7 @@ export default function CampaignList({ campaigns, isLoading, selectedCampaign, o
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center gap-2" role="presentation" onClick={e => e.stopPropagation()}>
                 <Button size="icon" variant="ghost"
                   onClick={() => toggleStatus(campaign)}
                   disabled={updating === campaign.id || campaign.status === 'completed'}

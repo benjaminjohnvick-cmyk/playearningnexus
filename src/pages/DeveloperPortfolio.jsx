@@ -20,7 +20,7 @@ export default function DeveloperPortfolio() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         console.error('Not authenticated');
       }
     };

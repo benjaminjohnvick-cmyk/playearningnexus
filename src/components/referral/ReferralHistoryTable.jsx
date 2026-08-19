@@ -31,7 +31,7 @@ export default function ReferralHistoryTable({ user }) {
   const totalCommission = referrals.reduce((s, r) => s + (r.commission_earned || 0), 0);
   const verified = referrals.filter(r => r.status === 'completed').length;
   const active = referrals.filter(r => r.status === 'active').length;
-  const pending = referrals.filter(r => r.status === 'pending').length;
+  const _pending = referrals.filter(r => r.status === 'pending').length;
 
   return (
     <Card>

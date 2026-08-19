@@ -40,8 +40,8 @@ function CaptionModal({ asset, onClose }) {
   const copyCaption = (text) => navigator.clipboard.writeText(text);
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" role="button" tabIndex={0} onClick={onClose} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}>
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6" role="presentation" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">AI Captions — {asset.title}</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-xl">×</button>
@@ -89,8 +89,8 @@ function UploadModal({ onClose, user }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl max-w-lg w-full p-6" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" role="button" tabIndex={0} onClick={onClose} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}>
+      <div className="bg-white rounded-2xl max-w-lg w-full p-6" role="presentation" onClick={e => e.stopPropagation()}>
         <h2 className="text-xl font-bold mb-4">Upload Marketing Asset</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <Input placeholder="Asset title" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} required />
@@ -128,7 +128,7 @@ function UploadModal({ onClose, user }) {
 }
 
 export default function MarketingAssetRepository() {
-  const { user } = useQuery({ queryKey: ['me'], queryFn: () => base44.auth.me() }).data ? { data: null } : { data: null };
+  const { user: _user } = useQuery({ queryKey: ['me'], queryFn: () => base44.auth.me() }).data ? { data: null } : { data: null };
   const [me, setMe] = useState(null);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');

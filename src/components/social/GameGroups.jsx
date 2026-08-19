@@ -144,16 +144,18 @@ export default function GameGroups({ user }) {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Group Name</label>
+              <label htmlFor="group-name" className="text-sm font-medium mb-2 block">Group Name</label>
               <Input
+                id="group-name"
                 placeholder="Puzzle Masters"
                 value={newGroup.name}
                 onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Description</label>
+              <label htmlFor="group-description" className="text-sm font-medium mb-2 block">Description</label>
               <Textarea
+                id="group-description"
                 placeholder="A group for puzzle game enthusiasts..."
                 value={newGroup.description}
                 onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })}

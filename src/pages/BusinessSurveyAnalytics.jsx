@@ -33,7 +33,7 @@ export default function BusinessSurveyAnalytics() {
 
   // Aggregate stats across all surveys
   const totalResponses = surveys.reduce((s, sv) => s + (sv.responses_count || 0), 0);
-  const totalSpent = surveys.reduce((s, sv) => s + (sv.total_spent || 0), 0);
+  const _totalSpent = surveys.reduce((s, sv) => s + (sv.total_spent || 0), 0);
   const avgQuality = surveys.length > 0
     ? Math.round(surveys.filter(s => s.avg_quality_score).reduce((s, sv) => s + sv.avg_quality_score, 0) / Math.max(1, surveys.filter(s => s.avg_quality_score).length))
     : 0;

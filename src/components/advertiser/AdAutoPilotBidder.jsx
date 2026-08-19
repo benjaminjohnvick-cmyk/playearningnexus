@@ -32,7 +32,7 @@ function getCompetitorBids(tick) {
 
 const LOG_MAX = 8;
 
-export default function AdAutoPilotBidder({ ads, adBalance, onRefresh }) {
+export default function AdAutoPilotBidder({ ads, adBalance: _adBalance, onRefresh }) {
   const [enabled, setEnabled] = useState({});           // adId -> bool
   const [targetTiers, setTargetTiers] = useState({});   // adId -> tier
   const [currentBids, setCurrentBids] = useState({});   // adId -> bid

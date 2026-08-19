@@ -32,7 +32,7 @@ export default function GameStorePanel() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         console.error('Not authenticated');
       }
     };
@@ -96,7 +96,7 @@ export default function GameStorePanel() {
 
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       toast.success('Survey payment initiated! Complete surveys to unlock your game.');
-    } catch (error) {
+    } catch {
       toast.error('Failed to initiate survey payment');
     }
   };
@@ -298,7 +298,7 @@ export default function GameStorePanel() {
   );
 }
 
-function GameStoreCard({ game, index, user, ratings, isRecommended, onPurchase }) {
+function GameStoreCard({ game, index, user: _user, ratings, isRecommended, onPurchase }) {
   const gameRatings = ratings.filter(r => r.game_id === game.id);
   const avgRating = gameRatings.length > 0
     ? gameRatings.reduce((sum, r) => sum + r.rating, 0) / gameRatings.length

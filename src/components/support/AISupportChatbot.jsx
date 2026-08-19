@@ -43,7 +43,7 @@ export default function AISupportChatbot({ user, isOpen, onClose, initialMessage
   const [inputMessage, setInputMessage] = useState('');
   const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef(null);
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
 
   // Initialize conversation
   useEffect(() => {
@@ -220,7 +220,7 @@ Provide a helpful, friendly response. If the issue seems complex or requires hum
         };
         setMessages(prev => [...prev, confirmMsg]);
       }
-    } catch (error) {
+    } catch {
       setMessages(prev => prev.filter(m => m.id !== 'typing'));
       toast.error('Failed to send message');
     }

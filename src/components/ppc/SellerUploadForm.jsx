@@ -79,12 +79,13 @@ export default function SellerUploadForm({ user }) {
           <CardHeader><CardTitle className="text-base flex items-center gap-2"><Package className="w-4 h-4" />Product Info</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
-              <Input placeholder="e.g. Wireless Gaming Headset" value={form.product_name} onChange={e => set('product_name', e.target.value)} required />
+              <label htmlFor="seller-product-name" className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+              <Input id="seller-product-name" placeholder="e.g. Wireless Gaming Headset" value={form.product_name} onChange={e => set('product_name', e.target.value)} required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label htmlFor="seller-description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
               <textarea
+                id="seller-description"
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none"
                 rows={3}
                 placeholder="Describe your product..."
@@ -93,7 +94,7 @@ export default function SellerUploadForm({ user }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <span className="block text-sm font-medium text-gray-700 mb-1">Category</span>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map(cat => (
                   <Button key={cat} type="button" size="sm"
@@ -143,12 +144,12 @@ export default function SellerUploadForm({ user }) {
           <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4" />Pricing & Commission</CardTitle></CardHeader>
           <CardContent className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price ($) *</label>
-              <Input type="number" min="0.01" step="0.01" placeholder="29.99" value={form.price} onChange={e => set('price', e.target.value)} required />
+              <label htmlFor="seller-price" className="block text-sm font-medium text-gray-700 mb-1">Price ($) *</label>
+              <Input id="seller-price" type="number" min="0.01" step="0.01" placeholder="29.99" value={form.price} onChange={e => set('price', e.target.value)} required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Commission Rate (%) *</label>
-              <Input type="number" min="1" max="90" step="0.1" placeholder="10" value={form.commission_rate} onChange={e => set('commission_rate', e.target.value)} required />
+              <label htmlFor="seller-commission-rate" className="block text-sm font-medium text-gray-700 mb-1">Commission Rate (%) *</label>
+              <Input id="seller-commission-rate" type="number" min="1" max="90" step="0.1" placeholder="10" value={form.commission_rate} onChange={e => set('commission_rate', e.target.value)} required />
               {form.price && form.commission_rate && (
                 <p className="text-xs text-green-600 mt-1">
                   Affiliates earn ${(parseFloat(form.price || 0) * parseFloat(form.commission_rate || 0) / 100).toFixed(2)} per sale
@@ -161,8 +162,8 @@ export default function SellerUploadForm({ user }) {
         <Card className="border-0 shadow-lg">
           <CardHeader><CardTitle className="text-base flex items-center gap-2"><Link className="w-4 h-4" />Purchase Link</CardTitle></CardHeader>
           <CardContent>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Product URL *</label>
-            <Input type="url" placeholder="https://yourstore.com/product" value={form.product_url} onChange={e => set('product_url', e.target.value)} required />
+            <label htmlFor="seller-product-url" className="block text-sm font-medium text-gray-700 mb-1">Product URL *</label>
+            <Input id="seller-product-url" type="url" placeholder="https://yourstore.com/product" value={form.product_url} onChange={e => set('product_url', e.target.value)} required />
             <p className="text-xs text-gray-400 mt-1">Buyers will be directed to this link to complete purchase.</p>
           </CardContent>
         </Card>

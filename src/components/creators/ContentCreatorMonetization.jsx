@@ -152,16 +152,18 @@ export default function ContentCreatorMonetization({ user }) {
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Tier Name</label>
+                  <label htmlFor="tier-name" className="text-sm font-medium mb-1 block">Tier Name</label>
                   <Input
+                    id="tier-name"
                     placeholder="e.g., Bronze, Silver, Gold"
                     value={newTierData.tier_name}
                     onChange={(e) => setNewTierData(prev => ({ ...prev, tier_name: e.target.value }))}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Monthly Price ($)</label>
+                  <label htmlFor="tier-price-monthly" className="text-sm font-medium mb-1 block">Monthly Price ($)</label>
                   <Input
+                    id="tier-price-monthly"
                     type="number"
                     placeholder="9.99"
                     value={newTierData.price_monthly}
@@ -171,7 +173,7 @@ export default function ContentCreatorMonetization({ user }) {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-1 block">Perks</label>
+                <span className="text-sm font-medium mb-1 block">Perks</span>
                 <div className="flex gap-2">
                   <Input
                     placeholder="Add a perk"

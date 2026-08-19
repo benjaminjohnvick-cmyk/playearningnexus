@@ -48,9 +48,9 @@ export default function ReferralProgram({ user }) {
 
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Your Referral Code</label>
+            <label htmlFor="referral-code" className="text-sm font-medium mb-2 block">Your Referral Code</label>
             <div className="flex gap-2">
-              <Input value={referralCode} readOnly className="font-mono" />
+              <Input id="referral-code" value={referralCode} readOnly className="font-mono" />
               <Button onClick={copyToClipboard} className="bg-red-600 hover:bg-red-700">
                 <Copy className="w-4 h-4" />
               </Button>
@@ -58,9 +58,9 @@ export default function ReferralProgram({ user }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Your Referral Link</label>
+            <label htmlFor="referral-link" className="text-sm font-medium mb-2 block">Your Referral Link</label>
             <div className="flex gap-2">
-              <Input value={referralUrl} readOnly className="text-sm" />
+              <Input id="referral-link" value={referralUrl} readOnly className="text-sm" />
               <Button onClick={copyToClipboard} className="bg-red-600 hover:bg-red-700">
                 <Copy className="w-4 h-4" />
               </Button>

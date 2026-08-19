@@ -174,7 +174,7 @@ Return exactly 4 game recommendations with reasoning. Focus on variety and user 
 
         {recommendations && recommendations.length > 0 && (
           <div className="grid md:grid-cols-2 gap-4">
-            {recommendations.map((game, idx) => (
+            {recommendations.map((game, _idx) => (
               <Link key={game.id} to={createPageUrl('GameDetail') + `?id=${game.id}`}>
                 <Card className="hover:shadow-lg transition-all cursor-pointer h-full">
                   <CardContent className="p-4">

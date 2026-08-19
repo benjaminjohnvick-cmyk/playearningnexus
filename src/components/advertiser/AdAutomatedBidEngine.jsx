@@ -70,8 +70,8 @@ export default function AdAutomatedBidEngine({ ads, onRefresh }) {
   // New schedule form
   const [schedAd, setSchedAd] = useState('all');
   const [schedPreset, setSchedPreset] = useState(0);
-  const [schedCustomAction, setSchedCustomAction] = useState('increase_bid_pct');
-  const [schedCustomVal, setSchedCustomVal] = useState(20);
+  const [_schedCustomAction, _setSchedCustomAction] = useState('increase_bid_pct');
+  const [_schedCustomVal, _setSchedCustomVal] = useState(20);
 
   const addLog = (msg, type = 'info') => {
     setLog(prev => [{ msg, type, time: new Date().toLocaleTimeString() }, ...prev.slice(0, 49)]);
@@ -201,16 +201,16 @@ export default function AdAutomatedBidEngine({ ads, onRefresh }) {
             <p className="text-xs font-bold text-orange-400 uppercase tracking-wider">New Trigger Rule</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-gray-400 font-bold block mb-1">Apply to Ad</label>
-                <select value={ruleAd} onChange={e => setRuleAd(e.target.value)}
+                <label htmlFor="bid-rule-apply-ad" className="text-xs text-gray-400 font-bold block mb-1">Apply to Ad</label>
+                <select id="bid-rule-apply-ad" value={ruleAd} onChange={e => setRuleAd(e.target.value)}
                   className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
                   <option value="all">All Ads</option>
                   {ads.map(a => <option key={a.id} value={a.id}>{a.brand_name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-400 font-bold block mb-1">Trigger Condition</label>
-                <select value={ruleTrigger} onChange={e => setRuleTrigger(e.target.value)}
+                <label htmlFor="bid-rule-trigger" className="text-xs text-gray-400 font-bold block mb-1">Trigger Condition</label>
+                <select id="bid-rule-trigger" value={ruleTrigger} onChange={e => setRuleTrigger(e.target.value)}
                   className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
                   {TRIGGER_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
@@ -223,8 +223,8 @@ export default function AdAutomatedBidEngine({ ads, onRefresh }) {
                   className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 font-bold block mb-1">Then Action</label>
-                <select value={ruleAction} onChange={e => setRuleAction(e.target.value)}
+                <label htmlFor="bid-rule-action" className="text-xs text-gray-400 font-bold block mb-1">Then Action</label>
+                <select id="bid-rule-action" value={ruleAction} onChange={e => setRuleAction(e.target.value)}
                   className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
                   {ACTION_TYPES.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
                 </select>
@@ -280,16 +280,16 @@ export default function AdAutomatedBidEngine({ ads, onRefresh }) {
             <p className="text-xs font-bold text-blue-400 uppercase tracking-wider">New Time Schedule</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-gray-400 font-bold block mb-1">Apply to Ad</label>
-                <select value={schedAd} onChange={e => setSchedAd(e.target.value)}
+                <label htmlFor="bid-sched-apply-ad" className="text-xs text-gray-400 font-bold block mb-1">Apply to Ad</label>
+                <select id="bid-sched-apply-ad" value={schedAd} onChange={e => setSchedAd(e.target.value)}
                   className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
                   <option value="all">All Ads</option>
                   {ads.map(a => <option key={a.id} value={a.id}>{a.brand_name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-400 font-bold block mb-1">Schedule Preset</label>
-                <select value={schedPreset} onChange={e => setSchedPreset(parseInt(e.target.value))}
+                <label htmlFor="bid-sched-preset" className="text-xs text-gray-400 font-bold block mb-1">Schedule Preset</label>
+                <select id="bid-sched-preset" value={schedPreset} onChange={e => setSchedPreset(parseInt(e.target.value))}
                   className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
                   {SCHEDULE_PRESETS.map((p, i) => <option key={i} value={i}>{p.label}</option>)}
                 </select>

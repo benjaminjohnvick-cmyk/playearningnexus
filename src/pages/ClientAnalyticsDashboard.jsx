@@ -35,7 +35,7 @@ export default function ClientAnalyticsDashboard() {
     queryFn: () => base44.entities.PPCSurveyResponse.list('-created_date', 500),
   });
 
-  const { data: fraudFlags = [] } = useQuery({
+  const { data: _fraudFlags = [] } = useQuery({
     queryKey: ['clientFraudFlags'],
     queryFn: () => base44.entities.ReferralAnomalyFlag.list('-created_date', 100),
   });

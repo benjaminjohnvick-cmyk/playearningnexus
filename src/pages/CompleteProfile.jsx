@@ -52,7 +52,7 @@ export default function CompleteProfile() {
           {/* Email (read-only, informational) */}
           {user?.email && (
             <div>
-              <label className="text-sm font-semibold text-gray-700 block mb-1">Email Address</label>
+              <span className="text-sm font-semibold text-gray-700 block mb-1">Email Address</span>
               <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg">
                 <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                 <span className="text-sm text-gray-600">{user.email}</span>
@@ -62,8 +62,9 @@ export default function CompleteProfile() {
 
           {/* Full Name */}
           <div>
-            <label className="text-sm font-semibold text-gray-700 block mb-1">Full Name <span className="text-red-500">*</span></label>
+            <label htmlFor="profile-full-name" className="text-sm font-semibold text-gray-700 block mb-1">Full Name <span className="text-red-500">*</span></label>
             <input
+              id="profile-full-name"
               type="text"
               value={fullName}
               onChange={e => { setFullName(e.target.value); setError(''); }}

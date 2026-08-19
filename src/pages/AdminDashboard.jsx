@@ -59,7 +59,7 @@ export default function AdminDashboard() {
           return;
         }
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -117,8 +117,9 @@ export default function AdminDashboard() {
             </div>
             <form onSubmit={handleCredLogin} className="space-y-4">
               <div>
-                <label className="text-sm font-semibold text-gray-700 block mb-1">Username</label>
+                <label htmlFor="admin-username" className="text-sm font-semibold text-gray-700 block mb-1">Username</label>
                 <input
+                  id="admin-username"
                   type="text"
                   value={loginForm.username}
                   onChange={e => setLoginForm(f => ({ ...f, username: e.target.value }))}
@@ -128,9 +129,10 @@ export default function AdminDashboard() {
                 />
               </div>
               <div>
-                <label className="text-sm font-semibold text-gray-700 block mb-1">Password</label>
+                <label htmlFor="admin-password" className="text-sm font-semibold text-gray-700 block mb-1">Password</label>
                 <div className="relative">
                   <input
+                    id="admin-password"
                     type={showPass ? 'text' : 'password'}
                     value={loginForm.password}
                     onChange={e => setLoginForm(f => ({ ...f, password: e.target.value }))}

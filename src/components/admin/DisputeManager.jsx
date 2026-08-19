@@ -22,7 +22,9 @@ function DisputeRow({ dispute, onResolve }) {
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden">
       <div className="flex items-center gap-3 px-4 py-3 bg-white cursor-pointer hover:bg-gray-50"
-        onClick={() => setExpanded(e => !e)}>
+        role="button" tabIndex={0}
+        onClick={() => setExpanded(e => !e)}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(x => !x); } }}>
         <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate">
@@ -69,15 +71,15 @@ function DisputeRow({ dispute, onResolve }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-gray-500 block mb-1">Resolved Amount ($)</label>
+              <label className="text-xs font-medium text-gray-500 block mb-1">Resolved Amount ($)
               <input type="number" value={amount} onChange={e => setAmount(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" /></label>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 block mb-1">Admin Notes</label>
+              <label className="text-xs font-medium text-gray-500 block mb-1">Admin Notes
               <input value={notes} onChange={e => setNotes(e.target.value)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Internal notes…" />
+                placeholder="Internal notes…" /></label>
             </div>
           </div>
           <div className="flex gap-2">
@@ -152,7 +154,7 @@ export default function DisputeManager() {
     onError: () => toast.error('Failed to update dispute'),
   });
 
-  const counts = { all: disputes.length };
+  const _counts = { all: disputes.length };
 
   return (
     <div className="space-y-4">

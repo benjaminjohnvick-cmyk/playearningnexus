@@ -29,7 +29,7 @@ export default function GameDetail() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         console.error('Not authenticated');
       }
     };
@@ -60,14 +60,14 @@ export default function GameDetail() {
     enabled: !!gameId
   });
 
-  const { data: userReview } = useQuery({
+  const { data: _userReview } = useQuery({
     queryKey: ['userReview', gameId, user?.id],
     queryFn: () => base44.entities.GameReview.filter({ game_id: gameId, user_id: user.id }),
     enabled: !!user && !!gameId,
     select: (data) => data[0]
   });
 
-  const submitReviewMutation = useMutation({
+  const _submitReviewMutation = useMutation({
     mutationFn: () => base44.entities.GameRating.create({
       user_id: user.id,
       game_id: gameId,

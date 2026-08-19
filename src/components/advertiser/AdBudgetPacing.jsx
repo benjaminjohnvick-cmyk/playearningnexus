@@ -49,8 +49,8 @@ const PRESETS = [
 ];
 
 function MultiplierBar({ value, onChange }) {
-  const pct = Math.round((value - 0.5) / 1.0 * 100); // 0.5–1.5 → 0–100
-  const color = value > 1.05 ? 'bg-green-500' : value < 0.95 ? 'bg-red-500' : 'bg-gray-500';
+  const _pct = Math.round((value - 0.5) / 1.0 * 100); // 0.5–1.5 → 0–100
+  const _color = value > 1.05 ? 'bg-green-500' : value < 0.95 ? 'bg-red-500' : 'bg-gray-500';
   return (
     <input
       type="range"
@@ -63,7 +63,7 @@ function MultiplierBar({ value, onChange }) {
   );
 }
 
-export default function AdBudgetPacing({ ads, adBalance, onRefresh }) {
+export default function AdBudgetPacing({ ads, adBalance: _adBalance, onRefresh }) {
   const [multipliers, setMultipliers] = useState(HOURS.map(() => 1.00));
   const [selectedAd, setSelectedAd] = useState(null);
   const [saving, setSaving] = useState(false);

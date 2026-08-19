@@ -14,7 +14,7 @@ export default function DailyEarningsMeter({ todaysEarnings = 0, dailyGoal = 8 }
     return 'from-red-500 to-red-600';
   };
 
-  const getTextColor = () => {
+  const _getTextColor = () => {
     if (todaysEarnings >= 6) return 'text-green-600';
     if (todaysEarnings >= 4) return 'text-yellow-600';
     if (todaysEarnings >= 2) return 'text-orange-600';

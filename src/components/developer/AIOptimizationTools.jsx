@@ -89,7 +89,7 @@ Provide:
       });
 
       setRecommendations(result);
-    } catch (error) {
+    } catch {
       toast.error('Failed to generate recommendations');
     }
     setLoading(false);

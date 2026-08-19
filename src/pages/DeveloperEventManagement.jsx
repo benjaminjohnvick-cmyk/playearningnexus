@@ -26,7 +26,7 @@ export default function DeveloperEventManagement() {
         if (clients[0]) {
           setBusinessClient(clients[0]);
         }
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -53,7 +53,7 @@ export default function DeveloperEventManagement() {
       if (startTime < new Date()) startTime.setDate(startTime.getDate() + 1);
     }
     
-    const endTime = new Date(startTime.getTime() + suggestion.duration_hours * 60 * 60 * 1000);
+    const _endTime = new Date(startTime.getTime() + suggestion.duration_hours * 60 * 60 * 1000);
 
     setShowAISuggestions(false);
     setShowCreateModal(true);

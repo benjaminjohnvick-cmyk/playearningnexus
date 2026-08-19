@@ -11,7 +11,10 @@ import { createPageUrl } from '@/utils';
 function Toggle({ enabled, onChange }) {
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={() => onChange(!enabled)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(!enabled); } }}
       className={`w-11 h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${enabled ? 'bg-purple-600' : 'bg-gray-300'}`}
     >
       <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0.5'}`} />

@@ -67,7 +67,7 @@ export default function GameSurveyClaimForm({ user, onSuccess }) {
     <div className="space-y-5">
       {/* Claim Type */}
       <div>
-        <label className="text-xs font-semibold text-gray-600 block mb-2">What type of claim is this?</label>
+        <span className="text-xs font-semibold text-gray-600 block mb-2">What type of claim is this?</span>
         <div className="grid grid-cols-2 gap-2">
           {CLAIM_TYPES.map(ct => {
             const Icon = ct.icon;
@@ -87,25 +87,25 @@ export default function GameSurveyClaimForm({ user, onSuccess }) {
       {/* Details */}
       <div className="grid md:grid-cols-2 gap-3">
         <div>
-          <label className="text-xs font-semibold text-gray-600 block mb-1">Game / Survey Name *</label>
-          <input value={form.item_name} onChange={e => setForm(f => ({...f, item_name: e.target.value}))}
+          <label htmlFor="claim-item-name" className="text-xs font-semibold text-gray-600 block mb-1">Game / Survey Name *</label>
+          <input id="claim-item-name" value={form.item_name} onChange={e => setForm(f => ({...f, item_name: e.target.value}))}
             className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
             placeholder="e.g. Daily Gamer Survey, Space Adventure" />
         </div>
         <div>
-          <label className="text-xs font-semibold text-gray-600 block mb-1">Expected Credit Amount ($)</label>
-          <input type="number" value={form.expected_amount} onChange={e => setForm(f => ({...f, expected_amount: e.target.value}))}
+          <label htmlFor="claim-expected-amount" className="text-xs font-semibold text-gray-600 block mb-1">Expected Credit Amount ($)</label>
+          <input id="claim-expected-amount" type="number" value={form.expected_amount} onChange={e => setForm(f => ({...f, expected_amount: e.target.value}))}
             className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
             placeholder="e.g. 2.50" min="0" step="0.01" />
         </div>
         <div>
-          <label className="text-xs font-semibold text-gray-600 block mb-1">Completion Date</label>
-          <input type="date" value={form.completion_date} onChange={e => setForm(f => ({...f, completion_date: e.target.value}))}
+          <label htmlFor="claim-completion-date" className="text-xs font-semibold text-gray-600 block mb-1">Completion Date</label>
+          <input id="claim-completion-date" type="date" value={form.completion_date} onChange={e => setForm(f => ({...f, completion_date: e.target.value}))}
             className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" />
         </div>
         <div className="md:row-span-2">
-          <label className="text-xs font-semibold text-gray-600 block mb-1">Description of Issue *</label>
-          <textarea value={form.description} onChange={e => setForm(f => ({...f, description: e.target.value}))}
+          <label htmlFor="claim-description" className="text-xs font-semibold text-gray-600 block mb-1">Description of Issue *</label>
+          <textarea id="claim-description" value={form.description} onChange={e => setForm(f => ({...f, description: e.target.value}))}
             rows={4} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-400 resize-none"
             placeholder="Describe what happened. Include any error messages or transaction IDs you saw..." />
         </div>
@@ -113,7 +113,7 @@ export default function GameSurveyClaimForm({ user, onSuccess }) {
 
       {/* Proof Upload */}
       <div>
-        <label className="text-xs font-semibold text-gray-600 block mb-2">Proof / Screenshots (recommended)</label>
+        <span className="text-xs font-semibold text-gray-600 block mb-2">Proof / Screenshots (recommended)</span>
         <div className="flex items-center gap-3 flex-wrap">
           <label className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-gray-300 cursor-pointer hover:border-indigo-400 transition-colors text-sm text-gray-500 ${uploading ? 'opacity-60 pointer-events-none' : ''}`}>
             {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}

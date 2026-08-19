@@ -82,7 +82,7 @@ export default function PayoutOptimizer({ user, payoutPref }) {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: payouts = [] } = useQuery({
+  const { data: _payouts = [] } = useQuery({
     queryKey: ['optimizer-payouts', user?.id],
     queryFn: () => base44.entities.Payout.filter({ user_id: user.id }, '-created_date', 30),
     enabled: !!user?.id,
@@ -120,7 +120,7 @@ export default function PayoutOptimizer({ user, payoutPref }) {
     .sort((a, b) => b.score - a.score);
 
   const bestMethod = rankedMethods[0];
-  const currentMethod = rankedMethods.find(m => m.id === payoutPref?.payout_method) || bestMethod;
+  const _currentMethod = rankedMethods.find(m => m.id === payoutPref?.payout_method) || bestMethod;
 
   const nextGoal = projections[0];
   const progressToNextGoal = nextGoal ? Math.min((currentBalance / nextGoal.goal) * 100, 100) : 100;

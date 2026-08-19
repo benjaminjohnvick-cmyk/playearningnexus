@@ -208,10 +208,11 @@ export default function AdminDisputeResolution() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-slate-900 mb-2">
+                          <label htmlFor={`dispute-payout-${claim.id}`} className="block text-sm font-medium text-slate-900 mb-2">
                             Override Payout Amount
                           </label>
                           <Input
+                            id={`dispute-payout-${claim.id}`}
                             type="number"
                             step="0.01"
                             min="0"
@@ -222,10 +223,11 @@ export default function AdminDisputeResolution() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-slate-900 mb-2">
+                          <label htmlFor={`dispute-notes-${claim.id}`} className="block text-sm font-medium text-slate-900 mb-2">
                             Admin Notes
                           </label>
                           <Input
+                            id={`dispute-notes-${claim.id}`}
                             type="text"
                             placeholder="Reason for override (optional)"
                             value={overrides[claim.id]?.notes || ''}

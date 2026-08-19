@@ -102,8 +102,9 @@ export default function QuickSurveyBuilder() {
           {step === 5 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Survey Title</label>
+                <label htmlFor="qsb-title" className="block text-sm font-medium mb-2">Survey Title</label>
                 <Input
+                  id="qsb-title"
                   placeholder="e.g., Gaming Preferences Survey"
                   value={survey.title}
                   onChange={(e) => setSurvey({ ...survey, title: e.target.value })}
@@ -111,8 +112,9 @@ export default function QuickSurveyBuilder() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Description</label>
+                <label htmlFor="qsb-description" className="block text-sm font-medium mb-2">Description</label>
                 <Textarea
+                  id="qsb-description"
                   placeholder="What is this survey about?"
                   value={survey.description}
                   onChange={(e) => setSurvey({ ...survey, description: e.target.value })}
@@ -126,9 +128,9 @@ export default function QuickSurveyBuilder() {
           {step === 4 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Category</label>
+                <label htmlFor="qsb-category" className="block text-sm font-medium mb-2">Category</label>
                 <Select value={survey.category} onValueChange={(val) => setSurvey({ ...survey, category: val })}>
-                  <SelectTrigger>
+                  <SelectTrigger id="qsb-category">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -159,10 +161,11 @@ export default function QuickSurveyBuilder() {
           {step === 3 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Price Per Response</label>
+                <label htmlFor="qsb-price" className="block text-sm font-medium mb-2">Price Per Response</label>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold">$</span>
                   <Input
+                    id="qsb-price"
                     type="number"
                     step="0.05"
                     min="0.25"
@@ -174,9 +177,9 @@ export default function QuickSurveyBuilder() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Target Audience</label>
+                <label htmlFor="qsb-target-audience" className="block text-sm font-medium mb-2">Target Audience</label>
                 <Select value={survey.target_audience} onValueChange={(val) => setSurvey({ ...survey, target_audience: val })}>
-                  <SelectTrigger>
+                  <SelectTrigger id="qsb-target-audience">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

@@ -109,7 +109,7 @@ export default function ThirdPartySellerStore({ user }) {
   );
 }
 
-function ProductCard({ product, user }) {
+function ProductCard({ product, user: _user }) {
   const commissionAmount = ((product.price || 0) * (product.commission_rate || 0) / 100).toFixed(2);
 
   const handleVisit = () => {

@@ -26,7 +26,7 @@ const COLOR_MAP = { blue: 'text-blue-400 border-blue-500/20 bg-blue-500/5', purp
 function CompetitorCard({ comp, idx, myAds, onGenerate, generating }) {
   const colorCls = COLOR_MAP[comp.color];
   const headlines = SAMPLE_HEADLINES[idx];
-  const [expanded, setExpanded] = useState(false);
+  const [_expanded, _setExpanded] = useState(false);
 
   return (
     <div className={`border rounded-2xl p-4 ${colorCls}`}>

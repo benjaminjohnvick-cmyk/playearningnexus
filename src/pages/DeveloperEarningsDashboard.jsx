@@ -13,7 +13,7 @@ export default function DeveloperEarningsDashboard() {
   const [loading, setLoading] = useState(true);
   const [payouts, setPayouts] = useState([]);
   const [earnings, setEarnings] = useState([]);
-  const [enterpriseStatus, setEnterpriseStatus] = useState(null);
+  const [_enterpriseStatus, _setEnterpriseStatus] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -27,7 +27,7 @@ export default function DeveloperEarningsDashboard() {
       ]);
       setPayouts(payoutData || []);
       setEarnings(earningData || []);
-    } catch (e) {
+    } catch {
       // demo data if entities empty
     } finally {
       setLoading(false);

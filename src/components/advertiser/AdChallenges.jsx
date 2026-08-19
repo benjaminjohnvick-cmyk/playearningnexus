@@ -46,7 +46,7 @@ const AD_SPRINTS = [
     target: 20,
     checkFn: (ads) => {
       const total = ads.reduce((s, a) => s + (a.surveys_completed || 0), 0);
-      const efficient = ads.filter(a => (a.total_spent || 0) > 0 && (a.total_spent / Math.max(1, a.surveys_completed)) < 0.5);
+      const _efficient = ads.filter(a => (a.total_spent || 0) > 0 && (a.total_spent / Math.max(1, a.surveys_completed)) < 0.5);
       return { progress: Math.min(100, (total / 20) * 100), current: total, target: 20, unit: ' surveys' };
     },
   },

@@ -367,8 +367,9 @@ export default function SelfServiceDisputeModule({ user }) {
                 )}
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Describe the issue *</label>
+                  <label htmlFor="dispute-description" className="text-xs font-semibold text-gray-600 mb-1 block">Describe the issue *</label>
                   <textarea
+                    id="dispute-description"
                     placeholder="e.g. I completed this survey/session but the credit was not added to my balance..."
                     value={description}
                     onChange={e => setDescription(e.target.value)}
@@ -378,7 +379,7 @@ export default function SelfServiceDisputeModule({ user }) {
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 mb-1 block">Upload Screenshot (optional but recommended)</label>
+                  <span className="text-xs font-semibold text-gray-600 mb-1 block">Upload Screenshot (optional but recommended)</span>
                   {screenshotUrl ? (
                     <div className="flex items-center gap-3 p-3 bg-green-50 border-2 border-green-200 rounded-xl">
                       <img src={screenshotUrl} alt="proof" className="w-14 h-10 object-cover rounded-lg border" />

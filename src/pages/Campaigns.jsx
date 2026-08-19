@@ -111,13 +111,13 @@ export default function Campaigns() {
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Campaign Name *</label>
-                <Input placeholder="e.g. Spring 2025 Push" value={form.campaign_name} onChange={e => setForm(f => ({ ...f, campaign_name: e.target.value }))} />
+                <label htmlFor="camp-name" className="text-xs font-medium text-gray-600 block mb-1">Campaign Name *</label>
+                <Input id="camp-name" placeholder="e.g. Spring 2025 Push" value={form.campaign_name} onChange={e => setForm(f => ({ ...f, campaign_name: e.target.value }))} />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Type</label>
+                <label htmlFor="camp-type" className="text-xs font-medium text-gray-600 block mb-1">Type</label>
                 <Select value={form.campaign_type} onValueChange={v => setForm(f => ({ ...f, campaign_type: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="camp-type"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="social_media">Social Media</SelectItem>
                     <SelectItem value="email">Email</SelectItem>
@@ -128,9 +128,9 @@ export default function Campaigns() {
                 </Select>
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Target Platform</label>
+                <label htmlFor="camp-platform" className="text-xs font-medium text-gray-600 block mb-1">Target Platform</label>
                 <Select value={form.target_platform} onValueChange={v => setForm(f => ({ ...f, target_platform: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="camp-platform"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {['general','facebook','twitter','instagram','youtube','tiktok','linkedin','email'].map(p => (
                       <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>
@@ -139,9 +139,9 @@ export default function Campaigns() {
                 </Select>
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Status</label>
+                <label htmlFor="camp-status" className="text-xs font-medium text-gray-600 block mb-1">Status</label>
                 <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="camp-status"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="draft">Draft</SelectItem>
                     <SelectItem value="active">Active</SelectItem>
@@ -151,25 +151,25 @@ export default function Campaigns() {
                 </Select>
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Start Date</label>
-                <Input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} />
+                <label htmlFor="camp-start-date" className="text-xs font-medium text-gray-600 block mb-1">Start Date</label>
+                <Input id="camp-start-date" type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">End Date</label>
-                <Input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))} />
+                <label htmlFor="camp-end-date" className="text-xs font-medium text-gray-600 block mb-1">End Date</label>
+                <Input id="camp-end-date" type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))} />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Bonus Amount ($)</label>
-                <Input type="number" min="0" step="0.01" placeholder="e.g. 5.00" value={form.bonus_amount} onChange={e => setForm(f => ({ ...f, bonus_amount: e.target.value }))} />
+                <label htmlFor="camp-bonus-amount" className="text-xs font-medium text-gray-600 block mb-1">Bonus Amount ($)</label>
+                <Input id="camp-bonus-amount" type="number" min="0" step="0.01" placeholder="e.g. 5.00" value={form.bonus_amount} onChange={e => setForm(f => ({ ...f, bonus_amount: e.target.value }))} />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">Bonus Description</label>
-                <Input placeholder="e.g. +$5 for each verified signup" value={form.bonus_description} onChange={e => setForm(f => ({ ...f, bonus_description: e.target.value }))} />
+                <label htmlFor="camp-bonus-desc" className="text-xs font-medium text-gray-600 block mb-1">Bonus Description</label>
+                <Input id="camp-bonus-desc" placeholder="e.g. +$5 for each verified signup" value={form.bonus_description} onChange={e => setForm(f => ({ ...f, bonus_description: e.target.value }))} />
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1">Description</label>
-              <Input placeholder="Short description of the campaign goal" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+              <label htmlFor="camp-description" className="text-xs font-medium text-gray-600 block mb-1">Description</label>
+              <Input id="camp-description" placeholder="Short description of the campaign goal" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
             <div className="flex gap-2 pt-1">
               <Button onClick={() => saveMutation.mutate(form)} disabled={saveMutation.isPending || !form.campaign_name} className="bg-purple-600 hover:bg-purple-700">

@@ -63,7 +63,7 @@ export default function AdAIAssistant({ ads }) {
     if (ads.length === 0) return 'The user has no active ad campaigns.';
     return ads.map(ad => {
       const ctr = ad.total_clicks > 0 ? ((ad.surveys_completed / ad.total_clicks) * 100).toFixed(1) : 0;
-      const roi = ad.total_spent > 0 ? ((ad.surveys_completed * ad.bid_amount - ad.total_spent) / ad.total_spent * 100).toFixed(0) : 0;
+      const _roi = ad.total_spent > 0 ? ((ad.surveys_completed * ad.bid_amount - ad.total_spent) / ad.total_spent * 100).toFixed(0) : 0;
       return `- "${ad.brand_name}" | Status: ${ad.status} | Tier: ${ad.grid_tier} | Bid: $${ad.bid_amount}/survey | Clicks: ${ad.total_clicks || 0} | Surveys completed: ${ad.surveys_completed || 0} | CTR: ${ctr}% | Spent: $${(ad.total_spent || 0).toFixed(2)} | Budget left: $${(ad.budget_limit - (ad.total_spent || 0)).toFixed(2)} | Tagline: "${ad.tagline || 'none'}"`;
     }).join('\n');
   };

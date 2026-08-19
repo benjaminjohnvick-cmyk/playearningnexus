@@ -21,7 +21,7 @@ const CHANNEL_ICONS = {
 };
 
 export default function ChannelROIPanel({ user }) {
-  const [tracking, setTracking] = useState(false);
+  const [_tracking, setTracking] = useState(false);
 
   const { data: journeyEvents = [], refetch } = useQuery({
     queryKey: ['journey_events', user?.id],
@@ -75,7 +75,7 @@ export default function ChannelROIPanel({ user }) {
   const totalSignups = stats.reduce((sum, s) => sum + s.signups, 0);
   const bestChannel = stats.sort((a, b) => b.revenue - a.revenue)[0];
 
-  const trackJourneyEvent = async (eventType, channel) => {
+  const _trackJourneyEvent = async (eventType, channel) => {
     setTracking(true);
     await base44.entities.UserJourneyEvent.create({
       user_id: user.id,

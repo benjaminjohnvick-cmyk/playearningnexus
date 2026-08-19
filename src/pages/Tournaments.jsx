@@ -17,7 +17,7 @@ export default function Tournaments() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  const { data: tournaments = [], isLoading: tournamentsLoading } = useQuery({
+  const { data: tournaments = [], isLoading: _tournamentsLoading } = useQuery({
     queryKey: ['tournaments'],
     queryFn: async () => {
       const res = await base44.entities.Tournament.filter({});

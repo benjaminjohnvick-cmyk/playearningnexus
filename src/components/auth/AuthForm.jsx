@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { useAuth } from '@/lib/AuthContext';
+import { useAuthOptional } from '@/lib/AuthContext';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 import GamerGainLogo from '@/components/branding/GamerGainLogo';
 
@@ -12,7 +12,7 @@ export default function AuthForm({ mode = 'login' }) {
   const isSignup = mode === 'signup';
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const auth = (() => { try { return useAuth(); } catch { return null; } })();
+  const auth = useAuthOptional();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -67,25 +67,25 @@ export default function AuthForm({ mode = 'login' }) {
 
           {isSignup && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
-              <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className={inputClass} placeholder="Your name" autoComplete="name" />
+              <label htmlFor="auth-fullname" className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
+              <input id="auth-fullname" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className={inputClass} placeholder="Your name" autoComplete="name" />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} placeholder="you@example.com" autoComplete="email" />
+            <label htmlFor="auth-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input id="auth-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} placeholder="you@example.com" autoComplete="email" />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className={inputClass} placeholder="••••••••" autoComplete={isSignup ? 'new-password' : 'current-password'} />
+            <label htmlFor="auth-password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input id="auth-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className={inputClass} placeholder="••••••••" autoComplete={isSignup ? 'new-password' : 'current-password'} />
           </div>
 
           {isSignup && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
-              <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required className={inputClass} placeholder="••••••••" autoComplete="new-password" />
+              <label htmlFor="auth-confirm-password" className="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
+              <input id="auth-confirm-password" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} required className={inputClass} placeholder="••••••••" autoComplete="new-password" />
             </div>
           )}
 

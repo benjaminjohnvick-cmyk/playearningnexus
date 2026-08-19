@@ -92,7 +92,7 @@ export default function RecentEarningsFeed() {
       .filter(a => !seenIds.current.has(a.id) && ACTIVITY_ICONS[a.activity_type])
       .map(a => {
         seenIds.current.add(a.id);
-        const meta = ACTIVITY_ICONS[a.activity_type];
+        const _meta = ACTIVITY_ICONS[a.activity_type];
         const pts = a.points_earned || 0;
         return {
           id: a.id,

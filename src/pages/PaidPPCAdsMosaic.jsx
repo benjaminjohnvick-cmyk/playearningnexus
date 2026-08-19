@@ -288,7 +288,7 @@ export default function PaidPPCAdsMosaic() {
   const [earned, setEarned] = useState(0);
   const [unlockedAds, setUnlockedAds] = useState([]);
   const [referrerId, setReferrerId] = useState(null);
-  const [botBlocked, setBotBlocked] = useState(false);
+  const [_botBlocked, setBotBlocked] = useState(false);
   const [adsClickedToday, setAdsClickedToday] = useState(0);
   const [showSocialGate, setShowSocialGate] = useState(false);
   const [currentPage, setCurrentPage] = useState(0); // Part G: pagination
@@ -368,7 +368,7 @@ export default function PaidPPCAdsMosaic() {
     toast.info('Ads refreshed!');
   };
 
-  const gridCols = 4; // 4×4 = 16 ads always
+  const _gridCols = 4; // 4×4 = 16 ads always
 
   const handleAdClick = (ad) => {
     if (!user) {
@@ -397,7 +397,7 @@ export default function PaidPPCAdsMosaic() {
     setSurveyDone(false);
   };
 
-  const handleAnswer = (questionIdx, answer) => {
+  const handleAnswer = (questionIdx, _answer) => {
     if (trackerRef.current) trackerRef.current.recordClick(0, questionIdx * 50);
     if (questionIdx < 4) {
       setSurveyStep(questionIdx + 1);

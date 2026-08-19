@@ -205,7 +205,7 @@ export default function ReferralAnalyticsTab({ referrals, referralLinks = [] }) 
           ) : (
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                {sourceStats.map((s, i) => (
+                {sourceStats.map((s, _i) => (
                   <div key={s.source} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-white transition-colors">
                     <div className="flex items-center gap-3">
                       <span className="text-xl">{s.meta.icon}</span>

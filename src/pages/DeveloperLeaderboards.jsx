@@ -26,7 +26,7 @@ export default function DeveloperLeaderboards() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -66,7 +66,7 @@ export default function DeveloperLeaderboards() {
   });
 
   // Fetch referrals with date filter
-  const { data: referrals = [] } = useQuery({
+  const { data: _referrals = [] } = useQuery({
     queryKey: ['referrals-leaderboard', timePeriod],
     queryFn: async () => {
       const dateFilter = getDateFilter();

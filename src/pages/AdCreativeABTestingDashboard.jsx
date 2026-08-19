@@ -46,7 +46,7 @@ export default function AdCreativeABTestingDashboard() {
     if (!testName || variants.some(v => !v.headline)) return;
     setCreating(true);
     try {
-      const result = await base44.functions.invoke('runAdCreativeABTest', {
+      const _result = await base44.functions.invoke('runAdCreativeABTest', {
         action: 'create',
         test_name: testName,
         total_budget: parseFloat(totalBudget) || 100,
@@ -95,12 +95,12 @@ export default function AdCreativeABTestingDashboard() {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium block mb-1">Test Name</label>
-                  <Input placeholder="e.g. Summer Campaign Test" value={testName} onChange={e => setTestName(e.target.value)} />
+                  <label htmlFor="abtest-name" className="text-sm font-medium block mb-1">Test Name</label>
+                  <Input id="abtest-name" placeholder="e.g. Summer Campaign Test" value={testName} onChange={e => setTestName(e.target.value)} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium block mb-1">Total Budget ($)</label>
-                  <Input type="number" placeholder="100" value={totalBudget} onChange={e => setTotalBudget(e.target.value)} />
+                  <label htmlFor="abtest-budget" className="text-sm font-medium block mb-1">Total Budget ($)</label>
+                  <Input id="abtest-budget" type="number" placeholder="100" value={totalBudget} onChange={e => setTotalBudget(e.target.value)} />
                 </div>
               </div>
 
@@ -125,12 +125,12 @@ export default function AdCreativeABTestingDashboard() {
                       </div>
                       <div className="space-y-2">
                         <div>
-                          <label className="text-xs text-slate-500">Original Headline</label>
-                          <Input placeholder="Enter headline (AI will rewrite it)" value={v.headline} onChange={e => updateVariant(i, 'headline', e.target.value)} />
+                          <label htmlFor={`abtest-headline-${i}`} className="text-xs text-slate-500">Original Headline</label>
+                          <Input id={`abtest-headline-${i}`} placeholder="Enter headline (AI will rewrite it)" value={v.headline} onChange={e => updateVariant(i, 'headline', e.target.value)} />
                         </div>
                         <div>
-                          <label className="text-xs text-slate-500">Image URL (optional)</label>
-                          <Input placeholder="https://..." value={v.image_url} onChange={e => updateVariant(i, 'image_url', e.target.value)} />
+                          <label htmlFor={`abtest-image-${i}`} className="text-xs text-slate-500">Image URL (optional)</label>
+                          <Input id={`abtest-image-${i}`} placeholder="https://..." value={v.image_url} onChange={e => updateVariant(i, 'image_url', e.target.value)} />
                         </div>
                       </div>
                     </CardContent>

@@ -66,7 +66,7 @@ const badgeMap = {
   orange: 'bg-orange-100 text-orange-800',
 };
 
-export default function RewardedAdsPanel({ user }) {
+export default function RewardedAdsPanel({ user: _user }) {
   const [watchingAd, setWatchingAd] = useState(false);
   const [adProgress, setAdProgress] = useState(0);
   const [rewarded, setRewarded] = useState(false);

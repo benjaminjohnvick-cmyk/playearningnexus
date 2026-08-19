@@ -54,7 +54,7 @@ Return ONLY valid JSON with this exact structure.`,
       } else {
         toast({ title: 'No questions returned', variant: 'destructive' });
       }
-    } catch (e) {
+    } catch {
       toast({ title: 'AI generation failed', variant: 'destructive' });
     } finally {
       setLoading(false);

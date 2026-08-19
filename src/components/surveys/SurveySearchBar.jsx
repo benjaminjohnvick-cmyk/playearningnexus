@@ -142,20 +142,21 @@ export default function SurveySearchBar({ surveys, onFiltered, user }) {
         <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Min Reward ($)</label>
-              <Input type="number" placeholder="0" value={minReward} onChange={e => setMinReward(e.target.value)} className="h-8 text-sm" />
+              <label htmlFor="filter-min-reward" className="text-xs text-gray-500 mb-1 block">Min Reward ($)</label>
+              <Input id="filter-min-reward" type="number" placeholder="0" value={minReward} onChange={e => setMinReward(e.target.value)} className="h-8 text-sm" />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Max Reward ($)</label>
-              <Input type="number" placeholder="Any" value={maxReward} onChange={e => setMaxReward(e.target.value)} className="h-8 text-sm" />
+              <label htmlFor="filter-max-reward" className="text-xs text-gray-500 mb-1 block">Max Reward ($)</label>
+              <Input id="filter-max-reward" type="number" placeholder="Any" value={maxReward} onChange={e => setMaxReward(e.target.value)} className="h-8 text-sm" />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Max Time (min)</label>
-              <Input type="number" placeholder="Any" value={maxTime} onChange={e => setMaxTime(e.target.value)} className="h-8 text-sm" />
+              <label htmlFor="filter-max-time" className="text-xs text-gray-500 mb-1 block">Max Time (min)</label>
+              <Input id="filter-max-time" type="number" placeholder="Any" value={maxTime} onChange={e => setMaxTime(e.target.value)} className="h-8 text-sm" />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Sort By</label>
+              <label htmlFor="filter-sort-by" className="text-xs text-gray-500 mb-1 block">Sort By</label>
               <select
+                id="filter-sort-by"
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
                 className="w-full h-8 text-sm border border-gray-200 rounded-md px-2 bg-white"

@@ -13,7 +13,7 @@ import { format, subDays } from 'date-fns';
 
 export default function AdvancedInsights() {
   const [user, setUser] = useState(null);
-  const [demographicFilter, setDemographicFilter] = useState('all');
+  const [_demographicFilter, _setDemographicFilter] = useState('all');
   const [engagementFilter, setEngagementFilter] = useState('all');
   const [timeRange, setTimeRange] = useState('30');
 

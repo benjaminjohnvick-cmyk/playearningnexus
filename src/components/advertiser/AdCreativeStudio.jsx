@@ -48,12 +48,12 @@ function OverlayEditor({ imageUrl, overlayText, setOverlayText, overlayStyle, se
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="text-xs text-gray-400 font-bold block mb-1">Overlay Text</label>
-          <input value={overlayText} onChange={e => setOverlayText(e.target.value)}
+          <label htmlFor="overlay-text" className="text-xs text-gray-400 font-bold block mb-1">Overlay Text</label>
+          <input id="overlay-text" value={overlayText} onChange={e => setOverlayText(e.target.value)}
             placeholder="e.g. LIMITED OFFER!" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
         </div>
         <div>
-          <label className="text-xs text-gray-400 font-bold block mb-1">Position Template</label>
+          <span className="text-xs text-gray-400 font-bold block mb-1">Position Template</span>
           <div className="flex gap-1.5">
             {TEXT_OVERLAYS.map(o => (
               <button key={o.id} onClick={() => setOverlayStyle(o.style)}
@@ -73,7 +73,7 @@ function OverlayEditor({ imageUrl, overlayText, setOverlayText, overlayStyle, se
   );
 }
 
-function AssetCard({ asset, ads, onDelete, onApplyToAd, onEdit, onTagToggle }) {
+function AssetCard({ asset, ads, onDelete, onApplyToAd, onEdit: _onEdit, onTagToggle: _onTagToggle }) {
   const [expanded, setExpanded] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const [overlayText, setOverlayText] = useState('');
@@ -83,7 +83,7 @@ function AssetCard({ asset, ads, onDelete, onApplyToAd, onEdit, onTagToggle }) {
 
   const handleApplyOverlay = async () => {
     if (!overlayText) return;
-    const annotated = `${asset.content}#overlay=${encodeURIComponent(overlayText)}`;
+    const _annotated = `${asset.content}#overlay=${encodeURIComponent(overlayText)}`;
     await base44.entities.AdAsset.update(asset.id, {
       notes: (asset.notes || '') + `\n[Overlay applied: "${overlayText}"]`,
       revision_history: [...(asset.revision_history || []), { content: asset.content, replaced_at: new Date().toISOString(), note: 'Before overlay' }],

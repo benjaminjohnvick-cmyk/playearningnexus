@@ -39,7 +39,7 @@ export default function FavoriteGames({ userId, isOwnProfile }) {
       
       await base44.auth.updateMe({ favorite_games: newFavorites });
       toast.success(currentFavorites.includes(gameId) ? 'Removed from favorites' : 'Added to favorites');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update favorites');
     }
   };

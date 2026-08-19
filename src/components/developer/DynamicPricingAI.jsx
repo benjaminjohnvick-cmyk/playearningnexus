@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, TrendingUp, DollarSign, Target } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function DynamicPricingAI({ game, developerId }) {
+export default function DynamicPricingAI({ game, developerId: _developerId }) {
   const [suggestion, setSuggestion] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const queryClient = useQueryClient();

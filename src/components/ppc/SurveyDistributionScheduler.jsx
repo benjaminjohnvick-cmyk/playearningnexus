@@ -186,8 +186,9 @@ export default function SurveyDistributionScheduler({ user, aiWindow }) {
           {/* Channel-specific inputs */}
           {selectedChannels.includes('email') && (
             <div className="mt-4">
-              <label className="text-sm font-medium text-gray-700 block mb-1">Email Subject Line</label>
+              <label htmlFor="dist-email-subject" className="text-sm font-medium text-gray-700 block mb-1">Email Subject Line</label>
               <Input
+                id="dist-email-subject"
                 placeholder={`You're invited: ${selectedSurvey?.title || 'Our Survey'}`}
                 value={emailSubject}
                 onChange={e => setEmailSubject(e.target.value)}
@@ -197,8 +198,9 @@ export default function SurveyDistributionScheduler({ user, aiWindow }) {
           )}
           {(selectedChannels.includes('twitter') || selectedChannels.includes('facebook') || selectedChannels.includes('linkedin')) && (
             <div className="mt-4">
-              <label className="text-sm font-medium text-gray-700 block mb-1">Social Caption</label>
+              <label htmlFor="dist-social-caption" className="text-sm font-medium text-gray-700 block mb-1">Social Caption</label>
               <textarea
+                id="dist-social-caption"
                 rows={2}
                 placeholder={`Share your opinion! Take our survey: ${selectedSurvey?.title || ''}`}
                 value={socialCaption}
@@ -216,11 +218,11 @@ export default function SurveyDistributionScheduler({ user, aiWindow }) {
         <CardHeader><CardTitle>Step 3 — Target Audience & Schedule</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1 flex items-center gap-1">
+            <label htmlFor="dist-audience-segment" className="text-sm font-medium text-gray-700 block mb-1 flex items-center gap-1">
               <Users className="w-4 h-4" /> Audience Segment
             </label>
             <Select value={selectedSegment} onValueChange={setSelectedSegment}>
-              <SelectTrigger className="border-2">
+              <SelectTrigger id="dist-audience-segment" className="border-2">
                 <SelectValue placeholder="Select target audience…" />
               </SelectTrigger>
               <SelectContent>
@@ -232,10 +234,11 @@ export default function SurveyDistributionScheduler({ user, aiWindow }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1 flex items-center gap-1">
+            <label htmlFor="dist-schedule-date" className="text-sm font-medium text-gray-700 block mb-1 flex items-center gap-1">
               <Calendar className="w-4 h-4" /> Distribution Date & Time
             </label>
             <Input
+              id="dist-schedule-date"
               type="datetime-local"
               value={scheduleDate}
               onChange={e => setScheduleDate(e.target.value)}

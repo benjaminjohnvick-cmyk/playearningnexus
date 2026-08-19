@@ -131,9 +131,9 @@ function AdFormatCard({ format, onEdit }) {
 function AutomationToggleRow({ task, enabled, onToggle }) {
   return (
     <div className={`flex items-start gap-3 p-3 rounded-xl border transition-all ${enabled ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-      <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${enabled ? 'bg-green-500' : 'bg-gray-300'} cursor-pointer`} onClick={() => onToggle(task.id)}>
+      <button type="button" className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${enabled ? 'bg-green-500' : 'bg-gray-300'} cursor-pointer`} onClick={() => onToggle(task.id)}>
         <div className={`w-2 h-2 rounded-full bg-white transition-transform ${enabled ? 'translate-x-0' : ''}`} />
-      </div>
+      </button>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className="text-sm font-bold text-gray-900">{task.label}</p>
@@ -181,7 +181,7 @@ export default function AppLovinStyleMonetization({ game }) {
         automation_tasks: Object.entries(automations).filter(([, v]) => v).map(([k]) => k),
       });
       setLastOptResult(res?.data?.recommendations || 'AI optimization cycle completed.');
-    } catch (e) {
+    } catch {
       setLastOptResult('AI optimization ran (credits may be needed for full analysis).');
     }
     setRunningAI(false);

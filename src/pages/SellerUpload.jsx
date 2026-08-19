@@ -257,19 +257,19 @@ export default function SellerUpload() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Ad Title *</label>
-                    <input value={adForm.title} onChange={e => setAdForm(p => ({ ...p, title: e.target.value }))}
+                    <label htmlFor="seller-ad-title" className="block text-sm font-semibold text-slate-700 mb-1">Ad Title *</label>
+                    <input id="seller-ad-title" value={adForm.title} onChange={e => setAdForm(p => ({ ...p, title: e.target.value }))}
                       className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="e.g. Summer Sale Banner" />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Daily Budget (USD)</label>
-                    <input type="number" value={adForm.budget_usd} onChange={e => setAdForm(p => ({ ...p, budget_usd: e.target.value }))}
+                    <label htmlFor="seller-ad-budget" className="block text-sm font-semibold text-slate-700 mb-1">Daily Budget (USD)</label>
+                    <input id="seller-ad-budget" type="number" value={adForm.budget_usd} onChange={e => setAdForm(p => ({ ...p, budget_usd: e.target.value }))}
                       className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="50.00" min="0" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Ad Type *</label>
+                  <span className="block text-sm font-semibold text-slate-700 mb-2">Ad Type *</span>
                   <div className="flex flex-wrap gap-2">
                     {AD_TYPES.map(at => (
                       <button key={at.value} onClick={() => setAdForm(p => ({ ...p, ad_type: at.value }))}
@@ -282,26 +282,26 @@ export default function SellerUpload() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Target URL *</label>
-                    <input value={adForm.target_url} onChange={e => setAdForm(p => ({ ...p, target_url: e.target.value }))}
+                    <label htmlFor="seller-ad-target-url" className="block text-sm font-semibold text-slate-700 mb-1">Target URL *</label>
+                    <input id="seller-ad-target-url" value={adForm.target_url} onChange={e => setAdForm(p => ({ ...p, target_url: e.target.value }))}
                       className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="https://yoursite.com/landing" />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">CTA Button Text</label>
-                    <input value={adForm.cta_text} onChange={e => setAdForm(p => ({ ...p, cta_text: e.target.value }))}
+                    <label htmlFor="seller-ad-cta" className="block text-sm font-semibold text-slate-700 mb-1">CTA Button Text</label>
+                    <input id="seller-ad-cta" value={adForm.cta_text} onChange={e => setAdForm(p => ({ ...p, cta_text: e.target.value }))}
                       className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="Learn More" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Ad Description / Copy</label>
-                  <textarea value={adForm.description} onChange={e => setAdForm(p => ({ ...p, description: e.target.value }))}
+                  <label htmlFor="seller-ad-description" className="block text-sm font-semibold text-slate-700 mb-1">Ad Description / Copy</label>
+                  <textarea id="seller-ad-description" value={adForm.description} onChange={e => setAdForm(p => ({ ...p, description: e.target.value }))}
                     rows={3} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none"
                     placeholder="Write your ad copy here..." />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2"><Image className="inline w-4 h-4" /> Ad Image / Creative</label>
+                  <span className="block text-sm font-semibold text-slate-700 mb-2"><Image className="inline w-4 h-4" /> Ad Image / Creative</span>
                   <div className="flex items-center gap-4">
                     {adForm.image_url && (
                       <img src={adForm.image_url} alt="" className="w-24 h-16 object-cover rounded-lg border" />
@@ -315,8 +315,8 @@ export default function SellerUpload() {
 
                 {adForm.ad_type === 'video' && (
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Video URL</label>
-                    <input value={adForm.video_url} onChange={e => setAdForm(p => ({ ...p, video_url: e.target.value }))}
+                    <label htmlFor="seller-ad-video-url" className="block text-sm font-semibold text-slate-700 mb-1">Video URL</label>
+                    <input id="seller-ad-video-url" value={adForm.video_url} onChange={e => setAdForm(p => ({ ...p, video_url: e.target.value }))}
                       className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-400 outline-none" placeholder="https://..." />
                   </div>
                 )}
@@ -345,20 +345,20 @@ export default function SellerUpload() {
               {/* Title & Price */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Product Title *</label>
-                  <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
+                  <label htmlFor="seller-product-title" className="block text-sm font-semibold text-slate-700 mb-1">Product Title *</label>
+                  <input id="seller-product-title" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
                     className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="My Awesome Game" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1"><DollarSign className="inline w-4 h-4" /> Price (USD) *</label>
-                  <input type="number" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))}
+                  <label htmlFor="seller-product-price" className="block text-sm font-semibold text-slate-700 mb-1"><DollarSign className="inline w-4 h-4" /> Price (USD) *</label>
+                  <input id="seller-product-price" type="number" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))}
                     className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="9.99" min="0" />
                 </div>
               </div>
 
               {/* Category */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2"><Tag className="inline w-4 h-4" /> Category *</label>
+                <span className="block text-sm font-semibold text-slate-700 mb-2"><Tag className="inline w-4 h-4" /> Category *</span>
                 <div className="flex flex-wrap gap-2">
                   {filteredCategories.map(cat => (
                     <button key={cat.value} onClick={() => setForm(p => ({ ...p, category: cat.value, category_fields: {} }))}
@@ -387,8 +387,8 @@ export default function SellerUpload() {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Description *</label>
-                <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+                <label htmlFor="seller-product-description" className="block text-sm font-semibold text-slate-700 mb-1">Description *</label>
+                <textarea id="seller-product-description" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
                   rows={4} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
                   placeholder="Describe your product in detail (at least 20 words)..." />
                 <p className="text-xs text-slate-400 mt-1">{form.description.split(' ').filter(Boolean).length} words</p>
@@ -396,7 +396,7 @@ export default function SellerUpload() {
 
               {/* Platform */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Platforms</label>
+                <span className="block text-sm font-semibold text-slate-700 mb-2">Platforms</span>
                 <div className="flex gap-2 flex-wrap">
                   {PLATFORMS.map(p => (
                     <button key={p} onClick={() => handleTogglePlatform(p)}
@@ -410,20 +410,20 @@ export default function SellerUpload() {
               {/* Genre Tags & URL */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Genre Tags (comma-separated)</label>
-                  <input value={form.genre_tags} onChange={e => setForm(p => ({ ...p, genre_tags: e.target.value }))}
+                  <label htmlFor="seller-genre-tags" className="block text-sm font-semibold text-slate-700 mb-1">Genre Tags (comma-separated)</label>
+                  <input id="seller-genre-tags" value={form.genre_tags} onChange={e => setForm(p => ({ ...p, genre_tags: e.target.value }))}
                     className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="action, multiplayer, 3D" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Download / Access URL</label>
-                  <input value={form.download_url} onChange={e => setForm(p => ({ ...p, download_url: e.target.value }))}
+                  <label htmlFor="seller-download-url" className="block text-sm font-semibold text-slate-700 mb-1">Download / Access URL</label>
+                  <input id="seller-download-url" value={form.download_url} onChange={e => setForm(p => ({ ...p, download_url: e.target.value }))}
                     className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="https://..." />
                 </div>
               </div>
 
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2"><Image className="inline w-4 h-4" /> Product Images</label>
+                <span className="block text-sm font-semibold text-slate-700 mb-2"><Image className="inline w-4 h-4" /> Product Images</span>
                 <div className="flex flex-wrap gap-3 mb-3">
                   {form.images.map((img, i) => (
                     <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-slate-200">

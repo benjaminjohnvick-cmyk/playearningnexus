@@ -275,7 +275,7 @@ Worth checking out 🙌`,
 
 function BannerCard({ banner, referralCode, onCopy }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl shadow-lg cursor-pointer group" onClick={() => onCopy(banner.copyText(referralCode))}>
+    <div className="relative overflow-hidden rounded-2xl shadow-lg cursor-pointer group" role="button" tabIndex={0} onClick={() => onCopy(banner.copyText(referralCode))} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onCopy(banner.copyText(referralCode)); } }}>
       <div className={`h-40 bg-gradient-to-br ${banner.gradient} flex flex-col items-center justify-center p-4 text-center`}>
         <p className="text-3xl mb-1">{banner.emoji}</p>
         <p className="text-white font-bold text-lg leading-tight">{banner.headline}</p>
@@ -346,7 +346,7 @@ const BANNERS = [
 
 // ─── Template Card ───────────────────────────────────────────────────────────
 
-function TemplateCard({ template, platform, referralLink }) {
+function TemplateCard({ template, platform, referralLink: _referralLink }) {
   const [copied, setCopied] = useState(false);
 
   const fullText = template.subject

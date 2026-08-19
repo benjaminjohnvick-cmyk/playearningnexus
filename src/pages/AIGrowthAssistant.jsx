@@ -161,7 +161,7 @@ Return a JSON object like:
       setInsights(result.insights || []);
       setLastGenerated(new Date());
       toast.success('Insights generated!');
-    } catch (e) {
+    } catch {
       toast.error('Failed to generate insights');
     } finally {
       setGeneratingInsights(false);
@@ -190,7 +190,7 @@ Be specific, encouraging, and data-driven. Keep it under 300 words.`;
       const report = await base44.integrations.Core.InvokeLLM({ prompt });
       setWeeklyReport(report);
       toast.success('Weekly report ready!');
-    } catch (e) {
+    } catch {
       toast.error('Failed to generate report');
     } finally {
       setGeneratingReport(false);

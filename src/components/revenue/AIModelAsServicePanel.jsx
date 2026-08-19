@@ -52,7 +52,7 @@ const AI_MODELS = [
   },
 ];
 
-export default function AIModelAsServicePanel({ user }) {
+export default function AIModelAsServicePanel({ user: _user }) {
   const [testingModel, setTestingModel] = useState(null);
   const [testInput, setTestInput] = useState('');
   const [testOutput, setTestOutput] = useState('');

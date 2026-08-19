@@ -9,7 +9,7 @@ export default function AdABTestingEngine({ ads }) {
   const [variations, setVariations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [rotating, setRotating] = useState(false);
-  const [activeVariation, setActiveVariation] = useState(0);
+  const [_activeVariation, _setActiveVariation] = useState(0);
   const [winner, setWinner] = useState(null);
 
   const activeAds = ads.filter(a => a.status === 'active' || a.status === 'paused');

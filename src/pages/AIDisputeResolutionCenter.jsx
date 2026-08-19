@@ -99,7 +99,7 @@ export default function AIDisputeResolutionCenter() {
       // Immediately trigger AI analysis
       setAnalyzing(true);
       await runAIAnalysis(dispute.id, dispute);
-    } catch (e) {
+    } catch {
       toast.error('Submission failed. Please try again.');
     }
     setSubmitting(false);
@@ -206,7 +206,7 @@ Respond as JSON:
 
       setResolution({ ...result, status: finalStatus });
       queryClient.invalidateQueries({ queryKey: ['myAIDisputes'] });
-    } catch (e) {
+    } catch {
       toast.error('AI analysis failed. Your dispute was saved for manual review.');
     }
     setAnalyzing(false);
@@ -355,8 +355,9 @@ Respond as JSON:
                   <CardHeader><CardTitle className="text-base">2. Claim Details</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <label className="text-xs font-bold text-gray-600 mb-1 block">Describe what happened *</label>
+                      <label htmlFor="claim-description" className="text-xs font-bold text-gray-600 mb-1 block">Describe what happened *</label>
                       <textarea
+                        id="claim-description"
                         className="w-full border-2 rounded-xl px-4 py-3 text-sm min-h-[100px] resize-none focus:outline-none focus:border-purple-400"
                         placeholder="E.g. I completed the TechCorp survey on May 15th and was not credited the $5.00 reward. My survey ID was XXXX..."
                         value={description}
@@ -365,13 +366,13 @@ Respond as JSON:
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-xs font-bold text-gray-600 mb-1 block">Amount Claimed ($)</label>
-                        <input className="w-full border-2 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-purple-400"
+                        <label htmlFor="claim-amount" className="text-xs font-bold text-gray-600 mb-1 block">Amount Claimed ($)</label>
+                        <input id="claim-amount" className="w-full border-2 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-purple-400"
                           placeholder="e.g. 5.00" type="number" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} />
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-gray-600 mb-1 block">Transaction / Survey ID (optional)</label>
-                        <input className="w-full border-2 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-purple-400"
+                        <label htmlFor="claim-transaction-id" className="text-xs font-bold text-gray-600 mb-1 block">Transaction / Survey ID (optional)</label>
+                        <input id="claim-transaction-id" className="w-full border-2 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-purple-400"
                           placeholder="e.g. TXN-12345" value={transactionId} onChange={e => setTransactionId(e.target.value)} />
                       </div>
                     </div>

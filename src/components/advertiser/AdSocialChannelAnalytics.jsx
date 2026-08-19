@@ -61,7 +61,7 @@ function generateWeeklyTrend(platforms) {
 function PlatformCard({ platform, selected, onClick }) {
   const trend = platform.roas > 1 ? 'up' : 'down';
   return (
-    <div onClick={onClick} className={`border rounded-2xl p-4 cursor-pointer transition-all ${selected ? 'ring-2 border-white/20' : 'border-gray-700 hover:border-gray-500'}`}
+    <div role="button" tabIndex={0} onClick={onClick} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(e); } }} className={`border rounded-2xl p-4 cursor-pointer transition-all ${selected ? 'ring-2 border-white/20' : 'border-gray-700 hover:border-gray-500'}`}
       style={selected ? { borderColor: platform.color + '60', backgroundColor: platform.color + '08' } : {}}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">

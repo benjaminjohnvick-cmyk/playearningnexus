@@ -81,19 +81,19 @@ export default function AdminCredentialsPanel() {
         <CardHeader><CardTitle className="text-base flex items-center gap-2"><Plus className="w-4 h-4" /> Add New Credential</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-xs font-semibold text-gray-600 block mb-1">Username <span className="text-red-500">*</span></label>
-            <Input placeholder="e.g. admin" value={form.username}
+            <label htmlFor="cred-username" className="text-xs font-semibold text-gray-600 block mb-1">Username <span className="text-red-500">*</span></label>
+            <Input id="cred-username" placeholder="e.g. admin" value={form.username}
               onChange={e => setForm(f => ({ ...f, username: e.target.value }))} />
           </div>
           <div>
-            <label className="text-xs font-semibold text-gray-600 block mb-1">Label (optional)</label>
-            <Input placeholder="e.g. Main Admin" value={form.label}
+            <label htmlFor="cred-label" className="text-xs font-semibold text-gray-600 block mb-1">Label (optional)</label>
+            <Input id="cred-label" placeholder="e.g. Main Admin" value={form.label}
               onChange={e => setForm(f => ({ ...f, label: e.target.value }))} />
           </div>
           <div>
-            <label className="text-xs font-semibold text-gray-600 block mb-1">Password <span className="text-red-500">*</span></label>
+            <label htmlFor="cred-password" className="text-xs font-semibold text-gray-600 block mb-1">Password <span className="text-red-500">*</span></label>
             <div className="relative">
-              <Input type={showPass ? 'text' : 'password'} placeholder="Min 8 characters"
+              <Input id="cred-password" type={showPass ? 'text' : 'password'} placeholder="Min 8 characters"
                 value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
               <button type="button" onClick={() => setShowPass(!showPass)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -102,8 +102,8 @@ export default function AdminCredentialsPanel() {
             </div>
           </div>
           <div>
-            <label className="text-xs font-semibold text-gray-600 block mb-1">Confirm Password <span className="text-red-500">*</span></label>
-            <Input type="password" placeholder="Re-enter password"
+            <label htmlFor="cred-confirm-password" className="text-xs font-semibold text-gray-600 block mb-1">Confirm Password <span className="text-red-500">*</span></label>
+            <Input id="cred-confirm-password" type="password" placeholder="Re-enter password"
               value={form.confirmPassword} onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))} />
           </div>
           {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{error}</p>}

@@ -37,7 +37,7 @@ function newQuestion(type) {
 }
 
 // ── Question Editor ────────────────────────────────────────────────────────────
-function QuestionEditor({ q, index, onUpdate, onDelete, totalQuestions }) {
+function QuestionEditor({ q, index, onUpdate, onDelete, totalQuestions: _totalQuestions }) {
   const [expanded, setExpanded] = useState(true);
   const cfg = QUESTION_TYPES.find(t => t.type === q.type);
   const Icon = cfg?.icon || FileText;
@@ -54,7 +54,7 @@ function QuestionEditor({ q, index, onUpdate, onDelete, totalQuestions }) {
   return (
     <div className={`bg-white border-2 rounded-xl transition-all ${expanded ? 'border-indigo-200 shadow-md' : 'border-gray-100 shadow-sm'}`}>
       {/* Header row */}
-      <div className="flex items-center gap-2 p-3 cursor-pointer" onClick={() => setExpanded(e => !e)}>
+      <div className="flex items-center gap-2 p-3 cursor-pointer" role="button" tabIndex={0} onClick={() => setExpanded(e => !e)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(x => !x); } }}>
         <GripVertical className="w-4 h-4 text-gray-300 flex-shrink-0" />
         <span className="text-xs font-bold text-gray-400 w-5">{index + 1}</span>
         <Badge className={`text-xs ${cfg?.color || 'bg-gray-100 text-gray-700'}`}>
@@ -429,20 +429,20 @@ export default function SurveyTemplateBuilder() {
                   <CardHeader className="pb-2"><CardTitle className="text-sm">Survey Settings</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 block mb-1">Title *</label>
-                      <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Survey title…" className="border-2" />
+                      <label htmlFor="stb-title" className="text-xs font-semibold text-gray-500 block mb-1">Title *</label>
+                      <Input id="stb-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="Survey title…" className="border-2" />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 block mb-1">Description</label>
-                      <Input value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief description…" className="border-2" />
+                      <label htmlFor="stb-description" className="text-xs font-semibold text-gray-500 block mb-1">Description</label>
+                      <Input id="stb-description" value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief description…" className="border-2" />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 block mb-1">Category</label>
-                      <Input value={category} onChange={e => setCategory(e.target.value)} placeholder="e.g. Health, Tech…" className="border-2" />
+                      <label htmlFor="stb-category" className="text-xs font-semibold text-gray-500 block mb-1">Category</label>
+                      <Input id="stb-category" value={category} onChange={e => setCategory(e.target.value)} placeholder="e.g. Health, Tech…" className="border-2" />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 block mb-1">Est. Time (min)</label>
-                      <Input type="number" min={1} max={60} value={estTime}
+                      <label htmlFor="stb-est-time" className="text-xs font-semibold text-gray-500 block mb-1">Est. Time (min)</label>
+                      <Input id="stb-est-time" type="number" min={1} max={60} value={estTime}
                         onChange={e => setEstTime(Number(e.target.value))} className="border-2 w-24" />
                     </div>
                   </CardContent>

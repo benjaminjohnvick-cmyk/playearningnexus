@@ -12,7 +12,7 @@ import LiveLeaderboard from '@/components/tournaments/LiveLeaderboard';
 export default function TournamentDetails() {
   const [searchParams] = useSearchParams();
   const tournamentId = searchParams.get('id');
-  const [user, setUser] = useState(null);
+  const [_user, setUser] = useState(null);
 
   React.useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -36,7 +36,7 @@ export default function TournamentDetails() {
     enabled: !!tournamentId,
   });
 
-  const { data: matches = [] } = useQuery({
+  const { data: _matches = [] } = useQuery({
     queryKey: ['tournamentMatches', tournamentId],
     queryFn: async () => {
       const res = await base44.entities.TournamentMatch.filter({ tournament_id: tournamentId });
@@ -153,7 +153,7 @@ export default function TournamentDetails() {
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-2">
-                  {participants.map((p, idx) => (
+                  {participants.map((p, _idx) => (
                     <div key={p.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
                       <div className="flex items-center gap-3">
                         <span className="font-bold text-gray-600">#{p.seed_number}</span>

@@ -137,16 +137,16 @@ export default function AdminClaimsPanel() {
                   <p className="text-xs font-bold text-indigo-800 uppercase tracking-wide">Review Decision</p>
                   <div className="grid md:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Credit to Issue ($)</label>
+                      <label className="text-xs text-gray-500 block mb-1">Credit to Issue ($)
                       <input type="number" value={creditAmount} onChange={e => setCreditAmount(e.target.value)}
                         className="w-full border border-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
-                        step="0.01" min="0" />
+                        step="0.01" min="0" /></label>
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Admin Notes (sent to user)</label>
+                      <label className="text-xs text-gray-500 block mb-1">Admin Notes (sent to user)
                       <textarea value={adminNotes} onChange={e => setAdminNotes(e.target.value)} rows={2}
                         className="w-full border border-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400 resize-none"
-                        placeholder="Reason for approval / denial..." />
+                        placeholder="Reason for approval / denial..." /></label>
                     </div>
                   </div>
                   <div className="flex gap-2">

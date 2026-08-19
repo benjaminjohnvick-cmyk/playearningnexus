@@ -73,8 +73,9 @@ export default function SurveyABTestBuilder({ userSurveys = [] }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-900 mb-2 block">Test Title</label>
+              <label htmlFor="abtest-title" className="text-sm font-medium text-gray-900 mb-2 block">Test Title</label>
               <Input
+                id="abtest-title"
                 placeholder="e.g., 'Question Wording Test'"
                 value={testTitle}
                 onChange={(e) => setTestTitle(e.target.value)}
@@ -82,8 +83,9 @@ export default function SurveyABTestBuilder({ userSurveys = [] }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-900 mb-2 block">Hypothesis</label>
+              <label htmlFor="abtest-hypothesis" className="text-sm font-medium text-gray-900 mb-2 block">Hypothesis</label>
               <Textarea
+                id="abtest-hypothesis"
                 placeholder="What are you testing? E.g., 'Shorter questions will improve completion rates'"
                 value={hypothesis}
                 onChange={(e) => setHypothesis(e.target.value)}
@@ -92,8 +94,9 @@ export default function SurveyABTestBuilder({ userSurveys = [] }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-900 mb-2 block">Sample Size Per Variant</label>
+              <label htmlFor="abtest-sample-size" className="text-sm font-medium text-gray-900 mb-2 block">Sample Size Per Variant</label>
               <Input
+                id="abtest-sample-size"
                 type="number"
                 min="10"
                 max="10000"
@@ -134,9 +137,9 @@ export default function SurveyABTestBuilder({ userSurveys = [] }) {
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-900 mb-2 block">Variant A</label>
+                <label htmlFor="abtest-variant-a" className="text-sm font-medium text-gray-900 mb-2 block">Variant A</label>
                 <Select value={surveyAId} onValueChange={setSurveyAId}>
-                  <SelectTrigger>
+                  <SelectTrigger id="abtest-variant-a">
                     <SelectValue placeholder="Select survey..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -147,9 +150,9 @@ export default function SurveyABTestBuilder({ userSurveys = [] }) {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-900 mb-2 block">Variant B</label>
+                <label htmlFor="abtest-variant-b" className="text-sm font-medium text-gray-900 mb-2 block">Variant B</label>
                 <Select value={surveyBId} onValueChange={setSurveyBId}>
-                  <SelectTrigger>
+                  <SelectTrigger id="abtest-variant-b">
                     <SelectValue placeholder="Select survey..." />
                   </SelectTrigger>
                   <SelectContent>

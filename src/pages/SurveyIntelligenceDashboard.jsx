@@ -27,7 +27,7 @@ const STATUS_CONFIG = {
   implemented:    { label: 'Implemented', color: 'bg-blue-100 text-blue-700' },
 };
 
-function RecommendationCard({ change, analysisId, onStatusUpdate }) {
+function RecommendationCard({ change, analysisId: _analysisId, onStatusUpdate }) {
   const [expanded, setExpanded] = useState(false);
   const priority = PRIORITY_CONFIG[change.priority] || PRIORITY_CONFIG.medium;
   const status = STATUS_CONFIG[change.status] || STATUS_CONFIG.pending_review;

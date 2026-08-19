@@ -75,7 +75,10 @@ export default function PayoutNotificationBell({ userId }) {
                 return (
                   <div
                     key={n.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => n.status === 'unread' && markRead(n.id)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (n.status === 'unread') markRead(n.id); } }}
                     className={`flex gap-3 p-3 cursor-pointer hover:bg-gray-50 transition-colors ${n.status === 'unread' ? 'bg-blue-50/40' : ''}`}
                   >
                     <div className={`p-2 rounded-lg flex-shrink-0 ${colorClass}`}>

@@ -179,29 +179,29 @@ export default function CampaignCreator({ userId, onCreated, onClose }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-slate-400 text-sm mb-1 block">Total Budget ($)</label>
-                <Input type="number" value={form.budget_total} onChange={e => setForm(f => ({ ...f, budget_total: +e.target.value }))}
+                <label htmlFor="campaign-budget-total" className="text-slate-400 text-sm mb-1 block">Total Budget ($)</label>
+                <Input id="campaign-budget-total" type="number" value={form.budget_total} onChange={e => setForm(f => ({ ...f, budget_total: +e.target.value }))}
                   className="bg-slate-800 border-slate-600 text-white" />
               </div>
               <div>
-                <label className="text-slate-400 text-sm mb-1 block">Daily Cap ($)</label>
-                <Input type="number" value={form.budget_daily} onChange={e => setForm(f => ({ ...f, budget_daily: +e.target.value }))}
+                <label htmlFor="campaign-budget-daily" className="text-slate-400 text-sm mb-1 block">Daily Cap ($)</label>
+                <Input id="campaign-budget-daily" type="number" value={form.budget_daily} onChange={e => setForm(f => ({ ...f, budget_daily: +e.target.value }))}
                   className="bg-slate-800 border-slate-600 text-white" />
               </div>
               <div>
-                <label className="text-slate-400 text-sm mb-1 block">Age Min</label>
-                <Input type="number" value={form.demographics.age_min} onChange={e => setForm(f => ({ ...f, demographics: { ...f.demographics, age_min: +e.target.value } }))}
+                <label htmlFor="campaign-age-min" className="text-slate-400 text-sm mb-1 block">Age Min</label>
+                <Input id="campaign-age-min" type="number" value={form.demographics.age_min} onChange={e => setForm(f => ({ ...f, demographics: { ...f.demographics, age_min: +e.target.value } }))}
                   className="bg-slate-800 border-slate-600 text-white" />
               </div>
               <div>
-                <label className="text-slate-400 text-sm mb-1 block">Age Max</label>
-                <Input type="number" value={form.demographics.age_max} onChange={e => setForm(f => ({ ...f, demographics: { ...f.demographics, age_max: +e.target.value } }))}
+                <label htmlFor="campaign-age-max" className="text-slate-400 text-sm mb-1 block">Age Max</label>
+                <Input id="campaign-age-max" type="number" value={form.demographics.age_max} onChange={e => setForm(f => ({ ...f, demographics: { ...f.demographics, age_max: +e.target.value } }))}
                   className="bg-slate-800 border-slate-600 text-white" />
               </div>
             </div>
 
             <div>
-              <label className="text-slate-400 text-sm mb-2 block flex items-center gap-1"><Users className="w-3 h-3" /> Interests</label>
+              <span className="text-slate-400 text-sm mb-2 block flex items-center gap-1"><Users className="w-3 h-3" /> Interests</span>
               <div className="flex flex-wrap gap-2">
                 {INTERESTS.map(i => (
                   <button key={i} onClick={() => toggleInterest(i, 'interests')}
@@ -213,7 +213,7 @@ export default function CampaignCreator({ userId, onCreated, onClose }) {
             </div>
 
             <div>
-              <label className="text-slate-400 text-sm mb-2 block">Platforms</label>
+              <span className="text-slate-400 text-sm mb-2 block">Platforms</span>
               <div className="flex flex-wrap gap-2">
                 {PLATFORMS.map(p => (
                   <button key={p} onClick={() => toggleInterest(p, 'platforms')}
@@ -225,7 +225,7 @@ export default function CampaignCreator({ userId, onCreated, onClose }) {
             </div>
 
             <div>
-              <label className="text-slate-400 text-sm mb-2 block">Gamer Types</label>
+              <span className="text-slate-400 text-sm mb-2 block">Gamer Types</span>
               <div className="flex flex-wrap gap-2">
                 {GAMER_TYPES.map(g => (
                   <button key={g} onClick={() => toggleInterest(g, 'gamer_types')}
@@ -251,8 +251,8 @@ export default function CampaignCreator({ userId, onCreated, onClose }) {
             <h3 className="text-white font-semibold text-lg flex items-center gap-2"><Sparkles className="w-5 h-5 text-yellow-400" /> AI Campaign Generation</h3>
 
             <div>
-              <label className="text-slate-400 text-sm mb-1 block">Campaign Name</label>
-              <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              <label htmlFor="campaign-name" className="text-slate-400 text-sm mb-1 block">Campaign Name</label>
+              <Input id="campaign-name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="Enter name or generate with AI..."
                 className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-500" />
             </div>

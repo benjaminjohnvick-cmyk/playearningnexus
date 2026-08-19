@@ -52,7 +52,7 @@ export default function SocialMediaAdPoster() {
       });
       setConversation(conv);
       setMessages(conv.messages || []);
-    } catch (e) {
+    } catch {
       // not logged in
     }
     setLoading(false);
@@ -113,7 +113,7 @@ For each platform, generate platform-optimized ad copy with relevant hashtags. F
 
     try {
       base44.agents.addMessage(conversation, { role: 'user', content: input });
-    } catch (e) {
+    } catch {
       // agent error
     }
   };

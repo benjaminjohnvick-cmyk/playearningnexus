@@ -265,7 +265,7 @@ Tasks should focus on earning activities. Return JSON array: id, title, descript
     setLoadingAi(false);
   };
 
-  const allCoreDone = CORE_TASKS.every(t => completedTasks.includes(t.id));
+  const _allCoreDone = CORE_TASKS.every(t => completedTasks.includes(t.id));
   const allMandatoryDone = ALL_MANDATORY.every(t => completedTasks.includes(t.id));
   const totalTasks = ALL_MANDATORY.length + aiTasks.length;
   const completedCount = completedTasks.length;
@@ -276,7 +276,7 @@ Tasks should focus on earning activities. Return JSON array: id, title, descript
     return icons[name] || Star;
   };
 
-  const renderTaskCard = (task, idx, isCore = false) => {
+  const renderTaskCard = (task, idx, _isCore = false) => {
     const done = completedTasks.includes(task.id);
     const isActive = currentTaskId === task.id && !done;
     const Icon = task.icon || getIcon(task.icon_name);

@@ -89,7 +89,7 @@ export default function GameVotingHub() {
   });
 
   const VoteSurveyCard = ({ survey }) => {
-    const [voted, setVoted] = useState(null);
+    const [_voted, _setVoted] = useState(null);
     const [voting, setVoting] = useState(null);
     const total = survey.options?.reduce((s, o) => s + (o.votes || 0), 0) || 0;
     const myVote = survey.options?.find(o => (o.voter_ids || []).includes(user?.id));

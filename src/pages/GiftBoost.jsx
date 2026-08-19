@@ -48,10 +48,10 @@ export default function GiftBoost() {
       <p className="text-sm text-gray-600">Send someone a little boost. It's funded by the platform as a thank-you — <strong>not</strong> money from your balance — so nothing moves from your wallet to theirs.</p>
 
       <Card><CardContent className="p-5 space-y-3">
-        <div><label className="text-xs text-gray-500">Send to (referral code, email, or user id)</label><Input value={to} onChange={(e) => setTo(e.target.value)} placeholder="their code / email" /></div>
+        <div><label htmlFor="giftboost-to" className="text-xs text-gray-500">Send to (referral code, email, or user id)</label><Input id="giftboost-to" value={to} onChange={(e) => setTo(e.target.value)} placeholder="their code / email" /></div>
         <div className="flex items-end gap-3 flex-wrap">
           <div><label className="text-xs text-gray-500">Amount (max {money(c.max_usd)})</label><div className="flex items-center gap-1"><span className="text-gray-400">$</span><Input type="number" min="0" max={c.max_usd} value={amt} onChange={(e) => setAmt(e.target.value)} className="w-24" /></div></div>
-          <div className="flex-1 min-w-[140px]"><label className="text-xs text-gray-500">Message (optional)</label><Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Nice work!" /></div>
+          <div className="flex-1 min-w-[140px]"><label htmlFor="giftboost-message" className="text-xs text-gray-500">Message (optional)</label><Input id="giftboost-message" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Nice work!" /></div>
         </div>
         <Button onClick={send} disabled={busy || !to || !(Number(amt) > 0) || c.remaining_today <= 0} className="bg-[#16264f] hover:bg-[#0a142e]">
           {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : `Send ${money(Number(amt) || 0)} boost`}

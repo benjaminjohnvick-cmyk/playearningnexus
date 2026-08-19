@@ -19,7 +19,7 @@ export default function ImageEditor({ imageUrl, onSave, onClose, imageId }) {
   const [textOverlay, setTextOverlay] = useState('');
   const [textColor, setTextColor] = useState('#ffffff');
   const [textSize, setTextSize] = useState(48);
-  const canvasRef = useRef(null);
+  const _canvasRef = useRef(null);
   const queryClient = useQueryClient();
 
   const filters = [
@@ -132,7 +132,7 @@ export default function ImageEditor({ imageUrl, onSave, onClose, imageId }) {
       };
       
       img.src = imageUrl;
-    } catch (error) {
+    } catch {
       toast.error('Failed to save edited image');
     }
   };

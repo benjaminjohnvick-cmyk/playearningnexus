@@ -14,7 +14,7 @@ import { Loader2, X } from 'lucide-react';
 export default function SurveyInterstitialAd({ onDone }) {
   const [state, setState] = useState('loading');   // loading | showing | done
   const [ad, setAd] = useState(null);
-  const [seconds, setSeconds] = useState(30);
+  const [_seconds, setSeconds] = useState(30);
   const [left, setLeft] = useState(30);
   const timer = useRef(null);
 

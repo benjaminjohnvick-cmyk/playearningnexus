@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ChatWidget({ currentUserId }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, _setSelectedUser] = useState(null);
   const [message, setMessage] = useState('');
   const messagesEndRef = useRef(null);
   const queryClient = useQueryClient();

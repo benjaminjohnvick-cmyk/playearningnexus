@@ -135,9 +135,9 @@ export default function AffiliateDisputeCenter() {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Dispute Type *</label>
+                  <label htmlFor="affdispute-type" className="text-sm font-medium">Dispute Type *</label>
                   <Select value={form.dispute_type} onValueChange={v => setForm({ ...form, dispute_type: v })}>
-                    <SelectTrigger>
+                    <SelectTrigger id="affdispute-type">
                       <SelectValue placeholder="Select dispute type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -150,16 +150,17 @@ export default function AffiliateDisputeCenter() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Transaction ID (if applicable)</label>
-                  <Input placeholder="e.g. txn_abc123" value={form.transaction_id} onChange={e => setForm({ ...form, transaction_id: e.target.value })} />
+                  <label htmlFor="affdispute-transaction-id" className="text-sm font-medium">Transaction ID (if applicable)</label>
+                  <Input id="affdispute-transaction-id" placeholder="e.g. txn_abc123" value={form.transaction_id} onChange={e => setForm({ ...form, transaction_id: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Amount Disputed ($)</label>
-                  <Input type="number" placeholder="0.00" value={form.amount_disputed} onChange={e => setForm({ ...form, amount_disputed: e.target.value })} />
+                  <label htmlFor="affdispute-amount" className="text-sm font-medium">Amount Disputed ($)</label>
+                  <Input id="affdispute-amount" type="number" placeholder="0.00" value={form.amount_disputed} onChange={e => setForm({ ...form, amount_disputed: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Description *</label>
+                  <label htmlFor="affdispute-description" className="text-sm font-medium">Description *</label>
                   <textarea
+                    id="affdispute-description"
                     className="w-full border rounded-md p-3 text-sm"
                     rows={5}
                     placeholder="Describe the issue in detail..."
@@ -169,7 +170,7 @@ export default function AffiliateDisputeCenter() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Upload Proof</label>
+                  <span className="text-sm font-medium">Upload Proof</span>
                   <div className="border-2 border-dashed rounded-lg p-6 text-center mt-2">
                     <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                     <p className="text-sm text-slate-600 mb-2">Upload screenshots, emails, or documents</p>

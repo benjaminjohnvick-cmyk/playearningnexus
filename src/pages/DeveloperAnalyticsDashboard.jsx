@@ -79,7 +79,7 @@ export default function DeveloperAnalyticsDashboard() {
     setLoading(false);
   };
 
-  const aggregatePayouts = (payouts, range) => {
+  const aggregatePayouts = (payouts, _range) => {
     const groups = {};
     payouts.forEach(p => {
       const date = new Date(p.created_date).toLocaleDateString();
@@ -90,7 +90,7 @@ export default function DeveloperAnalyticsDashboard() {
     return Object.values(groups).slice(-10);
   };
 
-  const aggregateReferrals = (referrals, range) => {
+  const aggregateReferrals = (referrals, _range) => {
     const months = {};
     referrals.forEach(r => {
       const month = new Date(r.created_date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
@@ -149,9 +149,9 @@ export default function DeveloperAnalyticsDashboard() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium text-slate-300 block mb-2">Time Range</label>
+                <label htmlFor="dad-time-range" className="text-sm font-medium text-slate-300 block mb-2">Time Range</label>
                 <Select value={timeRange} onValueChange={setTimeRange}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectTrigger id="dad-time-range" className="bg-slate-700 border-slate-600 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -162,9 +162,9 @@ export default function DeveloperAnalyticsDashboard() {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-300 block mb-2">Game Category</label>
+                <label htmlFor="dad-game-category" className="text-sm font-medium text-slate-300 block mb-2">Game Category</label>
                 <Select value={gameCategory} onValueChange={setGameCategory}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectTrigger id="dad-game-category" className="bg-slate-700 border-slate-600 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -176,9 +176,9 @@ export default function DeveloperAnalyticsDashboard() {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-300 block mb-2">Affiliate Tier</label>
+                <label htmlFor="dad-affiliate-tier" className="text-sm font-medium text-slate-300 block mb-2">Affiliate Tier</label>
                 <Select value={affiliateTier} onValueChange={setAffiliateTier}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectTrigger id="dad-affiliate-tier" className="bg-slate-700 border-slate-600 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

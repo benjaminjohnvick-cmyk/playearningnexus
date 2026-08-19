@@ -33,7 +33,7 @@ export default function AutoGameFeedbackEngine({ games = [] }) {
     for (const game of games.slice(0, 3)) {
       try {
         // 1. Auto-generate feedback survey
-        const surveyRes = await base44.functions.invoke('aiDeveloperFeedbackSurvey', {
+        const _surveyRes = await base44.functions.invoke('aiDeveloperFeedbackSurvey', {
           action: 'generate',
           game_id: game.id,
           game_title: game.title,

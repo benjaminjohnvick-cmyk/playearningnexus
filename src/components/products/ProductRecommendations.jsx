@@ -68,7 +68,7 @@ export default function ProductRecommendations({ user }) {
         });
 
         return response.recommendations || [];
-      } catch (error) {
+      } catch {
         // Fallback recommendations
         return [
           {

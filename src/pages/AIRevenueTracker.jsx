@@ -29,7 +29,7 @@ export default function AIRevenueTracker() {
       ]);
       setTransactions(txns || []);
       setPayouts(payoutData || []);
-    } catch (e) {
+    } catch {
       // not logged in
     }
     setLoading(false);
@@ -45,7 +45,7 @@ export default function AIRevenueTracker() {
   const pendingPayouts = payouts.filter(p => p.status === 'pending' || p.status === 'processing' || p.status === 'pending_approval' || p.status === 'approved');
   const pendingTotal = pendingPayouts.reduce((sum, p) => sum + (p.net_payout || p.gross_earnings || 0), 0);
   const completedPayouts = payouts.filter(p => p.status === 'completed');
-  const completedTotal = completedPayouts.reduce((sum, p) => sum + (p.net_payout || p.gross_earnings || 0), 0);
+  const _completedTotal = completedPayouts.reduce((sum, p) => sum + (p.net_payout || p.gross_earnings || 0), 0);
 
   const netBalance = incoming - outgoing - pendingTotal;
   const safeWithdrawalLimit = Math.max(0, netBalance - (incoming * 0.2)); // Keep 20% reserve

@@ -57,7 +57,7 @@ export default function AdDailyBudgetPacer({ ads, onRefresh }) {
   const [aiRunning, setAiRunning] = useState(false);
   const [aiResult, setAiResult] = useState(null);
   const [log, setLog] = useState([]);
-  const [plan, setPlan] = useState(null);
+  const [_plan, _setPlan] = useState(null);
   const [cycleCount, setCycleCount] = useState(0);
   const intervalRef = useRef(null);
 
@@ -128,16 +128,16 @@ export default function AdDailyBudgetPacer({ ads, onRefresh }) {
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Pacing Parameters</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">ROI Threshold <span className="text-gray-600">(below = low-performer)</span></label>
+            <label htmlFor="pacer-roi-threshold" className="text-xs text-gray-400 font-bold block mb-1">ROI Threshold <span className="text-gray-600">(below = low-performer)</span></label>
             <div className="flex items-center gap-2">
-              <input type="range" min="0.3" max="3" step="0.1" value={roiThreshold} onChange={e => setRoiThreshold(parseFloat(e.target.value))} className="flex-1 accent-yellow-500" />
+              <input id="pacer-roi-threshold" type="range" min="0.3" max="3" step="0.1" value={roiThreshold} onChange={e => setRoiThreshold(parseFloat(e.target.value))} className="flex-1 accent-yellow-500" />
               <span className="text-yellow-400 font-black text-sm w-10">{roiThreshold}x</span>
             </div>
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Daily Shift % <span className="text-gray-600">(from low-performers)</span></label>
+            <label htmlFor="pacer-shift-pct" className="text-xs text-gray-400 font-bold block mb-1">Daily Shift % <span className="text-gray-600">(from low-performers)</span></label>
             <div className="flex items-center gap-2">
-              <input type="range" min="5" max="60" step="5" value={shiftPct} onChange={e => setShiftPct(parseInt(e.target.value))} className="flex-1 accent-orange-500" />
+              <input id="pacer-shift-pct" type="range" min="5" max="60" step="5" value={shiftPct} onChange={e => setShiftPct(parseInt(e.target.value))} className="flex-1 accent-orange-500" />
               <span className="text-orange-400 font-black text-sm w-10">{shiftPct}%</span>
             </div>
           </div>

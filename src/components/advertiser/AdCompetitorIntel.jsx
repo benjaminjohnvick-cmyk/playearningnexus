@@ -108,7 +108,7 @@ Return JSON: { taglines: [{ text: string, why: string }] }`,
 
       setCounterTaglines(prev => ({ ...prev, [competitor.id]: result.taglines || [] }));
       toast.success('Counter-taglines generated!');
-    } catch (e) {
+    } catch {
       toast.error('Generation failed');
     }
     setGeneratingFor(null);

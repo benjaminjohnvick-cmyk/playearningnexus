@@ -62,8 +62,9 @@ export default function PPCNetworkPricing() {
         </div>
         <div className="grid md:grid-cols-2 gap-4 items-center">
           <div className="text-center">
-            <label className="block text-sm text-orange-200 mb-2">Platform Users</label>
+            <label htmlFor="ppc-platform-users" className="block text-sm text-orange-200 mb-2">Platform Users</label>
             <input
+              id="ppc-platform-users"
               type="number"
               value={userCount}
               onChange={e => setUserCount(Math.max(1, parseInt(e.target.value) || 1))}

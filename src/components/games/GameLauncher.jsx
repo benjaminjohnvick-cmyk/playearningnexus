@@ -33,7 +33,7 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
   const [playtime, setPlaytime] = useState(0);
   const [lastSaveTime, setLastSaveTime] = useState(null);
   const [showStore, setShowStore] = useState(false);
-  const [spectatorCount, setSpectatorCount] = useState(0);
+  const [_spectatorCount, setSpectatorCount] = useState(0);
   const gameContainerRef = useRef(null);
   const iframeRef = useRef(null);
   const playtimeIntervalRef = useRef(null);
@@ -289,6 +289,9 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
                       key={save.id}
                       className="p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors"
                       onClick={() => handleLoadSave(save)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleLoadSave(save); } }}
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium">{save.save_name}</span>
@@ -395,7 +398,7 @@ export default function GameLauncher({ game, user, isOpen, onClose }) {
   );
 }
 
-function TournamentQuickAccess({ game, user }) {
+function TournamentQuickAccess({ game, user: _user }) {
   const { data: gameTournaments = [] } = useQuery({
     queryKey: ['gameTournaments', game?.id],
     queryFn: () => base44.entities.Tournament.filter({

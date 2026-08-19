@@ -53,8 +53,8 @@ export default function UserDashboard() {
   const [user, setUser] = useState(null);
   const [showULA, setShowULA] = useState(false);
   const [showTrialExpired, setShowTrialExpired] = useState(false);
-  const [trialStartTime, setTrialStartTime] = useState(null);
-  const [currentGame, setCurrentGame] = useState(null);
+  const [_trialStartTime, setTrialStartTime] = useState(null);
+  const [_currentGame, setCurrentGame] = useState(null);
   const [showSharePrompt, setShowSharePrompt] = useState(false);
   const [gameToShare, setGameToShare] = useState(null);
   const queryClient = useQueryClient();
@@ -73,7 +73,7 @@ export default function UserDashboard() {
         }
         
         // Lockout logic moved to Surveys page
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -494,7 +494,7 @@ export default function UserDashboard() {
                       key={game.id}
                       game={game}
                       enableLauncher
-                      onInstall={(g) => toast.info('Game already in your library!')}
+                      onInstall={(_g) => toast.info('Game already in your library!')}
                     />
                   ))}
                 </div>

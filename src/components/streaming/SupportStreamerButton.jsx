@@ -134,8 +134,9 @@ export default function SupportStreamerButton({ streamer, game, viewer }) {
 
             <TabsContent value="credits" className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Amount (Credits)</label>
+                <label htmlFor="tip-amount-credits" className="text-sm font-medium mb-2 block">Amount (Credits)</label>
                 <Input
+                  id="tip-amount-credits"
                   type="number"
                   placeholder="100"
                   value={amount}
@@ -148,8 +149,9 @@ export default function SupportStreamerButton({ streamer, game, viewer }) {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Message (Optional)</label>
+                <label htmlFor="tip-message-credits" className="text-sm font-medium mb-2 block">Message (Optional)</label>
                 <Textarea
+                  id="tip-message-credits"
                   placeholder="Keep up the great work!"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
@@ -180,8 +182,9 @@ export default function SupportStreamerButton({ streamer, game, viewer }) {
 
             <TabsContent value="usd" className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Amount (USD)</label>
+                <label htmlFor="tip-amount-usd" className="text-sm font-medium mb-2 block">Amount (USD)</label>
                 <Input
+                  id="tip-amount-usd"
                   type="number"
                   placeholder="5.00"
                   value={amount}
@@ -192,8 +195,9 @@ export default function SupportStreamerButton({ streamer, game, viewer }) {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Message (Optional)</label>
+                <label htmlFor="tip-message-usd" className="text-sm font-medium mb-2 block">Message (Optional)</label>
                 <Textarea
+                  id="tip-message-usd"
                   placeholder="Keep up the great work!"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}

@@ -35,7 +35,7 @@ export default function Store() {
   const [productSearchResults, setProductSearchResults] = useState(null);
   const [activeTab, setActiveTab] = useState('games');
 
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
   const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function Store() {
     refetchInterval: 5000
   });
 
-  const { data: premiumMembership } = useQuery({
+  const { data: _premiumMembership } = useQuery({
     queryKey: ['premium-membership', user?.id],
     queryFn: async () => {
       const m = await base44.entities.PremiumMembership.filter({ user_id: user.id });
@@ -340,7 +340,7 @@ export default function Store() {
   );
 }
 
-function ProductCard({ product, type, owned, isWishlisted, onWishlist, onCheckout, onReview }) {
+function ProductCard({ product, type: _type, owned, isWishlisted, onWishlist, onCheckout, onReview: _onReview }) {
   return (
     <Card className="border-0 shadow-lg hover:shadow-xl transition-all group">
       <div className="relative overflow-hidden rounded-t-xl">

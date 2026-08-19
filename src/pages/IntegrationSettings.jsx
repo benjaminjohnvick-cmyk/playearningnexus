@@ -32,7 +32,7 @@ export default function IntegrationSettings() {
           return;
         }
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -90,7 +90,7 @@ export default function IntegrationSettings() {
   const elevenlabs = getIntegration('elevenlabs');
   const nvidia = getIntegration('nvidia_dgx_spark');
   const twilio = getIntegration('twilio_sms');
-  const cloud = getIntegration('cloud_autoscaling');
+  const _cloud = getIntegration('cloud_autoscaling');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">

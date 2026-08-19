@@ -88,7 +88,7 @@ export default function AIAutomationCenter() {
       const res = await base44.functions.invoke('aiPlatformInsights', {});
       setInsights(res.data);
       toast({ title: '✅ AI Insights Generated!', description: 'Platform analysis complete.' });
-    } catch (e) {
+    } catch {
       toast({ title: 'Error', description: 'Failed to generate insights.', variant: 'destructive' });
     } finally {
       setLoadingInsights(false);
@@ -107,7 +107,7 @@ export default function AIAutomationCenter() {
 
       const res = await base44.functions.invoke(fn, {});
       toast({ title: '✅ Automation Run!', description: JSON.stringify(res.data).slice(0, 120) });
-    } catch (e) {
+    } catch {
       toast({ title: 'Error', description: 'Automation failed.', variant: 'destructive' });
     } finally {
       setTestingId(null);

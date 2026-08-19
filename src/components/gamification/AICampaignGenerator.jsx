@@ -22,7 +22,7 @@ const priorityColors = {
   low: 'bg-gray-100 text-gray-600',
 };
 
-function CampaignCard({ campaign, index }) {
+function CampaignCard({ campaign, index: _index }) {
   const [expanded, setExpanded] = useState(false);
   const [launched, setLaunched] = useState(false);
   const Icon = campaignTypeIcons[campaign.campaign_type] || Sparkles;

@@ -57,7 +57,7 @@ export default function MarketTrendReport() {
       setGeneratedAt(res.data.generated_at);
       setDataPoints(res.data.data_points);
       toast.success('Market Trend Report generated!');
-    } catch (err) {
+    } catch {
       toast.error('Failed to generate report');
     }
     setLoading(false);

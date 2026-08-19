@@ -16,7 +16,7 @@ export default function RankedSurveyList({ user, onTakeSurvey }) {
     try {
       const res = await base44.functions.invoke('rankSurveysForUser', { limit: 20 });
       setSurveys(res.data?.surveys || []);
-    } catch (e) {
+    } catch {
       setError('Could not load personalized surveys');
     } finally {
       setLoading(false);

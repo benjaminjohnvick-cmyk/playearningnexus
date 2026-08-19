@@ -51,7 +51,7 @@ export default function LockoutModal({ user, isOpen, onClose }) {
 
       toast.success(`Lockout rescheduled to ${newTime}`);
       onClose();
-    } catch (error) {
+    } catch {
       toast.error('Failed to reschedule');
     }
   };

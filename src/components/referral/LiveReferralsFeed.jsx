@@ -76,7 +76,7 @@ export default function LiveReferralsFeed({ userId }) {
     if (referrals.length === 0) return;
 
     const interval = setInterval(() => {
-      const r = referrals[Math.floor(Math.random() * referrals.length)];
+      const _r = referrals[Math.floor(Math.random() * referrals.length)];
       const eventTypes = ['earn', 'active'];
       const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
       const idx = Math.floor(Math.random() * ANON_NAMES.length);

@@ -24,14 +24,14 @@ export default function AffiliateMarketplace() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -213,12 +213,18 @@ export default function AffiliateMarketplace() {
                           <img
                             src={product.product_image_url}
                             alt={product.product_name}
+                            role="button"
+                            tabIndex={0}
                             className="w-full h-48 object-cover rounded-t-xl cursor-pointer"
                             onClick={() => setSelectedProduct(product)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProduct(product); } }}
                           />
                         ) : (
                           <div className="w-full h-48 bg-gradient-to-br from-green-400 to-blue-600 rounded-t-xl cursor-pointer"
+                            role="button"
+                            tabIndex={0}
                             onClick={() => setSelectedProduct(product)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProduct(product); } }}
                           />
                         )}
                       </CardHeader>

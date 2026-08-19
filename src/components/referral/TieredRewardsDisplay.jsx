@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
 
-export default function TieredRewardsDisplay({ user, referralStats }) {
+export default function TieredRewardsDisplay({ user: _user, referralStats }) {
   const tiers = [
     {
       name: 'Bronze',

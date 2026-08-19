@@ -9,7 +9,7 @@ const TOTAL_CELLS = GRID_COLS * GRID_ROWS;
 // Simulate cell-level click data with latency, velocity, UA anomaly score
 function generateCellData(ads) {
   const cells = [];
-  const activeCnt = ads.filter(a => a.status === 'active').length || 1;
+  const _activeCnt = ads.filter(a => a.status === 'active').length || 1;
   for (let i = 0; i < TOTAL_CELLS; i++) {
     const latency = Math.floor(80 + Math.random() * 900); // ms
     const velocity = parseFloat((Math.random() * 12).toFixed(1)); // clicks/min
@@ -61,7 +61,7 @@ export default function AdFraudMapOverlay({ ads }) {
   useEffect(() => {
     if (autoBlock) {
       intervalRef.current = setInterval(() => {
-        setCells(prev => {
+        setCells(_prev => {
           const next = generateCellData(ads);
           const newBlocked = new Set(blocked);
           next.forEach(c => { if (c.isCritical) newBlocked.add(c.id); });
@@ -137,7 +137,8 @@ export default function AdFraudMapOverlay({ ads }) {
           {cells.map(cell => {
             const isBlocked = blocked.has(cell.id);
             return (
-              <div
+              <button
+                type="button"
                 key={cell.id}
                 onClick={() => !isBlocked && setSelected(selected?.id === cell.id ? null : cell)}
                 title={`Latency: ${cell.latency}ms | Vel: ${cell.velocity}/m | UA: ${cell.uaScore}`}

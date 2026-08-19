@@ -9,7 +9,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 export default function AIFinancialAdvisor() {
   const [user, setUser] = useState(null);
   const [advice, setAdvice] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     base44.auth.me().then(u => setUser(u));

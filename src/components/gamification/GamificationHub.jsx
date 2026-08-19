@@ -63,7 +63,7 @@ export default function GamificationHub({ user, stats = {}, todayEarnings = 0, t
   );
 
   const earnedBadges = BADGES.filter(b => b.threshold(userStats));
-  const lockedBadges = BADGES.filter(b => !b.threshold(userStats));
+  const _lockedBadges = BADGES.filter(b => !b.threshold(userStats));
 
   const tierProgressReferrals = nextTier
     ? Math.min(100, (activeReferrals / nextTier.minReferrals) * 100)

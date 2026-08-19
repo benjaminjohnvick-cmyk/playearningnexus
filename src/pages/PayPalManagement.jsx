@@ -33,7 +33,7 @@ export default function PayPalManagement() {
           return;
         }
         setUser(currentUser);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -86,7 +86,7 @@ export default function PayPalManagement() {
     }
   });
 
-  const createPayoutMutation = useMutation({
+  const _createPayoutMutation = useMutation({
     mutationFn: async ({ recipientType, recipientId, recipientEmail, amount, notes }) => {
       return await base44.entities.Payout.create({
         recipient_type: recipientType,

@@ -53,7 +53,7 @@ export default function PPCSessionWidget({ user, tier }) {
   const alreadyCompleted = todaySession?.[0]?.goal_met;
 
   const currentQ = SAMPLE_QUESTIONS[currentQIndex % SAMPLE_QUESTIONS.length];
-  const elapsedMinutes = sessionStartTime ? (Date.now() - sessionStartTime) / 60000 : 0;
+  const _elapsedMinutes = sessionStartTime ? (Date.now() - sessionStartTime) / 60000 : 0;
   const progressPct = Math.min(100, (sessionData.minutesCompleted / config.requiredMinutes) * 100);
 
   useEffect(() => {

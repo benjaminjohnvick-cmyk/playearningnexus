@@ -68,7 +68,7 @@ export default function Settings() {
         setNotificationPrefs(currentUser.notification_preferences || notificationPrefs);
         setLanguage(currentUser.preferred_language || 'en');
         setTwoFactorEnabled(currentUser.two_factor_enabled || false);
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };
@@ -84,7 +84,7 @@ export default function Settings() {
       toast.success('Profile updated successfully');
       const updatedUser = await base44.auth.me();
       setUser(updatedUser);
-    } catch (error) {
+    } catch {
       toast.error('Failed to update profile');
     } finally {
       setLoading(false);
@@ -150,21 +150,21 @@ export default function Settings() {
         notification_preferences: notificationPrefs
       });
       toast.success('Notification preferences saved');
-    } catch (error) {
+    } catch {
       toast.error('Failed to save preferences');
     } finally {
       setLoading(false);
     }
   };
 
-  const saveLanguage = async () => {
+  const _saveLanguage = async () => {
     setLoading(true);
     try {
       await base44.auth.updateMe({
         preferred_language: language
       });
       toast.success('Language preference saved');
-    } catch (error) {
+    } catch {
       toast.error('Failed to save language');
     } finally {
       setLoading(false);
@@ -183,7 +183,7 @@ export default function Settings() {
           ? 'Two-factor authentication enabled' 
           : 'Two-factor authentication disabled'
       );
-    } catch (error) {
+    } catch {
       toast.error('Failed to update security settings');
     } finally {
       setLoading(false);

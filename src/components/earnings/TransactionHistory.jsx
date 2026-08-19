@@ -62,13 +62,13 @@ export default function TransactionHistory({ user }) {
     refetchInterval: 15000,
   });
 
-  const { data: payouts = [], isLoading: loadingPayouts } = useQuery({
+  const { data: payouts = [], isLoading: _loadingPayouts } = useQuery({
     queryKey: ['all-payouts-history', user?.id],
     queryFn: () => base44.entities.Payout.filter({ user_id: user.id }, '-created_date', 50),
     enabled: !!user?.id,
   });
 
-  const { data: referrals = [] } = useQuery({
+  const { data: _referrals = [] } = useQuery({
     queryKey: ['referrals-history', user?.id],
     queryFn: () => base44.entities.Referral.filter({ referrer_user_id: user.id }),
     enabled: !!user?.id,

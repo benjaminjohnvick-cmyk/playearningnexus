@@ -95,7 +95,7 @@ export default function CheckoutChoices({ listing, onDone }) {
                   <div className="mt-2"><BankTowardItem listing={listing} /></div>
                 )}
                 {Active && o.key === 'earnback' && (
-                  <div className="mt-2" onClick={(e) => e.stopPropagation()}><EarnBackPlanPanel listing={listing} /></div>
+                  <div className="mt-2" role="button" tabIndex={0} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}><EarnBackPlanPanel listing={listing} /></div>
                 )}
                 {Active && o.key === 'wait' && (
                   <div className="mt-2 flex items-center gap-2 flex-wrap">

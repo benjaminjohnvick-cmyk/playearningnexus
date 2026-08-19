@@ -149,13 +149,13 @@ function CreateListingForm({ user, prestige, onCreated, onCancel }) {
       <CardContent className="space-y-4">
         <div className="grid md:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium block mb-1">Title</label>
-            <Input value={form.title} onChange={e => set('title', e.target.value)} placeholder="What are you offering?" />
+            <label htmlFor="sm-title" className="text-xs font-medium block mb-1">Title</label>
+            <Input id="sm-title" value={form.title} onChange={e => set('title', e.target.value)} placeholder="What are you offering?" />
           </div>
           <div>
-            <label className="text-xs font-medium block mb-1">Type</label>
+            <label htmlFor="sm-type" className="text-xs font-medium block mb-1">Type</label>
             <Select value={form.listing_type} onValueChange={v => set('listing_type', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger id="sm-type"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="trade">🔄 Trade Survey Opportunity</SelectItem>
                 <SelectItem value="swap">↔️ Swap</SelectItem>
@@ -169,30 +169,30 @@ function CreateListingForm({ user, prestige, onCreated, onCancel }) {
         </div>
 
         <div>
-          <label className="text-xs font-medium block mb-1">Description</label>
-          <Textarea value={form.description} onChange={e => set('description', e.target.value)} placeholder="Describe your listing…" className="h-20 text-sm" />
+          <label htmlFor="sm-description" className="text-xs font-medium block mb-1">Description</label>
+          <Textarea id="sm-description" value={form.description} onChange={e => set('description', e.target.value)} placeholder="Describe your listing…" className="h-20 text-sm" />
         </div>
 
         {form.listing_type === 'swap' && (
           <div>
-            <label className="text-xs font-medium block mb-1">What you're offering in exchange</label>
-            <Input value={form.swap_offer} onChange={e => set('swap_offer', e.target.value)} placeholder="e.g. Priority access to my Tech survey" />
+            <label htmlFor="sm-swap-offer" className="text-xs font-medium block mb-1">What you're offering in exchange</label>
+            <Input id="sm-swap-offer" value={form.swap_offer} onChange={e => set('swap_offer', e.target.value)} placeholder="e.g. Priority access to my Tech survey" />
           </div>
         )}
 
         <div className="grid md:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium block mb-1">Reward ($)</label>
-            <Input type="number" min="0" step="0.25" value={form.reward_amount} onChange={e => set('reward_amount', Number(e.target.value))} className="h-9" />
+            <label htmlFor="sm-reward" className="text-xs font-medium block mb-1">Reward ($)</label>
+            <Input id="sm-reward" type="number" min="0" step="0.25" value={form.reward_amount} onChange={e => set('reward_amount', Number(e.target.value))} className="h-9" />
           </div>
           <div>
-            <label className="text-xs font-medium block mb-1">Max responses</label>
-            <Input type="number" min="1" value={form.max_responses} onChange={e => set('max_responses', Number(e.target.value))} className="h-9" />
+            <label htmlFor="sm-max-responses" className="text-xs font-medium block mb-1">Max responses</label>
+            <Input id="sm-max-responses" type="number" min="1" value={form.max_responses} onChange={e => set('max_responses', Number(e.target.value))} className="h-9" />
           </div>
         </div>
 
         <div>
-          <label className="text-xs font-medium block mb-2">Required respondent tags <span className="text-gray-400">(leave empty for all)</span></label>
+          <span className="text-xs font-medium block mb-2">Required respondent tags <span className="text-gray-400">(leave empty for all)</span></span>
           <div className="flex flex-wrap gap-1.5">
             {ALL_TAGS.map(t => (
               <button key={t} onClick={() => toggleTag(t)}
@@ -205,7 +205,7 @@ function CreateListingForm({ user, prestige, onCreated, onCancel }) {
 
         {form.listing_type === 'micro_survey' && canCreateMicroSurvey && (
           <div>
-            <label className="text-xs font-medium block mb-2">Questions</label>
+            <span className="text-xs font-medium block mb-2">Questions</span>
             {form.questions.map((q, i) => (
               <div key={i} className="mb-3 p-3 bg-white rounded-xl border">
                 <Input value={q.question} onChange={e => setQ(i, 'question', e.target.value)} placeholder={`Question ${i + 1}`} className="mb-2 text-sm" />

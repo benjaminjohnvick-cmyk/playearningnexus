@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, TrendingUp, Loader2, DollarSign, Target, Zap } from 'lucide-react';
 
-export default function AIPricingStrategy({ game, developerId }) {
+export default function AIPricingStrategy({ game, developerId: _developerId }) {
   const [insights, setInsights] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -20,7 +20,7 @@ export default function AIPricingStrategy({ game, developerId }) {
     queryFn: () => base44.entities.InAppPurchase.filter({ game_id: game.id })
   });
 
-  const { data: dynamicPricing = [] } = useQuery({
+  const { data: _dynamicPricing = [] } = useQuery({
     queryKey: ['dynamicPricing', game.id],
     queryFn: () => base44.entities.DynamicPricing.filter({ game_id: game.id })
   });

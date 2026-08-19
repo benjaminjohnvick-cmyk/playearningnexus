@@ -103,7 +103,7 @@ export default function Layout({ children, currentPageName }) {
   const [showPPCPopup, setShowPPCPopup] = useState(false);
   const [showSessionRating, setShowSessionRating] = useState(false);
   const [promptShownThisSession, setPromptShownThisSession] = useState(false);
-  const [logoutContext, setLogoutContext] = useState({});
+  const [logoutContext, _setLogoutContext] = useState({});
 
   // Defer mounting of background side-effect components by 3 seconds
   // to avoid thundering-herd of API calls on initial page load
@@ -153,7 +153,7 @@ export default function Layout({ children, currentPageName }) {
   });
 
   useEffect(() => {
-    let deferredPrompt;
+    let _deferredPrompt;
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -551,9 +551,9 @@ export default function Layout({ children, currentPageName }) {
                 <h3 className="font-bold text-gray-900 mb-3">Developers</h3>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li><Link to={createPageUrl('BusinessDashboard')} className="hover:text-blue-600">Developer Portal</Link></li>
-                  <li><a href="#" className="hover:text-blue-600">Documentation</a></li>
+                  <li><button type="button" className="hover:text-blue-600 text-left">Documentation</button></li>
                   <li><Link to={createPageUrl('ContactUs')} className="hover:text-blue-600">Contact Us</Link></li>
-              <li><a href="#" className="hover:text-blue-600">Support</a></li>
+              <li><button type="button" className="hover:text-blue-600 text-left">Support</button></li>
                 </ul>
               </div>
             </div>

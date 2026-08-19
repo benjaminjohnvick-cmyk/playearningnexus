@@ -232,8 +232,9 @@ Respond as JSON:
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-xs text-gray-400 font-bold mb-1 block">Video Topic / Angle</label>
+                  <label htmlFor="video-topic" className="text-xs text-gray-400 font-bold mb-1 block">Video Topic / Angle</label>
                   <input
+                    id="video-topic"
                     className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-purple-500"
                     placeholder="e.g. How I earn $50/day playing games from my phone"
                     value={topic}
@@ -242,7 +243,7 @@ Respond as JSON:
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-gray-400 font-bold mb-2 block">Video Style</label>
+                    <span className="text-xs text-gray-400 font-bold mb-2 block">Video Style</span>
                     <div className="flex flex-wrap gap-2">
                       {STYLES.map(s => (
                         <button key={s} onClick={() => setStyle(s)}
@@ -253,7 +254,7 @@ Respond as JSON:
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-400 font-bold mb-2 block">Target Platforms</label>
+                    <span className="text-xs text-gray-400 font-bold mb-2 block">Target Platforms</span>
                     <div className="flex flex-wrap gap-2">
                       {PLATFORMS.map(p => (
                         <button key={p.id} onClick={() => togglePlatform(p.id)}
@@ -266,7 +267,7 @@ Respond as JSON:
                 </div>
                 {/* CTA */}
                 <div>
-                  <label className="text-xs text-gray-400 font-bold mb-2 block">Call-to-Action Overlay</label>
+                  <span className="text-xs text-gray-400 font-bold mb-2 block">Call-to-Action Overlay</span>
                   <div className="flex gap-2 mb-2">
                     {['referral', 'custom'].map(t => (
                       <button key={t} onClick={() => setCtaType(t)}

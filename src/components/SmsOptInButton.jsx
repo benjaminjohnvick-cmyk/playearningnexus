@@ -53,7 +53,7 @@ export default function SmsOptInButton() {
         ) : (
           <>
             <div className="flex items-end gap-2 flex-wrap">
-              <div><label className="text-xs text-gray-500">Mobile number</label><Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 555 123 4567" className="w-44 h-9" /></div>
+              <div><label htmlFor="sms-mobile-number" className="text-xs text-gray-500">Mobile number</label><Input id="sms-mobile-number" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 555 123 4567" className="w-44 h-9" /></div>
             </div>
             <label className="flex items-start gap-2 text-[12px] text-gray-600">
               <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5" />

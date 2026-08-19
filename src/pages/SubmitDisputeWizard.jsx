@@ -107,7 +107,9 @@ export default function SubmitDisputeWizard() {
                 activities.map(activity => (
                   <div
                     key={`${activity.type}-${activity.id}`}
+                    role="button" tabIndex={0}
                     onClick={() => setSelectedActivity(activity)}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedActivity(activity); } }}
                     className={`p-4 border-2 rounded-lg cursor-pointer transition ${
                       selectedActivity?.id === activity.id && selectedActivity?.type === activity.type
                         ? 'border-purple-600 bg-purple-50'
@@ -203,8 +205,9 @@ export default function SubmitDisputeWizard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">Reason for Dispute</label>
+                <label htmlFor="dispute-reason" className="block text-sm font-medium text-slate-900 mb-2">Reason for Dispute</label>
                 <textarea
+                  id="dispute-reason"
                   value={selfAssessment.reason}
                   onChange={(e) => setSelfAssessment({ ...selfAssessment, reason: e.target.value })}
                   placeholder="Explain why you're disputing this activity..."
@@ -213,8 +216,9 @@ export default function SubmitDisputeWizard() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">Expected Resolution Amount ($)</label>
+                <label htmlFor="dispute-expected-amount" className="block text-sm font-medium text-slate-900 mb-2">Expected Resolution Amount ($)</label>
                 <Input
+                  id="dispute-expected-amount"
                   type="number"
                   step="0.01"
                   min="0"

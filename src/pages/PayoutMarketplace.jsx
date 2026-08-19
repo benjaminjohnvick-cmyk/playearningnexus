@@ -95,7 +95,7 @@ export default function PayoutMarketplace() {
   const [filter, setFilter] = useState('all');
   const [purchasing, setPurchasing] = useState(null);
   const [recentPurchases, setRecentPurchases] = useState([]);
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
@@ -153,7 +153,7 @@ export default function PayoutMarketplace() {
       setUser(prev => ({ ...prev, total_earnings: newEarnings }));
       setRecentPurchases(prev => [item, ...prev].slice(0, 3));
       toast.success(`✅ ${item.title} redeemed! Saved $${(item.valueUsd - item.costEarnings).toFixed(2)}`);
-    } catch (e) {
+    } catch {
       toast.error('Purchase failed. Please try again.');
     }
     setPurchasing(null);

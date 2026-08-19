@@ -61,8 +61,8 @@ export default function AIFunnelConcierge() {
       <Card><CardContent className="p-5 space-y-4">
         <h3 className="font-bold text-gray-900 flex items-center gap-2"><Sparkles className="w-4 h-4" style={{ color: NAVY }} />Gate 1 — fit</h3>
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wide text-gray-500">Looking at</label>
-          <select value={currentKey} onChange={(e) => setCurrentKey(e.target.value)} className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+          <label htmlFor="afc-looking-at" className="text-xs font-semibold uppercase tracking-wide text-gray-500">Looking at</label>
+          <select id="afc-looking-at" value={currentKey} onChange={(e) => setCurrentKey(e.target.value)} className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
             {['free_member','premium_membership','points_boost','free_noupfront','sponsored_placement','tier1','tier2'].map((k) => <option key={k} value={k}>{k}</option>)}
           </select>
         </div>

@@ -88,9 +88,10 @@ fetch('https://api.gamergain.com/v1/users/{user_id}', {
         <CardContent className="pt-6">
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">API Key</label>
+              <label htmlFor="sdk-api-key" className="text-sm font-medium mb-2 block">API Key</label>
               <div className="flex gap-2">
                 <Input
+                  id="sdk-api-key"
                   value={apiKey || 'Generate an API key to get started'}
                   readOnly
                   className="font-mono text-sm"

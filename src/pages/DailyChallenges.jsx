@@ -118,7 +118,7 @@ export default function DailyChallengesPage() {
             ) : (
               <div className="space-y-4">
                 {activeChallenges.map((challenge) => {
-                  const progress = (challenge.current_progress / challenge.target_value) * 100;
+                  const _progress = (challenge.current_progress / challenge.target_value) * 100;
                   const isComplete = challenge.current_progress >= challenge.target_value;
 
                   return (

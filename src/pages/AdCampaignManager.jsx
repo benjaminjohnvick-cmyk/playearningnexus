@@ -31,7 +31,7 @@ export default function AdCampaignManager() {
 
   const totalSpend = campaigns.reduce((s, c) => s + (c.budget_spent || 0), 0);
   const totalRevenue = campaigns.reduce((s, c) => s + (c.performance?.revenue_generated || 0), 0);
-  const totalImpressions = campaigns.reduce((s, c) => s + (c.performance?.impressions || 0), 0);
+  const _totalImpressions = campaigns.reduce((s, c) => s + (c.performance?.impressions || 0), 0);
   const totalConversions = campaigns.reduce((s, c) => s + (c.performance?.conversions || 0), 0);
   const avgROAS = totalSpend > 0 ? (totalRevenue / totalSpend).toFixed(2) : '0.00';
   const activeCampaigns = campaigns.filter(c => c.status === 'active').length;

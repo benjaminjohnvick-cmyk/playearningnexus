@@ -26,7 +26,7 @@ export default function SalesAnalyticsDashboard() {
     enabled: !!user,
   });
 
-  const { data: transactions = [] } = useQuery({
+  const { data: _transactions = [] } = useQuery({
     queryKey: ['all-transactions'],
     queryFn: () => base44.entities.PPCTransaction.list('-created_date', 200),
     enabled: !!user,
@@ -125,7 +125,7 @@ Be specific and actionable.`,
         }
       });
       setAiInsights(res);
-    } catch (e) {
+    } catch {
       toast.error('Failed to generate AI insights');
     }
     setLoadingInsights(false);

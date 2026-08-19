@@ -93,7 +93,7 @@ export default function PremiumBoost() {
             <div className="flex items-center gap-1"><span className="text-gray-400">$</span><Input type="number" min="0" placeholder="Item price" value={itemPrice} onChange={(e) => setItemPrice(e.target.value)} /></div>
           </div>
           <div className="flex items-end gap-2 flex-wrap">
-            <div><label className="text-[11px] text-gray-500">How much boost to apply</label><div className="flex items-center gap-1"><span className="text-gray-400">$</span><Input type="number" min="0" max={s.available_credit_usd} value={applyAmt} onChange={(e) => setApplyAmt(e.target.value)} className="w-28" /></div></div>
+            <div><label htmlFor="boost-apply-amount" className="text-[11px] text-gray-500">How much boost to apply</label><div className="flex items-center gap-1"><span className="text-gray-400">$</span><Input id="boost-apply-amount" type="number" min="0" max={s.available_credit_usd} value={applyAmt} onChange={(e) => setApplyAmt(e.target.value)} className="w-28" /></div></div>
             <Button disabled={busy || !item || !(Number(applyAmt) > 0)} className="bg-emerald-600 hover:bg-emerald-700"
               onClick={() => call('premiumBoostApply', { item_name: item, item_price_usd: itemPrice === '' ? undefined : Number(itemPrice), amount_usd: Number(applyAmt) }, 'Applied.', () => { setItem(''); setItemPrice(''); setApplyAmt(''); })}>Apply to item</Button>
           </div>

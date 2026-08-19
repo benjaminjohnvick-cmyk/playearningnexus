@@ -20,7 +20,7 @@ function getReferralLink(userId) {
   return `${window.location.origin}/AdBusinessOverview?ref=${userId.slice(-8)}`;
 }
 
-export default function AdReferralProgram({ userId, ads }) {
+export default function AdReferralProgram({ userId, ads: _ads }) {
   const [copied, setCopied] = useState(false);
   const [referrals, setReferrals] = useState(() => {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY(userId)) || '[]'); } catch { return []; }
@@ -28,11 +28,11 @@ export default function AdReferralProgram({ userId, ads }) {
 
   // Simulate tracking: in production this would query a ReferralRecord entity
   const qualifiedReferrals = referrals.filter(r => r.spent >= BONUS_THRESHOLD);
-  const pendingReferrals   = referrals.filter(r => r.spent < BONUS_THRESHOLD);
+  const _pendingReferrals   = referrals.filter(r => r.spent < BONUS_THRESHOLD);
 
   const totalBonusPct  = qualifiedReferrals.length * POINT_BONUS_PCT;
   const earnedFrame    = [...PROFILE_FRAMES].reverse().find(f => qualifiedReferrals.length >= f.minReferrals);
-  const nextFrame      = PROFILE_FRAMES.find(f => qualifiedReferrals.length < f.minReferrals);
+  const _nextFrame      = PROFILE_FRAMES.find(f => qualifiedReferrals.length < f.minReferrals);
 
   const copyLink = () => {
     navigator.clipboard.writeText(getReferralLink(userId)).catch(() => {});

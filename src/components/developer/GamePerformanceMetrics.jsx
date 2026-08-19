@@ -18,13 +18,13 @@ export default function GamePerformanceMetrics({ user }) {
     enabled: !!user?.email,
   });
 
-  const { data: transactions = [] } = useQuery({
+  const { data: _transactions = [] } = useQuery({
     queryKey: ['dev-transactions'],
     queryFn: () => base44.entities.Transaction.filter({ transaction_type: 'game_purchase' }, '-created_date', 100),
     enabled: !!user?.email,
   });
 
-  const gameIds = new Set(games.map(g => g.id));
+  const _gameIds = new Set(games.map(g => g.id));
 
   // Per-game metrics
   const gameMetrics = games.map(game => {

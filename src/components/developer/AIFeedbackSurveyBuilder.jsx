@@ -96,8 +96,9 @@ export default function AIFeedbackSurveyBuilder({ gameId, gameTitle, gameCategor
               ))}
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-700 mb-1 block">What do you want to learn from users?</label>
+              <label htmlFor="ai-feedback-goal" className="text-xs font-semibold text-gray-700 mb-1 block">What do you want to learn from users?</label>
               <Textarea
+                id="ai-feedback-goal"
                 value={feedbackGoal}
                 onChange={e => setFeedbackGoal(e.target.value)}
                 placeholder="e.g. Why are players quitting after level 3? What features do they want most? Is the monetization too aggressive?"

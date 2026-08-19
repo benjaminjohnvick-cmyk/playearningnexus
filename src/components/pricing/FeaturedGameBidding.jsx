@@ -35,8 +35,9 @@ export default function FeaturedGameBidding() {
         </p>
         <div className="grid md:grid-cols-3 gap-6 items-center">
           <div className="text-center">
-            <label className="block text-sm text-purple-200 mb-2">Current Platform Users</label>
+            <label htmlFor="platform-users" className="block text-sm text-purple-200 mb-2">Current Platform Users</label>
             <input
+              id="platform-users"
               type="number"
               value={userCount}
               onChange={e => setUserCount(Math.max(0, parseInt(e.target.value) || 0))}

@@ -9,7 +9,7 @@ import SurveyInterstitialAd from './SurveyInterstitialAd';
 export default function BitLabsSurveys({ user, onEarningsUpdate }) {
   const [surveyUrl, setSurveyUrl] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [surveyLoaded, setSurveyLoaded] = useState(false);
+  const [_surveyLoaded, setSurveyLoaded] = useState(false);
   const [showAd, setShowAd] = useState(false);   // 30s interstitial before starting a survey (non-premium)
 
   // Show the interstitial ad first; SurveyInterstitialAd self-dismisses instantly for premium / when off.
@@ -27,7 +27,7 @@ export default function BitLabsSurveys({ user, onEarningsUpdate }) {
       } else {
         toast.error('Could not load surveys. Please try again.');
       }
-    } catch (error) {
+    } catch {
       toast.error('Survey service temporarily unavailable');
     } finally {
       setLoading(false);

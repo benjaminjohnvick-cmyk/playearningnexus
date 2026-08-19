@@ -8,7 +8,7 @@ import PriceAlertCards from '@/components/marketadvisor/PriceAlertCards';
 import CouponCodesPanel from '@/components/marketadvisor/CouponCodesPanel';
 
 export default function MarketAdvisor() {
-  const [user, setUser] = useState(null);
+  const [_user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState(null);
   const [lastRefreshed, setLastRefreshed] = useState(null);

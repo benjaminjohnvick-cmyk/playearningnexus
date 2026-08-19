@@ -12,7 +12,7 @@ export default function AutomationGuardianDashboard() {
   const queryClient = useQueryClient();
 
   // Query for automations to track Guardian's schedule
-  const { data: automations = [] } = useQuery({
+  const { data: _automations = [] } = useQuery({
     queryKey: ['automationGuardianAutomations'],
     queryFn: async () => {
       const all = await base44.entities.AdminAuditLog.filter({ type: 'automation_guardian_health_check' });

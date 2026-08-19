@@ -109,9 +109,9 @@ export default function AdminLocalizationPanel() {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Language</label>
+                  <label htmlFor="loc-language" className="text-sm font-medium">Language</label>
                   <Select value={selectedLang} onValueChange={setSelectedLang}>
-                    <SelectTrigger>
+                    <SelectTrigger id="loc-language">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -123,9 +123,9 @@ export default function AdminLocalizationPanel() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Category</label>
+                  <label htmlFor="loc-category" className="text-sm font-medium">Category</label>
                   <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger>
+                    <SelectTrigger id="loc-category">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -137,8 +137,9 @@ export default function AdminLocalizationPanel() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Translation Key</label>
+                  <label htmlFor="loc-key" className="text-sm font-medium">Translation Key</label>
                   <Input
+                    id="loc-key"
                     placeholder="e.g. dashboard.title"
                     value={formData.key}
                     onChange={(e) => setFormData({ ...formData, key: e.target.value })}
@@ -147,8 +148,9 @@ export default function AdminLocalizationPanel() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Translated Text</label>
+                  <label htmlFor="loc-translated" className="text-sm font-medium">Translated Text</label>
                   <textarea
+                    id="loc-translated"
                     className="w-full border rounded-md p-2 text-sm"
                     placeholder="Enter translated text..."
                     value={formData.translated_value}
@@ -158,8 +160,9 @@ export default function AdminLocalizationPanel() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Context (Optional)</label>
+                  <label htmlFor="loc-context" className="text-sm font-medium">Context (Optional)</label>
                   <Input
+                    id="loc-context"
                     placeholder="e.g. Title shown on main dashboard"
                     value={formData.context}
                     onChange={(e) => setFormData({ ...formData, context: e.target.value })}
@@ -244,8 +247,11 @@ export default function AdminLocalizationPanel() {
               {LANGUAGES.map(lang => (
                 <div
                   key={lang.code}
+                  role="button"
+                  tabIndex={0}
                   className="p-4 border rounded-lg text-center hover:bg-slate-50 cursor-pointer"
                   onClick={() => setSelectedLang(lang.code)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedLang(lang.code); } }}
                 >
                   <p className="font-semibold">{lang.name}</p>
                   <p className="text-sm text-slate-600">{lang.code.toUpperCase()}</p>

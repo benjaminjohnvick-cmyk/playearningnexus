@@ -59,7 +59,7 @@ export default function AIOrderForm() {
       });
       const fee = res.price * 0.10;
       setProductInfo({ ...res, fee, totalCharge: res.price + fee });
-    } catch (e) {
+    } catch {
       setError('Could not analyze the product link. Please check the URL and try again.');
     }
     setAnalyzing(false);

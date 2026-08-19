@@ -145,8 +145,8 @@ export default function RespondentProfile() {
               </div>
             ))}
             <div className="col-span-2">
-              <label className="text-xs font-semibold text-gray-500 block mb-1">Country</label>
-              <Input placeholder="e.g. United States" value={profile.country || ''} onChange={e => update('country', e.target.value)} className="border-2 h-9 text-sm" />
+              <label htmlFor="profile-country" className="text-xs font-semibold text-gray-500 block mb-1">Country</label>
+              <Input id="profile-country" placeholder="e.g. United States" value={profile.country || ''} onChange={e => update('country', e.target.value)} className="border-2 h-9 text-sm" />
             </div>
           </CardContent>
         </Card>

@@ -88,7 +88,7 @@ Return JSON with keys: tiktok, youtube_shorts, instagram (each a string).`,
       });
       setPosts(result);
       toast.success('🎉 Posts generated! Copy and post to go viral.');
-    } catch (e) {
+    } catch {
       toast.error('Failed to generate posts. Please try again.');
     }
     setGenerating(false);

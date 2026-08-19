@@ -38,8 +38,10 @@ function InvoiceModal({ data, branding, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4" role="button" tabIndex={0} onClick={onClose}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}>
+      <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto" role="presentation" onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}>
         <div ref={printRef}>
           {/* Branded header */}
           <div className="p-8 rounded-t-2xl" style={{ backgroundColor: branding.color + '15', borderBottom: `4px solid ${branding.color}` }}>
@@ -267,17 +269,17 @@ export default function AdPDFReportCenter({ userId, userEmail, ads }) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Company Name</label>
-            <input value={branding.companyName} onChange={e => setBranding(b => ({ ...b, companyName: e.target.value }))}
+            <label htmlFor="pdf-company-name" className="text-xs text-gray-400 font-bold block mb-1">Company Name</label>
+            <input id="pdf-company-name" value={branding.companyName} onChange={e => setBranding(b => ({ ...b, companyName: e.target.value }))}
               placeholder="My Company Inc." className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Tagline / Subtitle</label>
-            <input value={branding.tagline} onChange={e => setBranding(b => ({ ...b, tagline: e.target.value }))}
+            <label htmlFor="pdf-tagline" className="text-xs text-gray-400 font-bold block mb-1">Tagline / Subtitle</label>
+            <input id="pdf-tagline" value={branding.tagline} onChange={e => setBranding(b => ({ ...b, tagline: e.target.value }))}
               placeholder="Your trusted ad partner" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Brand Color</label>
+            <span className="text-xs text-gray-400 font-bold block mb-1">Brand Color</span>
             <div className="flex gap-1.5 items-center">
               {BRAND_COLORS.map(c => (
                 <button key={c} onClick={() => setBranding(b => ({ ...b, color: c }))}
@@ -289,7 +291,7 @@ export default function AdPDFReportCenter({ userId, userEmail, ads }) {
             </div>
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Company Logo</label>
+            <span className="text-xs text-gray-400 font-bold block mb-1">Company Logo</span>
             <label className="flex items-center gap-2 cursor-pointer bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 hover:border-gray-400 transition-all">
               {logoUploading ? <Loader2 className="w-4 h-4 animate-spin text-gray-400" /> : <Building2 className="w-4 h-4 text-gray-400" />}
               <span className="text-sm text-gray-400">{branding.logo ? 'Logo uploaded ✓' : 'Upload logo'}</span>
@@ -313,28 +315,28 @@ export default function AdPDFReportCenter({ userId, userEmail, ads }) {
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Report Settings</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Bill To / Company</label>
-            <input value={companyName} onChange={e => setCompanyName(e.target.value)}
+            <label htmlFor="pdf-bill-to" className="text-xs text-gray-400 font-bold block mb-1">Bill To / Company</label>
+            <input id="pdf-bill-to" value={companyName} onChange={e => setCompanyName(e.target.value)}
               placeholder="Client Company Name" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Recipient Email</label>
-            <input type="email" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)}
+            <label htmlFor="pdf-recipient-email" className="text-xs text-gray-400 font-bold block mb-1">Recipient Email</label>
+            <input id="pdf-recipient-email" type="email" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)}
               className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Date From</label>
-            <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+            <label htmlFor="pdf-date-from" className="text-xs text-gray-400 font-bold block mb-1">Date From</label>
+            <input id="pdf-date-from" type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
               className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Date To</label>
-            <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+            <label htmlFor="pdf-date-to" className="text-xs text-gray-400 font-bold block mb-1">Date To</label>
+            <input id="pdf-date-to" type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
               className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 font-bold block mb-1">Tax Region</label>
-            <select value={taxRegion} onChange={e => setTaxRegion(e.target.value)}
+            <label htmlFor="pdf-tax-region" className="text-xs text-gray-400 font-bold block mb-1">Tax Region</label>
+            <select id="pdf-tax-region" value={taxRegion} onChange={e => setTaxRegion(e.target.value)}
               className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
               {Object.keys(TAX_RATES).map(r => <option key={r} value={r}>{r} ({(TAX_RATES[r] * 100).toFixed(0)}% VAT)</option>)}
             </select>
@@ -383,22 +385,22 @@ export default function AdPDFReportCenter({ userId, userEmail, ads }) {
           <p className="text-xs font-bold text-yellow-400 uppercase tracking-wider">Recurring Report Schedule</p>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div>
-              <label className="text-xs text-gray-400 font-bold block mb-1">Frequency</label>
-              <select value={schedFreq} onChange={e => setSchedFreq(e.target.value)}
+              <label htmlFor="pdf-sched-freq" className="text-xs text-gray-400 font-bold block mb-1">Frequency</label>
+              <select id="pdf-sched-freq" value={schedFreq} onChange={e => setSchedFreq(e.target.value)}
                 className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
                 {FREQ_OPTIONS.map(f => <option key={f} value={f} className="capitalize">{f}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-gray-400 font-bold block mb-1">Report Type</label>
-              <select value={schedType} onChange={e => setSchedType(e.target.value)}
+              <label htmlFor="pdf-sched-type" className="text-xs text-gray-400 font-bold block mb-1">Report Type</label>
+              <select id="pdf-sched-type" value={schedType} onChange={e => setSchedType(e.target.value)}
                 className="w-full bg-gray-800 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm">
                 {REPORT_TYPES.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-gray-400 font-bold block mb-1">Send To</label>
-              <input type="email" value={schedEmail} onChange={e => setSchedEmail(e.target.value)}
+              <label htmlFor="pdf-sched-email" className="text-xs text-gray-400 font-bold block mb-1">Send To</label>
+              <input id="pdf-sched-email" type="email" value={schedEmail} onChange={e => setSchedEmail(e.target.value)}
                 placeholder="client@company.com" className="w-full bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-3 py-2 text-sm" />
             </div>
             <div className="flex items-end">

@@ -29,7 +29,7 @@ function ResponseRow({ response, auditData, onReject }) {
 
   return (
     <div className={`border rounded-xl overflow-hidden transition-all ${isBlocked ? 'opacity-60 border-gray-200' : isFlagged ? 'border-red-200 bg-red-50/30' : 'border-gray-100 bg-white'}`}>
-      <div className="flex items-center gap-3 p-3 cursor-pointer" onClick={() => setExpanded(e => !e)}>
+      <div className="flex items-center gap-3 p-3 cursor-pointer" role="button" tabIndex={0} onClick={() => setExpanded(e => !e)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(x => !x); } }}>
         {/* Status icon */}
         <div className="flex-shrink-0">
           {isBlocked
@@ -113,7 +113,7 @@ function ResponseRow({ response, auditData, onReject }) {
                   <Ban className="w-3.5 h-3.5 mr-1" /> Reject This Response
                 </Button>
               ) : (
-                <div className="space-y-2" onClick={e => e.stopPropagation()}>
+                <div className="space-y-2" role="presentation" onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
                   <p className="text-xs font-medium text-gray-700">Reason for rejection (shown to respondent):</p>
                   <select
                     className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white"

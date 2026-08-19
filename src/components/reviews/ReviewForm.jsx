@@ -63,7 +63,7 @@ export default function ReviewForm({ game, user, existingReview }) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Your Rating</label>
+            <span className="block text-sm font-medium mb-2">Your Rating</span>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -90,10 +90,11 @@ export default function ReviewForm({ game, user, existingReview }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label htmlFor="review-text" className="block text-sm font-medium mb-2">
               Your Review (Optional)
             </label>
             <Textarea
+              id="review-text"
               value={reviewText}
               onChange={(e) => setReviewText(e.target.value)}
               placeholder="Share your thoughts about this game..."

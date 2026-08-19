@@ -88,7 +88,7 @@ export default function RetentionRiskPanel() {
   const [running, setRunning] = useState(false);
   const [filterLevel, setFilterLevel] = useState('all');
   const [filterStatus, setFilterStatus] = useState('active');
-  const qc = useQueryClient();
+  const _qc = useQueryClient();
 
   const { data: risks = [], isLoading, refetch } = useQuery({
     queryKey: ['retention_risks', filterLevel, filterStatus],

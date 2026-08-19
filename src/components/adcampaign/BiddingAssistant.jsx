@@ -11,7 +11,7 @@ const STRATEGIES = [
   { id: 'target_roas', label: 'Target ROAS', desc: 'AI maximizes return on ad spend' }
 ];
 
-export default function BiddingAssistant({ campaigns, selectedCampaign, onSelectCampaign, onRefresh }) {
+export default function BiddingAssistant({ campaigns, selectedCampaign, onSelectCampaign: _onSelectCampaign, onRefresh }) {
   const [localSelected, setLocalSelected] = useState(selectedCampaign || campaigns[0]);
   const [optimizing, setOptimizing] = useState(false);
   const [result, setResult] = useState(null);
@@ -112,7 +112,10 @@ export default function BiddingAssistant({ campaigns, selectedCampaign, onSelect
 
               {/* Auto-bid Toggle */}
               <div
+                role="button"
+                tabIndex={0}
                 onClick={toggleAutoBid}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleAutoBid(e); } }}
                 className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${campaign.ai_bid_enabled ? 'bg-purple-900/30 border-purple-500/40' : 'bg-slate-900 border-slate-600'}`}>
                 <div>
                   <div className="text-white text-sm font-medium">AI Auto-Bidding</div>

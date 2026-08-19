@@ -72,7 +72,7 @@ export default function AgentIntelligenceDashboard() {
     setRunning(null);
   };
 
-  const approveMemory = async (memory) => {
+  const _approveMemory = async (memory) => {
     await base44.entities.AgentLearningMemory.update(memory.id, { admin_approved: true });
     toast.success('Memory approved — agent will now use this learning');
     setLearningMemories(m => m.map(x => x.id === memory.id ? { ...x, admin_approved: true } : x));

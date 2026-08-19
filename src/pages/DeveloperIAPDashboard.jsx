@@ -31,7 +31,7 @@ export default function DeveloperIAPDashboard() {
         if (clients.length > 0) {
           setBusinessClient(clients[0]);
         }
-      } catch (error) {
+      } catch {
         base44.auth.redirectToLogin();
       }
     };

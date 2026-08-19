@@ -207,9 +207,9 @@ function BugDetailModal({ bug, game, onClose, onUpdate }) {
           )}
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Status</label>
+            <label htmlFor="bug-status" className="text-sm font-medium mb-2 block">Status</label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger>
+              <SelectTrigger id="bug-status">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -223,8 +223,9 @@ function BugDetailModal({ bug, game, onClose, onUpdate }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Developer Notes</label>
+            <label htmlFor="bug-dev-notes" className="text-sm font-medium mb-2 block">Developer Notes</label>
             <Textarea
+              id="bug-dev-notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Internal notes..."
@@ -233,8 +234,9 @@ function BugDetailModal({ bug, game, onClose, onUpdate }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Resolution</label>
+            <label htmlFor="bug-resolution" className="text-sm font-medium mb-2 block">Resolution</label>
             <Textarea
+              id="bug-resolution"
               value={resolution}
               onChange={(e) => setResolution(e.target.value)}
               placeholder="How was this resolved?"

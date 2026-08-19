@@ -118,11 +118,12 @@ export default function SmartSavingsModule({ user }) {
                 <p className="text-sm font-medium text-gray-800">Auto-sweep on payout</p>
                 <p className="text-xs text-gray-500">Automatically sweep {sweepPct}% into vault</p>
               </div>
-              <div
+              <button
+                type="button"
                 onClick={() => setAutoEnabled(!autoEnabled)}
                 className={`w-11 h-6 rounded-full relative cursor-pointer transition-colors ${autoEnabled ? 'bg-purple-600' : 'bg-gray-300'}`}>
                 <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${autoEnabled ? 'translate-x-5' : 'translate-x-0.5'}`} />
-              </div>
+              </button>
             </div>
             <div className="flex gap-2">
               <Button size="sm" onClick={handleSaveSettings} disabled={saving} className="bg-purple-600 hover:bg-purple-700 flex-1">Save</Button>

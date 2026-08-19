@@ -15,7 +15,7 @@ const COST_PER_RESPONSE = 4;
 const MIN_SAMPLE_SIZE = 100;
 
 // ── PayPal payment step ────────────────────────────────────────────────────────
-function PayPalPaymentStep({ surveyTitle, sampleSize, onSuccess, onCancel }) {
+function PayPalPaymentStep({ surveyTitle, sampleSize, onSuccess: _onSuccess, onCancel }) {
   const [loading, setLoading] = useState(false);
 
   const totalCost = Math.max(sampleSize, MIN_SAMPLE_SIZE) * COST_PER_RESPONSE;
@@ -206,8 +206,9 @@ function SingleSurveyBuilder({ onSurveyCreated, onQuestionsGenerated }) {
       {step === 'prompt' && (
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-700 block mb-1">What do you want to research?</label>
+            <label htmlFor="research-prompt" className="text-sm font-medium text-gray-700 block mb-1">What do you want to research?</label>
             <textarea
+              id="research-prompt"
               rows={3}
               className="w-full border-2 border-purple-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white"
               placeholder={`e.g. "Understanding consumer attitudes toward electric vehicles"`}
@@ -261,16 +262,18 @@ function SingleSurveyBuilder({ onSurveyCreated, onQuestionsGenerated }) {
         <div className="space-y-3">
           <div className="bg-white rounded-xl border border-purple-100 p-3 space-y-2">
             <div>
-              <label className="text-xs font-semibold text-purple-600 uppercase tracking-wide">Survey Title</label>
+              <label htmlFor="generated-survey-title" className="text-xs font-semibold text-purple-600 uppercase tracking-wide">Survey Title</label>
               <input
+                id="generated-survey-title"
                 className="w-full text-sm font-semibold text-gray-800 bg-transparent border-b border-dashed border-gray-300 focus:outline-none focus:border-purple-400 py-0.5 mt-0.5"
                 value={generatedSurvey.title}
                 onChange={e => setGeneratedSurvey(p => ({ ...p, title: e.target.value }))}
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-purple-600 uppercase tracking-wide">Description</label>
+              <label htmlFor="generated-survey-description" className="text-xs font-semibold text-purple-600 uppercase tracking-wide">Description</label>
               <input
+                id="generated-survey-description"
                 className="w-full text-xs text-gray-600 bg-transparent border-b border-dashed border-gray-200 focus:outline-none py-0.5 mt-0.5"
                 value={generatedSurvey.description}
                 onChange={e => setGeneratedSurvey(p => ({ ...p, description: e.target.value }))}
@@ -321,7 +324,7 @@ function SingleSurveyBuilder({ onSurveyCreated, onQuestionsGenerated }) {
 }
 
 // ── Main export ───────────────────────────────────────────────────────────────
-export default function AISurveyBuilder({ surveyType, productName, onQuestionsGenerated, onSurveyCreated }) {
+export default function AISurveyBuilder({ surveyType: _surveyType, productName: _productName, onQuestionsGenerated, onSurveyCreated }) {
   return (
     <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50">
       <CardHeader>

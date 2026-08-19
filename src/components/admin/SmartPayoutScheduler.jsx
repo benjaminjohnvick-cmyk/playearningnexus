@@ -108,13 +108,13 @@ export default function SmartPayoutScheduler() {
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Liquidity Cap ($)</label>
-              <Input type="number" value={liquidityLimit} onChange={e => setLiquidityLimit(e.target.value)} className="h-9" />
+              <label htmlFor="liquidity-cap" className="text-xs font-semibold text-gray-600 block mb-1">Liquidity Cap ($)</label>
+              <Input id="liquidity-cap" type="number" value={liquidityLimit} onChange={e => setLiquidityLimit(e.target.value)} className="h-9" />
               <p className="text-xs text-gray-400 mt-1">Max total payout per run</p>
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-600 block mb-1">Min Batch Size</label>
-              <Input type="number" min="1" value={minBatch} onChange={e => setMinBatch(e.target.value)} className="h-9" />
+              <label htmlFor="min-batch-size" className="text-xs font-semibold text-gray-600 block mb-1">Min Batch Size</label>
+              <Input id="min-batch-size" type="number" min="1" value={minBatch} onChange={e => setMinBatch(e.target.value)} className="h-9" />
               <p className="text-xs text-gray-400 mt-1">Users needed to trigger a batch (tier 1-2)</p>
             </div>
             <div className="flex flex-col justify-end gap-2">

@@ -86,7 +86,7 @@ export default function AdMultivariateTesting({ ads }) {
   const [impressions, setImpressions] = useState({ A: 0, B: 0, C: 0 });
 
   // Simulate click accumulation
-  const simulateTick = (currentVariants) => {
+  const simulateTick = (_currentVariants) => {
     setImpressions(prev => {
       const next = { ...prev };
       ['A', 'B', 'C'].forEach(k => { next[k] = prev[k] + Math.floor(20 + Math.random() * 40); });
@@ -181,7 +181,7 @@ Return JSON with array of 3 objects, each with "headline" (max 8 words) and "cop
     <div className="space-y-5">
       {/* Ad selector */}
       <div>
-        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Select Ad to Test</label>
+        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Select Ad to Test</span>
         <div className="flex flex-wrap gap-2">
           {ads.filter(a => a.status === 'active' || a.status === 'pending').map(ad => (
             <button key={ad.id} onClick={() => { setSelectedAd(ad); setVariants(null); setImpressions({ A: 0, B: 0, C: 0 }); }}

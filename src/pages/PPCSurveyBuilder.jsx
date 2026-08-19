@@ -23,7 +23,7 @@ export default function PPCSurveyBuilder() {
   const [sampleSize, setSampleSize] = useState(400);
   const [productName, setProductName] = useState('');
   const [productUrl, setProductUrl] = useState('');
-  const [customBudget, setCustomBudget] = useState('');
+  const [_customBudget, _setCustomBudget] = useState('');
   const [activeTab, setActiveTab] = useState('builder');
 
   useEffect(() => {
@@ -154,16 +154,18 @@ export default function PPCSurveyBuilder() {
               />
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 mb-2 block">Product Name (Optional)</label>
+                  <label htmlFor="ppc-product-name" className="text-sm font-semibold text-gray-700 mb-2 block">Product Name (Optional)</label>
                   <Input
+                    id="ppc-product-name"
                     placeholder="e.g., iPhone 15"
                     value={productName}
                     onChange={(e) => setProductName(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 mb-2 block">Product Website URL (Optional)</label>
+                  <label htmlFor="ppc-product-url" className="text-sm font-semibold text-gray-700 mb-2 block">Product Website URL (Optional)</label>
                   <Input
+                    id="ppc-product-url"
                     placeholder="https://example.com"
                     value={productUrl}
                     onChange={(e) => setProductUrl(e.target.value)}
@@ -221,8 +223,9 @@ export default function PPCSurveyBuilder() {
                   />
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-semibold text-gray-700">Sample Size</label>
+                      <label htmlFor="ppc-sample-size" className="text-sm font-semibold text-gray-700">Sample Size</label>
                       <Input
+                        id="ppc-sample-size"
                         type="number"
                         min={MIN_SAMPLE_SIZE}
                         value={sampleSize}
@@ -232,7 +235,7 @@ export default function PPCSurveyBuilder() {
                       <p className="text-xs text-gray-500 mt-1">Minimum {MIN_SAMPLE_SIZE} responses</p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-700">Total Budget</label>
+                      <span className="text-sm font-semibold text-gray-700">Total Budget</span>
                       <div className="mt-1 p-3 bg-white rounded-lg border font-bold text-lg text-green-600">
                         ${totalCost.toFixed(2)}
                       </div>

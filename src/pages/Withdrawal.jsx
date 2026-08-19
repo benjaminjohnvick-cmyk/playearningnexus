@@ -260,14 +260,14 @@ function CashAppWithdrawForm({ user, balance, payouts, queryClient }) {
 
       queryClient.invalidateQueries(['withdrawal-history', user.id]);
       setAmount('');
-    } catch (e) {
+    } catch {
       toast.error('Failed to process Cash App payout. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const pendingTotal = payouts.filter(p => p.status === 'pending' || p.status === 'processing').reduce((s, p) => s + (p.amount || 0), 0);
+  const _pendingTotal = payouts.filter(p => p.status === 'pending' || p.status === 'processing').reduce((s, p) => s + (p.amount || 0), 0);
 
   return (
     <div className="space-y-4">
@@ -277,17 +277,17 @@ function CashAppWithdrawForm({ user, balance, payouts, queryClient }) {
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-700 block mb-2">Cash Card Details</label>
+        <span className="text-sm font-medium text-gray-700 block mb-2">Cash Card Details</span>
         <div className="border-2 border-gray-200 rounded-lg p-3 bg-white">
           <CardElement options={{ style: { base: { fontSize: '16px', color: '#374151' } } }} />
         </div>
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-700 block mb-1">Amount (USD)</label>
+        <label htmlFor="cashapp-withdrawal-amount" className="text-sm font-medium text-gray-700 block mb-1">Amount (USD)</label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
-          <Input type="number" placeholder={`Min $${MIN_WITHDRAWAL}`} value={amount}
+          <Input id="cashapp-withdrawal-amount" type="number" placeholder={`Min $${MIN_WITHDRAWAL}`} value={amount}
             onChange={e => setAmount(e.target.value)} className="pl-7 border-2 text-lg"
             min={MIN_WITHDRAWAL} max={balance} step="0.01" />
         </div>
@@ -440,7 +440,7 @@ export default function Withdrawal() {
       setUser(updated);
       queryClient.invalidateQueries(['withdrawal-history', user.id]);
       setAmount('');
-    } catch (e) {
+    } catch {
       toast.error('Failed to submit withdrawal. Please try again.');
     } finally {
       setSubmitting(false);
@@ -628,7 +628,7 @@ export default function Withdrawal() {
 
                 {/* Method selector */}
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-2">Payout Method</label>
+                  <span className="text-sm font-medium text-gray-700 block mb-2">Payout Method</span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {PAYOUT_METHODS.map(m => (
                       <button
@@ -673,10 +673,10 @@ export default function Withdrawal() {
 
                     {/* Amount */}
                     <div>
-                      <label className="text-sm font-medium text-gray-700 block mb-1">Amount (USD)</label>
+                      <label htmlFor="withdrawal-amount" className="text-sm font-medium text-gray-700 block mb-1">Amount (USD)</label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
-                        <Input type="number" placeholder={`Min $${MIN_WITHDRAWAL}`} value={amount}
+                        <Input id="withdrawal-amount" type="number" placeholder={`Min $${MIN_WITHDRAWAL}`} value={amount}
                           onChange={e => setAmount(e.target.value)} className="pl-7 border-2 text-lg"
                           min={MIN_WITHDRAWAL} max={balance} step="0.01" />
                       </div>

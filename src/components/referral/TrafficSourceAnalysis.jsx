@@ -30,7 +30,7 @@ const SOURCE_LABELS = {
   other: '🌐 Other',
 };
 
-export default function TrafficSourceAnalysis({ links = [], referrals = [] }) {
+export default function TrafficSourceAnalysis({ links = [], referrals: _referrals = [] }) {
   const sourceData = useMemo(() => {
     const map = {};
     links.forEach(link => {
@@ -79,7 +79,7 @@ export default function TrafficSourceAnalysis({ links = [], referrals = [] }) {
             ) : (
               <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
-                  <Pie data={pieData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}>
+                  <Pie data={pieData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name: _name, percent }) => `${(percent * 100).toFixed(0)}%`}>
                     {pieData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                   </Pie>
                   <Tooltip />

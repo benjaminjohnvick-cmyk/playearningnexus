@@ -47,7 +47,7 @@ export default function SocialShareButtons({ imageUrl, caption, platform = null 
       
       handleCopyCaption();
       toast.success('Image downloaded and caption copied! Share on your preferred platform.');
-    } catch (error) {
+    } catch {
       toast.error('Failed to download image');
     }
   };

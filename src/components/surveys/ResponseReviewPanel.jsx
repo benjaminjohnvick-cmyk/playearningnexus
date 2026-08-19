@@ -9,7 +9,7 @@ import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ResponseReviewPanel({ surveyId }) {
-  const [selectedFlag, setSelectedFlag] = useState(null);
+  const [_selectedFlag, setSelectedFlag] = useState(null);
 
   const { data: flaggedResponses = [] } = useQuery({
     queryKey: ['flagged-responses', surveyId],

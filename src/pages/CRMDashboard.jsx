@@ -16,12 +16,12 @@ import {
 } from 'lucide-react';
 
 export default function CRMDashboard() {
-  const [selectedProspect, setSelectedProspect] = useState(null);
+  const [_selectedProspect, _setSelectedProspect] = useState(null);
   const [activeTab, setActiveTab] = useState('prospects');
   const queryClient = useQueryClient();
 
   // Fetch prospects
-  const { data: prospects = [], isLoading: prospectLoading } = useQuery({
+  const { data: prospects = [], isLoading: _prospectLoading } = useQuery({
     queryKey: ['crm_prospects'],
     queryFn: () => base44.entities.CRMProspect.list('-created_date', 50),
   });

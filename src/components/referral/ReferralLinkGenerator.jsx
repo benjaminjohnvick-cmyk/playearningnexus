@@ -83,17 +83,18 @@ export default function ReferralLinkGenerator({ user }) {
             <h3 className="font-medium text-gray-800">Create New Referral Link</h3>
             <div className="grid md:grid-cols-3 gap-3">
               <div>
-                <label className="text-xs text-gray-500 block mb-1">Campaign Name (optional)</label>
+                <label htmlFor="referral-campaign-name" className="text-xs text-gray-500 block mb-1">Campaign Name (optional)</label>
                 <Input
+                  id="referral-campaign-name"
                   placeholder="e.g. Summer 2025"
                   value={newLink.campaign_name}
                   onChange={e => setNewLink(f => ({ ...f, campaign_name: e.target.value }))}
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 block mb-1">Link Type</label>
+                <label htmlFor="referral-link-type" className="text-xs text-gray-500 block mb-1">Link Type</label>
                 <Select value={newLink.link_type} onValueChange={v => setNewLink(f => ({ ...f, link_type: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="referral-link-type"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="general">General</SelectItem>
                     <SelectItem value="campaign">Campaign</SelectItem>
@@ -101,9 +102,9 @@ export default function ReferralLinkGenerator({ user }) {
                 </Select>
               </div>
               <div>
-                <label className="text-xs text-gray-500 block mb-1">Share Platform</label>
+                <label htmlFor="referral-share-platform" className="text-xs text-gray-500 block mb-1">Share Platform</label>
                 <Select value={newLink.referral_source} onValueChange={v => setNewLink(f => ({ ...f, referral_source: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="referral-share-platform"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {PLATFORMS.map(p => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
                   </SelectContent>

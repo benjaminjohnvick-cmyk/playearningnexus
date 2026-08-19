@@ -125,10 +125,13 @@ export default function AdCreativeCanvas({ onExport }) {
           <div
             ref={canvasRef}
             className={`relative w-64 h-64 rounded-xl overflow-hidden cursor-default select-none ${bgDef.style} border border-gray-600`}
+            role="button"
+            tabIndex={0}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
             onClick={() => setSelectedLayer(null)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedLayer(null); } }}
           >
             {/* Background image */}
             {imageUrl && (
@@ -144,6 +147,8 @@ export default function AdCreativeCanvas({ onExport }) {
             {layers.filter(l => l.type === 'text').map(layer => (
               <div
                 key={layer.id}
+                role="button"
+                tabIndex={0}
                 className={`absolute cursor-move ${layer.size} ${layer.color} ${layer.bold ? 'font-black' : 'font-medium'}
                   ${selectedLayer === layer.id ? 'ring-1 ring-white/50 rounded px-0.5' : ''}`}
                 style={{ left: `${layer.x}%`, top: `${layer.y}%`, transform: 'translate(0,-50%)' }}
@@ -195,7 +200,8 @@ export default function AdCreativeCanvas({ onExport }) {
             </div>
             <div className="space-y-1.5 max-h-40 overflow-y-auto">
               {layers.map(l => (
-                <div key={l.id} onClick={() => setSelectedLayer(l.id)}
+                <div key={l.id} role="button" tabIndex={0} onClick={() => setSelectedLayer(l.id)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedLayer(l.id); } }}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all text-xs ${
                     selectedLayer === l.id ? 'bg-yellow-500/20 border border-yellow-500/30' : 'bg-gray-800 hover:bg-gray-700 border border-transparent'
                   }`}>

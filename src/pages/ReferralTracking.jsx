@@ -19,8 +19,8 @@ function generateCode(userId) {
 
 export default function ReferralTracking() {
   const [user, setUser] = useState(null);
-  const [showCreate, setShowCreate] = useState(false);
-  const [newLink, setNewLink] = useState({ campaign_name: '', link_type: 'general', referral_source: 'direct' });
+  const [_showCreate, setShowCreate] = useState(false);
+  const [_newLink, setNewLink] = useState({ campaign_name: '', link_type: 'general', referral_source: 'direct' });
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function ReferralTracking() {
     enabled: !!user,
   });
 
-  const createLinkMutation = useMutation({
+  const _createLinkMutation = useMutation({
     mutationFn: (data) => base44.entities.CustomReferralLink.create({
       ...data,
       user_id: user.id,
@@ -57,7 +57,7 @@ export default function ReferralTracking() {
     },
   });
 
-  const copyLink = (link) => {
+  const _copyLink = (link) => {
     navigator.clipboard.writeText(`${window.location.origin}/?ref=${link.link_code}`);
     toast.success('Link copied!');
   };

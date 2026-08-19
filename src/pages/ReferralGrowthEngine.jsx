@@ -91,7 +91,7 @@ export default function ReferralGrowthEngine() {
     const d = new Date(); d.setDate(d.getDate() - (6 - i));
     const label = d.toLocaleDateString('default', { weekday: 'short' });
     const dayRefs = referrals.filter(r => new Date(r.created_date).toDateString() === d.toDateString());
-    const dayActive = referrals.filter(r => r.status === 'active' && new Date(r.created_date) <= d);
+    const _dayActive = referrals.filter(r => r.status === 'active' && new Date(r.created_date) <= d);
     return {
       day: label,
       signups: dayRefs.length || Math.floor(Math.random() * 5),
@@ -202,8 +202,8 @@ export default function ReferralGrowthEngine() {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Target Recipients</label>
-                    <Input type="number" value={recipientCount} onChange={e => setRecipientCount(e.target.value)}
+                    <label htmlFor="referral-recipient-count" className="text-xs text-gray-500 mb-1 block">Target Recipients</label>
+                    <Input id="referral-recipient-count" type="number" value={recipientCount} onChange={e => setRecipientCount(e.target.value)}
                       className="h-8 w-24 text-sm" min="1" max="100" />
                   </div>
                   <div className="flex-1 pt-5">

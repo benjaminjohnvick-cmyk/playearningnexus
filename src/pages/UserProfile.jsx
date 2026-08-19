@@ -63,7 +63,7 @@ export default function UserProfile() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef(null);
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(u => { setUser(u); setEditName(u.full_name); setAvatarUrl(u.avatar_url || ''); })
@@ -142,7 +142,7 @@ export default function UserProfile() {
   const nextTier = TIERS[TIERS.findIndex(t => t.name === currentTier.name) + 1];
   const earnedBadges = BADGES.filter(b => b.threshold(userStats));
   const points = Math.floor(totalSurveys * 10 + totalReferrals * 25 + totalEarnings * 5 + daysGoalMet * 15);
-  const { earnedCount: achievementCount } = useAchievements(user, userStats);
+  const { earnedCount: _achievementCount } = useAchievements(user, userStats);
 
   // ── Avatar upload ────────────────────────────────────────────────────────
   const handleAvatarChange = async (e) => {
@@ -658,7 +658,11 @@ function ChatbotPreferences() {
                 <p className="text-xs text-gray-500">{description}</p>
               </div>
               <div
+                role="switch"
+                aria-checked={!!prefs[key]}
+                tabIndex={0}
                 onClick={() => updatePref(key, !prefs[key])}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updatePref(key, !prefs[key]); } }}
                 className={`w-10 h-5 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${prefs[key] ? 'bg-purple-600' : 'bg-gray-300'}`}
               >
                 <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${prefs[key] ? 'translate-x-5' : 'translate-x-0.5'}`} />

@@ -19,7 +19,7 @@ const QUESTS = [
     icon: Tag,
     reward: 0.50,
     points: 50,
-    check: (user, stats) => (user?.survey_interests?.length || 0) >= 3,
+    check: (user, _stats) => (user?.survey_interests?.length || 0) >= 3,
     cta: 'Go to Profile',
     ctaPath: 'UserProfile',
   },
@@ -173,7 +173,7 @@ export default function OnboardingQuestWidget({ user }) {
                 const Icon = quest.icon;
                 const canClaim = quest.done && !quest.claimed;
                 const isClaimed = quest.claimed;
-                const isLocked = !quest.done && i > 0 && !questStatuses[i - 1]?.done;
+                const _isLocked = !quest.done && i > 0 && !questStatuses[i - 1]?.done;
 
                 return (
                   <div key={quest.id}

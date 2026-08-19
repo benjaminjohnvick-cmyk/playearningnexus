@@ -41,7 +41,7 @@ function QuestionCard({ q, index, total, onChange, onDelete, onMove }) {
 
   return (
     <div className="bg-white border-2 border-gray-100 hover:border-blue-100 rounded-xl shadow-sm transition-all">
-      <div className="flex items-center gap-2 p-3 cursor-pointer" onClick={() => setExpanded(!expanded)}>
+      <div className="flex items-center gap-2 p-3 cursor-pointer" onClick={() => setExpanded(!expanded)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(!expanded); } }}>
         <GripVertical className="w-4 h-4 text-gray-300 cursor-grab" />
         <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">{index + 1}</div>
         <p className="flex-1 text-sm font-medium text-gray-800 truncate">{q.question || 'Untitled question'}</p>
@@ -62,8 +62,9 @@ function QuestionCard({ q, index, total, onChange, onDelete, onMove }) {
       {expanded && (
         <div className="px-4 pb-4 space-y-3 border-t border-gray-50 pt-3">
           <div>
-            <label className="text-xs font-medium text-gray-500 block mb-1">Question text</label>
+            <label htmlFor={`fb-q-question-${index}`} className="text-xs font-medium text-gray-500 block mb-1">Question text</label>
             <Input
+              id={`fb-q-question-${index}`}
               value={q.question}
               onChange={e => updateField('question', e.target.value)}
               placeholder="Type your question here…"
@@ -73,18 +74,18 @@ function QuestionCard({ q, index, total, onChange, onDelete, onMove }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-gray-500 block mb-1">Type</label>
+              <label htmlFor={`fb-q-type-${index}`} className="text-xs font-medium text-gray-500 block mb-1">Type</label>
               <Select value={q.type} onValueChange={val => onChange({ ...q, type: val, options: DEFAULT_OPTIONS[val] || [] })}>
-                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectTrigger id={`fb-q-type-${index}`} className="h-8 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {QUESTION_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 block mb-1">Category</label>
+              <label htmlFor={`fb-q-category-${index}`} className="text-xs font-medium text-gray-500 block mb-1">Category</label>
               <Select value={q.category || ''} onValueChange={val => updateField('category', val)}>
-                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Category" /></SelectTrigger>
+                <SelectTrigger id={`fb-q-category-${index}`} className="h-8 text-xs"><SelectValue placeholder="Category" /></SelectTrigger>
                 <SelectContent>
                   {FOCUS_AREA_OPTIONS.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
                 </SelectContent>
@@ -94,7 +95,7 @@ function QuestionCard({ q, index, total, onChange, onDelete, onMove }) {
 
           {(q.type === 'multiple_choice') && (
             <div>
-              <label className="text-xs font-medium text-gray-500 block mb-1">Options</label>
+              <span className="text-xs font-medium text-gray-500 block mb-1">Options</span>
               <div className="space-y-1.5">
                 {(q.options || []).map((opt, i) => (
                   <div key={i} className="flex items-center gap-2">
@@ -173,7 +174,7 @@ export default function ManualFeedbackSurveyBuilder({ onSaved }) {
       toast.success(status === 'active' ? 'Survey published!' : 'Survey saved as draft!');
       qc.invalidateQueries({ queryKey: ['feedback_surveys'] });
       if (onSaved) onSaved();
-    } catch (e) {
+    } catch {
       toast.error('Failed to save survey');
     } finally {
       setSaving(false);
@@ -185,18 +186,18 @@ export default function ManualFeedbackSurveyBuilder({ onSaved }) {
       {/* Header inputs */}
       <div className="grid md:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs font-medium text-gray-600 block mb-1">Survey Date</label>
-          <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-9" />
+          <label htmlFor="feedback-survey-date" className="text-xs font-medium text-gray-600 block mb-1">Survey Date</label>
+          <Input id="feedback-survey-date" type="date" value={date} onChange={e => setDate(e.target.value)} className="h-9" />
         </div>
         <div>
-          <label className="text-xs font-medium text-gray-600 block mb-1">Survey Title (optional)</label>
-          <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Weekly UX Check-In" className="h-9" />
+          <label htmlFor="feedback-survey-title" className="text-xs font-medium text-gray-600 block mb-1">Survey Title (optional)</label>
+          <Input id="feedback-survey-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Weekly UX Check-In" className="h-9" />
         </div>
       </div>
 
       {/* Focus areas */}
       <div>
-        <label className="text-xs font-medium text-gray-600 block mb-2">Focus Areas</label>
+        <span className="text-xs font-medium text-gray-600 block mb-2">Focus Areas</span>
         <div className="flex flex-wrap gap-1.5">
           {FOCUS_AREA_OPTIONS.map(area => (
             <button

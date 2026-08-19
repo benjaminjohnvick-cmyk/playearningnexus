@@ -30,7 +30,7 @@ function saveSyncState(state) {
   localStorage.setItem('gg_ad_sync_state', JSON.stringify(state));
 }
 
-export default function AdCrossPlatformSync({ ads, onRefresh }) {
+export default function AdCrossPlatformSync({ ads, onRefresh: _onRefresh }) {
   // syncConfig[adId] = { enabled: bool, platforms: string[] }
   const [syncConfig, setSyncConfig] = useState(loadSyncState);
   const [syncing, setSyncing] = useState({}); // adId -> bool

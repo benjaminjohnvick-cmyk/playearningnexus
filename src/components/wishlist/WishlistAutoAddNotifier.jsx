@@ -80,11 +80,11 @@ export default function WishlistAutoAddNotifier({ user }) {
               tag: `wishlist-auto-add-${p.id || p.name}`,
               url: '/Wishlist',
             });
-          } catch (e) {
+          } catch {
             // Fail silently per product
           }
         }
-      } catch (e) {
+      } catch {
         // Fail silently — this is a background convenience feature
       }
     })();

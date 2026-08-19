@@ -16,7 +16,7 @@ export default function EarningsAnalyticsTab({ user }) {
     enabled: !!user?.id,
   });
 
-  const { data: referrals = [] } = useQuery({
+  const { data: _referrals = [] } = useQuery({
     queryKey: ['referrals-analytics', user?.id],
     queryFn: () => base44.entities.Referral.filter({ referrer_id: user.id }, '-created_date', 100),
     enabled: !!user?.id,

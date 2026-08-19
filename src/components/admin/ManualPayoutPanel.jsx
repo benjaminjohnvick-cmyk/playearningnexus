@@ -20,7 +20,7 @@ export default function ManualPayoutPanel() {
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
   const [rewardType, setRewardType] = useState('manual');
-  const [bulkMode, setBulkMode] = useState(false);
+  const [_bulkMode, _setBulkMode] = useState(false);
   const [editingPrefId, setEditingPrefId] = useState(null);
   const [prefEdits, setPrefEdits] = useState({});
   const [aiSuggestions, setAiSuggestions] = useState({}); // keyed by pref.id

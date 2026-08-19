@@ -20,7 +20,7 @@ export default function AIPersonalizedRecommendations({ user }) {
         base44.entities.PPCTransaction.filter({ user_id: user.id })
       ]);
 
-      const totalEarned = transactions.reduce((s, t) => s + (t.amount || 0), 0);
+      const _totalEarned = transactions.reduce((s, t) => s + (t.amount || 0), 0);
       const surveysCompleted = responses.filter(r => r.completed).length;
 
       const result = await base44.integrations.Core.InvokeLLM({

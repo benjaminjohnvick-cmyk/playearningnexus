@@ -26,7 +26,7 @@ import UserTrustScoreCard from '@/components/trust/UserTrustScoreCard';
 
 export default function Surveys() {
   const [user, setUser] = useState(null);
-  const [activeSurvey, setActiveSurvey] = useState(null);
+  const [_activeSurvey, setActiveSurvey] = useState(null);
   const handleSmartRoute = (survey) => setActiveSurvey(survey);
   const [showTierModal, setShowTierModal] = useState(null);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
@@ -60,7 +60,7 @@ export default function Surveys() {
     enabled: !!user
   });
 
-  const handleSurveyComplete = async (earnings) => {
+  const handleSurveyComplete = async (_earnings) => {
     await refetchEarnings();
     queryClient.invalidateQueries(['survey-transactions']);
     const updatedUser = await base44.auth.me();

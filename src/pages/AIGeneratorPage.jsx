@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 export default function AIGeneratorPage() {
   const navigate = useNavigate();
-  const [isCreating, setIsCreating] = useState(false);
+  const [_isCreating, setIsCreating] = useState(false);
 
   const handleSurveyGenerated = async (generatedSurvey) => {
     try {

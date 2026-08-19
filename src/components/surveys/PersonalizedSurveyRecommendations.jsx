@@ -77,7 +77,7 @@ export default function PersonalizedSurveyRecommendations({ user }) {
           animate="show"
           className="space-y-3"
         >
-          {recommendations.slice(0, 5).map((rec, idx) => {
+          {recommendations.slice(0, 5).map((rec, _idx) => {
             const ReasonIcon = reasonIcons[rec.match_reason] || Brain;
             return (
               <motion.div key={rec.survey_id} variants={item}>

@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 export default function DeveloperAnalyticsPage() {
-  const [user, setUser] = useState(null);
+  const [_user, setUser] = useState(null);
   const [businessClient, setBusinessClient] = useState(null);
 
   useEffect(() => {

@@ -29,7 +29,7 @@ export default function DisputeSubmissionForm() {
       });
       return result.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       toast.success('Dispute submitted! AI analysis complete.');
       setDisputeType('');
       setDescription('');
@@ -57,7 +57,7 @@ export default function DisputeSubmissionForm() {
         files.map(file => uploadMutation.mutateAsync(file))
       );
       await disputeMutation.mutateAsync(fileUrls);
-    } catch (err) {
+    } catch {
       toast.error('Upload failed');
     } finally {
       setLoading(false);
@@ -81,8 +81,9 @@ export default function DisputeSubmissionForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Dispute Type */}
             <div>
-              <label className="text-sm font-medium">Dispute Type</label>
+              <label htmlFor="dispute-type" className="text-sm font-medium">Dispute Type</label>
               <select
+                id="dispute-type"
                 value={disputeType}
                 onChange={(e) => setDisputeType(e.target.value)}
                 className="w-full mt-1 px-3 py-2 border rounded-lg"
@@ -98,8 +99,9 @@ export default function DisputeSubmissionForm() {
 
             {/* Description */}
             <div>
-              <label className="text-sm font-medium">Description</label>
+              <label htmlFor="dispute-description" className="text-sm font-medium">Description</label>
               <textarea
+                id="dispute-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Explain what happened and what you expect..."
@@ -110,7 +112,7 @@ export default function DisputeSubmissionForm() {
 
             {/* File Upload */}
             <div>
-              <label className="text-sm font-medium">Upload Evidence</label>
+              <label htmlFor="evidence-upload" className="text-sm font-medium">Upload Evidence</label>
               <div className="mt-2 border-2 border-dashed rounded-lg p-4 text-center">
                 <Upload className="w-6 h-6 mx-auto text-gray-400 mb-2" />
                 <p className="text-sm text-gray-600">Screenshots, receipts, transaction details</p>

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { TrendingUp, Users, AlertTriangle, Loader2, Brain, RefreshCw } from 'lucide-react';
 
-export default function LTVChurnPanel({ campaigns, selectedCampaign, onSelectCampaign }) {
+export default function LTVChurnPanel({ campaigns, selectedCampaign, onSelectCampaign: _onSelectCampaign }) {
   const [localSelected, setLocalSelected] = useState(selectedCampaign || campaigns[0]);
   const [loading, setLoading] = useState(false);
   const [insights, setInsights] = useState(null);

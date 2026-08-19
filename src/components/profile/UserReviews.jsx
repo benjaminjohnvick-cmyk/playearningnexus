@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import moment from 'moment';
 
-export default function UserReviews({ userId, ratings }) {
+export default function UserReviews({ userId: _userId, ratings }) {
   const { data: games = [] } = useQuery({
     queryKey: ['allGames'],
     queryFn: () => base44.entities.Game.list()

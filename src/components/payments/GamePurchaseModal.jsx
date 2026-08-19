@@ -150,11 +150,11 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
 
           {/* Payment Method Selection */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
+            <label htmlFor="gp-payment-method" className="text-sm font-medium text-gray-700 mb-2 block">
               Payment Method
             </label>
             <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-              <SelectTrigger>
+              <SelectTrigger id="gp-payment-method">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -179,10 +179,11 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
             <>
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  <label htmlFor="gp-card-number" className="text-sm font-medium text-gray-700 mb-1 block">
                     Card Number
                   </label>
                   <Input
+                    id="gp-card-number"
                     placeholder="1234 5678 9012 3456"
                     value={cardNumber}
                     onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
@@ -191,10 +192,11 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  <label htmlFor="gp-card-name" className="text-sm font-medium text-gray-700 mb-1 block">
                     Cardholder Name
                   </label>
                   <Input
+                    id="gp-card-name"
                     placeholder="John Doe"
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
@@ -203,10 +205,11 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                    <label htmlFor="gp-expiry" className="text-sm font-medium text-gray-700 mb-1 block">
                       Expiry Date
                     </label>
                     <Input
+                      id="gp-expiry"
                       placeholder="MM/YY"
                       value={expiry}
                       onChange={(e) => setExpiry(formatExpiry(e.target.value))}
@@ -214,10 +217,11 @@ export default function GamePurchaseModal({ game, open, onClose, onSuccess }) {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">
+                    <label htmlFor="gp-cvc" className="text-sm font-medium text-gray-700 mb-1 block">
                       CVC
                     </label>
                     <Input
+                      id="gp-cvc"
                       placeholder="123"
                       value={cvc}
                       onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').substring(0, 3))}

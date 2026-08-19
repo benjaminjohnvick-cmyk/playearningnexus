@@ -94,7 +94,7 @@ Create engaging, platform-appropriate content with hashtags and call-to-action.`
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Platform</label>
+            <span className="text-sm font-medium mb-2 block">Platform</span>
             <div className="flex flex-wrap gap-2">
               {platforms.map(p => (
                 <Badge
@@ -109,7 +109,7 @@ Create engaging, platform-appropriate content with hashtags and call-to-action.`
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Content Type</label>
+            <span className="text-sm font-medium mb-2 block">Content Type</span>
             <div className="flex flex-wrap gap-2">
               {contentTypes.map(t => (
                 <Badge
@@ -124,8 +124,9 @@ Create engaging, platform-appropriate content with hashtags and call-to-action.`
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Additional Instructions (Optional)</label>
+            <label htmlFor="promo-instructions" className="text-sm font-medium mb-2 block">Additional Instructions (Optional)</label>
             <Textarea
+              id="promo-instructions"
               value={customInstructions}
               onChange={(e) => setCustomInstructions(e.target.value)}
               placeholder="e.g., Focus on action features, mention discount code..."

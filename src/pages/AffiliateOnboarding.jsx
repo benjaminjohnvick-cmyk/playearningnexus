@@ -38,7 +38,7 @@ export default function AffiliateOnboarding() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       queryClient.invalidateQueries({ queryKey: ['affiliateOnboarding'] });
       setStep(2);
     }
@@ -178,10 +178,11 @@ export default function AffiliateOnboarding() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label htmlFor="onboarding-past-campaigns" className="block text-sm font-medium text-slate-700 mb-2">
                     Past Campaigns Completed
                   </label>
                   <input
+                    id="onboarding-past-campaigns"
                     type="number"
                     value={pastPerformance.past_campaigns}
                     onChange={(e) => setPastPerformance({ ...pastPerformance, past_campaigns: Number(e.target.value) })}
@@ -190,10 +191,11 @@ export default function AffiliateOnboarding() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label htmlFor="onboarding-avg-conversion" className="block text-sm font-medium text-slate-700 mb-2">
                     Average Conversion Rate (%)
                   </label>
                   <input
+                    id="onboarding-avg-conversion"
                     type="number"
                     step="0.1"
                     value={pastPerformance.avg_conversion_rate}

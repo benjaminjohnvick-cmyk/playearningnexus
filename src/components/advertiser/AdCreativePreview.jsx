@@ -133,7 +133,7 @@ export default function AdCreativePreview() {
   const [brandName, setBrandName] = useState('');
   const [tagline, setTagline] = useState('');
   const [uploading, setUploading] = useState(false);
-  const [ready, setReady] = useState(false);
+  const [_ready, _setReady] = useState(false);
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];

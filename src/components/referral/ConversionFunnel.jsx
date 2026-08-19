@@ -24,7 +24,7 @@ export default function ConversionFunnel({ referrals = [], links = [] }) {
         <div className="space-y-3">
           {steps.map((step, idx) => {
             const Icon = step.icon;
-            const width = idx === 0 ? 100 : Math.min(100, parseFloat(step.pct) * (idx / steps.length + 0.5));
+            const _width = idx === 0 ? 100 : Math.min(100, parseFloat(step.pct) * (idx / steps.length + 0.5));
             return (
               <div key={step.label}>
                 <div className="flex items-center justify-between mb-1">

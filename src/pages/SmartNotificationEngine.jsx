@@ -230,7 +230,7 @@ export default function SmartNotificationEngine() {
                 <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Clock className="w-4 h-4 text-indigo-500" /> Frequency & Threshold</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-gray-600 mb-2 block">Alert Frequency</label>
+                    <span className="text-xs font-semibold text-gray-600 mb-2 block">Alert Frequency</span>
                     <div className="space-y-2">
                       {FREQUENCIES.map(f => {
                         const Icon = f.icon;

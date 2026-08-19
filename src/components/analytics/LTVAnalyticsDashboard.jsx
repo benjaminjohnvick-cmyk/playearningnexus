@@ -8,7 +8,7 @@ import { LineChart, Line, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
 import { TrendingUp, AlertTriangle, Users, DollarSign, Target, Activity, RefreshCw } from 'lucide-react';
 
 export default function LTVAnalyticsDashboard() {
-  const [selectedSegment, setSelectedSegment] = useState('all');
+  const [_selectedSegment, _setSelectedSegment] = useState('all');
   const [analysisLoading, setAnalysisLoading] = useState(false);
 
   // Fetch LTV predictions

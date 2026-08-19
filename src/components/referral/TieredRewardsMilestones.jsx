@@ -16,7 +16,7 @@ const MILESTONES = [
 
 export default function TieredRewardsMilestones({ totalReferrals = 0 }) {
   const nextMilestone = MILESTONES.find(m => m.referrals > totalReferrals);
-  const prevMilestone = [...MILESTONES].reverse().find(m => m.referrals <= totalReferrals);
+  const _prevMilestone = [...MILESTONES].reverse().find(m => m.referrals <= totalReferrals);
 
   return (
     <Card className="border shadow-sm">
