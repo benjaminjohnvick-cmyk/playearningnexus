@@ -12,6 +12,8 @@ import { adjustUserBalance } from "../../sdk/balance.ts";
 import { recordRevenue, recordSubsidy, sellerCommissionPct, sellerCashbackPointsPct, marketplaceMarginSource, catalogWholesaleFraction, pointValueUsd, sellerCashbackRequiresActivation, curatorRewardPointsPct } from "../../sdk/revenue.ts";
 import { isSellerActivated } from "../../sdk/seller-activation.ts";
 import { maxPointsPerTransaction } from "../../sdk/redemption.ts";
+import { siteCashApplyPlan, resolveSiteCashAutoApply } from "../../sdk/site-cash-apply.ts";
+import { recordMoneyFlow } from "../../sdk/paypal.ts";
 
 // purchaseMarketplaceListing (authenticated buyer) — buy a marketplace item with POINTS (on-site,
 // closed-loop) or by CARD (adds the platform markup). Behavior branches on listing.source:
@@ -67,7 +69,7 @@ export default __handler(async (req) => {
     }
 
     // Pre-flight the payment path (no charge yet) so we don't claim a listing we can't pay for.
-    let charged = { method: payment_method, points: 0, usd: 0, markup: 0, welcome_discount_usd: 0, loyalty_discount_usd: 0 };
+    let charged = { method: payment_method, points: 0, usd: 0, markup: 0, welcome_discount_usd: 0, loyalty_discount_usd: 0, site_cash_usd: 0 };
 
     // LOYALTY / PREMIUM pricing. Load the member once. PREMIUM (loyalty) members get NO markup on their
     // purchases (only non-premium pay the markup — that's the platform's commerce margin), AND they get
@@ -326,6 +328,24 @@ export default __handler(async (req) => {
         charged.welcome_discount_usd = welcomeDiscountUsd;
       }
       charged.points = effectivePoints;
+    } else if (payment_method === "card") {
+      // AUTO-APPLY SITE CASH to the card order (if the buyer's preference allows). This runs on the claimed,
+      // not-yet-captured order: we deduct the buyer's non-cashable points now (funded to fulfillment via the
+      // business account, recorded as a money flow), and the external capture charges only the reduced
+      // remainder. Bounded by the item price, the per-transaction spend cap, and the balance held. The card
+      // option (and every other payment option) is unchanged — this only lowers what the card is charged.
+      if (resolveSiteCashAutoApply(user as Record<string, unknown>) && (Number(user.points) || 0) > 0) {
+        const plan = siteCashApplyPlan({ faceUsd: charged.usd, userPoints: Number(user.points) || 0, isPremium });
+        if (plan.points_applied > 0) {
+          const ok = await adjustUserBalance(user.id, -plan.points_applied, { field: "points" });
+          if (ok !== null) {
+            await recordMoneyFlow({ direction: "out", amount_usd: plan.points_usd, kind: "points_redemption_fulfillment", ref: String(listing.id), meta: { user_id: user.id, points_applied: plan.points_applied, funded_by: "paypal_business_account", auto_applied: true } }).catch(() => null);
+            charged.points = plan.points_applied;
+            charged.site_cash_usd = plan.points_usd;
+            charged.usd = plan.card_after_usd;
+          }
+        }
+      }
     }
 
     // Points are captured above (real closed-loop debit). CARD is NOT captured in this handler — the
@@ -354,6 +374,7 @@ export default __handler(async (req) => {
       payment_captured: paidNow,
       markup_applied: charged.markup || 0,
       welcome_discount_usd: charged.welcome_discount_usd || 0,
+      site_cash_applied_usd: charged.site_cash_usd || 0,
       fulfillment_type,
       source,
       shipping_address: shipping_address || null,

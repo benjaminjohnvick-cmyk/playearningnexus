@@ -3,9 +3,8 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { isEnabled } from "../../sdk/feature-flags.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
-import { pointValueUsd } from "../../sdk/revenue.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
-import { maxPointsPerTransaction } from "../../sdk/redemption.ts";
+import { siteCashApplyPlan, resolveSiteCashAutoApply } from "../../sdk/site-cash-apply.ts";
 import { recordMoneyFlow, netChargeAfterDiscount } from "../../sdk/paypal.ts";
 import { paypalConfigured, createOrder } from "../../sdk/paypal-api.ts";
 
@@ -24,8 +23,11 @@ export default __handler(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-    // apply_points is OPT-IN — the user chooses it by tapping "Apply my points" at checkout. Default OFF.
-    const { listing_id, apply_points = false, shipping_address } = await req.json().catch(() => ({}));
+    // Site Cash AUTO-APPLIES by default (SITE_CASH_AUTO_APPLY). A caller can still opt a single purchase out by
+    // sending apply_points:false explicitly; sending apply_points:true forces it on even if the global default is off.
+    const body = await req.json().catch(() => ({}));
+    const { listing_id, shipping_address } = body;
+    const applyPoints = body.apply_points === undefined ? resolveSiteCashAutoApply(user as Record<string, unknown>) : !!body.apply_points;
     if (!listing_id) return Response.json({ error: "listing_id required" }, { status: 400 });
 
     const listing = await base44.asServiceRole.entities.MarketplaceListing.filter({ id: listing_id }).then((r: any) => r[0]);
@@ -35,17 +37,16 @@ export default __handler(async (req) => {
     const faceUsd = Number(listing.price_usd) || 0;
     if (faceUsd <= 0) return Response.json({ error: "This item isn't available for card purchase" }, { status: 400 });
 
-    const pointUsd = pointValueUsd();
     const balance = Number(user.points) || 0;
 
-    // How many points can be applied: the spend cap (12%/24% of balance), bounded by the item's price.
+    // How much Site Cash to apply: bounded by the item price, the per-transaction spend cap (12%/24% of balance),
+    // and the balance held. Same math as the manual apply — see site-cash-apply.ts.
     let pointsApplied = 0, pointsUsd = 0;
-    if (apply_points && balance > 0) {
+    if (applyPoints && balance > 0) {
       const premium = await isPremiumUser(user.id);
-      const cap = maxPointsPerTransaction({ isPremium: premium, userPoints: balance });
-      const faceInPoints = Math.floor(faceUsd / pointUsd);
-      pointsApplied = Math.max(0, Math.min(cap.points, faceInPoints));
-      pointsUsd = Math.round(pointsApplied * pointUsd * 100) / 100;
+      const plan = siteCashApplyPlan({ faceUsd, userPoints: balance, isPremium: premium });
+      pointsApplied = plan.points_applied;
+      pointsUsd = plan.points_usd;
     }
 
     const cardNet = netChargeAfterDiscount(faceUsd, pointsUsd);

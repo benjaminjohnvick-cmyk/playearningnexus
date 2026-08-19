@@ -213,6 +213,25 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
 - **For counsel to confirm:** the takedown/counter-notice copy and the upload license-grant wording, and that
   the designated-agent registration is filed so the safe harbor attaches.
 
+## 13b. Advertiser billing, 30-day cancellation & Site-Cash auto-apply
+
+- **Current posture.** Every advertiser tier **prepays the full 52 weeks up front** in a single charge (one
+  prepayment recognized across 13 four-week cycles — `billing-schedule.ts`). **No recurring auto-charge / no
+  auto-renew was built**, so there's no negative-option exposure on this path. A **30-day proportional
+  cancellation** (`advertiser-cancellation.ts` / `advertiserCancel`) lets an advertiser cancel within 30 days of
+  purchase and recover **one-third** (we keep two-thirds; Tier 1 = keep $8,000 / refund $4,000); the
+  non-refundable portion is disclosed and consent-logged (`ConsentRecord kind:"advertiser_cancellation"`) before
+  it applies, and the refund is issued as **closed-loop site credit** (`refund_credit_balance`), never cash/card.
+  It coexists with — and is independent of — the Full-Value Delivery Guarantee (§11b), which governs after the
+  window. **Site Cash** (non-cashable points) now **auto-applies** to purchases at checkout, bounded by the
+  purchase total and the existing per-transaction spend cap; it only offsets a purchase and is never withdrawable.
+- **For counsel to confirm:** (a) the 30-day cancellation terms + the clear-and-conspicuous disclosure of the
+  non-refundable two-thirds before purchase and at cancellation; (b) that the full-year prepayment is properly
+  treated as unearned revenue recognized over the term (ties to §9); (c) that the closed-loop refund-credit
+  remedy (no cash refund) is acceptable for advertiser cancellations in your launch jurisdictions; (d) that
+  auto-applying non-cashable Site Cash to purchases raises no money-transmission/stored-value concern (it never
+  converts to cash).
+
 ## 14. Blanks to fill before launch
 
 - `BUSINESS_MAILING_ADDRESS` (CAN-SPAM footer + winner-list/rules requests) — currently empty.

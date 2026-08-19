@@ -1,5 +1,39 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-19 — Site Cash auto-apply: every checkout + per-user toggle
+
+Extends the Site-Cash auto-apply so it's automatic on every checkout and each buyer controls it:
+
+- **Per-user preference** (`auto_apply_site_cash` on User) that overrides the site default —
+  `setSiteCashAutoApply` (read/set/reset) + `resolveSiteCashAutoApply(user)`. `hybridCheckout` now honors it.
+- **Server-authoritative card paths auto-apply with no frontend change:** added to `purchaseMarketplaceListing`
+  (card branch) — deduct Site Cash, record the money flow, charge the card only the reduced remainder (mirrors
+  the hybrid flow; card opens awaiting_payment so capture charges the reduced amount). All existing payment
+  options untouched.
+- **Client-captured card paths** (e.g. `placeStoreOrder`, which captures on the client): new read-only
+  `checkoutSiteCashQuote` ({price_usd} → points_applied / card_after_usd, honoring the buyer's preference) so the
+  UI charges the reduced amount — avoids under-collecting. Store checkout component still needs to call it (small
+  follow-up).
+- Tests for the resolve logic (55 pass total); compile + audit clean.
+
+## 2026-08-19 — Advertiser billing (52-wk prepay / 13 cycles), 30-day cancellation, Site-Cash auto-apply
+
+Three billing/checkout changes (see `ADVERTISER-BILLING-CANCELLATION-AND-SITE-CASH.md`):
+
+- **Full 52 weeks prepaid up front, tracked in 13 four-week cycles** (all tiers). One upfront prepayment through
+  the normal checkout — not credit, not installments, not a recurring auto-charge. `billing-schedule.ts`
+  (`annualPrepayAmount`, `cycleLadder`, `billingScheduleStatus`) + `backend/functions/billingScheduleStatus`;
+  settings `BILLING_ANNUAL_PREPAY_ENABLED`/`BILLING_CYCLES` (13)/`BILLING_CYCLE_DAYS` (28).
+- **30-day proportional cancellation** (cooling-off): keep two-thirds, refund one-third, within 30 days of
+  purchase (Tier 1 $12k → keep $8k, refund $4k). Refund as closed-loop site credit; non-refundable portion
+  disclosed + consented up front. Coexists with the Full-Value Delivery Guarantee (which governs after the
+  window) — independent switches. `advertiser-cancellation.ts` + `backend/functions/advertiserCancel`; settings
+  `ADVERTISER_CANCELLATION_ENABLED`/`_WINDOW_DAYS` (30)/`_REFUND_PCT` (1/3).
+- **Site Cash auto-applies at checkout**: a buyer's non-cashable points auto-offset any purchase, bounded by the
+  total, the per-transaction spend cap (12%/24%), and balance held. `site-cash-apply.ts` + wired into
+  `hybridCheckout` (opt-out via `apply_points:false`); setting `SITE_CASH_AUTO_APPLY`.
+- 13 new Deno tests (54 pass total); compile + audit clean; no money moved by these functions.
+
 ## 2026-08-19 — Inventory governor now counts the guarantee's true committed volume (bottleneck fix)
 
 The Full-Value Delivery Guarantee promises each seat its base allotment **plus** the value-match bonus, and a
