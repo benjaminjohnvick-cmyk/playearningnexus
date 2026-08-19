@@ -25,6 +25,7 @@ import EarnBackPlanPanel from './EarnBackPlanPanel';
 export default function CheckoutChoices({ listing, onDone }) {
   const [choice, setChoice] = useState(null);
   const [plan, setPlan] = useState(null);
+  const [autoQuote, setAutoQuote] = useState(null); // Site Cash that auto-applies (honors the buyer's setting)
   const [busy, setBusy] = useState(false);
   const [waitDays, setWaitDays] = useState(0);
 
@@ -35,17 +36,26 @@ export default function CheckoutChoices({ listing, onDone }) {
         const res = await base44.functions.invoke('itemOwnershipPlan', listing?.id ? { listing_id: listing.id } : { price_usd: listing?.price_usd });
         if (alive && !res.data?.error) setPlan(res.data);
       } catch { /* ignore */ }
+      try {
+        const q = await base44.functions.invoke('checkoutSiteCashQuote', { price_usd: listing?.price_usd });
+        const d = q?.data ?? q;
+        if (alive && d?.apply && d.points_usd > 0) setAutoQuote(d);
+      } catch { /* ignore */ }
     })();
     return () => { alive = false; };
   }, [listing?.id, listing?.price_usd]);
 
   if (!listing || !(listing.price_usd > 0)) return null;
 
+  // applyPoints: true = force apply, false = force off, undefined = let the server decide from the buyer's
+  // auto-apply setting (so "pay by card" still gets their Site Cash discount when they've left it on).
   const card = async (applyPoints, waitPref) => {
     setBusy(true);
     try {
       const res = await base44.functions.invoke('hybridCheckout', {
-        listing_id: listing.id, apply_points: !!applyPoints, ...(waitPref ? { wait_days: waitPref } : {}),
+        listing_id: listing.id,
+        ...(applyPoints === undefined ? {} : { apply_points: !!applyPoints }),
+        ...(waitPref ? { wait_days: waitPref } : {}),
       });
       if (res.data?.blocked) toast.error(res.data.message || 'Payment method unavailable');
       else if (res.data?.success) {
@@ -59,9 +69,14 @@ export default function CheckoutChoices({ listing, onDone }) {
 
   const discountNow = plan?.discount_now_usd || 0;
   const priceUsd = plan?.price_usd ?? listing.price_usd;
+  const autoUsd = autoQuote ? Number(autoQuote.points_usd) : 0;         // Site Cash that auto-applies
+  const autoCardUsd = autoQuote ? Number(autoQuote.card_after_usd) : priceUsd; // card charge after it
 
   const options = [
-    { key: 'card', icon: CreditCard, title: 'Pay by card — own it outright', desc: `Pay ${formatCash(priceUsd)} now, it's yours.` },
+    { key: 'card', icon: CreditCard, title: 'Pay by card — own it outright',
+      desc: autoUsd > 0
+        ? `${formatCash(autoUsd)} Site Cash applied — pay ${formatCash(autoCardUsd)} by card, it's yours.`
+        : `Pay ${formatCash(priceUsd)} now, it's yours.` },
     { key: 'apply', icon: Wallet, title: 'Apply my Site Cash for a discount', desc: discountNow > 0 ? `Take ${formatCash(discountNow)} off now — card covers the rest.` : 'Use earned Site Cash to cut the price.' },
     { key: 'bank', icon: PiggyBank, title: 'Bank survey time until I own 100%', desc: 'Save up — it ships fully covered, no card needed.' },
     { key: 'earnback', icon: Sparkles, title: 'Pay by card now, earn Site Cash back', desc: 'Buy it today and earn it back through surveys.' },
@@ -71,6 +86,12 @@ export default function CheckoutChoices({ listing, onDone }) {
   return (
     <div className="space-y-3">
       <div className="text-sm font-semibold text-slate-700">How do you want to get this?</div>
+      {autoUsd > 0 && (
+        <div className="flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-xs text-green-800">
+          <Wallet className="w-4 h-4 flex-shrink-0 text-green-600" />
+          <span><strong>{formatCash(autoUsd)}</strong> of your Site Cash applies automatically at checkout — you pay <strong>{formatCash(autoCardUsd)}</strong> by card. Turn this off anytime in Settings.</span>
+        </div>
+      )}
       {options.map((o) => {
         const Active = choice === o.key;
         return (
@@ -82,8 +103,8 @@ export default function CheckoutChoices({ listing, onDone }) {
                 <div className="text-xs text-slate-500">{o.desc}</div>
 
                 {Active && o.key === 'card' && (
-                  <Button size="sm" className="mt-2" disabled={busy} onClick={(e) => { e.stopPropagation(); card(false); }}>
-                    {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : `Pay ${formatCash(priceUsd)} by card`}
+                  <Button size="sm" className="mt-2" disabled={busy} onClick={(e) => { e.stopPropagation(); card(undefined); }}>
+                    {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : (autoUsd > 0 ? `Pay ${formatCash(autoCardUsd)} by card` : `Pay ${formatCash(priceUsd)} by card`)}
                   </Button>
                 )}
                 {Active && o.key === 'apply' && (

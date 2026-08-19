@@ -15,7 +15,8 @@ import {
   Mail,
   Smartphone,
   Lock,
-  Check
+  Check,
+  Wallet
 } from "lucide-react";
 import { toast } from "sonner";
 import LockoutModeSettings from '../components/premium/LockoutModeSettings';
@@ -46,6 +47,8 @@ export default function Settings() {
   const [language, setLanguage] = useState('en');
   
   // Security settings
+  const [autoApplySiteCash, setAutoApplySiteCash] = useState(true);
+  const [savingSiteCash, setSavingSiteCash] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -67,6 +70,7 @@ export default function Settings() {
         setEmail(currentUser.email || '');
         setNotificationPrefs(currentUser.notification_preferences || notificationPrefs);
         setLanguage(currentUser.preferred_language || 'en');
+        setAutoApplySiteCash(currentUser.auto_apply_site_cash !== false); // default ON unless explicitly off
         setTwoFactorEnabled(currentUser.two_factor_enabled || false);
       } catch {
         base44.auth.redirectToLogin();
@@ -74,6 +78,21 @@ export default function Settings() {
     };
     fetchUser();
   }, []);
+
+  const saveSiteCashPref = async (checked) => {
+    setAutoApplySiteCash(checked);
+    setSavingSiteCash(true);
+    try {
+      await base44.auth.updateMe({ auto_apply_site_cash: checked });
+      toast.success(checked
+        ? 'Site Cash will be applied automatically at checkout.'
+        : 'Auto-apply turned off — you can still apply Site Cash on each purchase.');
+    } catch {
+      setAutoApplySiteCash(!checked); // revert on failure
+      toast.error('Could not save that setting. Please try again.');
+    }
+    setSavingSiteCash(false);
+  };
 
   const saveProfile = async () => {
     setLoading(true);
@@ -298,6 +317,32 @@ export default function Settings() {
                 >
                   {loading ? 'Saving...' : 'Save Profile'}
                 </Button>
+              </CardContent>
+            </Card>
+
+            {/* Checkout & Site Cash */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Checkout &amp; Site Cash</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Wallet className="w-5 h-5 text-green-600" />
+                    <div>
+                      <Label className="text-base font-medium">Automatically apply my Site Cash</Label>
+                      <p className="text-sm text-gray-500">
+                        When on, your Site Cash is applied at checkout to lower what you pay. It&apos;s
+                        non-cashable and only reduces a purchase — you can still choose to skip it on any order.
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={autoApplySiteCash}
+                    disabled={savingSiteCash}
+                    onCheckedChange={saveSiteCashPref}
+                  />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

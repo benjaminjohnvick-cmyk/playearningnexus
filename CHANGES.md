@@ -1,5 +1,14 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-19 — Site Cash: settings toggle + discount shown on marketplace checkout
+
+- **Settings toggle** (`Settings.jsx`, Profile tab → "Checkout & Site Cash"): a Switch buyers flip themselves to
+  turn auto-apply on/off; saves `auto_apply_site_cash` on the user (which every checkout already honors).
+- **Marketplace checkout** (`CheckoutChoices.jsx`): fetches `checkoutSiteCashQuote` and shows the auto-applied
+  discount up front (banner + on the "Pay by card" option: "$X Site Cash applied — pay $Y by card"). Fixed the
+  "Pay by card" action to pass no `apply_points` (let the server honor the buyer's setting) instead of forcing it
+  off. Frontend build + lint clean.
+
 ## 2026-08-19 — Store checkout wired for Site Cash auto-apply
 
 The store checkout (`OrderViaSite.jsx`, which captures the card client-side) now auto-applies Site Cash:
