@@ -17,7 +17,6 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 
 const CATEGORIES = ['puzzle', 'action', 'strategy', 'casual', 'rpg', 'simulation', 'sports', 'racing', 'adventure'];
-const PLATFORMS = ['ios', 'android', 'web'];
 
 const STATUS_COLORS = {
   pending_review: 'bg-yellow-100 text-yellow-700',

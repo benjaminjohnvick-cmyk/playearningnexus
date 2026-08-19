@@ -2,19 +2,9 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Coins, Zap, Lock, Package, Heart, Sparkles } from 'lucide-react';
+import { Coins } from 'lucide-react';
 import { toast } from 'sonner';
 
-const CATEGORY_ICONS = {
-  virtual_currency: Coins,
-  cosmetic: Sparkles,
-  digital_content: Package,
-  feature_unlock: Lock,
-  consumable: Zap,
-  tip: Heart,
-  ai_credits: Sparkles,
-  api_access: Zap,
-};
 
 const CATEGORY_COLORS = {
   virtual_currency: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -89,7 +79,6 @@ export default function InAppStorePanel({ user }) {
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {filtered.map(product => {
-          const Icon = CATEGORY_ICONS[product.category] || Package;
           return (
             <Card key={product.id} className="hover:shadow-md transition-all border hover:border-purple-300 group">
               <CardContent className="p-4 space-y-3">

@@ -3,13 +3,12 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Clock, CheckCircle2, XCircle,
-  Loader2, Send, ArrowDownCircle, RefreshCw, Info,
-  CreditCard, Wallet, Copy, ChevronDown, ChevronUp, Shield,
+import { Clock, CheckCircle2,
+  Loader2, Send, ArrowDownCircle, Info,
+  CreditCard, Wallet, Shield,
   TrendingUp, Zap, BarChart2, ShoppingBag, Search, ArrowRight, Lock
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -17,7 +16,6 @@ import TransactionHistory from '@/components/earnings/TransactionHistory';
 import PayoutTimeline from '@/components/payout/PayoutTimeline';
 import SmartPayoutTips from '@/components/payout/SmartPayoutTips';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
@@ -36,12 +34,6 @@ const PAYOUT_METHODS = [
   { id: 'bank',     label: 'Bank Transfer',  icon: '🏦', placeholder: 'Account number',                   type: 'text',  hint: 'Bank transfers take 1-3 business days.' },
 ];
 
-const statusConfig = {
-  pending:    { icon: Clock,        color: 'bg-amber-100 text-amber-800',  label: 'Pending',    dot: 'bg-amber-400',  bar: 'bg-amber-400' },
-  processing: { icon: RefreshCw,    color: 'bg-blue-100 text-blue-800',    label: 'Processing', dot: 'bg-blue-400',   bar: 'bg-blue-500' },
-  completed:  { icon: CheckCircle2, color: 'bg-green-100 text-green-800',  label: 'Completed',  dot: 'bg-green-500',  bar: 'bg-green-500' },
-  failed:     { icon: XCircle,      color: 'bg-red-100 text-red-800',      label: 'Failed',     dot: 'bg-red-500',    bar: 'bg-red-500' },
-};
 
 function EligibilityBar({ balance }) {
   const pct = Math.min(100, (balance / FULL_ELIGIBILITY_AMOUNT) * 100);
@@ -117,99 +109,6 @@ function EligibilityBar({ balance }) {
   );
 }
 
-function TransactionRow({ payout }) {
-  const [expanded, setExpanded] = useState(false);
-  const cfg = statusConfig[payout.status] || statusConfig.pending;
-  const StatusIcon = cfg.icon;
-  const methodLabel = PAYOUT_METHODS.find(m => m.id === payout.method)?.label || payout.method || 'PayPal';
-
-  const confId = payout.paypal_batch_id || payout.external_transaction_id || payout.paypal_payout_item_id;
-
-  return (
-    <div className="border-2 border-gray-100 rounded-xl overflow-hidden hover:border-gray-200 transition-colors">
-      <button
-        className="w-full flex items-center justify-between p-4 text-left"
-        onClick={() => setExpanded(e => !e)}
-      >
-        <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${cfg.color.split(' ')[0]}`}>
-            <StatusIcon className={`w-5 h-5 ${cfg.color.split(' ')[1]}`} />
-          </div>
-          <div>
-            <p className="font-semibold text-gray-800">${(payout.amount || 0).toFixed(2)} via {methodLabel}</p>
-            <p className="text-xs text-gray-400">
-              {payout.created_date ? format(new Date(payout.created_date), 'MMM d, yyyy · h:mm a') : '—'}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <Badge className={cfg.color}>
-            <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot} mr-1.5 inline-block`} />
-            {cfg.label}
-          </Badge>
-          {expanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
-        </div>
-      </button>
-
-      {expanded && (
-        <div className="px-4 pb-4 bg-gray-50 border-t border-gray-100 space-y-2 text-sm">
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Recipient</p>
-              <p className="text-gray-700 font-medium truncate">{payout.recipient_email || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Method</p>
-              <p className="text-gray-700 font-medium">{methodLabel}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Amount</p>
-              <p className="text-green-600 font-bold">${(payout.amount || 0).toFixed(2)} USD</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Status</p>
-              <p className={`font-medium ${payout.status === 'completed' ? 'text-green-600' : payout.status === 'failed' ? 'text-red-600' : 'text-amber-600'}`}>{cfg.label}</p>
-            </div>
-          </div>
-
-          {confId && (
-            <div className="mt-2 p-2 bg-white rounded-lg border border-gray-200">
-              <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Confirmation ID</p>
-              <div className="flex items-center justify-between gap-2">
-                <code className="text-xs text-gray-700 font-mono break-all">{confId}</code>
-                <button
-                  onClick={() => { navigator.clipboard.writeText(confId); toast.success('Copied!'); }}
-                  className="text-gray-400 hover:text-gray-600 flex-shrink-0"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {payout.paypal_batch_id && payout.paypal_batch_id !== confId && (
-            <div className="p-2 bg-white rounded-lg border border-gray-200">
-              <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Batch ID</p>
-              <code className="text-xs text-gray-700 font-mono">{payout.paypal_batch_id}</code>
-            </div>
-          )}
-
-          {payout.error_message && (
-            <div className="p-2 bg-red-50 rounded-lg border border-red-100 text-xs text-red-700">
-              ⚠️ {payout.error_message}
-            </div>
-          )}
-
-          {payout.completed_date && (
-            <p className="text-xs text-gray-400">
-              Completed: {format(new Date(payout.completed_date), 'MMM d, yyyy h:mm a')}
-            </p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // Inner CashApp form that has access to Stripe hooks
 function CashAppWithdrawForm({ user, balance, payouts, queryClient }) {
@@ -400,7 +299,7 @@ export default function Withdrawal() {
           } else {
             toast.success(`Withdrawal for $${amt.toFixed(2)} submitted — processing soon.`);
           }
-        } catch (_) {
+        } catch {
           toast.success(`Withdrawal for $${amt.toFixed(2)} submitted — we'll process it shortly.`);
         }
       } else if (method === 'venmo') {
@@ -416,7 +315,7 @@ export default function Withdrawal() {
           } else {
             toast.success(`Venmo withdrawal for $${amt.toFixed(2)} submitted — processing soon.`);
           }
-        } catch (_) {
+        } catch {
           toast.success(`Venmo withdrawal for $${amt.toFixed(2)} submitted — we'll process it shortly.`);
         }
       } else if (method === 'cashapp') {
@@ -429,7 +328,7 @@ export default function Withdrawal() {
           } else {
             toast.success(`Cash App withdrawal for $${amt.toFixed(2)} submitted — processing soon.`);
           }
-        } catch (_) {
+        } catch {
           toast.success(`Cash App withdrawal for $${amt.toFixed(2)} submitted — we'll process it shortly.`);
         }
       } else {

@@ -28,7 +28,7 @@ function PayoutCard({ payout }) {
   const cfg = STATUS_CONFIG[payout.status] || STATUS_CONFIG.pending;
   const Icon = cfg.icon;
   let notes = {};
-  try { notes = JSON.parse(payout.notes || '{}'); } catch (_) {}
+  try { notes = JSON.parse(payout.notes || '{}'); } catch {}
   const estimatedArrival = notes.estimated_arrival ? new Date(notes.estimated_arrival) : addDays(new Date(payout.created_date), 3);
   const progressPct = payout.status === 'completed' ? 100 : payout.status === 'processing' ? 60 : payout.status === 'pending' ? 20 : 5;
 

@@ -11,7 +11,6 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import CustomLinkBuilder from '../components/referral/CustomLinkBuilder';
 
-const SOURCES = ['facebook', 'twitter', 'instagram', 'youtube', 'tiktok', 'linkedin', 'email', 'direct', 'other'];
 
 function generateCode(userId) {
   return `${userId.slice(0, 6)}_${Math.random().toString(36).slice(2, 7)}`;

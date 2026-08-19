@@ -173,7 +173,6 @@ export default function BusinessPricingSection() {
       {/* Portal Cards */}
       <div className="space-y-6 mb-20">
         {portals.map((portal, i) => {
-          const Icon = portal.icon;
           const isOpen = expanded === i;
           const colorMap = {
             blue: { badge: 'bg-blue-100 text-blue-800 border-blue-200', border: 'border-blue-200 hover:border-blue-400', accent: 'text-blue-600', highlight: 'bg-blue-50 border-blue-200 text-blue-800', btn: 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700', dot: 'text-blue-500' },

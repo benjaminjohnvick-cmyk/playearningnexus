@@ -36,7 +36,6 @@ const OVERLAYS = [
   )},
 ];
 
-const TEXT_PRESETS = ['Bold & Black', 'Light & Italic', 'Yellow Highlight', 'White Shadow'];
 const FONT_SIZES = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
 const TEXT_COLORS = ['text-white', 'text-yellow-400', 'text-green-400', 'text-blue-300', 'text-red-400', 'text-black'];
 

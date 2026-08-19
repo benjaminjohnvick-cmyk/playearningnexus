@@ -34,7 +34,6 @@ const INTEREST_TAGS = ['Tech','Finance','Health','Gaming','Travel','Food','Fashi
 const GEO_TAGS = ['USA','Canada','UK','Europe','Asia','Latin America','Australia','Africa','Middle East'];
 const ALL_TAGS = [...INTEREST_TAGS, ...GEO_TAGS];
 
-const TIER_ORDER = ['bronze','silver','gold','platinum','diamond'];
 const LISTING_COLORS = { trade: 'bg-blue-100 text-blue-700', micro_survey: 'bg-purple-100 text-purple-700', swap: 'bg-teal-100 text-teal-700' };
 
 function ListingCard({ listing, userTags, onRespond }) {

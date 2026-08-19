@@ -14,7 +14,6 @@ import { startOfMonth } from 'date-fns';
 import JackpotWidget from '@/components/leaderboard/JackpotWidget';
 import RecentWinnersPanel from '@/components/leaderboard/RecentWinnersPanel';
 
-const TIER_RATES = { 1: 0.05, 2: 0.02, 3: 0.01 };
 
 // Weekly challenges that refresh
 const WEEKLY_CHALLENGES = [

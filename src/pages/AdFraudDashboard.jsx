@@ -14,7 +14,6 @@ import {
 import FraudThreatCard from '@/components/fraud/FraudThreatCard';
 import { toast } from 'sonner';
 
-const SEVERITY_COLORS = { high: '#dc2626', medium: '#d97706', low: '#2563eb' };
 
 export default function AdFraudDashboard() {
   const [user, setUser] = useState(null);

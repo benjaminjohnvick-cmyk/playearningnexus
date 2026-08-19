@@ -20,7 +20,6 @@ const TYPE_CONFIG = {
   brand_purchase:       { label: 'Brand Purchase',      icon: ArrowDownCircle, color: 'text-orange-600', bg: 'bg-orange-100', badgeClass: 'bg-orange-100 text-orange-700' },
 };
 
-const ALL_TYPES = ['all', ...Object.keys(TYPE_CONFIG)];
 
 function TxRow({ tx }) {
   const cfg = TYPE_CONFIG[tx.transaction_type] || { label: tx.transaction_type, icon: DollarSign, color: 'text-gray-600', bg: 'bg-gray-100', badgeClass: 'bg-gray-100 text-gray-700' };

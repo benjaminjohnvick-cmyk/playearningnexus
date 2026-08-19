@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 
 
-const COLORS = ['#dc2626', '#2563eb', '#059669', '#d97706', '#7c3aed', '#ec4899'];
 
 function StatCard({ label, value, sub, icon: Icon, color, trend }) {
   const up = trend > 0;

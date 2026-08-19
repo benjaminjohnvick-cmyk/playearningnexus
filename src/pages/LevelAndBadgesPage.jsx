@@ -7,15 +7,7 @@ import { Crown, Star, Zap, Shield, Trophy, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 
-const TITLES_BY_LEVEL = {
-  1: 'Newbie', 5: 'Surveyor', 10: 'Expert', 15: 'Master',
-  20: 'Legend', 25: 'Oracle', 30: 'Sage', 40: 'Mythic', 50: 'Ascended'
-};
 
-const PROFILE_FRAMES = {
-  5: 'Silver Frame', 10: 'Gold Frame', 15: 'Platinum Frame',
-  20: 'Diamond Frame', 30: 'Cosmic Frame', 50: 'Eternal Frame'
-};
 
 const ALL_BADGES = [
   { id: 'first_survey', name: 'First Step', icon: '🎬', requirement: 'surveys_completed', value: 1, description: 'Complete your first survey' },

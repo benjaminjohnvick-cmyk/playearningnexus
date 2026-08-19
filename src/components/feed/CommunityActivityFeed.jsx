@@ -47,7 +47,6 @@ function anonymize(name = '') {
 
 function FeedItem({ item, isNew }) {
   const meta = TYPES[item.type] || TYPES.survey_completed;
-  const Icon = meta.icon;
   return (
     <motion.div
       layout

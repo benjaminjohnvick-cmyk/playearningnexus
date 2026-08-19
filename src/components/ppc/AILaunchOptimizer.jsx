@@ -37,7 +37,6 @@ const REGIONS = [
 const CATEGORIES = ['Gaming', 'Consumer Products', 'Technology', 'Healthcare', 'Finance', 'Education', 'Entertainment', 'Food & Beverage', 'Travel', 'General'];
 
 const CONFIDENCE_COLOR = (c) => c >= 85 ? 'text-green-600' : c >= 70 ? 'text-yellow-600' : 'text-orange-600';
-const CONFIDENCE_BG = (c) => c >= 85 ? 'bg-green-100' : c >= 70 ? 'bg-yellow-100' : 'bg-orange-100';
 
 function HeatmapCell({ value, max }) {
   const intensity = max > 0 ? value / max : 0;

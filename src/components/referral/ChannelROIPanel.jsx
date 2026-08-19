@@ -7,12 +7,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { TrendingUp, DollarSign, Users, Target } from 'lucide-react';
 import { toast } from 'sonner';
 
-const CHANNEL_COLORS = {
-  email: '#6366f1', twitter: '#1da1f2', facebook: '#1877f2',
-  instagram: '#e1306c', youtube: '#ff0000', tiktok: '#69c9d0',
-  direct: '#10b981', organic: '#f59e0b', linkedin: '#0077b5',
-  whatsapp: '#25d366', other: '#6b7280'
-};
 
 const CHANNEL_ICONS = {
   email: '📧', twitter: '🐦', facebook: '📘', instagram: '📸',

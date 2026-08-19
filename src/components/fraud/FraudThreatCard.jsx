@@ -3,13 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Ban, DollarSign, X, ChevronDown, ChevronUp, Clock } from 'lucide-react';
 
-const SIGNAL_ICONS = {
-  'click-spam': '🖱️',
-  'fast': '⚡',
-  'volume': '📈',
-  'straight-line': '📊',
-  'low-quality': '⚠️',
-};
 
 function getSeverity(probability) {
   if (probability >= 75) return { label: 'High', color: 'bg-red-100 text-red-700', dot: 'bg-red-500' };

@@ -14,7 +14,6 @@ import BNPLFamilyMemberManager from '@/components/bnpl/BNPLFamilyMemberManager';
 const INDIVIDUAL_CREDIT = 1080;
 const MAX_GROUP = 10;
 const DAILY_EARN_PER_PERSON = 3;
-const MONTHS = 12;
 
 export default function BNPLModal({ isOpen, onClose, user, purchaseAmount }) {
   const [step, setStep] = useState('overview'); // overview | family | group | card | confirm

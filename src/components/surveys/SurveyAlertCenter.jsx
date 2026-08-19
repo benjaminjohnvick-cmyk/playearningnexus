@@ -38,7 +38,7 @@ export default function SurveyAlertCenter({ user }) {
         setAlerts(data.alerts || []);
         setIsSnoozed(false);
       }
-    } catch (_) {}
+    } catch {}
     setLoading(false);
   }, [user]);
 
@@ -57,7 +57,7 @@ export default function SurveyAlertCenter({ user }) {
       setSnoozeUntil(res.data.snoozed_until);
       setAlerts([]);
       toast.success(`Survey alerts snoozed for ${hours} hour${hours > 1 ? 's' : ''}`);
-    } catch (_) {
+    } catch {
       toast.error('Failed to snooze');
     }
   };

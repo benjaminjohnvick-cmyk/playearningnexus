@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   RefreshCw, Link, Link2Off, CheckCircle, XCircle, AlertTriangle,
-  Play, Pause, Loader2, Globe, Zap, Activity
+  Play, Pause, Loader2, Globe, Activity
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -228,7 +228,6 @@ export default function AdCrossPlatformSync({ ads, onRefresh: _onRefresh }) {
             <Activity className="w-3.5 h-3.5 text-blue-400" /> Sync Activity Log
           </p>
           {syncLog.map(e => {
-            const ReasonIcon = SYNC_REASONS[e.reason]?.icon || Zap;
             return (
               <div key={e.id} className="flex items-center gap-2 text-xs flex-wrap">
                 <span className="text-gray-600">{e.ts}</span>

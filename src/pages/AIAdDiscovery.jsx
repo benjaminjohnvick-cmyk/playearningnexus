@@ -54,7 +54,7 @@ export default function AIAdDiscovery() {
     // Track engagement
     try {
       await base44.functions.invoke("matchAdsToSearch", { searchQuery: ad.title });
-    } catch (_) {}
+    } catch {}
   };
 
   // Filter by search

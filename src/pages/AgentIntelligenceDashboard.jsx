@@ -40,7 +40,7 @@ export default function AgentIntelligenceDashboard() {
         if (u?.role !== 'admin') { window.location.href = '/'; return; }
         setUser(u);
         await loadData();
-      } catch (_) { window.location.href = '/'; }
+      } catch { window.location.href = '/'; }
     };
     init();
   }, []);

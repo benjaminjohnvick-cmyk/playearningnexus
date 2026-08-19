@@ -108,7 +108,7 @@ export default function DailyFeedbackModal({ user }) {
     try {
       const me = await base44.auth.me();
       await base44.auth.updateMe({ contest_entries: (me?.contest_entries || 0) + 1 });
-    } catch (_) {}
+    } catch {}
 
     localStorage.setItem(STORAGE_KEY, new Date().toISOString().split('T')[0]);
     setDone(true);

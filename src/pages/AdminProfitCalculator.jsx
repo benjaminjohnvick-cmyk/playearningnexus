@@ -8,7 +8,6 @@ import { BarChart2 } from 'lucide-react';
 const SURVEY_COST_PER_RESPONSE = 0.95;
 const MIN_RESPONSES = 3000;
 const BITLABS_COST_PER_RESPONSE = 0.50; // BitLabs is cheaper (no minimum requirement)
-const BITLABS_MIN = 500;
 const AD_VALUE_BONUS = 12000; // $12,000 in AI ads value included
 
 // Platform commission on referral earnings
@@ -20,7 +19,6 @@ const FULL_SERVICE_BASE = 5000;
 const ENTERPRISE_BASE = 10000;
 
 // Affiliate platform cut
-const AFFILIATE_COMMISSION_PAID_PCT = 0.10;
 
 export default function AdminProfitCalculator() {
   const [inputs, setInputs] = useState({

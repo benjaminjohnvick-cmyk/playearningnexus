@@ -9,7 +9,7 @@ import { MessageSquare, ShieldCheck, CheckCircle2 } from 'lucide-react';
 // SmsOptInButton — verifiable SMS marketing consent capture (double opt-in). Drop onto a settings/profile
 // page. Records real, auditable consent; actual SMS sending stays gated on a provider + the sms_marketing
 // flag. Off by default per user (they must explicitly opt in).
-const NAVY = '#16264f', INK = '#0a142e';
+const NAVY = '#16264f';
 
 export default function SmsOptInButton() {
   const [data, setData] = useState(null);

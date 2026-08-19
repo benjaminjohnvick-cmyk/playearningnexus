@@ -30,7 +30,7 @@ export default function DeveloperToolsHub() {
           setGames(devGames);
           if (devGames.length > 0) setSelectedGameId(devGames[0].id);
         }
-      } catch (_) {}
+      } catch {}
       setLoading(false);
     };
     init();

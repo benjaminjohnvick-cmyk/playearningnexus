@@ -198,7 +198,6 @@ export default function PreLaunchSurveyPanel({ gameData, onComplete }) {
             {/* Readiness Verdict */}
             {(() => {
               const cfg = readinessConfig[results.launch_readiness] || readinessConfig.needs_work;
-              const Icon = cfg.icon;
               return (
                 <div className={`p-4 rounded-xl border-2 ${fitScoreColor(results.market_fit_score)}`}>
                   <div className="flex items-center justify-between mb-2">

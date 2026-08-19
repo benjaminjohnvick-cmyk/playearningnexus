@@ -4,13 +4,6 @@ import { base44 } from '@/api/base44Client';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Share2, TrendingUp, DollarSign, Eye, MousePointerClick } from 'lucide-react';
 
-const PLATFORM_COLORS = {
-  facebook: '#1877f2',
-  twitter: '#1da1f2',
-  instagram: '#e4405f',
-  snapchat: '#fffc00',
-  tiktok: '#000000',
-};
 
 const PLATFORM_ICONS = {
   facebook: '📘',

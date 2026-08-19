@@ -141,7 +141,7 @@ export default function Home() {
           localStorage.setItem('referralCode', refCode);
           localStorage.setItem('referralTimestamp', new Date().toISOString());
         }
-      } catch (_) {}
+      } catch {}
     }, 2000); // defer 2s so it doesn't compete with critical calls
     return () => clearTimeout(t);
   }, []);

@@ -218,12 +218,9 @@ export default function DeveloperOnboarding() {
       }
 
       // Find or create the DeveloperApplication for this game
-      let appId = null;
       const existing = await base44.entities.DeveloperApplication.filter({ applied_user_id: user.id, game_title: assets.game_title });
-      if (existing[0]) {
-        appId = existing[0].id;
-      } else {
-        const created = await base44.entities.DeveloperApplication.create({
+      if (!existing[0]) {
+        await base44.entities.DeveloperApplication.create({
           applied_user_id: user.id,
           company_name: profile.company_name,
           contact_email: user.email,
@@ -235,7 +232,6 @@ export default function DeveloperOnboarding() {
           screenshot_urls: assets.screenshots,
           status: 'pending_review',
         });
-        _appId = created.id;
       }
 
       // Trigger AI business verification (runs async — will email result)
