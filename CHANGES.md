@@ -1,5 +1,25 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-19 — Inventory governor now counts the guarantee's true committed volume (bottleneck fix)
+
+The Full-Value Delivery Guarantee promises each seat its base allotment **plus** the value-match bonus, and a
+Tier 3 Unlimited plan promises a large **scaled** volume — but the inventory governor was counting every plan at a
+flat per-seat allotment. That under-counted true demand, so the governor could report free capacity it didn't have
+and oversell *immediate* seats, which the no-time-cap guarantee would then absorb as a growing make-good backlog
+(the bottleneck). Fixed:
+
+- **Reserve the real guaranteed-per-seat volume** — `tier1GuaranteedPerSeat` / `tier2GuaranteedPerSeat` = base
+  allotment + value-match bonus (mirrors `delivery-guarantee.ts` `guaranteedUnits`). Committed, utilization,
+  remaining headroom, sellable-seat counts, and the Tier 1 cap all now use these.
+- **Count Tier 3 Unlimited at its own scaled volume** — `inventoryStatus` sums each `Tier2ScalingPlan`'s actual
+  `guaranteed_impressions_per_year` instead of a flat number, and breaks Tier 3 out (`active_tier3`,
+  `committed_tier3`). A large Tier 3 plan now correctly pushes new Tier 2 seats to capacity-paced.
+  `inventoryPlacement("tier2", customAllotment)` lets a Tier 3 seat reserve its own volume.
+- **Make-good stays residual** — the end-of-term top-up serves on spare inventory only (after paid/priority,
+  before the house ad), so it never displaces paid delivery and is intentionally not added to `committed`.
+- Pure `committedFromPlans` helper + Deno tests (41 pass total); `TIER2-INVENTORY-GOVERNOR.md` updated. No money
+  moves; compile + audit clean.
+
 ## 2026-08-19 — Tier 1 gets the always-on AI campaign-manager line
 
 Tier 1 (Founding) now includes the same always-on AI campaign-manager + optimization service the higher tiers

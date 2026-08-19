@@ -11,6 +11,8 @@ import { getNumber, getBool, snapNumber, snapBool } from "./settings.ts";
 import { db } from "./db.ts";
 import { foundingImpressionsPerYear, tier1LaunchBonusImpressions } from "./founding-advertiser.ts";
 import { tier2ImpressionsPerYear, tier2VideoViewsPerYear } from "./tier2-scaling.ts";
+import { tier1ValueMatchBonusImpressions } from "./tier1-value-stack.ts";
+import { tier2ValueMatchBonusImpressions } from "./tier2-value-stack.ts";
 
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 
@@ -28,9 +30,33 @@ export const inventoryDauOverride = () => Math.max(0, snapNumber("INVENTORY_DAU_
 export const tier2AlwaysOpen = () => snapBool("TIER2_ALWAYS_OPEN", true);
 export const tier2CapacityReservePct = () => Math.min(1, Math.max(0, snapNumber("TIER2_CAPACITY_RESERVE_PCT", 0.5)));
 
-/** Per-advertiser annual impression allotment reserved by each tier. */
+/** Per-advertiser annual impression allotment reserved by each tier (base package, before any value-match bonus). */
 export const tier1Allotment = () => foundingImpressionsPerYear() + tier1LaunchBonusImpressions();
 export const tier2Allotment = () => tier2ImpressionsPerYear() + tier2VideoViewsPerYear();
+
+/** The FULL guaranteed impression volume the delivery guarantee actually backs for ONE seat — the tier's base
+ *  allotment PLUS the value-match bonus its value stack adds to hit the headline value ("$12k→$24k", "$200k→$400k").
+ *  The governor must reserve THIS (not just the base allotment), or it silently oversells the value-match bonus:
+ *  every seat is promised more than the governor set aside, so the shortfall accumulates into a make-good backlog
+ *  and delivery slows for everyone. Mirrors delivery-guarantee.ts `guaranteedUnits`. */
+export const tier1GuaranteedPerSeat = () => tier1Allotment() + tier1ValueMatchBonusImpressions();
+export const tier2GuaranteedPerSeat = () => tier2Allotment() + tier2ValueMatchBonusImpressions();
+
+export interface CommittedBreakdown { committed_tier2: number; committed_tier3: number; active_tier2: number; active_tier3: number; }
+
+/** Pure: sum active Tier2ScalingPlan rows into standard-Tier-2 vs Tier-3 committed volume. A row whose
+ *  `guaranteed_impressions_per_year` exceeds a standard seat is a Tier 3 Unlimited plan (counted at its real,
+ *  scaled volume); a row with no/standard volume is a standard Tier 2 seat (counted at `stdSeat`). Kept pure so
+ *  the committed-inventory accounting — the thing that stops the guarantee from overselling — is unit-tested. */
+export function committedFromPlans(rows: Record<string, unknown>[], stdSeat: number): CommittedBreakdown {
+  let committed_tier2 = 0, committed_tier3 = 0, active_tier2 = 0, active_tier3 = 0;
+  for (const r of (rows || [])) {
+    const vol = Number(r.guaranteed_impressions_per_year) || 0;
+    if (vol > stdSeat) { committed_tier3 += vol; active_tier3++; }
+    else { committed_tier2 += (vol > 0 ? vol : stdSeat); active_tier2++; }
+  }
+  return { committed_tier2, committed_tier3, active_tier2, active_tier3 };
+}
 
 export interface DauEstimate { dau: number; source: "override" | "measured"; sampled: number; truncated: boolean; }
 
@@ -64,10 +90,11 @@ export interface InventoryStatus {
   impressions_per_user_day: number;
   annual_capacity: number;          // usable capacity after the safety buffer
   safety_buffer_pct: number;
-  active_tier1: number; active_tier2: number;
-  committed: number;                // reserved by all active advertisers
-  committed_tier1: number; committed_tier2: number;
+  active_tier1: number; active_tier2: number; active_tier3: number;
+  committed: number;                // reserved by all active advertisers (true guaranteed volume, incl. Tier 3)
+  committed_tier1: number; committed_tier2: number; committed_tier3: number;
   tier1_allotment: number; tier2_allotment: number;
+  tier1_guaranteed_per_seat: number; tier2_guaranteed_per_seat: number; // base allotment + value-match bonus
   tier2_reserve_pct: number;        // share of capacity protected for Tier 2
   tier1_cap: number;                // most capacity Tier 1 may consume (protects Tier 2's reserve)
   tier1_remaining: number;          // headroom for new Tier 1 seats
@@ -87,35 +114,44 @@ export async function inventoryStatus(): Promise<InventoryStatus> {
   const reservePct = tier2CapacityReservePct();
 
   const t1a = tier1Allotment(), t2a = tier2Allotment();
+  const t1Seat = tier1GuaranteedPerSeat();      // base + value-match bonus (what we actually guarantee)
+  const t2Seat = tier2GuaranteedPerSeat();
   const faRows = (await db.filter("FoundingAdvertiser", {}, "-created_date", 20000).catch(() => [])) as Record<string, unknown>[];
   const activeTier1 = faRows.filter((r) => !["refunded", "cancelled"].includes(String(r.status ?? "").toLowerCase())).length;
   const t2Rows = (await db.filter("Tier2ScalingPlan", { status: "active" }, "-created_date", 20000).catch(() => [])) as Record<string, unknown>[];
-  const activeTier2 = t2Rows.length;
 
-  const committedTier1 = activeTier1 * t1a;
-  const committedTier2 = activeTier2 * t2a;
-  const committed = committedTier1 + committedTier2;
+  // Sum each plan's ACTUAL guaranteed volume rather than assuming a flat per-seat number. A Tier 3 Unlimited plan
+  // is a Tier2ScalingPlan row carrying a scaled `guaranteed_impressions_per_year` far larger than a standard seat;
+  // counting it at the flat Tier 2 allotment would blind the governor to its load and let it oversell. Plans that
+  // guarantee more than a standard seat are treated as Tier 3 (broken out separately); the rest as standard Tier 2.
+  const br = committedFromPlans(t2Rows, t2Seat);
+  const committedTier2 = br.committed_tier2, committedTier3 = br.committed_tier3;
+  const activeTier2 = br.active_tier2, activeTier3 = br.active_tier3;
+  const committedTier1 = activeTier1 * t1Seat;
+  const committed = committedTier1 + committedTier2 + committedTier3;
 
-  // Tier 1 may consume at most (1 − reserve) of capacity; the rest is protected for Tier 2.
+  // Tier 1 may consume at most (1 − reserve) of capacity; the rest is protected for Tier 2 / Tier 3.
   const tier1Cap = Math.floor(capacity * (1 - reservePct));
   const tier1Remaining = Math.max(0, tier1Cap - committedTier1);
-  // Tier 2 can use everything Tier 1 hasn't taken (its reserve + any unused Tier 1 headroom).
-  const tier2Remaining = Math.max(0, capacity - committedTier1 - committedTier2);
+  // Tier 2 / Tier 3 share everything Tier 1 hasn't taken; Tier 3's committed volume reduces the room left, so a
+  // large Tier 3 plan correctly pushes new Tier 2 seats to capacity-paced instead of overselling immediate ones.
+  const tier2Remaining = Math.max(0, capacity - committedTier1 - committedTier2 - committedTier3);
 
   return {
     dau: est.dau, dau_source: est.source, dau_truncated: est.truncated,
     impressions_per_user_day: impressionsPerUserDay(),
     annual_capacity: capacity, safety_buffer_pct: inventorySafetyBufferPct(),
-    active_tier1: activeTier1, active_tier2: activeTier2,
-    committed, committed_tier1: committedTier1, committed_tier2: committedTier2,
+    active_tier1: activeTier1, active_tier2: activeTier2, active_tier3: activeTier3,
+    committed, committed_tier1: committedTier1, committed_tier2: committedTier2, committed_tier3: committedTier3,
     tier1_allotment: t1a, tier2_allotment: t2a,
+    tier1_guaranteed_per_seat: t1Seat, tier2_guaranteed_per_seat: t2Seat,
     tier2_reserve_pct: reservePct, tier1_cap: tier1Cap,
     tier1_remaining: tier1Remaining, tier2_remaining: tier2Remaining,
     utilization_pct: capacity > 0 ? round2(committed / capacity) : (committed > 0 ? 1 : 0),
-    tier1_sellable: t1a > 0 ? Math.floor(tier1Remaining / t1a) : 0,
-    tier2_immediate_seats: t2a > 0 ? Math.floor(tier2Remaining / t2a) : 0,
+    tier1_sellable: t1Seat > 0 ? Math.floor(tier1Remaining / t1Seat) : 0,
+    tier2_immediate_seats: t2Seat > 0 ? Math.floor(tier2Remaining / t2Seat) : 0,
     tier2_always_open: tier2AlwaysOpen(),
-    can_sell_tier1: tier1Remaining >= t1a,
+    can_sell_tier1: tier1Remaining >= t1Seat,
   };
 }
 
@@ -123,9 +159,12 @@ export interface Placement { mode: "immediate" | "capacity_paced" | "blocked"; r
 
 /** Decide how a new seat is placed against inventory. Tier 2 is always accepted when TIER2_ALWAYS_OPEN — as
  *  "immediate" if it can be fully served now, else "capacity_paced" (allotment guaranteed over the term,
- *  delivered as the audience grows). Tier 1 is capped so it never eats Tier 2's reserve. */
-export async function inventoryPlacement(tier: "tier1" | "tier2"): Promise<Placement> {
-  const allot = tier === "tier1" ? tier1Allotment() : tier2Allotment();
+ *  delivered as the audience grows). Tier 1 is capped so it never eats Tier 2's reserve. The allotment reserved is
+ *  the FULL guaranteed-per-seat volume (base + value-match bonus). A Tier 3 Unlimited seat passes its own scaled
+ *  `customAllotment` (its `guaranteed_impressions_per_year`) via the "tier2" path so its true load is reserved. */
+export async function inventoryPlacement(tier: "tier1" | "tier2", customAllotment?: number): Promise<Placement> {
+  const base = tier === "tier1" ? tier1GuaranteedPerSeat() : tier2GuaranteedPerSeat();
+  const allot = (customAllotment && customAllotment > 0) ? Math.round(customAllotment) : base;
   if (!(await inventoryGovernorEnabled())) return { mode: "immediate", reason: "", allotment: allot };
   const inv = await inventoryStatus();
   if (tier === "tier2") {

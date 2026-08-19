@@ -16,12 +16,38 @@ makes availability real.
 
 ```
 annual capacity  =  DAU × INVENTORY_IMPRESSIONS_PER_USER_DAY × 365 × (1 − INVENTORY_SAFETY_BUFFER_PCT)
-committed        =  (active Tier 1 seats × Tier 1 allotment) + (active Tier 2 seats × Tier 2 allotment)
+committed        =  (active Tier 1 seats × Tier 1 guaranteed-per-seat)
+                 +  Σ(active Tier 2 plans, each at its standard guaranteed-per-seat)
+                 +  Σ(active Tier 3 Unlimited plans, each at its OWN scaled guaranteed_impressions_per_year)
 remaining        =  max(0, capacity − committed)
 ```
 
 - **Tier 1 allotment** = `FOUNDING_INTERSTITIAL_IMPRESSIONS_PER_YEAR` (200,000) + `TIER1_LAUNCH_BONUS_IMPRESSIONS` (100,000) = 300,000/yr.
 - **Tier 2 allotment** = `TIER2_IMPRESSIONS_PER_YEAR` (3,000,000) + `TIER2_VIDEO_VIEWS_PER_YEAR` (500,000) = 3,500,000/yr.
+- **Guaranteed-per-seat (what the governor actually reserves)** = the base allotment **plus the value-match bonus
+  impressions** the tier's value stack adds to back its headline ("$12k→$24k", "$200k→$400k"). The delivery
+  guarantee promises this larger number, so the governor reserves it too — otherwise every seat is promised more
+  than was set aside and the gap silently piles up as a make-good backlog. (`tier1GuaranteedPerSeat`,
+  `tier2GuaranteedPerSeat`; mirrors `delivery-guarantee.ts` `guaranteedUnits`.)
+
+## Tier 3 Unlimited is counted at its true, scaled volume (the bottleneck fix)
+
+A **Tier 3 Unlimited** plan is a `Tier2ScalingPlan` row carrying a `guaranteed_impressions_per_year` that can be
+many times a standard seat ("scale as big as you can afford"). The governor now **sums each plan's own guaranteed
+volume** instead of assuming a flat per-seat number, and breaks Tier 3 out (`active_tier3`, `committed_tier3`).
+This closes the one real bottleneck the delivery guarantee could have created: without it, a single large Tier 3
+plan would be counted as one ordinary seat, so the governor would think the audience had far more free room than
+it did and keep selling *immediate* Tier 1 / Tier 2 seats it couldn't actually serve — an oversell that the
+no-time-cap guarantee would then have to absorb as an ever-growing make-good backlog. Now a large Tier 3 plan
+correctly consumes shared headroom, so new Tier 2 seats flip to **capacity-paced** (guaranteed over time, never
+oversold) exactly when they should. A Tier 3 seat reserves its own scaled volume via
+`inventoryPlacement("tier2", guaranteed_impressions_per_year)`.
+
+**Does the guarantee's make-good itself bottleneck paid delivery? No.** The end-of-term make-good top-up is served
+as **residual inventory** — after paying/priority advertisers, before the house ad — so it only ever uses spare
+slots and can never displace a paying advertiser's current-term delivery (`activeMakeGoodOwners` in
+`delivery-guarantee.ts`). The backlog fills on leftover capacity and accelerates as DAU grows; it does not compete
+for sold impressions, which is why it is intentionally *not* added to `committed`.
 - **DAU** is measured from `DailyEarnings` activity over `INVENTORY_DAU_WINDOW_DAYS` (each row is one active
   user-day, so rows-in-window ÷ window ≈ average DAU), or pinned via `INVENTORY_DAU_OVERRIDE` once you have a
   reliable analytics number. It **fails safe**: an unreadable/truncated measure under-estimates DAU, which
