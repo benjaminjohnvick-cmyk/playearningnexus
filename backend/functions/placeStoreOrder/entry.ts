@@ -5,6 +5,10 @@ import { getNumber } from "../../sdk/settings.ts";
 import { blockedOrderReason } from "../../sdk/catalog-policy.ts";
 import { db } from "../../sdk/db.ts";
 import { recordPurchaseSignal } from "../../sdk/purchase-signal.ts";
+import { adjustUserBalance } from "../../sdk/balance.ts";
+import { recordMoneyFlow } from "../../sdk/paypal.ts";
+import { isPremiumUser } from "../../sdk/survey-reward.ts";
+import { siteCashApplyPlan, resolveSiteCashAutoApply } from "../../sdk/site-cash-apply.ts";
 
 // Server-authoritative store order (product OR online service → pay → AI fulfillment).
 //
@@ -78,7 +82,26 @@ export default __handler(async (req) => {
       if (!r.ok) return Response.json({ error: r.contended ? "Please retry — balance is being updated." : "Insufficient refund credit", required: charge, refund_balance: r.cur }, { status: r.contended ? 409 : 402 });
       newRefundBalance = r.next;
     }
-    // credit_card path: captured client-side (paypal_order_id) — nothing to deduct here.
+    // credit_card path: captured client-side (paypal_order_id). AUTO-APPLY SITE CASH here (server-authoritative):
+    // deduct the buyer's non-cashable points, record the money flow, and the card charge is the reduced
+    // remainder. The client fetched the same figure from checkoutSiteCashQuote and captured card_charge_usd, so
+    // the two match. Honors the buyer's own auto-apply preference. Site Cash only lowers the REAL-money (card)
+    // charge — balance-funded methods (survey_balance / refund_credit) are already site credit and unchanged.
+    let siteCashUsd = 0, pointsApplied = 0;
+    let cardCharge = charge;
+    if (payment_method === "credit_card" && resolveSiteCashAutoApply(user as Record<string, unknown>) && (Number(user.points) || 0) > 0) {
+      const premium = await isPremiumUser(String(user.id));
+      const plan = siteCashApplyPlan({ faceUsd: charge, userPoints: Number(user.points) || 0, isPremium: premium });
+      if (plan.points_applied > 0) {
+        const ok = await adjustUserBalance(String(user.id), -plan.points_applied, { field: "points" });
+        if (ok !== null) {
+          await recordMoneyFlow({ direction: "out", amount_usd: plan.points_usd, kind: "points_redemption_fulfillment", ref: String(product.product_name || product.name || "store_order"), meta: { user_id: user.id, points_applied: plan.points_applied, funded_by: "paypal_business_account", auto_applied: true } }).catch(() => null);
+          siteCashUsd = plan.points_usd;
+          pointsApplied = plan.points_applied;
+          cardCharge = plan.card_after_usd;
+        }
+      }
+    }
 
     const order = await base44.asServiceRole.entities.Order.create({
       user_id: user.id,
@@ -90,6 +113,9 @@ export default __handler(async (req) => {
       raw_price: rawPrice,
       markup_applied: markupApplied,
       amount: charge,
+      site_cash_applied_usd: siteCashUsd,
+      points_spent: pointsApplied || null,
+      card_charge_usd: payment_method === "credit_card" ? cardCharge : null,
       payment_method,
       paypal_order_id: paypal_order_id ?? null,
       vendor_name: product.vendor_name || product.vendor,
@@ -124,6 +150,9 @@ export default __handler(async (req) => {
       order_id: order.id,
       order_kind: orderKind,
       charged: charge,
+      card_charge_usd: payment_method === "credit_card" ? cardCharge : undefined,
+      site_cash_applied_usd: siteCashUsd,
+      points_spent: pointsApplied || 0,
       markup_applied: markupApplied,
       markup_free: markupFree,
       account_type: business ? "business" : "regular",

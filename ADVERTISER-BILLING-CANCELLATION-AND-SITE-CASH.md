@@ -78,12 +78,15 @@ buyer holds. Shared, tested math in `siteCashApplyPlan({ faceUsd, userPoints, is
   `purchaseMarketplaceListing` (card). Site Cash is deducted and the money-flow recorded on the server, and the
   card is charged only the reduced remainder (the points value is fronted to fulfillment via the business
   account, exactly like the existing hybrid flow). Honors the per-user preference.
-- **Client-captured card paths (e.g. `placeStoreOrder`):** because those flows capture the card **on the client**
-  for the amount they compute, the UI must first call **`checkoutSiteCashQuote`** (`{ price_usd }` → returns
-  `points_applied` / `points_usd` / `card_after_usd`, honoring the buyer's preference), charge the
-  `card_after_usd`, and pass it through. This one small hook makes auto-apply work on those checkouts too without
-  ever under-collecting. (Backend endpoint is ready; the store checkout component needs to call it — a quick
-  follow-up.)
+- **Client-captured card paths (e.g. `placeStoreOrder`) — now wired:** the store checkout (`OrderViaSite.jsx`)
+  calls **`checkoutSiteCashQuote`** (`{ price_usd }` → `points_applied` / `points_usd` / `card_after_usd`, honoring
+  the buyer's preference) before capturing the card, charges the reduced `card_after_usd`, and shows the discount
+  ("Site Cash applied: −$X · You pay: $Y"). `placeStoreOrder` then re-applies the same Site Cash
+  **server-authoritatively** on the credit-card branch (deducts the points, records the money flow, records
+  `card_charge_usd` / `site_cash_applied_usd` on the order) — the client and server use identical math on the same
+  balance, so the card charge and the points deduction always match, and the platform never under-collects. Site
+  Cash lowers only the real-money card charge; balance-funded methods (survey_balance / refund_credit) are
+  unchanged.
 - Settings: `SITE_CASH_AUTO_APPLY` (site default, **Economy & Payouts**); per-user override via
   `setSiteCashAutoApply`.
 

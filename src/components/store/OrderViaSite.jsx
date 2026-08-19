@@ -21,6 +21,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
   const [oneClickSubmitting, setOneClickSubmitting] = useState(false);
   const [_paypalOrderId, setPaypalOrderId] = useState(null);
   const [payMethod, setPayMethod] = useState('survey_balance');
+  const [siteCash, setSiteCash] = useState(null); // Site Cash auto-apply quote for the card charge
   const [showBNPL, setShowBNPL] = useState(false);
   const [address, setAddress] = useState({
     full_name: user?.full_name || '',
@@ -61,6 +62,25 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
     setPaypalOrderId(cardData.paypalOrderId);
     handleOrder(payMethod, cardData.paypalOrderId);
   };
+
+  // Move to the card step. For a real card charge, first fetch the buyer's Site Cash auto-apply quote so the
+  // card is charged only the reduced remainder. The SERVER re-applies the same Site Cash authoritatively when
+  // the order is placed, so the two always match; this just charges the right amount up front.
+  const goToCardStep = async (method) => {
+    setPayMethod(method);
+    setSiteCash(null);
+    if (method === 'credit_card') {
+      try {
+        const res = await base44.functions.invoke('checkoutSiteCashQuote', { price_usd: cardPrice });
+        const q = res?.data ?? res;
+        if (q?.apply && q.points_usd > 0) setSiteCash(q);
+      } catch { /* no Site Cash applied — charge full price */ }
+    }
+    setStep('card');
+  };
+
+  // What the card is actually charged (card price minus any auto-applied Site Cash).
+  const cardChargeUsd = payMethod === 'credit_card' && siteCash ? Number(siteCash.card_after_usd) : cardPrice;
 
   // One-click: uses saved address + survey balance, no extra steps
   const handleOneClick = async () => {
@@ -113,6 +133,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
     setStep('address');
     setPaypalOrderId(null);
     setPayMethod('survey_balance');
+    setSiteCash(null);
     onClose();
   };
 
@@ -175,7 +196,15 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2 text-sm">
                 <CreditCard className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-blue-800 font-semibold">Paying by credit card: <strong>${cardPrice.toFixed(2)}</strong></p>
+                  {siteCash ? (
+                    <>
+                      <p className="text-gray-600 text-xs">Item: ${cardPrice.toFixed(2)}</p>
+                      <p className="text-green-700 text-xs font-medium">Site Cash applied: −${Number(siteCash.points_usd).toFixed(2)}</p>
+                      <p className="text-blue-800 font-semibold mt-0.5">You pay by card: <strong>${cardChargeUsd.toFixed(2)}</strong></p>
+                    </>
+                  ) : (
+                    <p className="text-blue-800 font-semibold">Paying by credit card: <strong>${cardPrice.toFixed(2)}</strong></p>
+                  )}
                   {!isBusinessUser && <p className="text-blue-600 text-xs mt-0.5">Includes the one-time 10% platform fee</p>}
                 </div>
               </div>
@@ -188,7 +217,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
             <PayPalCardCapture
               onSuccess={handleCardCaptured}
               onCancel={() => setStep('review')}
-              amount={payMethod === 'credit_card' ? cardPrice.toFixed(2) : '1.00'}
+              amount={payMethod === 'credit_card' ? cardChargeUsd.toFixed(2) : '1.00'}
             />
             {submitting && (
               <div className="flex items-center justify-center gap-2 text-sm text-gray-500 py-2">
@@ -357,7 +386,7 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
               <Button
                 className="w-full bg-green-600 hover:bg-green-700"
                 disabled={!canAfford}
-                onClick={() => { setPayMethod('survey_balance'); setStep('card'); }}
+                onClick={() => goToCardStep('survey_balance')}
               >
                 Pay ${basePrice.toFixed(2)} with Survey Balance
               </Button>
@@ -377,10 +406,11 @@ export default function OrderViasite({ isOpen, onClose, user, product }) {
               </p>
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                onClick={() => { setPayMethod('credit_card'); setStep('card'); }}
+                onClick={() => goToCardStep('credit_card')}
               >
                 <CreditCard className="w-4 h-4 mr-1" /> Pay ${cardPrice.toFixed(2)} by Credit Card
               </Button>
+              <p className="text-[11px] text-green-700 mt-1 text-center">Your Site Cash is applied automatically at the next step.</p>
             </div>
 
             {user?.bnpl_active && (

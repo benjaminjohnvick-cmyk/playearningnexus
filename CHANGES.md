@@ -1,5 +1,17 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-19 — Store checkout wired for Site Cash auto-apply
+
+The store checkout (`OrderViaSite.jsx`, which captures the card client-side) now auto-applies Site Cash:
+
+- On the credit-card path it calls `checkoutSiteCashQuote` before capture, charges the reduced `card_after_usd`,
+  and shows the discount inline ("Site Cash applied: −$X · You pay: $Y").
+- `placeStoreOrder` re-applies the same Site Cash server-authoritatively on the credit-card branch: deducts the
+  points, records the money flow, and stamps `card_charge_usd` / `site_cash_applied_usd` / `points_spent` on the
+  order. Client and server use identical math, so the card charge and points deduction always match (no
+  under-collection). Only the real-money card charge is reduced; survey_balance / refund_credit are unchanged.
+- Frontend build + backend audit clean; 55 tests pass.
+
 ## 2026-08-19 — Site Cash auto-apply: every checkout + per-user toggle
 
 Extends the Site-Cash auto-apply so it's automatic on every checkout and each buyer controls it:
