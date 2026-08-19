@@ -14,7 +14,7 @@
 import { snapNumber, snapString, snapBool } from "./settings.ts";
 import {
   foundingPriceUsd, foundingImpressionsPerYear, tier1LaunchBonusImpressions,
-  tier1AiCreativeIncluded, tier1AiSocialPostsPerMonth, tier1AbTestingIncluded,
+  tier1AiCreativeIncluded, tier1AiCampaignManager, tier1AiSocialPostsPerMonth, tier1AbTestingIncluded,
   tier1AnalyticsIncluded, tier1SentimentInsightsIncluded, tier1FeaturedPlacement,
   tier1PrioritySupport, tier1IncludesPremium, foundingSocialAdsEnabled,
 } from "./founding-advertiser.ts";
@@ -71,6 +71,11 @@ function tier1Catalog(): Tier1ValueLine[] {
     key: "managed_ad_creative", name: "AI ad-creative production (ongoing refresh)",
     value_usd: snapNumber("TIER1_VALUE_CREATIVE_USD", 3000), delivery_guaranteed: false,
     basis: "AI creative generation (agency-retainer equivalent, AI-priced)",
+  });
+  add(tier1AiCampaignManager(), {
+    key: "ai_campaign_manager", name: "Always-on AI campaign manager + optimization",
+    value_usd: snapNumber("TIER1_VALUE_CAMPAIGN_MGR_USD", 3000), delivery_guaranteed: false,
+    basis: "AI campaign management + optimization (human escalation available); not sold as a dedicated human",
   });
   add(tier1AbTestingIncluded(), {
     key: "ab_testing", name: "Automatic A/B testing program",

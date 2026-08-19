@@ -45,6 +45,7 @@ export const tier1PostSurveySharePct = () => {
 export const tier1LaunchBonusImpressions = () => Math.max(0, snapNumber("TIER1_LAUNCH_BONUS_IMPRESSIONS", 100000));
 export const tier1IncludesPremium = () => snapBool("TIER1_INCLUDE_PREMIUM", true);
 export const tier1AiCreativeIncluded = () => snapBool("TIER1_AI_CREATIVE_INCLUDED", true);
+export const tier1AiCampaignManager = () => snapBool("TIER1_AI_CAMPAIGN_MANAGER", true);
 export const tier1AiSocialPostsPerMonth = () => Math.max(0, snapNumber("TIER1_AI_SOCIAL_POSTS_PER_MONTH", 30));
 export const tier1AbTestingIncluded = () => snapBool("TIER1_AB_TESTING_INCLUDED", true);
 export const tier1AnalyticsIncluded = () => snapBool("TIER1_ANALYTICS_INCLUDED", true);

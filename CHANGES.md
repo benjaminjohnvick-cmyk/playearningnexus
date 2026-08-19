@@ -1,5 +1,22 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-19 — Tier 1 gets the always-on AI campaign-manager line
+
+Tier 1 (Founding) now includes the same always-on AI campaign-manager + optimization service the higher tiers
+carry — previously only Tier 2 / Tier 3 Unlimited had the `ai_campaign_manager` line in their rate card. It is
+AI-driven with human escalation available (not sold as a dedicated human hire), and is sized for the Tier 1
+package (~$3,000/yr value vs the higher tiers' larger dedicated-manager line, since a $54k line would exceed the
+whole Tier 1 price).
+
+- **New line in the Tier 1 value stack** — `tier1-value-stack.ts` adds an `ai_campaign_manager` line, gated on
+  the new `TIER1_AI_CAMPAIGN_MANAGER` toggle (default ON) and valued at `TIER1_VALUE_CAMPAIGN_MGR_USD`
+  (default $3,000/yr). Keeps the stack comfortably above the 2× / $24k target; the value-match auto-sizer
+  still closes any gap with guaranteed impressions.
+- **Toggle + value settings** — `founding-advertiser.ts` exports `tier1AiCampaignManager()`; `settings.ts`
+  registers `TIER1_AI_CAMPAIGN_MANAGER` (bool, default 1) and `TIER1_VALUE_CAMPAIGN_MGR_USD` (number,
+  default 3000), both admin-tunable under Founding Advertiser.
+- Delivered-service line only (advertising value, not a revenue/ROI promise); compile + audit clean.
+
 ## 2026-08-19 — Full-Value Delivery Guarantee (all three tiers, make-good only)
 
 A standing guarantee behind every advertiser tier (Tier 1, Tier 2, Tier 3 Unlimited): **pay upfront, and we keep
