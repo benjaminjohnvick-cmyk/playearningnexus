@@ -78,6 +78,12 @@ export default function DeliveryGuaranteeCard() {
                 />
               </div>
 
+              {s.full_value_guarantee && s.full_value_guarantee.promised_value_usd > 0 && (
+                <p className="text-[11px] text-gray-400 mt-2">
+                  ${Number(s.full_value_guarantee.delivered_value_usd).toLocaleString()} of ${Number(s.full_value_guarantee.promised_value_usd).toLocaleString()} in
+                  advertising delivered{!s.full_value_guarantee.fulfilled ? ' — we keep delivering until you get the full amount' : ' — full amount delivered'}.
+                </p>
+              )}
               {(s.status === 'make_good_owed' || s.make_good_active) && s.make_good_units > 0 && (
                 <p className="text-[11px] text-yellow-400/90 mt-2 flex items-start gap-1.5">
                   <Gift className="w-3.5 h-3.5 mt-0.5 shrink-0" />

@@ -97,6 +97,21 @@ export default function Apply() {
           <Badge style={{ background: GOLD, color: INK }} className="text-sm px-3 py-1">Limited space for advertisers</Badge>
         </div>
 
+        {/* Full-Value Delivery Guarantee — backs ALL tiers */}
+        <Card className="border-2" style={{ borderColor: NAVY, background: '#f4f6fb' }}>
+          <CardContent className="p-4 flex items-start gap-3">
+            <ShieldCheck className="w-6 h-6 shrink-0 mt-0.5" style={{ color: NAVY }} />
+            <div>
+              <p className="text-sm font-bold" style={{ color: INK }}>Our Full-Value Delivery Guarantee — every tier</p>
+              <p className="text-xs text-gray-600 mt-1">
+                You pay upfront, and we deliver every dollar of the advertising you were promised. If we haven't by
+                year-end, we keep delivering — free, over time, for as long as it takes — until you've received the
+                full amount. It guarantees the advertising we deliver, never your revenue or ROI.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Founding Tier 1 hero — the prominent offer */}
         {t1 && (
           <Card className="overflow-hidden border-2" style={{ borderColor: GOLD }}>

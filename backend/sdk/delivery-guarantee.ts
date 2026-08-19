@@ -20,6 +20,9 @@ import { snapBool, snapNumber } from "./settings.ts";
 import { tier1Allotment, tier2Allotment } from "./inventory-governor.ts";
 import { tier1ValueMatchBonusImpressions } from "./tier1-value-stack.ts";
 import { tier2ValueMatchBonusImpressions } from "./tier2-value-stack.ts";
+import { fvgStatus, fullValueGuaranteeEnabled, type FvgStatus } from "./full-value-guarantee.ts";
+import { foundingPriceUsd } from "./founding-advertiser.ts";
+import { tier2TotalUsd } from "./tier2-scaling.ts";
 
 export type GuaranteeTier = "tier1" | "tier2";
 
@@ -125,6 +128,7 @@ export interface SeatGuarantee extends MakeGoodStatus {
   term_start: string;
   make_good_active: boolean;      // is a free top-up currently being delivered for this seat?
   make_good_expires_at: string;   // when the granted make-good stops delivering (if active)
+  full_value_guarantee: FvgStatus; // the promised-vs-delivered dollar picture + refund-if-closed
 }
 
 type Dbi = {
@@ -165,7 +169,14 @@ export async function computeSeatGuarantees(dbi: Dbi, advertiserUserId: string, 
       fractionElapsed: fractionElapsed(startISO, nowMs),
       termEnded: termEnded(startISO, nowMs),
     });
-    out.push({ ...st, seat_id: String(seat.id), advertiser_id: uid, term_start: startISO, make_good_active: active, make_good_expires_at: expires });
+    // Full-Value Delivery Guarantee — the same numbers expressed as the promised-vs-delivered DOLLAR amount of
+    // advertising, with the pro-rata refund owed if the guarantee were ever closed short. Price per tier bounds
+    // the refund: a Tier 3 Unlimited plan carries its own budget; else the tier's list price.
+    const price = planVol > 0
+      ? (Number(t2?.[0]?.budget_usd) || Math.round((planVol / 1_000) * 22))
+      : (tier === "tier2" ? tier2TotalUsd() : foundingPriceUsd());
+    const fvg = fvgStatus({ guaranteedImpressions: seatGuaranteedUnits, deliveredImpressions: delivered, priceUsd: price });
+    out.push({ ...st, seat_id: String(seat.id), advertiser_id: uid, term_start: startISO, make_good_active: active, make_good_expires_at: expires, full_value_guarantee: fvg });
   }
   return out;
 }

@@ -1,5 +1,23 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-19 — Full-Value Delivery Guarantee (all three tiers, make-good only)
+
+A standing guarantee behind every advertiser tier (Tier 1, Tier 2, Tier 3 Unlimited): **pay upfront, and we keep
+delivering the full dollar amount of advertising you were promised — no time cap — until you've received it.**
+Make-good only (more delivery until you're made whole) — NOT a refund and NOT a results/ROI guarantee.
+
+- **Deliver-until-met for every tier** — with `FULL_VALUE_GUARANTEE_ENABLED` (default ON), `deliveryMakeGoodSweep`
+  runs the make-good with no time cap for all tiers (previously only Tier 3 Unlimited match-over-time), closing
+  only when the full promised advertising is served.
+- **Dollar framing** — `full-value-guarantee.ts` (`fvgStatus`, `impressionsValueUsd`) expresses promised vs
+  delivered advertising as a dollar amount at the conventional CPM; `computeSeatGuarantees` /
+  `deliveryGuaranteeStatus` now return each seat's `full_value_guarantee`. The `/Apply` page shows a guarantee
+  callout across all tiers; the dashboard card shows "$X of $Y in advertising delivered."
+- **No refund in the offer** — `FULL_VALUE_GUARANTEE_REFUND_BACKSTOP` ships OFF; the remedy is delivery, not
+  money back. (An optional, bounded, undelivered-only refund path exists in config if ever needed, gated.)
+- Deno tests; `FULL-VALUE-DELIVERY-GUARANTEE.md` (guarantee + agreement/disclosure terms); `FOR-YOUR-ATTORNEY.md`
+  item added.
+
 ## 2026-08-18 — Tier 3 Unlimited wired into the marketing funnel
 
 The AI marketing-funnel product graph (`AI_FUNNEL_PRODUCT_GRAPH`) now carries the full advertiser ladder end to

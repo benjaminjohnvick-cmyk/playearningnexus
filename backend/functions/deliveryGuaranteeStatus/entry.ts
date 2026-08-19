@@ -6,6 +6,7 @@ import {
   guaranteeTermMonths,
   computeSeatGuarantees,
 } from "../../sdk/delivery-guarantee.ts";
+import { fullValueGuaranteeEnabled, fullValueGuaranteeRefundBackstop } from "../../sdk/full-value-guarantee.ts";
 
 // deliveryGuaranteeStatus (auth, read-only) — the caller's advertising DELIVERY guarantee picture, per seat and
 // across tiers: how many impressions were guaranteed for the term, how many have actually been delivered,
@@ -21,13 +22,20 @@ export default __handler(async (req) => {
 
     const seats = await computeSeatGuarantees(db, String(user.id), Date.now());
 
+    const fvgOn = fullValueGuaranteeEnabled();
     return Response.json({
       enabled: true,
       term_months: guaranteeTermMonths(),
+      full_value_guarantee_enabled: fvgOn,
+      refund_backstop: fvgOn && fullValueGuaranteeRefundBackstop(),
       seats,
       has_make_good: seats.some((s) => s.status === "make_good_owed" || s.make_good_active),
-      disclaimer: "This guarantees the ADVERTISING we deliver — a defined volume of impressions for your term — " +
-        "and if we fall short we make it up with free inventory. It is not a guarantee of revenue, sales, or ROI.",
+      disclaimer: fvgOn
+        ? "Full-Value Delivery Guarantee: you pay upfront and we deliver every dollar of the ADVERTISING you were " +
+          "promised — we keep delivering (free, over time, for as long as it takes) until you've received the full " +
+          "amount. It guarantees advertising delivered, never revenue, sales, or ROI."
+        : "This guarantees the ADVERTISING we deliver — a defined volume of impressions for your term — and if we " +
+          "fall short we make it up with free inventory. It is not a guarantee of revenue, sales, or ROI.",
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

@@ -10,6 +10,7 @@ import {
   termEnded,
   type GuaranteeTier,
 } from "../../sdk/delivery-guarantee.ts";
+import { fullValueGuaranteeEnabled } from "../../sdk/full-value-guarantee.ts";
 
 // deliveryMakeGoodSweep (scheduled service-role) — the all-tiers DELIVERY make-good true-up. For every active
 // advertising seat whose guarantee term has ended, it compares delivered impressions to the guaranteed volume
@@ -41,9 +42,10 @@ export default __handler(async (req) => {
       // A Tier 3 Unlimited plan carries a custom guaranteed volume; back exactly that (scaled to the guarantee term).
       const planVol = Number(t2?.[0]?.guaranteed_impressions_per_year) || 0;
       const guaranteed = planVol > 0 ? Math.round(planVol * (guaranteeTermMonths() / 12)) : guaranteedUnits(tier);
-      // Tier 3 Unlimited "match over time": when a budget exceeds inventory, keep delivering the full volume with
-      // NO time cap — the make-good closes only when the number is matched, never on the extension window.
-      const matchOverTime = !!t2?.[0]?.matched_over_time;
+      // "Deliver until met" — no time cap on the make-good — applies (a) to Tier 3 Unlimited match-over-time
+      // plans, and (b) to EVERY tier when the Full-Value Delivery Guarantee is on: we keep delivering the full
+      // promised advertising, free and capacity-paced, until the advertiser has received every dollar of it.
+      const matchOverTime = !!t2?.[0]?.matched_over_time || fullValueGuaranteeEnabled();
       const startISO = String(seat.purchased_at ?? seat.credit_start ?? seat.created_date ?? "");
 
       // Existing make-good record for this seat (idempotency + baseline).

@@ -168,6 +168,23 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   implication, and that prepaid + capacity-paced delivery of a large custom package is a clean advertising sale
   (not an investment/return product). Knobs: `TIER3_UNLIMITED_ENABLED`, `TIER3_UNLIMITED_MIN_USD`, `TIER3_UNLIMITED_MAX_USD`.
 
+## 11b. Full-Value Delivery Guarantee (all tiers)
+
+- **Current posture.** Every advertiser tier is backed by a standing guarantee (`FULL_VALUE_GUARANTEE_ENABLED`,
+  default ON): the advertiser **prepays in full** (prepayment, not credit), and the platform **keeps delivering
+  the promised advertising with no time cap until the full dollar amount of advertising is delivered** — a
+  **make-good** remedy (more delivery), **not** a refund. The "dollar amount" is advertising VALUE
+  (impressions/placements at a conventional CPM) that the platform measures and controls; it is **never** the
+  advertiser's revenue/sales/ROI, and there is **no results/money-back guarantee**. The refund backstop ships
+  **OFF** (`FULL_VALUE_GUARANTEE_REFUND_BACKSTOP=false`) — the offer is make-good only. See
+  `FULL-VALUE-DELIVERY-GUARANTEE.md` (also the customer agreement/disclosure terms to finalize).
+- **For counsel to confirm:** (a) that a prepaid, deliver-until-fulfilled advertising guarantee (make-good only)
+  is a clean service-level commitment with no credit or performance-guarantee character; (b) the customer
+  agreement/disclosure wording, especially the over-time delivery disclosure (delivery may extend beyond the
+  initial term as the audience grows) and the plain statement that it covers advertising delivery, not results;
+  (c) if the refund backstop is ever enabled, the refund terms (undelivered-only, bounded, processor-window).
+  Knobs: `FULL_VALUE_GUARANTEE_ENABLED`, `FULL_VALUE_GUARANTEE_REFUND_BACKSTOP`, `FULL_VALUE_GUARANTEE_CPM_USD`.
+
 ## 12. Tax / 1099 reporting on partner cash payouts
 
 - **Current posture.** Business partners paid real cash (developers, affiliates, creators) run through a 1099
