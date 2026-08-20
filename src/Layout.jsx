@@ -313,7 +313,7 @@ export default function Layout({ children, currentPageName }) {
                   </div>
                   <span className="hidden sm:flex flex-col leading-none">
                     <span className="text-xl font-bold bg-gradient-to-r from-white to-[#8fc3f5] bg-clip-text text-transparent">
-                      Get Goods Gratis (Free)
+                      Get Goods Gratis (Free)<sup className="text-[9px] align-super ml-0.5">™</sup>
                     </span>
                     <span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">
                       Where Global Goods Gather
@@ -534,7 +534,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="md:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
                   <GamerGainLogo className="w-10 h-10" />
-                  <span className="flex flex-col leading-none"><span className="text-xl font-bold bg-gradient-to-r from-white to-[#8fc3f5] bg-clip-text text-transparent">Get Goods Gratis (Free)</span><span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">Where Global Goods Gather</span></span>
+                  <span className="flex flex-col leading-none"><span className="text-xl font-bold bg-gradient-to-r from-white to-[#8fc3f5] bg-clip-text text-transparent">Get Goods Gratis (Free)<sup className="text-[9px] align-super ml-0.5">™</sup></span><span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">Where Global Goods Gather</span></span>
                 </div>
                 <p className="text-gray-600 text-sm">The premium game discovery platform. Play games, earn rewards, connect with creators.</p>
               </div>
