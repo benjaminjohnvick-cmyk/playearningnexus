@@ -1,5 +1,19 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-19 — 13-period (four-week) annual pricing (+8.33%), value kept at ~2×
+
+Billing every 4 weeks = 13 periods/year, not 12. New `BILLING_13_PERIOD_PRICING` (default ON) makes a fixed-price
+tier's ANNUAL price 13 four-week periods (×13/12, +8.33%): Tier 1 $12,000 → $13,000; Tier 2 $200,000 →
+$216,666.67. Tier 3 pays its named budget with the floor tracking the Tier 2 price.
+
+- Applied at the price source (`billing-cadence.ts` → `billingYearFactor`), so value stacks target 2× of the new
+  price and the ~2× headline holds (Tier 1 ~$28.5k value / 2.19×; Tier 2 $433,333 / 2.0× via value-match
+  impressions; Tier 3 2.0×). Extra value is the platform's own inventory (near-zero cost) → uplift ≈ margin.
+- Tier 3 now scales off the RAW base so its ratio stays 2×; its floor never dips below the live Tier 2 price.
+- MUST be disclosed as "billed in 13 four-week cycles," never "monthly." Prepay-upfront unchanged (full year
+  collected once). Toggle off to revert to 12-month pricing.
+- Tests updated + factor test added (56 pass); docs + FOR-YOUR-ATTORNEY item; audit clean.
+
 ## 2026-08-19 — Site Cash: settings toggle + discount shown on marketplace checkout
 
 - **Settings toggle** (`Settings.jsx`, Profile tab → "Checkout & Site Cash"): a Switch buyers flip themselves to

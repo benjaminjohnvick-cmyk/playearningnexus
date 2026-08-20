@@ -23,6 +23,7 @@
 import { snapBool, snapNumber, snapString } from "./settings.ts";
 import { db } from "./db.ts";
 import { cacheGet, cacheSet } from "./cache.ts";
+import { billingYearFactor } from "./billing-cadence.ts";
 
 export const DISCLOSURES_VERSION = "2";
 
@@ -76,7 +77,9 @@ export function tier1Perks(): Record<string, unknown> {
 
 export const foundingEnabled = () => snapBool("FOUNDING_ADVERTISER_ENABLED", true);
 export const foundingSlots = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_SLOTS", 100000));
-export const foundingPriceUsd = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_PRICE_USD", 12000));
+// Annual Tier 1 price. When 13-period (four-week) pricing is on, the annual = 13 four-week periods (×13/12,
+// +8.33%) — e.g. $12,000 → $13,000. The value stack targets 2× of THIS, so value scales to keep the ~2× headline.
+export const foundingPriceUsd = () => Math.round(Math.max(0, snapNumber("FOUNDING_ADVERTISER_PRICE_USD", 12000)) * billingYearFactor() * 100) / 100;
 export const foundingMonthlyPriceUsd = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_MONTHLY_PRICE_USD", 1000));
 export const foundingTermYears = () => Math.max(1, snapNumber("FOUNDING_ADVERTISER_TERM_YEARS", 4));
 export const foundingImpressionsPerYear = () => Math.max(0, snapNumber("FOUNDING_INTERSTITIAL_IMPRESSIONS_PER_YEAR", 200000));

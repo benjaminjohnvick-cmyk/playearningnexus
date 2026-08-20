@@ -15,6 +15,28 @@ The prepaid year is then **tracked and reported as 13 four-week cycles** (13 × 
 Cycles are an accounting / delivery-pacing lens — how the prepayment is recognized as revenue and how delivery
 paces across the year — **not** 13 separate charges.
 
+### 13-period (four-week) annual pricing (the "13th period")
+
+Billing every four weeks means **13 periods a year, not 12** (52 ÷ 4 = 13). When `BILLING_13_PERIOD_PRICING` is
+on (default), a fixed-price tier's **annual price is 13 four-week periods** rather than 12 months — a **+8.33%**
+uplift (13/12):
+
+- **Tier 1:** $1,000 / four weeks × 13 = **$13,000/yr** (was $12,000).
+- **Tier 2:** **$216,666.67/yr** (was $200,000).
+- **Tier 3:** the advertiser names their budget (paid as-named); the **floor** tracks the Tier 2 price
+  ($216,666.67), and value stays ~2× of what they pay.
+
+The extra 8.33% is applied at each tier's price source (`billing-cadence.ts` → `billingYearFactor` = 13/12), so
+the **value stacks scale with it** — the target is 2× of the new price, kept via the rate card plus value-match
+guaranteed impressions. So Tier 1 is now **≈ $13,000 → ~$26k+ of advertising value**, Tier 2 **≈ $216,666.67 →
+~$433k**. Because the extra value is delivered as the platform's own impressions (near-zero marginal cost), the
+uplift is largely margin.
+
+**Disclosure (required):** present this as **"billed in 13 four-week cycles"** (or "every 4 weeks"), never as
+"monthly." Implying a monthly cadence while collecting 13 periods is the deceptive pattern to avoid. Prepay is
+unchanged — the full 13-period year is still collected once, up front. Turn the whole thing off with
+`BILLING_13_PERIOD_PRICING = 0` to revert to a classic 12-month annual price.
+
 - `backend/sdk/billing-schedule.ts` — `annualPrepayAmount(tier)`, `cycleLadder(annualUsd, termStart)` (13 equal
   cycles, last absorbs rounding so the cumulative hits the exact annual amount), `billingScheduleStatus(...)`
   (which cycle you're in, how much of the prepay is recognized, whether the year is complete).

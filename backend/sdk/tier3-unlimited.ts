@@ -11,6 +11,7 @@
 import { snapNumber, snapBool } from "./settings.ts";
 import { rateCard } from "./ai-ad-manager.ts";
 import { tier2TotalUsd, tier2ImpressionsPerYear, tier2VideoViewsPerYear } from "./tier2-scaling.ts";
+import { upgradePriceUsd } from "./founding-rollover.ts";
 
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 
@@ -18,8 +19,9 @@ export const tier3UnlimitedEnabled = () => snapBool("TIER3_UNLIMITED_ENABLED", t
 /** When a budget exceeds what the audience can serve now, deliver the FULL purchased volume over time (no time
  *  cap on the make-good) until their number is matched. Bounded by volume (never more than sold), not by time. */
 export const tier3UnlimitedMatchOverTime = () => snapBool("TIER3_UNLIMITED_MATCH_OVER_TIME", true);
-/** Floor for Tier 3 Unlimited — at/above the base Tier 2 price. Default = the live Tier 2 price ($200,000). */
-export const tier3UnlimitedMinUsd = () => Math.max(0, snapNumber("TIER3_UNLIMITED_MIN_USD", tier2TotalUsd()));
+/** Floor for Tier 3 Unlimited — at/above the base Tier 2 price. Never below the live (possibly 13-period) Tier 2
+ *  price, so Tier 3 always starts at or above what a Tier 2 seat costs; an admin can set a higher floor. */
+export const tier3UnlimitedMinUsd = () => Math.max(tier2TotalUsd(), snapNumber("TIER3_UNLIMITED_MIN_USD", tier2TotalUsd()));
 /** Optional ceiling (0 = uncapped). A safety cap admins can set; 0 means scale as big as they can afford. */
 export const tier3UnlimitedMaxUsd = () => Math.max(0, snapNumber("TIER3_UNLIMITED_MAX_USD", 0));
 
@@ -46,7 +48,10 @@ export interface Tier3UnlimitedQuote {
 export function tier3UnlimitedQuote(budgetUsd: number): Tier3UnlimitedQuote {
   const min = tier3UnlimitedMinUsd();
   const max = tier3UnlimitedMaxUsd();
-  const base = Math.max(1, tier2TotalUsd());
+  // Scale off the RAW Tier 2 base so the rate-card value ratio stays ~2× at any budget. (The 13-period uplift
+  // rides on the FLOOR via `min` = tier2TotalUsd and on the budget the advertiser names; it must not also shrink
+  // the value ratio, which using the uplifted price as the scale base would do.)
+  const base = Math.max(1, upgradePriceUsd());
   const requested = round2(Number(budgetUsd) || 0);
   const budget = Math.max(min, requested);
   const eligible = budget >= min && (max <= 0 || budget <= max);

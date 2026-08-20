@@ -11,17 +11,18 @@ Deno.test("budget below the floor is raised to the minimum", () => {
   assertEquals(q.budget_usd >= 200000, true);
 });
 
-Deno.test("value scales linearly and holds the ~2x ratio at the base", () => {
-  const q = tier3UnlimitedQuote(200000);
-  assertEquals(q.scale_factor, 1);
-  assertEquals(q.multiple >= 2, true);
-  assertEquals(q.value_usd >= 400000, true);
+Deno.test("value holds the ~2x ratio at the floor", () => {
+  const min = tier3UnlimitedMinUsd();
+  const q = tier3UnlimitedQuote(min);
+  assertEquals(q.budget_usd, min);
+  assertEquals(q.multiple >= 2, true);              // ~2× of what they pay
+  assertEquals(q.value_usd >= min * 1.9, true);
 });
 
 Deno.test("doubling the budget doubles deliverables, value, and guaranteed impressions", () => {
-  const a = tier3UnlimitedQuote(200000);
-  const b = tier3UnlimitedQuote(400000);
-  assertEquals(b.scale_factor, 2);
+  // Both budgets above the floor so neither is clamped.
+  const a = tier3UnlimitedQuote(300000);
+  const b = tier3UnlimitedQuote(600000);
   assertEquals(Math.round(b.value_usd), Math.round(a.value_usd * 2));
   assertEquals(b.guaranteed_impressions_per_year, a.guaranteed_impressions_per_year * 2);
   // The value ratio is preserved as it scales (it's a value stack, not a return).

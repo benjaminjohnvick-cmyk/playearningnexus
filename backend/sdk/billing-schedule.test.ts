@@ -2,6 +2,8 @@
 //   deno test backend/sdk/billing-schedule.test.ts
 import { assertEquals, assert } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import { cycleLadder, billingScheduleStatus, annualPrepayAmount } from "./billing-schedule.ts";
+import { foundingPriceUsd } from "./founding-advertiser.ts";
+import { tier2TotalUsd } from "./tier2-scaling.ts";
 
 Deno.test("the 13-cycle ladder splits the annual prepay evenly and sums to it exactly (last cycle absorbs rounding)", () => {
   const rows = cycleLadder(12000, "2026-08-01");
@@ -37,10 +39,18 @@ Deno.test("after the full year all cycles are elapsed and the whole prepay is re
   assertEquals(s.recognized_to_date_usd, 200000);
 });
 
-Deno.test("annual prepay amount resolves per tier from the tier price", () => {
-  assertEquals(annualPrepayAmount("tier1"), 12000);   // FOUNDING_ADVERTISER_PRICE_USD default
-  assertEquals(annualPrepayAmount("tier2"), 200000);  // FOUNDING_UPGRADE_PRICE_USD default
-  // tier 3 clamps a small budget up to the floor (= tier 2 price)
-  assertEquals(annualPrepayAmount("tier3", { budgetUsd: 50000 }), 200000);
+Deno.test("annual prepay amount resolves per tier from the tier price (13-period pricing on by default)", () => {
+  // With 13-period (four-week) pricing ON: Tier 1 $12,000 → $13,000, Tier 2 $200,000 → $216,666.67.
+  assertEquals(annualPrepayAmount("tier1"), foundingPriceUsd()); // 13,000
+  assertEquals(annualPrepayAmount("tier2"), tier2TotalUsd());    // 216,666.67
+  // tier 3 clamps a small budget up to the floor (= Tier 2 price); a larger budget is paid as-named.
+  assertEquals(annualPrepayAmount("tier3", { budgetUsd: 50000 }), tier2TotalUsd());
   assertEquals(annualPrepayAmount("tier3", { budgetUsd: 500000 }), 500000);
+});
+
+Deno.test("13-period pricing lifts the annual by 13/12 (+8.33%) and keeps the ~2x value ratio", () => {
+  // Tier 1: $12,000 base × 13/12 = $13,000; the value stack targets 2× of the new price.
+  assertEquals(foundingPriceUsd(), 13000);
+  // Tier 2: $200,000 × 13/12 = $216,666.67.
+  assertEquals(tier2TotalUsd(), 216666.67);
 });

@@ -8,6 +8,7 @@
 // rolling up from Tier 1; FOUNDING members (holders of a founding Tier 1 seat) keep it in PERPETUITY.
 import { snapBool, snapNumber, snapString } from "./settings.ts";
 import { upgradePriceUsd, upgradeName, upgradeDiscountPct } from "./founding-rollover.ts";
+import { billingYearFactor } from "./billing-cadence.ts";
 
 const r2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 const MS_PER_DAY = 86400000;
@@ -23,7 +24,9 @@ export const tier2MultiYearCommitmentOptin = () => snapBool("TIER2_MULTIYEAR_COM
 export const tier2RenewalNoticeDays = () => Math.max(0, Math.round(snapNumber("TIER2_RENEWAL_NOTICE_DAYS", 30)));
 export const tier2DiscountFirstYearOnly = () => snapBool("TIER2_DISCOUNT_FIRST_YEAR_ONLY", true);
 export const tier2FoundingDiscountPerpetual = () => snapBool("TIER2_FOUNDING_DISCOUNT_PERPETUAL", true);
-export const tier2TotalUsd = () => upgradePriceUsd();       // $200,000
+// Tier 2 annual price. With 13-period (four-week) pricing on, the annual = 13 four-week periods (×13/12): the
+// Tier 2 value stack targets 2× of this, so value scales to keep the ~2× headline ($216,666.67 → ~$433k).
+export const tier2TotalUsd = () => r2(upgradePriceUsd() * billingYearFactor()); // $200,000 → $216,666.67 (13-period)
 export const tier2Name = () => upgradeName();               // "Tier 2 — Scaling"
 export const tier2DiscountPct = () => upgradeDiscountPct(); // 6%
 

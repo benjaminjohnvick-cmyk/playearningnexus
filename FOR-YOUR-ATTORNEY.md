@@ -225,12 +225,17 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   It coexists with — and is independent of — the Full-Value Delivery Guarantee (§11b), which governs after the
   window. **Site Cash** (non-cashable points) now **auto-applies** to purchases at checkout, bounded by the
   purchase total and the existing per-transaction spend cap; it only offsets a purchase and is never withdrawable.
+- **13-period (four-week) pricing.** With `BILLING_13_PERIOD_PRICING` on (default), a fixed-price tier's annual
+  is 13 four-week periods rather than 12 months — a +8.33% uplift (Tier 1 $12,000 → $13,000; Tier 2 $200,000 →
+  $216,666.67). Delivered advertising value scales with the price (value stacks target 2× of the new price), so
+  the ~2× substantiation holds. It is disclosed as "billed in 13 four-week cycles," never "monthly."
 - **For counsel to confirm:** (a) the 30-day cancellation terms + the clear-and-conspicuous disclosure of the
   non-refundable two-thirds before purchase and at cancellation; (b) that the full-year prepayment is properly
   treated as unearned revenue recognized over the term (ties to §9); (c) that the closed-loop refund-credit
   remedy (no cash refund) is acceptable for advertiser cancellations in your launch jurisdictions; (d) that
   auto-applying non-cashable Site Cash to purchases raises no money-transmission/stored-value concern (it never
-  converts to cash).
+  converts to cash); (e) that the 13-period (four-week) billing and its "billed every 4 weeks / 13 cycles"
+  disclosure are acceptable and not presented as "monthly."
 
 ## 14. Blanks to fill before launch
 
