@@ -1,18 +1,22 @@
-# Tier 1 Value Stack — "$12,000 → $24,000 in advertising value"
+# Tier 1 Value Stack — "$13,000 → $26,000 in advertising value"
 
-*The compliant way to headline a 2x on the Tier 1 / founding offer: the advertiser pays $12,000 and receives at
-least $24,000 of **advertising value** — real, delivered advertising valued at conventional market rates, with
+*The compliant way to headline a 2x on the Tier 1 / founding offer: the advertiser pays $13,000 and receives at
+least $26,000 of **advertising value** — real, delivered advertising valued at conventional market rates, with
 the impression portion backed by the delivery guarantee. It is not a promise about the advertiser's revenue,
 sales, or ROI. Not legal advice.*
 
+> **Pricing note:** figures reflect **13-period (four-week) pricing** (`BILLING_13_PERIOD_PRICING`, default ON) —
+> Tier 1's annual is 13 four-week periods = **$13,000** (billed as 13 four-week cycles, never "monthly"). With
+> that toggle OFF the price reverts to the 12-month **$12,000 → $24,000**. Everything below scales with the price.
+
 ## Why it's built this way
 
-"Free ads until you earn $24,000" and "$12k → $24k in advertising value" sound similar but are opposites in
+"Free ads until you earn $26,000" and "$13k → $26k in advertising value" sound similar but are opposites in
 compliance terms. The first ties the offer to the advertiser's **revenue** — an outcome the platform doesn't
 control, can't reliably measure off-platform, and would owe against with no natural cap. That's an
 unsubstantiated performance guarantee (an FTC and payment-processor red flag) with an unbounded liability.
 
-This stack keeps the same $24k headline but puts it entirely on the **value-delivered** side. The $24,000 is the
+This stack keeps the same $26k headline but puts it entirely on the **value-delivered** side. The $26,000 is the
 conventional market value of the advertising the advertiser actually receives — impressions, placements,
 creative, managed service — none of it a claim about what they'll earn. That makes it:
 
@@ -25,7 +29,7 @@ creative, managed service — none of it a claim about what they'll earn. That m
 
 ## What's in the stack (default)
 
-At default settings the included lines total about **$25,500 ≈ 2.1×** the $12,000 price:
+At default settings the included lines total about **$28,500 ≈ 2.19×** the $13,000 price:
 
 | Line | Conventional value | Guaranteed |
 |---|---|---|
@@ -33,6 +37,7 @@ At default settings the included lines total about **$25,500 ≈ 2.1×** the $12
 | Launch-bonus impressions (100,000, one-time) | ~$2,200 | ✅ delivery-guaranteed |
 | Managed social ad posts (360/yr) | ~$4,500 | — |
 | AI ad-creative production | $3,000 | — |
+| Always-on AI campaign manager + optimization | $3,000 | — |
 | Automatic A/B testing | $2,000 | — |
 | Analytics & attribution dashboard | $2,400 | — |
 | Consumer-sentiment insights | $1,800 | — |
@@ -46,11 +51,11 @@ delivered.
 
 ## The value-match guarantee (holding the 2x honestly)
 
-If the honestly-valued included lines ever fall **below** the target (default 2× = $24,000) — because an admin
+If the honestly-valued included lines ever fall **below** the target (default 2× = $26,000) — because an admin
 trims values or turns features off — the stack does **not** inflate a rate to hit the number. Instead it sizes a
 block of **guaranteed value-match impressions**, valued at the conventional CPM, to close the gap: the platform
 delivers *more real advertising* rather than quoting a bigger number. Those value-match impressions are added to
-the Tier 1 volume the **delivery guarantee** guarantees (`guaranteedUnits("tier1")`), so the advertised $24,000
+the Tier 1 volume the **delivery guarantee** guarantees (`guaranteedUnits("tier1")`), so the advertised $26,000
 is genuinely backed by delivery + make-good, not just asserted.
 
 ## Components
@@ -66,8 +71,8 @@ is genuinely backed by delivery + make-good, not just asserted.
 
 ## Positioning language (safe)
 
-Say: *"Your $12,000 gets you over $24,000 in advertising value — impressions, placements, creative, and managed
+Say: *"Your $13,000 gets you over $26,000 in advertising value — impressions, placements, creative, and managed
 service at standard rates — and we guarantee the delivery: if we fall short, we make it up free."*
 
-Never say: *"you'll earn $24,000,"* *"double your money,"* *"guaranteed 2x return,"* or anything tying the
+Never say: *"you'll earn $26,000,"* *"double your money,"* *"guaranteed 2x return,"* or anything tying the
 number to the advertiser's revenue or ROI. The number describes advertising delivered, not money made.
