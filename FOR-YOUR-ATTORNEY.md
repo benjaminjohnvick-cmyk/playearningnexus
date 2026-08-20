@@ -219,7 +219,8 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   prepayment recognized across 13 four-week cycles — `billing-schedule.ts`). **No recurring auto-charge / no
   auto-renew was built**, so there's no negative-option exposure on this path. A **30-day proportional
   cancellation** (`advertiser-cancellation.ts` / `advertiserCancel`) lets an advertiser cancel within 30 days of
-  purchase and recover **one-third** (we keep two-thirds; Tier 1 = keep $8,000 / refund $4,000); the
+  purchase and recover **one-third** (we keep two-thirds; at the 13-period price Tier 1 = keep $8,666.67 / refund
+  $4,333.33, computed from what was actually paid); the
   non-refundable portion is disclosed and consent-logged (`ConsentRecord kind:"advertiser_cancellation"`) before
   it applies, and the refund is issued as **closed-loop site credit** (`refund_credit_balance`), never cash/card.
   It coexists with — and is independent of — the Full-Value Delivery Guarantee (§11b), which governs after the

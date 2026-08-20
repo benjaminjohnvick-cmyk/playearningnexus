@@ -123,7 +123,7 @@ export default function Apply() {
               <h1 className="text-3xl font-extrabold">{t1.name}</h1>
               <div className="flex items-end gap-2 mt-2">
                 <span className="text-4xl font-extrabold">{money(t1.annual_usd)}</span>
-                <span className="text-white/70 mb-1">/ year{t1.monthly_usd ? ` · or ${money(t1.monthly_usd)}/mo` : ''}</span>
+                <span className="text-white/70 mb-1">/ year{t1.period_usd ? ` · billed as ${money(t1.period_usd)} / ${t1.period_label}${t1.thirteen_period ? ` (${t1.periods_per_year} cycles/yr)` : ''}` : ''}</span>
               </div>
               {info?.scarcity && <p className="text-white/80 text-sm mt-3">{info.scarcity}</p>}
               <Button onClick={() => applyFor('founding_tier1')} className="mt-4 font-semibold" style={{ background: GOLD, color: INK }}>

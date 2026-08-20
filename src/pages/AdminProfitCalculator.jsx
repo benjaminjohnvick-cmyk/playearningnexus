@@ -8,7 +8,7 @@ import { BarChart2 } from 'lucide-react';
 const SURVEY_COST_PER_RESPONSE = 0.95;
 const MIN_RESPONSES = 3000;
 const BITLABS_COST_PER_RESPONSE = 0.50; // BitLabs is cheaper (no minimum requirement)
-const AD_VALUE_BONUS = 12000; // $12,000 in AI ads value included
+const AD_VALUE_BONUS = 13000; // $13,000 in AI ads value included (matches the Tier 1 13-period price)
 
 // Platform commission on referral earnings
 const PLATFORM_COMMISSION_PCT = 0.15;
@@ -103,10 +103,10 @@ export default function AdminProfitCalculator() {
   const revenue_per_diy_client = SURVEY_SUBSCRIPTION_ANNUAL; // what they pay
   const cost_per_diy_client = MIN_RESPONSES * SURVEY_COST_PER_RESPONSE * 0.5; // our payout cost
   const gross_per_diy = revenue_per_diy_client - cost_per_diy_client;
-  // Client's value: 3000 responses * $0.95 = $2,850 of data + $12,000 ad value = $14,850 total value
+  // Client's value: 3000 responses * $0.95 = $2,850 of data + $13,000 ad value = $15,850 total value
   const client_data_value = MIN_RESPONSES * SURVEY_COST_PER_RESPONSE; // $2,850
-  const client_total_value = client_data_value + AD_VALUE_BONUS; // $14,850
-  const client_net_gain = client_total_value - SURVEY_SUBSCRIPTION_ANNUAL; // $14,850 - $2,920 = $11,930
+  const client_total_value = client_data_value + AD_VALUE_BONUS; // $15,850
+  const client_net_gain = client_total_value - SURVEY_SUBSCRIPTION_ANNUAL; // $15,850 - $2,920 = $12,930
 
   const InputRow = ({ label, field, prefix = '', suffix = '' }) => (
     <div className="flex items-center justify-between gap-3">
@@ -177,7 +177,7 @@ export default function AdminProfitCalculator() {
                 <p className="font-bold text-amber-800 mb-2">📣 Our Guarantee to Clients</p>
                 <ul className="text-sm text-amber-900 space-y-1">
                   <li>✓ 3,000 verified survey responses at $0.95/response</li>
-                  <li>✓ <strong>$12,000 in AI advertising value</strong> included free</li>
+                  <li>✓ <strong>$13,000 in AI advertising value</strong> included free</li>
                   <li>✓ We keep working until they <strong>double their investment</strong></li>
                   <li>✓ Auto-renewal annual subscription for continuous data</li>
                   <li>✓ Anti-fraud trust score on every response</li>

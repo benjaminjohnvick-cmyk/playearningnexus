@@ -3,11 +3,17 @@
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import { cancellationQuote } from "./advertiser-cancellation.ts";
 
-Deno.test("Tier 1: cancel in-window keeps $8,000 and refunds $4,000 (exactly)", () => {
+Deno.test("a $12,000 base (12-month Tier 1) refunds exactly $4,000, keeps $8,000", () => {
   const q = cancellationQuote({ paidUsd: 12000, purchasedAtISO: "2026-08-01", nowMs: Date.parse("2026-08-10T00:00:00Z") });
   assertEquals(q.within_window, true);
   assertEquals(q.refund_usd, 4000);
   assertEquals(q.kept_usd, 8000);
+});
+
+Deno.test("13-period Tier 1 ($13,000): refund $4,333.33, keep $8,666.67", () => {
+  const q = cancellationQuote({ paidUsd: 13000, purchasedAtISO: "2026-08-01", nowMs: Date.parse("2026-08-10T00:00:00Z") });
+  assertEquals(q.refund_usd, 4333.33);
+  assertEquals(q.kept_usd, 8666.67);
 });
 
 Deno.test("proportional at any tier: keep two-thirds, refund one-third", () => {

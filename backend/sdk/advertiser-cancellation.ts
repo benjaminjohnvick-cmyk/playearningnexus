@@ -2,7 +2,9 @@
 //
 // WHAT IT IS: a time-boxed buyer right. Within ADVERTISER_CANCELLATION_WINDOW_DAYS (30) of purchase, an
 // advertiser may cancel and receive a PROPORTIONAL refund — we KEEP two-thirds and REFUND one-third of what they
-// paid (Tier 1 $12,000 → keep $8,000, refund $4,000). It is keyed to the PURCHASE DATE, not to delivery progress.
+// paid (at the 13-period price, Tier 1 $13,000 → keep $8,666.67, refund $4,333.33; 12-month $12,000 → $8,000 /
+// $4,000). The refund is computed from what was actually paid, so it tracks the live price. Keyed to the
+// PURCHASE DATE, not to delivery progress.
 //
 // HOW IT RELATES TO THE FULL-VALUE DELIVERY GUARANTEE (they are independent, and both stay on):
 //   • Full-Value Guarantee = a DELIVERY promise: we keep delivering the advertising you paid for until it's met
@@ -23,7 +25,8 @@ export const advertiserCancellationEnabled = () => snapBool("ADVERTISER_CANCELLA
 /** Days after purchase during which a proportional cancellation is allowed. */
 export const advertiserCancellationWindowDays = () => Math.max(1, Math.round(snapNumber("ADVERTISER_CANCELLATION_WINDOW_DAYS", 30)));
 /** Fraction of what was paid that is REFUNDED on an in-window cancellation (default 1/3 → keep two-thirds).
- *  Stored at full double precision so a $12,000 Tier 1 refunds exactly $4,000. */
+ *  Stored at full double precision so the third is computed cleanly (a $12,000 base refunds exactly $4,000; the
+ *  13-period $13,000 refunds $4,333.33). */
 export const advertiserCancellationRefundPct = () =>
   Math.min(1, Math.max(0, snapNumber("ADVERTISER_CANCELLATION_REFUND_PCT", 0.3333333333333333)));
 

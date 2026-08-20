@@ -6,6 +6,7 @@ import { tier2Name, tier2TotalUsd, tier2Parts } from "../../sdk/tier2-scaling.ts
 import { flexPayLive } from "../../sdk/flexpay.ts";
 import { tier1FinancedLive } from "../../sdk/tier1-financed.ts";
 import { publicSeatAvailability } from "../../sdk/inventory-governor.ts";
+import { billing13PeriodPricingEnabled, billingPeriodsPerYear } from "../../sdk/billing-cadence.ts";
 
 // advertiserApplyInfo (public read) — the content for the /Apply page: the prominent Founding Advertiser
 // (Tier 1) offer with its live benefits + availability, and the three financing options with their real
@@ -18,10 +19,16 @@ export default __handler(async () => {
     const discPct = Math.round(upgradeDiscountPct() * 100);
     const slots = Math.max(0, snapNumber("FOUNDING_ADVERTISER_SLOTS", 100000));
 
+    // Billing cadence: with 13-period pricing on, the annual is 13 four-week periods (never "monthly").
+    const thirteenPeriod = billing13PeriodPricingEnabled();
     const tier1 = {
       name: "Founding Advertiser — Tier 1",
       annual_usd: foundingPriceUsd(),
-      monthly_usd: foundingMonthlyPriceUsd(),
+      // Per-period price + label for the sub-line. 13-period → "$1,000 / 4 weeks" (13 cycles/yr); off → "/mo".
+      period_usd: foundingMonthlyPriceUsd(),
+      period_label: thirteenPeriod ? "4 weeks" : "month",
+      periods_per_year: thirteenPeriod ? billingPeriodsPerYear() : 12,
+      thirteen_period: thirteenPeriod,
       slots_cap: slots,
       benefits: [
         `${impressions.toLocaleString()} ad impressions per year — a ${term}-year term`,

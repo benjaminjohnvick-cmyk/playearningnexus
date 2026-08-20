@@ -49,8 +49,10 @@ unchanged — the full 13-period year is still collected once, up front. Turn th
 ## 2. 30-day proportional cancellation (cooling-off)
 
 Within **30 days** of purchase, an advertiser may cancel and receive a **proportional refund: we keep two-thirds
-and refund one-third** of what they paid. For a Tier 1 $12,000 package that is **keep $8,000, refund $4,000**;
-Tier 2 ($200,000) is keep $133,333.33 / refund $66,666.67; Tier 3 scales with the budget paid.
+and refund one-third** of what they paid. At the current 13-period prices that is **Tier 1 $13,000 → keep
+$8,666.67, refund $4,333.33**; **Tier 2 $216,666.67 → keep $144,444.45, refund $72,222.22**; Tier 3 scales with
+the budget paid. (The refund is always computed from what the advertiser actually paid, so it tracks the live
+price automatically — with 12-month pricing it's $12,000 → keep $8,000 / refund $4,000.)
 
 - The refund is issued as **closed-loop site refund credit** (`refund_credit_balance`), consistent with
   `REFUND-POLICY.md` — never a cash or card refund (that path stays gated off).
