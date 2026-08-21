@@ -5,8 +5,8 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 
 > **Reconciled 2026-08-15.** Consistent with the other Get Goods Gratis docs as of this date. The Founding
 > Tier 1 offer, the 5.5% decoupled upgrade discount, the $2,000 premium gift boost, Tier 2 pay-as-you-go, the
-> discontinued free earn-to-unlock tier, and the three OFF-by-default credit products all match
-> `RECONCILED-STATE-2026-08-15.md`. There is now a public **`/Apply`** page that markets this pricing —
+> discontinued free earn-to-unlock tier, and the three OFF-by-default credit products all match the current
+> Get Goods Gratis documents. There is now a public **`/Apply`** page that markets this pricing —
 > Founding Tier 1 as the prominent offer, Tier 2 as available, and the three credit products as "coming soon."
 > See `APPLY-AND-COMING-SOON.md`.
 
