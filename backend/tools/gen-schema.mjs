@@ -85,6 +85,16 @@ for (const tName of AT_SORTED_TABLES) {
   sql += `CREATE INDEX IF NOT EXISTS "${tName}_at" ON "${tName}" ((data->>'at'));\n`;
 }
 
+// ── Manual tables not derived from a Base44 entity file ─────────────────────────────────────────────────
+// CreativeAsset backs the AI Creative Suite (sdk/creative-suite.ts): generated ad variants + live performance.
+const MANUAL_TABLES = ['CreativeAsset'];
+for (const tName of MANUAL_TABLES) {
+  sql += `\n-- ${tName} (manual — see sdk/creative-suite.ts)\n`;
+  sql += `CREATE TABLE IF NOT EXISTS "${tName}" (\n  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,\n  created_date timestamptz NOT NULL DEFAULT now(),\n  updated_date timestamptz NOT NULL DEFAULT now(),\n  created_by   text,\n  data         jsonb NOT NULL DEFAULT '{}'::jsonb\n);\n`;
+  sql += `CREATE INDEX IF NOT EXISTS "${tName}_data_gin" ON "${tName}" USING gin (data jsonb_path_ops);\n`;
+  sql += `CREATE INDEX IF NOT EXISTS "${tName}_created" ON "${tName}" (created_date DESC);\n`;
+}
+
 sql += `\n-- Auto-update updated_date on row change\nCREATE OR REPLACE FUNCTION set_updated_date() RETURNS trigger AS $$\nBEGIN NEW.updated_date = now(); RETURN NEW; END; $$ LANGUAGE plpgsql;\n`;
 
 fs.writeFileSync(OUT, sql);

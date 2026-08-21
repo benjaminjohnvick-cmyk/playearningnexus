@@ -3865,3 +3865,15 @@ CREATE INDEX IF NOT EXISTS "LoyaltyLedger_at" ON "LoyaltyLedger" ((data->>'at'))
 CREATE INDEX IF NOT EXISTS "SessionCaptureFrame_at" ON "SessionCaptureFrame" ((data->>'at'));
 CREATE INDEX IF NOT EXISTS "UXHeatmapSnapshot_at" ON "UXHeatmapSnapshot" ((data->>'at'));
 CREATE INDEX IF NOT EXISTS "UserVariantState_at" ON "UserVariantState" ((data->>'at'));
+
+
+-- CreativeAsset: AI Creative Suite generated ad variants + their live performance (see sdk/creative-suite.ts)
+CREATE TABLE IF NOT EXISTS "CreativeAsset" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "CreativeAsset_data_gin" ON "CreativeAsset" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "CreativeAsset_created" ON "CreativeAsset" (created_date DESC);
