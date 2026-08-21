@@ -3877,3 +3877,15 @@ CREATE TABLE IF NOT EXISTS "CreativeAsset" (
 );
 CREATE INDEX IF NOT EXISTS "CreativeAsset_data_gin" ON "CreativeAsset" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "CreativeAsset_created" ON "CreativeAsset" (created_date DESC);
+
+
+-- SurveyDraft: AI Survey Suite generated surveys/drafts (see sdk/survey-suite.ts)
+CREATE TABLE IF NOT EXISTS "SurveyDraft" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SurveyDraft_data_gin" ON "SurveyDraft" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SurveyDraft_created" ON "SurveyDraft" (created_date DESC);

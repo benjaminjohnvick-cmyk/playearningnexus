@@ -878,6 +878,14 @@ export const REGISTRY: SettingDef[] = [
   { key: "CREATIVE_SUITE_T3_PREDICTIVE", label: "Tier 3 — predictive creative score", category: "AI Creative Suite", type: "boolean", default: "1", help: "Show a 0–100 pre-flight creative score before any spend." },
   { key: "CREATIVE_SUITE_T3_AUTO_REFRESH", label: "Tier 3 — auto-refresh fatigued creatives", category: "AI Creative Suite", type: "boolean", default: "1", help: "Automatically regenerate a creative once fatigue is detected (subject to the autonomy cap)." },
 
+
+  // ── AI Survey Suite — Pollfish-parity survey creation (see survey-suite.ts). ──
+  { key: "SURVEY_SUITE_ENABLED", label: "AI Survey Suite — enabled", category: "AI Survey Suite", type: "boolean", default: "1", help: "Master switch for the end-to-end AI survey suite (prompt-to-survey, 19+ question types, editing, advanced methods, self-learning, reports)." },
+  { key: "SURVEY_SUITE_MAX_QUESTIONS", label: "Survey Suite — max questions", category: "AI Survey Suite", type: "number", default: "30", unit: "questions", help: "Cap on how many questions a single generated survey may contain.", min: 1 },
+  { key: "SURVEY_SUITE_METHODS_ENABLED", label: "Survey Suite — advanced methods", category: "AI Survey Suite", type: "boolean", default: "1", help: "Allow advanced research methods (A/B, conjoint, MaxDiff, Van Westendorp, Gabor-Granger)." },
+  { key: "SURVEY_SUITE_TRANSLATION_ENABLED", label: "Survey Suite — translation", category: "AI Survey Suite", type: "boolean", default: "1", help: "Allow AI translation/localization of surveys." },
+  { key: "SURVEY_SUITE_CONVERSATIONAL_ENABLED", label: "Survey Suite — conversational follow-up", category: "AI Survey Suite", type: "boolean", default: "1", help: "Allow AI conversational follow-up probes + response theme summaries in reports." },
+
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

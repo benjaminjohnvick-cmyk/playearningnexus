@@ -127,7 +127,10 @@ import __Layout from './Layout.jsx';
 
 import CreativeStudio from './pages/CreativeStudio';
 
+import SurveyStudio from './pages/SurveyStudio';
+
 export const PAGES = {
+    "SurveyStudio": SurveyStudio,
     "CreativeStudio": CreativeStudio,
     "AIAgents": AIAgents,
     "AdminDashboard": AdminDashboard,
