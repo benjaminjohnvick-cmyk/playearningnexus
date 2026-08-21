@@ -86,6 +86,9 @@ export default __handler(async (req) => {
       term_years: foundingTermYears(),
       // Founder-only category exclusivity (null when not claimed or post-founding).
       category: category || null,
+      // Normalized lowercase key so exclusivity checks are exact + index-accelerated at scale (see
+      // foundingCategoryTaken) and case-insensitive.
+      category_key: category ? category.toLowerCase() : null,
       category_exclusive: !!(exclusivityOn && category),
       is_founding: isTier1,
       // The advertising is live immediately (no launch-milestone gate in the clean model).

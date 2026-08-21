@@ -25,12 +25,16 @@ Deno.test("the delivery disclosure is present and is capacity-paced, no-ROI", ()
 
 Deno.test("category exclusivity: a live founder's category is taken; others are free", async () => {
   const rows = [
-    { category: "Fitness", tier1: true, status: "active" },
-    { category: "Coffee", tier1: true, status: "cancelled" }, // cancelled → frees the category
+    { category: "Fitness", category_key: "fitness", tier1: true, status: "active" },
+    { category: "Coffee", category_key: "coffee", tier1: true, status: "cancelled" }, // cancelled → frees it
   ];
-  const dbi = { filter: (_n: string, _q: Record<string, unknown>) => Promise.resolve(rows) };
+  // Fake dbi honors the exact category_key filter the scale-safe query relies on.
+  const dbi = {
+    filter: (_n: string, q: Record<string, unknown>) =>
+      Promise.resolve(rows.filter((r) => r.category_key === q.category_key)),
+  };
   assertEquals(await foundingCategoryTaken(dbi, "Fitness"), true);
-  assertEquals(await foundingCategoryTaken(dbi, "fitness"), true);   // case-insensitive
+  assertEquals(await foundingCategoryTaken(dbi, "fitness"), true);   // case-insensitive (normalized key)
   assertEquals(await foundingCategoryTaken(dbi, "Coffee"), false);   // cancelled seat doesn't hold it
   assertEquals(await foundingCategoryTaken(dbi, "Gaming"), false);   // unclaimed
   assertEquals(await foundingCategoryTaken(dbi, ""), false);         // empty

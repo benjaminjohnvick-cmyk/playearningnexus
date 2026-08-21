@@ -22,8 +22,8 @@ export async function countSuccessfulReferrals(userId: string): Promise<number> 
 
 /** How many members are already enrolled in Premium (for founding-seat availability). Bounded scan. */
 export async function enrolledPremiumCount(): Promise<number> {
-  const rows = await db.filter("PremiumPPCMembership", { loyalty_enrolled: true }, "-created_date", 50000).catch(() => []) as Record<string, unknown>[];
-  return (rows || []).filter((m) => m.status !== "ended").length;
+  // SCALE: COUNT(*) with a NULL-safe "status not ended" filter, instead of loading up to 50k rows to .length.
+  return await db.count("PremiumPPCMembership", { loyalty_enrolled: true, status: { $nin: ["ended"] } }).catch(() => 0);
 }
 
 /** Which survey provider a user is served: premium → PPC AdGrid, non-premium → BitLabs. */

@@ -328,8 +328,10 @@ export const FA_STATUS = {
 export async function foundingSeatsTaken(): Promise<number> {
   const hit = await cacheGet<number>("founding_seats_taken").catch(() => null);
   if (typeof hit === "number") return hit;
-  const rows = await db.filter("FoundingAdvertiser", {}, "-created_date", 200000).catch(() => []) as Record<string, unknown>[];
-  const taken = (rows || []).filter((r) => r.status !== FA_STATUS.REFUNDED && r.status !== FA_STATUS.CANCELLED).length;
+  // SCALE: COUNT(*) in the DB instead of loading up to 200k rows to filter+.length in app memory.
+  const taken = await db.count("FoundingAdvertiser", {
+    status: { $nin: [FA_STATUS.REFUNDED, FA_STATUS.CANCELLED] },
+  }).catch(() => 0);
   await cacheSet("founding_seats_taken", taken, 300).catch(() => null);
   return taken;
 }
@@ -348,18 +350,20 @@ type CatDbi = { filter: (name: string, q: Record<string, unknown>, sort?: string
 export async function foundingCategoryTaken(dbi: CatDbi, category: string): Promise<boolean> {
   const cat = String(category ?? "").trim().toLowerCase();
   if (!cat) return false;
-  const rows = await dbi.filter("FoundingAdvertiser", { tier1: true }, "-created_date", 20000).catch(() => []) as Record<string, unknown>[];
-  return (rows || []).some((r) =>
-    String(r.category ?? "").trim().toLowerCase() === cat &&
-    r.status !== FA_STATUS.REFUNDED && r.status !== FA_STATUS.CANCELLED);
+  // SCALE: exact, index-accelerated match on the normalized `category_key` (lowercased, stamped at signup),
+  // so this returns only rows in THIS category — never a full scan of every founder. Case-insensitive by
+  // construction. Only a live (not refunded/cancelled) founder holds the category.
+  const rows = await dbi.filter("FoundingAdvertiser", { tier1: true, category_key: cat }, "-created_date", 1000)
+    .catch(() => []) as Record<string, unknown>[];
+  return (rows || []).some((r) => r.status !== FA_STATUS.REFUNDED && r.status !== FA_STATUS.CANCELLED);
 }
 
 /** Count premium users on the network (drives the launch milestone). Best-effort + cached (10 min). */
 export async function premiumUserCount(): Promise<number> {
   const hit = await cacheGet<number>("premium_user_count").catch(() => null);
   if (typeof hit === "number") return hit;
-  const rows = await db.filter("PremiumPPCMembership", { loyalty_enrolled: true }, "-created_date", 500000).catch(() => []) as unknown[];
-  const n = rows?.length || 0;
+  // SCALE: COUNT(*) instead of loading up to 500k membership rows just to read .length.
+  const n = await db.count("PremiumPPCMembership", { loyalty_enrolled: true }).catch(() => 0);
   await cacheSet("premium_user_count", n, 600).catch(() => null);
   return n;
 }
@@ -402,12 +406,23 @@ export async function milestoneState(todayISO: string): Promise<MilestoneState> 
 export async function activeFoundingAdOwners(dbi: {
   filter: (name: string, q: Record<string, unknown>, sort?: string, limit?: number) => Promise<Record<string, unknown>[]>;
 }): Promise<Set<string>> {
-  const rows = await dbi.filter("FoundingAdvertiser", { status: FA_STATUS.ACTIVE }, "-created_date", 5000).catch(() => []);
   const cap = foundingImpressionsPerYear() * foundingTermYears();
   const owners = new Set<string>();
-  for (const r of rows || []) {
-    const served = Number(r.impressions_served) || 0;
-    if (cap <= 0 || served < cap) owners.add(String(r.user_id));
+  // SCALE: keyset-page through EVERY active founding advertiser (no fixed 5k cap) so ALL advertisers with
+  // allotment remaining are eligible to serve — not just the most-recent few thousand. Bounded memory per
+  // page (2k rows), unbounded total. Seek on the primary key via the `id > last` operator.
+  let last = "";
+  for (;;) {
+    const page = await dbi.filter(
+      "FoundingAdvertiser", { status: FA_STATUS.ACTIVE, id: { $gt: last } }, "id", 2000,
+    ).catch(() => []);
+    if (!page || !page.length) break;
+    for (const r of page) {
+      const served = Number(r.impressions_served) || 0;
+      if (cap <= 0 || served < cap) owners.add(String(r.user_id));
+    }
+    last = String(page[page.length - 1].id);
+    if (page.length < 2000) break;
   }
   return owners;
 }

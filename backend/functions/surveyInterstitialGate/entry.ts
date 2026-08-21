@@ -59,8 +59,17 @@ export default __handler(async (req) => {
     // If no founding ad was chosen, prefer an ad whose advertiser is actively paying for the PPC grid, so
     // paying PPC advertisers are placed in the mandatory between-survey slot ahead of any stray/house ad.
     if (!foundingOwnerId && snapBool("SURVEY_INTERSTITIAL_PPC_PRIORITY", true) && (slots || []).length) {
-      const advertisers = await base44.asServiceRole.entities.User.filter({ ppc_grid_active: true }).then((r: any) => r || []).catch(() => []) as Record<string, unknown>[];
-      const paying = new Set((advertisers || []).map((a) => String(a.id)));
+      // SCALE: check only the CANDIDATE slots' owners for ppc_grid_active via one bounded id-$in lookup —
+      // never load the entire paying-advertiser population (which grows with every advertiser you add).
+      const ownerIds = Array.from(new Set(
+        (slots || []).flatMap((s) => [String(s.advertiser_user_id ?? ""), String(s.created_by ?? "")]).filter(Boolean),
+      ));
+      let paying = new Set<string>();
+      if (ownerIds.length) {
+        const payingRows = await base44.asServiceRole.entities.User
+          .filter({ id: { $in: ownerIds }, ppc_grid_active: true }).then((r: any) => r || []).catch(() => []) as Record<string, unknown>[];
+        paying = new Set((payingRows || []).map((a) => String(a.id)));
+      }
       const ppick = (slots || []).find((s) => paying.has(String(s.advertiser_user_id)) || paying.has(String(s.created_by)));
       if (ppick) { pick = ppick; ppcAdvertiser = true; }
     }

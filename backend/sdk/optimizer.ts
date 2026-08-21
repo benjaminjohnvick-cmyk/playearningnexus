@@ -176,7 +176,7 @@ export async function collectSignals(days = 14): Promise<Snapshot> {
   const earnings = await db.filter("DailyEarnings", {}, "-created_date", 5000).catch(() => []);
   const recentEarn = earnings.filter((e: any) => (e.date ?? e.created_date) >= since.slice(0, 10));
   const activeUsers = new Set(recentEarn.map((e: any) => e.user_id)).size;
-  const totalUsers = (await db.filter("User", {}, undefined, 20000).catch(() => [])).length || 1;
+  const totalUsers = (await db.count("User").catch(() => 0)) || 1;  // SCALE: COUNT(*), not a 20k-row load
   snap.engagement_rate = round2(activeUsers / totalUsers);
   snap.active_users = activeUsers;
 

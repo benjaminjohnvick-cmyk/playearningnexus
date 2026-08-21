@@ -116,15 +116,22 @@ export async function inventoryStatus(): Promise<InventoryStatus> {
   const t1a = tier1Allotment(), t2a = tier2Allotment();
   const t1Seat = tier1GuaranteedPerSeat();      // base + value-match bonus (what we actually guarantee)
   const t2Seat = tier2GuaranteedPerSeat();
-  const faRows = (await db.filter("FoundingAdvertiser", {}, "-created_date", 20000).catch(() => [])) as Record<string, unknown>[];
-  const activeTier1 = faRows.filter((r) => !["refunded", "cancelled"].includes(String(r.status ?? "").toLowerCase())).length;
-  const t2Rows = (await db.filter("Tier2ScalingPlan", { status: "active" }, "-created_date", 20000).catch(() => [])) as Record<string, unknown>[];
+  // SCALE: COUNT(*) the live founders instead of loading up to 20k rows to filter+.length. At 200k advertisers
+  // this is the difference between one number and a 200k-row transfer.
+  const activeTier1 = await db.count("FoundingAdvertiser", { status: { $nin: ["refunded", "cancelled"] } }).catch(() => 0);
 
   // Sum each plan's ACTUAL guaranteed volume rather than assuming a flat per-seat number. A Tier 3 Unlimited plan
   // is a Tier2ScalingPlan row carrying a scaled `guaranteed_impressions_per_year` far larger than a standard seat;
   // counting it at the flat Tier 2 allotment would blind the governor to its load and let it oversell. Plans that
   // guarantee more than a standard seat are treated as Tier 3 (broken out separately); the rest as standard Tier 2.
-  const br = committedFromPlans(t2Rows, t2Seat);
+  // SCALE: stream active plans in bounded keyset batches (constant memory) and accumulate the breakdown, rather
+  // than materializing every active plan at once.
+  const br: CommittedBreakdown = { committed_tier2: 0, committed_tier3: 0, active_tier2: 0, active_tier3: 0 };
+  for await (const batch of db.scan("Tier2ScalingPlan", { status: "active" }, 2000)) {
+    const b = committedFromPlans(batch, t2Seat);
+    br.committed_tier2 += b.committed_tier2; br.committed_tier3 += b.committed_tier3;
+    br.active_tier2 += b.active_tier2; br.active_tier3 += b.active_tier3;
+  }
   const committedTier2 = br.committed_tier2, committedTier3 = br.committed_tier3;
   const activeTier2 = br.active_tier2, activeTier3 = br.active_tier3;
   const committedTier1 = activeTier1 * t1Seat;

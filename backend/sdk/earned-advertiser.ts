@@ -296,9 +296,17 @@ export async function activeEarnedAdOwners(dbi: {
   filter: (name: string, q: Record<string, unknown>, sort?: string, limit?: number) => Promise<Record<string, unknown>[]>;
 }, todayISO: string): Promise<Set<string>> {
   if (!earnedInterstitialEnabled()) return new Set<string>();
-  const rows = await dbi.filter("EarnedAdvertiser", {}, "-created_date", 20000).catch(() => []) as Record<string, unknown>[];
   const owners = new Set<string>();
-  for (const r of rows || []) if (earnedAdActive(r, todayISO)) owners.add(String(r.user_id));
+  // SCALE: keyset-page through EVERY earned advertiser (no fixed 20k cap) so all with currently-active free
+  // advertising are eligible to serve. Bounded memory per page, unbounded total.
+  let last = "";
+  for (;;) {
+    const page = await dbi.filter("EarnedAdvertiser", { id: { $gt: last } }, "id", 2000).catch(() => []) as Record<string, unknown>[];
+    if (!page || !page.length) break;
+    for (const r of page) if (earnedAdActive(r, todayISO)) owners.add(String(r.user_id));
+    last = String(page[page.length - 1].id);
+    if (page.length < 2000) break;
+  }
   return owners;
 }
 

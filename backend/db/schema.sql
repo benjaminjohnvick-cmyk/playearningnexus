@@ -3852,3 +3852,16 @@ CREATE TABLE IF NOT EXISTS "DeviceToken" (
 );
 CREATE INDEX IF NOT EXISTS "DeviceToken_data_gin" ON "DeviceToken" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "DeviceToken_created" ON "DeviceToken" (created_date DESC);
+
+
+-- ── Scale hot-path indexes (appended last, after every table exists) ─────────────────────────────────────
+-- Append-heavy event/ledger tables are read time-ordered by the JSONB 'at' field. Without a btree on
+-- (data->>'at'), those reads seq-scan + top-N sort (hundreds of ms at 300k, seconds at millions); the
+-- expression index makes them index scans. Kept at the very end so all referenced tables are already created,
+-- regardless of the order the table sections appear above. See tools/gen-schema.mjs.
+CREATE INDEX IF NOT EXISTS "InteractionEvent_at" ON "InteractionEvent" ((data->>'at'));
+CREATE INDEX IF NOT EXISTS "LiveMetricEvent_at" ON "LiveMetricEvent" ((data->>'at'));
+CREATE INDEX IF NOT EXISTS "LoyaltyLedger_at" ON "LoyaltyLedger" ((data->>'at'));
+CREATE INDEX IF NOT EXISTS "SessionCaptureFrame_at" ON "SessionCaptureFrame" ((data->>'at'));
+CREATE INDEX IF NOT EXISTS "UXHeatmapSnapshot_at" ON "UXHeatmapSnapshot" ((data->>'at'));
+CREATE INDEX IF NOT EXISTS "UserVariantState_at" ON "UserVariantState" ((data->>'at'));

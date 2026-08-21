@@ -69,6 +69,22 @@ for (const f of files.sort()) {
   ok++;
 }
 
+// ── Scale hot-path indexes ────────────────────────────────────────────────────────────────────────────
+// Append-heavy event/ledger tables are read time-ordered by the JSONB 'at' field. Without a btree on
+// (data->>'at'), those reads do a full seq-scan + top-N sort that grows with the table (hundreds of ms at
+// 300k, seconds at millions). The expression btree turns them into an index scan (~2ms, flat regardless of
+// size). Measured 2026-08-21 on 300k rows: 116ms seq-scan+heapsort → 2.5ms index scan. Add a table here
+// whenever a hot path does `.filter(T, q, "-at" | "at")`. The GIN(data) + (created_date) indexes above
+// already cover equality/containment lookups and created_date-ordered reads, so those need nothing extra.
+const AT_SORTED_TABLES = [
+  'InteractionEvent', 'LiveMetricEvent', 'LoyaltyLedger',
+  'SessionCaptureFrame', 'UXHeatmapSnapshot', 'UserVariantState',
+];
+sql += `\n-- Scale hot-path indexes: time-ordered reads on append-heavy 'at' tables (see tools/gen-schema.mjs)\n`;
+for (const tName of AT_SORTED_TABLES) {
+  sql += `CREATE INDEX IF NOT EXISTS "${tName}_at" ON "${tName}" ((data->>'at'));\n`;
+}
+
 sql += `\n-- Auto-update updated_date on row change\nCREATE OR REPLACE FUNCTION set_updated_date() RETURNS trigger AS $$\nBEGIN NEW.updated_date = now(); RETURN NEW; END; $$ LANGUAGE plpgsql;\n`;
 
 fs.writeFileSync(OUT, sql);

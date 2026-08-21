@@ -78,6 +78,14 @@ function buildWhere(entity: string, query: Record<string, unknown>, startIdx = 1
           arr.forEach((a) => params.push(a));
           if (sys.has(key)) clauses.push(`${quoteCol(key)} IN (${ph.join(",")})`);
           else clauses.push(`data->>${jsonKey(key)} IN (${ph.join(",")})`);
+        } else if (op === "$nin") {
+          const arr = opVal as unknown[];
+          const ph = arr.map(() => `$${i++}`);
+          arr.forEach((a) => params.push(a));
+          const col = sys.has(key) ? quoteCol(key) : `data->>${jsonKey(key)}`;
+          // NULL-inclusive NOT IN: a missing/null field counts as "not equal to" every listed value,
+          // matching the app's JS `x !== a && x !== b` intent (where an absent field passes the test).
+          clauses.push(`(${col} IS NULL OR ${col} NOT IN (${ph.join(",")}))`);
         } else if (OPS[op]) {
           if (sys.has(key)) { clauses.push(`${quoteCol(key)} ${OPS[op]} $${i}`); params.push(opVal); i++; }
           else { clauses.push(`(data->>${jsonKey(key)}) ${OPS[op]} $${i}`); params.push(String(opVal)); i++; }
@@ -127,6 +135,67 @@ export const db = {
   },
   async list(entity: string, sort?: string, limit?: number) {
     return await this.filter(entity, {}, sort, limit);
+  },
+  // Offset-paginated read — same filter/sort as filter(), plus OFFSET. Use for admin/list endpoints so a
+  // caller can walk pages instead of pulling one giant array. (Deep offsets get slower; for full-table
+  // sweeps prefer scan(), which is keyset-paginated and O(1) per page.)
+  async filterPage(entity: string, query: Record<string, unknown> = {}, sort?: string, limit = 50, offset = 0) {
+    const { where, params, next } = buildWhere(entity, query);
+    let sql = `SELECT * FROM ${quoteTbl(entity)} ${where} ${orderBy(sort)} LIMIT $${next}`;
+    const p = [...params, Math.max(1, limit)];
+    if (offset > 0) { sql += ` OFFSET $${next + 1}`; p.push(Math.max(0, offset)); }
+    return await withReadClient(async (c) => {
+      const r = await c.queryObject<Record<string, unknown>>(sql, p);
+      return r.rows.map((row) => rowToDoc(entity, row));
+    });
+  },
+  // COUNT(*) with the same filter compilation — the SCALE-SAFE way to size a set. Never loads rows into
+  // app memory; returns one number. Replaces the `filter(entity, q, sort, BIGNUM).length` anti-pattern that
+  // pulled tens/hundreds of thousands of full JSONB rows across the wire just to call `.length`.
+  async count(entity: string, query: Record<string, unknown> = {}): Promise<number> {
+    const { where, params } = buildWhere(entity, query);
+    const sql = `SELECT COUNT(*)::bigint AS n FROM ${quoteTbl(entity)} ${where}`;
+    return await withReadClient(async (c) => {
+      const r = await c.queryObject<{ n: bigint | number | string }>(sql, params);
+      return Number(r.rows[0]?.n ?? 0);
+    });
+  },
+  // SUM of a numeric field with the same filter compilation — the SCALE-SAFE way to total a column
+  // (e.g. committed advertising volume) without loading every row to reduce() in app memory. A row whose
+  // value isn't numeric contributes 0 (guarded cast) rather than erroring the whole query.
+  async sum(entity: string, field: string, query: Record<string, unknown> = {}): Promise<number> {
+    const { where, params } = buildWhere(entity, query);
+    const sys = sysCols(entity);
+    const raw = sys.has(field) ? quoteCol(field) : `data->>${jsonKey(field)}`;
+    const expr = sys.has(field)
+      ? `${raw}::numeric`
+      : `CASE WHEN ${raw} ~ '^-?[0-9]+(\\.[0-9]+)?$' THEN (${raw})::numeric ELSE 0 END`;
+    const sql = `SELECT COALESCE(SUM(${expr}), 0)::float8 AS s FROM ${quoteTbl(entity)} ${where}`;
+    return await withReadClient(async (c) => {
+      const r = await c.queryObject<{ s: number | string }>(sql, params);
+      return Number(r.rows[0]?.s ?? 0);
+    });
+  },
+  // Keyset (seek) pagination over EVERY matching row, in bounded-memory batches ordered by primary key.
+  // Yields arrays of `batch` rows using `id > lastId` (the PK index) — constant memory and constant per-page
+  // cost regardless of table size. Use this for full-table jobs (loyalty distribution, nightly optimizer)
+  // instead of filter(entity, q, sort, 200000), which materializes the whole set at once.
+  async *scan(entity: string, query: Record<string, unknown> = {}, batch = 1000): AsyncGenerator<Record<string, unknown>[]> {
+    const size = Math.max(1, Math.min(10000, Math.floor(batch) || 1000));
+    let last = "";
+    for (;;) {
+      const { where, params, next } = buildWhere(entity, query);
+      const seek = where ? `${where} AND id > $${next}` : `WHERE id > $${next}`;
+      const sql = `SELECT * FROM ${quoteTbl(entity)} ${seek} ORDER BY id ASC LIMIT ${size}`;
+      const rows = await withReadClient(async (c) => {
+        const r = await c.queryObject<Record<string, unknown>>(sql, [...params, last]);
+        return r.rows.map((row) => rowToDoc(entity, row));
+      });
+      if (!rows.length) break;
+      yield rows;
+      last = String(rows[rows.length - 1].id);
+      if (rows.length < size) break;
+    }
   },
   async get(entity: string, id: string) {
     const r = await this.filter(entity, { id }, undefined, 1);

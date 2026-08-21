@@ -189,11 +189,19 @@ export async function computeSeatGuarantees(dbi: Dbi, advertiserUserId: string, 
 export async function activeMakeGoodOwners(dbi: Dbi): Promise<Set<string>> {
   const owners = new Set<string>();
   if (!deliveryGuaranteeEnabled()) return owners;
-  const rows = (await dbi.filter("FoundingAdvertiser", { makegood_active: true }, "-created_date", 5000).catch(() => [])) as Record<string, unknown>[];
-  for (const r of (rows || [])) {
-    const target = Number(r.makegood_target_impressions) || 0;
-    const served = Number(r.impressions_served) || 0;
-    if (target <= 0 || served < target) owners.add(String(r.user_id));
+  // SCALE: keyset-page through EVERY make-good-active advertiser (no fixed 5k cap) so all owed a top-up are
+  // eligible to serve. Bounded memory per page, unbounded total.
+  let last = "";
+  for (;;) {
+    const page = (await dbi.filter("FoundingAdvertiser", { makegood_active: true, id: { $gt: last } }, "id", 2000).catch(() => [])) as Record<string, unknown>[];
+    if (!page || !page.length) break;
+    for (const r of page) {
+      const target = Number(r.makegood_target_impressions) || 0;
+      const served = Number(r.impressions_served) || 0;
+      if (target <= 0 || served < target) owners.add(String(r.user_id));
+    }
+    last = String(page[page.length - 1].id);
+    if (page.length < 2000) break;
   }
   return owners;
 }

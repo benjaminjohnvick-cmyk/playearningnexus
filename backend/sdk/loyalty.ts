@@ -61,16 +61,16 @@ export const loyaltyFreeShipping = () => snapNumber("LOYALTY_FREE_SHIPPING", 1) 
 
 // ── Capacity GOVERNOR (levers 1, 2, 6, 7) — replaces strict 1:1 ────────────────────────────────────
 export async function activeAdvertiserCount(): Promise<number> {
-  const rows = await db.filter("User", { ppc_grid_active: true }, undefined, 100000).catch(() => []);
-  return (rows || []).length;
+  // SCALE: COUNT(*) instead of loading up to 100k User rows to read .length.
+  return await db.count("User", { ppc_grid_active: true }).catch(() => 0);
 }
 export async function enrolledLoyaltyCount(): Promise<number> {
-  const rows = await db.filter("PremiumPPCMembership", { loyalty_enrolled: true }, undefined, 100000).catch(() => []) as Record<string, unknown>[];
-  return (rows || []).filter((m) => m.status !== "ended").length;
+  // SCALE: COUNT(*) with a NULL-safe "status not ended" filter, instead of loading up to 100k rows.
+  return await db.count("PremiumPPCMembership", { loyalty_enrolled: true, status: { $nin: ["ended"] } }).catch(() => 0);
 }
 async function totalUserCount(): Promise<number> {
-  const rows = await db.filter("User", {}, undefined, 200000).catch(() => []);
-  return (rows || []).length;
+  // SCALE: COUNT(*) instead of loading up to 200k User rows to read .length.
+  return await db.count("User").catch(() => 0);
 }
 /** Annualized pooled revenue that can fund member benefits: advertiser grid fees + other streams. */
 export async function pooledAnnualRevenueUsd(): Promise<number> {
