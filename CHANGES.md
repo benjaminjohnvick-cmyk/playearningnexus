@@ -1,5 +1,21 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-20 — Founding (pre-revenue) offer → Tier 1: 200k cap, +30% Tier 1, category exclusivity, disclosure
+
+Two-phase advertiser offer (see FOUNDING-PRE-REVENUE-OFFER-AND-TIER1-SPEC.md):
+
+- **Founding cap → 200,000** (`FOUNDING_ADVERTISER_SLOTS`) — aspirational headline; delivery is capacity-paced
+  with NO fixed timeline (governor never promises a fixed year-one volume).
+- **Post-founding Tier 1 price = +30%** (`TIER1_PRICE_UPLIFT_OVER_FOUNDING_PCT` 0.30): founding $13,000 → Tier 1
+  $16,900 (`tier1PostFoundingPriceUsd`). Signup + `/Apply` flip price/name/perks automatically when the cap fills;
+  founders are grandfathered (keep their price + perks + 100%-for-life survey earn-share).
+- **Category exclusivity** for every founder (`FOUNDING_CATEGORY_EXCLUSIVITY`): claim a category no other live
+  founder holds; enforced at signup (`foundingCategoryTaken`, stamped `category`/`category_exclusive`).
+- **Capacity-paced delivery disclosure** (`FOUNDING_DISCLOSURE_COPY` + built-in default) — added to
+  `foundingDisclosures`, recorded in the consent ledger, and shown clear-and-conspicuously on `/Apply`.
+  Advertising-delivered framing, never ROI/revenue.
+- New Deno tests (61 pass); build + audit clean; no money moved (charging stays on the gated processor path).
+
 ## 2026-08-19 — 13-period (four-week) annual pricing (+8.33%), value kept at ~2×
 
 Billing every 4 weeks = 13 periods/year, not 12. New `BILLING_13_PERIOD_PRICING` (default ON) makes a fixed-price

@@ -76,7 +76,28 @@ export function tier1Perks(): Record<string, unknown> {
 }
 
 export const foundingEnabled = () => snapBool("FOUNDING_ADVERTISER_ENABLED", true);
-export const foundingSlots = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_SLOTS", 100000));
+export const foundingSlots = () => Math.max(0, snapNumber("FOUNDING_ADVERTISER_SLOTS", 200000));
+
+// ── Two-phase pricing: Founding (pre-revenue) → Tier 1 (post-founding) ──────────────────────────────────────
+/** Post-founding Tier 1 price uplift over the founding price (0.30 = +30%). */
+export const tier1PriceUpliftPct = () => Math.max(0, snapNumber("TIER1_PRICE_UPLIFT_OVER_FOUNDING_PCT", 0.30));
+/** Tier 1 price AFTER the founding offer closes = founding price × (1 + uplift). Founding $13,000 → $16,900. */
+export const tier1PostFoundingPriceUsd = () => Math.round(foundingPriceUsd() * (1 + tier1PriceUpliftPct()) * 100) / 100;
+/** Founding perk: category exclusivity for founders (on by default). */
+export const foundingCategoryExclusivityEnabled = () => snapBool("FOUNDING_CATEGORY_EXCLUSIVITY", true);
+/** Built-in default for the capacity-paced / no-fixed-timeline delivery disclosure. */
+const FOUNDING_DISCLOSURE_DEFAULT =
+  "CAPACITY-PACED DELIVERY — NO FIXED TIMELINE. Your advertising is guaranteed by AMOUNT, not by date. " +
+  "Impressions deliver as our audience grows; during the founding / pre-launch period the audience is still " +
+  "being built, so delivery is paced to available capacity and there is NO promised delivery date and NO " +
+  "promised year-one volume. We keep delivering — free — until you have received the full amount of advertising " +
+  "you were promised, however long that takes. You pay ONCE, up front, and owe nothing further until your full " +
+  "guaranteed advertising has been delivered. This guarantees ADVERTISING DELIVERED (a dollar amount of " +
+  "impressions/placements we measure on our own surfaces) — it is NOT a guarantee of revenue, sales, ROI, or any " +
+  "business result.";
+/** The capacity-paced / no-fixed-timeline delivery disclosure a founder must see and accept before buying.
+ *  Admin can override via FOUNDING_DISCLOSURE_COPY; empty → the built-in default above. */
+export const foundingDisclosureCopy = () => snapString("FOUNDING_DISCLOSURE_COPY", "") || FOUNDING_DISCLOSURE_DEFAULT;
 // Annual Tier 1 price. When 13-period (four-week) pricing is on, the annual = 13 four-week periods (×13/12,
 // +8.33%) — e.g. $12,000 → $13,000. The value stack targets 2× of THIS, so value scales to keep the ~2× headline.
 export const foundingPriceUsd = () => Math.round(Math.max(0, snapNumber("FOUNDING_ADVERTISER_PRICE_USD", 12000)) * billingYearFactor() * 100) / 100;
@@ -198,8 +219,8 @@ export interface SignupFinancials {
 
 /** Split a founding payment into the spendable (non-refundable) and escrowed (refundable) portions per the
  *  configured model. presale → all spendable; escrow → all escrowed; hybrid → deposit spendable, rest escrow. */
-export function signupFinancials(): SignupFinancials {
-  const price = foundingPriceUsd();
+export function signupFinancials(priceOverride?: number): SignupFinancials {
+  const price = (priceOverride && priceOverride > 0) ? round2(priceOverride) : foundingPriceUsd();
   const model = foundingFundsModel();
   if (model === "escrow") return { model, price_usd: price, spendable_usd: 0, escrow_usd: price, refundable: true };
   if (model === "hybrid") {
@@ -314,6 +335,18 @@ export async function foundingProgramOpen(): Promise<boolean> {
   return foundingEnabled() && (await foundingSlotsRemaining()) > 0;
 }
 
+type CatDbi = { filter: (name: string, q: Record<string, unknown>, sort?: string, limit?: number) => Promise<Record<string, unknown>[]> };
+/** Category exclusivity: is `category` already held by an ACTIVE founding advertiser? Founders get one exclusive
+ *  category each; a new founder can't claim a category another live founder already holds. Case-insensitive. */
+export async function foundingCategoryTaken(dbi: CatDbi, category: string): Promise<boolean> {
+  const cat = String(category ?? "").trim().toLowerCase();
+  if (!cat) return false;
+  const rows = await dbi.filter("FoundingAdvertiser", { tier1: true }, "-created_date", 20000).catch(() => []) as Record<string, unknown>[];
+  return (rows || []).some((r) =>
+    String(r.category ?? "").trim().toLowerCase() === cat &&
+    r.status !== FA_STATUS.REFUNDED && r.status !== FA_STATUS.CANCELLED);
+}
+
 /** Count premium users on the network (drives the launch milestone). Best-effort + cached (10 min). */
 export async function premiumUserCount(): Promise<number> {
   const hit = await cacheGet<number>("premium_user_count").catch(() => null);
@@ -401,6 +434,7 @@ export function foundingDisclosures() {
     is_advertising_not_investment:
       "This is a purchase of advertising and membership — NOT an investment or a security. You are not buying " +
       "a financial return, and no profit, gain, or 'multiple' of your money is promised or guaranteed.",
+    capacity_paced_delivery: foundingDisclosureCopy(),
     // ---- The SEPARATE membership perk (a survey earn-SHARE) ----------------------------------------
     survey_perk_separate:
       "SEPARATE MEMBERSHIP PERK (not part of the price of advertising): as a Tier 1 member you keep 100% of " +

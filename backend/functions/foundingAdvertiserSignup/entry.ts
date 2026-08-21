@@ -10,6 +10,7 @@ import {
   foundingDisclosures, DISCLOSURES_VERSION, FA_STATUS,
   foundingSurveyEarnSharePct, tier1PostSurveySharePct, foundingFullKeepYears, foundingSocialAdsEnabled,
   tier1Perks, tier1LaunchBonusImpressions, tier1IncludesPremium,
+  tier1PostFoundingPriceUsd, foundingCategoryExclusivityEnabled, foundingCategoryTaken,
 } from "../../sdk/founding-advertiser.ts";
 
 // foundingAdvertiserSignup (authenticated) — reserve a Tier 1 advertising seat. Clean Tier 1 model:
@@ -49,8 +50,18 @@ export default __handler(async (req) => {
 
     // Tier assignment by AVAILABILITY: while the introductory offer is open, the member keeps 100% in-window;
     // once the advertiser cap is reached the offer has closed and new members keep the post-Tier-1 share.
-    const isTier1 = await foundingProgramOpen();
+    const isTier1 = await foundingProgramOpen();  // true = FOUNDING (pre-revenue) phase open; false = post-founding Tier 1
     const sharePct = isTier1 ? foundingSurveyEarnSharePct() : tier1PostSurveySharePct();
+
+    // Category exclusivity — a FOUNDER-ONLY perk: each founder claims a category no other live founder holds.
+    const exclusivityOn = isTier1 && foundingCategoryExclusivityEnabled();
+    const category = String(body.category ?? "").trim();
+    if (exclusivityOn && category) {
+      const taken = await foundingCategoryTaken(db, category).catch(() => false);
+      if (taken) {
+        return Response.json({ error: `The "${category}" category is already held by a founding advertiser — pick another.`, category_taken: true }, { status: 409 });
+      }
+    }
 
     const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || null;
     // Record explicit consent to the honest disclosures (append-only evidence).
@@ -60,7 +71,8 @@ export default __handler(async (req) => {
     }).catch(() => null);
 
     // Presale funds split (non-refundable revenue by default). Real payment/escrow are external — state only.
-    const fin = signupFinancials();
+    // Founding phase pays the founding price ($13,000); after it closes, standard Tier 1 pays the +30% price.
+    const fin = signupFinancials(isTier1 ? undefined : tier1PostFoundingPriceUsd());
     const now = new Date().toISOString();
     const rec = await base44.asServiceRole.entities.FoundingAdvertiser.create({
       user_id: user.id,
@@ -72,6 +84,10 @@ export default __handler(async (req) => {
       escrow_usd: fin.escrow_usd,            // refundable portion (0 in presale)
       refundable: fin.refundable,
       term_years: foundingTermYears(),
+      // Founder-only category exclusivity (null when not claimed or post-founding).
+      category: category || null,
+      category_exclusive: !!(exclusivityOn && category),
+      is_founding: isTier1,
       // The advertising is live immediately (no launch-milestone gate in the clean model).
       status: FA_STATUS.ACTIVE,
       impressions_per_year: foundingImpressionsPerYear(),

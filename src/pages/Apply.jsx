@@ -131,7 +131,9 @@ export default function Apply() {
               </Button>
             </div>
             <CardContent className="p-6">
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">What founding advertisers get</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">
+                {t1.founding_open ? 'What founding advertisers get' : 'What Tier 1 advertisers get'}
+              </p>
               <ul className="space-y-2">
                 {(t1.benefits || []).map((b, i) => (
                   <li key={i} className="flex items-start gap-2.5 text-sm text-gray-800">
@@ -139,6 +141,14 @@ export default function Apply() {
                   </li>
                 ))}
               </ul>
+
+              {/* Clear-and-conspicuous capacity-paced delivery disclosure (founder must see + accept before buying). */}
+              {t1.delivery_disclosure && (
+                <div className="mt-5 rounded-lg border border-gray-300 bg-gray-50 p-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 mb-1">How delivery works — please read</p>
+                  <p className="text-xs text-gray-600 leading-relaxed">{t1.delivery_disclosure}</p>
+                </div>
+              )}
 
               {/* Value stack — $12k → $24k in advertising VALUE (delivered), backed by the delivery guarantee. */}
               {valueStack && valueStack.total_value_usd > 0 && (
