@@ -196,4 +196,20 @@ guaranteed), zero return/ROI promise.
   100%-for-life earn-share, category exclusivity); post-founding Tier 1 drops the founder-only ones and keeps
   AI concierge support. Tests: 61 pass; build + audit clean.
 
-*(Counsel to finalize the disclosure wording; the delivery guarantee frames advertising delivered, never ROI.)*
+## Finalized delivery disclosure (2026-08-21)
+
+The built-in `FOUNDING_DISCLOSURE_COPY` default is now the finalized, clear-and-conspicuous copy a founder
+must see and accept before buying (recorded to the consent ledger; shown on `/Apply`). It carries four
+non-negotiable points — override the setting only to tailor for a jurisdiction, and keep all four:
+
+1. **Capacity-paced delivery — no fixed timeline.** Guaranteed by amount, not by date; delivers as the
+   audience grows; no promised delivery date and no promised year-one volume.
+2. **Delivered in full, at no extra cost, however long it takes.** Pay once, up front; owe nothing further;
+   we keep delivering free until the full promised amount is received.
+3. **What is guaranteed = advertising delivered** (a stated dollar amount of impressions/placements measured
+   on our own surfaces) — **NOT** revenue, sales, sign-ups, ROI, or any business result.
+4. **Not an investment** — a purchase of advertising and membership, not a security; no profit or "multiple"
+   promised or implied.
+
+*Counsel may further tailor the wording for a buyer's jurisdiction, but the four points above must survive —
+the delivery guarantee frames advertising delivered, never ROI.*

@@ -85,16 +85,23 @@ export const tier1PriceUpliftPct = () => Math.max(0, snapNumber("TIER1_PRICE_UPL
 export const tier1PostFoundingPriceUsd = () => Math.round(foundingPriceUsd() * (1 + tier1PriceUpliftPct()) * 100) / 100;
 /** Founding perk: category exclusivity for founders (on by default). */
 export const foundingCategoryExclusivityEnabled = () => snapBool("FOUNDING_CATEGORY_EXCLUSIVITY", true);
-/** Built-in default for the capacity-paced / no-fixed-timeline delivery disclosure. */
+/** Built-in default for the capacity-paced / no-fixed-timeline delivery disclosure. Finalized 2026-08-21;
+ *  clear-and-conspicuous, plain-language. Admin may override via FOUNDING_DISCLOSURE_COPY; counsel may
+ *  further tailor for the buyer's jurisdiction, but the four substantive points below must survive. */
 const FOUNDING_DISCLOSURE_DEFAULT =
-  "CAPACITY-PACED DELIVERY — NO FIXED TIMELINE. Your advertising is guaranteed by AMOUNT, not by date. " +
-  "Impressions deliver as our audience grows; during the founding / pre-launch period the audience is still " +
-  "being built, so delivery is paced to available capacity and there is NO promised delivery date and NO " +
-  "promised year-one volume. We keep delivering — free — until you have received the full amount of advertising " +
-  "you were promised, however long that takes. You pay ONCE, up front, and owe nothing further until your full " +
-  "guaranteed advertising has been delivered. This guarantees ADVERTISING DELIVERED (a dollar amount of " +
-  "impressions/placements we measure on our own surfaces) — it is NOT a guarantee of revenue, sales, ROI, or any " +
-  "business result.";
+  "FOUNDING / PRE-LAUNCH ADVERTISING — HOW DELIVERY WORKS (please read):\n\n" +
+  "1) CAPACITY-PACED DELIVERY — NO FIXED TIMELINE. Your advertising is guaranteed by AMOUNT, not by date. " +
+  "During the founding / pre-launch period our audience is still being built, so your impressions and placements " +
+  "deliver as that audience grows. There is NO promised delivery date and NO promised year-one volume.\n\n" +
+  "2) DELIVERED IN FULL, AT NO EXTRA COST, HOWEVER LONG IT TAKES. You pay ONCE, up front, and owe nothing " +
+  "further. We keep delivering — at no additional charge to you — until you have received the entire amount of " +
+  "advertising you were promised, for as long as that takes.\n\n" +
+  "3) WHAT IS GUARANTEED. This guarantees ADVERTISING DELIVERED — a stated dollar amount of impressions and " +
+  "placements, measured on our own surfaces. It is NOT a guarantee of revenue, sales, sign-ups, ROI, or any " +
+  "other business result. What your advertising earns you depends on your offer, your creative, and your market, " +
+  "which are outside our control.\n\n" +
+  "4) NOT AN INVESTMENT. This is a purchase of advertising and membership — not a security or an investment. " +
+  "No profit, gain, or 'multiple' of your money is promised or implied.";
 /** The capacity-paced / no-fixed-timeline delivery disclosure a founder must see and accept before buying.
  *  Admin can override via FOUNDING_DISCLOSURE_COPY; empty → the built-in default above. */
 export const foundingDisclosureCopy = () => snapString("FOUNDING_DISCLOSURE_COPY", "") || FOUNDING_DISCLOSURE_DEFAULT;
