@@ -119,7 +119,10 @@ For EACH creative return: headline, body, cta, and an attributes object tagging:
           status: compliant ? "draft" : "blocked",
           impressions: 0, clicks: 0, created_at: new Date().toISOString(),
         };
-        if (compliant) await db.create("CreativeAsset", asset).catch(() => null);
+        if (compliant) {
+          const created = await db.create("CreativeAsset", asset).catch(() => null) as Record<string, unknown> | null;
+          if (created?.id) (asset as Record<string, unknown>).id = created.id;   // the UI needs the id to launch a test
+        }
         out.push(asset);
       }
     }

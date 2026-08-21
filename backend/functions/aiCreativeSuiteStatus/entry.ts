@@ -15,8 +15,9 @@ export default __handler(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
+    const body = await req.json().catch(() => ({}));
     const url = new URL(req.url);
-    const tier = normalizeTier(url.searchParams.get("tier"));
+    const tier = normalizeTier(body?.tier ?? url.searchParams.get("tier"));
     const caps = creativeSuiteTierCaps(tier);
     const today = new Date().toISOString();
 

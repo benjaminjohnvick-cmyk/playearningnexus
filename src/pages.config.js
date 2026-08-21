@@ -125,7 +125,10 @@ import Withdrawal from './pages/Withdrawal';
 import __Layout from './Layout.jsx';
 
 
+import CreativeStudio from './pages/CreativeStudio';
+
 export const PAGES = {
+    "CreativeStudio": CreativeStudio,
     "AIAgents": AIAgents,
     "AdminDashboard": AdminDashboard,
     "AdminSettings": AdminSettings,
