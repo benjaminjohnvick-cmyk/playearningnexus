@@ -1,6 +1,6 @@
 # GamerGain / PlayEarning Nexus — Load-Test Plan
 
-**Purpose:** prove the app handles the target load (path to **100,000 registered users**, ≈5,000–15,000 concurrent at peak) *before* launch, and find where it bends first so you fix that instead of guessing. Turns "should scale" into measured numbers.
+**Purpose:** prove the app handles the target load (path to **200,000 registered users**, ≈10,000–30,000 concurrent at peak) *before* launch, and find where it bends first so you fix that instead of guessing. Turns "should scale" into measured numbers.
 
 _Written July 21, 2026 for the self-hosted stack (React frontend · Deno backend · PostgreSQL, deployed on AWS per `AWS-SCALING-ARCHITECTURE.md`). A developer can run this straight from here._
 
@@ -10,7 +10,7 @@ _Written July 21, 2026 for the self-hosted stack (React frontend · Deno backend
 
 - **Test against a staging environment that mirrors production** (same instance classes, RDS Proxy, Redis, SQS, auto-scaling enabled) — never against live production, and never against a laptop.
 - **Use test/sandbox keys** for Stripe, PayPal, Twilio, OpenAI/SendGrid so you don't spend real money or send real messages. Point payouts at provider sandboxes.
-- **Seed realistic data first:** ~100k user rows, referrals, surveys, leaderboard entries, an active contest. An empty database lies — indexes and query plans behave differently at volume.
+- **Seed realistic data first:** ~200k user rows, referrals, surveys, leaderboard entries, an active contest. An empty database lies — indexes and query plans behave differently at volume.
 - **One variable at a time.** Change one thing (instance size, cache TTL, worker concurrency), re-run, compare.
 
 ## 1. Tooling
@@ -69,7 +69,7 @@ Based on the architecture, watch these in order — they're the likely first fai
 ## 6. Runbook (per cycle)
 
 1. Deploy the current build to staging; enable auto-scaling; confirm dashboards.
-2. Seed/refresh ~100k-scale data.
+2. Seed/refresh ~200k-scale data.
 3. Run **smoke** → fix anything broken.
 4. Run **ramp** → record the knee (capacity number) and the first component to saturate.
 5. Fix the top bottleneck (one change).
@@ -80,7 +80,7 @@ Based on the architecture, watch these in order — they're the likely first fai
 
 ## 7. Deliverable from the test
 
-A one-page result: *"On [instance sizes], the app sustained **N concurrent users** at p95 **X ms** and **<0.5%** errors; first bottleneck was **[component]**, addressed by **[change]**; next ceiling is **[component]** at roughly **M** users."* That sentence — backed by graphs — is what lets you say "handles 100k" honestly.
+A one-page result: *"On [instance sizes], the app sustained **N concurrent users** at p95 **X ms** and **<0.5%** errors; first bottleneck was **[component]**, addressed by **[change]**; next ceiling is **[component]** at roughly **M** users."* That sentence — backed by graphs — is what lets you say "handles 200k" honestly.
 
 ---
 

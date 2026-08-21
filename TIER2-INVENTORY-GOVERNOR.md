@@ -9,7 +9,7 @@ assumptions, not guarantees; not legal advice.*
 Impression inventory is **DAU-limited**: you can only serve as many ad impressions as your daily-active users
 generate. Selling more advertiser allotments than that means under-delivering a promised impression count — a
 breach, and exactly the kind of "we can't substantiate what we sold" problem the compliance posture avoids.
-`FOUNDING_ADVERTISER_SLOTS = 100,000` is a marketing number, not an inventory-backed one; the governor is what
+`FOUNDING_ADVERTISER_SLOTS = 200,000` is a marketing number, not an inventory-backed one; the governor is what
 makes availability real.
 
 ## The model
@@ -61,18 +61,18 @@ for sold impressions, which is why it is intentionally *not* added to `committed
   grows"). Toggle with `INVENTORY_GOVERNOR_ENABLED`.
 - **Sizes availability.** `inventoryStatus` (admin) reports DAU, capacity, committed, remaining, utilization,
   and **how many more Tier 1 / Tier 2 seats fit** right now — a live, inventory-backed replacement for the
-  static 100k slot cap.
+  static 200k slot cap.
 - **Watches delivery.** `fillRate(promisedYear, served, fractionOfYearElapsed)` reports per-advertiser pacing
   (served vs what should be served by now) and flags anyone materially behind (`< 90%`), using the
   `impressions_served` already tracked per advertiser.
 
-## What this means at 100,000 users
+## What this means at 200,000 users
 
-100k *registered* users is not 100k daily-active. At a realistic 25–40% DAU (~25k–40k) and 8 impressions per
-active day, capacity is roughly **62M–99M servable impressions/year**, which supports on the order of **17–28
-concurrent Tier 2 advertisers** (or ~200–330 Tier 1). The system side is already designed for this scale
-(`AWS-SCALING-ARCHITECTURE.md`, `LOAD-TEST-PLAN.md`). So Tier 2 works comfortably at 100k users — the governor
-is what keeps you from selling the 29th Tier 2 seat you couldn't serve, and it opens more automatically as DAU
+200k *registered* users is not 200k daily-active. At a realistic 25–40% DAU (~50k–80k) and 8 impressions per
+active day, capacity is roughly **124M–198M servable impressions/year**, which supports on the order of **35–56
+concurrent Tier 2 advertisers** (or ~410–660 Tier 1). The system side is already designed for this scale
+(`AWS-SCALING-ARCHITECTURE.md`, `LOAD-TEST-PLAN.md`). So Tier 2 works comfortably at 200k users — the governor
+is what keeps you from selling the 57th Tier 2 seat you couldn't serve, and it opens more automatically as DAU
 climbs. (At a tiny audience — e.g. 1,000 DAU — it correctly allows zero Tier 2 seats, since one seat alone
 needs 3.5M/yr.)
 

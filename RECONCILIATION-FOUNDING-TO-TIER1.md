@@ -1,45 +1,51 @@
-# Document Reconciliation — the "Founding Advertiser" offer is now the "Tier 1" offer
+# Founding / Tier 1 Advertising Offer — Canonical Summary & Document Index
 
-**Read this first if any other document still says "Founding Advertiser," "earn your money back," a cap
-"equal to what you paid," escrow/refund milestones, "2x/4x," or "$8/day."** Those describe the **old**
-structure and are **superseded** by the Tier 1 model below. Where any older doc conflicts with this one, **this
-one and `TIER1-OFFER.md` / `FOUNDING-OFFER-LEGAL-REVIEW.md` win.**
+This is the one-page canonical summary of the current founding / Tier 1 advertising offer, plus a pointer to
+the authoritative documents. If any detail elsewhere conflicts with this page, follow `TIER1-OFFER.md` and
+`FOUNDING-OFFER-LEGAL-REVIEW.md`.
 
-## What changed (and why)
+## The offer, in brief
 
-The offer was reworked from the original "Founding Advertiser" design into the clean **Tier 1** offer,
-specifically to remove the features that carried the most legal risk:
+- **Founding Advertiser (Tier 1)** — a limited introductory advertising + membership offer on a closed-loop,
+  18+ play-to-earn / survey-rewards platform.
+- **200,000 founding-advertiser slots.** Open until 200,000 founding advertisers enroll, then it closes and
+  becomes the standard Tier 1 offer at **+30% ($16,900/year)**. Founders keep their founding price for life.
+- **Price — $13,000/year**, billed as **$1,000 every 4 weeks across 13 cycles**, for a **4-year package**.
+- **Advertising — 200,000 impressions/year** across the between-survey and social surfaces, priority placement,
+  delivered **capacity-paced** (guaranteed by amount, not by date; advertising delivered, never revenue/ROI).
+- **Category exclusivity** — each founder is the only founding advertiser in their category.
+- **Included** — premium membership, AI campaign manager + concierge support, AI creative, A/B testing,
+  analytics, sentiment insights, and a **$2,000 Site Cash grant** (non-cashable store credit, released over the
+  term).
+- **Membership survey perk** — keep **100% of your own** third-party survey earnings for 4 years as Site Cash
+  (non-cashable), a better **share** with **no cap** and **no promised amount**, not a return of the price;
+  reverts to the standard 75% share afterward or for post-close members.
+- **Two launch gates** — full delivery is gated on **200,000 founding advertisers AND a separate 200,000
+  premium-user pool** (see `ADVERTISER-FUNDED-LAUNCH.md`).
+- **Funds model — presale** (non-refundable, disclosed); escrow/hybrid supported by the same code.
 
-| Old "Founding Advertiser" | New **Tier 1** (current) |
-|---|---|
-| Keep 100% "up to a cap **equal to the amount you paid**, over 4 years" | Keep 100% of your **own** survey earnings for 4 years — a **rate**, **no cap**, **not** tied to the price |
-| Framed as recoup / "earn your money back" | **No recoup framing anywhere.** A separate membership perk, not a return |
-| Escrow + **refund milestone** (refund if user target missed) | **No escrow/refund milestone.** Non-refundable presale; records ACTIVE immediately |
-| "$8/day," "8 minutes," "2x/4x" earnings figures | **No stated earnings amount.** Perk is a **share**, availability/earnings vary, nothing promised |
-| One paid path | **Three paths:** pay $8k upfront · **no-upfront** (4-yr participation) · **free earn-to-unlock** |
+**Nobody owes anything in any tier.** Alongside the paid founding path there are participation paths — a
+no-upfront path and a free earn-to-unlock path (`FREE-EARN-TO-UNLOCK-TIER-SPEC.md`) — which are delivery
+schedules, never debts: stop anytime, owe nothing, no penalty.
 
-**Availability:** Tier 1 is an introductory offer, open until **100,000 Tier 1 advertisers** enroll, then it
-closes; after close new members keep the **post-Tier-1 share** (default 75%; platform fee 25%, admin-tunable).
+## The authoritative documents
 
-**Nobody owes anything in any tier.** The no-upfront and free tiers are participation programs (delivery
-schedules), never debts — stop anytime, owe nothing, no penalty.
-
-## The authoritative documents (use these)
-
-- **`TIER1-OFFER.md`** — what the offer is, the value stack, the three paths.
-- **`FOUNDING-OFFER-LEGAL-REVIEW.md`** — the counsel review packet (titled "Tier 1 Advertising Offer"). In
-  *00 - Lawyer Packet* and *01 - Legal & Compliance*.
-- **`FREE-EARN-TO-UNLOCK-TIER-SPEC.md`** — the free/earn-to-unlock + no-upfront tiers, weighted referrals,
-  the $5→$8k internal LTV tracker, the required (exposure-only) invite step, the 4-year participation term.
-- **`REFERRAL-CONTACT-INVITE.md`** — the compliant contact-invite + AI copy flow (user's own apps send;
-  server never stores contacts; no mandatory recruitment).
-- **`ADVERTISER-FUNDED-LAUNCH.md`** — strategy doc; its top box is the current Tier 1 summary.
+- **`TIER1-OFFER.md`** — what the offer is, the value stack, the paths.
+- **`FOUNDING-OFFER-LEGAL-REVIEW.md`** — the counsel review packet. In *00 - Lawyer Packet* and *01 - Legal &
+  Compliance*.
+- **`FOUNDING-PRE-REVENUE-OFFER-AND-TIER1-SPEC.md`** — the two-phase founding → Tier 1 spec (200k cap, +30%
+  close, category exclusivity, capacity-paced delivery disclosure).
+- **`ADVERTISER-FUNDED-LAUNCH.md`** — the strategy + what's coded, including the separate 200,000-user pool.
+- **`FREE-EARN-TO-UNLOCK-TIER-SPEC.md`** — the free/earn-to-unlock + no-upfront paths, weighted referrals, the
+  participation term.
+- **`REFERRAL-CONTACT-INVITE.md`** — the compliant contact-invite flow (user's own apps send; server never
+  stores contacts; no mandatory recruitment).
 
 ## Compliance line that governs all of the above
 
 Nothing launches and no money is collected until qualified counsel reviews the offer and every line of
-member-facing copy. Held throughout: no guaranteed return, no recoup/return-of-capital, no stated earnings
-amount, no consumer-credit/debt, no mandatory recruitment (referrals accelerate but are never required), and
-the contact-invite is user-sent from their own device (never a server-side blast). *Not legal advice.*
-
-*Generated 2026-08-05 for GamerGain 25. Repo tip at reconciliation: `7762c3a`.*
+member-facing copy. Held throughout: no guaranteed return, no recoup / return-of-capital, no stated earnings
+amount, no promised delivery date or ROI (delivery is capacity-paced, by amount), no consumer-credit/debt, no
+mandatory recruitment (referrals accelerate but are never required), and the contact-invite is user-sent from
+their own device (never a server-side blast). Site Cash — including the $2,000 grant — is closed-loop and
+non-cashable. *Not legal advice.*

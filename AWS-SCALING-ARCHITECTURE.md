@@ -1,6 +1,6 @@
 # GamerGain / PlayEarning Nexus — AWS Scaling Architecture (one-pager)
 
-**Goal:** run the self-hosted stack on AWS so it comfortably serves **100,000 registered users** (≈5,000–15,000 concurrent at peak) with auto-scaling, without the database or third-party providers becoming the ceiling.
+**Goal:** run the self-hosted stack on AWS so it comfortably serves **200,000 registered users** (≈10,000–30,000 concurrent at peak) with auto-scaling, without the database or third-party providers becoming the ceiling.
 
 _Written July 21, 2026 for the current self-hosted stack (React frontend · Deno backend in `/backend` · PostgreSQL). A developer can build straight from this. No Base44._
 
@@ -47,7 +47,7 @@ _Written July 21, 2026 for the current self-hosted stack (React frontend · Deno
 
 ## Components, sizing, and why (build list)
 
-| Layer | AWS service | Start-at sizing for 100k | Why it's here |
+| Layer | AWS service | Start-at sizing for 200k | Why it's here |
 |---|---|---|---|
 | **Frontend / CDN** | **CloudFront** + S3 origin | default | Serves the static React `dist/` globally and offloads all asset traffic from the backend. Set the SPA fallback: 403/404 → `/index.html` (200). |
 | **Load balancer** | **ALB** + ACM cert | 1 | TLS termination, health checks (`/health`), routes to the Fargate service. |
@@ -81,12 +81,12 @@ _Written July 21, 2026 for the current self-hosted stack (React frontend · Deno
 ## The three things auto-scaling does NOT fix (address these on purpose)
 
 1. **Database write ceiling.** One primary handles all writes. Mitigate with RDS Proxy (pooling), read replicas (offload reads), and query tuning on the JSONB/GIN tables for heavy write/aggregate paths (mass payouts, analytics sweeps).
-2. **Hot-read pressure.** The 15-second prize-pool poll × 100k users is a self-inflicted DDoS if it hits Postgres. It must be served from Redis.
+2. **Hot-read pressure.** The 15-second prize-pool poll × 200k users is a self-inflicted DDoS if it hits Postgres. It must be served from Redis.
 3. **Third-party provider limits.** OpenAI/Anthropic, SendGrid, Twilio, Stripe rate limits live in *your* accounts. More containers = more pressure on them. The SQS + worker pattern turns that into a managed queue; raising provider tiers raises the drain rate.
 
 ---
 
-## Cost sketch (order of magnitude, USD/month, at real 100k-scale usage)
+## Cost sketch (order of magnitude, USD/month, at real 200k-scale usage)
 
 - RDS Postgres (Multi-AZ `r6g.xlarge` + replica): ~$700–1,200
 - ECS Fargate (web + worker, auto-scaled): ~$300–1,200
@@ -94,6 +94,8 @@ _Written July 21, 2026 for the current self-hosted stack (React frontend · Deno
 - ALB + CloudFront + S3 + data transfer: ~$150–500
 - **Provider usage (LLM/SMS/email/payments): usage-based and often the largest line** — this scales with engagement, not infra, and is the main reason to cache and queue aggressively.
 - **Infra floor at this scale: ~$1,500–3,500/mo**, plus provider usage on top. (Early launch on minimal sizing is far lower — see `BASE44-MIGRATION-PLAN.md`.)
+
+> These bands are order-of-magnitude. At 200k (vs the original 100k baseline) the database and compute sit toward the **upper end of each range**, or one instance size up on RDS (e.g. `r6g.2xlarge`). The application code is already hardened for this scale (`SCALE-READINESS.md`); recompute exact sizing from Step 9's measured numbers before committing.
 
 ---
 
@@ -109,4 +111,4 @@ _Written July 21, 2026 for the current self-hosted stack (React frontend · Deno
 8. Configure **auto-scaling policies** (above) and **CloudWatch alarms**.
 9. **Run the load-test plan** (`LOAD-TEST-PLAN.md`) → resize from real numbers before launch.
 
-> This is a projection from the architecture, not a measured result. Step 9 is what turns "should handle 100k" into "handles 100k."
+> This is a projection from the architecture, not a measured result. Step 9 is what turns "should handle 200k" into "handles 200k."

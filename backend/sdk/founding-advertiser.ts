@@ -10,7 +10,7 @@
 //      to the advertising price. It is a better earning RATE (a share), never a recoup of the payment.
 //
 // AVAILABILITY: Tier 1 is an introductory offer, OPEN until a set number of Tier 1 advertisers enroll
-//   (FOUNDING_ADVERTISER_SLOTS, default 100,000), then it CLOSES. A member who joins AFTER it closes keeps
+//   (FOUNDING_ADVERTISER_SLOTS, default 200,000), then it CLOSES. A member who joins AFTER it closes keeps
 //   only the post-Tier-1 share (TIER1_POST_SURVEY_SHARE_PCT, default 0.75 = 75%; platform fee 25%). Existing
 //   Tier 1 members are unaffected. After signup, members may be offered additional advertising/spend upsells.
 //
@@ -114,8 +114,8 @@ export const foundingImpressionsPerYear = () => Math.max(0, snapNumber("FOUNDING
 export const foundingInterstitialPriority = () => snapBool("FOUNDING_INTERSTITIAL_PRIORITY", true);
 export const foundingAutoEnrollMember = () => snapBool("FOUNDING_AUTO_ENROLL_MEMBER", true);
 export const foundingEscrowRequired = () => snapBool("FOUNDING_ESCROW_REQUIRED", true);
-export const foundingMilestonePremiumUsers = () => Math.max(0, snapNumber("FOUNDING_LAUNCH_MILESTONE_PREMIUM_USERS", 100000));
-export const foundingMilestoneFounders = () => Math.max(0, snapNumber("FOUNDING_LAUNCH_MILESTONE_FOUNDERS", 100000));
+export const foundingMilestonePremiumUsers = () => Math.max(0, snapNumber("FOUNDING_LAUNCH_MILESTONE_PREMIUM_USERS", 200000));
+export const foundingMilestoneFounders = () => Math.max(0, snapNumber("FOUNDING_LAUNCH_MILESTONE_FOUNDERS", 200000));
 /** Members are NEVER auto-charged for an earnings shortfall — this is coded off and must stay off. */
 export const memberShortfallChargeEnabled = () => snapBool("FOUNDING_MEMBER_SHORTFALL_CHARGE", false);
 export const foundingMilestoneDeadline = () => snapString("FOUNDING_LAUNCH_MILESTONE_DEADLINE", "");
@@ -383,7 +383,7 @@ export interface MilestoneState {
   past_deadline: boolean;
 }
 
-/** Evaluate the launch milestone — requires BOTH 100k premium users AND 100k founding members.
+/** Evaluate the launch milestone — requires BOTH 200k premium users AND 200k founding advertisers.
  *  `todayISO` is passed in (Deno has the clock; keep this pure/testable). */
 export async function milestoneState(todayISO: string): Promise<MilestoneState> {
   const target = foundingMilestonePremiumUsers();
