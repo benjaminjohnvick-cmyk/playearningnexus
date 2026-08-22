@@ -475,6 +475,12 @@ export function foundingDisclosures() {
     no_shortfall_charge:
       "You will NEVER be charged for 'falling short' of any earnings amount. There is no required earnings " +
       "figure and no card charge tied to survey results.",
+    tier_auto_advance:
+      "TIER PROGRESSION (please read): your package renews yearly with a one-tap 'see your results and agree,' " +
+      "and — unless you opt out — if your MEASURED advertising ROI reaches your threshold, we will advance you " +
+      "to the next tier (Tier 1 → Tier 2 → Tier 3) over up to 5 years. Advancing means a higher price for the " +
+      "larger tier; we always send an advance notice first that you can decline, and you can turn auto-advance " +
+      "off anytime. This reacts to MEASURED results — it is never a guarantee of any ROI.",
     effort_note:
       "Surveys take a few minutes each when they are available. We are deliberately NOT stating a per-day or " +
       "per-minute earnings figure, because your earnings depend entirely on your own activity and on survey " +

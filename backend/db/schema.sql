@@ -3902,3 +3902,15 @@ CREATE TABLE IF NOT EXISTS "SocialAmplificationEvent" (
 );
 CREATE INDEX IF NOT EXISTS "SocialAmplificationEvent_data_gin" ON "SocialAmplificationEvent" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "SocialAmplificationEvent_created" ON "SocialAmplificationEvent" (created_date DESC);
+
+
+-- TierProgressionEvent: renewal offers, advance notices/applies, completions (see sdk/tier-progression.ts)
+CREATE TABLE IF NOT EXISTS "TierProgressionEvent" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "TierProgressionEvent_data_gin" ON "TierProgressionEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "TierProgressionEvent_created" ON "TierProgressionEvent" (created_date DESC);

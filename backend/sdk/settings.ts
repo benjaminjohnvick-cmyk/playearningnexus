@@ -896,6 +896,30 @@ export const REGISTRY: SettingDef[] = [
   { key: "SOCIAL_AMP_MAX_REACH_PER_USER", label: "Social Amplification — max reach / user", category: "Social Amplification", type: "number", default: "50000", unit: "followers", help: "Cap the reach counted from any single member so one large account can't distort delivered value. 0 = no cap.", min: 0 },
   { key: "SOCIAL_AMP_WEEKLY_POSTS_PER_USER", label: "Social Amplification — weekly posts / user", category: "Social Amplification", type: "number", default: "7", unit: "posts", help: "How many amplified ads one member may be credited for per 7-day window (frequency cap). 0 = no cap.", min: 0 },
 
+
+  // ── Tier Progression — one-tap renewal + opt-in auto-advance up the ladder over up to 5 years (tier-progression.ts). ──
+  { key: "TIER_PROGRESSION_ENABLED", label: "Tier progression — enabled", category: "Tier Progression", type: "boolean", default: "1", help: "Master switch for one-tap renewal + auto-advance across advertiser tiers." },
+  { key: "TIER_MAX_TOTAL_YEARS", label: "Progression — max total years", category: "Tier Progression", type: "number", default: "5", unit: "years", help: "Hard cap on total years an advertiser can progress across all tiers.", min: 1 },
+  { key: "TIER12_MAX_YEARS", label: "Progression — Tier 1+2 combined years", category: "Tier Progression", type: "number", default: "2", unit: "years", help: "Combined cap on years spent across Tier 1 and Tier 2 before Tier 3.", min: 1 },
+  { key: "TIER3_MAX_YEARS", label: "Progression — Tier 3 years", category: "Tier Progression", type: "number", default: "3", unit: "years", help: "Cap on years at Tier 3.", min: 1 },
+  { key: "TIER_RENEWAL_ROAS_BASELINE", label: "Renewal — min measured ROAS", category: "Tier Progression", type: "number", default: "1.0", help: "Minimum MEASURED ROAS for a renewal to be shown as 'going well'. Measured, never guaranteed.", min: 0 },
+  { key: "TIER_RENEWAL_DELIVERY_PCT", label: "Renewal — min delivered fraction", category: "Tier Progression", type: "number", default: "0.85", help: "Minimum delivered fraction of guaranteed advertising for 'on track' (0.85 = 85%).", min: 0 },
+  { key: "TIER_AUTOADVANCE_DEFAULT_OPT_IN", label: "Auto-advance — default opt-in", category: "Tier Progression", type: "boolean", default: "1", help: "ON by default (owner decision, pending counsel review): advertisers are auto-opted-in to advance to the next tier when their MEASURED ROAS threshold is met, unless they explicitly opt out. Auto-charging a higher-priced tier by default is a negative-option-billing risk — CONFIRM WITH COUNSEL, and set this to 0 if not approved. Each advance still fires a pre-charge notice the advertiser can decline." },
+  { key: "TIER_AUTOADVANCE_DEFAULT_ROAS", label: "Auto-advance — default ROAS threshold", category: "Tier Progression", type: "number", default: "2.0", help: "Default MEASURED ROAS an advertiser must reach to auto-advance (they can set their own). Measured, never guaranteed.", min: 0 },
+  { key: "TIER_PROGRESSION_NOTICE_DAYS", label: "Progression — advance notice (days)", category: "Tier Progression", type: "number", default: "30", unit: "days", help: "Days of advance notice before a renewal OR an auto-advance charge (auto-renewal law / click-to-cancel).", min: 0 },
+
+
+  // ── Ad Branding — Get Goods Gratis watermark + website link on every ad, all tiers (ad-branding.ts). ──
+  { key: "AD_BRANDING_ENABLED", label: "Ad branding — enabled", category: "Ad Branding", type: "boolean", default: "1", help: "Stamp the house brand (logo watermark + website link) on every served/posted ad, across all three tiers." },
+  { key: "AD_WATERMARK_ENABLED", label: "Ad branding — watermark", category: "Ad Branding", type: "boolean", default: "1", help: "Show the Get Goods Gratis logo as a soft watermark behind each ad." },
+  { key: "AD_WATERMARK_LOGO_URL", label: "Ad branding — watermark logo URL", category: "Ad Branding", type: "string", default: "/gg-logo-mark.svg", help: "Path/URL to the logo used as the behind-the-ad watermark." },
+  { key: "AD_WATERMARK_OPACITY", label: "Ad branding — watermark opacity", category: "Ad Branding", type: "number", default: "0.12", help: "Watermark opacity 0..1 (soft by default so it sits behind the ad).", min: 0 },
+  { key: "AD_WATERMARK_SCALE_PCT", label: "Ad branding — watermark scale", category: "Ad Branding", type: "number", default: "0.7", help: "Watermark size as a fraction of the ad's shorter side (0.1..1).", min: 0 },
+  { key: "AD_WEBSITE_LINK_ENABLED", label: "Ad branding — website link", category: "Ad Branding", type: "boolean", default: "1", help: "Show a clickable website link at the top of each ad." },
+  { key: "AD_WEBSITE_URL", label: "Ad branding — website URL", category: "Ad Branding", type: "string", default: "https://getgoodsgratis.com", help: "The website each ad links to at the top." },
+  { key: "AD_WEBSITE_LABEL", label: "Ad branding — website label", category: "Ad Branding", type: "string", default: "getgoodsgratis.com", help: "The visible text for the top website link." },
+  { key: "AD_BRAND_NAME", label: "Ad branding — brand name", category: "Ad Branding", type: "string", default: "Get Goods Gratis", help: "Brand name used in alt text / labels." },
+
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

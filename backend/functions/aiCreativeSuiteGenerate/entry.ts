@@ -5,6 +5,7 @@ import {
   normalizeTier, creativeSuiteTierCaps, adFormat, formatAllowed,
   screenCreative, scoreCreative, playbookFor, generationsRemaining, allFormatKeys,
 } from "../../sdk/creative-suite.ts";
+import { adBranding, watermarkImageHint } from "../../sdk/ad-branding.ts";
 
 // aiCreativeSuiteGenerate — the "generate" step of the AI Creative Suite. One brief → compliant, brand-aligned
 // variants across every requested ad format, biased by the advertiser's self-learning playbook, each
@@ -106,7 +107,7 @@ For EACH creative return: headline, body, cta, and an attributes object tagging:
         let image_url: string | null = null;
         if (compliant && wantImages && (spec.medium === "image" || spec.medium === "video") && v.image_prompt) {
           const img = await base44.asServiceRole.integrations.Core.GenerateImage({
-            prompt: `${v.image_prompt}. ${spec.width && spec.height ? `Composition sized for ${spec.width}x${spec.height}.` : ""} No text overlays claiming guaranteed money/returns.`,
+            prompt: `${v.image_prompt}. ${spec.width && spec.height ? `Composition sized for ${spec.width}x${spec.height}.` : ""} No text overlays claiming guaranteed money/returns.${watermarkImageHint()}`,
           }).catch(() => ({ url: null }));
           image_url = img?.url ?? null;
         }
@@ -116,6 +117,7 @@ For EACH creative return: headline, body, cta, and an attributes object tagging:
           headline: v.headline ?? "", body: v.body ?? "", cta: v.cta ?? "",
           image_prompt: v.image_prompt ?? null, image_url,
           attributes: attrs, score, compliant, violations: screen.violations,
+          branding: adBranding(),   // Get Goods Gratis watermark + website link, stamped on every ad (all tiers)
           status: compliant ? "draft" : "blocked",
           impressions: 0, clicks: 0, created_at: new Date().toISOString(),
         };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import BrandedAd from '@/components/branding/BrandedAd';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -258,7 +259,11 @@ export default function CreativeStudio() {
               const isPicked = picked.includes(c.id);
               return (
                 <Card key={c.id || i} className={`overflow-hidden transition ${isPicked ? 'ring-2' : ''}`} style={isPicked ? { boxShadow: `0 0 0 2px ${GOLD}` } : {}}>
-                  {c.image_url && <img src={c.image_url} alt="" className="w-full h-36 object-cover" />}
+                  <BrandedAd branding={c.branding}>
+                    {c.image_url
+                      ? <img src={c.image_url} alt="" className="w-full h-36 object-cover" />
+                      : <div className="w-full h-24 flex items-center justify-center text-xs text-slate-500 px-3 text-center bg-slate-50">{c.headline}</div>}
+                  </BrandedAd>
                   <CardContent className="p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <Badge variant="outline" className="text-[10px]">{c.format}</Badge>

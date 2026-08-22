@@ -87,7 +87,7 @@ for (const tName of AT_SORTED_TABLES) {
 
 // ── Manual tables not derived from a Base44 entity file ─────────────────────────────────────────────────
 // CreativeAsset backs the AI Creative Suite (sdk/creative-suite.ts): generated ad variants + live performance.
-const MANUAL_TABLES = ['CreativeAsset', 'SurveyDraft', 'SocialAmplificationEvent'];
+const MANUAL_TABLES = ['CreativeAsset', 'SurveyDraft', 'SocialAmplificationEvent', 'TierProgressionEvent'];
 for (const tName of MANUAL_TABLES) {
   sql += `\n-- ${tName} (manual — see sdk/creative-suite.ts)\n`;
   sql += `CREATE TABLE IF NOT EXISTS "${tName}" (\n  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,\n  created_date timestamptz NOT NULL DEFAULT now(),\n  updated_date timestamptz NOT NULL DEFAULT now(),\n  created_by   text,\n  data         jsonb NOT NULL DEFAULT '{}'::jsonb\n);\n`;

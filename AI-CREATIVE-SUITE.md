@@ -122,3 +122,14 @@ rest of the system is careful never to make.
 An advertiser-facing **Creative Studio** page (brief box → generated variants gallery with scores →
 one-click A/B launch → live playbook + recommendations) is the natural front-end for these endpoints. Say the
 word and it's the next build.
+
+## House branding on every ad (all tiers)
+
+Every generated ad — across Tier 1, 2, and 3 — carries the **Get Goods Gratis** house branding for brand
+recognition: the logo as a **soft watermark behind the ad**, and a **clickable website link at the top**
+(`getgoodsgratis.com`). Configured in `backend/sdk/ad-branding.ts` (all `AD_BRANDING_*` / `AD_WATERMARK_*` /
+`AD_WEBSITE_*` settings): logo URL, opacity, scale, website URL/label, each toggleable. `aiCreativeSuiteGenerate`
+attaches a `branding` block to every creative (`applyBranding`/`adBranding`) and nudges the image generator to
+leave clean space for the watermark; the frontend `src/components/branding/BrandedAd.jsx` renders the top link
++ behind-the-ad watermark and can wrap any ad surface (it's used in the Creative Studio preview). Unit-tested in
+`ad-branding.test.ts`.
