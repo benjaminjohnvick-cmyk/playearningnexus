@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2, X } from 'lucide-react';
+import BrandedAd from '@/components/branding/BrandedAd';
 
 /**
  * SurveyInterstitialAd — the mandatory ~30-second ad shown BETWEEN surveys for non-premium users
@@ -54,11 +55,13 @@ export default function SurveyInterstitialAd({ onDone }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl max-w-sm w-full overflow-hidden shadow-2xl">
-        <div className="relative aspect-video bg-slate-900 flex items-center justify-center text-center">
-          {ad?.image_url
-            ? <img src={ad.image_url} alt={ad.title || 'Ad'} className="w-full h-full object-cover" />
-            : <div className="text-white p-6"><div className="text-lg font-semibold">{ad?.title || 'Sponsored'}</div><div className="text-white/70 text-sm mt-1">Premium members skip these ads.</div></div>}
-          <div className="absolute top-2 right-2 text-[11px] bg-black/60 text-white rounded-full px-2 py-0.5">
+        <div className="relative">
+          <BrandedAd branding={ad?.branding}>
+            {ad?.image_url
+              ? <img src={ad.image_url} alt={ad.title || 'Ad'} className="w-full aspect-video object-cover" />
+              : <div className="aspect-video bg-slate-900 flex flex-col items-center justify-center text-center text-white p-6"><div className="text-lg font-semibold">{ad?.title || 'Sponsored'}</div><div className="text-white/70 text-sm mt-1">Premium members skip these ads.</div></div>}
+          </BrandedAd>
+          <div className="absolute top-2 right-2 z-10 text-[11px] bg-black/60 text-white rounded-full px-2 py-0.5">
             {done ? 'Ready' : `${left}s`}
           </div>
         </div>

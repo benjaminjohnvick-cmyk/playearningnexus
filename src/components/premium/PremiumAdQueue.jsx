@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Copy, Check, X, Send, Megaphone, ExternalLink, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { composeMode, prefillUrl, canNativeShare, openUrl, primaryActionLabel } from '@/lib/socialCompose';
+import BrandedAd from '@/components/branding/BrandedAd';
 
 // PremiumAdQueue — the member reviews AI-generated, #ad-labeled ad posts. The primary action gets them
 // as close to "just hit Post" as the platform allows: open the platform's OWN composer with the text
@@ -99,7 +100,10 @@ export default function PremiumAdQueue() {
                 <Badge variant="secondary" className="capitalize">{p.platform}</Badge>
                 <Badge variant="outline" className="text-[10px]">{p.post_type === 'platform_own_ad' ? 'Our business' : 'Advertiser'}</Badge>
               </div>
-              <p className="whitespace-pre-wrap text-sm text-gray-800">{p.content}</p>
+              <BrandedAd branding={p.branding} className="mb-1 border">
+                {p.image_url && <img src={p.image_url} alt="" className="w-full max-h-40 object-cover" />}
+                <p className="whitespace-pre-wrap text-sm text-gray-800 p-2">{p.content}</p>
+              </BrandedAd>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Button size="sm" onClick={() => sendAd(p)}>
                   {composeMode(p.platform) === 'share' && canNativeShare()
