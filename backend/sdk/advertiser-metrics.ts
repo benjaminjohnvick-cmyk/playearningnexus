@@ -10,6 +10,8 @@
 import { db } from "./db.ts";
 import { snapNumber, snapBool } from "./settings.ts";
 import { attributedSalesUsd } from "./earned-advertiser.ts";
+import { socialImpressionsForAdvertiser } from "./social-amplification.ts";
+import { impressionsValueUsd, fvgCpmUsd } from "./full-value-guarantee.ts";
 
 const r2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 const pct2 = (n: number) => Math.round((Number(n) || 0) * 10000) / 100; // fraction -> % w/ 2dp
@@ -52,6 +54,14 @@ export interface AdvertiserMetrics {
   social_clicks: number;
   social_revenue_usd: number;
   engagement_events: number;
+  // User-amplified social advertising — members posting the advertiser's AI ads (all tiers). ESTIMATED from
+  // reach × view-rate, MEASURED per confirmed post; adds to delivered ad value + the social-inclusive ROI.
+  social_reach: number;              // total follower reach of members who posted this advertiser's ads
+  social_impressions: number;        // estimated impressions from that reach (reach × view-rate)
+  total_impressions_incl_social: number;   // on-platform impressions + estimated social impressions
+  delivered_value_usd: number;       // "ad value" delivered = total impressions (incl. social) × CPM
+  revenue_incl_social_usd: number;   // measured revenue + social-attributed revenue
+  roas_incl_social: number;          // revenue_incl_social / spend (still MEASURED, never guaranteed)
   // Substantiation
   substantiated: boolean;           // enough data to trust the ratios
   basis: string;                    // one-line description of what the numbers rest on
@@ -109,6 +119,14 @@ export async function computeAdvertiserMetrics(advertiserUserId: string, windowD
     engagement = win.reduce((s, p) => s + (Number(p.engagement) || Number(p.likes) || 0), 0);
   } catch { /* optional */ }
 
+  // User-amplified social advertising: estimated impressions + $ value delivered by members posting this
+  // advertiser's AI ads (all tiers). Additive to the delivered ad value + a social-inclusive ROI; base fields
+  // above stay on-platform-measured so the pay-from-results rev-share is unaffected.
+  const socialAmp = await socialImpressionsForAdvertiser(db, uid, sinceISO).catch(() => ({ posts: 0, reach: 0, impressions: 0, value_usd: 0 }));
+  const totalImpressionsInclSocial = impressions + socialAmp.impressions;
+  const deliveredValueUsd = impressionsValueUsd(totalImpressionsInclSocial, fvgCpmUsd());
+  const revenueInclSocial = r2(revenue + socialRevenue);
+
   const ctr = impressions > 0 ? clicks / impressions : 0;
   const convRate = clicks > 0 ? conversions / clicks : 0;
   const roas = spend > 0 ? revenue / spend : 0;
@@ -122,6 +140,9 @@ export async function computeAdvertiserMetrics(advertiserUserId: string, windowD
     conv_rate_pct: pct2(convRate), cpa_usd: conversions > 0 ? r2(spend / conversions) : 0,
     roas: r2(roas), roi_pct: spend > 0 ? pct2((revenue - spend) / spend) : 0,
     social_posts: socialPosts, social_clicks: socialClicks, social_revenue_usd: socialRevenue, engagement_events: engagement,
+    social_reach: socialAmp.reach, social_impressions: socialAmp.impressions,
+    total_impressions_incl_social: totalImpressionsInclSocial, delivered_value_usd: deliveredValueUsd,
+    revenue_incl_social_usd: revenueInclSocial, roas_incl_social: spend > 0 ? r2(revenueInclSocial / spend) : 0,
     substantiated,
     basis: substantiated
       ? `${impressions.toLocaleString()} impressions, ${clicks.toLocaleString()} clicks over ${windowDays}d (on-platform measured${offIncluded ? " + connected off-platform revenue" : ""}).`

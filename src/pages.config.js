@@ -129,7 +129,10 @@ import CreativeStudio from './pages/CreativeStudio';
 
 import SurveyStudio from './pages/SurveyStudio';
 
+import JoinAndConnect from './pages/JoinAndConnect';
+
 export const PAGES = {
+    "JoinAndConnect": JoinAndConnect,
     "SurveyStudio": SurveyStudio,
     "CreativeStudio": CreativeStudio,
     "AIAgents": AIAgents,

@@ -3889,3 +3889,16 @@ CREATE TABLE IF NOT EXISTS "SurveyDraft" (
 );
 CREATE INDEX IF NOT EXISTS "SurveyDraft_data_gin" ON "SurveyDraft" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "SurveyDraft_created" ON "SurveyDraft" (created_date DESC);
+
+
+-- SocialAmplificationEvent: a member posted an advertiser's AI social ad; carries reach -> est impressions ->
+-- $ value that adds to the advertiser's delivered ad value (see sdk/social-amplification.ts)
+CREATE TABLE IF NOT EXISTS "SocialAmplificationEvent" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SocialAmplificationEvent_data_gin" ON "SocialAmplificationEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SocialAmplificationEvent_created" ON "SocialAmplificationEvent" (created_date DESC);

@@ -886,6 +886,16 @@ export const REGISTRY: SettingDef[] = [
   { key: "SURVEY_SUITE_TRANSLATION_ENABLED", label: "Survey Suite — translation", category: "AI Survey Suite", type: "boolean", default: "1", help: "Allow AI translation/localization of surveys." },
   { key: "SURVEY_SUITE_CONVERSATIONAL_ENABLED", label: "Survey Suite — conversational follow-up", category: "AI Survey Suite", type: "boolean", default: "1", help: "Allow AI conversational follow-up probes + response theme summaries in reports." },
 
+
+  // ── Social Amplification — user-amplified social ads count toward delivered ad value (see social-amplification.ts). ──
+  { key: "SOCIAL_AMP_ENABLED", label: "Social Amplification — enabled", category: "Social Amplification", type: "boolean", default: "1", help: "Master switch: distribute AI social ads to consenting members and count their reach as delivered advertising value." },
+  { key: "SOCIAL_AMP_TIER1_ENABLED", label: "Social Amplification — Tier 1", category: "Social Amplification", type: "boolean", default: "1", help: "Enable user-amplified social distribution for Tier 1 advertisers." },
+  { key: "SOCIAL_AMP_TIER2_ENABLED", label: "Social Amplification — Tier 2", category: "Social Amplification", type: "boolean", default: "1", help: "Enable user-amplified social distribution for Tier 2 advertisers." },
+  { key: "SOCIAL_AMP_TIER3_ENABLED", label: "Social Amplification — Tier 3", category: "Social Amplification", type: "boolean", default: "1", help: "Enable user-amplified social distribution for Tier 3 advertisers." },
+  { key: "SOCIAL_AMP_VIEW_RATE", label: "Social Amplification — view rate", category: "Social Amplification", type: "number", default: "0.30", help: "Fraction of a poster's followers estimated to actually SEE the post → estimated impressions. Conservative so counted value is substantiated (organic reach << follower count).", min: 0 },
+  { key: "SOCIAL_AMP_MAX_REACH_PER_USER", label: "Social Amplification — max reach / user", category: "Social Amplification", type: "number", default: "50000", unit: "followers", help: "Cap the reach counted from any single member so one large account can't distort delivered value. 0 = no cap.", min: 0 },
+  { key: "SOCIAL_AMP_WEEKLY_POSTS_PER_USER", label: "Social Amplification — weekly posts / user", category: "Social Amplification", type: "number", default: "7", unit: "posts", help: "How many amplified ads one member may be credited for per 7-day window (frequency cap). 0 = no cap.", min: 0 },
+
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));
