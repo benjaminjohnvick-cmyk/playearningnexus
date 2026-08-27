@@ -1,14 +1,20 @@
-# GitHub Actions — build & sign the Capacitor Android app bundle (.aab) in the cloud.
+# GitHub Actions — build & (optionally) sign the Capacitor Android app bundle (.aab) in the cloud.
 # No Android Studio, no local machine needed — Android builds on a free Linux runner.
 #
-# Install: copy to `.github/workflows/android-build.yml`.
+# ── HOW THIS RUNS ──────────────────────────────────────────────────────────────────────────────
+# MANUAL ONLY. This workflow does NOT run on pushes — it only runs when you start it yourself from
+# the Actions tab (Actions → "Android Build & Play" → "Run workflow"). That's deliberate: the repo is
+# wrapper-only (the android/ project is regenerated at build time and there's no signing keystore yet),
+# so there is nothing for an automatic build to accomplish, and an automatic build would just email you
+# a failure on every push. Run it by hand when you actually want an .aab.
 #
-# Required repo Secrets (Settings → Secrets and variables → Actions):
+# ── Optional repo Secrets for a Play-ready SIGNED build (Settings → Secrets and variables → Actions) ──
 #   ANDROID_KEYSTORE_BASE64  - your upload keystore, base64-encoded (see one-time step below)
 #   ANDROID_KEYSTORE_PASSWORD
 #   ANDROID_KEY_ALIAS
 #   ANDROID_KEY_PASSWORD
 #   (optional) PLAY_SERVICE_ACCOUNT_JSON - Google Play service-account JSON to auto-upload
+# With NO secrets set, the run still succeeds and produces a downloadable UNSIGNED .aab.
 #
 # ── ONE-TIME: create the upload keystore (runs on ANY machine with a JDK — no Android Studio) ──
 #   keytool -genkeypair -v -keystore upload.keystore -alias upload \
@@ -19,9 +25,10 @@
 name: Android Build & Play
 
 on:
-  workflow_dispatch:          # run manually from the Actions tab
-  push:
-    branches: [ android-release ]
+  workflow_dispatch:          # MANUAL ONLY — start it from the Actions tab. No push triggers.
+
+permissions:
+  contents: read
 
 jobs:
   build-android:
@@ -40,7 +47,7 @@ jobs:
 
       - name: Install deps & build web
         run: |
-          npm install --ignore-scripts
+          npm install --no-audit --no-fund
           npm run build
 
       - name: Add & sync Capacitor Android
@@ -60,8 +67,10 @@ jobs:
       # which skips gracefully when its secrets aren't wired yet).
       - name: Check for signing keystore
         id: signing
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
+          if [ -n "$KS" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -70,18 +79,24 @@ jobs:
 
       - name: Decode the upload keystore
         if: steps.signing.outputs.ready == 'true'
-        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > $RUNNER_TEMP/upload.keystore
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: echo "$KS" | base64 -d > $RUNNER_TEMP/upload.keystore
 
       - name: Build SIGNED AAB (release)
         if: steps.signing.outputs.ready == 'true'
         working-directory: android
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
           ./gradlew bundleRelease \
             -Pandroid.injected.signing.store.file=$RUNNER_TEMP/upload.keystore \
-            -Pandroid.injected.signing.store.password="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
-            -Pandroid.injected.signing.key.alias="${{ secrets.ANDROID_KEY_ALIAS }}" \
-            -Pandroid.injected.signing.key.password="${{ secrets.ANDROID_KEY_PASSWORD }}"
+            -Pandroid.injected.signing.store.password="$KS_PASS" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASS"
 
       - name: Build UNSIGNED AAB (release) — no keystore configured
         if: steps.signing.outputs.ready != 'true'
