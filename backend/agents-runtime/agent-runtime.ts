@@ -54,7 +54,17 @@ function fn(name: string, description: string, props: Record<string, unknown>, r
 // different shapes, so the loop below is written provider-agnostically and the two
 // builders here translate to/from each provider's native format. Flip LLM_PROVIDER to
 // switch cleanly — no per-agent edits needed; model pins translate via OPENAI_TO_CLAUDE.
-const LLM_PROVIDER = Deno.env.get("LLM_PROVIDER") ?? "openai"; // openai | anthropic
+// openai | anthropic | groq. Default groq when a GROQ_API_KEY is present so agents run on FREE Llama
+// (Groq's API is OpenAI-compatible); else openai. Groq calls fall back to OpenAI on error so agents never break.
+const LLM_PROVIDER = (Deno.env.get("LLM_PROVIDER") ?? (Deno.env.get("GROQ_API_KEY") ? "groq" : "openai")).toLowerCase();
+
+// Map the OpenAI model pins in agent-guardrails.json to Groq's free Llama models. Agents use tools, so the
+// default routes to the 70B (reliable tool-calling); only explicitly-small pins use the 8B.
+function groqModelFor(model: string): string {
+  const large = Deno.env.get("GROQ_MODEL_LARGE") ?? "llama-3.3-70b-versatile";
+  const small = Deno.env.get("GROQ_MODEL_SMALL") ?? "llama-3.1-8b-instant";
+  return (model === "gpt-4o-mini" || model === "gpt-3.5-turbo") ? small : large;
+}
 
 // Reversible model translation so the OpenAI model pins in agent-guardrails.json keep
 // working when you flip to Claude (and flipping back restores OpenAI exactly).
@@ -105,25 +115,44 @@ async function callModel(opts: {
     return { assistant: { role: "assistant", content: j?.content ?? [] }, text, calls, usage };
   }
 
+  // OpenAI-compatible providers: OpenAI, and Groq (free Llama — same request/response shape, different base).
+  // For groq we call Groq's endpoint with the mapped Llama model; on ANY groq error we fall back to OpenAI
+  // (when an OPENAI_API_KEY exists) so agents keep running even if the free tier is rate-limited.
+  const wantGroq = LLM_PROVIDER === "groq";
+  const openaiCompatible = async (base: string, key: string, model: string) => {
+    const r = await fetch(base, {
+      method: "POST",
+      headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "system", content: opts.system }, ...opts.messages],
+        ...(opts.tools.length ? { tools: opts.tools, tool_choice: "auto" } : {}),
+      }),
+    });
+    if (!r.ok) throw Object.assign(new Error(`${base.includes("groq") ? "Groq" : "OpenAI"} ${r.status}`), { status: r.status });
+    const j = await r.json();
+    const msg = j?.choices?.[0]?.message ?? {};
+    const calls: NormalCall[] = (msg.tool_calls ?? []).map((c: { id: string; function: { name: string; arguments: string } }) => {
+      let args: Record<string, unknown> = {};
+      try { args = JSON.parse(c.function.arguments || "{}"); } catch { /* leave empty */ }
+      return { id: c.id, name: c.function.name, args };
+    });
+    return { assistant: msg, text: msg.content ?? "", calls, usage: j?.usage };
+  };
+
+  if (wantGroq) {
+    const groqKey = Deno.env.get("GROQ_API_KEY") ?? "";
+    try {
+      return await openaiCompatible("https://api.groq.com/openai/v1/chat/completions", groqKey, groqModelFor(opts.model));
+    } catch (e) {
+      const openaiKey = Deno.env.get("OPENAI_API_KEY") ?? opts.key;
+      if (!openaiKey) throw e;   // no fallback available
+      return await openaiCompatible("https://api.openai.com/v1/chat/completions", openaiKey, opts.model);
+    }
+  }
+
   // default: OpenAI
-  const r = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: { authorization: `Bearer ${opts.key}`, "content-type": "application/json" },
-    body: JSON.stringify({
-      model: opts.model,
-      messages: [{ role: "system", content: opts.system }, ...opts.messages],
-      ...(opts.tools.length ? { tools: opts.tools, tool_choice: "auto" } : {}),
-    }),
-  });
-  if (!r.ok) throw Object.assign(new Error(`OpenAI ${r.status}`), { status: r.status });
-  const j = await r.json();
-  const msg = j?.choices?.[0]?.message ?? {};
-  const calls: NormalCall[] = (msg.tool_calls ?? []).map((c: { id: string; function: { name: string; arguments: string } }) => {
-    let args: Record<string, unknown> = {};
-    try { args = JSON.parse(c.function.arguments || "{}"); } catch { /* leave empty */ }
-    return { id: c.id, name: c.function.name, args };
-  });
-  return { assistant: msg, text: msg.content ?? "", calls, usage: j?.usage };
+  return await openaiCompatible("https://api.openai.com/v1/chat/completions", opts.key, opts.model);
 }
 
 // Append tool results in each provider's native shape so the next turn sees them.

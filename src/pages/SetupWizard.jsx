@@ -27,7 +27,10 @@ export default function SetupWizard() {
     try {
       const res = await base44.functions.invoke('costFloorProfile', {});
       if (res?.error) setFloorMsg({ ok: false, text: res.error });
-      else setFloorMsg({ ok: true, text: `Applied — ${Array.isArray(res.applied) ? res.applied.length : 0} setting(s) dropped to the floor. ${res.note || ''}` });
+      else {
+        const recs = Array.isArray(res.recommendations) && res.recommendations.length ? ` Next free wins: ${res.recommendations.join(' ')}` : '';
+        setFloorMsg({ ok: true, text: `Applied — ${Array.isArray(res.applied) ? res.applied.length : 0} setting(s) dropped to the floor. ${res.note || ''}${recs}` });
+      }
       await load();
     } catch (e) { setFloorMsg({ ok: false, text: e?.message || 'Failed.' }); }
     finally { setFlooring(false); }
@@ -79,9 +82,12 @@ export default function SetupWizard() {
           <Card className="mb-4 border-indigo-200 bg-indigo-50/40">
             <CardHeader><CardTitle className="text-base flex items-center gap-2"><Zap className="w-4 h-4 text-indigo-600" />One-click cost floor</CardTitle></CardHeader>
             <CardContent className="space-y-2">
-              <p className="text-sm text-slate-600">Routes AI, transcription, and voice to the cheapest backend (your self-hosted server if set, else free tiers), forces every LLM call onto the small Llama model, and sets a daily AI spend cap. Reversible — only changes settings.</p>
+              <p className="text-sm text-slate-600">Pulls every cost lever to the floor while keeping every feature ON: routes AI, transcription, and voice to the cheapest backend (self-hosted if set, else free tiers), forces every LLM call onto the small Llama model, sends images to Cloudflare's free FLUX, turns paid video rendering OFF, and switches caching on. Reversible — only changes settings, never a feature.</p>
               <Button size="sm" onClick={applyFloor} disabled={flooring} className="bg-indigo-600 hover:bg-indigo-700 text-white">{flooring ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Drop cost to the floor'}</Button>
               {floorMsg && <div className={`text-xs rounded-md p-2 ${floorMsg.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>{floorMsg.text}</div>}
+              {data.agents_on_llama != null && (
+                <div className="text-xs text-slate-500">Autonomous agents: {data.agents_on_llama ? <span className="text-emerald-600 font-medium">running on free Llama (Groq)</span> : <span className="text-amber-600">on OpenAI — set GROQ_API_KEY to move them to free Llama</span>}.</div>
+              )}
             </CardContent>
           </Card>
 
@@ -107,6 +113,16 @@ export default function SetupWizard() {
               <div className="text-xs text-slate-400 mt-2">AI daily spend cap: {data.ai_daily_spend_cap_usd ? `$${data.ai_daily_spend_cap_usd}` : 'off (no cap)'} · card charging: {data.card_charging_on ? 'on' : 'off'}</div>
             </CardContent>
           </Card>
+
+          {data.load_test && (
+            <Card className="mb-4 border-amber-200 bg-amber-50/40">
+              <CardHeader><CardTitle className="text-base">Load test before launch</CardTitle></CardHeader>
+              <CardContent className="text-sm text-slate-700">
+                <p>{data.load_test.detail}</p>
+                <p className="text-xs text-slate-400 mt-1">The scale-hardening indexes and read-replica routing are already in place — this just confirms the free tiers hold under real concurrency.</p>
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
     </div>

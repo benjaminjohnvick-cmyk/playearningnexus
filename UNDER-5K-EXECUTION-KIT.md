@@ -244,6 +244,27 @@ sentiment, support triage, catalog text. What benefits from the 70B (turn the fo
 multi-step reasoning, dispute adjudication, and anything doing careful math. Image generation is separate —
 it's already on Cloudflare FLUX free tier; set a `SELF_IMAGE_URL` (SDXL/FLUX) to take it to $0 on your own GPU.
 
+**NEW — the autonomous AGENTS now run on free Llama too.** Previously the agent runtime (`agents-runtime/
+agent-runtime.ts`) only spoke OpenAI or Anthropic, so every agent step (oversight, optimizer, growth, dispute
+prep, etc.) billed OpenAI `gpt-4o`. It now has a **Groq branch** (Groq's API is OpenAI-compatible): when
+`GROQ_API_KEY` is set it routes agents to `llama-3.3-70b-versatile` (the 70B, for reliable tool-calling; the
+few `mini` pins use `llama-3.1-8b-instant`) — **$0 on the free tier** — and **falls back to OpenAI automatically
+if Groq errors or is rate-limited**, so agents never break. This closes the last non-Llama LLM path; with a
+Groq key, *all* text generation on the platform — user-facing AI **and** the agents — runs free. Only offload
+things that are free or cheaper on Llama (they are — Groq's free tier, then ~$0.0001/1k tokens vs `gpt-4o`);
+TTS and images aren't LLM work and stay on their own free tiers (Polly / Cloudflare FLUX).
+
+**NEW — the expanded one-click floor** (`costFloorProfile`) now also: routes images to **Cloudflare's free
+FLUX** (was leaving them on a paid provider), sets **`VIDEO_ENGINE_RENDER_PROVIDER=none`** (the video engine
+still generates concepts, polls, and learns for free — you only pay when you deliberately wire a render
+vendor), turns on **TTS caching**, sets a realistic free-tier cost estimate so any spend cap tracks reality,
+and reports the two env "free unlocks" (`REDIS_URL` shared cache, `DATABASE_REPLICA_URL` read replica) plus
+whether agents are on free Llama. It changes only settings — never a feature flag — so **everything stays on**.
+
+**Load test before launch.** After applying the floor, run `LOAD-TEST-PLAN.md` (k6/artillery against
+`/health`, a read path, and a write path at target RPS) to confirm the free tiers hold under concurrency. The
+scale-hardening indexes and read-replica routing are already in place; the load test just proves it.
+
 ## Lowest legal & compliance cost — launch on the "straightforward" versions
 
 The cheapest way to keep legal spend near zero at launch is the same trick we used on Tier 2 (pay-as-you-go,
