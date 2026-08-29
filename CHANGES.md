@@ -1,5 +1,28 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-29 — Two-tier referral bonus + paid-endorser social program (BUILT, gated OFF pending counsel)
+
+Two Site Cash reward features, both single-tier, all closed-loop, disabled by default (no money moves, nothing
+posts to any account) until enabled after counsel sign-off:
+
+- **Two-tier referral bonus** (`sdk/referral-tiers.ts`; `REFERRAL_TIERS_ENABLED=0`): **$5** Site Cash per active
+  referred user, and **$2,000 Site Cash per referred paying advertiser on each of the three tiers**
+  (`REFERRAL_ADVERTISER_BONUS_SITECASH`/`REFERRAL_ADV_BONUS_TIER1|2|3`, all default 2000). Advertiser bonus pays
+  only after the referred advertiser's payment clears + a 45-day clawback (`REFERRAL_ADVERTISER_CLAWBACK_DAYS`),
+  never on refund/chargeback/self/no-KYC. User bonus auto-staged on the real conversion
+  (`autoReferralConversionHandler`). Hooks: `referralBonusRecord`/`referralBonusSweep` (sweep preview-only while off).
+- **Paid-endorser program + AI social-post engine** (`sdk/endorser-rewards.ts`, `sdk/social-endorser-engine.ts`;
+  `ENDORSER_ENABLED=0`): opted-in members earn a share (default **20%**, capped **$25/day** / **$500/period**) of
+  the **measured** conversion value their **#ad-disclosed** posts drive. `endorserPersonalizePost` personalizes an
+  advertiser's **approved** copy (no income claims, disclosure enforced), routed through the autonomy `social`
+  domain — **draft by default**, auto-posting triple-gated (`ENDORSER_PERSONALIZE_ENABLED`/`ENDORSER_AUTOPOST_ENABLED`
+  + earned trust + kill switch). **Self-learning**: posts tag creative axes and each conversion feeds the shared
+  creative-suite playbook per platform, so copy self-improves like the other ads. Hooks:
+  `endorserConversionRecord`/`endorserPostConversionHook`/`endorserRewardSweep`.
+- **Docs**: `SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md` (counsel packet), plus updates to `REFERRAL-PROGRAM.md`,
+  `SOCIAL-AMPLIFICATION-AND-VALUE.md`, `ADMIN-SETTINGS-README.md`, `COMPLIANCE-AND-CURRENT-STATE.md`.
+- **Tests/audit**: 16 new SDK tests pass; structural audit clean. New tables: `ReferralBonus`, `EndorserConversion`.
+
 ## 2026-08-20 — Founding (pre-revenue) offer → Tier 1: 200k cap, +30% Tier 1, category exclusivity, disclosure
 
 Two-phase advertiser offer (see FOUNDING-PRE-REVENUE-OFFER-AND-TIER1-SPEC.md):

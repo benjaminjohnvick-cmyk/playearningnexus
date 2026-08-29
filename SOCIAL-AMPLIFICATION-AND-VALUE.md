@@ -54,3 +54,42 @@ advertising value** and to their **measured ROI/ROAS report**.
   `advertiserSocialValue` (registered in `_manifest.json`).
 - **Settings** — `SOCIAL_AMP_*` (enable, per-tier toggles, view-rate, reach cap, weekly cap).
 - **Schema** — `SocialAmplificationEvent` table.
+
+---
+
+## Paid-endorser program + AI social-post engine — BUILT, gated OFF pending counsel
+
+On top of the advertiser-value side above, opted-in members can be **paid endorsers**: they earn **Site Cash =
+a share of the MEASURED conversion value** their disclosed posts drive. **OFF by default**
+(`ENDORSER_ENABLED=0`); the record hooks credit nothing and the sweep is preview-only until enabled.
+
+**Reward math.** Share = `ENDORSER_REWARD_SHARE_PCT` (default **0.20** = 20% of measured conversion value);
+minimum conversion `ENDORSER_MIN_CONVERSION_USD` (default **$1**, noise floor); per-member caps
+`ENDORSER_DAILY_CAP_USD` (default **$25/day**) and `ENDORSER_PERIOD_CAP_USD` (default **$500 / 4 weeks**).
+Self-conversions earn nothing; **undisclosed posts earn nothing**. 1099: `ENDORSER_REWARD_1099_REPORTABLE`
+(default **1**, reportable — confirm for closed-loop Site Cash). Code: `sdk/endorser-rewards.ts`,
+`endorserConversionRecord` → `endorserRewardSweep`.
+
+**AI social-post engine.** `endorserPersonalizePost` turns an advertiser's **approved** creative into
+member/platform-native copy — **pinned to approved claims, no income claims**, with the **`#ad` disclosure
+enforced and unremovable** (`enforceDisclosure`). It routes through the autonomy **`social`** domain: a
+human-approved **DRAFT by default**; **auto-posting** fires only when `ENDORSER_PERSONALIZE_ENABLED` **and**
+`ENDORSER_AUTOPOST_ENABLED` are on, the domain has **earned trust** (approved runs + agreement + data), **and**
+the global kill switch is off. Eligibility (`endorserEligibleToPost`) requires consent + a live connection;
+`ENDORSER_OPT_IN_REQUIRED` (default **1**) keeps that mandatory. Code: `sdk/social-endorser-engine.ts`.
+
+**Self-learning (like the other ads).** Each generated post is tagged on creative axes (hook, tone, length,
+CTA style, emoji, urgency, audience). Each disclosed, non-self conversion feeds those tags back into the shared
+creative-suite **playbook**, per platform, as a positive signal scaled by value (capped) via
+`recordCreativeOutcome`; future posts are conditioned on what's actually converting (`endorserPostConversionHook`
+closes the loop). No schema change — reuses `OptimizationSignal`. Compliance posture is unchanged: it only tunes
+**which approved framing** is used.
+
+- **Endorser settings** — `ENDORSER_ENABLED` (0), `ENDORSER_REWARD_SHARE_PCT` (0.2),
+  `ENDORSER_MIN_CONVERSION_USD` (1), `ENDORSER_DAILY_CAP_USD` (25), `ENDORSER_PERIOD_CAP_USD` (500),
+  `ENDORSER_REWARD_1099_REPORTABLE` (1), `ENDORSER_PERSONALIZE_ENABLED` (0), `ENDORSER_AUTOPOST_ENABLED` (0),
+  `ENDORSER_OPT_IN_REQUIRED` (1).
+- **Endorser functions** — `endorserPersonalizePost`, `endorserPostConversionHook`, `endorserConversionRecord`,
+  `endorserRewardSweep` (registered in `_manifest.json`).
+- **Endorser schema** — `EndorserConversion` table.
+- **Full counsel questions** — `SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md`.

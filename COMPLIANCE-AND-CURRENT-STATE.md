@@ -86,6 +86,17 @@ Affiliate links are labeled and disclosed. Any influencer or promotional content
 configured disclosure tag. Marketing email respects frequency caps and includes required sender
 information; SMS marketing is off by default until consent and carrier requirements are met.
 
+**Two-tier referral bonus + paid-endorser program (BUILT, gated OFF pending counsel).** Two Site Cash reward
+features ship disabled by default and move no money until enabled after sign-off. (a) A single-tier referral
+bonus: **$5** per active referred user and **$2,000 per referred paying advertiser on each of the three tiers**
+(`REFERRAL_TIERS_ENABLED=0`), the advertiser bonus paid only after the referred advertiser's payment clears + a
+45-day clawback, never on refund/chargeback/self/no-KYC. (b) A paid-endorser program: opted-in members earn a
+share (default 20%, capped daily/period) of the **measured** conversion value their **#ad-disclosed** posts
+drive; the AI personalizes an advertiser's **approved** copy (no income claims, disclosure enforced), posts as a
+human-approved **draft** by default (auto-posting triple-gated), and self-improves on conversion data
+(`ENDORSER_ENABLED=0`). Both are single-tier (no downline), all Site Cash (non-cashable, closed-loop), 1099
+default-reportable, and fully audited. Full posture + counsel questions: `SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md`.
+
 ## 6. Data protection and user rights
 - **What is collected:** account data, transaction data, behavioral/interaction data (including
   survey-answer timing used for quality and fraud checks), device data, and approximate location from IP

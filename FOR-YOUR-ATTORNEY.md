@@ -238,6 +238,28 @@ flag ON **and** a real licensed provider **and** its counsel sign-off set true:
   converts to cash); (e) that the 13-period (four-week) billing and its "billed every 4 weeks / 13 cycles"
   disclosure are acceptable and not presented as "monthly."
 
+## 13c. Two-tier referral bonus + paid-endorser social program (all BUILT, gated OFF)
+
+- **Current posture.** Two Site Cash reward features ship **disabled by default** and move no money — and post
+  to no one's account — until enabled after your sign-off. Both are **single-tier** (no downline) and all
+  rewards are **non-cashable closed-loop Site Cash**. Full detail + questions: `SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md`.
+  - **Two-tier referral bonus** (`REFERRAL_TIERS_ENABLED=0`): **$5** per active referred user; **$2,000 per
+    referred paying advertiser on each of the three tiers** (`REFERRAL_ADV_BONUS_TIER1|2|3`, all default 2000).
+    The advertiser bonus pays **only after** the referred advertiser's payment **clears** + a **45-day clawback**,
+    and never on refund/chargeback/self-referral/no-KYC — so each bonus is funded by a real, retained advertiser
+    purchase. (Distinct from the §7 "$2,000 boost," which is a founding-offer advertising credit, not a referral.)
+  - **Paid-endorser program** (`ENDORSER_ENABLED=0`): opted-in members earn a **share** (default 20%, capped
+    $25/day, $500/period) of the **measured** conversion value their **#ad-disclosed** posts drive; undisclosed
+    and self-conversions earn nothing. The AI personalizes an advertiser's **approved** copy only (no income
+    claims; disclosure enforced and unremovable), posts as a human-approved **draft** by default (auto-posting
+    triple-gated), and self-improves on conversion data.
+- **For counsel to confirm:** (a) single-tier referral tied to a real paying advertiser is a normal
+  finder's/affiliate fee, well clear of pyramid/MLM law; (b) FTC endorsement-disclosure sufficiency for **paid**
+  endorsers with enforced `#ad`; (c) whether scheduled auto-posting to a consenting member's own account is
+  acceptable or the human "tap Post" must stay permanent; (d) 1099 treatment of non-cashable closed-loop Site
+  Cash for both the $2,000 referral bonus and endorser rewards (defaulted reportable); (e) referral-invite
+  constraints (TCPA/CAN-SPAM); (f) that the guaranteed per-referral bonus is a rewards program, not a sweepstakes.
+
 ## 14. Blanks to fill before launch
 
 - `BUSINESS_MAILING_ADDRESS` (CAN-SPAM footer + winner-list/rules requests) — currently empty.
@@ -255,4 +277,6 @@ which licensed path — (6) confirm the Tier 2 multi-year commitment + auto-rene
 confirm the Tier 2 upfront-deposit prepayment/unearned-revenue treatment and make-good/refund terms — (8)
 confirm the all-tiers delivery guarantee + free make-good reads as a delivery (not results) commitment — (9)
 confirm the Tier 1 "$12k → $24k in advertising value" claim is substantiated and carries no implied revenue/ROI
-promise — and (10) confirm the 1099/backup-withholding pipeline and TIN handling on partner cash payouts.
+promise — (10) confirm the 1099/backup-withholding pipeline and TIN handling on partner cash payouts — and (11)
+confirm the two-tier referral bonus ($5 user / $2,000-per-tier advertiser, single-tier) and the paid-endorser
+social program (disclosed, performance-based, draft-by-default) per §13c and the endorser/referral brief.

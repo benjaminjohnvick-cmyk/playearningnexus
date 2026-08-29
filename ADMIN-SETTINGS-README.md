@@ -89,6 +89,22 @@ Each row: the registry key(s) → the file to edit → the getter to use. All ar
 - `REFERRAL_MODEL`, `AFFILIATE_COMMISSION_MODE`, `AFFILIATE_ACTIVATION_THRESHOLD`,
   `AFFILIATE_TIER_*_MIN`, `AFFILIATE_ONGOING_RATE_*`, `AFFILIATE_BOUNTY_*`.
 
+**Two-tier referral bonus (Site Cash)** → `sdk/referral-tiers.ts`, `referralBonusRecord`/`referralBonusSweep`
+(OFF by default pending counsel; see `REFERRAL-PROGRAM.md`)
+- `REFERRAL_TIERS_ENABLED` (0), `REFERRAL_USER_BONUS_SITECASH` (5),
+  `REFERRAL_ADVERTISER_BONUS_SITECASH` (2000), `REFERRAL_ADV_BONUS_TIER1` (2000),
+  `REFERRAL_ADV_BONUS_TIER2` (2000), `REFERRAL_ADV_BONUS_TIER3` (2000),
+  `REFERRAL_ADVERTISER_CLAWBACK_DAYS` (45), `REFERRAL_BONUS_1099_REPORTABLE` (1).
+  — $5 per active referred user; **$2,000 per referred advertiser on each of the 3 tiers** (paid only after the
+  advertiser's payment clears + the clawback window).
+
+**Paid-endorser program (Site Cash)** → `sdk/endorser-rewards.ts` + `sdk/social-endorser-engine.ts`,
+`endorserPersonalizePost`/`endorserConversionRecord`/`endorserRewardSweep`/`endorserPostConversionHook`
+(OFF by default pending counsel; see `SOCIAL-AMPLIFICATION-AND-VALUE.md`)
+- `ENDORSER_ENABLED` (0), `ENDORSER_REWARD_SHARE_PCT` (0.2), `ENDORSER_MIN_CONVERSION_USD` (1),
+  `ENDORSER_DAILY_CAP_USD` (25), `ENDORSER_PERIOD_CAP_USD` (500), `ENDORSER_REWARD_1099_REPORTABLE` (1),
+  `ENDORSER_PERSONALIZE_ENABLED` (0), `ENDORSER_AUTOPOST_ENABLED` (0), `ENDORSER_OPT_IN_REQUIRED` (1).
+
 **Store / catalog** → `sdk/catalog-policy.ts` (`CATALOG_BLOCKED_CATEGORIES` via `getList`),
 `placeStoreOrder`/`aiOrderFulfillment` (`AI_FULFILLMENT_MAX_ORDER_USD`, `REFUND_WINDOW_DAYS`,
 `GIFTING_ENABLED`).
