@@ -286,6 +286,12 @@
       "cron": "35 */4 * * *",
       "function": "aiVideoAutopilotTick",
       "_comment": "Every 4 hours: advance any run whose poll is ready \u2014 learn from votes, select render winners, then auto-approve (if trust earned) or park at the human gate."
+    },
+    {
+      "name": "feedback-auto-collect",
+      "cron": "45 * * * *",
+      "function": "feedbackAutoCollect",
+      "_comment": "Hourly: mine the site's page telemetry (dwell/scroll/friction/purchases) into implicit feedback signals per domain \u2014 automatic, no user prompts."
     }
   ]
 }

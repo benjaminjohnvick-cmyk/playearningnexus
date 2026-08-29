@@ -3986,3 +3986,56 @@ CREATE TABLE IF NOT EXISTS "VideoPipelineRun" (
 CREATE INDEX IF NOT EXISTS "VideoPipelineRun_data_gin" ON "VideoPipelineRun" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "VideoPipelineRun_created" ON "VideoPipelineRun" (created_date DESC);
 CREATE INDEX IF NOT EXISTS "VideoPipelineRun_stage" ON "VideoPipelineRun" ((data->>'stage'));
+
+
+-- Automation platform tables (see sdk/autonomy-kernel.ts, sdk/feedback.ts, sdk/fair-choice.ts):
+-- FeedbackEvent: one standard feedback signal from any surface (explicit + implicit/auto-collected).
+CREATE TABLE IF NOT EXISTS "FeedbackEvent" (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(), updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by text, data jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "FeedbackEvent_data_gin" ON "FeedbackEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "FeedbackEvent_created" ON "FeedbackEvent" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "FeedbackEvent_domain" ON "FeedbackEvent" ((data->>'domain'));
+CREATE INDEX IF NOT EXISTS "FeedbackEvent_surface" ON "FeedbackEvent" ((data->>'surface'));
+
+-- AutonomyDecision: one gated decision for any domain + its human/auto outcome (trust history).
+CREATE TABLE IF NOT EXISTS "AutonomyDecision" (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(), updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by text, data jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AutonomyDecision_data_gin" ON "AutonomyDecision" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AutonomyDecision_created" ON "AutonomyDecision" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "AutonomyDecision_domain" ON "AutonomyDecision" ((data->>'domain'));
+CREATE INDEX IF NOT EXISTS "AutonomyDecision_stage" ON "AutonomyDecision" ((data->>'stage'));
+
+-- AutonomyDomain: per-domain autonomy mode overrides set from the Command Center.
+CREATE TABLE IF NOT EXISTS "AutonomyDomain" (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(), updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by text, data jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AutonomyDomain_data_gin" ON "AutonomyDomain" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AutonomyDomain_created" ON "AutonomyDomain" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "AutonomyDomain_did" ON "AutonomyDomain" ((data->>'domain_id'));
+
+-- AutoCollectState: the cursor for the automatic telemetry→feedback miner (idempotency).
+CREATE TABLE IF NOT EXISTS "AutoCollectState" (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(), updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by text, data jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AutoCollectState_data_gin" ON "AutoCollectState" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AutoCollectState_created" ON "AutoCollectState" (created_date DESC);
+
+-- TrendChoiceEvent: impressions + picks for the unbiased current-event topic/ad chooser (fair scoring).
+CREATE TABLE IF NOT EXISTS "TrendChoiceEvent" (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(), updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by text, data jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "TrendChoiceEvent_data_gin" ON "TrendChoiceEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "TrendChoiceEvent_created" ON "TrendChoiceEvent" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "TrendChoiceEvent_topic" ON "TrendChoiceEvent" ((data->>'topic'));

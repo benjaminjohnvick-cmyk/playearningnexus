@@ -966,6 +966,22 @@ export const REGISTRY: SettingDef[] = [
   { key: "VIDEO_AUTOPILOT_TRUST_MIN_AGREEMENT", label: "Autopilot trust — min agreement", category: "Video Autopilot", type: "number", default: "0.8", help: "Under 'earned' autonomy: the fraction of your decisions that must be clean approvals (approved with no tweak) before auto-approval kicks in (0.8 = 80%).", min: 0 },
   { key: "VIDEO_AUTOPILOT_TRUST_MIN_PLAYBOOK", label: "Autopilot trust — min learning outcomes", category: "Video Autopilot", type: "number", default: "200", help: "Under 'earned' autonomy: how many recorded video-learning outcomes (survey + engagement) the playbook needs before auto-approval kicks in.", min: 0 },
 
+
+  // ── Autonomy Kernel — the site-wide graduated-autonomy engine every process shares (autonomy-kernel.ts). ──
+  { key: "AUTONOMY_ENABLED", label: "Autonomy — enabled", category: "Automation", type: "boolean", default: "1", help: "Master switch for the site-wide automation platform (per-domain graduated autonomy + the human gate)." },
+  { key: "AUTONOMY_KILL_SWITCH", label: "Autonomy — global kill switch", category: "Automation", type: "boolean", default: "0", help: "EMERGENCY: when ON, nothing auto-approves anywhere — every domain falls back to a human gate immediately. Leave OFF for normal operation." },
+  { key: "AUTONOMY_TRUST_MIN_RUNS", label: "Autonomy — trust: min approved decisions", category: "Automation", type: "number", default: "10", help: "Under 'earned' autonomy: approved human decisions a domain needs before it may start auto-approving.", min: 0 },
+  { key: "AUTONOMY_TRUST_MIN_AGREEMENT", label: "Autonomy — trust: min agreement", category: "Automation", type: "number", default: "0.8", help: "Under 'earned' autonomy: fraction of your decisions that must be clean approvals (approved with no tweak) before auto-approval (0.8 = 80%).", min: 0 },
+  { key: "AUTONOMY_TRUST_MIN_DATA", label: "Autonomy — trust: min learning data", category: "Automation", type: "number", default: "200", help: "Under 'earned' autonomy: how much learning data (feedback + decisions) a domain needs before auto-approval.", min: 0 },
+
+  // ── Feedback — the standard event every surface emits (mostly IMPLICIT, collected automatically). ──
+  { key: "FEEDBACK_ENABLED", label: "Feedback — enabled", category: "Automation", type: "boolean", default: "1", help: "Record customer feedback events (explicit ratings + implicit conversion/completion/dwell) into the shared learning substrate." },
+  { key: "FEEDBACK_AUTOCOLLECT_ENABLED", label: "Feedback — automatic collection", category: "Automation", type: "boolean", default: "1", help: "Mine the site's existing page telemetry (dwell, scroll, friction, purchases) into implicit feedback signals automatically — no user asked anything." },
+
+  // ── Fair Choice — unbiased forced-choice over current-event topics/ads (fair-choice.ts). ──
+  { key: "FAIR_CHOICE_ENABLED", label: "Fair Choice — enabled", category: "Automation", type: "boolean", default: "1", help: "Let users pick from current-event topics/ads presented with no favoritism (uniform draw, randomized position, exposure-normalized scoring) so the choice data is unbiased and collected automatically." },
+  { key: "FAIR_CHOICE_SET_SIZE", label: "Fair Choice — options per set", category: "Automation", type: "number", default: "4", help: "How many topics/ads to show in each fair choice set (2–6).", min: 2 },
+
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

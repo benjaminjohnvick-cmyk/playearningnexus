@@ -91,7 +91,7 @@ for (const tName of AT_SORTED_TABLES) {
 // their predictive score / render phase / measured metrics, and the live trend pool used to ground them.
 // ConceptPoll + ConceptPollVote back the Concept Polling loop (sdk/concept-polling.ts): a poll's concept
 // pool + matchups, and each user's head-to-head / MaxDiff vote.
-const MANUAL_TABLES = ['CreativeAsset', 'SurveyDraft', 'SocialAmplificationEvent', 'TierProgressionEvent', 'VideoConcept', 'VideoTrend', 'ConceptPoll', 'ConceptPollVote', 'VideoPipelineRun'];
+const MANUAL_TABLES = ['CreativeAsset', 'SurveyDraft', 'SocialAmplificationEvent', 'TierProgressionEvent', 'VideoConcept', 'VideoTrend', 'ConceptPoll', 'ConceptPollVote', 'VideoPipelineRun', 'FeedbackEvent', 'AutonomyDecision', 'AutonomyDomain', 'AutoCollectState', 'TrendChoiceEvent'];
 for (const tName of MANUAL_TABLES) {
   sql += `\n-- ${tName} (manual — see sdk/creative-suite.ts)\n`;
   sql += `CREATE TABLE IF NOT EXISTS "${tName}" (\n  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,\n  created_date timestamptz NOT NULL DEFAULT now(),\n  updated_date timestamptz NOT NULL DEFAULT now(),\n  created_by   text,\n  data         jsonb NOT NULL DEFAULT '{}'::jsonb\n);\n`;
@@ -110,6 +110,12 @@ sql += `CREATE INDEX IF NOT EXISTS "ConceptPollVote_poll" ON "ConceptPollVote" (
 sql += `CREATE INDEX IF NOT EXISTS "ConceptPollVote_poll_user" ON "ConceptPollVote" ((data->>'poll_id'), (data->>'user_id'));\n`;
 sql += `CREATE INDEX IF NOT EXISTS "ConceptPoll_status" ON "ConceptPoll" ((data->>'status'));\n`;
 sql += `CREATE INDEX IF NOT EXISTS "VideoPipelineRun_stage" ON "VideoPipelineRun" ((data->>'stage'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "FeedbackEvent_domain" ON "FeedbackEvent" ((data->>'domain'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "FeedbackEvent_surface" ON "FeedbackEvent" ((data->>'surface'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "AutonomyDecision_domain" ON "AutonomyDecision" ((data->>'domain'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "AutonomyDecision_stage" ON "AutonomyDecision" ((data->>'stage'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "AutonomyDomain_did" ON "AutonomyDomain" ((data->>'domain_id'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "TrendChoiceEvent_topic" ON "TrendChoiceEvent" ((data->>'topic'));\n`;
 
 sql += `\n-- Auto-update updated_date on row change\nCREATE OR REPLACE FUNCTION set_updated_date() RETURNS trigger AS $$\nBEGIN NEW.updated_date = now(); RETURN NEW; END; $$ LANGUAGE plpgsql;\n`;
 

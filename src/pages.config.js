@@ -135,8 +135,14 @@ import AdminVideoEngine from './pages/AdminVideoEngine';
 
 import ConceptPolls from './pages/ConceptPolls';
 
+import AutomationCommandCenter from './pages/AutomationCommandCenter';
+
+import FairTopicPicker from './pages/FairTopicPicker';
+
 export const PAGES = {
     "AdminVideoEngine": AdminVideoEngine,
+    "AutomationCommandCenter": AutomationCommandCenter,
+    "FairTopicPicker": FairTopicPicker,
     "ConceptPolls": ConceptPolls,
     "JoinAndConnect": JoinAndConnect,
     "SurveyStudio": SurveyStudio,
