@@ -4039,3 +4039,28 @@ CREATE TABLE IF NOT EXISTS "TrendChoiceEvent" (
 CREATE INDEX IF NOT EXISTS "TrendChoiceEvent_data_gin" ON "TrendChoiceEvent" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "TrendChoiceEvent_created" ON "TrendChoiceEvent" (created_date DESC);
 CREATE INDEX IF NOT EXISTS "TrendChoiceEvent_topic" ON "TrendChoiceEvent" ((data->>'topic'));
+
+
+-- ReferralBonus: a pending/paid two-tier referral bonus (Site Cash). $5 user / $2000 advertiser per tier;
+-- the advertiser bonus pays only after cleared payment + clawback (see sdk/referral-tiers.ts).
+CREATE TABLE IF NOT EXISTS "ReferralBonus" (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(), updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by text, data jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ReferralBonus_data_gin" ON "ReferralBonus" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ReferralBonus_created" ON "ReferralBonus" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "ReferralBonus_status" ON "ReferralBonus" ((data->>'status'));
+CREATE INDEX IF NOT EXISTS "ReferralBonus_referrer" ON "ReferralBonus" ((data->>'referrer_user_id'));
+
+-- EndorserConversion: a measured conversion from a member's disclosed sponsored post; the gated sweep pays a
+-- Site Cash share of its value (see sdk/endorser-rewards.ts).
+CREATE TABLE IF NOT EXISTS "EndorserConversion" (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(), updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by text, data jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "EndorserConversion_data_gin" ON "EndorserConversion" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "EndorserConversion_created" ON "EndorserConversion" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "EndorserConversion_status" ON "EndorserConversion" ((data->>'status'));
+CREATE INDEX IF NOT EXISTS "EndorserConversion_member" ON "EndorserConversion" ((data->>'member_id'));
