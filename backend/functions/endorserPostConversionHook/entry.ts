@@ -1,6 +1,9 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { db } from "../../sdk/db.ts";
 import { endorserEnabled } from "../../sdk/endorser-rewards.ts";
+import { endorserLearningWeight } from "../../sdk/social-endorser-engine.ts";
+import { recordCreativeOutcome } from "../../sdk/creative-suite.ts";
 
 // endorserPostConversionHook — the WIRE between a measured social-post conversion and the endorser reward.
 // Whatever flow measures that a member's disclosed post drove a real conversion (a postback, an advertiser-
@@ -34,7 +37,26 @@ export default __handler(async (req) => {
     // Forward to the record hook in-process (reuses its idempotency + validation). No money moves here.
     const res = await base44.functions.invoke("endorserConversionRecord", payload).catch((e: unknown) => ({ error: String((e as Error)?.message || e) }));
 
+    // Self-learning loop: feed this conversion back to the platform playbook so future posts lean into the
+    // creative attributes that actually convert (per platform). Uses the post's tagged attributes; positive
+    // signal scaled by the disclosed, non-self conversion value (capped). Best-effort; never blocks the record.
+    let learned = false;
+    const weight = endorserLearningWeight(payload.conversion_value_usd, payload.disclosed, payload.self_conversion);
+    if (weight > 0 && payload.post_id) {
+      const post = await db.get("SocialMediaPost", String(payload.post_id)).catch(() => null) as Record<string, unknown> | null;
+      const attrs = (post?.creative_attributes as Record<string, string>) || {};
+      const platform = String(post?.platform ?? payload.platform ?? "any").toLowerCase();
+      if (Object.keys(attrs).length) {
+        await recordCreativeOutcome({ create: db.create, filter: db.filter } as any, {
+          creative_id: String(payload.post_id), advertiser_id: `endorser:${platform}`,
+          attributes: attrs, weight, impressions: 1, outcome: "converted", todayISO: new Date().toISOString(),
+        }).catch(() => null);
+        learned = true;
+      }
+    }
+
     return Response.json({
+      learned,
       ok: true, recorded: res, program_enabled: endorserEnabled(),
       note: endorserEnabled()
         ? "Conversion staged — endorserRewardSweep will credit the Site Cash share within caps."

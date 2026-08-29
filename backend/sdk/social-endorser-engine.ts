@@ -67,12 +67,40 @@ export interface MemberVoice {
   niche?: string;                    // optional audience niche
 }
 
+// The creative attribute axes the endorser loop learns over (a subset of the creative-suite dimensions that
+// apply to a short social text). Each generated post is tagged on these, and measured conversions teach which
+// values win — per platform — so future posts lean into what actually converts. Kept as a local constant so
+// this module stays standalone (the function layer maps these to the shared creative-suite playbook).
+export const ENDORSER_ATTR_DIMENSIONS = ["hook", "tone", "length", "cta_style", "emoji", "urgency", "audience"] as const;
+export type EndorserAttrDimension = typeof ENDORSER_ATTR_DIMENSIONS[number];
+
+/** Render the currently-winning attributes into a short prompt line the generator can lean into. Only lists
+ *  dimensions that HAVE a proven winner, so a cold start (no data) adds nothing. Pure. */
+export function winnersLine(top?: Record<string, string> | null): string {
+  const entries = ENDORSER_ATTR_DIMENSIONS.map((d) => [d, top?.[d]]).filter(([, v]) => !!v) as [string, string][];
+  if (!entries.length) return "";
+  return `Currently CONVERTING best on this platform (lean into these where it stays natural and truthful): ${entries.map(([d, v]) => `${d}=${v}`).join(", ")}.`;
+}
+
+/** Signed learning weight for one endorser outcome. A real, disclosed, non-self conversion is a positive
+ *  signal scaled by its measured value (capped so one whale can't dominate the playbook); anything that earns
+ *  no reward contributes no positive signal. Pure + deterministic. */
+export function endorserLearningWeight(conversionValueUsd: number, disclosed: boolean, selfConversion: boolean, cap = 50): number {
+  if (!disclosed || selfConversion) return 0;
+  const v = Math.max(0, Number(conversionValueUsd) || 0);
+  return Math.min(cap, v);
+}
+
 /** Build the LLM prompt that adapts an advertiser's APPROVED creative into copy native to one member +
  *  platform. Hard rules baked in: keep to the approved claims (no new/exaggerated claims), keep it truthful,
- *  and ALWAYS include the disclosure tag. The engine still re-enforces disclosure after generation, so this
+ *  and ALWAYS include the disclosure tag. Optionally conditions on the winning creative attributes so the
+ *  copy self-improves off conversion data. The engine still re-enforces disclosure after generation, so this
  *  is belt-and-suspenders. Pure — returns the prompt string. */
-export function personalizationPrompt(creative: CreativeInput, voice: MemberVoice, disclosureTag = AD_DISCLOSURE): string {
+export function personalizationPrompt(
+  creative: CreativeInput, voice: MemberVoice, disclosureTag = AD_DISCLOSURE, winners?: Record<string, string> | null,
+): string {
   const platform = String(voice.platform || "social").toLowerCase();
+  const winLine = winnersLine(winners);
   return [
     `You are adapting an ADVERTISER-APPROVED ad into a short post that feels native to ${platform}.`,
     `Advertiser: ${creative.advertiser_name || "the advertiser"}.`,
@@ -82,12 +110,13 @@ export function personalizationPrompt(creative: CreativeInput, voice: MemberVoic
     creative.landing_url ? `Include this link once: ${creative.landing_url}.` : ``,
     voice.tone ? `Match this tone: ${voice.tone}.` : `Keep the tone friendly and authentic.`,
     voice.niche ? `The poster's audience: ${voice.niche}.` : ``,
+    winLine,
     `HARD RULES:`,
     `- Truthful only. Never invent benefits, statistics, earnings, or outcomes.`,
     `- No income, earnings, or "get rich" claims of any kind.`,
     `- Keep it concise and platform-appropriate; a few relevant hashtags are fine.`,
     `- You MUST include the disclosure "${disclosureTag}" so it is clear and conspicuous (FTC).`,
-    `Return ONLY the post text.`,
+    `Return the post text, plus the creative attributes you used on these axes: ${ENDORSER_ATTR_DIMENSIONS.join(", ")}.`,
   ].filter(Boolean).join("\n");
 }
 

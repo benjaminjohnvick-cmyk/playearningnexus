@@ -1,6 +1,7 @@
 import { assert, assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import {
   endorserEligibleToPost, personalizationPrompt, enforceDisclosure, decidePostMode,
+  winnersLine, endorserLearningWeight,
 } from "./social-endorser-engine.ts";
 
 Deno.test("eligibility: needs consent + an active connection, blocks suspended", () => {
@@ -34,6 +35,32 @@ Deno.test("enforceDisclosure: always yields #ad-carrying copy", () => {
   // Already-disclosed copy is left intact (not double-tagged).
   const already = enforceDisclosure("Love these #ad");
   assertEquals((already.match(/#ad/gi) || []).length, 1);
+});
+
+Deno.test("winnersLine: lists only proven winners; empty on a cold start", () => {
+  assertEquals(winnersLine(null), "");
+  assertEquals(winnersLine({}), "");
+  const line = winnersLine({ hook: "question", tone: "playful", format: "ignored" });
+  assert(line.includes("hook=question"), "includes a learned winner");
+  assert(line.includes("tone=playful"));
+  assert(!line.includes("format="), "ignores dimensions outside the endorser axes");
+});
+
+Deno.test("personalizationPrompt: conditions on winners when provided", () => {
+  const withWin = personalizationPrompt({ approved_copy: "x" }, { platform: "tiktok" }, "#ad", { hook: "question" });
+  assert(withWin.toLowerCase().includes("converting best"), "leans into winning attributes");
+  assert(withWin.includes("hook=question"));
+  // No winners → no conditioning line, but still asks for attribute tags back.
+  const cold = personalizationPrompt({ approved_copy: "x" }, { platform: "tiktok" });
+  assert(!cold.toLowerCase().includes("converting best"));
+  assert(cold.includes("hook"), "still requests attribute axes for tagging");
+});
+
+Deno.test("endorserLearningWeight: positive scaled by value, zero when it earns nothing", () => {
+  assertEquals(endorserLearningWeight(10, true, false), 10);       // disclosed real conversion → positive
+  assertEquals(endorserLearningWeight(999, true, false, 50), 50);  // capped so a whale can't dominate
+  assertEquals(endorserLearningWeight(10, false, false), 0);       // undisclosed → no positive signal
+  assertEquals(endorserLearningWeight(10, true, true), 0);         // self-conversion → no signal
 });
 
 Deno.test("decidePostMode: draft unless personalize+autopost ON and the social gate clears", () => {

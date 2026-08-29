@@ -3,9 +3,10 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import {
   endorserEligibleToPost, personalizationPrompt, enforceDisclosure, decidePostModeLive,
-  endorserPersonalizeEnabled,
+  endorserPersonalizeEnabled, ENDORSER_ATTR_DIMENSIONS,
 } from "../../sdk/social-endorser-engine.ts";
 import { resolvePolicy } from "../../sdk/autonomy-kernel.ts";
+import { loadCreativeOutcomes, buildCreativePlaybook } from "../../sdk/creative-suite.ts";
 
 // endorserPersonalizePost — the AI social-post ENGINE for the paid-endorser program (the compliant version,
 // gated OFF). For one opted-in, connected member it (1) checks consent + a live social connection, (2) turns
@@ -44,16 +45,35 @@ export default __handler(async (req) => {
     });
     if (!elig.eligible) return Response.json({ ok: true, skipped: true, reason: elig.reason });
 
-    // 2) Personalize the APPROVED creative for this member + platform (pinned to approved claims).
+    // 2) Personalize the APPROVED creative for this member + platform (pinned to approved claims), CONDITIONED
+    //    on what is currently converting best on this platform (the self-learning loop). The playbook comes
+    //    from the shared creative-suite learning store, scoped to this platform's endorser outcomes.
     let copy = approvedCopy;
+    let attributes: Record<string, string> = {};
     if (endorserPersonalizeEnabled()) {
+      // Winners: build the platform-scoped playbook from recorded endorser conversions (positive signals).
+      const outcomes = await loadCreativeOutcomes({ create: db.create, filter: db.filter } as any, `endorser:${platform}`, 4000).catch(() => []);
+      const playbook = buildCreativePlaybook(outcomes, new Date().toISOString());
       const prompt = personalizationPrompt(
         { advertiser_name: body.advertiser_name ? String(body.advertiser_name) : undefined, approved_copy: approvedCopy, offer: body.offer ? String(body.offer) : undefined, landing_url: body.landing_url ? String(body.landing_url) : undefined },
         { platform, tone: body.tone ? String(body.tone) : undefined, niche: body.niche ? String(body.niche) : undefined },
+        undefined, playbook.top,
       );
-      const gen = await base44.asServiceRole.integrations.Core.InvokeLLM({ prompt, model: "gpt_5_mini" }).catch(() => null) as { content?: string } | string | null;
+      const gen = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt, model: "gpt_5_mini",
+        response_json_schema: {
+          type: "object",
+          properties: {
+            content: { type: "string" },
+            attributes: { type: "object", properties: Object.fromEntries(ENDORSER_ATTR_DIMENSIONS.map((d) => [d, { type: "string" }])) },
+          },
+        },
+      }).catch(() => null) as { content?: string; attributes?: Record<string, string> } | string | null;
       const out = typeof gen === "string" ? gen : (gen?.content ?? "");
       if (out && String(out).trim()) copy = String(out).trim();
+      if (gen && typeof gen !== "string" && gen.attributes) {
+        for (const d of ENDORSER_ATTR_DIMENSIONS) if (gen.attributes[d]) attributes[d] = String(gen.attributes[d]).slice(0, 40);
+      }
     }
     // 3) Disclosure is non-negotiable — enforce it no matter what the model returned.
     const content = enforceDisclosure(copy);
@@ -76,6 +96,7 @@ export default __handler(async (req) => {
       user_id: memberId, advertiser_id: body.advertiser_id ? String(body.advertiser_id) : null,
       tier: body.tier ? String(body.tier) : "tier1",
       platform, content, disclosed: true, source: "endorser_engine",
+      creative_attributes: attributes,   // tagged axes → fed back to the platform playbook when this post converts
       status, auto_posted: mode.action === "autopost",
       created_at: now, updated_at: now,
     }).catch(() => null) as Record<string, unknown> | null;
