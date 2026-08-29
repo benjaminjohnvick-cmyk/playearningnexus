@@ -131,7 +131,13 @@ import SurveyStudio from './pages/SurveyStudio';
 
 import JoinAndConnect from './pages/JoinAndConnect';
 
+import AdminVideoEngine from './pages/AdminVideoEngine';
+
+import ConceptPolls from './pages/ConceptPolls';
+
 export const PAGES = {
+    "AdminVideoEngine": AdminVideoEngine,
+    "ConceptPolls": ConceptPolls,
     "JoinAndConnect": JoinAndConnect,
     "SurveyStudio": SurveyStudio,
     "CreativeStudio": CreativeStudio,

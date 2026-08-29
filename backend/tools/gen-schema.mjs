@@ -87,13 +87,28 @@ for (const tName of AT_SORTED_TABLES) {
 
 // ── Manual tables not derived from a Base44 entity file ─────────────────────────────────────────────────
 // CreativeAsset backs the AI Creative Suite (sdk/creative-suite.ts): generated ad variants + live performance.
-const MANUAL_TABLES = ['CreativeAsset', 'SurveyDraft', 'SocialAmplificationEvent', 'TierProgressionEvent'];
+// VideoConcept + VideoTrend back the admin AI Video Engine (sdk/video-engine.ts): sampled concepts +
+// their predictive score / render phase / measured metrics, and the live trend pool used to ground them.
+// ConceptPoll + ConceptPollVote back the Concept Polling loop (sdk/concept-polling.ts): a poll's concept
+// pool + matchups, and each user's head-to-head / MaxDiff vote.
+const MANUAL_TABLES = ['CreativeAsset', 'SurveyDraft', 'SocialAmplificationEvent', 'TierProgressionEvent', 'VideoConcept', 'VideoTrend', 'ConceptPoll', 'ConceptPollVote'];
 for (const tName of MANUAL_TABLES) {
   sql += `\n-- ${tName} (manual — see sdk/creative-suite.ts)\n`;
   sql += `CREATE TABLE IF NOT EXISTS "${tName}" (\n  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,\n  created_date timestamptz NOT NULL DEFAULT now(),\n  updated_date timestamptz NOT NULL DEFAULT now(),\n  created_by   text,\n  data         jsonb NOT NULL DEFAULT '{}'::jsonb\n);\n`;
   sql += `CREATE INDEX IF NOT EXISTS "${tName}_data_gin" ON "${tName}" USING gin (data jsonb_path_ops);\n`;
   sql += `CREATE INDEX IF NOT EXISTS "${tName}_created" ON "${tName}" (created_date DESC);\n`;
 }
+
+// Extra hot-path indexes for VideoConcept (AI Video Engine): the status/render queries filter by phase + day
+// and order by predictive_score, so these back those reads at scale (mirrors the AT_SORTED_TABLES pattern).
+sql += `CREATE INDEX IF NOT EXISTS "VideoConcept_phase" ON "VideoConcept" ((data->>'phase'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "VideoConcept_day" ON "VideoConcept" ((data->>'day'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "VideoConcept_score" ON "VideoConcept" (((data->>'predictive_score')::float));\n`;
+
+// ConceptPollVote is read by (poll_id) and (poll_id,user_id) on every vote/next call — index both.
+sql += `CREATE INDEX IF NOT EXISTS "ConceptPollVote_poll" ON "ConceptPollVote" ((data->>'poll_id'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "ConceptPollVote_poll_user" ON "ConceptPollVote" ((data->>'poll_id'), (data->>'user_id'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "ConceptPoll_status" ON "ConceptPoll" ((data->>'status'));\n`;
 
 sql += `\n-- Auto-update updated_date on row change\nCREATE OR REPLACE FUNCTION set_updated_date() RETURNS trigger AS $$\nBEGIN NEW.updated_date = now(); RETURN NEW; END; $$ LANGUAGE plpgsql;\n`;
 

@@ -3914,3 +3914,61 @@ CREATE TABLE IF NOT EXISTS "TierProgressionEvent" (
 );
 CREATE INDEX IF NOT EXISTS "TierProgressionEvent_data_gin" ON "TierProgressionEvent" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "TierProgressionEvent_created" ON "TierProgressionEvent" (created_date DESC);
+
+
+-- VideoConcept: one sampled short-video concept from the AI Video Engine — its dimension tags (attributes),
+-- attached live trend, compliance-safe brief, 0-100 predictive score, render phase, and (once tested) the
+-- real measured metrics + blended performance + signed outcome weight (see sdk/video-engine.ts).
+CREATE TABLE IF NOT EXISTS "VideoConcept" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "VideoConcept_data_gin" ON "VideoConcept" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "VideoConcept_created" ON "VideoConcept" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "VideoConcept_phase" ON "VideoConcept" ((data->>'phase'));
+CREATE INDEX IF NOT EXISTS "VideoConcept_day" ON "VideoConcept" ((data->>'day'));
+CREATE INDEX IF NOT EXISTS "VideoConcept_score" ON "VideoConcept" (((data->>'predictive_score')::float));
+
+
+-- VideoTrend: the live trend pool (trending topics / current events) that grounds concepts for news-jacking
+-- (see sdk/video-engine.ts, aiVideoEngineRefreshTrends).
+CREATE TABLE IF NOT EXISTS "VideoTrend" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "VideoTrend_data_gin" ON "VideoTrend" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "VideoTrend_created" ON "VideoTrend" (created_date DESC);
+
+
+-- ConceptPoll: a user poll built from generated video concepts — its concept pool + balanced matchups
+-- (head-to-head / MaxDiff) + status (see sdk/concept-polling.ts).
+CREATE TABLE IF NOT EXISTS "ConceptPoll" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ConceptPoll_data_gin" ON "ConceptPoll" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ConceptPoll_created" ON "ConceptPoll" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "ConceptPoll_status" ON "ConceptPoll" ((data->>'status'));
+
+
+-- ConceptPollVote: one user's head-to-head / MaxDiff vote on a matchup (best + optional worst).
+CREATE TABLE IF NOT EXISTS "ConceptPollVote" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ConceptPollVote_data_gin" ON "ConceptPollVote" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ConceptPollVote_created" ON "ConceptPollVote" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "ConceptPollVote_poll" ON "ConceptPollVote" ((data->>'poll_id'));
+CREATE INDEX IF NOT EXISTS "ConceptPollVote_poll_user" ON "ConceptPollVote" ((data->>'poll_id'), (data->>'user_id'));
