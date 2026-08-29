@@ -24,8 +24,18 @@ export default __handler(async (req) => {
     const day = now.slice(0, 10);
     const budget = renderBudget();
 
-    // Candidate pool: today's compliant concepts still in the "concept" phase, best score first.
-    const pool = await db.filter("VideoConcept", { phase: "concept", compliant: true }, "-predictive_score", 500).catch(() => []) as Record<string, unknown>[];
+    // Candidate pool: an explicit concept_ids set (e.g. an autopilot-approved selection) if given, else
+    // today's compliant concepts still in the "concept" phase, best score first.
+    let pool: Record<string, unknown>[];
+    if (Array.isArray(body.concept_ids) && body.concept_ids.length) {
+      pool = [];
+      for (const id of body.concept_ids.slice(0, 500)) {
+        const r = await db.get("VideoConcept", String(id)).catch(() => null) as Record<string, unknown> | null;
+        if (r && r.compliant !== false) pool.push(r);
+      }
+    } else {
+      pool = await db.filter("VideoConcept", { phase: "concept", compliant: true }, "-predictive_score", 500).catch(() => []) as Record<string, unknown>[];
+    }
     const scored: ScoredConcept[] = (pool || []).map((r) => ({
       id: String(r.id ?? ""),
       concept: (r.attributes as VideoConcept) || {},

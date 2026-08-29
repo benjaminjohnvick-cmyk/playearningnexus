@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import {
   Loader2, Film, Sparkles, TrendingUp, Gauge, Brain, Lightbulb, Play, RefreshCw, ShieldCheck, DollarSign,
-  Trophy, ListChecks,
+  Trophy, ListChecks, Rocket, CheckCircle2, XCircle, Zap,
 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 
 // AdminVideoEngine — the admin front end for the AI Video Engine. Shows the size of the concept space,
@@ -27,6 +28,9 @@ export default function AdminVideoEngine() {
   const [busy, setBusy] = useState('');
   const [poll, setPoll] = useState(null);
   const [pollBusy, setPollBusy] = useState('');
+  const [auto, setAuto] = useState(null);
+  const [autoBusy, setAutoBusy] = useState('');
+  const [dropped, setDropped] = useState({});   // { runId: Set(conceptId) } — concepts the owner unchecked
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -80,6 +84,42 @@ export default function AdminVideoEngine() {
       await Promise.all([loadPollResults(poll.poll_id), load()]);
     } catch (e) { toast.error(e?.data?.error || 'Could not learn from poll.'); }
     finally { setPollBusy(''); }
+  }
+
+  // ── Autopilot: end-to-end run with the human approval gate + graduated autonomy ──
+  const loadAuto = useCallback(async () => {
+    try {
+      const r = await base44.functions.invoke('aiVideoAutopilotStatus', {});
+      if (!r.data?.error) setAuto(r.data);
+    } catch { /* not available */ }
+  }, []);
+  useEffect(() => { loadAuto(); }, [loadAuto]);
+
+  async function autoRun(name, body, label) {
+    setAutoBusy(name);
+    try {
+      const r = await base44.functions.invoke(name, body || {});
+      if (r.data?.error) { toast.error(r.data.error); return null; }
+      toast.success(label || 'Done.');
+      await loadAuto();
+      return r.data;
+    } catch (e) { toast.error(e?.data?.error || 'Request failed.'); return null; }
+    finally { setAutoBusy(''); }
+  }
+  function toggleDrop(runId, cid) {
+    setDropped((d) => {
+      const s = new Set(d[runId] || []);
+      if (s.has(cid)) s.delete(cid); else s.add(cid);
+      return { ...d, [runId]: s };
+    });
+  }
+  async function approveRun(run) {
+    const drop = dropped[run.run_id] || new Set();
+    const kept = (run.candidates || []).map((c) => c.id).filter((id) => !drop.has(id));
+    if (!kept.length) { toast.error('Keep at least one concept to render.'); return; }
+    const all = (run.candidates || []).length;
+    const body = { run_id: run.run_id, action: 'approve', ...(kept.length !== all ? { concept_ids: kept } : {}) };
+    await autoRun('aiVideoAutopilotApprove', body, kept.length !== all ? `Approved ${kept.length} (tweaked).` : 'Approved — rendering.');
   }
 
   if (loading) return <div className="p-8 flex items-center gap-2 text-slate-500"><Loader2 className="h-5 w-5 animate-spin" /> Loading the Video Engine…</div>;
@@ -213,6 +253,93 @@ export default function AdminVideoEngine() {
           </CardContent></Card>
         </div>
       </div>
+
+      {/* Autopilot — the whole pipeline, automatic, with your approval gate that graduates to full autonomy */}
+      {auto && (
+        <Card><CardContent className="p-4">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2 font-semibold"><Rocket className="h-4 w-4" /> Autopilot
+              <Badge variant="secondary" className="capitalize">{auto.autonomy}</Badge>
+              {auto.trust?.auto_approving && <Badge className="bg-emerald-600"><Zap className="h-3 w-3 mr-1" /> auto-approving</Badge>}
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" disabled={!!autoBusy} onClick={() => autoRun('aiVideoAutopilotStart', {}, 'Run started.')}>
+                {autoBusy === 'aiVideoAutopilotStart' ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Play className="h-4 w-4 mr-1" />} Start run
+              </Button>
+              <Button size="sm" variant="ghost" disabled={!!autoBusy} onClick={() => autoRun('aiVideoAutopilotTick', {}, 'Advanced.')} title="Advance in-flight runs now">
+                {autoBusy === 'aiVideoAutopilotTick' ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-1" />} Advance
+              </Button>
+            </div>
+          </div>
+          <p className="mt-1 text-xs text-slate-500">Each morning it pulls live trends → generates concepts → polls users → learns → selects winners, then {auto.autonomy === 'full' ? 'renders automatically.' : 'waits for your approval before rendering.'}</p>
+
+          {/* Trust meter — how close to earning full autonomy */}
+          {auto.trust && auto.autonomy !== 'full' && (
+            <div className="mt-3 rounded-lg border p-3">
+              <div className="text-xs font-medium mb-2 flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5" /> Trust — {auto.trust.earned ? 'earned ✓ (set autonomy to “earned” to let it auto-approve)' : auto.trust.status}</div>
+              <div className="grid sm:grid-cols-3 gap-3 text-[11px]">
+                {[['Approved runs', auto.trust.progress?.runs], ['Agreement', auto.trust.progress?.agreement, true], ['Learning data', auto.trust.progress?.playbook]].map(([label, pair, pct]) => {
+                  const cur = pair?.[0] ?? 0, tgt = pair?.[1] ?? 1;
+                  const val = Math.min(100, Math.round((tgt ? cur / tgt : 1) * 100));
+                  return (
+                    <div key={label}>
+                      <div className="flex justify-between mb-0.5"><span className="text-slate-500">{label}</span><span>{pct ? `${Math.round(cur * 100)}%/${Math.round(tgt * 100)}%` : `${cur}/${tgt}`}</span></div>
+                      <Progress value={val} className="h-1.5" />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Approval gate */}
+          {(auto.awaiting_approval || []).map((run) => {
+            const drop = dropped[run.run_id] || new Set();
+            const kept = (run.candidates || []).filter((c) => !drop.has(c.id)).length;
+            return (
+              <div key={run.run_id} className="mt-3 rounded-lg border-2 border-amber-300 bg-amber-50/40 p-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="text-sm font-medium flex items-center gap-2"><Gauge className="h-4 w-4" /> {run.candidates?.length || 0} winners ready to render · {run.votes || 0} votes · est ${run.est_cost_usd || 0}</div>
+                  <div className="flex gap-2">
+                    <Button size="sm" disabled={!!autoBusy} onClick={() => approveRun(run)} style={{ background: NAVY }}>
+                      <CheckCircle2 className="h-4 w-4 mr-1" /> Approve {kept}{kept !== (run.candidates?.length || 0) ? ' (tweaked)' : ''}
+                    </Button>
+                    <Button size="sm" variant="outline" disabled={!!autoBusy} onClick={() => autoRun('aiVideoAutopilotApprove', { run_id: run.run_id, action: 'reject' }, 'Rejected.')}>
+                      <XCircle className="h-4 w-4 mr-1" /> Reject
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1">Uncheck any you don’t want rendered — that tweak is a training signal.</p>
+                <div className="mt-2 space-y-1">
+                  {(run.candidates || []).map((c) => {
+                    const on = !drop.has(c.id);
+                    return (
+                      <label key={c.id} className={`flex items-center gap-2 rounded border p-1.5 text-xs cursor-pointer ${on ? 'bg-white' : 'opacity-50 line-through'}`}>
+                        <input type="checkbox" checked={on} onChange={() => toggleDrop(run.run_id, c.id)} />
+                        <Badge className={c.predictive_score >= 80 ? 'bg-emerald-600' : 'bg-amber-500'}>{c.predictive_score}</Badge>
+                        <span className="flex flex-wrap gap-1">
+                          {['hook', 'visual_style', 'cta_style', 'trend_angle'].map((d) => c.attributes?.[d] && <Badge key={d} variant="outline" className="text-[10px]">{c.attributes[d]}</Badge>)}
+                        </span>
+                        {c.trend && <span className="text-[11px] text-indigo-600 flex items-center gap-1"><TrendingUp className="h-3 w-3" />{typeof c.trend === 'string' ? c.trend : c.trend?.topic}</span>}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Recent runs */}
+          {!!(auto.recent_runs || []).length && (
+            <div className="mt-3 text-[11px] text-slate-500">
+              <span className="font-medium">Recent runs: </span>
+              {auto.recent_runs.slice(0, 8).map((r, i) => (
+                <span key={r.run_id}>{i ? ' · ' : ''}{r.stage}{r.auto_approved ? ' (auto)' : r.decided === 'approved' ? (r.tweaked ? ' (tweaked)' : ' (approved)') : r.decided === 'rejected' ? ' (rejected)' : ''}</span>
+              ))}
+            </div>
+          )}
+        </CardContent></Card>
+      )}
 
       {/* Concept polls — poll users on which concepts they prefer BEFORE spending render budget */}
       <Card><CardContent className="p-4">

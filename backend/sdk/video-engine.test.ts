@@ -9,6 +9,7 @@ import {
   metricRates, videoPerformance, scoreVideoOutcome,
   buildVideoPlaybook, videoRecommendations,
   usableTrends, pickTrend, attachTrends,
+  momentumFromTraffic, parseGoogleTrendsRss,
 } from "./video-engine.ts";
 
 const SPACE = currentSpace();
@@ -153,6 +154,29 @@ Deno.test("trends: momentum-weighted pick favors the hotter trend and is determi
   assertEquals(pickTrend(TRENDS, 0.01)?.topic, "Mint Mobile price change");   // low r → first/hottest
   assertEquals(pickTrend(TRENDS, 0.99)?.topic, "New viral dance audio");      // high r → the other usable one
   assertEquals(pickTrend([], 0.5), undefined);
+});
+
+Deno.test("trends: momentumFromTraffic maps traffic to 0-100 on a log scale; empty -> 0", () => {
+  assertEquals(momentumFromTraffic(""), 0);
+  assertEquals(momentumFromTraffic("1,000+"), 42);       // log10(1000)=3 *14=42
+  assert(momentumFromTraffic("2,000,000+") > momentumFromTraffic("5,000+"));
+  assert(momentumFromTraffic("100+") >= 20);             // floor
+});
+
+Deno.test("trends: parseGoogleTrendsRss extracts topics + momentum from a live-style RSS feed", () => {
+  const xml = `<?xml version="1.0"?><rss><channel>
+    <item><title><![CDATA[Mint Mobile deal]]></title><ht:approx_traffic>500,000+</ht:approx_traffic><ht:news_item><ht:news_item_title>Mint Mobile drops price</ht:news_item_title></ht:news_item></item>
+    <item><title>Some Game Launch</title><ht:approx_traffic>50,000+</ht:approx_traffic></item>
+    <item><title>No Traffic Topic</title></item>
+  </channel></rss>`;
+  const trends = parseGoogleTrendsRss(xml);
+  assertEquals(trends.length, 3);
+  assertEquals(trends[0].topic, "Mint Mobile deal");     // CDATA stripped
+  assertEquals(trends[0].source, "google-trends");
+  assertEquals(trends[0].angle_hint, "current-event");
+  assert(trends[0].momentum > trends[1].momentum);       // 500k beats 50k
+  assert(trends[2].momentum >= 30);                       // rank-based fallback when no traffic
+  assertEquals(parseGoogleTrendsRss("garbage not xml"), []);
 });
 
 Deno.test("trends: attachTrends pins a live topic and honors angle_hint; empty list passes through", () => {

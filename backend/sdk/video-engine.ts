@@ -167,10 +167,61 @@ export function trendMinMomentum(): number {
   return Math.max(0, snapNumber("VIDEO_ENGINE_TREND_MIN_MOMENTUM", 20));
 }
 
-/** Where trends come from: "llm" (ask a web-aware model each refresh), "manual" (admin-entered list),
- *  or "none" (skip the trend layer entirely). Default "llm". */
+/** Where trends come from: "auto" (fetch LIVE Google-Trends daily searches from the internet, then let the
+ *  AI curate them), "llm" (ask the model from its own knowledge), "manual" (admin-entered list), or "none"
+ *  (skip the trend layer). Default "auto" — genuinely searches the internet for what's blowing up now. */
 export function trendProvider(): string {
-  return (snapString("VIDEO_ENGINE_TREND_PROVIDER", "llm") || "llm").trim().toLowerCase();
+  return (snapString("VIDEO_ENGINE_TREND_PROVIDER", "auto") || "auto").trim().toLowerCase();
+}
+
+/** Region for the live trend search (Google-Trends geo code). */
+export function trendGeo(): string {
+  return (snapString("VIDEO_ENGINE_TREND_GEO", "US") || "US").trim().toUpperCase();
+}
+
+// ── live trend parsing (pure + testable; the network fetch lives in the function) ───────────────────────
+function stripTag(s?: string): string {
+  return String(s ?? "")
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ").trim();
+}
+function firstMatch(body: string, re: RegExp): string {
+  const m = body.match(re);
+  return m ? stripTag(m[1]) : "";
+}
+
+/** Map a Google-Trends "approx traffic" string (e.g. "200,000+") to a 0–100 momentum via a log scale.
+ *  Returns 0 when there's no number, so the caller can fall back to a rank-based momentum. Pure. */
+export function momentumFromTraffic(s?: string): number {
+  const n = Number(String(s ?? "").replace(/[^\d]/g, "")) || 0;
+  if (n <= 0) return 0;
+  return Math.max(20, Math.min(100, Math.round(Math.log10(n) * 14)));
+}
+
+/** Parse a Google-Trends "daily trending searches" RSS feed into TrendSignals. Regex-based (no XML lib), so
+ *  it runs anywhere and is unit-testable. Momentum comes from approx_traffic when present, else from rank
+ *  (earlier items are hotter). Pure. */
+export function parseGoogleTrendsRss(xml: string): TrendSignal[] {
+  const out: TrendSignal[] = [];
+  const items = String(xml ?? "").split(/<item[\s>]/i).slice(1);
+  let rank = 0;
+  for (const chunk of items) {
+    const body = chunk.split(/<\/item>/i)[0] ?? "";
+    const topic = firstMatch(body, /<title>([\s\S]*?)<\/title>/i);
+    if (!topic) continue;
+    rank++;
+    const traffic = firstMatch(body, /<ht:approx_traffic>([\s\S]*?)<\/ht:approx_traffic>/i);
+    const news = firstMatch(body, /<ht:news_item_title>([\s\S]*?)<\/ht:news_item_title>/i);
+    const momentum = momentumFromTraffic(traffic) || Math.max(30, 92 - rank * 4);
+    out.push({
+      topic, source: "google-trends", momentum,
+      hashtags: [], category: news ? news.slice(0, 60) : "",
+      angle_hint: "current-event",
+    });
+  }
+  return out;
 }
 
 /** Keep only trends at/above the momentum floor, hottest first. Pure. */

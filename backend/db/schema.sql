@@ -3972,3 +3972,17 @@ CREATE INDEX IF NOT EXISTS "ConceptPollVote_data_gin" ON "ConceptPollVote" USING
 CREATE INDEX IF NOT EXISTS "ConceptPollVote_created" ON "ConceptPollVote" (created_date DESC);
 CREATE INDEX IF NOT EXISTS "ConceptPollVote_poll" ON "ConceptPollVote" ((data->>'poll_id'));
 CREATE INDEX IF NOT EXISTS "ConceptPollVote_poll_user" ON "ConceptPollVote" ((data->>'poll_id'), (data->>'user_id'));
+
+
+-- VideoPipelineRun: one end-to-end AI Video Autopilot run — its stage, poll, selected render candidates, the
+-- human (or auto) decision, and trust bookkeeping for graduated autonomy (see sdk/video-autopilot.ts).
+CREATE TABLE IF NOT EXISTS "VideoPipelineRun" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "VideoPipelineRun_data_gin" ON "VideoPipelineRun" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "VideoPipelineRun_created" ON "VideoPipelineRun" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "VideoPipelineRun_stage" ON "VideoPipelineRun" ((data->>'stage'));

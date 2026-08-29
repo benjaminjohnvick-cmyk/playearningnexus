@@ -83,7 +83,7 @@
       "name": "daily-delivery-makegood-sweep",
       "cron": "0 11 * * *",
       "function": "deliveryMakeGoodSweep",
-      "_comment": "All-tiers DELIVERY make-good true-up. For every active advertising seat past its guarantee term, compares delivered impressions to the guaranteed volume and, on a shortfall, grants a FREE make-good (extends delivery at no charge until the guaranteed volume is served — bounded, never more than what was sold), records an AdvertiserMakeGood, and emails the advertiser. Closes out make-goods once met/expired. Guarantees delivery we control, never revenue/ROI. Respects DELIVERY_GUARANTEE_ENABLED."
+      "_comment": "All-tiers DELIVERY make-good true-up. For every active advertising seat past its guarantee term, compares delivered impressions to the guaranteed volume and, on a shortfall, grants a FREE make-good (extends delivery at no charge until the guaranteed volume is served \u2014 bounded, never more than what was sold), records an AdvertiserMakeGood, and emails the advertiser. Closes out make-goods once met/expired. Guarantees delivery we control, never revenue/ROI. Respects DELIVERY_GUARANTEE_ENABLED."
     },
     {
       "name": "weekly-advertiser-ai-report",
@@ -268,6 +268,24 @@
       "cron": "30 13 * * *",
       "function": "productStatsCompile",
       "_comment": "Daily: aggregates real Orders per product into ProductStat (units, buyers, median/avg revenue). Publishes results once a product passes PRODUCT_STATS_MIN_SAMPLE; below that it stays 'gathering data' (show how it works). Run with {dry_run:true} to preview."
+    },
+    {
+      "name": "daily-video-trend-refresh",
+      "cron": "12 8 * * *",
+      "function": "aiVideoEngineRefreshTrends",
+      "_comment": "Searches the internet each morning (live Google-Trends daily searches, AI-curated) and refreshes the AI Video Engine's trend pool so concepts ride current events. Provider follows VIDEO_ENGINE_TREND_PROVIDER (default 'auto')."
+    },
+    {
+      "name": "daily-video-autopilot-start",
+      "cron": "20 8 * * *",
+      "function": "aiVideoAutopilotStart",
+      "_comment": "Starts one end-to-end AI video run each morning (after the trend refresh): generate concepts -> build a user poll -> collect votes. It then waits for the human approval gate (or auto-approves once autonomy is earned)."
+    },
+    {
+      "name": "video-autopilot-tick",
+      "cron": "35 */4 * * *",
+      "function": "aiVideoAutopilotTick",
+      "_comment": "Every 4 hours: advance any run whose poll is ready \u2014 learn from votes, select render winners, then auto-approve (if trust earned) or park at the human gate."
     }
   ]
 }
