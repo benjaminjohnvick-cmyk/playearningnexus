@@ -512,6 +512,8 @@
   "earningsWhatIf",
   "emailMarketingAutomation",
   "endorserConversionRecord",
+  "endorserPersonalizePost",
+  "endorserPostConversionHook",
   "endorserRewardSweep",
   "enrichCRMProspectsAI",
   "enrollSocialAffiliate",

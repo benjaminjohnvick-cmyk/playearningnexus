@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { emitEvent } from "../../sdk/events.ts";
+import { referralTiersEnabled, referralBonusAmount } from "../../sdk/referral-tiers.ts";
 
 export default __handler(async (req) => {
   const base44 = createClientFromRequest(req);
@@ -57,6 +58,26 @@ export default __handler(async (req) => {
         referrer_user_id: referral.referrer_user_id,
         referred_user_id: referral.referred_user_id,
       }, { source: "autoReferralConversionHandler" }).catch(() => null);
+
+      // ── Two-tier referral bonus (GATED — pending counsel) ────────────────────────────────────────────
+      // On a REAL user conversion, stage a PENDING ReferralBonus (USER kind) so the gated referralBonusSweep
+      // can pay the small Site Cash bonus once enabled. Additive + idempotent + moves NO money: while
+      // REFERRAL_TIERS_ENABLED is off this block no-ops entirely. (Advertiser-tier bonuses are staged from the
+      // advertiser-payment-clear flow via referralBonusRecord, not here — a user conversion is the user kind.)
+      if (referralTiersEnabled() && referral.referrer_user_id !== referral.referred_user_id) {
+        const dup = await base44.asServiceRole.entities.ReferralBonus
+          .filter({ referrer_user_id: referral.referrer_user_id, referred_user_id: referral.referred_user_id, kind: "user" }, "-created_date", 1)
+          .then((r: any) => r || []).catch(() => []);
+        if (!dup?.[0]) {
+          const nowISO = new Date().toISOString();
+          await base44.asServiceRole.entities.ReferralBonus.create({
+            referrer_user_id: referral.referrer_user_id, referred_user_id: referral.referred_user_id,
+            kind: "user", tier: null, amount_sitecash: referralBonusAmount("user"),
+            payment_cleared_at: null, kyc_ok: false, self_referral: false, refunded: false, chargeback: false,
+            active: true, status: "pending", created_at: nowISO, updated_at: nowISO,
+          }).catch(() => null);
+        }
+      }
     }
 
     return Response.json({ ok: true });
