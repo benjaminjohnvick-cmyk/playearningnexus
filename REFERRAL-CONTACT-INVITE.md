@@ -48,7 +48,11 @@ leave the device. Plus a `ConsentRecord` (kind `referral_contact_invite`) as the
   first survey (existing `Referral.signup_bonus_paid`). Sending invites alone earns nothing, so there's no
   incentive to blast.
 - Each qualified referral is worth **$5 internally** (`REFERRAL_INTERNAL_VALUE_USD`) — an internal accounting
-  figure stamped on the `Referral` row, **never shown to any user**.
+  figure stamped on the `Referral` row, **never shown to any user**. NOTE: this internal $5 is **not** the
+  referral-bonus payout. The Site Cash **two-tier referral bonus** — **$5 to a referred user** and **$2,000 to
+  the referrer for each referred paying advertiser, on every one of the three tiers** — is a separate feature,
+  documented in `REFERRAL-PROGRAM.md` ("Two-tier referral bonus") and `SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md`
+  (§3). Both are gated OFF pending counsel.
 
 ## Backend built
 
