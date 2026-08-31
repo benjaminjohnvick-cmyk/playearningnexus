@@ -1,5 +1,640 @@
 # PlayEarning Nexus — Changes Summary
 
+## 2026-08-29 — Two-tier referral bonus + paid-endorser social program (BUILT, gated OFF pending counsel)
+
+Two Site Cash reward features, both single-tier, all closed-loop, disabled by default (no money moves, nothing
+posts to any account) until enabled after counsel sign-off:
+
+- **Two-tier referral bonus** (`sdk/referral-tiers.ts`; `REFERRAL_TIERS_ENABLED=0`): **$5** Site Cash per active
+  referred user, and **$2,000 Site Cash per referred paying advertiser on each of the three tiers**
+  (`REFERRAL_ADVERTISER_BONUS_SITECASH`/`REFERRAL_ADV_BONUS_TIER1|2|3`, all default 2000). Advertiser bonus pays
+  only after the referred advertiser's payment clears + a 45-day clawback (`REFERRAL_ADVERTISER_CLAWBACK_DAYS`),
+  never on refund/chargeback/self/no-KYC. User bonus auto-staged on the real conversion
+  (`autoReferralConversionHandler`). Hooks: `referralBonusRecord`/`referralBonusSweep` (sweep preview-only while off).
+- **Paid-endorser program + AI social-post engine** (`sdk/endorser-rewards.ts`, `sdk/social-endorser-engine.ts`;
+  `ENDORSER_ENABLED=0`): opted-in members earn a share (default **20%**, capped **$25/day** / **$500/period**) of
+  the **measured** conversion value their **#ad-disclosed** posts drive. `endorserPersonalizePost` personalizes an
+  advertiser's **approved** copy (no income claims, disclosure enforced), routed through the autonomy `social`
+  domain — **draft by default**, auto-posting triple-gated (`ENDORSER_PERSONALIZE_ENABLED`/`ENDORSER_AUTOPOST_ENABLED`
+  + earned trust + kill switch). **Self-learning**: posts tag creative axes and each conversion feeds the shared
+  creative-suite playbook per platform, so copy self-improves like the other ads. Hooks:
+  `endorserConversionRecord`/`endorserPostConversionHook`/`endorserRewardSweep`.
+- **Docs**: `SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md` (counsel packet), plus updates to `REFERRAL-PROGRAM.md`,
+  `SOCIAL-AMPLIFICATION-AND-VALUE.md`, `ADMIN-SETTINGS-README.md`, `COMPLIANCE-AND-CURRENT-STATE.md`.
+- **Tests/audit**: 16 new SDK tests pass; structural audit clean. New tables: `ReferralBonus`, `EndorserConversion`.
+
+## 2026-08-20 — Founding (pre-revenue) offer → Tier 1: 200k cap, +30% Tier 1, category exclusivity, disclosure
+
+Two-phase advertiser offer (see FOUNDING-PRE-REVENUE-OFFER-AND-TIER1-SPEC.md):
+
+- **Founding cap → 200,000** (`FOUNDING_ADVERTISER_SLOTS`) — aspirational headline; delivery is capacity-paced
+  with NO fixed timeline (governor never promises a fixed year-one volume).
+- **Post-founding Tier 1 price = +30%** (`TIER1_PRICE_UPLIFT_OVER_FOUNDING_PCT` 0.30): founding $13,000 → Tier 1
+  $16,900 (`tier1PostFoundingPriceUsd`). Signup + `/Apply` flip price/name/perks automatically when the cap fills;
+  founders are grandfathered (keep their price + perks + 100%-for-life survey earn-share).
+- **Category exclusivity** for every founder (`FOUNDING_CATEGORY_EXCLUSIVITY`): claim a category no other live
+  founder holds; enforced at signup (`foundingCategoryTaken`, stamped `category`/`category_exclusive`).
+- **Capacity-paced delivery disclosure** (`FOUNDING_DISCLOSURE_COPY` + built-in default) — added to
+  `foundingDisclosures`, recorded in the consent ledger, and shown clear-and-conspicuously on `/Apply`.
+  Advertising-delivered framing, never ROI/revenue.
+- New Deno tests (61 pass); build + audit clean; no money moved (charging stays on the gated processor path).
+
+## 2026-08-19 — 13-period (four-week) annual pricing (+8.33%), value kept at ~2×
+
+Billing every 4 weeks = 13 periods/year, not 12. New `BILLING_13_PERIOD_PRICING` (default ON) makes a fixed-price
+tier's ANNUAL price 13 four-week periods (×13/12, +8.33%): Tier 1 $12,000 → $13,000; Tier 2 $200,000 →
+$216,666.67. Tier 3 pays its named budget with the floor tracking the Tier 2 price.
+
+- Applied at the price source (`billing-cadence.ts` → `billingYearFactor`), so value stacks target 2× of the new
+  price and the ~2× headline holds (Tier 1 ~$28.5k value / 2.19×; Tier 2 $433,333 / 2.0× via value-match
+  impressions; Tier 3 2.0×). Extra value is the platform's own inventory (near-zero cost) → uplift ≈ margin.
+- Tier 3 now scales off the RAW base so its ratio stays 2×; its floor never dips below the live Tier 2 price.
+- MUST be disclosed as "billed in 13 four-week cycles," never "monthly." Prepay-upfront unchanged (full year
+  collected once). Toggle off to revert to 12-month pricing.
+- Tests updated + factor test added (56 pass); docs + FOR-YOUR-ATTORNEY item; audit clean.
+
+## 2026-08-19 — Site Cash: settings toggle + discount shown on marketplace checkout
+
+- **Settings toggle** (`Settings.jsx`, Profile tab → "Checkout & Site Cash"): a Switch buyers flip themselves to
+  turn auto-apply on/off; saves `auto_apply_site_cash` on the user (which every checkout already honors).
+- **Marketplace checkout** (`CheckoutChoices.jsx`): fetches `checkoutSiteCashQuote` and shows the auto-applied
+  discount up front (banner + on the "Pay by card" option: "$X Site Cash applied — pay $Y by card"). Fixed the
+  "Pay by card" action to pass no `apply_points` (let the server honor the buyer's setting) instead of forcing it
+  off. Frontend build + lint clean.
+
+## 2026-08-19 — Store checkout wired for Site Cash auto-apply
+
+The store checkout (`OrderViaSite.jsx`, which captures the card client-side) now auto-applies Site Cash:
+
+- On the credit-card path it calls `checkoutSiteCashQuote` before capture, charges the reduced `card_after_usd`,
+  and shows the discount inline ("Site Cash applied: −$X · You pay: $Y").
+- `placeStoreOrder` re-applies the same Site Cash server-authoritatively on the credit-card branch: deducts the
+  points, records the money flow, and stamps `card_charge_usd` / `site_cash_applied_usd` / `points_spent` on the
+  order. Client and server use identical math, so the card charge and points deduction always match (no
+  under-collection). Only the real-money card charge is reduced; survey_balance / refund_credit are unchanged.
+- Frontend build + backend audit clean; 55 tests pass.
+
+## 2026-08-19 — Site Cash auto-apply: every checkout + per-user toggle
+
+Extends the Site-Cash auto-apply so it's automatic on every checkout and each buyer controls it:
+
+- **Per-user preference** (`auto_apply_site_cash` on User) that overrides the site default —
+  `setSiteCashAutoApply` (read/set/reset) + `resolveSiteCashAutoApply(user)`. `hybridCheckout` now honors it.
+- **Server-authoritative card paths auto-apply with no frontend change:** added to `purchaseMarketplaceListing`
+  (card branch) — deduct Site Cash, record the money flow, charge the card only the reduced remainder (mirrors
+  the hybrid flow; card opens awaiting_payment so capture charges the reduced amount). All existing payment
+  options untouched.
+- **Client-captured card paths** (e.g. `placeStoreOrder`, which captures on the client): new read-only
+  `checkoutSiteCashQuote` ({price_usd} → points_applied / card_after_usd, honoring the buyer's preference) so the
+  UI charges the reduced amount — avoids under-collecting. Store checkout component still needs to call it (small
+  follow-up).
+- Tests for the resolve logic (55 pass total); compile + audit clean.
+
+## 2026-08-19 — Advertiser billing (52-wk prepay / 13 cycles), 30-day cancellation, Site-Cash auto-apply
+
+Three billing/checkout changes (see `ADVERTISER-BILLING-CANCELLATION-AND-SITE-CASH.md`):
+
+- **Full 52 weeks prepaid up front, tracked in 13 four-week cycles** (all tiers). One upfront prepayment through
+  the normal checkout — not credit, not installments, not a recurring auto-charge. `billing-schedule.ts`
+  (`annualPrepayAmount`, `cycleLadder`, `billingScheduleStatus`) + `backend/functions/billingScheduleStatus`;
+  settings `BILLING_ANNUAL_PREPAY_ENABLED`/`BILLING_CYCLES` (13)/`BILLING_CYCLE_DAYS` (28).
+- **30-day proportional cancellation** (cooling-off): keep two-thirds, refund one-third, within 30 days of
+  purchase (Tier 1 $12k → keep $8k, refund $4k). Refund as closed-loop site credit; non-refundable portion
+  disclosed + consented up front. Coexists with the Full-Value Delivery Guarantee (which governs after the
+  window) — independent switches. `advertiser-cancellation.ts` + `backend/functions/advertiserCancel`; settings
+  `ADVERTISER_CANCELLATION_ENABLED`/`_WINDOW_DAYS` (30)/`_REFUND_PCT` (1/3).
+- **Site Cash auto-applies at checkout**: a buyer's non-cashable points auto-offset any purchase, bounded by the
+  total, the per-transaction spend cap (12%/24%), and balance held. `site-cash-apply.ts` + wired into
+  `hybridCheckout` (opt-out via `apply_points:false`); setting `SITE_CASH_AUTO_APPLY`.
+- 13 new Deno tests (54 pass total); compile + audit clean; no money moved by these functions.
+
+## 2026-08-19 — Inventory governor now counts the guarantee's true committed volume (bottleneck fix)
+
+The Full-Value Delivery Guarantee promises each seat its base allotment **plus** the value-match bonus, and a
+Tier 3 Unlimited plan promises a large **scaled** volume — but the inventory governor was counting every plan at a
+flat per-seat allotment. That under-counted true demand, so the governor could report free capacity it didn't have
+and oversell *immediate* seats, which the no-time-cap guarantee would then absorb as a growing make-good backlog
+(the bottleneck). Fixed:
+
+- **Reserve the real guaranteed-per-seat volume** — `tier1GuaranteedPerSeat` / `tier2GuaranteedPerSeat` = base
+  allotment + value-match bonus (mirrors `delivery-guarantee.ts` `guaranteedUnits`). Committed, utilization,
+  remaining headroom, sellable-seat counts, and the Tier 1 cap all now use these.
+- **Count Tier 3 Unlimited at its own scaled volume** — `inventoryStatus` sums each `Tier2ScalingPlan`'s actual
+  `guaranteed_impressions_per_year` instead of a flat number, and breaks Tier 3 out (`active_tier3`,
+  `committed_tier3`). A large Tier 3 plan now correctly pushes new Tier 2 seats to capacity-paced.
+  `inventoryPlacement("tier2", customAllotment)` lets a Tier 3 seat reserve its own volume.
+- **Make-good stays residual** — the end-of-term top-up serves on spare inventory only (after paid/priority,
+  before the house ad), so it never displaces paid delivery and is intentionally not added to `committed`.
+- Pure `committedFromPlans` helper + Deno tests (41 pass total); `TIER2-INVENTORY-GOVERNOR.md` updated. No money
+  moves; compile + audit clean.
+
+## 2026-08-19 — Tier 1 gets the always-on AI campaign-manager line
+
+Tier 1 (Founding) now includes the same always-on AI campaign-manager + optimization service the higher tiers
+carry — previously only Tier 2 / Tier 3 Unlimited had the `ai_campaign_manager` line in their rate card. It is
+AI-driven with human escalation available (not sold as a dedicated human hire), and is sized for the Tier 1
+package (~$3,000/yr value vs the higher tiers' larger dedicated-manager line, since a $54k line would exceed the
+whole Tier 1 price).
+
+- **New line in the Tier 1 value stack** — `tier1-value-stack.ts` adds an `ai_campaign_manager` line, gated on
+  the new `TIER1_AI_CAMPAIGN_MANAGER` toggle (default ON) and valued at `TIER1_VALUE_CAMPAIGN_MGR_USD`
+  (default $3,000/yr). Keeps the stack comfortably above the 2× / $24k target; the value-match auto-sizer
+  still closes any gap with guaranteed impressions.
+- **Toggle + value settings** — `founding-advertiser.ts` exports `tier1AiCampaignManager()`; `settings.ts`
+  registers `TIER1_AI_CAMPAIGN_MANAGER` (bool, default 1) and `TIER1_VALUE_CAMPAIGN_MGR_USD` (number,
+  default 3000), both admin-tunable under Founding Advertiser.
+- Delivered-service line only (advertising value, not a revenue/ROI promise); compile + audit clean.
+
+## 2026-08-19 — Full-Value Delivery Guarantee (all three tiers, make-good only)
+
+A standing guarantee behind every advertiser tier (Tier 1, Tier 2, Tier 3 Unlimited): **pay upfront, and we keep
+delivering the full dollar amount of advertising you were promised — no time cap — until you've received it.**
+Make-good only (more delivery until you're made whole) — NOT a refund and NOT a results/ROI guarantee.
+
+- **Deliver-until-met for every tier** — with `FULL_VALUE_GUARANTEE_ENABLED` (default ON), `deliveryMakeGoodSweep`
+  runs the make-good with no time cap for all tiers (previously only Tier 3 Unlimited match-over-time), closing
+  only when the full promised advertising is served.
+- **Dollar framing** — `full-value-guarantee.ts` (`fvgStatus`, `impressionsValueUsd`) expresses promised vs
+  delivered advertising as a dollar amount at the conventional CPM; `computeSeatGuarantees` /
+  `deliveryGuaranteeStatus` now return each seat's `full_value_guarantee`. The `/Apply` page shows a guarantee
+  callout across all tiers; the dashboard card shows "$X of $Y in advertising delivered."
+- **No refund in the offer** — `FULL_VALUE_GUARANTEE_REFUND_BACKSTOP` ships OFF; the remedy is delivery, not
+  money back. (An optional, bounded, undelivered-only refund path exists in config if ever needed, gated.)
+- Deno tests; `FULL-VALUE-DELIVERY-GUARANTEE.md` (guarantee + agreement/disclosure terms); `FOR-YOUR-ATTORNEY.md`
+  item added.
+
+## 2026-08-18 — Tier 3 Unlimited wired into the marketing funnel
+
+The AI marketing-funnel product graph (`AI_FUNNEL_PRODUCT_GRAPH`) now carries the full advertiser ladder end to
+end: **sponsored placement → Tier 1 → Tier 2 → Tier 3 Unlimited**. Added a `tier3_unlimited` node (top of the
+ladder, `down → tier2`, `financial:false` since it's prepaid advertising, not credit) and set `tier2.up →
+tier3_unlimited` (was null). So a maxed-out Tier 2 advertiser with strong on-platform attributed results is now
+recommended up to Tier 3 Unlimited through the same engine (`aiFunnelRecommend`/`aiFunnelCommit`), daily
+re-engagement sweep (`funnelReengageSweep`/`funnelReengageEmail`), suitability guard, and benchmark loop as every
+other product — connecting the tiers to the broader consumer + email/CRM funnels. `AI-FUNNEL-DESIGN.md` updated.
+
+## 2026-08-18 — Tier 3 Unlimited: match a budget bigger than inventory over time
+
+When a Tier 3 Unlimited budget buys more impressions than the current audience can serve in a year, we now
+deliver the FULL purchased volume **over time — matched to their number as the audience grows** — instead of
+turning them away or overselling.
+
+- **No time cap on the make-good** for match-over-time plans (`TIER3_UNLIMITED_MATCH_OVER_TIME`, default ON):
+  `deliveryMakeGoodSweep` leaves the make-good's `expires_at` null and closes it only when the exact purchased
+  volume is matched (still bounded by volume — never more than sold, never oversold).
+- **Honest over-time outlook in the quote** — `tier3UnlimitedDeliveryOutlook()` compares the guaranteed volume
+  to live inventory capacity (`inventoryStatus`): `exceeds_current_inventory`, `est_min_years_to_match` (a floor
+  at today's audience, shorter as DAU grows), and plain-language framing. The `/Apply` Tier 3 Unlimited card
+  shows it whenever the budget outpaces current inventory. Deno tests; `TIER3-UNLIMITED-SPEC.md` updated.
+
+## 2026-08-18 — Tier 3 Unlimited (uncapped scaling above $200k)
+
+Added a scaling tier above the $200k Tier 2 base: an advertiser names any budget they can afford and the package
+scales proportionally from the A–D rate card, keeping the same ~2× advertising-value ratio (advertising VALUE
+delivered, never a return).
+
+- **tier3-unlimited.ts + tier3UnlimitedQuote endpoint** — `tier3UnlimitedQuote(budgetUsd)` scales deliverables, value, and
+  guaranteed impressions linearly (e.g. $400k → ~$808.6k value / 12M impressions/yr; $1M → ~$2.02M / 30M).
+- **Two guardrails:** prepaid upfront (not credit) and capacity-paced (guaranteed as a total, delivered as the
+  audience grows via the inventory governor — never oversold), backed by the delivery guarantee.
+- **Delivery guarantee honors custom volumes** — `computeSeatGuarantees` + `deliveryMakeGoodSweep` now read a
+  per-plan `guaranteed_impressions_per_year`, so a Tier 3 Unlimited seat's custom guaranteed volume is made good if short.
+- **/Apply** — a Tier 3 Unlimited card with a budget input and live scaled-value preview. Settings `TIER3_UNLIMITED_*`;
+  Deno tests; `TIER3-UNLIMITED-SPEC.md`; `FOR-YOUR-ATTORNEY.md` gains a Tier 3 Unlimited item.
+
+## 2026-08-18 — Tier 2 value stack ($200k → $400k in advertising value)
+
+Applied the Tier 1 value-stack pattern to Tier 2 "Scale". Same compliance spine: $400,000 is advertising VALUE
+delivered, never a $400,000 return/revenue/ROI claim.
+
+- **Rate card raised to a conservative 2×** — the A–D `CATALOG` went from ~$282,400 to **~$404,300** at
+  conventional rates via a balanced mix: more media (between-survey impressions 3M→5M/yr, video 500k→1M/yr) AND
+  more research/service (audience panels 4→5, brand-lift 2→3, competitive reports 4→6, expanded managed
+  creative/social/email/newsletter and AI campaign management). The delivery-driving `TIER2_*` settings were
+  bumped in lockstep, so what's valued is what's delivered and guaranteed.
+- **tier2-value-stack.ts + endpoint** — `tier2ValueStack()` wraps the rate card with the 2×/$400k target and a
+  value-match top-up (guaranteed bonus impressions) if the card is ever trimmed below target; `tier2ValueStack`
+  read endpoint surfaces it on `/Apply` (Tier 2 card shows "$200k → $400k in advertising value" with A–D group
+  subtotals and the guarantee note).
+- **Backed by the delivery guarantee** — `guaranteedUnits("tier2")` now folds in the value-match bonus, so the
+  advertised $400k is actually backed by delivery + make-good. Deno tests for the math; `TIER2-VALUE-STACK.md`,
+  rate-card/offer docs, and `FOR-YOUR-ATTORNEY.md` (value-claim item now covers both tiers) updated.
+
+## 2026-08-18 — Launch-backlog Section A close-out
+
+Swept the remaining "Section A" engineering items from `WHATS-LEFT-BEFORE-LAUNCH.md`. Most were already built
+and were verified done; the genuine gaps were closed:
+
+- **DMCA content-license-at-upload** (new) — uploaders now certify they own/are licensed to their content and
+  grant a display license before it's hosted. Required on the ad-creative paths (`createAdGridAd` server-side +
+  the AdSignupForm checkbox), logged to the consent ledger via `recordContentLicense` (+ `content-license.ts`),
+  and stamped on the ad record. Completes the DMCA trio (takedown + counter-notice already existed).
+- **partnerNotificationWebhook hardening** (new) — optional `PARTNER_WEBHOOK_SECRET` shared-secret guard so the
+  internal notification hook can't be spoofed (matches the IAP-webhook pattern).
+- **Automated a11y gate** (new) — a `lint:a11y` script promoting the key jsx-a11y rules to errors, on top of the
+  existing eslint-plugin-jsx-a11y config.
+- **Verified already-done (no change needed):** idempotency-key UNIQUE index (strict exactly-once) on the money
+  ledger; `jurisdictionCheck` + `age_verified_18plus` gating on prize/contest entry; sweepstakes free-entry
+  (AMOE) + official-rules/odds screen; inbound webhook signature verification (BitLabs HMAC-SHA256, IAP secret);
+  no raw card data stored (PCI SAQ-A posture). MLMNode field rename is the backlog's explicitly-optional
+  back-compat cleanup and was left as-is. `FOR-YOUR-ATTORNEY.md` notes the content-license/DMCA posture.
+
+## 2026-08-18 — Tax / 1099 pipeline completion (partner cash payouts)
+
+Completed the launch-list Tax/1099 item for real-cash partner payouts (developers/affiliates/creators; users
+stay closed-loop and generate no 1099s). W-9 collection, backup withholding, and admin aggregation already
+existed; this adds the missing pieces end to end:
+
+- **Self-service W-9 status** — `taxProfileStatus` (YTD reportable vs the $600 threshold, W-9 on file, backup
+  withholding, masked TIN) surfaced in a new **Tax Center** on the developer earnings dashboard, with a W-9
+  submission form (`submitTaxInfo`). Partners can see when they must file a W-9 to stop 24% withholding.
+- **Filing-ready 1099-NEC export** — `tax1099Export` (admin) produces per-recipient 1099-NEC rows (box 1
+  nonemployee comp, box 4 federal tax withheld) as JSON or CSV for a filing provider; over-threshold recipients
+  without a W-9 return as `blocked`. Full TIN only in an explicit admin export, masked everywhere else.
+- **Helpers + security** — `ytdReportable`, `ytdWithheld`, `hasW9OnFile`, `w9Requirement`, and the 1099-NEC
+  row/CSV builders in `tax.ts`; `TaxProfile` given owner-scoped RLS (previously unscoped PII). Deno unit tests
+  for withholding, thresholds, and the CSV builder. Backup withholding confirmed wired across all payout rails.
+  See `TAX-1099-PIPELINE.md`; `FOR-YOUR-ATTORNEY.md` gains a 1099/withholding review item.
+
+## 2026-08-18 — Advertiser analytics, delivery guarantee & Tier 1 value stack
+
+**Compliance spine throughout: we measure/benchmark/guarantee-delivery, we never guarantee revenue or ROI.**
+
+- **AI advertiser performance engine** — the conventional PPC metric set (impressions, clicks, CTR, CPC,
+  conversions, CPA, revenue, ROAS/ROI) + social/engagement attribution, computed from REAL activity and
+  benchmarked against standard PPC norms, with AI-written recommendations. Automatic weekly report for every
+  advertiser across all tiers (`advertiserWeeklyReport`, Mondays), an on-demand read (`advertiserPerformance`),
+  and a dashboard card. Never guarantees an ROI; below a data threshold it says "still gathering data" instead
+  of fabricating numbers. Off-platform revenue is only counted when the advertiser reports it
+  (`advertiserReportRevenue`), stored flagged/unverified. (`advertiser-metrics.ts`; `AdvertiserReport`,
+  `AdvertiserReportedRevenue` entities; `AI_ADVERTISER_REPORTS_ENABLED`, `PPC_BENCH_*`.) See
+  `ADVERTISER-AI-REPORTS.md`.
+- **All-tiers delivery guarantee + make-good** — each seat is guaranteed a defined impression volume; any
+  term-end shortfall is topped up with FREE inventory until the guarantee is met. Bounded by volume (never more
+  than sold) and time (`DELIVERY_GUARANTEE_MAX_EXTENSION_MONTHS`). Runs automatically: daily sweep
+  (`deliveryMakeGoodSweep`) grants make-goods, the interstitial serving path delivers them as a residual tier,
+  and delivery meters them to fulfillment. Read via `deliveryGuaranteeStatus` + dashboard card. Guarantees
+  delivery we control, never results. (`delivery-guarantee.ts`; `AdvertiserMakeGood` entity;
+  `DELIVERY_GUARANTEE_*`.) See `DELIVERY-GUARANTEE-MAKEGOOD.md`.
+- **Tier 1 value stack ("$12,000 → $24,000 in advertising value")** — the compliant 2× headline: the $24k is
+  advertising VALUE delivered (impressions at conventional CPM, placements, creative, managed service),
+  itemized and rendered on `/Apply`, backed by the delivery guarantee. If included lines fall below target, the
+  stack adds guaranteed value-match impressions (real advertising) rather than inflating a rate — never tied to
+  the advertiser's revenue. (`tier1-value-stack.ts`; `TIER1_VALUE_*`.) See `TIER1-VALUE-STACK.md`.
+- **Supporting** — new entity tables + owner-scoped RLS registered; Deno unit tests for the make-good bounding
+  and value-stack math; `FOR-YOUR-ATTORNEY.md` gains review items for the delivery guarantee and the value
+  claim.
+
+## 2026-07-30 — New features + platform-wide cost levers
+
+**Five features (all prebuilt, ON by default):**
+- **Tiered survey rewards** — non-premium earn 12 points per $1 of survey value; premium (PPC) earn 24%
+  cash back; the store unlocks at $8/day of gross survey value. BitLabs cash is kept by the platform.
+- **Services marketplace section** — full parity with the other sections + the App Store: serverless-GPU
+  category tiles, subsections, and search (`serviceStoreCategories`, `aiServiceCategoryImages`).
+- **Auto-qualify → one-tap Premium** — a user who completes the daily survey goal on enough days
+  (`PREMIUM_AUTOQUALIFY_DAYS`, default 260 = 5/wk × 52) is offered a consent-gated, one-tap upgrade
+  (`premiumEligibility`, `premiumAcceptOffer`, `PremiumEarnedBanner`).
+- **Group goals** — friends work toward a big-ticket item with NO shared wallet: each keeps their own
+  points, the platform sums individual progress and funds a capped reward at the shared milestone
+  (`createGroupGoal`/`joinGroupGoal`/`groupGoalStatus`/`claimGroupGoalReward`; `GroupGoal`,
+  `GroupGoalReward` entities). Compliant — value flows platform→member only.
+- **Verified surveys** — answer the platform's OWN PPC surveys by typing/dictating (free, phone keyboard
+  mic) or by voice recording. Free device transcription first, Whisper only as fallback; a free rules-first
+  matcher fills answers, the respondent confirms, an AI validity score + heatmap trace gate the payout.
+  **Recordings are transcribed then discarded — never stored** (biometric data minimization). Own PPC
+  surveys only, never BitLabs. (`verifiedSurveyConsent`, `transcribeSurveyAudio`,
+  `autofillSurveyFromTranscript`, `submitVerifiedSurveyResponse`; `VerifiedSurveyMedia` receipt entity.)
+
+**Cost levers applied across the platform (everything stays ON — pure efficiency):**
+- Cheap-model default (Claude aligned to Haiku, matching OpenAI's gpt-4o-mini; heavy sites opt up).
+- Rules-first moderation & triage (`sdk/rules-first.ts`) — chat/forum moderation + support/bug triage
+  resolve most cases free; AI only for the ambiguous middle.
+- Borderline-only AI quality scan (`surveyQualityAutoScan`) — deterministic score resolves clear cases.
+- Do-once translation cache (`translateText`) + geo-IP cache (`checkSurveyFraud`) via `sdk/cache.ts`.
+- Verified-survey recordings never stored (zero storage, compliance win).
+- Voice-input hint (`VoiceInputHint`) — free OS keyboard dictation surfaced on chat inputs.
+- Docs: `VERIFIED-SURVEYS.md`, `COST-LEVERS-CODEABLE.md`, `LAUNCH-ESTIMATE-2026-07-30.md`; updated
+  `UNDER-5K-EXECUTION-KIT.md`, `backend/.env.example`.
+
+## 2026-07-29 — Automate the kit: continuous deployment, one-click Railway, no-terminal wizard
+
+The execution kit now runs itself and works without a coding agent. See
+`deploy-kit/CONTINUOUS-DEPLOYMENT-AND-ONE-CLICK.md`.
+
+- **Continuous deployment** — `.github/workflows/deploy.yml`: every push to `main` validates (build +
+  full pre-deploy audit), deploys the backend to Railway, and runs the automated QA smoke. Guarded on a
+  `RAILWAY_TOKEN` secret — validates and skips deploy gracefully until set (never hard-fails, no money paths).
+- **One-click deploy** — a "Deploy on Railway" button in the README + `backend/railway.json`.
+- **No-terminal wizard** — `deploy-kit/wizard/index.html`: 100% in-browser, sends nothing anywhere; paste
+  keys → Generate → ready `.env` with the launch defaults pre-filled.
+- Mobile builds already push-triggered (`android-release` / `ios-release`).
+- Human-only steps unchanged for everyone: account creation, keys/payment, terms, app-store review.
+
+---
+
+## 2026-07-29 — Survey make-up, everything-on defaults, execution kit maxed out
+
+**Survey make-up.** Missed PPC survey days add one extra 8-min session to a later day; the app
+recalculates the daily catch-up target (today's + one per missed day) within a ≥1-year window from signup.
+`makeupPlan()` + `markSurveyDay(userId, minutes)` credit multiple sessions/day (idempotent, capped);
+`premiumPPCStatus.makeup` + `PremiumLockoutMode.jsx` surface it. No debt, no expiry inside the window.
+
+**Everything ON from day one.** `backend/.env.example` rewritten as the everything-on launch config for
+the current up-front + advertising + make-up model (removed the contradictory old charge vars). AI/product
+flags default ON; only legally-gated switches stay off.
+
+**Execution kit maxed out.** `deploy-kit/validate.sh` now does a full pre-deploy audit (entities↔schema,
+scheduler↔functions, manifest); `deploy-kit/e2e-smoke.mjs` is a full automated QA pass (critical path +
+new-feature routes); `launch.sh` runs it automatically. UNDER-5K-EXECUTION-KIT.md + COST-AND-DEVHOURS-
+LEVERS.md document the honest floor (realistic full-launch dev ≈ $1,050–$1,800).
+
+---
+
+## 2026-07-29 — Premium PPC up-front model, AI advertising + learning, one-tap posting, compliance backstops
+
+**Premium PPC up-front model (points-value-only, closed-loop).** Enrollment grants the full $1,460
+(146,000 points) up front for a 1-year ~8-min/day survey commitment; 1:1 matched to $5,000 advertisers who
+get $10k perks + $10k social-ad credit and are advertised free until they've doubled ($10k in orders).
+Nothing is repaid or clawed back — falling behind only pauses surveys (keep-your-points lockout).
+Changed/new: `premiumPPCEnroll`, `premiumPPCStatus`, `premiumPPCSurveyDay`, `premiumPPCOffer`,
+`sdk/premium-ppc.ts`; survey-day hook in `processPPCSession`; order-attribution in
+`autoOrderFulfillmentAndFundsRelease`; scheduled `daily-premium-ppc-autoadvertise`. See
+PREMIUM-PPC-UPFRONT-AND-SOCIAL-ADS.md.
+
+**Lockout mode (in-app).** `premiumPPCSetLockoutTime` + `PremiumLockoutMode.jsx` — member-set daily
+in-app survey reminder; required to re-enroll after a default (in-app only).
+
+**AI advertising that learns and self-improves.** `premiumPPCAutoAdvertise` writes #ad-disclosed ads for
+each not-yet-doubled advertiser (plus a daily own-business post) to consenting members' connected accounts,
+defaulting to member approval. New `sdk/ad-learning.ts` turns every member decision into the same learning
+primitives the platform already uses (`OptimizationSignal` + `AgentLearningMemory`, agent `ppc_ad_ai`),
+feeding `learningInsights`/`learningDistill`/self-learning — no new tables. Reads signals back to
+prioritize platforms + feed exemplars; respects the global `ai_paused` switch; logs each run to the live
+oversight feed. See AI-ADVERTISING-AND-LEARNING.md.
+
+**One-tap posting.** `src/lib/socialCompose.js` + `PremiumAdQueue.jsx` — prefilled composer
+(X/Reddit/Telegram/WhatsApp), OS native share sheet (Instagram/TikTok/Facebook/LinkedIn), copy+open
+fallback. See SOCIAL-POSTING-ONE-TAP-AND-CONSENT.md.
+
+**Compliance backstops (default-safe).** `DAILY_EARN_CAP_USD` wired into `processPPCSession` (clamp via
+`allowedEarn` + record `DailyEarnings`); payout reservation released on `failed`/`cancelled` in
+`autoPayoutRequestLifecycle`; jurisdiction + 18+ gate added to `awardReferralJackpotEntries`. Confirmed
+`AI_DAILY_SPEND_CAP_USD` and `MAINTENANCE_MODE` already wired.
+
+**Still needs counsel:** up-front grant characterization, real-dollar ad claims + points disclaimer,
+social posting under each platform's API terms + FTC, 1099 tax treatment.
+
+---
+
+## 2026-07-29 — AI Live Oversight: all-AI-on with user-vote promotion + optional human gate
+
+The autonomous-AI control layer. See `AI-LIVE-OVERSIGHT.md`.
+
+- **All AI on by default.** Every AI engine runs from the get-go (`kyc_survey_ai_autopublish` → ON).
+- **Per-user consent → statistical approval → global.** Each non-sensitive AI change is put to real
+  users as a yes/no; only changes with a high statistical approval bar (min votes + min yes-rate +
+  Wilson 95% lower-bound) are promoted. `OPTIMIZER_REQUIRE_EXPERIMENT` on; `evaluateExperiments` + the
+  vote prompt (already mounted) drive it.
+- **AI self-review by default; human review optional.** With `AI_GLOBAL_HUMAN_GATE` OFF (default), the
+  AI reviews the user-approved change (`aiReviewPromotion`) and promotes it site-wide. Flip the gate ON
+  to route promotions to a once-per-24h, one-hour peak-time human window (`aiGlobalReview` /
+  `aiGlobalDecide`).
+- **Global STOP button + live feed + corrections that teach.** New `backend/sdk/ai-control.ts`:
+  `ai_paused` kill switch (halts optimizer pass, self-learning, autopublish), `logAiAction`/
+  `recentAiActivity` live feed, `recordCorrection` (writes AICorrection + weighted OptimizationSignal +
+  AgentLearningMemory so the AI learns from human fixes). New `AILiveOversight.jsx` admin page.
+- Compliance/guardrail settings stay excluded via the optimizer `COMPLIANCE_DENYLIST`.
+- New settings (`AI_GLOBAL_HUMAN_GATE`, `CHANGE_GLOBAL_MIN_APPROVAL`, `CHANGE_GLOBAL_MIN_SAMPLE`,
+  `PEAK_REVIEW_HOUR_UTC`, `PEAK_REVIEW_WINDOW_HOURS`); new entities `AIActivityLog`, `AICorrection`;
+  3+2 functions registered.
+
+## 2026-07-29 — Editable KYC survey (AI- and human-adjustable) + self-learning chatbot memory
+
+See `KYC-SURVEY-EDITABLE.md` and `AI-CHATBOT-MEMORY.md`.
+
+- **KYC survey is now stored & editable** (`KycSurveyConfig`), not hardcoded. Human admin editor
+  (`KYCSurveyAdmin.jsx` + `kycSurveyAdminGet`/`kycSurveyAdminSave`) and AI adjustment
+  (`kycSurveyAISuggest` analyzes real answer distributions → proposal; `kycSurveyProposalDecide`
+  approve/reject; `kyc_survey_ai_autopublish` for live AI edits). `validateSurvey` guards every edit.
+- **Per-user chatbot memory** (`AssistantMemory`): the catalog assistant remembers each member's
+  conversations, distills durable preferences to their individual file, and grounds greetings/replies in
+  it — learning and self-improving per user (`backend/sdk/assistant-memory.ts`).
+
+## 2026-07-29 — Marketplace as post-login hub + App Store in Digital Products + onboarding redirect
+
+- **App Store** (the in-app game/app store) is reachable inside **Digital Products** as a **"Digital
+  Gaming" subcategory** that opens the existing store page unchanged (no code moved). Nav "Game Store"
+  renamed **"App Store."**
+- **Marketplace is the post-login hub.** After login, first-time members complete the KYC survey then are
+  redirected to the Marketplace; returning members go straight there (logic in `KYCSurveyGate`).
+- Marketplace **"buy or browse" intro** wired to the KYC-grounded AI shopping assistant.
+
+## 2026-07-29 — Backend schema audit: 17 missing entity tables added (launch-blocker fix)
+
+The store is table-per-entity, provisioned from `schema.sql`. A full audit found 17 entities used by
+this session's features with **no table** (would fail at runtime): `Household`, `Layaway`,
+`LiveExperiment`, `LiveAssignment`, `LiveMetricEvent`, `InteractionEvent`, `PointsBoostLedger`,
+`SessionCaptureFrame`, `SessionClose`, `UXHeatmapSnapshot`, `UserVariantState`, `AssistantMemory`,
+`KycSurveyConfig`, `AIActivityLog`, `AICorrection`, `KYCResponse`, `CatalogBrowseNode`, `CatalogCategory`,
+`OverheadReport`, `UXFinding`. All added to `schema.sql` + `entities.json` (idempotent
+`CREATE TABLE IF NOT EXISTS`); re-run audit reports zero missing. Run the migrate step on deploy.
+
+## 2026-07-29 — Family & Teens accounts + store sort + one-click Buy now
+
+Storefront + account-structure additions. See `HOUSEHOLD-TEEN-ACCOUNTS.md` and
+`STORE-SORT-AND-ONE-CLICK.md`.
+
+- **Store sort control**: Amazon-style sort dropdown at the top of both stores' results (Featured, Price
+  Low→High, Price High→Low, Avg. Customer Review, Newest Arrivals, Best Sellers) via a shared
+  `src/lib/storeSort.js` (`SORT_OPTIONS` + `applySort`, graceful field fallbacks). Wired into
+  `PhysicalStore.jsx` and `DigitalStore.jsx`.
+- **One-click "⚡ Buy now"** (`oneClickPurchase`): logs the order immediately in `awaiting_payment`
+  (`payment_captured: false`) **without claiming the listing or charging**, then prompts the buyer to
+  complete the purchase. Nothing is charged until they confirm and a card is on file (`card_charging`
+  stays OFF until processor + legal). Reuses markup, markup-funded welcome credit, and the affordability
+  warning; never touches raw card numbers. Buttons + confirm modal added to both store pages.
+- **Family & Teens (household/approval) accounts**: new `backend/sdk/household.ts` + six functions
+  (`householdCreate`, `householdAddMember`, `householdStatus`, `householdSetLimit`, `householdDecideOrder`,
+  `householdRemoveMember`). An adult holder groups members; **teen (13–17) orders route to the adult to
+  approve**, or auto-approve under a per-order limit. `purchaseGate` wired into `oneClickPurchase` and
+  `purchaseMarketplaceListing` (teen orders open as `pending_approval`, no claim/charge). New
+  `src/pages/Household.jsx` + nav entry.
+- **Teen enrollment gated OFF**: new `teen_accounts` feature flag defaults **OFF** — adult members work
+  today; under-18 enrollment requires verifiable parental consent, minor-data handling, updated legal /
+  app-store docs, and counsel sign-off before the flag is turned on. New settings
+  `HOUSEHOLD_MAX_MEMBERS` (6), `HOUSEHOLD_TEEN_MIN_AGE` (13).
+
+## 2026-07-28 — Digital Products store (online-only, no BNPL/pickup)
+
+A Digital Products section mirroring the physical store for online-delivered goods. See `DIGITAL-STORE.md`.
+
+- "Digital Products" taxonomy department → serverless-GPU category tiles like every other category.
+- `catalog.ts`: `DIGITAL_DEPARTMENT` + `DIGITAL_CATEGORIES` + `isDigitalCategory()`; `physicalStoreConfig`
+  now returns `digital_categories` so the Digital store shows only these and the Physical store excludes them.
+- `purchaseMarketplaceListing`: digital orders deliver instantly (`delivered` / `digital_delivery`).
+  `createMarketplaceListing` accepts `product_type: "digital"`.
+- `DigitalStore.jsx`: online-delivery only (no pickup), payment = card (+markup) / points / layaway +
+  promo credit + affordability + earn-back tracker; **no Affirm BNPL** (real shippable goods only).
+- Flag `digital_store`; nav entry + Marketplace banner (physical + digital side by side).
+
+
+
+## 2026-07-28 — Buy Physical Items section (ship/pickup) + payment options + earn-back tracker + layaway
+
+New marketplace section for tangible goods with full parity, serverless-GPU tiles, and the legal,
+non-lending versions of "buy now, work it off." See `PHYSICAL-STORE.md`.
+
+- **Section**: "Physical Items" taxonomy department (`taxonomy.ts`) → serverless-GPU category tiles like
+  every other category. `PhysicalStore.jsx` page (nav entry + Marketplace banner) with a **Ship vs Local
+  Pickup** chooser, search/sort, localized pricing + flag. `fulfillment_mode`/`pickup_location` on listings.
+- **Payment options**: credit card default (+10% markup), points/surveys-only, Affirm BNPL, and **Layaway**
+  (`layaway.ts`, `layawayStart`/`Contribute`/`Status`) — reserve & pay down with points BEFORE delivery
+  (no credit extended); required monthly capped at `LAYAWAY_MAX_MONTHLY_USD` ($90). Welcome credit applied
+  per existing rules.
+- **Affordability warning**: orders over `PHYSICAL_AFFORDABILITY_LIMIT_USD` ($1,460) warn the buyer before
+  they commit (warning, not a block; `purchaseMarketplaceListing` + acknowledgement).
+- **Purchase Payback tracker** (`purchasePaybackStatus`): the "negative balance" reframed after
+  clarification as a FACTUAL earn-back progress tracker (cash spent vs points earned back) — NOT a loan, no
+  money fronted, honest "depends on your activity" copy (no guaranteed payback).
+- Flags `physical_store`/`local_pickup`/`layaway`/`purchase_payback`; `physicalStoreConfig` endpoint;
+  functions registered.
+
+
+
+## 2026-07-28 — Points Boost: closed-loop "your points grow while you hold them" (non-cashable, breakage-funded, self-tuning)
+
+The legal, $0-marginal version of "value goes up → capture the difference as more points." Not crypto,
+not an investment — a loyalty mechanic keyed to the user's own behavior. See `POINTS-BOOST.md`.
+
+- **Engine** (`backend/sdk/points-boost.ts`): personal Boost % from streak + tenure + vault (capped at
+  `BOOST_MAX_PCT`); balance accrues bonus points; `harvestBoost` credits accrued growth as non-cashable
+  points (spendable on-platform only, tagged `boost_promo_points`); `setVault` locks points for a higher
+  Boost (reversible, no lock-up risk).
+- **Functions**: `pointsBoostStatus`, `pointsBoostHarvest`, `pointsBoostVault`, `autoPointsBoostCredit`
+  (scheduled daily auto-harvest). Flag `points_boost`; `PointsBoostLedger` + non-cashable `Transaction`.
+- **UI**: `PointsBoostCard.jsx` — live animated ticker (boosted value grows in real time), factor chips,
+  Harvest + Vault buttons; mounted on the dashboard.
+- **Cost governors**: `BOOST_DAILY_CAP_USD` + `BOOST_LIFETIME_CAP_USD` hard-cap the whole feature's cost
+  (breakage-funded ≈ $0); they're on the `COMPLIANCE_DENYLIST` so the AI can never raise them.
+- **Self-tuning**: rate knobs (`BOOST_BASE_RATE`, `BOOST_STREAK_RATE`, `BOOST_VAULT_BONUS_PCT`) added to
+  optimizer `OPTIMIZABLE` → auto-tuned + live-A/B-tested for engagement through the existing segment
+  holdout → significance → guardrail → promote pipeline; `boost_harvest` metric reported.
+
+
+
+## 2026-07-28 — Performance & cost optimization pass (keeps every feature, removes cost + risk)
+
+See `PERFORMANCE-AND-COST-OPTIMIZATION.md`. No features removed; each concern became a bounded lever.
+
+- **Incremental counters**: live-experiment monitor reads per-variant counters on the experiment doc
+  (CAS-guarded) in O(1) instead of scanning up to 20k `LiveMetricEvent` rows per tick. Scan kept as
+  fallback for pre-counter data.
+- **Cheap heatmap capture replaces pixel screenshots**: `html2canvas` → tiny structural snapshot
+  (viewport, scroll depth, click coords, dead/rage clicks, element boxes; ~1 KB, no image/bucket). New
+  `storeSnapshot` + `UXHeatmapSnapshot`; `sessionCaptureAnalyzeBatch` rewritten to **rule-based** analysis
+  (dead-click/rage/low-scroll/below-fold CTA), optional single LLM summary only under spend headroom.
+- **Coalesced + idle telemetry**: one `telemetryIngest` call now writes both journey rows + aggregate
+  (was two client writes); flush on `requestIdleCallback`; unload/background via `fetch({keepalive})` +
+  `sendBeacon` fallback; `TELEMETRY_SAMPLE_PCT` session-consistent down-sampling.
+- **Caching + fewer writes**: `runningExperiments`/`segmentKeptExperiments` cached ~20s (invalidated on
+  create/promote/revert); `UserVariantState` snapshot written only when changed (fingerprint).
+- **Delta/wifi OTA**: `capacitor.config` delta + periodic check; `otaUpdate.js` wifi/metered gate via
+  `@capacitor/network` (guarded).
+- **Kill switch**: `experiments_paused` flag / `LIVE_EXPERIMENTS_PAUSED` setting halts all live
+  experimentation with one flip (kept/promoted changes stay).
+- **Overhead monitor** (`learningOverheadMonitor`, hourly): watches telemetry/metric/snapshot volume + AI
+  spend and auto-throttles within bounds (lowers sample rates over `OVERHEAD_MAX_EVENTS_PER_DAY`; pauses
+  experiments at `OVERHEAD_AI_SPEND_PAUSE_PCT` of the AI cap). `OverheadReport` + audit.
+
+
+
+## 2026-07-28 — Personalized (segment) learning + segment→site-wide graduation + login/logout lifecycle + OTA live updates
+
+Option (b): AI changes are tested per user-segment first, kept per-user when they win, and graduated
+site-wide on a big aggregate bump — applied at next login, no downtime, across web/PWA/native. Plus an
+OTA channel so web-layer code reaches installed native apps with no store review. See
+`PERSONALIZATION-AND-GRADUATION.md` and `MOBILE-OTA-LIVE-UPDATES.md`.
+
+- **Segment personalization** (`live-experiments.ts` + `personalization.ts`): experiments can be scoped
+  to a user segment (behavior + top KYC interest; prefix-matched so base segments cover sub-segments).
+  Aggregate significance across the segment is required — no per-single-user noise. Segment winners are
+  **promoted as segment-kept** (applied per-user at login via `resolveVariantOverrides`), NOT flipped
+  globally.
+- **Graduation** (`nominateGraduation` + `runGraduation` + `graduationScan`, scheduled): a segment winner
+  with lift ≥ `GRADUATION_LIFT_PCT` opens a site-wide 24h validation experiment; a pass flips it globally
+  (no downtime, all platforms). Money/compliance never enter this path.
+- **Login/logout lifecycle** (`sessionStart`, `sessionEnd`): login applier resolves + applies the user's
+  segment variants (quiet-swap — winners that landed while away apply at next login, never mid-session);
+  logout finalizes the session. Wired into `AuthContext` (login/logout) and native `appStateChange`
+  (app-resume re-pull).
+- **Optimizer wiring**: `OPTIMIZER_SEGMENT_TESTING` (default on) routes non-sensitive proposals to the
+  most active segment first. Flag `personalized_learning`; settings `GRADUATION_LIFT_PCT`/
+  `SEGMENT_MIN_SAMPLE`. `graduationScan` scheduled every 2h.
+- **OTA live updates** (`src/lib/otaUpdate.js`, `native.js`, `capacitor.config.json`): guarded
+  `@capgo/capacitor-updater` integration (no-op until installed) that pushes web-bundle updates to
+  installed native apps with **no store review**; app-resume checks for updates. `APP-STORE-SUBMISSION-
+  CHECKLIST.md` now documents that ongoing changes are store-review-free.
+
+
+
+## 2026-07-28 — Live experimentation: 24h test → promote-if-better, bandit, circuit breaker, canary, per-user quiet-swap
+
+Added a live-experiment layer so AI-proposed changes are tested on real traffic and promoted only if the
+data agrees — with no downtime (see `LIVE-EXPERIMENTATION.md`). Built on the existing optimizer +
+settings/flags; money/compliance stays human-gated.
+
+- **Engine** (`backend/sdk/live-experiments.ts`): a change is a config value read at request time, so
+  promote/revert is a flip (no downtime). Deterministic **sticky per-user assignment** with **quiet-swap**
+  (users only bucketed at a session boundary / while inactive). **Two-proportion significance test** +
+  normal-approx posterior. **Thompson-style bandit** traffic-shift. **Guardrail circuit breaker** (instant
+  halt on refund/complaint/drop-off regression). **Canary ramp** 5→25→50→100%. Promotion via `setSetting`
+  (setting/flag) or a `UIVARIANT_*` row (UI). Opt-out honored.
+- **Functions**: `liveExperimentCreate`, `liveVariants` (request-time applier + exposure),
+  `recordVariantMetric` (outcome/guardrail), `liveExperimentTick` (scheduled real-time monitor:
+  measure→breaker→bandit→canary→promote/expire), `liveExperimentPromote` (manual), `liveExperimentStatus`
+  (dashboard). Scheduled `liveExperimentTick` every 10 min.
+- **Optimizer wiring** (`optimizer.ts`): non-sensitive proposals now route to a live holdout; sensitive/
+  price stay on the human-approval path. Flag `live_experiments` + `OPTIMIZER_LIVE_TEST`/
+  `LIVE_TEST_WINDOW_HOURS`/`LIVE_TEST_START_SHARE` settings.
+- **Frontend**: `src/lib/liveVariants.js` (fetch-once-per-session applier + `reportMetric`) and
+  `VariantProvider`/`useVariant`. `Marketplace.jsx` wired as the reference adoption (buy-CTA variant +
+  `purchase`/`click_through` reporting). No new paid deps; monitor is cheap aggregate math under the AI cap.
+
+
+
+## 2026-07-28 — KYC survey, catalog first-view chatbot, telemetry + sampled capture, self-learning loop
+
+Added the AI data + self-learning package, all default-safe and built on the existing engines
+(optimizer, experiment/A-B pipeline, session recorder, site-model grounding, welcome-credit):
+
+- **Know-Your-Customer survey** (`backend/sdk/kyc.ts`, `kycSurveyGet`, `kycSurveySubmit`,
+  `src/components/onboarding/KYCSurveyGate.jsx`): the mandatory first survey after first login. Gates
+  the app until completed, captures interests, and grants a **$5 non-cashable** reward (tops up the
+  welcome-rewards pool; per-order cap + expiry apply — $0 cash via breakage). `kyc_survey` flag +
+  `KYC_SURVEY_REQUIRED`/`KYC_REWARD_USD` settings.
+- **Catalog first-view chatbot** (`catalogAssistantChat`,
+  `src/components/marketplace/CatalogWelcomeChat.jsx`): greets a member the first time they open the
+  marketplace and asks what they want, grounded in their KYC answers + real catalog listings.
+- **Interaction telemetry + statistics** (`backend/sdk/telemetry.ts`, `telemetryIngest`,
+  `telemetryStats`; extends `src/lib/uxTracker.js` with scroll depth + a telemetry feed): every
+  interaction is a data point (default-on, ~free), rolled into funnel/scroll/drop-off statistics and
+  published as `OptimizationSignal`s the site model + optimizer already consume. `site_telemetry` flag.
+- **Sampled, budget-capped session screenshots** (`backend/sdk/session-capture.ts`,
+  `sessionCaptureIngest`, `sessionCaptureAnalyzeBatch`): a rotating **fraction** of sessions (not
+  everyone) is captured to the low-cost bucket and analyzed in batches under
+  `SESSION_CAPTURE_DAILY_BUDGET_USD` / `AI_DAILY_SPEND_CAP_USD`. **OFF by default** (`session_screenshots`
+  flag). Disclosed in the privacy policy; opt-out honored; PII masked.
+- **Self-learning loop** (`selfLearningCycle`, scheduled): collect + analyze telemetry/capture/KYC →
+  refresh the site model → propose small, statistically-backed changes → A/B test each with a customer
+  survey (existing experiment pipeline) → deploy customer-favored winners. Money/compliance stays
+  human-gated. Gated on `SELF_LEARNING_MIN_SAMPLE` so changes stay small, iterative, and correlated.
+- Scheduled `telemetryStats`, `sessionCaptureAnalyzeBatch`, and `selfLearningCycle` in
+  `backend/scheduler/schedules.json`. No new paid dependencies — launch cost unchanged; the only cost
+  lever (full screenshot capture) ships off + sampled.
+
+
+
 Two zips (your local "final 2" and the GitHub `main`) were confirmed **byte-for-byte identical**, so these changes apply cleanly to either.
 
 > **Note on "identical yet buggy":** the two zips matching each other only means your local copy and GitHub are the same code — not that the code is correct. Both copies shared the *same* latent gaps (missing backend functions, missing entity schemas, a dead link). Comparing the zips tells you they match; auditing the code is what surfaced the real errors below.
@@ -260,3 +895,5 @@ A  base44/agents/weekly_referral_campaign_agent.jsonc
 M  base44/functions/submitFeatureVote/entry.ts  (now also credits pending referral rewards)
 (src/App.jsx and FloatingNavSidebar.jsx updated again for the referral page)
 ```
+
+<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->

@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 
 // https://vite.dev/config/
@@ -14,6 +15,33 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    // PWA / service worker — caches the app SHELL (static assets) so the app loads and runs offline / when the
+    // server is stressed, powering the resilient on-device fallback (src/lib/resilient-mode.js handles the data
+    // side). Deliberately does NOT cache the /functions/ API (those are POSTs and often sensitive) — data
+    // caching + the sensitive-action guard live in resilient-mode.js, not the service worker.
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico'],
+      manifest: {
+        name: 'Get Goods Gratis (Free)',
+        short_name: 'GetGoods',
+        description: 'Play, earn, and get goods — free.',
+        theme_color: '#0a142e',
+        background_color: '#0a142e',
+        display: 'standalone',
+        start_url: '/',
+        icons: [
+          { src: 'gg-icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'gg-icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/functions\//, /^\/api\//],   // never intercept API calls
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+      },
+    }),
   ],
   build: {
     // The heavy libraries below get their own named, independently-cacheable chunk. Everything else is

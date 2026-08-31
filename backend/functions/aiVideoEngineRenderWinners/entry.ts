@@ -5,6 +5,7 @@ import {
   videoEngineEnabled, renderBudget, selectForRender, screenConcept,
   type ScoredConcept, type VideoConcept,
 } from "../../sdk/video-engine.ts";
+import { renderConfig, renderVideoCall } from "../../sdk/video-render.ts";
 
 // aiVideoEngineRenderWinners — the PHASED spend gate. Takes the top-scoring compliant concepts, up to the
 // daily render count AND the daily $ cap, writes each a real script + storyboard (and a thumbnail if images
@@ -96,12 +97,21 @@ Return: script (spoken/on-screen lines, timestamped), storyboard (array of {t, s
         thumbnail_url = String(img?.url ?? "");
       }
 
+      // Real render: submit the script/hook to the configured provider (Abacus / serverless GPU). Guarded +
+      // capped + fail-safe — if it isn't configured or the job is still rendering, we keep the script/storyboard
+      // and store the job id to poll later (never blocks, never throws).
+      const rc = renderConfig();
+      const renderPrompt = `${String(res?.hook_line ?? "")}. ${script}`.slice(0, 1500);
+      const rr = await renderVideoCall(rc, renderPrompt).catch(() => ({ ok: false, provider: rc.provider, reason: "render error" }));
+      const video_url = rr.ok ? rr.video_url : "";
+
       await db.update("VideoConcept", s.id!, {
-        phase: "rendered", script, storyboard, thumbnail_url,
+        phase: rr.ok ? "rendered" : (rr.job_id ? "rendering" : "rendered"),
+        script, storyboard, thumbnail_url, video_url: video_url ?? "", render_job_id: rr.job_id ?? null,
         hook_line: String(res?.hook_line ?? ""), render_provider: budget.provider,
         est_cost_usd: budget.est_cost_per_render_usd, rendered_at: now, updated_at: now,
       }).catch(() => null);
-      rendered.push({ id: s.id, score: s.score, attributes: s.concept, thumbnail_url });
+      rendered.push({ id: s.id, score: s.score, attributes: s.concept, thumbnail_url, video_url: video_url ?? "", render_status: rr.ok ? "done" : (rr.job_id ? "rendering" : "no_video") });
     }
 
     return Response.json({

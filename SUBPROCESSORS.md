@@ -28,3 +28,14 @@ Guidance:
 - Notify users of material changes to this list where your privacy notice or law requires.
 - Affiliate retailers reached through outbound "find the real thing" links are **independent
   controllers**, not our subprocessors — we don't send them account data; the user leaves our app.
+
+## AI video render (optional — only if enabled)
+
+- **Abacus.AI** — AI video generation aggregator (routes to Veo/Kling/Luma/Runway/Seedance). Used only if
+  `VIDEO_ENGINE_RENDER_PROVIDER='abacus'`. Processes the ad prompt + any product image supplied. Abacus states
+  it does not claim ownership of generated content and maintains a **Zero Data Retention** arrangement with its
+  upstream model partners (e.g. OpenAI), so uploaded product specs/marketing prompts are not retained or used to
+  train public models — confirm the current ZDR terms in your DPA. Sign a DPA before enabling.
+- **Serverless GPU host** (Replicate / Modal / RunPod — whichever you wire to `SERVERLESS_GPU_ENDPOINT`) — runs
+  open video models on your behalf if `VIDEO_ENGINE_RENDER_PROVIDER='serverless_gpu'`. Add the specific vendor
+  here when chosen; sign a DPA.

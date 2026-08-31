@@ -1,28 +1,30 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { setSetting, effectiveSettings, invalidateSettingsCache } from "../../sdk/settings.ts";
+import { setSetting, effectiveSettings, invalidateSettingsCache, gatedBooleanFlags } from "../../sdk/settings.ts";
 
-// counselFeatureGate — the single control for the features that ship OFF pending counsel. It (a) LISTS every
-// pending-counsel flag with its current on/off state, and (b) enables/disables them — but a bulk enable
-// requires an explicit acknowledgment (confirm: "COUNSEL_APPROVED"), so nothing legally-sensitive flips on by
-// accident. Deliberately NOT a blind one-click: each feature below carries its own distinct legal question and
-// should be enabled only after your attorney signs off on that specific one. Admin only. Audited via setSetting.
+// counselFeatureGate — the single control for every gated-OFF feature flag. The list is DERIVED from the
+// settings registry (every sensitive boolean that defaults OFF), so ANY new gated flag appears here
+// automatically — no code change needed to surface it in the Setup Wizard. It (a) LISTS every gated flag with
+// its current state, marking which ones are LEGAL (need counsel) vs operational, and (b) enables/disables them.
+// Enabling a LEGAL flag requires confirm:"COUNSEL_APPROVED"; enabling an operational one requires confirm:true
+// (or COUNSEL_APPROVED). Disabling never needs a confirm. Admin only. Audited via setSetting.
 //
-//   List:            POST {}                                   → current state of every pending-counsel flag
-//   Enable some:     POST { enable: ["ADVANCE_ENABLED"], confirm: "COUNSEL_APPROVED" }
+//   List:            POST {}
+//   Enable one:      POST { enable: ["AUTO_SCALE_ENABLED"], confirm: true }
+//   Enable a legal:  POST { enable: ["ADVANCE_ENABLED"], confirm: "COUNSEL_APPROVED" }
 //   Enable all:      POST { enable: "all", confirm: "COUNSEL_APPROVED" }
-//   Disable (revert):POST { disable: ["ADVANCE_ENABLED"] }     (no confirm needed to turn OFF)
+//   Disable:         POST { disable: ["AUTO_SCALE_ENABLED"] }
 
-// Each pending-counsel flag + the doc that states its legal questions.
-const PENDING: Array<{ key: string; label: string; brief: string }> = [
-  { key: "USAGE_FEE_ENABLED", label: "Daily usage fee ($1/day, from earnings)", brief: "PLATFORM-ADVANCE-AND-USAGE-FEE-LEGAL-BRIEF.md" },
-  { key: "ADVANCE_ENABLED", label: "Free non-recourse purchasing-power advance", brief: "PLATFORM-ADVANCE-AND-USAGE-FEE-LEGAL-BRIEF.md" },
-  { key: "REFERRAL_TIERS_ENABLED", label: "Two-tier referral bonus ($5 user / $2,000 advertiser)", brief: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md" },
-  { key: "ENDORSER_ENABLED", label: "Paid-endorser rewards", brief: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md" },
-  { key: "ENDORSER_PERSONALIZE_ENABLED", label: "Endorser AI personalization", brief: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md" },
-  { key: "ENDORSER_AUTOPOST_ENABLED", label: "Endorser auto-posting", brief: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md" },
-];
-const KEYS = new Set(PENDING.map((p) => p.key));
+// The legal flags + the brief that states each one's questions. Flags NOT in here are treated as operational.
+const LEGAL_BRIEFS: Record<string, string> = {
+  USAGE_FEE_ENABLED: "PLATFORM-ADVANCE-AND-USAGE-FEE-LEGAL-BRIEF.md",
+  ADVANCE_ENABLED: "PLATFORM-ADVANCE-AND-USAGE-FEE-LEGAL-BRIEF.md",
+  REFERRAL_TIERS_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
+  ENDORSER_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
+  ENDORSER_PERSONALIZE_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
+  ENDORSER_AUTOPOST_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
+  POINTS_CASHABLE: "COMPLIANCE-AND-CURRENT-STATE.md",
+};
 
 export default __handler(async (req) => {
   try {
@@ -32,34 +34,37 @@ export default __handler(async (req) => {
     if (user.role !== "admin") return Response.json({ error: "Forbidden (admin only)." }, { status: 403 });
 
     const body = await req.json().catch(() => ({}));
+    const flags = gatedBooleanFlags();
+    const KEYS = new Set(flags.map((f) => f.key));
+    const isLegal = (k: string) => k in LEGAL_BRIEFS;
+
     const all = await effectiveSettings().catch(() => []) as Array<{ key: string; value: string }>;
     const valOf = (k: string) => String((all.find((s) => s.key === k)?.value ?? "0")) === "1";
+    const describe = () => flags.map((f) => ({ key: f.key, label: f.label, category: f.category, legal: isLegal(f.key), brief: LEGAL_BRIEFS[f.key] ?? null, enabled: valOf(f.key) }));
 
-    const wantEnable: string[] = body.enable === "all" ? PENDING.map((p) => p.key)
+    const wantEnable: string[] = body.enable === "all" ? flags.map((f) => f.key)
       : Array.isArray(body.enable) ? body.enable.filter((k: string) => KEYS.has(k)) : [];
     const wantDisable: string[] = Array.isArray(body.disable) ? body.disable.filter((k: string) => KEYS.has(k)) : [];
 
-    // Enabling requires the explicit counsel acknowledgment.
-    if (wantEnable.length && body.confirm !== "COUNSEL_APPROVED") {
-      return Response.json({
-        ok: false, needs_confirm: true,
-        message: "Enabling counsel-gated features requires confirm: \"COUNSEL_APPROVED\". Each feature should be enabled only after your attorney has signed off on that specific one.",
-        features: PENDING.map((p) => ({ ...p, enabled: valOf(p.key) })),
-      });
+    // Enabling a LEGAL flag needs the counsel acknowledgment; an operational one needs any confirm.
+    const enablingLegal = wantEnable.some((k) => isLegal(k));
+    if (wantEnable.length) {
+      if (enablingLegal && body.confirm !== "COUNSEL_APPROVED") {
+        return Response.json({ ok: false, needs_confirm: "COUNSEL_APPROVED", message: "Enabling a counsel-gated (legal) feature requires confirm:\"COUNSEL_APPROVED\" — enable each only after your attorney signs off on that specific one.", features: describe() });
+      }
+      if (!enablingLegal && body.confirm !== true && body.confirm !== "COUNSEL_APPROVED") {
+        return Response.json({ ok: false, needs_confirm: true, message: "Enabling a gated feature requires confirm:true.", features: describe() });
+      }
     }
 
     const changed: Array<{ key: string; to: string }> = [];
-    for (const k of wantDisable) { await setSetting(k, "0", `counselGate:${user.email ?? user.id}`).catch(() => null); changed.push({ key: k, to: "0" }); }
-    for (const k of wantEnable) { await setSetting(k, "1", `counselGate:${user.email ?? user.id}`).catch(() => null); changed.push({ key: k, to: "1" }); }
+    for (const k of wantDisable) { await setSetting(k, "0", `gate:${user.email ?? user.id}`).catch(() => null); changed.push({ key: k, to: "0" }); }
+    for (const k of wantEnable) { await setSetting(k, "1", `gate:${user.email ?? user.id}`).catch(() => null); changed.push({ key: k, to: "1" }); }
     if (changed.length) invalidateSettingsCache();
 
-    const after = await effectiveSettings().catch(() => all) as Array<{ key: string; value: string }>;
-    const valAfter = (k: string) => String((after.find((s) => s.key === k)?.value ?? "0")) === "1";
-
     return Response.json({
-      ok: true, changed_count: changed.length, changed,
-      features: PENDING.map((p) => ({ ...p, enabled: valAfter(p.key) })),
-      note: changed.length ? "Updated. Each enabled feature is now live per its settings." : "No changes — this is the current pending-counsel state.",
+      ok: true, changed_count: changed.length, changed, features: describe(),
+      note: changed.length ? "Updated." : "Current gated-feature state (auto-derived from the settings registry).",
     });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });

@@ -44,10 +44,10 @@ export default function SetupWizard() {
     catch { /* ignore */ }
   };
   useEffect(() => { loadGate(); }, []);
-  const toggleGate = async (key, enabled) => {
+  const toggleGate = async (key, enabled, legal) => {
     setGateBusy(true); setGateMsg(null);
     try {
-      const body = enabled ? { disable: [key] } : { enable: [key], confirm: 'COUNSEL_APPROVED' };
+      const body = enabled ? { disable: [key] } : { enable: [key], confirm: legal ? 'COUNSEL_APPROVED' : true };
       const res = await base44.functions.invoke('counselFeatureGate', body);
       if (res?.error) setGateMsg({ ok: false, text: res.error });
       else { setGate(res.features || gate); setGateMsg({ ok: true, text: res.note || 'Updated.' }); }
@@ -64,6 +64,12 @@ export default function SetupWizard() {
     } catch (e) { setGateMsg({ ok: false, text: e?.message || 'Failed.' }); }
     finally { setGateBusy(false); }
   };
+
+  const [scale, setScale] = useState(null);
+  const loadScale = async () => {
+    try { const res = await base44.functions.invoke('scaleStatus', {}); setScale(res || null); } catch { /* ignore */ }
+  };
+  useEffect(() => { loadScale(); }, []);
 
   const Row = ({ it }) => (
     <div className="flex items-start gap-3 py-2 border-b last:border-0">
@@ -102,14 +108,29 @@ export default function SetupWizard() {
                 <div className="text-xs text-amber-700">These ship OFF. Each one moves money or posts on a member’s behalf and carries its own legal question — enable each only after your attorney approves that specific feature. See the briefs in the Lawyer Packet.</div>
                 {gate.map((f) => (
                   <div key={f.key} className="flex items-center justify-between gap-3 py-1.5 border-b last:border-0">
-                    <div className="min-w-0"><div className="font-semibold text-sm truncate">{f.label}</div><div className="text-xs text-slate-500">{f.enabled ? 'ON' : 'OFF'} · {f.brief}</div></div>
-                    <Button size="sm" variant={f.enabled ? 'outline' : 'default'} disabled={gateBusy} onClick={() => toggleGate(f.key, f.enabled)}>{f.enabled ? 'Turn off' : 'Turn on'}</Button>
+                    <div className="min-w-0"><div className="font-semibold text-sm truncate">{f.label} {f.legal ? <span className="text-[10px] uppercase text-amber-700 font-bold">· legal</span> : <span className="text-[10px] uppercase text-slate-400 font-bold">· ops</span>}</div><div className="text-xs text-slate-500">{f.enabled ? 'ON' : 'OFF'}{f.brief ? ` · ${f.brief}` : ''}</div></div>
+                    <Button size="sm" variant={f.enabled ? 'outline' : 'default'} disabled={gateBusy} onClick={() => toggleGate(f.key, f.enabled, f.legal)}>{f.enabled ? 'Turn off' : 'Turn on'}</Button>
                   </div>
                 ))}
                 <div className="flex items-center justify-between pt-1">
                   <Button size="sm" variant="destructive" disabled={gateBusy} onClick={enableAllGate}>{gateBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Enable all (after full counsel sign-off)'}</Button>
                   {gateMsg && <span className={`text-xs ${gateMsg.ok ? 'text-emerald-700' : 'text-red-600'}`}>{gateMsg.text}</span>}
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {scale && Array.isArray(scale.levers) && (
+            <Card className="mb-4 border-sky-200 bg-sky-50/40">
+              <CardHeader><CardTitle className="text-base">Auto-scale governor {scale.enabled ? <span className="text-xs text-emerald-700">(ON — switches with load)</span> : <span className="text-xs text-slate-500">(OFF — enable in gated features)</span>}</CardTitle></CardHeader>
+              <CardContent className="text-sm text-slate-700 space-y-1">
+                <div className="text-xs text-slate-500">When load crosses each threshold, these flip to their scaled option automatically (and back when it subsides). {scale.scaled_count}/{scale.total} currently scaled.</div>
+                {scale.levers.map((l) => (
+                  <div key={l.key} className="flex items-center justify-between gap-2 text-xs py-0.5 border-b last:border-0">
+                    <span className="truncate">{l.label}</span>
+                    <span className={l.is_scaled ? 'text-emerald-600 font-semibold' : 'text-slate-400'}>{l.is_scaled ? `scaled → ${l.scaled}` : `base (${l.base})`}</span>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           )}

@@ -242,3 +242,26 @@ not *whether* it runs.
 
 Same rule as before: everything stays **on from the get-go**; the floor comes from cheap tiers, caching,
 rules-first, right-sizing, and revenue offsets — never from switching a feature off.
+
+## Video render providers + auto-scale governor (2026-08-31)
+
+The AI Video Engine renders the **winners** only, behind a provider abstraction (`sdk/video-render.ts`,
+`VIDEO_ENGINE_RENDER_PROVIDER`) with a hard **daily count + $ cap** (`VIDEO_RENDER_DAILY_CAP_COUNT` /
+`_USD`). Three providers, cheapest-fit by volume:
+
+- **`none`** (default) — concepts/polls/learning only, **$0** render spend (the floor).
+- **`abacus`** — Abacus.AI aggregator API: one key/subscription routes to many premium models (Veo 3.1, Kling
+  v3, Luma, Runway, Seedance…). Best **low-to-mid volume + lowest ops**; cheaper than wiring/paying each model's
+  native API separately. Commercial use permitted per Abacus (verify per-model for third-party advertiser
+  resale). `ABACUS_API_KEY`, `ABACUS_VIDEO_MODEL`.
+- **`serverless_gpu`** — self-hosted open models (Wan 2.5 / Hunyuan) on an auto-scaling serverless GPU endpoint
+  (Replicate/Modal/RunPod): scales to zero when idle, kicks off automatically at volume, **cheapest per-render
+  at high scale** (more ops). `SERVERLESS_GPU_ENDPOINT`, `SERVERLESS_GPU_VIDEO_MODEL`.
+
+**Cost-saving rule:** stay on `none` until you actually ship video; then `abacus` for convenience/mid volume,
+`serverless_gpu` at scale. The **auto-scale governor** (`sdk/scale-governor.ts`, `scaleGovernorRun`,
+`AUTO_SCALE_ENABLED`) does this automatically: it watches live load and, as metrics cross thresholds, flips
+every scale lever to its scaled option — **render → serverless GPU**, shared cache on, reads → DB replica,
+higher render/worker concurrency, scaled AI tier — and flips them **back** when load subsides (hysteresis, no
+flapping). It is the mirror of `costFloorProfile`: floor by default, scale only when demand pays for it. OFF by
+default; preview-only until enabled. New cost-saving finds get added here as levers, same as the Abacus find.

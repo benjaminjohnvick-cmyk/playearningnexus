@@ -23,16 +23,16 @@ const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 
 // ── Config (OFF / conservative by default — PENDING COUNSEL) ────────────────────────────────────────────
 export const usageFeeEnabled = () => snapBool("USAGE_FEE_ENABLED", false);
-/** Daily fee in CENTS (default 80 = $0.80). */
-export const usageFeeDailyUsd = () => Math.max(0, snapNumber("USAGE_FEE_DAILY_CENTS", 80)) / 100;
-/** Lifetime/period cap in dollars (default $182). Fee stops once a user has paid this much in the period. */
-export const usageFeeCapUsd = () => Math.max(0, snapNumber("USAGE_FEE_CAP_USD", 182));
+/** Daily fee in CENTS (default 100 = $1.00). */
+export const usageFeeDailyUsd = () => Math.max(0, snapNumber("USAGE_FEE_DAILY_CENTS", 100)) / 100;
+/** Period cap in dollars (default $365 ≈ $1/day for a year). Fee stops once a user has paid this much. */
+export const usageFeeCapUsd = () => Math.max(0, snapNumber("USAGE_FEE_CAP_USD", 365));
 /** Cap window in days (default 365 = rolling year). 0 = lifetime (never resets). */
 export const usageFeeCapPeriodDays = () => Math.max(0, Math.round(snapNumber("USAGE_FEE_CAP_PERIOD_DAYS", 365)));
 /** Show the "do one more survey to offset today's fee" nudge. */
 export const usageFeeOffsetEnabled = () => snapBool("USAGE_FEE_OFFSET_ENABLED", true);
-/** Assumed net value of one extra survey, for the offset count (default $0.80 → one survey offsets the fee). */
-export const usageFeePerSurveyUsd = () => Math.max(0.01, snapNumber("USAGE_FEE_PER_SURVEY_USD", 0.8));
+/** Assumed net value of one extra survey, for the offset count (default $1.00 → one survey offsets the $1/day). */
+export const usageFeePerSurveyUsd = () => Math.max(0.01, snapNumber("USAGE_FEE_PER_SURVEY_USD", 1.0));
 
 // ── Pure core (unit-tested) ─────────────────────────────────────────────────────────────────────────────
 export interface UsageFeeInput {

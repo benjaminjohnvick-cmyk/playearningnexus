@@ -4076,3 +4076,14 @@ CREATE INDEX IF NOT EXISTS "Advance_data_gin" ON "Advance" USING gin (data jsonb
 CREATE INDEX IF NOT EXISTS "Advance_created" ON "Advance" (created_date DESC);
 CREATE INDEX IF NOT EXISTS "Advance_status" ON "Advance" ((data->>'status'));
 CREATE INDEX IF NOT EXISTS "Advance_member" ON "Advance" ((data->>'member_id'));
+
+-- StepUpVerification: a completed strong re-auth for a sensitive action (see sdk/step-up-auth.ts). Stores the
+-- method + timestamp (+ vendor reference for face_vendor) — NEVER any raw biometric.
+CREATE TABLE IF NOT EXISTS "StepUpVerification" (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(), updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by text, data jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "StepUpVerification_data_gin" ON "StepUpVerification" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "StepUpVerification_created" ON "StepUpVerification" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "StepUpVerification_user" ON "StepUpVerification" ((data->>'user_id'));

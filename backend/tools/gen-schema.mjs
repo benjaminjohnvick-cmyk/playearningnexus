@@ -91,7 +91,7 @@ for (const tName of AT_SORTED_TABLES) {
 // their predictive score / render phase / measured metrics, and the live trend pool used to ground them.
 // ConceptPoll + ConceptPollVote back the Concept Polling loop (sdk/concept-polling.ts): a poll's concept
 // pool + matchups, and each user's head-to-head / MaxDiff vote.
-const MANUAL_TABLES = ['CreativeAsset', 'SurveyDraft', 'SocialAmplificationEvent', 'TierProgressionEvent', 'VideoConcept', 'VideoTrend', 'ConceptPoll', 'ConceptPollVote', 'VideoPipelineRun', 'FeedbackEvent', 'AutonomyDecision', 'AutonomyDomain', 'AutoCollectState', 'TrendChoiceEvent', 'ReferralBonus', 'EndorserConversion'];
+const MANUAL_TABLES = ['CreativeAsset', 'SurveyDraft', 'SocialAmplificationEvent', 'TierProgressionEvent', 'VideoConcept', 'VideoTrend', 'ConceptPoll', 'ConceptPollVote', 'VideoPipelineRun', 'FeedbackEvent', 'AutonomyDecision', 'AutonomyDomain', 'AutoCollectState', 'TrendChoiceEvent', 'ReferralBonus', 'EndorserConversion', 'Advance', 'StepUpVerification'];
 for (const tName of MANUAL_TABLES) {
   sql += `\n-- ${tName} (manual — see sdk/creative-suite.ts)\n`;
   sql += `CREATE TABLE IF NOT EXISTS "${tName}" (\n  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,\n  created_date timestamptz NOT NULL DEFAULT now(),\n  updated_date timestamptz NOT NULL DEFAULT now(),\n  created_by   text,\n  data         jsonb NOT NULL DEFAULT '{}'::jsonb\n);\n`;
@@ -114,6 +114,9 @@ sql += `CREATE INDEX IF NOT EXISTS "ReferralBonus_status" ON "ReferralBonus" ((d
 sql += `CREATE INDEX IF NOT EXISTS "ReferralBonus_referrer" ON "ReferralBonus" ((data->>'referrer_user_id'));\n`;
 sql += `CREATE INDEX IF NOT EXISTS "EndorserConversion_status" ON "EndorserConversion" ((data->>'status'));\n`;
 sql += `CREATE INDEX IF NOT EXISTS "EndorserConversion_member" ON "EndorserConversion" ((data->>'member_id'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "Advance_status" ON "Advance" ((data->>'status'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "Advance_member" ON "Advance" ((data->>'member_id'));\n`;
+sql += `CREATE INDEX IF NOT EXISTS "StepUpVerification_user" ON "StepUpVerification" ((data->>'user_id'));\n`;
 sql += `CREATE INDEX IF NOT EXISTS "FeedbackEvent_domain" ON "FeedbackEvent" ((data->>'domain'));\n`;
 sql += `CREATE INDEX IF NOT EXISTS "FeedbackEvent_surface" ON "FeedbackEvent" ((data->>'surface'));\n`;
 sql += `CREATE INDEX IF NOT EXISTS "AutonomyDecision_domain" ON "AutonomyDecision" ((data->>'domain'));\n`;

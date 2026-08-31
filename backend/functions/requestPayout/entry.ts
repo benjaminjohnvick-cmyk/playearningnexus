@@ -7,6 +7,7 @@ import { applyBackupWithholding } from "../../sdk/tax.ts";
 import { gate } from "../../sdk/oversight.ts";
 import { postLedgerEntry } from "../../sdk/ledger.ts";
 import { db } from "../../sdk/db.ts";
+import { requireStepUp } from "../../sdk/step-up-auth.ts";
 
 export default __handler(async (req) => {
   try {
@@ -19,6 +20,13 @@ export default __handler(async (req) => {
     }
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // Step-up auth gate: a payout is a high-risk action — require a FRESH strong re-auth (passkey/biometric,
+    // else vendor face) verified server-side. No-op while STEP_UP_ENABLED is off (returns required:false).
+    const __stepUp = await requireStepUp(String(user.id), "payout").catch(() => ({ required: false, acceptable_methods: [], reason: "" }));
+    if (__stepUp.required) {
+      return Response.json({ step_up_required: true, acceptable_methods: __stepUp.acceptable_methods, reason: __stepUp.reason, message: "Confirm it's you before this payout: complete a step-up (stepUpChallenge → stepUpVerify), then retry." }, { status: 401 });
+    }
 
     // Closed-loop eligibility: cash only for business partners (shared policy)
     const { amount, payment_method, payment_details, payout_type } = await req.json();
