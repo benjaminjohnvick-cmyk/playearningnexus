@@ -94,7 +94,8 @@ Every money-making mode resolves through `hosting-monetization.ts`, which enforc
 - **Virtual content → paid access**: viewers either donate Site Cash (`access_donation`) or complete an
   advertiser-funded survey (`access_survey`). Never a real-money charge to a user.
 - **Retail / QVC-style physical products**: `retail_5050` / `live_shopping_5050` — orders in Site Cash, revenue
-  AI-tracked and split (default 50/50, `HOSTING_REVENUE_PLATFORM_PCT`). The **business** seller is paid real
+  AI-tracked; the seller pays a **Facebook-Marketplace-style fee** (10% / $0.80 min shipped, free local; see
+  `SOCIAL_SHOP_FEE_*`) — this replaced the earlier 50/50 split. The **business** seller is paid real
   money; a user is paid Site Cash. `revenueSplit()` computes the split; `payoutCurrency(isBusiness)` encodes the
   invariant.
 

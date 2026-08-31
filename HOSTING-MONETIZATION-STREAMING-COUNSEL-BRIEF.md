@@ -60,9 +60,12 @@ paid real money.** Modes (each independently gated):
   decision on the sweepstakes/free-entry alternative.
 - **Paid access to virtual content:** viewers either **donate Site Cash** or **complete an advertiser-funded
   survey** — never a real-money charge to a user.
-- **Retail / QVC-style live shopping:** orders placed in **Site Cash**, revenue AI-tracked and split (default
-  50/50). The **business** seller is paid **real money**; a user seller is credited Site Cash; the buyer only
-  ever spends Site Cash. Real-money seller payouts require **KYC/tax onboarding** first.
+- **Retail / QVC-style live shopping:** orders placed in **Site Cash**; the platform charges the **seller** a
+  **Facebook-Marketplace-style selling fee** — **10% of the buyer-paid total (minimum $0.80) on shipped orders,
+  and no fee on local pickup** (configurable). This replaced an earlier 50/50 revenue split. The **business**
+  seller is paid **real money** (their proceeds net of the fee); a user seller is credited Site Cash; the buyer
+  only ever spends Site Cash. Real-money seller payouts require **KYC/tax onboarding** first. *Review angle:*
+  confirm the fee is a marketplace facilitation fee (not a customer surcharge) and the seller-fee disclosure.
 
 ## 7. Third-party sellers
 
@@ -86,6 +89,24 @@ connected and consented to, per post**, with `#ad` disclosure — never silently
 Multi-platform video simulcast routes through a media relay; **platform stream keys are treated as secrets** and
 are never handled in plaintext by application code (only secret-manager references). *Review angle:* FTC
 disclosure, platform ToS compliance for each social network.
+
+## 9a. Other features built this session (lower legal risk, noted for completeness)
+
+- **AI Social Shop in Buddy Chat** — the shop and the four hosting options live inside Buddy Chat; the shop
+  auto-displays the current top-selling items. Same fee/invariant as §6.
+- **Omni-Channel Livestream category** — a shopping category whose subcategories mirror the catalog; featured
+  products get AI images and (optionally) short AI commercials, disclosed as AI + `#ad`, no real person, no
+  guaranteed-results claims (same rules as §8). *Review angle:* advertising-claims + AI disclosure.
+- **Survey-test-first** — an unsure user creates a **free** validation survey (advertiser-funded; respondents keep
+  the full Site-Cash reward) to gauge interest before selling/hosting. Results are labeled **feedback, never a
+  sales or income guarantee**.
+- **Universal translation agent** — translates into the user's language/dialect from the typed text (no
+  screenshots; nothing captured beyond the text being translated) and learns a small **glossary of corrections**
+  over time. *Review angle:* the only data stored is correction text, not identity.
+- **Interactive tutorial + guidebook** — auto-starts on first login, role-branched (member/business), and offers a
+  downloadable guidebook that can be emailed to the user's **own** address. Copy is written to be accurate: Site
+  Cash is store credit, businesses are paid real money, fees and AI-ad disclosures are stated, and **no income or
+  ROI is promised**.
 
 ## 10. Posture summary
 

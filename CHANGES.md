@@ -1,5 +1,33 @@
 # PlayEarning Nexus — Changes Summary
 
+## Session — hosting arc, social shop, agents, tutorial (this session)
+
+All new features ship GATED OFF and auto-appear in the Setup Wizard (enforced by an audit check). Invariant held
+throughout: users only ever receive Site Cash; businesses are paid real money; money/identity stay server-side.
+
+- **Device tiers:** on-device offline reads (IndexedDB) + on-device compute (catalog search/rank) + resilient
+  auto-failover governor; the authoritative DB stays server-side (Aurora path in AWS-200M-PATH / DB-SCALING-PATH).
+- **Site-maintenance AI** (advisory, human-gated) + shared agent guardrails; step-up auth for sensitive actions.
+- **Tier-3 player hosting** (listen-server model): peer-hosted game sessions, server-validated rewards; host
+  migration; capabilities: record/clip (consent+moderation), on-demand, scoped co-op control.
+- **Monetization:** users→Site Cash, businesses→real money. Skill tournaments (Site-Cash default; real-money
+  variant counsel-gated), paid access (donation/survey), and RETAIL now uses a **Facebook-Marketplace-style
+  seller fee (10% / $0.80 shipped, free local)** — replaced the old 50/50 split.
+- **AI Social Shop in Buddy Chat:** unified hub (shop + hosting), auto top-10 sellers.
+- **Omni-Channel Livestream:** shopping category + subcategories with AI images/commercials (Abacus), disclosed
+  as AI + #ad.
+- **Survey-test-first:** free validation survey before selling/hosting (feedback, never a guarantee).
+- **Third-party sellers** (reuse onboarding; KYC/tax) and **consented social simulcast** (own accounts, #ad;
+  RTMP via a media relay, stream keys kept as secrets).
+- **AI-hosted advertiser fallback** (Abacus; disclosed AI + #ad, no guaranteed results).
+- **Universal translation agent:** LLM translation into any language/dialect + self-learning dialect glossary
+  (stores corrections, not languages; no screenshots).
+- **Interactive tutorial + guidebook:** auto-starts on first login, role-branched, downloadable + emailable.
+- **Docs:** AWS-LAUNCH-TO-200M-CHECKLIST, AWS-200M-PATH, DB-SCALING-PATH, DEVICE-OFFLOAD-TIERS, AI-SITE-MAINTENANCE,
+  HOSTING-MONETIZATION-STREAMING-COUNSEL-BRIEF, BUDDYCHAT-SOCIAL-SHOP-AND-AGENTS-DESIGN; FOR-YOUR-ATTORNEY updated.
+
+
+
 ## 2026-08-29 — Two-tier referral bonus + paid-endorser social program (BUILT, gated OFF pending counsel)
 
 Two Site Cash reward features, both single-tier, all closed-loop, disabled by default (no money moves, nothing

@@ -61,6 +61,36 @@ export function revenueSplit(grossUsd: number, platformSharePct = 50): { gross: 
   return { gross, platform_usd: platform, seller_usd: round2(gross - platform), platform_pct: pct, seller_pct: round2(100 - pct) };
 }
 
+export interface MarketplaceFeeConfig {
+  feePct: number;      // percent of buyer-paid total, charged to the seller (default 10)
+  feeMin: number;      // minimum fee on a shipped/checkout order (default 0.80)
+  localFree: boolean;  // local pickup is free (default true)
+}
+
+export interface MarketplaceFeeResult {
+  gross: number;
+  fee: number;         // what the platform takes from the seller
+  seller_net: number;  // seller's proceeds after the fee
+  shipped: boolean;
+  model: string;
+}
+
+/** Facebook-Marketplace-style selling fee (replaces the 50/50 split for retail). The SELLER pays: on a
+ *  shipped/checkout order, feePct of the buyer-paid total with a feeMin floor; local pickup is free. The buyer
+ *  still pays in Site Cash; a business seller is paid real money (net) via the existing pipeline; a user seller is
+ *  credited Site Cash (net). Pure + deterministic. */
+export function marketplaceFee(buyerPaidUsd: number, shipped: boolean, cfg: MarketplaceFeeConfig): MarketplaceFeeResult {
+  const gross = Math.max(0, round2(buyerPaidUsd));
+  const pct = clampPct(cfg.feePct);
+  const min = Math.max(0, Number(cfg.feeMin) || 0);
+  let fee = 0;
+  if (shipped || !cfg.localFree) {
+    fee = round2(Math.max(gross > 0 ? min : 0, gross * pct / 100));
+    fee = Math.min(fee, gross); // never exceed the sale
+  } // else local pickup → free
+  return { gross, fee, seller_net: round2(gross - fee), shipped: !!shipped, model: fee === 0 ? "local_no_fee" : `${pct}%_min_${min}` };
+}
+
 /** The invariant, as a function: a recipient who is a business is paid real money; a plain user gets Site Cash. */
 export function payoutCurrency(recipientIsBusiness: boolean): "real_money" | "site_cash" {
   return recipientIsBusiness ? "real_money" : "site_cash";
@@ -98,11 +128,11 @@ export function resolveMonetization(modeIn: string, gates: MonetizationGates): M
 
     case "retail_5050":
       if (!gates.liveShopping) return no("Retail selling is disabled (HOSTING_LIVE_SHOPPING_ENABLED off).");
-      return ok({ mode, buyer_pays_in: "site_cash", user_receives: "site_cash", business_receives: "real_money", split, ai_tracked: true, needs_counsel: false, note: `Retail sale: buyers pay Site Cash, AI tracks revenue, split ${split.platform_pct}/${split.seller_pct}. Business seller is paid REAL money; a user seller is paid Site Cash.` });
+      return ok({ mode, buyer_pays_in: "site_cash", user_receives: "site_cash", business_receives: "real_money", split, ai_tracked: true, needs_counsel: false, note: "Retail sale: buyers pay Site Cash; the platform charges a Facebook-Marketplace-style SELLER fee at checkout (see SOCIAL_SHOP_FEE_*: default 10% / $0.80 min on shipped, free local). Business seller is paid REAL money (net); a user seller is paid Site Cash (net)." });
 
     case "live_shopping_5050":
       if (!gates.liveShopping) return no("Live shopping is disabled (HOSTING_LIVE_SHOPPING_ENABLED off).");
-      return ok({ mode, buyer_pays_in: "site_cash", user_receives: "site_cash", business_receives: "real_money", split, ai_tracked: true, needs_counsel: false, note: `QVC-style live shopping for physical products: orders in Site Cash, AI-tracked revenue, split ${split.platform_pct}/${split.seller_pct}. Business paid REAL money; users only ever get Site Cash.` });
+      return ok({ mode, buyer_pays_in: "site_cash", user_receives: "site_cash", business_receives: "real_money", split, ai_tracked: true, needs_counsel: false, note: "QVC-style live shopping for physical products: orders in Site Cash; the platform charges a Facebook-Marketplace-style SELLER fee at checkout (default 10% / $0.80 min on shipped, free local). Business paid REAL money (net); users only ever get Site Cash." });
 
     default:
       return no(`Unknown monetization mode "${modeIn}".`);

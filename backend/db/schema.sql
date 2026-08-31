@@ -4132,3 +4132,37 @@ CREATE TABLE IF NOT EXISTS "SimulcastJob" (
 );
 CREATE INDEX IF NOT EXISTS "SimulcastJob_data_gin" ON "SimulcastJob" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "SimulcastJob_session" ON "SimulcastJob" ((data->>'session_id'));
+
+-- LivestreamFeature: featured products per Omni-Channel Livestream channel + their AI image/commercial
+CREATE TABLE IF NOT EXISTS "LivestreamFeature" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "LivestreamFeature_data_gin" ON "LivestreamFeature" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "LivestreamFeature_channel" ON "LivestreamFeature" ((data->>'channel'));
+
+-- DialectGlossary: self-learned translation corrections (deltas), personal + graduated shared, per language/dialect
+CREATE TABLE IF NOT EXISTS "DialectGlossary" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "DialectGlossary_data_gin" ON "DialectGlossary" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "DialectGlossary_key" ON "DialectGlossary" ((data->>'key'));
+CREATE INDEX IF NOT EXISTS "DialectGlossary_lang" ON "DialectGlossary" ((data->>'language'), (data->>'dialect'));
+
+-- TutorialProgress: per-user tutorial progress + completion (single-source tutorial content)
+CREATE TABLE IF NOT EXISTS "TutorialProgress" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "TutorialProgress_data_gin" ON "TutorialProgress" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "TutorialProgress_user" ON "TutorialProgress" ((data->>'user_id'));

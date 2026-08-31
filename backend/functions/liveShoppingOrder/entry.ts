@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { snapBool, getNumber } from "../../sdk/settings.ts";
 import { pointValueUsd, recordRevenue } from "../../sdk/revenue.ts";
-import { revenueSplit, payoutCurrency } from "../../sdk/hosting-monetization.ts";
+import { marketplaceFee, payoutCurrency } from "../../sdk/hosting-monetization.ts";
 
 // liveShoppingOrder — places an order from a live-shopping / QVC-style hosted session and feeds it into the
 // EXISTING order → fulfillment → funds-release pipeline (nothing new for moving money). The buyer pays in SITE
@@ -55,8 +55,13 @@ export default __handler(async (req) => {
       return Response.json({ ok: false, error: "insufficient Site Cash (concurrent spend)", }, { status: 402 });
     }
 
-    // 50/50 split (or the configured platform %).
-    const split = revenueSplit(priceUsd, await getNumber("HOSTING_REVENUE_PLATFORM_PCT", 50));
+    // Facebook-Marketplace-style SELLER fee (replaces the 50/50 split). Shipped = fee; local pickup = free.
+    const shipped = body?.fulfillment !== "local" && body?.local_pickup !== true;
+    const fee = marketplaceFee(priceUsd, shipped, {
+      feePct: await getNumber("SOCIAL_SHOP_FEE_PCT", 10),
+      feeMin: await getNumber("SOCIAL_SHOP_FEE_MIN", 0.80),
+      localFree: snapBool("SOCIAL_SHOP_LOCAL_FREE", true),
+    });
     const sellerCurrency = payoutCurrency(sellerIsBusiness);   // business → real_money, user → site_cash
 
     // Create the order in the EXISTING pipeline. shipping_status drives autoOrderFulfillmentAndFundsRelease.
@@ -64,9 +69,9 @@ export default __handler(async (req) => {
       user_id: user.id, seller_id: sellerId, item_name: itemName, quantity: qty,
       amount: priceUsd, total_usd: priceUsd,
       payment_method: "site_cash", points_spent: pointsNeeded, payment_captured: true,
-      source: "live_shopping", session_id: sessionId,
-      platform_usd: split.platform_usd, seller_net_usd: split.seller_usd, seller_payout_currency: sellerCurrency,
-      revenue_split_pct: split.platform_pct,
+      source: "live_shopping", session_id: sessionId, fulfillment: shipped ? "shipped" : "local",
+      platform_usd: fee.fee, seller_net_usd: fee.seller_net, seller_payout_currency: sellerCurrency,
+      marketplace_fee: fee.fee, fee_model: fee.model,
       shipping_status: "pending_ai_fulfillment", funds_released: false,
       created_at: new Date().toISOString(),
     }).catch(() => null);
@@ -76,25 +81,27 @@ export default __handler(async (req) => {
     }
     const orderId = String((order as Record<string, unknown>).id ?? "");
 
-    // Record the platform's share to the revenue ledger (existing system). Never a customer markup.
-    await recordRevenue({ type: "seller_commission", amount_usd: split.platform_usd, business_id: sellerIsBusiness ? sellerId : null, user_id: user.id, ref: orderId, meta: { source: "live_shopping", session_id: sessionId, seller_net_usd: split.seller_usd, seller_payout_currency: sellerCurrency } }).catch(() => null);
+    // Record the platform's fee to the revenue ledger (existing system). Never a customer markup.
+    await recordRevenue({ type: "seller_commission", amount_usd: fee.fee, business_id: sellerIsBusiness ? sellerId : null, user_id: user.id, ref: orderId, meta: { source: "live_shopping", session_id: sessionId, seller_net_usd: fee.seller_net, fee_model: fee.model, seller_payout_currency: sellerCurrency } }).catch(() => null);
 
-    // If the seller is a USER (not a business), credit their share as Site Cash pending (closed loop) rather than
-    // a real-money payout. Business sellers are paid real money by the existing funds-release pipeline on delivery.
+    // If the seller is a USER (not a business), credit their NET as Site Cash pending (closed loop) rather than a
+    // real-money payout. Business sellers are paid real money by the existing funds-release pipeline on delivery.
     if (!sellerIsBusiness && sellerId) {
-      const sellerPoints = Math.round(split.seller_usd / ppv);
+      const sellerPoints = Math.round(fee.seller_net / ppv);
       await db.incrementField("User", sellerId, "pending_points", sellerPoints).catch(() => null);
     }
 
     return Response.json({
       ok: true, order_id: orderId, session_id: sessionId,
       charged_points: pointsNeeded, price_usd: priceUsd,
-      split: { platform_usd: split.platform_usd, seller_usd: split.seller_usd, platform_pct: split.platform_pct },
+      fulfillment: shipped ? "shipped" : "local",
+      fee: { amount_usd: fee.fee, seller_net_usd: fee.seller_net, model: fee.model },
       seller_payout_currency: sellerCurrency,
-      note: `Order placed. You paid ${pointsNeeded} Site Cash. Split ${split.platform_pct}/${split.seller_pct}. ` +
+      note: `Order placed. You paid ${pointsNeeded} Site Cash. ` +
+        (fee.fee > 0 ? `Seller fee ${fee.model} = $${fee.fee.toFixed(2)}; seller nets $${fee.seller_net.toFixed(2)}. ` : "Local pickup — no seller fee. ") +
         (sellerIsBusiness
-          ? "The business seller is paid REAL money by the existing fulfillment/funds-release pipeline on delivery."
-          : "The seller is a user, so their share is credited as Site Cash.") +
+          ? "The business seller is paid REAL money (net) by the existing fulfillment/funds-release pipeline on delivery."
+          : "The seller is a user, so their net is credited as Site Cash.") +
         " Users only ever get Site Cash.",
     });
   } catch (e) {

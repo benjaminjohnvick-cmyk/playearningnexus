@@ -304,6 +304,12 @@
       "cron": "45 * * * *",
       "function": "feedbackAutoCollect",
       "_comment": "Hourly: mine the site's page telemetry (dwell/scroll/friction/purchases) into implicit feedback signals per domain \u2014 automatic, no user prompts."
+    },
+    {
+      "name": "omni-channel-livestream-build",
+      "cron": "30 10 * * *",
+      "function": "livestreamChannelBuild",
+      "_comment": "Daily: refresh the Omni-Channel Livestream channels from top sellers (image + optional AI commercial), bounded per run. No-op while OMNI_CHANNEL_LIVESTREAM_ENABLED is off."
     }
   ]
 }
