@@ -4064,3 +4064,15 @@ CREATE INDEX IF NOT EXISTS "EndorserConversion_data_gin" ON "EndorserConversion"
 CREATE INDEX IF NOT EXISTS "EndorserConversion_created" ON "EndorserConversion" (created_date DESC);
 CREATE INDEX IF NOT EXISTS "EndorserConversion_status" ON "EndorserConversion" ((data->>'status'));
 CREATE INDEX IF NOT EXISTS "EndorserConversion_member" ON "EndorserConversion" ((data->>'member_id'));
+
+-- Advance: a FREE, NON-RECOURSE purchasing-power advance of store credit (see sdk/advance.ts). Recouped only
+-- from the member's future advertiser-funded rewards; any shortfall is forgiven. Never a debt.
+CREATE TABLE IF NOT EXISTS "Advance" (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(), updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by text, data jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "Advance_data_gin" ON "Advance" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "Advance_created" ON "Advance" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "Advance_status" ON "Advance" ((data->>'status'));
+CREATE INDEX IF NOT EXISTS "Advance_member" ON "Advance" ((data->>'member_id'));

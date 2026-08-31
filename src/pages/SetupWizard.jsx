@@ -36,6 +36,35 @@ export default function SetupWizard() {
     finally { setFlooring(false); }
   };
 
+  const [gate, setGate] = useState(null);
+  const [gateBusy, setGateBusy] = useState(false);
+  const [gateMsg, setGateMsg] = useState(null);
+  const loadGate = async () => {
+    try { const res = await base44.functions.invoke('counselFeatureGate', {}); setGate(res?.features || null); }
+    catch { /* ignore */ }
+  };
+  useEffect(() => { loadGate(); }, []);
+  const toggleGate = async (key, enabled) => {
+    setGateBusy(true); setGateMsg(null);
+    try {
+      const body = enabled ? { disable: [key] } : { enable: [key], confirm: 'COUNSEL_APPROVED' };
+      const res = await base44.functions.invoke('counselFeatureGate', body);
+      if (res?.error) setGateMsg({ ok: false, text: res.error });
+      else { setGate(res.features || gate); setGateMsg({ ok: true, text: res.note || 'Updated.' }); }
+    } catch (e) { setGateMsg({ ok: false, text: e?.message || 'Failed.' }); }
+    finally { setGateBusy(false); }
+  };
+  const enableAllGate = async () => {
+    if (!window.confirm('Turn ON every counsel-gated feature? Do this only after your attorney has signed off on ALL of them. Each one moves money or posts on a member’s behalf.')) return;
+    setGateBusy(true); setGateMsg(null);
+    try {
+      const res = await base44.functions.invoke('counselFeatureGate', { enable: 'all', confirm: 'COUNSEL_APPROVED' });
+      if (res?.error) setGateMsg({ ok: false, text: res.error });
+      else { setGate(res.features || gate); setGateMsg({ ok: true, text: `Enabled ${res.changed_count} feature(s).` }); }
+    } catch (e) { setGateMsg({ ok: false, text: e?.message || 'Failed.' }); }
+    finally { setGateBusy(false); }
+  };
+
   const Row = ({ it }) => (
     <div className="flex items-start gap-3 py-2 border-b last:border-0">
       {it.ok ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" /> : <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />}
@@ -65,6 +94,25 @@ export default function SetupWizard() {
               <div><div className="text-lg font-bold">{data.go_live_ready ? "You're live" : 'Built & on — connect your accounts'}</div><div className="text-sm text-white/85">{data.summary}</div></div>
             </CardContent>
           </Card>
+
+          {gate && gate.length > 0 && (
+            <Card className="mb-4 border-amber-200 bg-amber-50/40">
+              <CardHeader><CardTitle className="text-base">Counsel-gated features (OFF until your lawyer signs off)</CardTitle></CardHeader>
+              <CardContent className="text-sm text-slate-700 space-y-2">
+                <div className="text-xs text-amber-700">These ship OFF. Each one moves money or posts on a member’s behalf and carries its own legal question — enable each only after your attorney approves that specific feature. See the briefs in the Lawyer Packet.</div>
+                {gate.map((f) => (
+                  <div key={f.key} className="flex items-center justify-between gap-3 py-1.5 border-b last:border-0">
+                    <div className="min-w-0"><div className="font-semibold text-sm truncate">{f.label}</div><div className="text-xs text-slate-500">{f.enabled ? 'ON' : 'OFF'} · {f.brief}</div></div>
+                    <Button size="sm" variant={f.enabled ? 'outline' : 'default'} disabled={gateBusy} onClick={() => toggleGate(f.key, f.enabled)}>{f.enabled ? 'Turn off' : 'Turn on'}</Button>
+                  </div>
+                ))}
+                <div className="flex items-center justify-between pt-1">
+                  <Button size="sm" variant="destructive" disabled={gateBusy} onClick={enableAllGate}>{gateBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Enable all (after full counsel sign-off)'}</Button>
+                  {gateMsg && <span className={`text-xs ${gateMsg.ok ? 'text-emerald-700' : 'text-red-600'}`}>{gateMsg.text}</span>}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {data.cost_floor && (
             <Card className="mb-4 border-emerald-200 bg-emerald-50/40">
