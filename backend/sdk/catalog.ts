@@ -18,6 +18,7 @@
 import { db } from "./db.ts";
 import { Core } from "./integrations.ts";
 import { generateProductImages } from "./image-gen.ts";
+import { LOCALIZATION_GUARDRAIL } from "./localization.ts";
 
 export const PLATFORM_SELLER_ID = "platform_catalog";
 
@@ -379,10 +380,56 @@ export async function ensureTemplateListings(count: number, category?: string): 
   return made;
 }
 
+/** Options for cloneTemplatesToCountry. Localization is OFF by default and TIGHTLY BOUNDED: cloning
+ *  runs per country over up to `cap` templates, so an LLM call per template per country would be very
+ *  expensive. When `localize` is on, only the first `localizeCap` cloned products are adapted (one
+ *  batched LLM call, not one per product), and only their TEXT (title/description) is translated +
+ *  culturally adapted — the base image, USD price, local price, and points are unchanged. */
+export interface CloneOptions { localize?: boolean; localizeCap?: number; }
+
+interface LocalizedText { title?: string; description?: string; cultural_notes?: string[]; }
+
+/** Batch-adapt template title/description into a country's language + customs in a SINGLE LLM call.
+ *  Bounded by the caller (items is already sliced). Returns a map templateId → adapted text. Best-effort:
+ *  on any failure it returns an empty map and cloning proceeds with the base (English) copy. */
+async function localizeTemplateTexts(items: any[], country: string): Promise<Map<string, LocalizedText>> {
+  const out = new Map<string, LocalizedText>();
+  if (!items.length) return out;
+  if (!(Deno.env.get("ANTHROPIC_API_KEY") || Deno.env.get("OPENAI_API_KEY"))) return out;
+  const lang = COUNTRY_LANGUAGE[country] || "en";
+  const payload = items.map((t, i) => ({ i, title: String(t.title || ""), description: String(t.description || "") }));
+  try {
+    const r = await Core.InvokeLLM({
+      prompt:
+        `Adapt each of these ${payload.length} marketplace product listings for shoppers in country ` +
+        `"${country}" (primary language "${lang}"). Translate the title and description into the local ` +
+        `language/dialect AND adapt CUSTOMS (tone, examples, formats). ` + LOCALIZATION_GUARDRAIL +
+        ` Return {"items": [{"i": number, "title": string, "description": string, "cultural_notes": string[]}]} ` +
+        `with the same "i" index for each input.\nLISTINGS: ` + JSON.stringify(payload),
+      response_json_schema: {
+        type: "object",
+        properties: { items: { type: "array", items: { type: "object", properties: { i: { type: "number" }, title: { type: "string" }, description: { type: "string" }, cultural_notes: { type: "array", items: { type: "string" } } }, required: ["i", "title"] } } },
+        required: ["items"],
+      },
+    }) as any;
+    const rows: any[] = Array.isArray(r?.items) ? r.items : [];
+    for (const row of rows) {
+      const idx = Number(row?.i);
+      const t = items[idx];
+      if (!t || !row?.title) continue;
+      out.set(String(t.id), { title: String(row.title), description: String(row.description ?? ""), cultural_notes: Array.isArray(row.cultural_notes) ? row.cultural_notes.slice(0, 10) : [] });
+    }
+  } catch { /* best-effort: fall back to base copy */ }
+  return out;
+}
+
 /** Clone every template not yet present in `country` into an ACTIVE country listing. Reuses the
  *  template's base image (no image generation), overlays the country flag (display-time), and localizes
- *  price so points = one cent in the local currency. Returns the number of new country listings. */
-export async function cloneTemplatesToCountry(country: string, cap = 500): Promise<number> {
+ *  price so points = one cent in the local currency. When `opts.localize` is set (caller gates this on
+ *  AUTO_LOCALIZE_ENABLED), the first `opts.localizeCap` cloned products also have their TEXT translated +
+ *  culturally adapted to the country in a single batched LLM call; base facts, image, and prices are kept
+ *  and the English copy is preserved in base_title/base_description. Returns the number of new listings. */
+export async function cloneTemplatesToCountry(country: string, cap = 500, opts: CloneOptions = {}): Promise<number> {
   const c = (country || "US").toUpperCase();
   const templates = await db.filter("MarketplaceListing", { seller_id: PLATFORM_SELLER_ID, status: "template" }).catch(() => []) as any[];
   if (!templates?.length) return 0;
@@ -391,14 +438,29 @@ export async function cloneTemplatesToCountry(country: string, cap = 500): Promi
   const flag = COUNTRY_FLAG[c] || "";
   const lang = COUNTRY_LANGUAGE[c] || "en";
 
+  // The templates that will actually be cloned this run (respecting the clone cap), in order.
+  const toClone = templates.filter((t) => !doneTemplateIds.has(t.id)).slice(0, cap);
+
+  // Optional, bounded localization of the first N cloned products' text (single batched LLM call).
+  let localized = new Map<string, LocalizedText>();
+  if (opts.localize && lang !== "en") {
+    const lcap = Math.max(0, Math.min(opts.localizeCap ?? 25, toClone.length));
+    if (lcap > 0) localized = await localizeTemplateTexts(toClone.slice(0, lcap), c);
+  }
+
   let made = 0;
-  for (const t of templates) {
-    if (made >= cap) break;
-    if (doneTemplateIds.has(t.id)) continue;
+  for (const t of toClone) {
     const px = localPricing(c, Number(t.price_usd) || 0);
+    const loc = localized.get(String(t.id));
     const listing = await db.create("MarketplaceListing", {
       seller_id: PLATFORM_SELLER_ID, seller_name: "GamerGain Catalog",
-      title: t.title, description: t.description, category: t.category, condition: "new",
+      title: loc?.title || t.title,
+      description: loc?.description || t.description,
+      base_title: loc ? t.title : undefined,               // English original kept for review when localized
+      base_description: loc ? t.description : undefined,
+      localized: !!loc,
+      cultural_notes: loc?.cultural_notes || undefined,
+      category: t.category, condition: "new",
       price_usd: Number(t.price_usd) || 0,       // base USD retained (card processor / conversion)
       price_local: px.price_local,
       currency: px.currency,

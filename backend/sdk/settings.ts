@@ -1134,6 +1134,9 @@ export const REGISTRY: SettingDef[] = [
 
   // ── Auto-localization / culturalization (language + customs; ad visuals) ──
   { key: "AUTO_LOCALIZE_ENABLED", label: "Auto-localize content to a market (language + customs)", category: "Scale", type: "boolean", default: "0", help: "OFF by default. When creating features/products/sales/services, localizeContent adapts them to a target country's LANGUAGE and CUSTOMS (not just translation), with an anti-stereotype + local-law guardrail. AI ad visuals (commercials, AI host) also get styled to the local market. Facts/prices/claims unchanged; adaptation is assistive and reviewable.", sensitive: true },
+  { key: "LOCALIZE_MAX_MARKETS", label: "Auto-localize — max markets per item", category: "Scale", type: "number", default: "5", help: "Cap on how many target markets a single product/content is auto-localized to per request, to keep cost predictable.", min: 1 },
+  { key: "CATALOG_AUTO_LOCALIZE_ENABLED", label: "Auto-localize the AI catalog per country", category: "Scale", type: "boolean", default: "0", help: "OFF by default. When the AI catalog seeder clones template products into a country, also translate + culturally adapt each product's title/description to that country (language + customs). Requires AUTO_LOCALIZE_ENABLED. Bounded by CATALOG_LOCALIZE_MAX_PER_COUNTRY, and one batched LLM call per country, so cost stays predictable. Images and prices are unchanged; English copy is kept for review.", sensitive: true },
+  { key: "CATALOG_LOCALIZE_MAX_PER_COUNTRY", label: "Catalog auto-localize — max products per country", category: "Scale", type: "number", default: "25", help: "Cap on how many cloned catalog products per country get their text localized on a seeder run, to keep cost predictable. The rest launch with the original (English) copy.", min: 0 },
 
 ];
 

@@ -1,6 +1,6 @@
 import { __handler } from "../../sdk/runtime.ts";
 import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
-import { getNumber, snapString } from "../../sdk/settings.ts";
+import { getNumber, snapBool, snapNumber, snapString } from "../../sdk/settings.ts";
 import { ensureTemplateListings, cloneTemplatesToCountry, providersForCountry } from "../../sdk/catalog.ts";
 import { allSubcategories } from "../../sdk/taxonomy.ts";
 
@@ -48,13 +48,17 @@ export default __handler(async (req) => {
     }
 
     // 2. Clone templates into each country (no image generation — reuses base images + flag + local price).
+    //    Optional per-country TEXT localization (language + customs), gated + tightly bounded: only the first
+    //    `localizeCap` cloned products per country are adapted, via one batched LLM call each. OFF by default.
+    const localize = snapBool("AUTO_LOCALIZE_ENABLED", false) && (body?.localize === true || snapBool("CATALOG_AUTO_LOCALIZE_ENABLED", false));
+    const localizeCap = Math.max(0, Math.floor(Number(body?.localize_cap) || snapNumber("CATALOG_LOCALIZE_MAX_PER_COUNTRY", 25)));
     const seeded: any[] = [];
     for (const country of countries) {
-      const cloned = await cloneTemplatesToCountry(country).catch(() => 0);
-      seeded.push({ country, cloned, affiliate_providers_live: providersForCountry(country).map((p) => p.label) });
+      const cloned = await cloneTemplatesToCountry(country, 500, { localize, localizeCap }).catch(() => 0);
+      seeded.push({ country, cloned, localized: localize ? Math.min(localizeCap, cloned) : 0, affiliate_providers_live: providersForCountry(country).map((p) => p.label) });
     }
 
-    return Response.json({ success: true, templates_created_this_run: templatesCreated, template_categories: categories.length, seeded });
+    return Response.json({ success: true, templates_created_this_run: templatesCreated, template_categories: categories.length, localized: localize, seeded });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }
