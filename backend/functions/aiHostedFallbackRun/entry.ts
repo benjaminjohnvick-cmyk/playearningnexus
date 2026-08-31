@@ -48,6 +48,7 @@ export default __handler(async (req) => {
       valueProps: Array.isArray(body?.product?.value_props) ? body.product.value_props : [],
       targetDemographic: String(body?.target_demographic || ""),
       disclosureTag: AD_DISCLOSURE,
+      targetLocale: String(body?.target_locale || ""),
     });
     const cfg = renderConfig();
     const gate = renderGate(cfg, Number(body?.rendered_today) || 0, Number(body?.spent_today_usd) || 0, Number(body?.est_cost_usd) || 0);

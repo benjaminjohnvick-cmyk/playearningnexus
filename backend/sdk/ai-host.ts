@@ -1,4 +1,5 @@
 // ai-host.ts — pure logic for the "AI-hosted fallback live session." When an advertiser's product isn't
+import { visualAestheticBrief } from "./localization.ts";
 // converting on social (weak CTR / few conversions despite enough impressions), the platform can spin up a live
 // shopping session hosted by an AI PRESENTER the advertiser configured to match their target demographic, using
 // the Abacus.AI video engine wired earlier this session. This module decides WHEN to trigger the fallback and
@@ -53,6 +54,7 @@ export interface AiHostBriefInput {
   valueProps?: string[];
   targetDemographic?: string;   // creative fit only (e.g. "budget-conscious parents") — NOT protected-category targeting
   disclosureTag?: string;       // e.g. "#ad"
+  targetLocale?: string;        // optional market to style the VISUALS for (e.g. "Japan" / "ja-JP")
 }
 
 /** Build the render prompt for the AI host video, with the compliance constraints inline so the generated host
@@ -69,8 +71,10 @@ export function buildAiHostBrief(i: AiHostBriefInput): { prompt: string; disclos
     `person and does not depict a real individual); include the ad disclosure "${tag}"; describe product VALUE ` +
     `only — do NOT promise earnings, savings guarantees, medical/financial outcomes, or any guaranteed result; ` +
     `no fabricated testimonials or fake reviews; keep claims to what the advertiser actually provided.`;
+  const localeTag = (i.targetLocale || "").trim();
+  const finalPrompt = localeTag ? prompt + visualAestheticBrief(localeTag) : prompt;
   return {
-    prompt,
-    disclosure: { ai_generated: true, not_a_real_person: true, ad_disclosure: tag, no_guaranteed_results: true, demographic_is_creative_only: true },
+    prompt: finalPrompt,
+    disclosure: { ai_generated: true, not_a_real_person: true, ad_disclosure: tag, no_guaranteed_results: true, demographic_is_creative_only: true, localized_visuals_for: localeTag || null },
   };
 }

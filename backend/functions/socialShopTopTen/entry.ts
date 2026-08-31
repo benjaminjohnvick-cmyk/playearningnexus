@@ -1,8 +1,10 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
-import { getNumber } from "../../sdk/settings.ts";
+import { getNumber, snapBool, snapString } from "../../sdk/settings.ts";
 import { rankTopSellers, type OrderLike } from "../../sdk/social-shop.ts";
+import { localizeItems, userCurrency } from "../../sdk/localize-price.ts";
+import { type RateTable } from "../../sdk/currency.ts";
 
 // socialShopTopTen — the AI Social Shop's auto storefront: the current top-selling items over a rolling window,
 // no manual curation. Reads recent orders and ranks them (units, then revenue). Returned as the default shop
@@ -21,11 +23,28 @@ export default __handler(async (req) => {
 
     // Recent sales. Bounded read; scan the window and rank in memory (top-N is small).
     const orders = await db.filter("Order", { created_date: { $gte: sinceISO } }, "-created_date", 5000).catch(() => []) as OrderLike[];
-    const top = rankTopSellers(orders, limit);
+    let top = rankTopSellers(orders, limit).map((t) => ({ ...t, unit_price_usd: t.units > 0 ? Math.round((t.revenue_usd / t.units) * 100) / 100 : 0 })) as Array<Record<string, unknown>>;
+
+    // Localize prices to the user's currency for DISPLAY (approximate; charged in the base unit / Site Cash).
+    let displayCurrency: string | null = null;
+    if (snapBool("CURRENCY_LIVE_FX_ENABLED", false)) {
+      const base = (snapString("FX_BASE_CURRENCY", "USD") || "USD").toUpperCase();
+      const target = userCurrency(user as Record<string, unknown>, base);
+      if (target !== base) {
+        const [rateRow] = await db.filter("CurrencyRate", { base }, "-created_date", 1).catch(() => []) as Record<string, unknown>[];
+        if (rateRow?.rates) {
+          const table: RateTable = { base, rates: rateRow.rates as Record<string, number> };
+          top = localizeItems(top, table, target, { priceField: "unit_price_usd" });
+          displayCurrency = target;
+        }
+      }
+    }
 
     return Response.json({
       ok: true, window_days: windowDays, count: top.length, top_sellers: top,
-      note: top.length ? `Top ${top.length} sellers over the last ${windowDays} day(s).` : "No sales in the window yet.",
+      display_currency: displayCurrency,
+      note: (top.length ? `Top ${top.length} sellers over the last ${windowDays} day(s).` : "No sales in the window yet.") +
+        (displayCurrency ? ` Prices shown in ${displayCurrency} are approximate live conversions; orders are charged in Site Cash.` : ""),
     });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });

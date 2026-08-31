@@ -3,6 +3,7 @@
 // the products being sold get an AI image + (optionally) a short AI commercial so catalog, livestream, and social
 // stay one connected system. This file decides WHAT to feature and builds the render brief; the DB reads and the
 // image/video generation live in the functions.
+import { visualAestheticBrief } from "./localization.ts";
 
 export interface FeaturedItem {
   item_name: string;
@@ -54,13 +55,15 @@ export function renderWorklist(channels: Channel[], cap = 10): Array<{ channel: 
 }
 
 /** Render brief for a product commercial, with the ad-compliance lines baked in (disclosed AI + #ad, no real
- *  person, no guaranteed results). Pure. */
-export function commercialBrief(itemName: string, channel: string, disclosureTag = "#ad"): { prompt: string; disclosure: Record<string, unknown> } {
-  const prompt =
+ *  person, no guaranteed results). Optionally styles the VISUALS to a target market (targetLocale) via the shared
+ *  localization brief. Pure. */
+export function commercialBrief(itemName: string, channel: string, disclosureTag = "#ad", targetLocale = ""): { prompt: string; disclosure: Record<string, unknown> } {
+  let prompt =
     `Create a short, upbeat product commercial for "${itemName}" (category: ${channel}) for a live-shopping ` +
     `channel. HARD REQUIREMENTS: the presenter/voice is AI-generated (make clear it is not a real person and does ` +
     `not depict a real individual); include the ad disclosure "${disclosureTag}"; describe the product's VALUE ` +
     `only — no guaranteed results, savings, or income claims; no fabricated testimonials; keep claims to what the ` +
     `listing actually states.`;
-  return { prompt, disclosure: { ai_generated: true, not_a_real_person: true, ad_disclosure: disclosureTag, no_guaranteed_results: true } };
+  if (targetLocale) prompt += visualAestheticBrief(targetLocale);
+  return { prompt, disclosure: { ai_generated: true, not_a_real_person: true, ad_disclosure: disclosureTag, no_guaranteed_results: true, localized_visuals_for: targetLocale || null } };
 }

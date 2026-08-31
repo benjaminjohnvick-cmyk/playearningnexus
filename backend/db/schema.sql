@@ -4166,3 +4166,24 @@ CREATE TABLE IF NOT EXISTS "TutorialProgress" (
 );
 CREATE INDEX IF NOT EXISTS "TutorialProgress_data_gin" ON "TutorialProgress" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "TutorialProgress_user" ON "TutorialProgress" ((data->>'user_id'));
+
+-- CurrencyRate: cached live FX rate tables (base + rates map) from the internet feed
+CREATE TABLE IF NOT EXISTS "CurrencyRate" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "CurrencyRate_data_gin" ON "CurrencyRate" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "CurrencyRate_base" ON "CurrencyRate" ((data->>'base'));
+
+-- LanguageReference: translation reference (language/dialect estimate + pangram/font samples)
+CREATE TABLE IF NOT EXISTS "LanguageReference" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "LanguageReference_data_gin" ON "LanguageReference" USING gin (data jsonb_path_ops);

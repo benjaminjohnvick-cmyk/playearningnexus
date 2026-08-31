@@ -1122,6 +1122,19 @@ export const REGISTRY: SettingDef[] = [
   { key: "TUTORIAL_ENABLED", label: "Interactive tutorial + guidebook", category: "Scale", type: "boolean", default: "0", help: "OFF by default. Turns on the role-branched interactive tutorial (business / non-business coach-marks, translated) and the downloadable guidebook — both generated from one source so they never drift. Auto-activates on a user's FIRST login (tutorialProgress reports first_time/autostart); replayable from Help after that.", sensitive: true },
   { key: "TUTORIAL_COMPLETION_REWARD", label: "Tutorial — completion reward (Site Cash)", category: "Scale", type: "number", default: "0", unit: "$", help: "Optional one-time SITE-CASH reward for completing the tutorial (0 = none). Members only ever receive Site Cash.", min: 0 },
 
+  // ── Currency: live FX conversion (internet feed) ──
+  { key: "CURRENCY_LIVE_FX_ENABLED", label: "Live currency conversion (internet FX feed)", category: "Scale", type: "boolean", default: "0", help: "OFF by default. Fetches live exchange rates from an internet FX feed (Frankfurter by default, no key) and converts amounts for display/pricing help. Cached and refreshed on a schedule. Site Cash stays a closed-loop unit; authoritative money handling stays server-side.", sensitive: true },
+  { key: "FX_PROVIDER_URL", label: "FX — provider URL", category: "Scale", type: "string", default: "https://api.frankfurter.dev/v1/latest", help: "Live rates endpoint. Default Frankfurter (free, no key), returns {base, rates:{...}} for ?base=CUR. Swap for another provider if you prefer." },
+  { key: "FX_BASE_CURRENCY", label: "FX — base currency", category: "Scale", type: "string", default: "USD", help: "Base currency for the rate table (e.g. USD)." },
+  { key: "FX_CACHE_MINUTES", label: "FX — cache freshness (minutes)", category: "Scale", type: "number", default: "60", help: "How long cached rates are considered fresh before a refresh (default 60 min).", min: 1 },
+
+  // ── Language reference (estimate + pangram/font-coverage samples) ──
+  { key: "LANGUAGE_REFERENCE_ENABLED", label: "Language reference (counts + pangram samples)", category: "Scale", type: "boolean", default: "0", help: "OFF by default. Stores a reference for the translation agent: an ESTIMATE of how many languages/dialects exist (~7,000 living languages; dialects in the tens of thousands, no exact count) and a pangram per script. Pangrams are a font/display coverage aid, NOT a translation mechanism.", sensitive: true },
+  { key: "PANGRAM_IMAGES", label: "Language reference — render pangram images", category: "Scale", type: "boolean", default: "0", help: "When ON, languageReference build can render each pangram to an image (font preview), bounded per run. Off = text samples only." },
+
+  // ── Auto-localization / culturalization (language + customs; ad visuals) ──
+  { key: "AUTO_LOCALIZE_ENABLED", label: "Auto-localize content to a market (language + customs)", category: "Scale", type: "boolean", default: "0", help: "OFF by default. When creating features/products/sales/services, localizeContent adapts them to a target country's LANGUAGE and CUSTOMS (not just translation), with an anti-stereotype + local-law guardrail. AI ad visuals (commercials, AI host) also get styled to the local market. Facts/prices/claims unchanged; adaptation is assistive and reviewable.", sensitive: true },
+
 ];
 
 const BY_KEY: Record<string, SettingDef> = Object.fromEntries(REGISTRY.map((d) => [d.key, d]));

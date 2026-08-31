@@ -58,7 +58,7 @@ export default __handler(async (req) => {
       let videoUrl: string | null = null, jobId: string | null = null;
       let disclosure: Record<string, unknown> | null = null;
       if (wantCommercials) {
-        const brief = commercialBrief(w.item_name, w.channel, AD_DISCLOSURE);
+        const brief = commercialBrief(w.item_name, w.channel, AD_DISCLOSURE, String(body?.target_locale || ""));
         disclosure = brief.disclosure;
         const rr = await renderVideoCall(rc, brief.prompt).catch(() => ({ ok: false } as { ok: boolean; video_url?: string; job_id?: string }));
         if (rr.ok) { videoUrl = rr.video_url ?? null; jobId = rr.job_id ?? null; commercials++; }

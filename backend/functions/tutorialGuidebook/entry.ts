@@ -18,7 +18,21 @@ export default __handler(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const markdown = renderGuidebookMarkdown();
+    let markdown = renderGuidebookMarkdown();
+
+    // Optional localization: translate + adapt the guidebook to a target market (language + customs).
+    const target = String(body?.target || body?.target_market || "").trim();
+    let localizedFor: string | null = null;
+    if (target && (snapBool("AUTO_TRANSLATE_ENABLED", false) || snapBool("AUTO_LOCALIZE_ENABLED", false))) {
+      const adaptCustoms = snapBool("AUTO_LOCALIZE_ENABLED", false)
+        ? " Also adapt CUSTOMS (tone, examples, formats) for that market respectfully and WITHOUT stereotypes."
+        : "";
+      const r = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt: `Translate and localize this Markdown guidebook for the market "${target}", preserving Markdown structure, headings, and any placeholders. Keep all facts, prices, and claims unchanged; make no guaranteed-result claims.${adaptCustoms} Return {"markdown": string}.\n\n${markdown}`,
+        response_json_schema: { type: "object", properties: { markdown: { type: "string" } }, required: ["markdown"] },
+      }).catch(() => null) as { markdown?: string } | null;
+      if (r?.markdown) { markdown = String(r.markdown); localizedFor = target; }
+    }
 
     if (String(body?.action || "") === "email") {
       const to = String(user.email || "").trim();
@@ -35,8 +49,8 @@ export default __handler(async (req) => {
 
     return Response.json({
       ok: true, format: "markdown", filename: "Get-Goods-Gratis-Guidebook.md", markdown,
-      can_email: !!user.email,
-      note: "Download the guidebook, or call with action:'email' to have it sent to your email to read later.",
+      can_email: !!user.email, localized_for: localizedFor,
+      note: (localizedFor ? `Localized for ${localizedFor}. ` : "") + "Download the guidebook, or call with action:'email' to have it sent to your email to read later.",
     });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });

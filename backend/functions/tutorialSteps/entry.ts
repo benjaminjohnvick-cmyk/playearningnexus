@@ -25,11 +25,17 @@ export default __handler(async (req) => {
     const wantTranslate = body?.translate !== false && snapBool("AUTO_TRANSLATE_ENABLED", false);
     const locale = String(body?.target_locale || user.locale || snapString("TRANSLATION_DEFAULT_LOCALE", "en") || "en");
     const { language, dialect } = normalizeLocale(locale);
+    // Optional culturalization: adapt CUSTOMS to a target market (not just translate), when enabled.
+    const targetMarket = String(body?.target_market || "").trim();
+    const culturalize = !!targetMarket && snapBool("AUTO_LOCALIZE_ENABLED", false);
     if (wantTranslate && language && language !== "en") {
       const strings = [label, ...steps.flatMap((s) => [s.title, s.body, s.tryIt ?? ""])];
       const dialectHint = dialect ? ` in the "${dialect}" dialect` : "";
+      const customs = culturalize
+        ? ` Also adapt CUSTOMS for the "${targetMarket}" market (tone, examples, formats) respectfully and without stereotypes; keep facts and placeholders unchanged.`
+        : "";
       const r = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `Translate each item of this JSON array into ${language}${dialectHint}, preserving meaning and any placeholders. Return {"translations": string[]} in order.\nITEMS: ${JSON.stringify(strings)}`,
+        prompt: `Translate each item of this JSON array into ${language}${dialectHint}, preserving meaning and any placeholders.${customs} Return {"translations": string[]} in order.\nITEMS: ${JSON.stringify(strings)}`,
         response_json_schema: { type: "object", properties: { translations: { type: "array", items: { type: "string" } } }, required: ["translations"] },
       }).catch(() => null) as { translations?: string[] } | null;
       const tr = r?.translations;
