@@ -187,9 +187,13 @@ for (const f of fnFiles) {
   //     REAL disbursement CALL — the PayPal payout path or a Stripe payout/transfer .create — not
   //     read-only listing (stripe.payouts.list), reconciliation, or the words "payouts" in prose/email
   //     (the old loose `paypal[^\n]*payouts` matched across escaped \n inside string literals).
+  //     The cash_out guard is satisfied either by a direct isEnabled('cash_out') check OR by the
+  //     centralized cashDisbursementHold() helper (payout-policy.ts), which enforces BOTH the cash_out
+  //     kill-switch AND the CASH_OUT_LEGAL_SIGNOFF legal hold at every money rail — the preferred path.
   const cashRail = c.match(/(\/v1\/payments\/payouts|stripe\.(payouts|transfers)\.create)/);
-  if (cashRail && !/isEnabled\(\s*['"]cash_out['"]/.test(c)) {
-    warn(f, lineOf(c, cashRail.index), `external cash disbursement (payout/transfer) with no isEnabled('cash_out') kill-switch. Review.`);
+  const cashGuarded = /isEnabled\(\s*['"]cash_out['"]/.test(c) || /cashDisbursementHold\s*\(/.test(c);
+  if (cashRail && !cashGuarded) {
+    warn(f, lineOf(c, cashRail.index), `external cash disbursement (payout/transfer) with no cash_out kill-switch (isEnabled('cash_out') or cashDisbursementHold()). Review.`);
   }
 
   // (c) social post creation without FTC #ad disclosure.
