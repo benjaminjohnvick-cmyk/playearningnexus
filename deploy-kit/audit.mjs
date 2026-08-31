@@ -140,6 +140,36 @@ if (Array.isArray(manifest)) {
   for (const d of onDisk) if (!set.has(d)) fail('backend/functions/_manifest.json', `function "${d}" exists but is NOT registered in the manifest (won't load)`);
 }
 
+// ---- STRUCTURAL 6: every gated feature flag reaches the Setup Wizard -------
+// The wizard's gated panel is derived from gatedBooleanFlags(): boolean settings that default OFF ("0") AND are
+// marked `sensitive: true`. Convention: a gated FUNCTION is gated behind a boolean setting whose key ends
+// "_ENABLED". So any such flag MUST be `sensitive: true` (→ it auto-appears in the wizard) unless it is on the
+// explicit exclusion list below (with a reason). This makes "new gated function shows up in the wizard"
+// automatic AND enforced — the build FAILS if someone adds a gated *_ENABLED flag without wiring it in.
+//
+// To intentionally keep a flag OUT of the wizard, add it here with a reason (e.g. a compliance must-stay-off
+// guardrail, an emergency kill switch, or a deprecated flag) — a conscious decision, not a silent omission.
+const WIZARD_EXCLUDE = {
+  FREE_ADVERTISER_TIER_ENABLED: 'discontinued per owner decision — not an activatable feature',
+};
+{
+  const s = read(path.join(ROOT, 'backend/sdk/settings.ts')) || '';
+  const objRe = /\{\s*key:\s*"([^"]+)"([\s\S]*?)\}/g;
+  let m;
+  while ((m = objRe.exec(s))) {
+    const key = m[1], body = m[2];
+    if (!key.endsWith('_ENABLED')) continue;
+    if (!/type:\s*"boolean"/.test(body)) continue;
+    if (!/default:\s*"0"/.test(body)) continue;               // only default-OFF gates
+    const sensitive = /sensitive:\s*true/.test(body);
+    if (sensitive) continue;                                   // → surfaces in the wizard automatically
+    if (WIZARD_EXCLUDE[key]) continue;                         // consciously excluded, with a reason
+    fail('backend/sdk/settings.ts',
+      `gated flag "${key}" (boolean, default off) is not in the Setup Wizard: mark it \`sensitive: true\` so ` +
+      `gatedBooleanFlags() surfaces it, or add it to WIZARD_EXCLUDE in deploy-kit/audit.mjs with a reason.`);
+  }
+}
+
 // ---- GUARDRAIL LINTS (advisory) -------------------------------------------
 const fnFiles = walkTs('backend/functions');
 for (const f of fnFiles) {

@@ -40,6 +40,18 @@
       "function": "autoDailyOperationsEngine"
     },
     {
+      "name": "resilient-governor",
+      "cron": "* * * * *",
+      "function": "resilientGovernorRun",
+      "_comment": "Every minute: the scaling-helper AI reads live load and sets RESILIENT_AUTO_STATE so users are auto-switched to on-device mode BEFORE the server tips over (hysteresis prevents flapping). No-op while RESILIENT_MODE_ENABLED is off."
+    },
+    {
+      "name": "site-maintenance-agent",
+      "cron": "*/15 * * * *",
+      "function": "maintenanceAgentRun",
+      "_comment": "Every 15 min: the site-maintenance AI sweeps health signals (errors, stuck/failed jobs, stale records, storage, secret expiry), writes a MaintenanceReport, and proposes fixes. Advisory + human-gated; never touches money/identity/secrets/security/code. No-op while MAINTENANCE_AGENT_ENABLED is off."
+    },
+    {
       "name": "daily-ai-goal",
       "cron": "0 8 * * *",
       "function": "generateAIDailyGoal"

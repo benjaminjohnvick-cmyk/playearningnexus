@@ -12,9 +12,19 @@
 // This is framework-agnostic. Wire it once at app start: `initResilientMode(base44)`. Pair with a PWA service
 // worker (see AI-SCALING-AGENT.md) for true offline caching of the app shell.
 
+import * as localDb from "./local-db.js";
+
 const SENSITIVE = new Set([
   "requestPayout", "requestManualPayout", "cashappPayout", "paypalPayout", "venmoPayout", "processRewardPayout",
   "assistedCheckout", "placeStoreOrder", "advanceGrant", "moneyTransfer", "submitTaxInfo", "kyc",
+]);
+
+// SENSITIVE READS — money/identity reads that must ALWAYS come live from the server, never from the on-device
+// copy. A stale local balance could mislead a purchase decision, so these bypass the offline-first path entirely
+// and fail closed (throw) rather than show a cached number. Extend as needed.
+const SENSITIVE_READ = new Set([
+  "getBalance", "walletBalance", "getWallet", "siteCashBalance", "payoutStatus", "getPayouts",
+  "taxInfo", "getTaxInfo", "kycStatus", "getKyc", "advanceStatus", "getStatement",
 ]);
 
 const state = {
@@ -100,15 +110,118 @@ export async function flushQueue() {
   }
 }
 
-/** Start it. Polls every `intervalMs` (default 15s) and reacts to browser online/offline events. */
-export function initResilientMode(base44, { intervalMs = 15000 } = {}) {
+// ── Offline-first reads from the on-device store (IndexedDB) ────────────────────────────────────────────────
+// This is the "use the phone's storage / download the safe slice" feature, done safely. For NON-sensitive reads
+// of the user's own data or public reference data, it serves instantly from the device copy and revalidates from
+// the server in the background (stale-while-revalidate). Money/identity reads are refused here and must go live.
+//
+// Returns { data, fromLocal, stale }. A caller can render `data` immediately and, if `stale`, show a subtle
+// "updating…" until the background refresh lands (subscribe via onModeChange or just re-read).
+export async function offlineFirstRead(fnName, payload, { store = "reads", ttlMs = 5 * 60 * 1000 } = {}) {
+  if (SENSITIVE_READ.has(fnName)) {
+    // Never serve money/identity from the device copy — always live, fail closed if offline.
+    return { data: await state.base44.functions.invoke(fnName, payload || {}), fromLocal: false, stale: false };
+  }
+  const key = `${fnName}:${JSON.stringify(payload || {})}`;
+  const cached = await localDb.getRead(key, ttlMs).catch(() => null);
+
+  const refresh = async () => {
+    try {
+      const res = await state.base44.functions.invoke(fnName, payload || {});
+      await localDb.putRead(key, res).catch(() => {});
+      if (store !== "reads") await localDb.put(store, key, res).catch(() => {});
+      return res;
+    } catch { return null; }
+  };
+
+  // Have a local copy: return it now. Refresh in the background only when the server is healthy.
+  if (cached && cached.v != null) {
+    if (state.mode === "normal") refresh();
+    return { data: cached.v, fromLocal: true, stale: cached.stale };
+  }
+  // No local copy: fetch, store, return. If the network fails and we truly have nothing, surface that.
+  const fresh = await refresh();
+  if (fresh != null) return { data: fresh, fromLocal: false, stale: false };
+  throw new Error("offline and no local copy on this device yet");
+}
+
+/** Download a PUBLIC, read-only slice (e.g. the product catalog) onto the device for offline browsing. This is
+ *  the safe form of "download the database": only public reference data, never other users' private data. Pass
+ *  the read function that returns the slice; its result is stored in the `catalog` store. */
+export async function prefetch(fnName, payload, { store = "catalog" } = {}) {
+  if (SENSITIVE.has(fnName) || SENSITIVE_READ.has(fnName)) return { ok: false, reason: "refused: not public data" };
+  try {
+    const res = await state.base44.functions.invoke(fnName, payload || {});
+    const key = `${fnName}:${JSON.stringify(payload || {})}`;
+    await localDb.put(store, key, res).catch(() => {});
+    await localDb.putRead(key, res).catch(() => {});
+    return { ok: true, key };
+  } catch (e) {
+    return { ok: false, reason: String(e?.message || e) };
+  }
+}
+
+/** Read a previously-prefetched public slice from the device (for offline catalog browsing). */
+export async function readPrefetched(fnName, payload, { store = "catalog" } = {}) {
+  const key = `${fnName}:${JSON.stringify(payload || {})}`;
+  return localDb.get(store, key);
+}
+
+// ── On-device self-heal (the LOCAL, non-authoritative tier of maintenance) ──────────────────────────────────
+// The server-side maintenance agent (maintenanceAgentRun) owns authoritative health — data hygiene, job retries,
+// anything shared. This is its counterpart INSIDE the app on a user's phone/desktop: it only ever fixes the
+// LOCAL app so the device experience stays smooth during a spike or a blip. It never mutates shared state and
+// never touches anything sensitive — the SENSITIVE guard above still blocks money/identity in every mode. What
+// it does: drop corrupt local-cache entries, discard a runaway write queue, re-register the service worker if the
+// app shell broke, and flush the queue on recovery. Returns a small client-health object for optional telemetry.
+export function deviceSelfHeal() {
+  const health = { checkedAt: Date.now(), cacheDropped: 0, queueTrimmed: 0, swReregistered: false, ok: true, mode: state.mode };
+  try {
+    // 1) Cache integrity: remove any rm_cache_* entry that no longer parses or lost its shape (corruption/partial write).
+    if (typeof localStorage !== "undefined") {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith("rm_cache_")) continue;
+        try {
+          const r = JSON.parse(localStorage.getItem(k) || "null");
+          if (!r || typeof r !== "object" || !("v" in r)) { localStorage.removeItem(k); health.cacheDropped++; }
+        } catch { localStorage.removeItem(k); health.cacheDropped++; }
+      }
+    }
+    // 2) Queue sanity: never let the local write queue grow unbounded (a stuck overloaded device could pile up).
+    if (state.queue.length > 500) { state.queue = state.queue.slice(-500); saveQueue(); health.queueTrimmed = 1; }
+    // 3) App shell: if the service worker died, re-register it so offline caching keeps working.
+    if (typeof navigator !== "undefined" && navigator.serviceWorker) {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        if (!reg) { navigator.serviceWorker.register("/sw.js").then(() => {}).catch(() => {}); health.swReregistered = true; }
+      }).catch(() => {});
+    }
+    // 4) On recovery, flush anything queued.
+    if (state.mode === "normal" && state.queue.length) flushQueue();
+  } catch (e) {
+    health.ok = false;
+  }
+  return health;
+}
+
+/** Start it. Polls every `intervalMs` (default 15s) and reacts to browser online/offline events. Also runs the
+ *  on-device self-heal at start and whenever the app recovers to normal, so the local app repairs itself. */
+export function initResilientMode(base44, { intervalMs = 15000, selfHeal = true } = {}) {
   state.base44 = base44;
   loadQueue();
+  if (selfHeal) {
+    // Self-heal at boot, and again each time we transition back to normal (recovery is when a flush/repair helps).
+    try { deviceSelfHeal(); } catch { /* ignore */ }
+    onModeChange((m) => { if (m === "normal") { try { deviceSelfHeal(); } catch { /* ignore */ } } });
+  }
   pollSignal();
   setInterval(pollSignal, intervalMs);
   if (typeof window !== "undefined") {
     window.addEventListener("offline", () => setMode("degraded"));
     window.addEventListener("online", () => pollSignal());
   }
-  return { currentMode, resilientRead, resilientWrite, flushQueue, onModeChange };
+  return {
+    currentMode, resilientRead, resilientWrite, flushQueue, onModeChange, deviceSelfHeal,
+    offlineFirstRead, prefetch, readPrefetched, localDb,
+  };
 }

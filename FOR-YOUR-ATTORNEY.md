@@ -5,6 +5,18 @@ turned on. The platform is already built to the conservative posture described b
 exact switch that keeps it safe until you clear it. This document is a plain-English map for counsel, not
 legal advice, and is current as of the 2026-08-15 compliance pass.*
 
+> **What's new for counsel (latest build) — read first.** A new set of live-hosting, monetization, and
+> streaming features was added, all gated OFF. They are summarized for review in
+> **`HOSTING-MONETIZATION-STREAMING-COUNSEL-BRIEF.md`** (in this same Lawyer Packet, with a PDF in the PDFs
+> folder). Highest-priority items there: **real-money skill tournaments** (regulated state-by-state, 18+,
+> conflicts with the users-only-Site-Cash rule — do not enable without review; the Site-Cash version is the
+> safe default); **public streaming / screen-mirroring** (DMCA/notice-and-takedown, moderation, age-gating
+> before it's enabled); **session recording consent/retention**; **AI-hosted advertiser sessions** (FTC AI +
+> #ad disclosure); and **third-party seller KYC/tax**. The monetization invariant is unchanged and enforced in
+> code: **users only ever receive Site Cash; businesses are paid real money; money/identity stay
+> server-authoritative.** Everything new appears in the operator Setup Wizard and is off until deliberately
+> enabled.
+
 ## How the safeguards work
 
 Nothing risky turns on by accident. Each area below is held behind an admin setting (a feature flag, a

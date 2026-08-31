@@ -84,3 +84,26 @@ export function decideScale(levers: ScaleLever[], metrics: ScaleMetrics, current
   }
   return { changes, scaled_count: scaledNow, at_scale: scaledNow > 0 };
 }
+
+// ── Resilient-mode state machine (pure) ─────────────────────────────────────────────────────────────────
+// Decides the on-device-fallback state from live load, with hysteresis so it escalates fast but de-escalates
+// only after load has clearly dropped (no flapping users in/out of on-device mode).
+export type ResilientState = "normal" | "degraded" | "overloaded";
+const RM_LEVEL: Record<ResilientState, number> = { normal: 0, degraded: 1, overloaded: 2 };
+const RM_STATE: ResilientState[] = ["normal", "degraded", "overloaded"];
+
+export interface ResilientThresholds { degradeUp: number; overloadUp: number; degradeDown: number; overloadDown: number; }
+
+/** Next resilient state from load (req/min) + current state. Escalate the moment an up-threshold is crossed;
+ *  de-escalate only once load falls below the down-threshold for the current level. Pure + deterministic. */
+export function resilientAutoDecide(loadRpm: number, current: ResilientState, t: ResilientThresholds): ResilientState {
+  const load = Math.max(0, Number(loadRpm) || 0);
+  const cur = RM_LEVEL[current] ?? 0;
+  const rawLevel = load >= t.overloadUp ? 2 : load >= t.degradeUp ? 1 : 0;
+  if (rawLevel > cur) return RM_STATE[rawLevel];                       // escalate immediately
+  if (rawLevel < cur) {                                               // de-escalate only past the down-threshold
+    if (cur === 2) return load <= t.overloadDown ? (load >= t.degradeUp ? "degraded" : "normal") : "overloaded";
+    if (cur === 1) return load <= t.degradeDown ? "normal" : "degraded";
+  }
+  return current;
+}

@@ -4087,3 +4087,48 @@ CREATE TABLE IF NOT EXISTS "StepUpVerification" (
 CREATE INDEX IF NOT EXISTS "StepUpVerification_data_gin" ON "StepUpVerification" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "StepUpVerification_created" ON "StepUpVerification" (created_date DESC);
 CREATE INDEX IF NOT EXISTS "StepUpVerification_user" ON "StepUpVerification" ((data->>'user_id'));
+
+-- MaintenanceReport: site-maintenance agent reports + approved re-run requests (added for the maintenance AI)
+CREATE TABLE IF NOT EXISTS "MaintenanceReport" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "MaintenanceReport_data_gin" ON "MaintenanceReport" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "MaintenanceReport_created" ON "MaintenanceReport" (created_date DESC);
+
+-- GameSession: Tier-3 peer-hosted session record + reward validation (source of truth for a session's identity)
+CREATE TABLE IF NOT EXISTS "GameSession" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "GameSession_data_gin" ON "GameSession" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "GameSession_created" ON "GameSession" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "GameSession_session" ON "GameSession" ((data->>'session_id'));
+
+-- SessionRecording: metadata for hosted-session recordings/clips (media lives in object storage; DB holds pointer)
+CREATE TABLE IF NOT EXISTS "SessionRecording" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SessionRecording_data_gin" ON "SessionRecording" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SessionRecording_session" ON "SessionRecording" ((data->>'session_id'));
+
+-- SimulcastJob: log of RTMP simulcast start/stop per session (NO secret material stored)
+CREATE TABLE IF NOT EXISTS "SimulcastJob" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SimulcastJob_data_gin" ON "SimulcastJob" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SimulcastJob_session" ON "SimulcastJob" ((data->>'session_id'));

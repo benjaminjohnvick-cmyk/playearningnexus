@@ -39,3 +39,23 @@ Deno.test("hysteresis: metric between down and up leaves the lever as-is (no fla
   const fromScaled = decideScale(DEFAULT_SCALE_LEVERS, mid, scaledCurrent);
   assertEquals(fromScaled.changes.find((c) => c.key === "VIDEO_ENGINE_RENDER_PROVIDER"), undefined);
 });
+
+import { resilientAutoDecide, type ResilientState } from "./scale-governor.ts";
+const RT = { degradeUp: 800, overloadUp: 1500, degradeDown: 500, overloadDown: 1000 };
+
+Deno.test("resilientAutoDecide: escalates immediately on load", () => {
+  assertEquals(resilientAutoDecide(200, "normal", RT), "normal");
+  assertEquals(resilientAutoDecide(900, "normal", RT), "degraded");
+  assertEquals(resilientAutoDecide(1600, "normal", RT), "overloaded");
+});
+
+Deno.test("resilientAutoDecide: de-escalates only past the down-threshold (hysteresis)", () => {
+  // overloaded, load drops to 1200 (< overloadUp but > overloadDown) → stays overloaded (no flap)
+  assertEquals(resilientAutoDecide(1200, "overloaded", RT), "overloaded");
+  // drops to 900 (<= overloadDown, still >= degradeUp) → degraded
+  assertEquals(resilientAutoDecide(900, "overloaded", RT), "degraded");
+  // degraded, load 600 (> degradeDown) → stays degraded
+  assertEquals(resilientAutoDecide(600, "degraded", RT), "degraded");
+  // degraded, load 400 (<= degradeDown) → normal
+  assertEquals(resilientAutoDecide(400, "degraded", RT), "normal");
+});
