@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { surveyTranslateEnabled, parseLanguages, translateSurvey } from "../../sdk/survey-translate.ts";
 
 export default __handler(async (req) => {
   try {
@@ -10,7 +11,10 @@ export default __handler(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { survey_goal, target_audience, num_questions = 5 } = await req.json();
+    const body = await req.json();
+    const { survey_goal, target_audience, num_questions = 5 } = body;
+    // Languages the creator chose to auto-translate the survey into (BCP-47 codes or labels).
+    const targetLanguages = parseLanguages(body.target_languages ?? body.languages);
 
     if (!survey_goal || !target_audience) {
       return Response.json({ 
@@ -75,9 +79,20 @@ Format response as JSON with structure:
       }
     });
 
+    // Auto-translate into the selected languages (neutral, structure-preserving), if enabled + requested.
+    let translations: Record<string, unknown> | null = null;
+    if (targetLanguages.length && surveyTranslateEnabled()) {
+      translations = await translateSurvey(base44, result as Record<string, unknown>, targetLanguages).catch(() => null);
+      if (translations && Object.keys(translations).length) {
+        (result as Record<string, unknown>).translations = translations;
+        (result as Record<string, unknown>).translated_languages = Object.keys(translations);
+      } else translations = null;
+    }
+
     return Response.json({
       success: true,
-      survey: result
+      survey: result,
+      translated_languages: translations ? Object.keys(translations) : [],
     });
   } catch (error) {
     console.error('AI survey generation error:', error);

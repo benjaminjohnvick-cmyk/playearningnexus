@@ -25,6 +25,20 @@ it does **not** change the app's core purpose or bypass review. OTA here is for 
 A/B variants — **not** for shipping a fundamentally different app. Keep updates in-scope and you're within
 policy.
 
+## Compliance control — server kill-switch (built in)
+
+OTA is **server-gated and OFF by default**, so you stay in control:
+- The plugin's blind auto-apply is **off** (`autoUpdate: false`). Instead the app checks the backend flag
+  **`MOBILE_OTA_ENABLED`** (via the public `mobileOtaConfig` endpoint) **before applying any bundle**, and
+  fails closed (no flag / unreachable → doesn't apply).
+- Flip `MOBILE_OTA_ENABLED` **off** in Admin settings and installed apps **stop applying OTA bundles at
+  once** — an instant halt if a bundle turned out to be out-of-scope or bad. `MOBILE_OTA_CHANNEL` picks the
+  channel.
+- A bad bundle that did apply also **auto-rolls back** on device (`notifyAppReady`).
+
+Net: OTA is opt-in (turn it on deliberately), automatic once on, and haltable in one click — which keeps the
+3.3.2 "in-scope only" posture enforceable rather than just a promise.
+
 ## How it's wired in this repo
 
 - `src/lib/otaUpdate.js` — a **guarded** integration of the open-source `@capgo/capacitor-updater`. It
@@ -48,6 +62,18 @@ policy.
    ```
    Installed apps download the new bundle in the background and apply it on next open. `notifyAppReady()`
    (called in `initOta`) prevents a broken bundle from sticking — a bad update auto-rolls back.
+
+## Automatic publish on every push (same as the backend)
+
+The **Deploy (CI/CD)** workflow has an **`ota-mobile`** job that makes mobile updates automatic, exactly like
+the backend auto-deploys to Railway. On every push to `main`, once you've added a **`CAPGO_TOKEN`** repo
+secret (Settings → Secrets and variables → Actions), CI builds the web bundle and runs
+`@capgo/cli bundle upload` for you — so a web-layer change you push reaches installed apps with **no manual
+step and no store review**. Without the secret the job **skips gracefully** (a notice, not a failure), so
+nothing breaks before you wire it. Channel defaults to `production` (override with a `CAPGO_CHANNEL` variable).
+
+This means the one-time manual `bundle upload` in the steps above is only needed for your first publish or a
+manual push — after that, pushing to `main` ships web changes to mobile automatically.
 
 ## How this ties into the learning system
 

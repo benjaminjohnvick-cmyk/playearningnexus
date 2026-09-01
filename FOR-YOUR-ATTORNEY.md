@@ -16,6 +16,14 @@ legal advice, and is current as of the 2026-08-15 compliance pass.*
 > code: **users only ever receive Site Cash; businesses are paid real money; money/identity stay
 > server-authoritative.** Everything new appears in the operator Setup Wizard and is off until deliberately
 > enabled.
+>
+> **Also new (2026-09-01) — see `SESSION-2026-09-01-COUNSEL-NOTE.md` in this Lawyer Packet:** Buddy Chat now
+> has **browsable, opt-in member profiles built from KYC-survey interests** (first name + interests only — no
+> email, full name, free-text, budget, or age), member-to-member **invites**, next-day **scheduling with
+> auto pop-up + cross-timezone coordination**, and **automatic AI translation of surveys** (neutral,
+> structure-preserving). Highest-priority review items: consent/privacy disclosure and data-minimization for
+> making KYC interest data member-visible, member-to-member contact safety, and machine-translation accuracy.
+> All gated OFF by default; the compliance spine is unchanged.
 
 ## How the safeguards work
 

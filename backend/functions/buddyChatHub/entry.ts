@@ -1,6 +1,8 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { snapBool } from "../../sdk/settings.ts";
+import { bookingEnabled } from "../../sdk/buddy-schedule.ts";
+import { profileBrowseEnabled } from "../../sdk/buddy-profile.ts";
 
 // buddyChatHub — tells the Buddy Chat client which actions to show in its "＋" menu, so the AI Social Shop and the
 // four hosting options live inside Buddy Chat instead of separate screens. Pure gate-reading; the client renders
@@ -26,6 +28,12 @@ export default __handler(async (req) => {
       { key: "stream", label: "Stream / Screen", enabled: sessionHosting && snapBool("HOSTING_ALLOW_NONGAME", false), calls: "sessionHostAssign", content_type: "screen", desc: "Live stream or screen-mirror (moderated)." },
       { key: "go_live", label: "Go live (omni-channel)", enabled: sessionHosting && snapBool("HOSTING_SOCIAL_SIMULCAST_ENABLED", false), calls: "sessionSimulcast", desc: "Simulcast to your connected social accounts." },
       { key: "survey_test", label: "Test it first", enabled: snapBool("SURVEY_TEST_FIRST_ENABLED", false), calls: "surveyTestCreate", desc: "Unsure? Run a free validation survey before you sell or host." },
+      // Book the next session (available to every tier). "Schedule next chat" reunites you with buddies who pick
+      // the same moment; "Schedule with a new buddy" auto-matches a fresh, KYC-compatible partner for tomorrow.
+      { key: "schedule_next", label: "Schedule next chat", enabled: bookingEnabled(), calls: "buddyScheduleNext", body_hint: { match_preference: "any" }, desc: "Pick a local time to meet again tomorrow — Buddy Chat auto-opens then, and cross-timezone buddies are lined up on the same moment." },
+      { key: "schedule_new", label: "Schedule with a new buddy", enabled: bookingEnabled(), calls: "buddyScheduleNext", body_hint: { with_new_user: true }, desc: "Book tomorrow with a NEW buddy, auto-matched to your interests from your first (KYC) survey." },
+      // Browse other members' interest profiles (built from the KYC survey) and pick your own match.
+      { key: "browse_buddies", label: "Browse & pick a buddy", enabled: profileBrowseEnabled(), calls: "buddyProfileBrowse", then: "buddyPickMatch", desc: "Browse members by shared interests (first name + interests only) and pick your own buddy — invite now or schedule for tomorrow." },
     ];
 
     return Response.json({

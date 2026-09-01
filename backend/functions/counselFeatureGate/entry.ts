@@ -24,6 +24,12 @@ const LEGAL_BRIEFS: Record<string, string> = {
   ENDORSER_PERSONALIZE_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
   ENDORSER_AUTOPOST_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
   POINTS_CASHABLE: "COMPLIANCE-AND-CURRENT-STATE.md",
+  // Founding-offer guardrails that MUST stay off in the clean Tier 1 model — enabling reads as
+  // return-of-capital / charging members, so it requires counsel sign-off.
+  FOUNDING_MEMBER_SHORTFALL_CHARGE: "FOUNDING-OFFER-LEGAL-REVIEW.md",
+  FOUNDING_FULLKEEP_CAP_TO_PRICE: "FOUNDING-OFFER-LEGAL-REVIEW.md",
+  // Flexible-payment (credit) opt-in — conditioning credit on a future purchase is regulated.
+  FLEXPAY_NEXT_TIER_OPTIN: "FLEXIBLE-PAYMENT-TERMS-COMPLIANCE.md",
 };
 
 export default __handler(async (req) => {

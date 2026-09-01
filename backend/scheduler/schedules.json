@@ -316,6 +316,12 @@
       "cron": "5 * * * *",
       "function": "currencyRates",
       "_comment": "Hourly: refresh live FX rates from the internet feed into the cache. No-op while CURRENCY_LIVE_FX_ENABLED is off."
+    },
+    {
+      "name": "buddy-next-session-popups",
+      "cron": "*/5 * * * *",
+      "function": "buddyScheduledPopups",
+      "_comment": "Every 5 min: fire the auto-open Buddy Chat notification at each user's booked next-day moment (in their own timezone) and expire missed slots. No-op while BUDDY_NEXT_SESSION_BOOKING_ENABLED is off."
     }
   ]
 }

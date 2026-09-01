@@ -16,12 +16,12 @@
       "showSpinner": false
     },
     "CapacitorUpdater": {
-      "autoUpdate": true,
+      "autoUpdate": false,
       "appReadyTimeout": 10000,
       "responseTimeout": 20,
       "directUpdate": false,
       "periodCheckDelay": 600,
-      "_comment": "OTA live web-bundle updates (no store review). autoUpdate downloads DELTA bundles (only changed files) in the background and applies on next open; periodCheckDelay checks every 10 min; the client also checks on app-resume and gates downloads to wifi (see otaUpdate.js). Inert until '@capgo/capacitor-updater' is installed and a channel is set via the Capgo CLI. See MOBILE-OTA-LIVE-UPDATES.md."
+      "_comment": "OTA live web-bundle updates (no store review). autoUpdate is OFF on purpose: the app (src/lib/otaUpdate.js) drives updates itself so it can check the server kill-switch MOBILE_OTA_ENABLED (via /functions/mobileOtaConfig) BEFORE applying any bundle — flip that flag off to halt a rollout instantly (Apple 3.3.2 / Google compliance control). Updates download as DELTA bundles on wifi and apply on next open; a bad bundle auto-rolls back (notifyAppReady). Inert until '@capgo/capacitor-updater' is installed and a channel is set via the Capgo CLI. See MOBILE-OTA-LIVE-UPDATES.md."
     }
   }
 }

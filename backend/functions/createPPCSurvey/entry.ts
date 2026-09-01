@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { surveyTranslateEnabled, parseLanguages, translateSurvey } from "../../sdk/survey-translate.ts";
 
 export default __handler(async (req) => {
   try {
@@ -10,7 +11,10 @@ export default __handler(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { questions, sample_size, total_cost, title, product_name, product_url } = await req.json();
+    const body = await req.json();
+    const { questions, sample_size, total_cost, title, product_name, product_url } = body;
+    // Languages the business chose to auto-translate this survey into (BCP-47 codes or labels).
+    const targetLanguages = parseLanguages(body.target_languages ?? body.languages);
 
     // Validate inputs
     if (!questions || questions.length < 5) {
@@ -41,9 +45,27 @@ export default __handler(async (req) => {
       tracking_enabled: !!product_url
     });
 
+    // Auto-translate the survey (title + questions/options) into the selected languages, if enabled + requested.
+    // Neutral, structure-preserving; stored as per-locale variants next to the original. Survey stays in review.
+    let translatedLanguages: string[] = [];
+    if (targetLanguages.length && surveyTranslateEnabled()) {
+      const translations = await translateSurvey(
+        base44,
+        { title: title || 'Untitled Survey', product_name, questions },
+        targetLanguages,
+      ).catch(() => ({} as Record<string, unknown>));
+      translatedLanguages = Object.keys(translations || {});
+      if (translatedLanguages.length) {
+        await base44.asServiceRole.entities.PPCSurvey.update(survey.id, {
+          translations, translated_languages: translatedLanguages,
+        }).catch(() => null);
+      }
+    }
+
     return Response.json({
       success: true,
       survey_id: survey.id,
+      translated_languages: translatedLanguages,
       message: 'Survey created and submitted for review'
     });
 

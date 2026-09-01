@@ -4,6 +4,7 @@ import { db } from "../../sdk/db.ts";
 import { burstDailyGoalUsd } from "../../sdk/burst.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
 import { isUnlocked, chatDailyLimit, buddyUnlockEarningsUsd, buddyCommitEnabled, buddyCommitTargetUsd, buddyMandatoryNonPremium, buddyMatchWaitSeconds, buddyChatIdleSeconds } from "../../sdk/buddy.ts";
+import { bookingEnabled, premiumAvailable, withinStartWindow } from "../../sdk/buddy-schedule.ts";
 
 // buddyStatus (authenticated) — current buddy state: who you're paired with, both of today's progress, your
 // unlock progress toward extended chat + connect, chat allowance left, and connect state. Read-only.
@@ -49,6 +50,29 @@ export default __handler(async (req) => {
       }
     }
 
+    // Next-session booking (all tiers): the user's booked slot for tomorrow, and whether it's time to auto-open.
+    const booking_on = bookingEnabled();
+    let next_session: Record<string, unknown> | null = null;
+    if (booking_on) {
+      const bk = await db.filter("BuddyNextSession", { user_id: user.id, status: "booked" }, "-created_date", 1).catch(() => []) as Record<string, unknown>[];
+      const nt = bk?.[0] ? [] : await db.filter("BuddyNextSession", { user_id: user.id, status: "notified" }, "-created_date", 1).catch(() => []) as Record<string, unknown>[];
+      const slot = bk?.[0] || nt?.[0] || null;
+      if (slot) {
+        const at = String(slot.next_session_at || "");
+        const openNow = at ? withinStartWindow(at) : false;
+        next_session = {
+          booked: true,
+          next_session_at: at,
+          local_time: slot.local_time ?? null,
+          timezone: slot.timezone ?? null,
+          can_start_now: openNow,
+          should_auto_open: openNow,   // the client polls this and pops Buddy Chat open at the chosen moment
+        };
+      } else {
+        next_session = { booked: false };
+      }
+    }
+
     // Commitment (accountability, not a cage — Leave/Report always work). Applies to all tiers.
     const commitTarget = buddyCommitTargetUsd();
     const iAmA = pair ? pair.user_a === user.id : false;
@@ -70,6 +94,9 @@ export default __handler(async (req) => {
       pair_id: pair?.id || null,
       status: pair ? pair.status : "none",
       is_premium: premium,
+      available_to_premium: premiumAvailable(),   // Buddy Chat is open to premium users too
+      booking_enabled: booking_on,
+      next_session,   // { booked, next_session_at, local_time, timezone, can_start_now, should_auto_open } | null
       mandatory,   // non-premium can't turn buddy chat off; safety valves (leave/report→re-match) still apply
       match_wait_seconds: buddyMatchWaitSeconds(),   // wait this long for a 1:1, then auto-add to a group
       chat_idle_seconds: buddyChatIdleSeconds(),     // chat/voice pauses after this long without a survey

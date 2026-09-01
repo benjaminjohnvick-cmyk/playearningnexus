@@ -422,6 +422,21 @@ CREATE TABLE IF NOT EXISTS "BuddyPair" (
 CREATE INDEX IF NOT EXISTS "BuddyPair_data_gin" ON "BuddyPair" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "BuddyPair_created" ON "BuddyPair" (created_date DESC);
 
+-- BuddyNextSession: one user's booked "meet again tomorrow" slot. Stored as an absolute UTC instant plus the
+-- user's IANA timezone so the client can auto-open Buddy Chat at exactly the chosen moment (in their own local
+-- time) and buddies who chose the SAME real-world moment across timezones share a utc_bucket and get matched.
+-- data: { user_id, next_session_at (UTC ISO), timezone, local_time "HH:MM", utc_bucket, status
+--         (booked|notified|consumed|expired), source_day, booked_at, notified_at?, consumed_at? }
+CREATE TABLE IF NOT EXISTS "BuddyNextSession" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "BuddyNextSession_data_gin" ON "BuddyNextSession" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "BuddyNextSession_created" ON "BuddyNextSession" (created_date DESC);
+
 -- BuddyVoiceClip: a voice message between two MUTUALLY-CONNECTED buddies. Transcribed for moderation
 -- (answer-wall + scam-guard on the transcript) and retained. data: { pair_id, from_user_id, to_user_id,
 -- audio_base64, mime, transcript, day, flagged }
