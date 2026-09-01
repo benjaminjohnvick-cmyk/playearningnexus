@@ -1,0 +1,41 @@
+name: Mobile OTA publish
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.js'
+      - '.github/workflows/ota-mobile.yml'
+  workflow_dispatch:
+
+jobs:
+  ota-mobile:
+    name: Publish OTA bundle to mobile apps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for Capgo token
+        id: guard
+        run: |
+          if [ -n "${{ secrets.CAPGO_TOKEN }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Mobile OTA skipped::Add a CAPGO_TOKEN secret to auto-ship web changes to installed mobile apps."
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.ready == 'true'
+        with:
+          node-version: '20'
+      - name: Build web bundle + publish OTA
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          CAPGO_TOKEN: ${{ secrets.CAPGO_TOKEN }}
+          CAPGO_CHANNEL: ${{ vars.CAPGO_CHANNEL }}
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+          npx --yes @capgo/cli@latest bundle upload --channel "${CAPGO_CHANNEL:-production}" --apikey "$CAPGO_TOKEN"
