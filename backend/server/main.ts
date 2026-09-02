@@ -10,7 +10,13 @@ import { autoMigrate } from "./migrate.ts";
 import { frontendEnabled, serveStatic } from "./static.ts";
 import { primeSettings, snapBool } from "../sdk/settings.ts";
 import { verifyJwt } from "../sdk/auth.ts";
-import { db } from "../sdk/db.ts";
+import { db, withClient } from "../sdk/db.ts";
+
+// Which commit this container is running (Railway injects RAILWAY_GIT_COMMIT_SHA on GitHub deploys),
+// and when this process booted. Both are surfaced on /health so a single public URL paste proves WHICH
+// deploy is live — no dashboard digging. booted_at also moves forward on every redeploy.
+const BUILD_COMMIT = (Deno.env.get("RAILWAY_GIT_COMMIT_SHA") ?? Deno.env.get("GIT_COMMIT_SHA") ?? "unknown").slice(0, 12);
+const BOOT_TIME = new Date().toISOString();
 
 // True only for a request bearing a valid admin bearer token (used for the maintenance-mode bypass).
 async function requesterIsAdmin(req: Request): Promise<boolean> {
@@ -59,8 +65,31 @@ Deno.serve({ port: PORT }, async (req) => {
   const url = new URL(req.url);
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
 
-  // Health check
-  if (url.pathname === "/health") return Response.json({ ok: true, functions: loaded, agents: listAgents().length, frontend: frontendEnabled(), scheduler_inline: (Deno.env.get("SCHEDULER_INLINE") ?? "0") === "1" });
+  // Health check. Plain /health stays DB-free so Railway's frequent healthcheck adds no DB load; it now
+  // also reports `commit` + `booted_at` so a single paste proves which deploy is live. /health?deep=1
+  // additionally runs a `SELECT 1` to confirm the database connection end-to-end (db:true/false).
+  if (url.pathname === "/health") {
+    const base = {
+      ok: true,
+      functions: loaded,
+      agents: listAgents().length,
+      frontend: frontendEnabled(),
+      scheduler_inline: (Deno.env.get("SCHEDULER_INLINE") ?? "0") === "1",
+      commit: BUILD_COMMIT,
+      booted_at: BOOT_TIME,
+    };
+    if (url.searchParams.get("deep") === "1") {
+      let db_ok = false;
+      let db_error: string | undefined;
+      try { await withClient(async (c) => { await c.queryObject("SELECT 1"); }); db_ok = true; }
+      catch (e) { db_error = (e as Error).message; }
+      return Response.json({ ...base, ok: db_ok, db: db_ok, ...(db_error ? { db_error } : {}) }, {
+        status: db_ok ? 200 : 503,
+        headers: CORS,
+      });
+    }
+    return Response.json(base, { headers: CORS });
+  }
 
   // Auth endpoints: /auth/signup, /auth/login, /auth/me
   if (url.pathname.startsWith("/auth/")) {
