@@ -4,8 +4,9 @@ import { snapBool, snapNumber } from "../../sdk/settings.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
 import { db } from "../../sdk/db.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
-import { noteFoundingImpression } from "../../sdk/founding-advertiser.ts";
 import { pickInterstitialAd } from "../../sdk/interstitial-ad.ts";
+import { recordRevenue } from "../../sdk/revenue.ts";
+import { impressionsValueUsd } from "../../sdk/full-value-guarantee.ts";
 import { adFreeEnabled, adFreeEnrolled, adFreeAdSeconds, adFreeStatusToday, markAdFreeAdWatched, markAdFreeFeeCharged } from "../../sdk/premium-adfree.ts";
 
 // premiumAdFree (authenticated) — the premium "skip ads by watching one extra ad a day" option. The extra
@@ -73,8 +74,23 @@ export default __handler(async (req) => {
       await base44.asServiceRole.entities.AdImpression.create({
         user_id: user.id, ad_id: adId, placement: "adfree_minute", seconds, day: new Date().toISOString().slice(0, 10),
       }).catch(() => null);
-      if (body?.founding_owner_id) await noteFoundingImpression(db, String(body.founding_owner_id)).catch(() => {});
-      if (body?.makegood_owner_id) await noteFoundingImpression(db, String(body.makegood_owner_id)).catch(() => {});
+
+      // AUTOMATIC per-impression CPM billing → your direct extra revenue. The extra ad-free minute is
+      // incremental billable inventory (NOT metered against any prepaid package): the sponsoring advertiser is
+      // charged PREMIUM_ADFREE_CPM_USD per impression, recorded to the revenue ledger. Server-authoritative —
+      // the advertiser is looked up from the served ad, never taken from the client; a house ad bills nothing.
+      let billedUsd = 0;
+      if (adId !== "house") {
+        const cpm = Math.max(0, snapNumber("PREMIUM_ADFREE_CPM_USD", 22));
+        if (cpm > 0) {
+          const adRow = await db.get("AdGridAd", adId).catch(() => null);
+          const advId = adRow ? String((adRow as Record<string, unknown>).advertiser_user_id ?? (adRow as Record<string, unknown>).created_by ?? "") : "";
+          if (advId) {
+            billedUsd = impressionsValueUsd(1, cpm);
+            await recordRevenue({ type: "advertising", amount_usd: billedUsd, business_id: advId, ref: adId, meta: { placement: "adfree_minute", cpm, impressions: 1, user_id: user.id } }).catch(() => {});
+          }
+        }
+      }
 
       const res = await markAdFreeAdWatched(db, user.id, adId);
 
@@ -97,7 +113,7 @@ export default __handler(async (req) => {
         }
       }
 
-      return Response.json({ ok: true, ad_free_now: true, done_today: true, fee_charged: feeCharged, note: "Done — you watched today's ad, so you're ad-free for the rest of today. You keep all your survey earnings." });
+      return Response.json({ ok: true, ad_free_now: true, done_today: true, fee_charged: feeCharged, billed_usd: billedUsd, note: "Done — you watched today's ad, so you're ad-free for the rest of today. You keep all your survey earnings." });
     }
 
     // status (default) — premium members are ENROLLED by default; opted_in reflects "not opted out".
