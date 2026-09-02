@@ -46,6 +46,7 @@ import { LocaleProvider, useLocale } from '@/components/locale/LocaleContext';
 import CustomerFeedbackSurvey from '@/components/feedback/CustomerFeedbackSurvey';
 import { initTracker, setPage, trackEvent, initSessionCapture } from '@/lib/uxTracker';
 import KYCSurveyGate from '@/components/onboarding/KYCSurveyGate';
+import InAppInterstitialAd from '@/components/ads/InAppInterstitialAd';
 import { VariantProvider } from '@/components/experiments/VariantProvider';
 import { initLiveVariants } from '@/lib/liveVariants';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
@@ -509,6 +510,8 @@ export default function Layout({ children, currentPageName }) {
         {isAuthenticated && user && <AIChatAssistant />}
         {isAuthenticated && user && <ExperimentVotePrompt userId={user.id} />}
         {isAuthenticated && user && <KYCSurveyGate />}
+        {/* Full-screen in-app ad at natural navigation breaks (frequency-capped; skips onboarding/age-gate). */}
+        {isAuthenticated && user && !user?.needs_age_verification && <InAppInterstitialAd trigger={currentPageName} />}
 
         <LogoutPromptModal
           isOpen={showLogoutPrompt}

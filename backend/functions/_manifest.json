@@ -169,6 +169,7 @@
   "analyzeGamePreferences",
   "analyzeProspectResponseAndPause",
   "analyzeTopPerformingPosts",
+  "appInterstitialGate",
   "appStoreCategories",
   "appStoreEarningsValidator",
   "appStoreSearch",

@@ -3,9 +3,8 @@ import { __handler } from "../../sdk/runtime.ts";
 import { snapBool, snapNumber } from "../../sdk/settings.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
 import { db } from "../../sdk/db.ts";
-import { foundingInterstitialPriority, activeFoundingAdOwners, noteFoundingImpression } from "../../sdk/founding-advertiser.ts";
-import { activeEarnedAdOwners } from "../../sdk/earned-advertiser.ts";
-import { activeMakeGoodOwners } from "../../sdk/delivery-guarantee.ts";
+import { noteFoundingImpression } from "../../sdk/founding-advertiser.ts";
+import { pickInterstitialAd } from "../../sdk/interstitial-ad.ts";
 
 // surveyInterstitialGate (authenticated) — the mandatory ~30s ad BETWEEN surveys for non-premium users
 // (flywheel #3 addition). Premium is exempt (an upgrade incentive). The ad is served from your OWN inventory
@@ -42,63 +41,15 @@ export default __handler(async (req) => {
     const required = enabled && !(nonPremiumOnly && premium);
     if (!required) return Response.json({ required: false, premium });
 
-    // Serve one ad from your own inventory. Priority order:
-    //   1) Founding advertisers' active creatives (up to their yearly allotment),
-    //   2) Paying PPC-grid advertisers' active creatives,
-    //   3) any active AdGrid/sponsored slot, then
-    //   4) a house ad.
-    const slots = await base44.asServiceRole.entities.AdGridAd.filter({ status: "active" }).then((r: any) => r || []).catch(() => []) as Record<string, unknown>[];
-    let pick = (slots || [])[0] || null;
-    let foundingOwnerId: string | null = null;
-    let ppcAdvertiser = false;
-    if (foundingInterstitialPriority() && (slots || []).length) {
-      const owners = await activeFoundingAdOwners(db).catch(() => new Set<string>());
-      const fpick = (slots || []).find((s) => owners.has(String(s.created_by)));
-      if (fpick) { pick = fpick; foundingOwnerId = String(fpick.created_by); }
-    }
-    // If no founding ad was chosen, prefer an ad whose advertiser is actively paying for the PPC grid, so
-    // paying PPC advertisers are placed in the mandatory between-survey slot ahead of any stray/house ad.
-    if (!foundingOwnerId && snapBool("SURVEY_INTERSTITIAL_PPC_PRIORITY", true) && (slots || []).length) {
-      // SCALE: check only the CANDIDATE slots' owners for ppc_grid_active via one bounded id-$in lookup —
-      // never load the entire paying-advertiser population (which grows with every advertiser you add).
-      const ownerIds = Array.from(new Set(
-        (slots || []).flatMap((s) => [String(s.advertiser_user_id ?? ""), String(s.created_by ?? "")]).filter(Boolean),
-      ));
-      let paying = new Set<string>();
-      if (ownerIds.length) {
-        const payingRows = await base44.asServiceRole.entities.User
-          .filter({ id: { $in: ownerIds }, ppc_grid_active: true }).then((r: any) => r || []).catch(() => []) as Record<string, unknown>[];
-        paying = new Set((payingRows || []).map((a) => String(a.id)));
-      }
-      const ppick = (slots || []).find((s) => paying.has(String(s.advertiser_user_id)) || paying.has(String(s.created_by)));
-      if (ppick) { pick = ppick; ppcAdvertiser = true; }
-    }
-    // Then earned / no-upfront advertisers whose free advertising is currently delivering (participating).
-    // Their unlocked/free ad benefit actually shows here, after founding + paid PPC priority, before house.
-    let earnedAdvertiser = false;
-    if (!foundingOwnerId && !ppcAdvertiser && (slots || []).length) {
-      const earnedOwners = await activeEarnedAdOwners(db, new Date().toISOString().slice(0, 10)).catch(() => new Set<string>());
-      if (earnedOwners.size) {
-        const epick = (slots || []).find((s) => earnedOwners.has(String(s.advertiser_user_id)) || earnedOwners.has(String(s.created_by)));
-        if (epick) { pick = epick; earnedAdvertiser = true; }
-      }
-    }
-    // Finally, RESIDUAL make-good delivery: an advertiser owed a free delivery top-up (their guarantee fell
-    // short at term end) serves here on spare capacity — after every paying/priority advertiser, before house.
-    // Each impression meters against their served counter, driving the make-good to fulfillment.
-    let makegoodOwnerId: string | null = null;
-    if (!foundingOwnerId && !ppcAdvertiser && !earnedAdvertiser && (slots || []).length) {
-      const mgOwners = await activeMakeGoodOwners(db).catch(() => new Set<string>());
-      if (mgOwners.size) {
-        const mpick = (slots || []).find((s) => mgOwners.has(String(s.advertiser_user_id)) || mgOwners.has(String(s.created_by)));
-        if (mpick) { pick = mpick; makegoodOwnerId = String(mpick.advertiser_user_id ?? mpick.created_by); }
-      }
-    }
-    const ad = pick
-      ? { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser, earned_advertiser: earnedAdvertiser, makegood: !!makegoodOwnerId, makegood_owner_id: makegoodOwnerId }
-      : { ad_id: "house", title: "Upgrade to Premium — skip the ads", image_url: "", url: "/Pricing" };
+    // Serve one ad from your OWN inventory (founding → paying PPC → earned/free → residual make-good → house).
+    // Shared with the in-app interstitial via pickInterstitialAd so the two placements never drift apart.
+    const picked = await pickInterstitialAd(base44, db, {
+      ppcPriority: snapBool("SURVEY_INTERSTITIAL_PPC_PRIORITY", true),
+      houseTitle: "Upgrade to Premium — skip the ads",
+      houseUrl: "/Pricing",
+    });
 
-    return Response.json({ required: true, seconds, premium, ad });
+    return Response.json({ required: true, seconds, premium, ad: picked.ad });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

@@ -9,26 +9,28 @@ const DEFAULTS = {
   website: { enabled: true, url: 'https://getgoodsgratis.com', label: 'getgoodsgratis.com' },
 };
 
-export default function BrandedAd({ branding, className = '', children }) {
+// `fill` makes the branded frame stretch to fill its parent (used by the full-screen interstitials): the
+// website link stays a thin bar at the top and the ad creative fills all remaining height.
+export default function BrandedAd({ branding, className = '', fill = false, children }) {
   const b = branding || DEFAULTS;
-  if (b.enabled === false) return <div className={className}>{children}</div>;
+  if (b.enabled === false) return <div className={`${fill ? 'h-full w-full' : ''} ${className}`}>{children}</div>;
   const wm = b.watermark || DEFAULTS.watermark;
   const site = b.website || DEFAULTS.website;
 
   return (
-    <div className={`relative overflow-hidden rounded-md ${className}`}>
+    <div className={`relative overflow-hidden ${fill ? 'h-full w-full flex flex-col' : 'rounded-md'} ${className}`}>
       {site.enabled !== false && site.url && (
         <a
           href={site.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block text-center text-[11px] font-medium py-1 px-2 truncate"
+          className="block text-center text-[11px] font-medium py-1 px-2 truncate shrink-0"
           style={{ background: '#16264f', color: '#e8c766' }}
         >
           {site.label || site.url} ↗
         </a>
       )}
-      <div className="relative">
+      <div className={`relative ${fill ? 'flex-1 min-h-0' : ''}`}>
         {wm.enabled !== false && wm.logo_url && (
           <img
             src={wm.logo_url}
@@ -43,7 +45,7 @@ export default function BrandedAd({ branding, className = '', children }) {
             }}
           />
         )}
-        <div className="relative" style={{ zIndex: 1 }}>{children}</div>
+        <div className={`relative ${fill ? 'h-full w-full' : ''}`} style={{ zIndex: 1 }}>{children}</div>
       </div>
     </div>
   );

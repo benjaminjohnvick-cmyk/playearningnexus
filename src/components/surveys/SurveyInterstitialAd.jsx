@@ -4,10 +4,11 @@ import { Loader2, X } from 'lucide-react';
 import BrandedAd from '@/components/branding/BrandedAd';
 
 /**
- * SurveyInterstitialAd — the mandatory ~30-second ad shown BETWEEN surveys for non-premium users
- * (premium is exempt). Renders a full-panel ad with a countdown; the "Continue" button unlocks only when
- * the countdown finishes. The ad comes from your OWN inventory (AdGrid / sponsored / a house upgrade ad),
- * so the impression is your ad revenue. Calls onDone() when the user proceeds (or when no ad is required).
+ * SurveyInterstitialAd — the mandatory full-screen ad shown BETWEEN surveys for non-premium users
+ * (premium is exempt by default). Renders a TRUE full-screen ad with a countdown; the "Continue" button
+ * unlocks only when the countdown finishes. The ad comes from your OWN inventory (AdGrid / sponsored /
+ * a house upgrade ad), so the impression is your ad revenue. Calls onDone() when the user proceeds (or
+ * when no ad is required). Length is server-controlled (SURVEY_INTERSTITIAL_SECONDS, default 35s).
  *
  * Usage: mount before starting the next survey; render nothing once done.
  *   <SurveyInterstitialAd onDone={() => startNextSurvey()} />
@@ -15,8 +16,8 @@ import BrandedAd from '@/components/branding/BrandedAd';
 export default function SurveyInterstitialAd({ onDone }) {
   const [state, setState] = useState('loading');   // loading | showing | done
   const [ad, setAd] = useState(null);
-  const [_seconds, setSeconds] = useState(30);
-  const [left, setLeft] = useState(30);
+  const [_seconds, setSeconds] = useState(35);
+  const [left, setLeft] = useState(35);
   const timer = useRef(null);
 
   const finish = useCallback((adId, foundingOwnerId) => {
@@ -35,7 +36,7 @@ export default function SurveyInterstitialAd({ onDone }) {
         const res = await base44.functions.invoke('surveyInterstitialGate', {});
         if (!alive) return;
         if (res.data?.error || !res.data?.required) { finish(); return; }
-        const s = Number(res.data.seconds) || 30;
+        const s = Number(res.data.seconds) || 35;
         setAd(res.data.ad || null); setSeconds(s); setLeft(s); setState('showing');
       } catch { if (alive) finish(); }
     })();
@@ -49,32 +50,47 @@ export default function SurveyInterstitialAd({ onDone }) {
   }, [state]);
 
   if (state === 'done') return null;
-  if (state === 'loading') return <div className="p-6 flex items-center gap-2 text-slate-500"><Loader2 className="w-4 h-4 animate-spin" /> Loading…</div>;
+  if (state === 'loading') {
+    return (
+      <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center text-white/70">
+        <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading…
+      </div>
+    );
+  }
 
   const done = left <= 0;
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl max-w-sm w-full overflow-hidden shadow-2xl">
-        <div className="relative">
-          <BrandedAd branding={ad?.branding}>
-            {ad?.image_url
-              ? <img src={ad.image_url} alt={ad.title || 'Ad'} className="w-full aspect-video object-cover" />
-              : <div className="aspect-video bg-slate-900 flex flex-col items-center justify-center text-center text-white p-6"><div className="text-lg font-semibold">{ad?.title || 'Sponsored'}</div><div className="text-white/70 text-sm mt-1">Premium members skip these ads.</div></div>}
-          </BrandedAd>
-          <div className="absolute top-2 right-2 z-10 text-[11px] bg-black/60 text-white rounded-full px-2 py-0.5">
-            {done ? 'Ready' : `${left}s`}
-          </div>
-        </div>
-        <div className="p-3 space-y-2">
-          {ad?.title && <div className="text-sm font-medium text-slate-800 truncate">{ad.title}</div>}
-          <button
-            disabled={!done}
-            onClick={() => finish(ad?.ad_id, ad?.founding_owner_id)}
-            className={`w-full text-sm py-2 rounded-md font-medium flex items-center justify-center gap-1 ${done ? 'bg-violet-600 text-white hover:bg-violet-700' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}>
-            {done ? <><X className="w-4 h-4" /> Continue to survey</> : `Continue in ${left}s`}
-          </button>
-          <a href="/Pricing" className="block text-center text-[11px] text-violet-600 hover:underline">Go Premium to skip ads</a>
-        </div>
+    // TRUE full-screen: fills the entire viewport edge to edge.
+    <div className="fixed inset-0 z-[100] bg-black flex flex-col">
+      {/* Countdown / status pill, top-right */}
+      <div className="absolute top-4 right-4 z-10 text-sm font-medium bg-black/60 text-white rounded-full px-3 py-1">
+        {done ? 'Ready' : `Ad · ${left}s`}
+      </div>
+
+      {/* Ad fills the whole screen */}
+      <div className="flex-1 min-h-0">
+        <BrandedAd branding={ad?.branding} fill>
+          {ad?.image_url
+            ? <img src={ad.image_url} alt={ad.title || 'Ad'} className="h-full w-full object-cover" />
+            : (
+              <div className="h-full w-full bg-gradient-to-b from-slate-900 to-black flex flex-col items-center justify-center text-center text-white p-8">
+                <div className="text-3xl font-bold">{ad?.title || 'Sponsored'}</div>
+                <div className="text-white/70 text-base mt-3 max-w-md">Premium members skip these ads.</div>
+              </div>
+            )}
+        </BrandedAd>
+      </div>
+
+      {/* Bottom action bar */}
+      <div className="relative z-10 bg-black/80 backdrop-blur px-4 pb-[env(safe-area-inset-bottom)] pt-3 space-y-2">
+        {ad?.title && <div className="text-sm font-medium text-white/90 text-center truncate">{ad.title}</div>}
+        <button
+          disabled={!done}
+          onClick={() => finish(ad?.ad_id, ad?.founding_owner_id)}
+          className={`w-full max-w-md mx-auto text-base py-3 rounded-lg font-semibold flex items-center justify-center gap-2 ${done ? 'bg-violet-600 text-white hover:bg-violet-700' : 'bg-white/10 text-white/50 cursor-not-allowed'}`}>
+          {done ? <><X className="w-5 h-5" /> Continue to survey</> : `Continue in ${left}s`}
+        </button>
+        <a href="/Pricing" className="block text-center text-xs text-violet-300 hover:underline pb-2">Go Premium to skip ads</a>
       </div>
     </div>
   );
