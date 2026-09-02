@@ -63,6 +63,10 @@ export default __handler(async (req) => {
       product_url: b.product_url || null,
       product_page: { description: String(productPage?.description || "").slice(0, 2000) },
       questions,
+      // Premium "extra minute" ad-free placement — a 60s full-screen ad a premium member watches once a day
+      // to go ad-free (a billable premium impression). Advertisers are INCLUDED BY DEFAULT as part of the
+      // offer; they must explicitly OPT OUT (adfree_minute_optout: true) to keep their creative out of it.
+      adfree_minute_optout: b.adfree_minute_optout === true,
       status: "active",
       rights_attested: true,
       rights_attested_at: new Date().toISOString(),

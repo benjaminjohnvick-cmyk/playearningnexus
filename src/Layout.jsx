@@ -47,6 +47,7 @@ import CustomerFeedbackSurvey from '@/components/feedback/CustomerFeedbackSurvey
 import { initTracker, setPage, trackEvent, initSessionCapture } from '@/lib/uxTracker';
 import KYCSurveyGate from '@/components/onboarding/KYCSurveyGate';
 import InAppInterstitialAd from '@/components/ads/InAppInterstitialAd';
+import AdFreeDailyMinute from '@/components/ads/AdFreeDailyMinute';
 import { VariantProvider } from '@/components/experiments/VariantProvider';
 import { initLiveVariants } from '@/lib/liveVariants';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
@@ -512,6 +513,8 @@ export default function Layout({ children, currentPageName }) {
         {isAuthenticated && user && <KYCSurveyGate />}
         {/* Full-screen in-app ad at natural navigation breaks (frequency-capped; skips onboarding/age-gate). */}
         {isAuthenticated && user && !user?.needs_age_verification && <InAppInterstitialAd trigger={currentPageName} />}
+        {/* Premium ad-free daily minute — opt-in + progress (premium-only; hides itself otherwise). */}
+        {isAuthenticated && user && !user?.needs_age_verification && <AdFreeDailyMinute />}
 
         <LogoutPromptModal
           isOpen={showLogoutPrompt}

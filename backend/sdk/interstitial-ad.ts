@@ -20,12 +20,17 @@ export type PickedInterstitial = {
 };
 
 // deno-lint-ignore no-explicit-any
-export async function pickInterstitialAd(base44: any, db: any, opts?: { ppcPriority?: boolean; houseTitle?: string; houseUrl?: string }): Promise<PickedInterstitial> {
+export async function pickInterstitialAd(base44: any, db: any, opts?: { ppcPriority?: boolean; houseTitle?: string; houseUrl?: string; adfreeOnly?: boolean }): Promise<PickedInterstitial> {
   const ppcPriority = opts?.ppcPriority ?? true;
 
-  const slots = await base44.asServiceRole.entities.AdGridAd.filter({ status: "active" })
+  let slots = await base44.asServiceRole.entities.AdGridAd.filter({ status: "active" })
     // deno-lint-ignore no-explicit-any
     .then((r: any) => r || []).catch(() => []) as Record<string, unknown>[];
+
+  // adfreeOnly: the premium "extra minute" placement includes every active creative BY DEFAULT (part of the
+  // offer); an advertiser is in unless they explicitly opted out (adfree_minute_optout === true). If every
+  // eligible creative has opted out, falls through to the house ad below.
+  if (opts?.adfreeOnly) slots = (slots || []).filter((s) => s.adfree_minute_optout !== true);
 
   let pick = (slots || [])[0] || null;
   let foundingOwnerId: string | null = null;

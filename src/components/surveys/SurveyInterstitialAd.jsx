@@ -75,7 +75,7 @@ export default function SurveyInterstitialAd({ onDone }) {
             : (
               <div className="h-full w-full bg-gradient-to-b from-slate-900 to-black flex flex-col items-center justify-center text-center text-white p-8">
                 <div className="text-3xl font-bold">{ad?.title || 'Sponsored'}</div>
-                <div className="text-white/70 text-base mt-3 max-w-md">Premium members skip these ads.</div>
+                <div className="text-white/70 text-base mt-3 max-w-md">Thanks for supporting Get Goods Gratis.</div>
               </div>
             )}
         </BrandedAd>
@@ -90,7 +90,6 @@ export default function SurveyInterstitialAd({ onDone }) {
           className={`w-full max-w-md mx-auto text-base py-3 rounded-lg font-semibold flex items-center justify-center gap-2 ${done ? 'bg-violet-600 text-white hover:bg-violet-700' : 'bg-white/10 text-white/50 cursor-not-allowed'}`}>
           {done ? <><X className="w-5 h-5" /> Continue to survey</> : `Continue in ${left}s`}
         </button>
-        <a href="/Pricing" className="block text-center text-xs text-violet-300 hover:underline pb-2">Go Premium to skip ads</a>
       </div>
     </div>
   );

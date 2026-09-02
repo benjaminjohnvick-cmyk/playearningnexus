@@ -3416,6 +3416,18 @@ CREATE TABLE IF NOT EXISTS "AdImpression" (
 CREATE INDEX IF NOT EXISTS "AdImpression_data_gin" ON "AdImpression" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AdImpression_created" ON "AdImpression" (created_date DESC);
 
+-- PremiumAdFreeDay: one row per premium member per UTC day tracking their opt-in "extra minute of surveys"
+-- toward the ad-free benefit. id is deterministic (adf_<user>_<YYYY-MM-DD>) so crediting is single-flight.
+CREATE TABLE IF NOT EXISTS "PremiumAdFreeDay" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PremiumAdFreeDay_data_gin" ON "PremiumAdFreeDay" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "PremiumAdFreeDay_created" ON "PremiumAdFreeDay" (created_date DESC);
+
 -- AffiliatePurchase: a purchase seen through the OPT-IN shopping extension (Honey-style), recorded ONLY
 -- after explicit consent (ConsentRecord kind "shopping_tracking"). DATA-MINIMIZED on purpose: merchant,
 -- order total, affiliate commission, coarse day/ref — never full carts, item lists, card data, or browsing

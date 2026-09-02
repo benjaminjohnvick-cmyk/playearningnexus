@@ -5,6 +5,7 @@ import { isPremiumUser } from "../../sdk/survey-reward.ts";
 import { db } from "../../sdk/db.ts";
 import { noteFoundingImpression } from "../../sdk/founding-advertiser.ts";
 import { pickInterstitialAd } from "../../sdk/interstitial-ad.ts";
+import { premiumAdFreeActive } from "../../sdk/premium-adfree.ts";
 
 // appInterstitialGate (authenticated) — the full-screen IN-APP ad shown at natural breaks during general
 // app use (NOT just between surveys). Served from your OWN inventory (AdGrid / sponsored / house), so the
@@ -38,8 +39,10 @@ export default __handler(async (req) => {
       return Response.json({ ok: true });
     }
 
-    const required = enabled && !(nonPremiumOnly && premium);
-    if (!required) return Response.json({ required: false, premium, min_gap_min: minGapMin });
+    // Premium members who opted into the ad-free arrangement AND completed today's extra minute skip the ad.
+    const adFree = await premiumAdFreeActive(db, user, premium);
+    const required = enabled && !(nonPremiumOnly && premium) && !adFree;
+    if (!required) return Response.json({ required: false, premium, ad_free: adFree, min_gap_min: minGapMin });
 
     const picked = await pickInterstitialAd(base44, db, {
       ppcPriority: snapBool("SURVEY_INTERSTITIAL_PPC_PRIORITY", true),
