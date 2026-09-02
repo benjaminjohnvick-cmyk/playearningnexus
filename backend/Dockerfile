@@ -5,4 +5,4 @@ COPY . .
 # Cache deps
 RUN deno cache server/main.ts || true
 EXPOSE 8000
-CMD ["run", "--allow-net", "--allow-env", "--allow-read", "server/main.ts"]
+CMD ["run", "--unstable-cron", "--allow-net", "--allow-env", "--allow-read", "server/main.ts"]

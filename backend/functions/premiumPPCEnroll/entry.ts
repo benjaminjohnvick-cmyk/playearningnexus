@@ -1,7 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { annualEarnCeiling, DAILY_EARN_CAP, PPC_GRID_ANNUAL_PRICE, upfrontGrantEnabled, surveyCommitmentDays, surveyMinutesPerDay } from "../../sdk/premium-ppc.ts";
-import { WELCOME_BONUS } from "../../sdk/premium-boost.ts";
+import { welcomeBonus } from "../../sdk/premium-boost.ts";
 import { getNumber } from "../../sdk/settings.ts";
 import { db } from "../../sdk/db.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
@@ -93,7 +93,7 @@ export default __handler(async (req) => {
       grant_points: (upfront && !alreadyGranted) ? grantPoints : 0,
       grant_usd: (upfront && !alreadyGranted) ? ceilingUsd : 0,
       regranted: alreadyGranted || false,
-      points_earned_total: upfront ? (alreadyGranted ? 0 : grantPoints) : WELCOME_BONUS,
+      points_earned_total: upfront ? (alreadyGranted ? 0 : grantPoints) : welcomeBonus(),
       commitment_start: now,
       survey_requirement_days: surveyCommitmentDays(),
       survey_days: 0,
@@ -112,7 +112,7 @@ export default __handler(async (req) => {
 
     // Credit the member's balance: the FULL up-front grant (banked, non-cashable) — ONLY if they haven't
     // had it before — or, in the safer earn-as-you-go mode, just the welcome bonus. Never repaid/clawed back.
-    const creditPoints = upfront ? (alreadyGranted ? 0 : grantPoints) : WELCOME_BONUS;
+    const creditPoints = upfront ? (alreadyGranted ? 0 : grantPoints) : welcomeBonus();
     if (creditPoints > 0) {
       // Atomic compare-and-set on each money field (balance + non-cashable promo marker) so a
       // concurrent/duplicate enroll can't double-grant the up-front points.
@@ -126,10 +126,10 @@ export default __handler(async (req) => {
       }, user.id).catch(() => null);
       await base44.asServiceRole.entities.Notification.create({
         user_id: user.id, type: upfront ? "premium_upfront_grant" : "premium_welcome_bonus",
-        title: upfront ? `🎁 ${grantPoints.toLocaleString()} points added!` : `🎁 $${WELCOME_BONUS} Welcome Bonus!`,
+        title: upfront ? `🎁 ${grantPoints.toLocaleString()} points added!` : `🎁 $${welcomeBonus()} Welcome Bonus!`,
         message: upfront
           ? `Your ${grantPoints.toLocaleString()} points ($${ceilingUsd}) are in your balance to spend now. Just complete ~${surveyMinutesPerDay()} min of surveys a day for a year — you can catch up anytime. Points are closed-loop and non-cashable; nothing is ever charged or owed.`
-          : `Welcome to Premium PPC — here's $${WELCOME_BONUS} in points to start.`,
+          : `Welcome to Premium PPC — here's $${welcomeBonus()} in points to start.`,
         is_read: false,
       }).catch(() => null);
     }
@@ -145,7 +145,7 @@ export default __handler(async (req) => {
       lockout_mode_enabled: lockoutEnabled,
       note: upfront
         ? `${grantPoints.toLocaleString()} points ($${ceilingUsd}) are yours up front. Complete ~${surveyMinutesPerDay()} min of surveys/day for a year (flexible catch-up). Points are closed-loop and non-cashable; nothing is ever repaid or clawed back — falling behind only affects future access.`
-        : `You start with a $${WELCOME_BONUS} welcome bonus, then earn points as you go up to $${ceilingUsd}/year. Missed days simply don't earn — no charge, no debt, nothing to repay.`,
+        : `You start with a $${welcomeBonus()} welcome bonus, then earn points as you go up to $${ceilingUsd}/year. Missed days simply don't earn — no charge, no debt, nothing to repay.`,
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

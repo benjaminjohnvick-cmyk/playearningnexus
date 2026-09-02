@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import {
   annualEarnCeiling, BUSINESS_REFUND_PER_DAY, hasDoubled, round2, SOCIAL_CREDIT_PER_DAY, utcDay,
 } from "../../sdk/premium-ppc.ts";
-import { dailyBoostCap, LAPSE_AFTER_DAYS, streakMultiplier } from "../../sdk/premium-boost.ts";
+import { dailyBoostCap, lapseAfterDays, streakMultiplier } from "../../sdk/premium-boost.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
 
 // premiumPPCDailyReconcile — runs once/day (scheduler, service token). NO-PENALTY model with legal
@@ -57,7 +57,7 @@ export default __handler(async (req) => {
         const daysSinceActive = m.last_active_date
           ? Math.floor((Date.now() - new Date(String(m.last_active_date)).getTime()) / (24 * 60 * 60 * 1000))
           : 999;
-        const willLapse = m.status !== "lapsed" && daysSinceActive >= LAPSE_AFTER_DAYS;
+        const willLapse = m.status !== "lapsed" && daysSinceActive >= lapseAfterDays();
         if (willLapse) lapsedCount++;
         await base44.asServiceRole.entities.PremiumPPCMembership.update(m.id, {
           streak: 0,

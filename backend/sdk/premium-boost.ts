@@ -10,12 +10,35 @@
 // advertiser contributions consumed 1:1 into member grants, so the platform can never grant more boost than
 // advertisers have actually funded. See PREMIUM-GIFT-BOOST.md.
 import { isEnabled } from "./feature-flags.ts";
-import { getNumber, getBool } from "./settings.ts";
+import { getNumber, getBool, snapNumber } from "./settings.ts";
 import { db } from "./db.ts";
 import { adjustUserBalance } from "./balance.ts";
 
 const round2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 export const MEMBER_CREDIT_FIELD = "gift_boost_credit_usd"; // non-cashable, item-directed boost credit on User
+
+// ── Premium PPC front-loaded engagement boosts (used by premiumPPCEnroll + premiumPPCDailyReconcile) ──
+// These read the existing, clearly-labeled Premium-PPC settings live (sync snapshot). Restored after a
+// refactor dropped their exports, which had been silently preventing those two functions from loading.
+/** Welcome bonus (USD value in points) granted once at Premium PPC enrollment. */
+export const welcomeBonus = (): number => Math.round(snapNumber("PREMIUM_WELCOME_BONUS", 25));
+/** Premium status lapses to free after this many consecutive inactive days (no charge, no debt). */
+export const lapseAfterDays = (): number => Math.max(1, Math.round(snapNumber("PREMIUM_LAPSE_AFTER_DAYS", 14)));
+/** Front-loaded daily Site-Cash boost cap (USD) by day number: heavier in week 1, lighter through day 30,
+ *  then the front-loaded boost ends (the member keeps earning normally after that). */
+export function dailyBoostCap(dayNum: number): number {
+  const d = Math.max(1, Math.floor(Number(dayNum) || 1));
+  if (d <= 7) return Math.max(0, snapNumber("PREMIUM_BOOST_CAP_WEEK1", 20));
+  if (d <= 30) return Math.max(0, snapNumber("PREMIUM_BOOST_CAP_MONTH1", 8));
+  return 0;
+}
+/** Streak multiplier: +PER_WEEK for each full week of consecutive active days, capped at CAP (e.g. 1.0–1.5×). */
+export function streakMultiplier(streakDays: number): number {
+  const perWeek = Math.max(0, snapNumber("PREMIUM_STREAK_BONUS_PER_WEEK", 0.1));
+  const cap = Math.max(0, snapNumber("PREMIUM_STREAK_BONUS_CAP", 0.5));
+  const weeks = Math.floor(Math.max(0, Number(streakDays) || 0) / 7);
+  return 1 + Math.min(cap, weeks * perWeek);
+}
 
 export interface PremiumBoostConfig {
   enabled: boolean;
