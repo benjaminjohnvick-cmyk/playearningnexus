@@ -7,7 +7,43 @@
 import { Pool, type PoolClient } from "https://deno.land/x/postgres@v0.19.3/mod.ts";
 
 const POOL_SIZE = Number(Deno.env.get("PG_POOL_SIZE") ?? "10");
-const pool = new Pool(Deno.env.get("DATABASE_URL")!, POOL_SIZE, true);
+
+// --- TLS mode normalization ---------------------------------------------------------------------
+// deno-postgres defaults to sslmode=prefer: it TRIES TLS and, if the handshake fails, prints a
+// warning and silently falls back to a plaintext connection. On Railway that fallback fires on every
+// boot, because:
+//   1. Railway's private network (*.railway.internal) is ALREADY encrypted in transit by WireGuard
+//      (ChaCha20/Curve25519) — Railway itself recommends plain connections internally because app-layer
+//      TLS is redundant there, and the traffic never leaves Railway's network.
+//   2. Railway's bundled Postgres presents a SELF-SIGNED cert that Deno's TLS verifier rejects
+//      ("invalid peer certificate: CaUsedAsEndEntity"). Supplying that cert as a CA does NOT help —
+//      the verifier still rejects a CA cert used as an end-entity — so verified app-TLS is unachievable
+//      against Railway's internal Postgres.
+// The noise is therefore an accidental default, not a real security gap. We make the posture explicit:
+// for a Railway-internal host with no sslmode already set, force sslmode=disable so there's no failed
+// TLS attempt and the boot log stays clean (encryption in transit is still provided by WireGuard). Any
+// URL that already carries an sslmode is left untouched (e.g. a managed Postgres with a real CA can keep
+// verify-full), and PG_SSLMODE overrides the default for any host.
+function normalizeDbUrl(raw: string): string {
+  try {
+    const u = new URL(raw);
+    const forced = Deno.env.get("PG_SSLMODE");
+    if (forced) { u.searchParams.set("sslmode", forced); return u.toString(); }
+    if (u.searchParams.has("sslmode")) return raw; // caller / managed DB already chose a mode
+    const host = u.hostname.toLowerCase();
+    if (host.endsWith(".railway.internal") || host.endsWith(".internal")) {
+      // Private, WireGuard-encrypted network + self-signed PG cert → intentional plaintext.
+      u.searchParams.set("sslmode", "disable");
+      return u.toString();
+    }
+    return raw; // external/managed host → keep the driver/URL default (prefer/verify)
+  } catch {
+    return raw; // not a parseable URL — leave exactly as provided
+  }
+}
+
+const _DB_URL = Deno.env.get("DATABASE_URL");
+const pool = new Pool(_DB_URL ? normalizeDbUrl(_DB_URL) : _DB_URL!, POOL_SIZE, true);
 
 // DORMANT scale scaffolding, behind a flag. Reads route to a read replica ONLY when
 // DATABASE_REPLICA_URL is set; otherwise every read uses the primary (identical to before).
@@ -16,7 +52,7 @@ const pool = new Pool(Deno.env.get("DATABASE_URL")!, POOL_SIZE, true);
 // still uses the primary via withClient; withReadClient is for the read-heavy list/filter paths.
 const REPLICA_URL = Deno.env.get("DATABASE_REPLICA_URL");
 const REPLICA_POOL_SIZE = Number(Deno.env.get("PG_REPLICA_POOL_SIZE") ?? String(POOL_SIZE));
-const replicaPool = REPLICA_URL ? new Pool(REPLICA_URL, REPLICA_POOL_SIZE, true) : null;
+const replicaPool = REPLICA_URL ? new Pool(normalizeDbUrl(REPLICA_URL), REPLICA_POOL_SIZE, true) : null;
 
 export async function withClient<T>(fn: (c: PoolClient) => Promise<T>): Promise<T> {
   const c = await pool.connect();
