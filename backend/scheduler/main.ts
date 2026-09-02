@@ -4,7 +4,17 @@
 //   deno run --allow-net --allow-env --unstable-cron scheduler/main.ts
 import { signJwt } from "../sdk/auth.ts";
 
-const BACKEND = (Deno.env.get("BACKEND_URL") ?? "http://localhost:8000").replace(/\/$/, "");
+// Where the scheduler sends its job calls. When it runs INLINE in the web process (the Railway setup), it
+// must call the server on localhost over PLAIN HTTP — never the public HTTPS URL. Looping out to the public
+// domain leaves the box, adds latency, and fails Deno's TLS check against the edge cert
+// ("invalid peer certificate: CaUsedAsEndEntity"). A truly separate scheduler process (ECS/Deno Deploy) has
+// no local server, so it falls back to SCHEDULER_BACKEND_URL / BACKEND_URL.
+const _inline = (Deno.env.get("SCHEDULER_INLINE") ?? "0") === "1";
+const _port = Deno.env.get("PORT") ?? "8000";
+const BACKEND = (
+  Deno.env.get("SCHEDULER_BACKEND_URL")
+  ?? (_inline ? `http://127.0.0.1:${_port}` : (Deno.env.get("BACKEND_URL") ?? "http://localhost:8000"))
+).replace(/\/$/, "");
 const SERVICE_USER_ID = Deno.env.get("SCHEDULER_SERVICE_USER_ID") ?? "00000000-0000-0000-0000-000000000001"; // seed admin
 const cfg = JSON.parse(await Deno.readTextFile(new URL("./schedules.json", import.meta.url)));
 
