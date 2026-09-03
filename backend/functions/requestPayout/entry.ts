@@ -138,21 +138,23 @@ export default __handler(async (req) => {
         timestamp: new Date().toISOString(),
       };
 
-      // Invoke payment processor webhook (stub for now)
-      try {
-        const webhookRes = await fetch(Deno.env.get('PAYOUT_WEBHOOK_URL') || 'https://api.example.com/payout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Deno.env.get('PAYOUT_WEBHOOK_SECRET')}` },
-          body: JSON.stringify(webhookPayload),
-        });
-        
-        if (webhookRes.ok) {
-          await base44.asServiceRole.entities.PayoutRequest.update(payoutRequest.id, {
-            status: 'processing',
+      // Invoke the payment-processor webhook ONLY if one is actually configured. (Never POST to a placeholder
+      // like api.example.com — an unset webhook simply leaves the request 'approved' for the real payout rails
+      // / manual processing, rather than firing at a stub URL.)
+      const webhookUrl = Deno.env.get('PAYOUT_WEBHOOK_URL');
+      if (webhookUrl) {
+        try {
+          const webhookRes = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Deno.env.get('PAYOUT_WEBHOOK_SECRET') ?? ''}` },
+            body: JSON.stringify(webhookPayload),
           });
+          if (webhookRes.ok) {
+            await base44.asServiceRole.entities.PayoutRequest.update(payoutRequest.id, { status: 'processing' });
+          }
+        } catch (err) {
+          console.error('Payout webhook failed:', err);
         }
-      } catch (err) {
-        console.error('Webhook trigger failed:', err);
       }
     }
 

@@ -13,6 +13,20 @@ import { enabledMethods, type StepUpMethod } from "../../sdk/step-up-auth.ts";
 //   • face_vendor — accept ONLY a signed pass result from the identity vendor's webhook (liveness + match done
 //                   by the vendor). Never store the raw biometric; store the vendor's decision + reference.
 // Nothing is recorded unless the proof validates. See BIOMETRIC-AND-STEP-UP-AUTH counsel note for BIPA/GDPR.
+
+// Server-side password verification — identical scheme to login (auth-routes checkPw): the stored value is
+// "base64(salt):base64(sha256(salt+password))". Recompute and constant-form compare.
+async function verifyPassword(pw: string, stored: string): Promise<boolean> {
+  try {
+    const saltB64 = stored.split(":")[0];
+    if (!saltB64) return false;
+    const salt = Uint8Array.from(atob(saltB64), (c) => c.charCodeAt(0));
+    const bits = await crypto.subtle.digest("SHA-256", new Uint8Array([...salt, ...new TextEncoder().encode(pw)]));
+    const recomputed = btoa(String.fromCharCode(...salt)) + ":" + btoa(String.fromCharCode(...new Uint8Array(bits)));
+    return recomputed === stored;
+  } catch { return false; }
+}
+
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -24,24 +38,20 @@ export default __handler(async (req) => {
     const action = String(body.action ?? "");
     if (!enabledMethods().includes(method)) return Response.json({ error: `method '${method}' not enabled.` }, { status: 400 });
 
-    // ── Per-method verification (guarded; unverified proofs are rejected, never recorded) ──
+    // ── Per-method verification (SERVER-AUTHORITATIVE; a client-supplied "ok" flag is never trusted) ──
     let verified = false, detail = "";
     if (method === "password") {
-      // Wire to the account's real password check (same as login). Placeholder rejects until wired.
-      verified = body._password_ok === true;   // set true only by the real hash-verify step
+      // Real re-check against the account's stored hash — the SAME scheme as login (salted SHA-256).
+      const submitted = String(body.password ?? "");
+      const stored = String((user as Record<string, unknown>).password_hash ?? "");
+      verified = !!submitted && !!stored && await verifyPassword(submitted, stored);
       detail = "password re-check";
-    } else if (method === "otp") {
-      const expected = String(body.expected_code ?? "");   // supplied by the OTP-issuing step (server side)
-      verified = !!expected && String(body.code ?? "") === expected;
-      detail = "one-time code";
-    } else if (method === "passkey") {
-      // Verify the WebAuthn assertion (challenge + credential). Requires a verifier; safe default = reject.
-      verified = body._assertion_verified === true;
-      detail = "passkey / WebAuthn";
-    } else if (method === "face_vendor") {
-      // Accept ONLY a signed vendor pass (liveness + match). No raw biometric stored.
-      verified = body.vendor_result === "pass" && !!body.vendor_reference;
-      detail = "vendor selfie + liveness";
+    } else {
+      // otp / passkey / face_vendor have NO server-side proof wired yet: there is no server-issued OTP store,
+      // no WebAuthn assertion verifier, and no signed-vendor webhook check. Accepting a client-supplied flag
+      // would be spoofable, so these FAIL CLOSED until real verification is implemented (enable only the
+      // 'password' method via STEP_UP_METHODS until then). See BIOMETRIC-AND-STEP-UP-AUTH counsel note.
+      return Response.json({ ok: false, verified: false, method, reason: `step-up method '${method}' is not available yet — its server-side verification is not wired. Use 'password'.` }, { status: 501 });
     }
     if (!verified) return Response.json({ ok: false, verified: false, reason: `${method} proof did not validate` }, { status: 401 });
 
