@@ -30,6 +30,9 @@ const LEGAL_BRIEFS: Record<string, string> = {
   FOUNDING_FULLKEEP_CAP_TO_PRICE: "FOUNDING-OFFER-LEGAL-REVIEW.md",
   // Flexible-payment (credit) opt-in — conditioning credit on a future purchase is regulated.
   FLEXPAY_NEXT_TIER_OPTIN: "FLEXIBLE-PAYMENT-TERMS-COMPLIANCE.md",
+  // Live automated money movement out of the PayPal business account — reserve/stored-value, money-
+  // transmitter posture, and PayPal-terms review all apply before this may be turned on.
+  PAYPAL_AUTOSETTLE_ENABLED: "TREASURY-SOLVENCY-AND-PAYPAL-SETTLEMENT.md",
 };
 
 export default __handler(async (req) => {

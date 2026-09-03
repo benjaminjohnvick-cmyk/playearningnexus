@@ -10,6 +10,7 @@
 import { db } from "./db.ts";
 import { isEnabled } from "./feature-flags.ts";
 import { getBool } from "./settings.ts";
+import { solvency } from "./treasury.ts";
 
 type Policy = { partnerRoles: string[]; partnerPayoutTypes: string[] };
 const policy: Policy = JSON.parse(
@@ -63,6 +64,15 @@ export async function isPartnerUserId(userId: string | null | undefined): Promis
 export async function cashDisbursementHold(jurisdiction?: string | null): Promise<string | null> {
   if (!(await isEnabled("cash_out", jurisdiction ?? null))) return "cash payouts are disabled (cash_out kill-switch).";
   if (!(await getBool("CASH_OUT_LEGAL_SIGNOFF", true))) return "cash payouts are on legal hold pending counsel sign-off (CASH_OUT_LEGAL_SIGNOFF).";
+  // 3. Solvency brake — if the business account can't currently cover its obligations (the reserve), pause ALL
+  //    payouts so expenses always stay covered. Gated by PAYOUT_SOLVENCY_GUARD (default on); fail-safe — a read
+  //    error never blocks a legitimate payout (the two brakes above remain the primary controls).
+  try {
+    if (await getBool("PAYOUT_SOLVENCY_GUARD", true)) {
+      const s = await solvency();
+      if (!s.solvent) return `cash payouts paused: the business account is $${s.shortfall_usd.toLocaleString()} short of covering its obligations (solvency guard). Top up the account or adjust the reserve before paying out.`;
+    }
+  } catch { /* fail-safe: never block a payout on a solvency read error */ }
   return null;
 }
 

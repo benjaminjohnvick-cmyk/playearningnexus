@@ -170,6 +170,8 @@
   "analyzeProspectResponseAndPause",
   "analyzeTopPerformingPosts",
   "appInterstitialGate",
+  "treasuryReserveReport",
+  "treasuryWithdrawCheck",
   "appStoreCategories",
   "appStoreEarningsValidator",
   "appStoreSearch",
