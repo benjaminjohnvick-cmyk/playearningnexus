@@ -72,7 +72,11 @@ export default __handler(async (req) => {
         : null;
 
       const failedPayoutCount = userPayoutHistory.filter(p => p.status === 'failed').length;
-      const changedEmailRecently = false; // placeholder, can be enriched
+      // Real signal: was the account email changed in the last 7 days? (stamped by /auth/updateMe). A recent
+      // email change right before a payout is a classic account-takeover / payout-redirect indicator.
+      const emailChangedAt = user?.email_changed_at ? new Date(user.email_changed_at) : null;
+      const changedEmailRecently = !!emailChangedAt && !isNaN(emailChangedAt.getTime())
+        && (Date.now() - emailChangedAt.getTime()) <= 7 * 24 * 60 * 60 * 1000;
 
       const prompt = `You are a financial fraud detection AI for GamerGain, a gaming rewards platform where users earn money by completing surveys and referring friends.
 

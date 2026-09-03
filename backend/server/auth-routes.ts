@@ -108,6 +108,16 @@ export async function authRoutes(req: Request, pathname: string): Promise<Respon
       // Surface any missed client call site instead of silently dropping it.
       try { await db.create("AppLog", { source: "security", event: "blocked_client_balance_write", user_id: payload.sub, at: new Date().toISOString() }); } catch { /* non-fatal */ }
     }
+    // Track email changes — a payout-fraud signal (aiPayoutFraudDetection reads email_changed_at). Stamp it
+    // only when the email ACTUALLY changes, and log it for the audit trail.
+    if (typeof patch.email === "string" && patch.email.trim()) {
+      const cur = await db.get("User", payload.sub).catch(() => null);
+      const curEmail = cur ? String((cur as Record<string, unknown>).email ?? "") : "";
+      if (patch.email.trim().toLowerCase() !== curEmail.toLowerCase()) {
+        patch.email_changed_at = new Date().toISOString();
+        try { await db.create("AppLog", { source: "security", event: "email_changed", user_id: payload.sub, at: patch.email_changed_at }); } catch { /* non-fatal */ }
+      }
+    }
     const updated = await db.update("User", payload.sub, patch);
     return updated ? Response.json(safeUser(updated)) : Response.json({ error: "Not found" }, { status: 404 });
   }

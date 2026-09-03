@@ -17,11 +17,27 @@ export default __handler(async (req) => {
     for (const item of postedContent) {
       const content = item.content_data;
       
-      // Fetch engagement metrics (in production, would use platform APIs)
+      // Real engagement from the posted item's stored metrics (never a random number). Metrics may live on the
+      // item or in content_data; when nothing has been measured yet, report null rather than a fabricated score.
+      const m = { ...(item || {}), ...(content || {}) };
+      const likes = Number(m.likes ?? m.like_count ?? 0);
+      const shares = Number(m.shares ?? m.share_count ?? 0);
+      const comments = Number(m.comments ?? m.comment_count ?? 0);
+      const clicks = Number(m.clicks ?? m.click_count ?? 0);
+      const impressions = Number(m.impressions ?? m.reach ?? 0);
+      const interactions = likes + shares * 2 + comments * 2 + clicks * 3;
+      const measured = impressions > 0 || interactions > 0;
+      const engagement_score = !measured
+        ? null
+        : impressions > 0
+          ? Math.min(100, Math.round((interactions / impressions) * 1000) / 10)  // engagement rate (%), capped at 100
+          : Math.min(100, interactions);                                          // raw interaction count when no impressions
+
       const engagement = {
         platform: content.platform,
         type: content.type,
-        engagement_score: Math.random() * 100, // Placeholder
+        engagement_score,               // real, or null when not yet measured — no placeholder
+        engagement_measured: measured,
         posted_time: new Date(item.posted_at),
         content_quality: 0
       };
