@@ -146,6 +146,7 @@ you already store.
 | **Absolute shoestring** (web PWA + Android, iOS as fast-follow) | **~$2,000–$2,800** | Dev $1,725–2,475 · Play $25 · domain ~$15 · hosting ~$120–180 · LLM capped ~$60–180 · images ~$0–19 |
 | Full three platforms (adds native iOS) | ~$2,900–$4,000 | + iOS dev $300–600 · Apple $99/yr |
 | Full three + AWS auto-scaling | ~$3,100–$4,800 | + the auto-scaling infra floor (App Runner + single-AZ RDS trims it) |
+| **Full three + everything on + auto-scaling + load test** (the complete launch) | **~$3,100–$4,800** | Same ceiling — "everything on" adds ≈ $0: with the cost floor every AI/LLM call runs on free Llama-8B (and images/speech on free tiers), and the closed-loop revenue features (cosmetics, gifting, boosts, earn hook, extension, affiliate) cost $0 at the margin and *generate* money. The **load test** itself is ~$10–50 (a small k6/EC2 generator fleet for the 2–4 h soak + spike). **Legal stays $0** as long as the credit/money products stay counsel-gated; unlocking one on day one adds a one-time attorney read (~$1,500–$5,000). |
 
 The hard external floor you cannot code away is about **$40** on the shoestring path — Google Play $25 plus
 a ~$15 domain — because the PWA installs on iOS Safari, so iPhone users are covered without the $99 Apple
