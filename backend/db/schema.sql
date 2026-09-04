@@ -4280,3 +4280,15 @@ CREATE TABLE IF NOT EXISTS "SiteCashGift" (
 );
 CREATE INDEX IF NOT EXISTS "SiteCashGift_data_gin" ON "SiteCashGift" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "SiteCashGift_created" ON "SiteCashGift" (created_date DESC);
+
+-- SiteCashTopoff: a promotional (non-cashable) Site-Cash top-off granted on a sink purchase; used for the
+-- daily/lifetime cost caps and as an audit trail (promotional=true so a future cash-out can exclude it).
+CREATE TABLE IF NOT EXISTS "SiteCashTopoff" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SiteCashTopoff_data_gin" ON "SiteCashTopoff" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SiteCashTopoff_created" ON "SiteCashTopoff" (created_date DESC);

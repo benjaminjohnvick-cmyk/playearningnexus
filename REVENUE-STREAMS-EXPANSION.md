@@ -26,15 +26,28 @@ the existing closed-loop / non-money-transmission / FTC-safe lines.
 Beyond the cosmetics store (below), two more category-4 sub-points shipped fully, and a governance registry was
 added so **every sub-point of all 8 categories** is enumerated and status-tracked:
 
-- **Site-Cash gifting-with-fee** ✅ BUILT — a user gifts non-cashable Site Cash to another user; store credit
-  moves *between accounts* (never money, never a cash-out), and the platform keeps a small closed-loop spread
-  booked as `breakage`. Sender sees fee + net before confirming; atomic debit with full refund if delivery
-  fails; min/max caps. Settings `SITE_CASH_GIFTING_*`. Function `giftSiteCash`. Entity `SiteCashGift`.
-- **Earn boosts** ✅ BUILT — a user spends Site Cash on a **deterministic**, time-limited earn multiplier
-  (fixed multiplier, fixed window, known price — **not** a random/paid draw, so not a loot box, not gambling).
-  The purchase is a closed-loop sink (`breakage`); the boost scales only **non-cashable** Site-Cash earnings
-  and is **wired into the live earning path** (`adGridAnswer`). Settings `EARN_BOOST_*`. Functions
-  `purchaseEarnBoost`, `siteCashPerksStatus`. Entity `EarnBoost`. User page `SiteCashExtras.jsx`.
+- **Site-Cash gifting-with-fee** ⚠️ BUILT but GATED OFF + COUNSEL (reconciled) — `giftSiteCash` moves Site
+  Cash *between* user balances (sender debited, recipient credited, platform keeps the spread as `breakage`).
+  On review this is a **user-to-user (p2p) transfer**, which the platform's strictest-standard posture keeps
+  OFF as a money-transmission risk (`p2p_transfers: false`). So it was reconciled to match that posture: the
+  function now requires the counsel-gated **`p2p_transfers`** flag AND `SITE_CASH_GIFTING_ENABLED` (now default
+  **OFF**, sensitive, in `LEGAL_BRIEFS`). It earns nothing until counsel clears p2p transfers. **The compliant,
+  default gift path is the existing PLATFORM-FUNDED `gift_boost`** (`giftBoostSend`), where no value moves
+  wallet-to-wallet — see GIFT-BOOST.md. Function `giftSiteCash`; entity `SiteCashGift`.
+- **Earn boosts + the self-perpetuating sink loop** ✅ BUILT — a user spends Site Cash on a **deterministic**,
+  time-limited earn multiplier (fixed step, fixed window, known price — **not** a random/paid draw, so not a
+  loot box, not gambling), wired into the live earning path (`adGridAnswer`). The earn boost is the **recurring
+  sink** (cosmetics are one-time; the boost is repeatable), so it's what keeps Site Cash draining. Two mechanics
+  make it self-perpetuating: **(a) purchase-linked stacking** — every sink purchase (cosmetic *or* boost) raises
+  the buyer's multiplier a step (`PURCHASE_BOOST_STEP`, 2× → 2.5× → 3× …) up to a hard cap (`PURCHASE_BOOST_MAX`)
+  and refreshes the window, and the higher boost only holds while they keep buying; and **(b) loyalty top-off** —
+  a regular user (active ≥ `SITE_CASH_TOPOFF_REGULAR_MIN_DAYS`) gets `SITE_CASH_TOPOFF_PCT` (10%) of each purchase
+  back as **promotional, non-cashable** Site Cash (logged `promotional:true` for cash-out exclusion; booked as a
+  **subsidy**/cost, not revenue), bounded by daily + lifetime cost caps. Net effect: purchases keep draining Site
+  Cash (~90% net drain after the top-off) while giving users a reason to keep spending. All closed-loop. Settings
+  `EARN_BOOST_*`, `PURCHASE_BOOST_*`, `SITE_CASH_TOPOFF_*`. SDK `boosts.ts` + `sink-rewards.ts`. Entities
+  `EarnBoost`, `SiteCashTopoff`. Functions `purchaseEarnBoost`/`purchaseCosmetic`/`siteCashPerksStatus`. Page
+  `SiteCashExtras.jsx`.
 - **Revenue-Levers registry** ✅ BUILT — `backend/sdk/revenue-levers.ts` enumerates **every sub-point of all 8
   categories** with its status (built/gated/counsel), ledger type, gate, and (for gated) what external account
   it still needs. Admin function `revenueLeversStatus` + admin page `RevenueLevers.jsx` show it live, with real
@@ -140,6 +153,7 @@ Revenue-Levers page marks any you've switched on as **"On · awaiting"**.
   `EXPEDITED_FULFILLMENT_ENABLED`, `PARTNER_PAYOUT_FEE_ENABLED` (white-label RaaS is the existing
   `MULTITENANCY_ENABLED`).
 - **Counsel (require `confirm:"COUNSEL_APPROVED"` — added to `LEGAL_BRIEFS`):**
+  `SITE_CASH_GIFTING_ENABLED` (direct p2p gifting — also needs the `p2p_transfers` flag),
   `FINANCIAL_LEAD_GEN_ENABLED`, `FX_SPREAD_ENABLED`, `CRYPTO_PAYMENTS_ENABLED`, `NFT_MARKETPLACE_ENABLED`.
   The last two (and FX) are **governance placeholders with NO mechanism built** — the flag alone does nothing;
   a dedicated, counsel-cleared build is required before they could ever earn. The existing user cash-out rails

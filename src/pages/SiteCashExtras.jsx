@@ -112,21 +112,27 @@ export default function SiteCashExtras() {
               <span className="inline-flex w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 items-center justify-center text-white"><Zap className="w-4 h-4" /></span>
               <h2 className="text-sm font-bold text-gray-800">Earn Boost</h2>
             </div>
-            {b.active ? (
-              <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex items-center gap-2">
+            {b.active && (
+              <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex items-center gap-2 mb-3">
                 <Clock className="w-4 h-4" /> {b.active_multiplier}× boost active{b.active_until ? ` until ${new Date(b.active_until).toLocaleString()}` : ''}.
               </div>
-            ) : (
-              <>
-                <p className="text-sm text-gray-600">
-                  Get <span className="font-bold">{b.multiplier}×</span> Site-Cash earnings for <span className="font-bold">{b.hours} hours</span> for <span className="font-bold">{usd(b.price_usd)}</span>.
-                  It multiplies only your non-cashable Site-Cash earnings — a fixed boost for a fixed window (not a random draw).
-                </p>
-                <button disabled={busy === 'boost'} onClick={buyBoost} className="mt-4 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white text-sm font-semibold px-5 py-2 disabled:opacity-60">
-                  {busy === 'boost' ? 'Activating…' : `Buy Boost · ${usd(b.price_usd)}`}
-                </button>
-              </>
             )}
+            <p className="text-sm text-gray-600">
+              {b.active
+                ? <>Buy again to stack it to <span className="font-bold">{b.next_multiplier}×</span> and refresh the {b.hours}h window</>
+                : <>Get <span className="font-bold">{b.multiplier}×</span> Site-Cash earnings for <span className="font-bold">{b.hours} hours</span></>}
+              {' '}for <span className="font-bold">{usd(b.price_usd)}</span>.
+              {b.stack_enabled && <> Each repurchase stacks +{b.step}× up to <span className="font-bold">{b.max}×</span> — keep it going by buying again.</>}
+              {' '}It multiplies only your non-cashable Site-Cash earnings (a fixed boost for a fixed window, not a random draw).
+            </p>
+            {s?.topoff?.enabled && s?.topoff?.regular && (
+              <p className="mt-2 text-xs text-emerald-700">
+                Regular-member perk: you get {Math.round((Number(s.topoff.pct) || 0) * 100)}% of each purchase back as bonus Site Cash.
+              </p>
+            )}
+            <button disabled={busy === 'boost'} onClick={buyBoost} className="mt-4 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white text-sm font-semibold px-5 py-2 disabled:opacity-60">
+              {busy === 'boost' ? 'Activating…' : b.active ? `Stack Boost → ${b.next_multiplier}× · ${usd(b.price_usd)}` : `Buy Boost · ${usd(b.price_usd)}`}
+            </button>
           </div>
         )}
 

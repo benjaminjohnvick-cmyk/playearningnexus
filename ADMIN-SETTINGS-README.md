@@ -162,6 +162,17 @@ booleans that default OFF auto-appear in the **Setup Wizard** (`gatedBooleanFlag
 earning path in `adGridAnswer`) → `sdk/boosts.ts`, `purchaseEarnBoost`/`siteCashPerksStatus`, page `SiteCashExtras`.
 - `EARN_BOOST_ENABLED` (1), `EARN_BOOST_MULTIPLIER` (2×), `EARN_BOOST_HOURS` (24), `EARN_BOOST_PRICE_USD` ($5).
 
+**Purchase-linked stacking boost + loyalty top-off** (the self-perpetuating sink loop) → `sdk/sink-rewards.ts`
+(`applySinkReward`) called from `purchaseCosmetic`/`purchaseEarnBoost`; boost stacking in `sdk/boosts.ts`
+(`bumpEarnBoostOnPurchase`). The earn boost is the *recurring* sink (cosmetics are one-time). Entity `SiteCashTopoff`.
+- `PURCHASE_BOOST_STACK_ENABLED` (1) — each sink purchase raises the earn-boost multiplier a step, refreshes the
+  window; higher boost holds only while buying continues. `PURCHASE_BOOST_STEP` (0.5×), `PURCHASE_BOOST_MAX` (3×,
+  sensitive cost cap).
+- `SITE_CASH_TOPOFF_ENABLED` (1) — regular users get `SITE_CASH_TOPOFF_PCT` (0.10) of each sink purchase back as
+  PROMOTIONAL, non-cashable Site Cash (logged `promotional:true`; booked as a subsidy/cost, not revenue).
+  `SITE_CASH_TOPOFF_REGULAR_MIN_DAYS` (3), `SITE_CASH_TOPOFF_DAILY_CAP_USD` ($1, sensitive),
+  `SITE_CASH_TOPOFF_LIFETIME_CAP_USD` ($50, sensitive). Net ~90% drain per purchase after the top-off.
+
 **Direct Site-Cash gifting — GATED OFF + COUNSEL** (user→user transfer = p2p / money-transmission risk; the
 compliant default is the platform-funded `gift_boost`) → `sdk/gifting.ts`, `giftSiteCash`.
 - `SITE_CASH_GIFTING_ENABLED` (**0**, sensitive, in `LEGAL_BRIEFS`) — also requires the counsel-gated

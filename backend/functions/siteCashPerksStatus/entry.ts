@@ -2,7 +2,8 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { giftingEnabled, giftFeePct, giftMinUsd, giftMaxUsd, splitGift } from "../../sdk/gifting.ts";
-import { earnBoostEnabled, earnBoostMultiplier, earnBoostHours, earnBoostPriceUsd, activeBoostMultiplier } from "../../sdk/boosts.ts";
+import { earnBoostEnabled, earnBoostMultiplier, earnBoostHours, earnBoostPriceUsd, activeBoostMultiplier, purchaseBoostStackEnabled, purchaseBoostStep, purchaseBoostMax } from "../../sdk/boosts.ts";
+import { topoffEnabled, topoffPct, topoffDailyCapUsd, isRegularUser } from "../../sdk/sink-rewards.ts";
 
 // siteCashPerksStatus (authenticated) — powers the closed-loop "Site-Cash extras" page: current balance, the
 // gifting config (fee/min/max + a sample split), and the earn-boost config + whether one is active now. Read-only.
@@ -32,6 +33,13 @@ export default __handler(async (req) => {
       earn_boost: {
         enabled: earnBoostEnabled(), multiplier: earnBoostMultiplier(), hours: earnBoostHours(),
         price_usd: earnBoostPriceUsd(), active: activeMult > 1, active_multiplier: activeMult, active_until: boost_active_until,
+        // Purchase-linked stacking: each repurchase raises the multiplier a step, up to max.
+        stack_enabled: purchaseBoostStackEnabled(), step: purchaseBoostStep(), max: purchaseBoostMax(),
+        next_multiplier: activeMult > 1 ? Math.min(purchaseBoostMax(), activeMult + purchaseBoostStep()) : earnBoostMultiplier(),
+      },
+      topoff: {
+        enabled: topoffEnabled(), pct: topoffPct(), daily_cap_usd: topoffDailyCapUsd(),
+        regular: await isRegularUser(uid).catch(() => false),
       },
     });
   } catch (error) {

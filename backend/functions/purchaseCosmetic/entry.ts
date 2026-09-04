@@ -4,6 +4,7 @@ import { db } from "../../sdk/db.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
 import { recordRevenue } from "../../sdk/revenue.ts";
 import { cosmeticsEnabled, defaultByKey, normalizeCosmetic } from "../../sdk/cosmetics.ts";
+import { applySinkReward } from "../../sdk/sink-rewards.ts";
 
 // purchaseCosmetic (authenticated) — buy a closed-loop cosmetic with non-cashable Site Cash (current_balance,
 // USD store credit). NO real-money purchase, NO cash value, non-tradeable — a pure Site-Cash SINK, so it stays
@@ -61,10 +62,15 @@ export default __handler(async (req) => {
       }).catch(() => null);
     }
 
+    // Sink-purchase rewards: stack the earn boost + (regular users) grant the loyalty top-off. Best-effort.
+    const reward = await applySinkReward(uid, price, `cosmetic:${key}`).catch(() => null);
+
     return Response.json({
       ok: true, owned: key, cosmetic_type: def.type,
       new_balance_usd: Math.round((Number(newBalance) || 0) * 100) / 100,
       grant_id: (grant as Record<string, unknown>)?.id ?? null,
+      boost_multiplier: reward?.boost_multiplier ?? null,
+      topoff_usd: reward?.topoff_usd ?? 0,
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
