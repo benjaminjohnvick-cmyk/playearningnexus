@@ -10,6 +10,7 @@
 import { foundingInterstitialPriority, activeFoundingAdOwners } from "./founding-advertiser.ts";
 import { activeEarnedAdOwners } from "./earned-advertiser.ts";
 import { activeMakeGoodOwners } from "./delivery-guarantee.ts";
+import { houseCrossSellEnabled, pickHouseCrossSell } from "./cross-promo.ts";
 
 export type PickedInterstitial = {
   ad: Record<string, unknown>;
@@ -20,7 +21,7 @@ export type PickedInterstitial = {
 };
 
 // deno-lint-ignore no-explicit-any
-export async function pickInterstitialAd(base44: any, db: any, opts?: { ppcPriority?: boolean; houseTitle?: string; houseUrl?: string; adfreeOnly?: boolean }): Promise<PickedInterstitial> {
+export async function pickInterstitialAd(base44: any, db: any, opts?: { ppcPriority?: boolean; houseTitle?: string; houseUrl?: string; adfreeOnly?: boolean; user?: Record<string, unknown> }): Promise<PickedInterstitial> {
   const ppcPriority = opts?.ppcPriority ?? true;
 
   let slots = await base44.asServiceRole.entities.AdGridAd.filter({ status: "active" })
@@ -81,10 +82,17 @@ export async function pickInterstitialAd(base44: any, db: any, opts?: { ppcPrior
     }
   }
 
-  // 5) House ad fallback.
-  const ad = pick
-    ? { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser, earned_advertiser: earnedAdvertiser, makegood: !!makegoodOwnerId, makegood_owner_id: makegoodOwnerId }
-    : { ad_id: "house", title: opts?.houseTitle ?? "Sponsored", image_url: "", url: opts?.houseUrl ?? "/Pricing" };
+  // 5) House fallback. When nothing paid filled the slot, prefer a HOUSE CROSS-SELL creative (refer / Premium /
+  //    spend) over a blank house filler, so unsold inventory still markets the flywheel (§4.2). Bills nothing
+  //    (its ad_id matches no advertiser). Falls back to the plain house ad if cross-sell is turned off.
+  let ad: Record<string, unknown>;
+  if (pick) {
+    ad = { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser, earned_advertiser: earnedAdvertiser, makegood: !!makegoodOwnerId, makegood_owner_id: makegoodOwnerId };
+  } else if (houseCrossSellEnabled()) {
+    ad = pickHouseCrossSell(opts?.user);
+  } else {
+    ad = { ad_id: "house", title: opts?.houseTitle ?? "Sponsored", image_url: "", url: opts?.houseUrl ?? "/Pricing" };
+  }
 
   return { ad, foundingOwnerId, ppcAdvertiser, earnedAdvertiser, makegoodOwnerId };
 }

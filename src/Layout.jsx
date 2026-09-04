@@ -48,6 +48,7 @@ import { initTracker, setPage, trackEvent, initSessionCapture } from '@/lib/uxTr
 import KYCSurveyGate from '@/components/onboarding/KYCSurveyGate';
 import InAppInterstitialAd from '@/components/ads/InAppInterstitialAd';
 import AdFreeDailyMinute from '@/components/ads/AdFreeDailyMinute';
+import CrossPromoNudge from '@/components/growth/CrossPromoNudge';
 import { VariantProvider } from '@/components/experiments/VariantProvider';
 import { initLiveVariants } from '@/lib/liveVariants';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
@@ -515,6 +516,17 @@ export default function Layout({ children, currentPageName }) {
         {isAuthenticated && user && !user?.needs_age_verification && <InAppInterstitialAd trigger={currentPageName} />}
         {/* Premium ad-free daily minute — opt-in + progress (premium-only; hides itself otherwise). */}
         {isAuthenticated && user && !user?.needs_age_verification && <AdFreeDailyMinute />}
+        {/* Flywheel cross-promotion nudge — funnels the user from this page's avenue toward another (§3).
+            Only on the key transition pages; the server picks the best avenue and it's dismissible. */}
+        {isAuthenticated && user && !user?.needs_age_verification && (() => {
+          const CTX_BY_PAGE = {
+            UserDashboard: 'dashboard', Surveys: 'post_survey', ExploreSurveys: 'post_survey',
+            Store: 'checkout', InAppStore: 'checkout', Marketplace: 'checkout',
+            ReferralContest: 'leaderboard', WeeklyReferralContest: 'leaderboard', Leaderboard: 'leaderboard',
+          };
+          const ctx = CTX_BY_PAGE[currentPageName];
+          return ctx ? <CrossPromoNudge context={ctx} trigger={currentPageName} /> : null;
+        })()}
 
         <LogoutPromptModal
           isOpen={showLogoutPrompt}

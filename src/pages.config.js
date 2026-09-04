@@ -14,6 +14,8 @@
  *   import Settings from './pages/Settings';
  *   
  *   export const PAGES = {
+    "FlywheelDashboard": FlywheelDashboard,
+    "ProfitOptimization": ProfitOptimization,
  *       "HomePage": HomePage,
  *       "Dashboard": Dashboard,
  *       "Settings": Settings,
@@ -58,6 +60,8 @@ import AdGridSurvey from './pages/AdGridSurvey';
 import AIShoppingAssistant from './pages/AIShoppingAssistant';
 import BuyingDesk from './pages/BuyingDesk';
 import OpsConsole from './pages/OpsConsole';
+import FlywheelDashboard from './pages/FlywheelDashboard';
+import ProfitOptimization from './pages/ProfitOptimization';
 import SetupWizard from './pages/SetupWizard';
 import BusinessDashboard from './pages/BusinessDashboard';
 import BusinessPortal from './pages/BusinessPortal';

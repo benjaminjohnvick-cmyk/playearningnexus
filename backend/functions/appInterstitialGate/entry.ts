@@ -48,6 +48,7 @@ export default __handler(async (req) => {
       ppcPriority: snapBool("SURVEY_INTERSTITIAL_PPC_PRIORITY", true),
       houseTitle: "Get Goods Gratis",
       houseUrl: "/",
+      user,
     });
 
     return Response.json({ required: true, seconds, min_gap_min: minGapMin, premium, ad: picked.ad });
