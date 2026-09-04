@@ -146,3 +146,44 @@ Each row: the registry key(s) → the file to edit → the getter to use. All ar
   card-charging / cash-out / points-cashable in their safe state until legal clears them.
 - To add a new adjustable later: add one line to `REGISTRY` in `settings.ts` — it appears in the panel
   automatically; then do the one-line consumer swap when you want it live.
+
+---
+
+## Settings Appendix — Closed-loop sinks & revenue levers (added 2026-09-04)
+
+New settings groups from the revenue-streams expansion. All live in `REGISTRY` in `settings.ts`; sensitive
+booleans that default OFF auto-appear in the **Setup Wizard** (`gatedBooleanFlags` → `counselFeatureGate`).
+
+**Cosmetics store** (closed-loop virtual goods; Site-Cash sink → `breakage`) → `sdk/cosmetics.ts`,
+`cosmeticsCatalog`/`purchaseCosmetic`/`equipCosmetic`/`adminCosmeticUpsert`, page `CosmeticsStore`.
+- `COSMETICS_ENABLED` (1) — non-sensitive; moves no real money, not a loot box.
+
+**Earn boosts** (deterministic Site-Cash multiplier bought with Site Cash; sink → `breakage`; wired into the
+earning path in `adGridAnswer`) → `sdk/boosts.ts`, `purchaseEarnBoost`/`siteCashPerksStatus`, page `SiteCashExtras`.
+- `EARN_BOOST_ENABLED` (1), `EARN_BOOST_MULTIPLIER` (2×), `EARN_BOOST_HOURS` (24), `EARN_BOOST_PRICE_USD` ($5).
+
+**Direct Site-Cash gifting — GATED OFF + COUNSEL** (user→user transfer = p2p / money-transmission risk; the
+compliant default is the platform-funded `gift_boost`) → `sdk/gifting.ts`, `giftSiteCash`.
+- `SITE_CASH_GIFTING_ENABLED` (**0**, sensitive, in `LEGAL_BRIEFS`) — also requires the counsel-gated
+  `p2p_transfers` compliance flag before the function runs. `SITE_CASH_GIFTING_FEE_PCT` (0.10),
+  `SITE_CASH_GIFT_MIN_USD` (1), `SITE_CASH_GIFT_MAX_USD` (100).
+
+**Revenue-levers governance registry** (read-only status of every monetization sub-point across all 8
+categories) → `sdk/revenue-levers.ts`, `revenueLeversStatus`, admin page `RevenueLevers`.
+- `REVENUE_LEVERS_REGISTRY_ENABLED` (1).
+
+**Gated revenue levers — need an EXTERNAL ACCOUNT (all sensitive, default 0, in the Setup Wizard):**
+`OFFERWALL_CPA_ENABLED`, `REWARDED_VIDEO_ENABLED`, `SPONSORED_PUSH_EMAIL_ENABLED`, `AFFILIATE_STOREFRONT_ENABLED`,
+`PRINT_ON_DEMAND_ENABLED`, `GROUP_BUYING_ENABLED`, `FAMILY_PLAN_ENABLED`, `PRO_TOOLS_ENABLED`, `SEASON_PASS_ENABLED`,
+`PRODUCT_TESTING_PANEL_ENABLED`, `API_ACCESS_ENABLED`, `AI_CREATIVE_SAAS_ENABLED`, `SURVEY_ROUTING_ARBITRAGE_ENABLED`,
+`HOSTING_MONETIZATION_ENABLED`, `FRAUD_SAAS_ENABLED`, `EXPEDITED_FULFILLMENT_ENABLED`, `PARTNER_PAYOUT_FEE_ENABLED`.
+Each earns nothing until its named third-party account is connected. (White-label RaaS uses the existing
+`MULTITENANCY_ENABLED`.)
+
+**Counsel revenue levers — need an ATTORNEY (sensitive, default 0, in `LEGAL_BRIEFS` → require
+`confirm:"COUNSEL_APPROVED"`):** `FINANCIAL_LEAD_GEN_ENABLED`, `FX_SPREAD_ENABLED`, `CRYPTO_PAYMENTS_ENABLED`,
+`NFT_MARKETPLACE_ENABLED`. The last three have **no mechanism built** — governance placeholders; the flag alone
+does nothing. See `REVENUE-STREAMS-EXPANSION.md`.
+
+*Full map, statuses, and the "what each gated lever still needs" list: **REVENUE-STREAMS-EXPANSION.md** and the
+live **RevenueLevers** admin page.*
