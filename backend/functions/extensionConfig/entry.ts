@@ -4,6 +4,7 @@ import {
   extensionEnabled, extensionOwnAdsEnabled, extensionAffiliateEnabled, extensionTrackingEnabled,
   extensionRewardsDefaultEnrolled, extensionTrackingRequireOptin, extensionRewardPerImpressionPoints,
   extensionRewardDailyCapUsd, extensionAffiliateUserSharePct, grantablePointsForOneAd, pointsToUsd, rewardTotals,
+  extensionWebstoreUrl,
 } from "../../sdk/extension.ts";
 
 // extensionConfig (authenticated) — powers the extension's own surfaces + the in-app extension settings. Returns
@@ -27,6 +28,7 @@ export default __handler(async (req) => {
 
     return Response.json({
       enabled: true,
+      webstore_url: extensionWebstoreUrl(),
       layers: {
         own_ads: extensionOwnAdsEnabled(),        // show our own inventory on the extension surfaces
         affiliate: extensionAffiliateEnabled(),   // affiliate cashback on genuinely-referred sales

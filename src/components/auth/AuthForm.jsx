@@ -25,6 +25,9 @@ export default function AuthForm({ mode = 'login' }) {
 
   const finishAuth = async () => {
     try { await auth?.checkAppState?.(); } catch { /* non-fatal */ }
+    // After SIGNUP, route through the Get-Extension step (pre-checked opt-in → opens the Chrome Web Store),
+    // preserving the intended destination. It no-ops straight to redirectTo if the extension isn't live.
+    if (isSignup) { navigate(`/GetExtension?redirect=${encodeURIComponent(redirectTo)}`, { replace: true }); return; }
     if (redirectTo.startsWith('http')) window.location.href = redirectTo;
     else navigate(redirectTo, { replace: true });
   };

@@ -15,6 +15,7 @@ export const extensionRewardsDefaultEnrolled = () => snapBool("EXTENSION_REWARDS
 export const extensionTrackingRequireOptin = () => snapBool("EXTENSION_TRACKING_REQUIRE_OPTIN", true);
 export const extensionAdvertiserDefaultEligible = () => snapBool("EXTENSION_ADVERTISER_DEFAULT_ELIGIBLE", true);
 export const extensionInventoryClauseVersion = () => snapString("EXTENSION_INVENTORY_CLAUSE_VERSION", "v1");
+export const extensionWebstoreUrl = () => snapString("EXTENSION_WEBSTORE_URL", "");
 
 // ── Reward config ────────────────────────────────────────────────────────────────────────────────────────
 export const extensionRewardPerImpressionPoints = () => Math.max(0, Math.round(snapNumber("EXTENSION_REWARD_PER_IMPRESSION_POINTS", 5)));

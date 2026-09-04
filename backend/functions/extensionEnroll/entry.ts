@@ -22,6 +22,13 @@ export default __handler(async (req) => {
 
     if (body.installed !== undefined) patch.extension_installed = body.installed === true;
     if (body.rewards_opt_out !== undefined) patch.extension_rewards_opt_out = body.rewards_opt_out === true;
+    // Signup opt-in intent to add the extension (default-on/opt-out at signup). Records the choice so you can
+    // nudge users who opted in but haven't installed yet. This is INTENT only — Chrome still requires the user
+    // to click "Add to Chrome" on the Web Store (no site can auto-install).
+    if (body.install_intent !== undefined) {
+      patch.extension_install_intent = body.install_intent === true;
+      patch.extension_install_intent_at = new Date().toISOString();
+    }
 
     let trackingChanged = false;
     let trackingOptIn: boolean | undefined;
