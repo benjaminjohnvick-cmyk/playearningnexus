@@ -20,8 +20,12 @@
 >   **~$40** shoestring (no Apple fee — the PWA covers iPhone via Safari).
 > - **Recurring: AI / media / email $0/mo** — free tiers + the one-click cost floor; with `AI_FORCE_CHEAP_TIER`
 >   on, every call runs on Llama-8B so the LLM line is now ~$0–20/mo (was $5–40). Hosting ~$10–35/mo (backend +
->   Postgres + the always-on **scheduler** service). **Legal $0** at launch (credit features off). **Optional**
->   AWS auto-scaling + load test lifts the ceiling to ~$3,100–$4,800.
+>   Postgres + the always-on **scheduler** service). **Legal $0** at launch (credit features off).
+> - **Standing auto-scaling is now ON from day one** (governor `AUTO_SCALE_ENABLED=1`, Railway provider, min 2
+>   instances) — with the AWS-style full-scale posture + load test the ceiling is ~$3,100–$4,800. But the
+>   **$3,000 native-apps recipe** delivers the *same* everything-on + all-platforms + standing-auto-scaling +
+>   load-test posture for **~$1,540–$2,940** (Capacitor + Codemagic free-tier native builds + fixed-bid deploy);
+>   see the floor table below.
 >
 > *Older single figures in these docs predate the kit/automation + cost floor that trimmed the numbers; the
 > banner above is current.*
@@ -147,6 +151,7 @@ you already store.
 | Full three platforms (adds native iOS) | ~$2,900–$4,000 | + iOS dev $300–600 · Apple $99/yr |
 | Full three + AWS auto-scaling | ~$3,100–$4,800 | + the auto-scaling infra floor (App Runner + single-AZ RDS trims it) |
 | **Full three + everything on + auto-scaling + load test** (the complete launch) | **~$3,100–$4,800** | Same ceiling — "everything on" adds ≈ $0: with the cost floor every AI/LLM call runs on free Llama-8B (and images/speech on free tiers), and the closed-loop revenue features (cosmetics, gifting, boosts, earn hook, extension, affiliate) cost $0 at the margin and *generate* money. The **load test** itself is ~$10–50 (a small k6/EC2 generator fleet for the 2–4 h soak + spike). **Legal stays $0** as long as the credit/money products stay counsel-gated; unlocking one on day one adds a one-time attorney read (~$1,500–$5,000). |
+| **⭐ $3,000 native-apps recipe** (native iOS + Android, everything on, standing auto-scaling ON, load test) | **~$1,540–$2,940** | The **way to hit the complete posture and still stay under $3,000.** Same feature set and the same standing auto-scaling as the row above — the savings come from *how you build and host*, not from turning anything off: **(1) native iOS + Android via the Capacitor wrappers + Codemagic free-tier CI** already in the repo (both store binaries built in the cloud, no Mac, no native rebuild) trims dev to ~$1,300–$2,100; **(2) a fixed-bid deploy** (owner does the store submissions from the kit) caps labor instead of billing hourly; **(3) standing auto-scaling is ON from day one** (governor `AUTO_SCALE_ENABLED=1`, `INFRA_SCALE_PROVIDER=railway`, min 2 instances) but costs only ~$240–$840/yr because Railway replicas are cheap and the governor scales *down* on hysteresis when load subsides; **(4) load test** stays ~$10–50. Legal still $0 while credit/money products stay counsel-gated. Net: **~$1,540–$2,940 year-one all-in** — the everything-on + all-platforms + auto-scaling + load-test posture, delivered for **≤ $3,000**. |
 
 The hard external floor you cannot code away is about **$40** on the shoestring path — Google Play $25 plus
 a ~$15 domain — because the PWA installs on iOS Safari, so iPhone users are covered without the $99 Apple
