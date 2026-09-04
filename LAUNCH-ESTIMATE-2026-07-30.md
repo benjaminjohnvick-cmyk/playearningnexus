@@ -22,10 +22,13 @@
 >   on, every call runs on Llama-8B so the LLM line is now ~$0–20/mo (was $5–40). Hosting ~$10–35/mo (backend +
 >   Postgres + the always-on **scheduler** service). **Legal $0** at launch (credit features off).
 > - **Standing auto-scaling is now ON from day one** (governor `AUTO_SCALE_ENABLED=1`, Railway provider, min 2
->   instances) — with the AWS-style full-scale posture + load test the ceiling is ~$3,100–$4,800. But the
->   **$3,000 native-apps recipe** delivers the *same* everything-on + all-platforms + standing-auto-scaling +
->   load-test posture for **~$1,540–$2,940** (Capacitor + Codemagic free-tier native builds + fixed-bid deploy);
->   see the floor table below.
+>   instances) — and the full-scale ceiling is now **hard-capped at ~$3,000** by a codeable monthly-budget lever
+>   (`INFRA_SCALE_MONTHLY_BUDGET_USD`, default $48/mo → ≤ 4 steady-state replicas ≈ $576/yr), down from the old
+>   uncapped ~$4,800 top end. A real surge still auto-bursts past the budget up to an 8-replica emergency ceiling
+>   (`INFRA_SCALE_BURST_ABOVE_BUDGET`, ON) and falls back on hysteresis, so the app never sheds load to save a few
+>   dollars. The **$3,000 native-apps recipe** delivers the same everything-on + all-platforms + standing-auto-
+>   scaling + load-test posture for **~$1,540–$2,940** (Capacitor + Codemagic free-tier native builds + fixed-bid
+>   deploy); see the floor table below.
 >
 > *Older single figures in these docs predate the kit/automation + cost floor that trimmed the numbers; the
 > banner above is current.*
@@ -149,8 +152,8 @@ you already store.
 |---|---:|---|
 | **Absolute shoestring** (web PWA + Android, iOS as fast-follow) | **~$2,000–$2,800** | Dev $1,725–2,475 · Play $25 · domain ~$15 · hosting ~$120–180 · LLM capped ~$60–180 · images ~$0–19 |
 | Full three platforms (adds native iOS) | ~$2,900–$4,000 | + iOS dev $300–600 · Apple $99/yr |
-| Full three + AWS auto-scaling | ~$3,100–$4,800 | + the auto-scaling infra floor (App Runner + single-AZ RDS trims it) |
-| **Full three + everything on + auto-scaling + load test** (the complete launch) | **~$3,100–$4,800** | Same ceiling — "everything on" adds ≈ $0: with the cost floor every AI/LLM call runs on free Llama-8B (and images/speech on free tiers), and the closed-loop revenue features (cosmetics, gifting, boosts, earn hook, extension, affiliate) cost $0 at the margin and *generate* money. The **load test** itself is ~$10–50 (a small k6/EC2 generator fleet for the 2–4 h soak + spike). **Legal stays $0** as long as the credit/money products stay counsel-gated; unlocking one on day one adds a one-time attorney read (~$1,500–$5,000). |
+| Full three + AWS auto-scaling | ~$3,100–$4,800 | + the auto-scaling infra floor (App Runner + single-AZ RDS trims it) — this was the old *uncapped* top end, before the codeable budget cap below |
+| **Full three + everything on + auto-scaling + load test** (the complete launch, **budget-capped**) | **~$2,400–$3,000** | **The full-scale ceiling brought down to $3,000 by a codeable hard cap.** The old $4,800 top end assumed *uncapped* auto-scaling infra; a new monthly-budget lever (`INFRA_SCALE_MONTHLY_BUDGET_USD`, default $48/mo) now derives the governor's normal max replicas from a dollar budget — `soft_max = min(max_instances, floor(budget / cost_per_instance))` — so steady-state scaling infra is **≤ 4 replicas ≈ $48/mo ≈ $576/yr**, provably. "Everything on" still adds ≈ $0 (AI/LLM on free Llama-8B, closed-loop revenue features $0 at the margin and *generating* money); the **load test** is ~$10–50 owner-run; **legal stays $0** while credit/money products stay counsel-gated. A real surge isn't shut out: `INFRA_SCALE_BURST_ABOVE_BUDGET` (ON) lets the governor **auto-burst past the budget up to an 8-replica emergency ceiling** to stay up, then fall back on hysteresis — so burst spend applies only for the minutes a spike lasts, and the annual number holds at ~$3,000. |
 | **⭐ $3,000 native-apps recipe** (native iOS + Android, everything on, standing auto-scaling ON, load test) | **~$1,540–$2,940** | The **way to hit the complete posture and still stay under $3,000.** Same feature set and the same standing auto-scaling as the row above — the savings come from *how you build and host*, not from turning anything off: **(1) native iOS + Android via the Capacitor wrappers + Codemagic free-tier CI** already in the repo (both store binaries built in the cloud, no Mac, no native rebuild) trims dev to ~$1,300–$2,100; **(2) a fixed-bid deploy** (owner does the store submissions from the kit) caps labor instead of billing hourly; **(3) standing auto-scaling is ON from day one** (governor `AUTO_SCALE_ENABLED=1`, `INFRA_SCALE_PROVIDER=railway`, min 2 instances) but costs only ~$240–$840/yr because Railway replicas are cheap and the governor scales *down* on hysteresis when load subsides; **(4) load test** stays ~$10–50. Legal still $0 while credit/money products stay counsel-gated. Net: **~$1,540–$2,940 year-one all-in** — the everything-on + all-platforms + auto-scaling + load-test posture, delivered for **≤ $3,000**. |
 
 The hard external floor you cannot code away is about **$40** on the shoestring path — Google Play $25 plus

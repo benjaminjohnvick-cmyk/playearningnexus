@@ -12,7 +12,7 @@
 //   (AWS ECS/Fargate: use the "webhook" provider pointing at a tiny Lambda that calls UpdateService — SigV4 from
 //    here is avoidable and the webhook keeps your AWS creds server-side, which is safer.)
 
-import { snapNumber, snapString } from "./settings.ts";
+import { snapBool, snapNumber, snapString } from "./settings.ts";
 
 export type InfraProvider = "none" | "webhook" | "railway";
 
@@ -44,7 +44,47 @@ export const infraScaleProvider = (): InfraProvider => {
   return (["none", "webhook", "railway"] as string[]).includes(p) ? (p as InfraProvider) : "none";
 };
 export const infraScaleMin = () => Math.max(1, Math.round(snapNumber("INFRA_SCALE_MIN_INSTANCES", 1)));
-export const infraScaleMax = () => Math.max(infraScaleMin(), Math.round(snapNumber("INFRA_SCALE_MAX_INSTANCES", 4)));
+
+// ── Cost discipline: a monthly dollar budget derives the NORMAL soft ceiling; an absolute hard ceiling is the
+//    burst/runaway guard. ───────────────────────────────────────────────────────────────────────────────────
+// Two ceilings:
+//   • softMax  = the budget-disciplined normal ceiling = min(configured max, floor(budget / cost/instance)).
+//                This is what keeps steady-state cost provably under the year-one $3,000 target.
+//   • hardMax  = INFRA_SCALE_MAX_INSTANCES, the ABSOLUTE emergency ceiling and runaway guard. The governor
+//                never exceeds this, budget or not.
+// When INFRA_SCALE_BURST_ABOVE_BUDGET is ON and live load genuinely needs more than softMax, the governor may
+// AUTOMATICALLY burst up to hardMax to keep the app up — then hysteresis scales it back down to softMax once
+// load subsides, so the over-budget spend is only for the minutes the surge actually lasts.
+export const infraScaleCostPerInstance = () => Math.max(1, snapNumber("INFRA_SCALE_COST_PER_INSTANCE_USD_MO", 12));
+export const infraScaleMonthlyBudget = () => Math.max(0, snapNumber("INFRA_SCALE_MONTHLY_BUDGET_USD", 0));
+export const infraScaleBurstEnabled = () => snapBool("INFRA_SCALE_BURST_ABOVE_BUDGET", true);
+/** The absolute emergency ceiling / runaway guard — configured max-instances, independent of the budget. */
+export const infraScaleHardMax = () => Math.max(infraScaleMin(), Math.round(snapNumber("INFRA_SCALE_MAX_INSTANCES", 8)));
+/** Instance ceiling implied by the monthly dollar budget, or null when no budget is set. */
+export const infraScaleBudgetMaxInstances = (): number | null => {
+  const budget = infraScaleMonthlyBudget();
+  if (budget <= 0) return null;
+  return Math.max(infraScaleMin(), Math.floor(budget / infraScaleCostPerInstance()));
+};
+/** NORMAL soft ceiling: budget-disciplined, never above the hard max. */
+export const infraScaleMax = () => {
+  const hard = infraScaleHardMax();
+  const budgetCap = infraScaleBudgetMaxInstances();
+  const soft = budgetCap === null ? hard : Math.min(hard, budgetCap);
+  return Math.max(infraScaleMin(), soft);
+};
+/** The ceiling to use for a given live load: soft normally, but hardMax when burst is on and demand exceeds
+ *  soft (so a real surge can auto-scale past budget up to the emergency ceiling). Pure/deterministic. */
+export function infraScaleCeilingForLoad(load: number): {
+  ceiling: number; softMax: number; hardMax: number; bursting: boolean;
+} {
+  const softMax = infraScaleMax();
+  const hardMax = infraScaleHardMax();
+  const per = infraScalePerInstance();
+  const demand = Math.max(infraScaleMin(), Math.ceil((Math.max(0, Number(load) || 0)) / per));
+  const bursting = infraScaleBurstEnabled() && demand > softMax && hardMax > softMax;
+  return { ceiling: bursting ? hardMax : softMax, softMax, hardMax, bursting };
+}
 export const infraScalePerInstance = () => Math.max(1, snapNumber("INFRA_SCALE_RPM_PER_INSTANCE", 600));
 export const infraScaleMaxStep = () => Math.max(1, Math.round(snapNumber("INFRA_SCALE_MAX_STEP", 2)));
 

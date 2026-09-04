@@ -4,6 +4,8 @@ import { snapBool } from "../../sdk/settings.ts";
 import {
   computeDesiredInstances, scaleInfra, infraScaleProvider,
   infraScaleMin, infraScaleMax, infraScalePerInstance, infraScaleMaxStep,
+  infraScaleMonthlyBudget, infraScaleCostPerInstance, infraScaleBudgetMaxInstances,
+  infraScaleHardMax, infraScaleBurstEnabled, infraScaleCeilingForLoad,
 } from "../../sdk/infra-scale.ts";
 
 // infraScaleController — the ACTING, in-platform, Claude-based scaling agent. Each tick it takes the live load,
@@ -26,9 +28,12 @@ export default __handler(async (req) => {
 
     const load = Math.max(0, Number(body.requests_per_min) || Number(body.load) || 0);
     const current = Math.max(0, Number(body.current_instances) || infraScaleMin());
+    // Burst-aware ceiling: budget-disciplined soft max normally, emergency hard max when a real surge needs it.
+    const ceil = infraScaleCeilingForLoad(load);
     const decision = computeDesiredInstances(load, current, {
-      perInstance: infraScalePerInstance(), min: infraScaleMin(), max: infraScaleMax(), maxStep: infraScaleMaxStep(),
+      perInstance: infraScalePerInstance(), min: infraScaleMin(), max: ceil.ceiling, maxStep: infraScaleMaxStep(),
     });
+    const bursting = decision.desired > ceil.softMax;
 
     let action = { ok: true, provider, desired: decision.desired, applied: false, reason: enabled ? "would act" : "gated off — decision only" };
     if (!dryRun && decision.desired !== current) {
@@ -39,7 +44,28 @@ export default __handler(async (req) => {
       ok: true, enabled, dry_run: dryRun, provider,
       current_instances: current, desired_instances: decision.desired,
       decision: decision.reason, action,
-      bounds: { min: infraScaleMin(), max: infraScaleMax(), per_instance_rpm: infraScalePerInstance(), max_step: infraScaleMaxStep() },
+      bounds: {
+        min: infraScaleMin(), soft_max: ceil.softMax, hard_max: ceil.hardMax,
+        per_instance_rpm: infraScalePerInstance(), max_step: infraScaleMaxStep(),
+      },
+      burst: {
+        enabled: infraScaleBurstEnabled(), bursting,
+        note: bursting
+          ? `Load exceeds the budgeted ${ceil.softMax}-replica soft cap — auto-bursting toward the ${ceil.hardMax}-replica emergency ceiling to stay up; will fall back once load subsides.`
+          : infraScaleBurstEnabled()
+            ? "Within budget. Would auto-burst above the soft cap (up to the emergency ceiling) if a surge required it."
+            : "Auto-burst OFF — the governor hard-freezes at the budget soft cap even under a spike.",
+      },
+      budget: {
+        monthly_usd: infraScaleMonthlyBudget(), cost_per_instance_usd_mo: infraScaleCostPerInstance(),
+        budget_max_instances: infraScaleBudgetMaxInstances(),
+        est_normal_monthly_usd: ceil.softMax * infraScaleCostPerInstance(),
+        est_normal_yearly_usd: ceil.softMax * infraScaleCostPerInstance() * 12,
+        est_burst_ceiling_monthly_usd: ceil.hardMax * infraScaleCostPerInstance(),
+        note: infraScaleMonthlyBudget() > 0
+          ? "Soft max = min(emergency ceiling, floor(budget / cost/instance)). Steady-state cost tracks the soft cap; burst spend applies only for the minutes a surge lasts."
+          : "No dollar cap set — INFRA_SCALE_MAX_INSTANCES alone bounds cost.",
+      },
       note: enabled
         ? "Scales capacity via your cloud API (same code, more instances) — capped, never rewrites code."
         : "Infra auto-scale is OFF — preview only. Set INFRA_SCALE_PROVIDER + credentials and enable INFRA_SCALE_ENABLED to let it act.",
