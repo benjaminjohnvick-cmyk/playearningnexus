@@ -3,6 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { adjustUserBalance } from "../../sdk/balance.ts";
 import { computeSurveyReward, isPremiumUser } from "../../sdk/survey-reward.ts";
+import { activeBoostMultiplier } from "../../sdk/boosts.ts";
 import { foundingFullKeepActive, recordFoundingFullKeepEarning } from "../../sdk/founding-advertiser.ts";
 import { payReferralSignupBonusOnce, creditReferralOverrideOnEarn } from "../../sdk/referral-rewards.ts";
 import { adgridThumbnailPrice, sessionGrossTarget, profileLine } from "../../sdk/adgrid.ts";
@@ -67,7 +68,11 @@ export default __handler(async (req) => {
       const premium = await isPremiumUser(user.id);
       const ff = await foundingFullKeepActive(db, user.id, day);
       const rw = await computeSurveyReward(premium, gross, ff.active ? ff.share : undefined);
-      if (rw.points > 0) { await adjustUserBalance(user.id, rw.points, { field: "points" }); creditedPoints = rw.points; }
+      // Closed-loop EARN BOOST: if the user bought an active boost, their NON-CASHABLE Site-Cash (points)
+      // earning is multiplied. Never affects realized cash / total_earnings — only the closed-loop points.
+      const boostMult = await activeBoostMultiplier(user.id).catch(() => 1);
+      const boostedPoints = boostMult > 1 ? Math.round((rw.points * boostMult) * 100) / 100 : rw.points;
+      if (boostedPoints > 0) { await adjustUserBalance(user.id, boostedPoints, { field: "points" }); creditedPoints = boostedPoints; }
       await adjustUserBalance(user.id, rw.realizedUsd, { field: "total_earnings" });
       if (ff.active && ff.record) await recordFoundingFullKeepEarning(db, ff.record, rw.realizedUsd, day);
 

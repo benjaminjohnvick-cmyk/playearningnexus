@@ -4236,3 +4236,47 @@ CREATE TABLE IF NOT EXISTS "ComplianceProfileProposal" (
 );
 CREATE INDEX IF NOT EXISTS "ComplianceProfileProposal_data_gin" ON "ComplianceProfileProposal" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "ComplianceProfileProposal_created" ON "ComplianceProfileProposal" (created_date DESC);
+
+-- UserCosmetic: a cosmetic a user owns; equipped flag per type.
+CREATE TABLE IF NOT EXISTS "UserCosmetic" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "UserCosmetic_data_gin" ON "UserCosmetic" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "UserCosmetic_created" ON "UserCosmetic" (created_date DESC);
+
+-- EarnBoost: a time-limited Site-Cash earn multiplier a user BOUGHT with Site Cash (closed-loop sink).
+CREATE TABLE IF NOT EXISTS "EarnBoost" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "EarnBoost_data_gin" ON "EarnBoost" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "EarnBoost_created" ON "EarnBoost" (created_date DESC);
+
+-- RevenueLever: admin-managed governance record for a monetization lever (enable/configure/status).
+CREATE TABLE IF NOT EXISTS "RevenueLever" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "RevenueLever_data_gin" ON "RevenueLever" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "RevenueLever_created" ON "RevenueLever" (created_date DESC);
+
+-- SiteCashGift: one user gifts closed-loop Site Cash to another; the platform keeps a small closed-loop spread.
+CREATE TABLE IF NOT EXISTS "SiteCashGift" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SiteCashGift_data_gin" ON "SiteCashGift" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SiteCashGift_created" ON "SiteCashGift" (created_date DESC);

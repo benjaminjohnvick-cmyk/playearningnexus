@@ -43,6 +43,12 @@ const LEGAL_BRIEFS: Record<string, string> = {
   // AI compliance research assistant — drafts per-country legal-posture proposals. Proposals only (never auto-
   // applied), but counsel should approve turning the assistant on and own the review of what it drafts.
   COMPLIANCE_AI_RESEARCH_ENABLED: "GLOBAL-COMPLIANCE-AND-LOCALIZATION.md",
+  // Revenue-lever COUNSEL gates — each is regulated or closed-loop-breaking. Enabling needs counsel sign-off
+  // AND (for the placeholders) a dedicated build; the flag alone earns nothing. See the expansion brief.
+  FINANCIAL_LEAD_GEN_ENABLED: "REVENUE-STREAMS-EXPANSION.md",
+  FX_SPREAD_ENABLED: "REVENUE-STREAMS-EXPANSION.md",
+  CRYPTO_PAYMENTS_ENABLED: "REVENUE-STREAMS-EXPANSION.md",
+  NFT_MARKETPLACE_ENABLED: "REVENUE-STREAMS-EXPANSION.md",
 };
 
 export default __handler(async (req) => {

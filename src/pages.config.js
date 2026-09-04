@@ -17,6 +17,9 @@
     "AccessibilityStatement": AccessibilityStatement,
     "FlywheelDashboard": FlywheelDashboard,
     "ProfitOptimization": ProfitOptimization,
+    "CosmeticsStore": CosmeticsStore,
+    "SiteCashExtras": SiteCashExtras,
+    "RevenueLevers": RevenueLevers,
  *       "HomePage": HomePage,
  *       "Dashboard": Dashboard,
  *       "Settings": Settings,
@@ -64,6 +67,9 @@ import AccessibilityStatement from './pages/AccessibilityStatement';
 import OpsConsole from './pages/OpsConsole';
 import FlywheelDashboard from './pages/FlywheelDashboard';
 import ProfitOptimization from './pages/ProfitOptimization';
+import CosmeticsStore from './pages/CosmeticsStore';
+import SiteCashExtras from './pages/SiteCashExtras';
+import RevenueLevers from './pages/RevenueLevers';
 import SetupWizard from './pages/SetupWizard';
 import BusinessDashboard from './pages/BusinessDashboard';
 import BusinessPortal from './pages/BusinessPortal';
