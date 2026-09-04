@@ -322,6 +322,18 @@
       "cron": "*/5 * * * *",
       "function": "buddyScheduledPopups",
       "_comment": "Every 5 min: fire the auto-open Buddy Chat notification at each user's booked next-day moment (in their own timezone) and expire missed slots. No-op while BUDDY_NEXT_SESSION_BOOKING_ENABLED is off."
+    },
+    {
+      "name": "daily-tier-autorenew",
+      "cron": "20 10 * * *",
+      "function": "tierAutoRenewSweep",
+      "_comment": "Tier 2/3 default auto-renewal posture (owner request): sends advance + 24h renewal notices (email + inbox) and records results-gated renewal INTENT. No-op while TIER_AUTORENEW_ENABLED is off (counsel-gated). Never moves money."
+    },
+    {
+      "name": "daily-premium-autorenew",
+      "cron": "25 10 * * *",
+      "function": "premiumAutoRenewSweep",
+      "_comment": "Consumer Premium default auto-renewal (owner request): advance + 24h notices (email + inbox) + results-independent renewal INTENT, strict express-consent gate. No-op while PREMIUM_AUTORENEW_ENABLED is off (counsel-gated). Never moves money."
     }
   ]
 }

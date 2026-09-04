@@ -33,6 +33,13 @@ const LEGAL_BRIEFS: Record<string, string> = {
   // Live automated money movement out of the PayPal business account — reserve/stored-value, money-
   // transmitter posture, and PayPal-terms review all apply before this may be turned on.
   PAYPAL_AUTOSETTLE_ENABLED: "TREASURY-SOLVENCY-AND-PAYPAL-SETTLEMENT.md",
+  // Tier 2/3 default (opt-out) multi-year auto-renewal — a NEGATIVE-OPTION posture regulated by FTC/ROSCA and
+  // state auto-renewal laws (advance-notice windows, express consent, easy cancellation). Counsel must clear
+  // the disclosures and per-state notice timing before this may be turned on.
+  TIER_AUTORENEW_ENABLED: "TIER-AUTORENEW-COMPLIANCE-COUNSEL-NOTE.md",
+  // Consumer PREMIUM default auto-renewal — the highest auto-renewal-law exposure (California ARL + ROSCA
+  // apply squarely to consumer subscriptions). Same counsel note governs both the B2B and consumer cases.
+  PREMIUM_AUTORENEW_ENABLED: "TIER-AUTORENEW-COMPLIANCE-COUNSEL-NOTE.md",
 };
 
 export default __handler(async (req) => {
