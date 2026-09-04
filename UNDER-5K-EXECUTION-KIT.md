@@ -411,3 +411,42 @@ they're set conservatively.
 
 **To floor a running system right now:** run `costFloorProfile` (admin) — it reports exactly what it changed and
 is fully reversible.
+
+---
+
+## Revenue-expansion levers — built, mostly gated OFF, turn on post-launch (2026-09-04)
+
+Everything below is **already coded** and either live (closed-loop) or **gated OFF + counsel** so it ships safe
+and can be switched on later. None of it is required to launch, and none changes the under-5k number (the cost
+floor keeps AI ≈$0 and these are revenue-side). Each gated `*_ENABLED` flag **auto-appears in the Setup Wizard**;
+turning one on is one toggle (plus, where noted, an external account and counsel sign-off).
+
+**Live at launch — closed-loop, on by default, no external account:**
+
+- **Cosmetics store** (`COSMETICS_ENABLED`, on) — Site-Cash sink, near-100% margin.
+- **Earn boosts + purchase-linked stacking + loyalty top-off** (`EARN_BOOST_ENABLED`, `PURCHASE_BOOST_*`,
+  `SITE_CASH_TOPOFF_*`, on) — the self-perpetuating Site-Cash sink; capped cost governors.
+- **Revenue-Levers registry** (`REVENUE_LEVERS_REGISTRY_ENABLED`, on) — the admin governance page.
+
+**Post-launch — gated OFF; flip the wizard flag + connect the account + clear counsel:**
+
+| Lever | Flag | What it needs to turn on |
+|---|---|---|
+| Browser extension — own-inventory ads | `EXTENSION_ENABLED` + `EXTENSION_OWN_ADS_ENABLED` | Publish the extension to the Chrome Web Store · set `EXTENSION_WEBSTORE_URL` · counsel |
+| Browser extension — affiliate cashback | `EXTENSION_AFFILIATE_ENABLED` | An affiliate NETWORK publisher account (CJ/Rakuten/Impact/…) + the postback wired (see AFFILIATE-POSTBACK-INTEGRATION-SPEC.md) |
+| Browser extension — browsing/personalization layer | `EXTENSION_TRACKING_ENABLED` | Explicit user opt-in + privacy policy + counsel (highest-sensitivity) |
+| Mobile earn hook + reminder + continuous earn | `EARN_HOOK_ENABLED` | A rewarded-ad network + the native widget/notification build (mobile app) + counsel |
+| Direct Site-Cash gifting (p2p) | `SITE_CASH_GIFTING_ENABLED` | The counsel-gated `p2p_transfers` flag + counsel (prefer the platform-funded gift/boost, which is already on) |
+| Offerwall/CPA, rewarded video, sponsored push/email | `OFFERWALL_CPA_ENABLED`, `REWARDED_VIDEO_ENABLED`, `SPONSORED_PUSH_EMAIL_ENABLED` | The respective ad-network account |
+| Affiliate storefront · print-on-demand · group buying | `AFFILIATE_STOREFRONT_ENABLED`, `PRINT_ON_DEMAND_ENABLED`, `GROUP_BUYING_ENABLED` | Affiliate network · POD supplier API · group-buy supplier |
+| Family plan · Pro tools · season pass | `FAMILY_PLAN_ENABLED`, `PRO_TOOLS_ENABLED`, `SEASON_PASS_ENABLED` | A priced SKU (no external account) |
+| Product-testing panels · API access · AI-creative SaaS | `PRODUCT_TESTING_PANEL_ENABLED`, `API_ACCESS_ENABLED`, `AI_CREATIVE_SAAS_ENABLED` | A paying buyer + (for API) key issuance/metering |
+| White-label / hosting / fraud-SaaS | `MULTITENANCY_ENABLED`, `HOSTING_MONETIZATION_ENABLED`, `FRAUD_SAAS_ENABLED` | A tenant/buyer + (hosting) moderation + DMCA agent |
+| Expedited fulfillment · partner payout fee · survey-routing arbitrage | `EXPEDITED_FULFILLMENT_ENABLED`, `PARTNER_PAYOUT_FEE_ENABLED`, `SURVEY_ROUTING_ARBITRAGE_ENABLED` | A priced SKU · the payout rail live · a partner router |
+
+**Counsel-only (no mechanism built; leave off):** `FINANCIAL_LEAD_GEN_ENABLED`, `FX_SPREAD_ENABLED`,
+`CRYPTO_PAYMENTS_ENABLED`, `NFT_MARKETPLACE_ENABLED` — each requires an attorney's yes *and* a dedicated build.
+
+*Bottom line: launch with the closed-loop set on (≈$0) and everything else gated OFF; flip levers post-launch as
+you connect accounts and clear counsel. Full map + live status: the **RevenueLevers** admin page and
+**REVENUE-STREAMS-EXPANSION.md**.*
