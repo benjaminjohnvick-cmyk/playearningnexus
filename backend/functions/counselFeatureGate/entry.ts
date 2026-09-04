@@ -40,6 +40,9 @@ const LEGAL_BRIEFS: Record<string, string> = {
   // Consumer PREMIUM default auto-renewal — the highest auto-renewal-law exposure (California ARL + ROSCA
   // apply squarely to consumer subscriptions). Same counsel note governs both the B2B and consumer cases.
   PREMIUM_AUTORENEW_ENABLED: "TIER-AUTORENEW-COMPLIANCE-COUNSEL-NOTE.md",
+  // AI compliance research assistant — drafts per-country legal-posture proposals. Proposals only (never auto-
+  // applied), but counsel should approve turning the assistant on and own the review of what it drafts.
+  COMPLIANCE_AI_RESEARCH_ENABLED: "GLOBAL-COMPLIANCE-AND-LOCALIZATION.md",
 };
 
 export default __handler(async (req) => {

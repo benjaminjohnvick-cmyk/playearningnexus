@@ -49,6 +49,8 @@ import KYCSurveyGate from '@/components/onboarding/KYCSurveyGate';
 import InAppInterstitialAd from '@/components/ads/InAppInterstitialAd';
 import AdFreeDailyMinute from '@/components/ads/AdFreeDailyMinute';
 import CrossPromoNudge from '@/components/growth/CrossPromoNudge';
+import ConsentBanner from '@/components/consent/ConsentBanner';
+import { hasAnalyticsConsent, openConsentPreferences } from '@/lib/consent';
 import { VariantProvider } from '@/components/experiments/VariantProvider';
 import { initLiveVariants } from '@/lib/liveVariants';
 import FloatingNavSidebar from '@/components/nav/FloatingNavSidebar';
@@ -117,7 +119,9 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     if (user) {
-      if (!user.tracking_opt_out) { initTracker(user.id); initSessionCapture(); initLiveVariants(); } // behavioral analytics + sampled session capture + live-experiment variant assignment; opt-out honored (disclosed in privacy policy)
+      // Non-essential analytics/session-capture run ONLY with explicit consent (GDPR opt-in, applied globally)
+      // AND no server-side opt-out. Essential/fraud tooling is separate and always allowed.
+      if (!user.tracking_opt_out && hasAnalyticsConsent()) { initTracker(user.id); initSessionCapture(); initLiveVariants(); }
       if (!sessionStorage.getItem('ppc_popup_shown_v2')) {
         sessionStorage.setItem('ppc_popup_shown_v2', '1');
         setShowPPCPopup(true);
@@ -577,9 +581,20 @@ export default function Layout({ children, currentPageName }) {
             </div>
             <div className="border-t mt-8 pt-8 text-center text-sm text-gray-500">
               <p>© 2024 Get Goods Gratis (Free). All rights reserved. | Premium gaming platform</p>
+              <p className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+                <Link to={createPageUrl('PrivacyPolicy')} className="hover:text-blue-600">Privacy Policy</Link>
+                <span aria-hidden="true">·</span>
+                <Link to={createPageUrl('TermsOfService')} className="hover:text-blue-600">Terms</Link>
+                <span aria-hidden="true">·</span>
+                <button type="button" onClick={openConsentPreferences} className="hover:text-blue-600 underline">Do Not Sell or Share My Personal Information</button>
+                <span aria-hidden="true">·</span>
+                <button type="button" onClick={openConsentPreferences} className="hover:text-blue-600">Cookie Preferences</button>
+              </p>
             </div>
           </div>
         </footer>
+        {/* Global cookie/tracking consent (GDPR opt-in + CCPA Do-Not-Sell/Share), shown to all visitors. */}
+        <ConsentBanner />
       </div>
     </LocaleProvider>);
 

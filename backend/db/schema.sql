@@ -4214,3 +4214,25 @@ CREATE TABLE IF NOT EXISTS "LanguageReference" (
   data         jsonb NOT NULL DEFAULT '{}'::jsonb
 );
 CREATE INDEX IF NOT EXISTS "LanguageReference_data_gin" ON "LanguageReference" USING gin (data jsonb_path_ops);
+
+-- ComplianceProfile: admin/counsel-approved per-country compliance overrides (cookie model, age of majority, SCA, privacy regime). Keyed by ISO-3166 alpha-2.
+CREATE TABLE IF NOT EXISTS "ComplianceProfile" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ComplianceProfile_data_gin" ON "ComplianceProfile" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ComplianceProfile_created" ON "ComplianceProfile" (created_date DESC);
+
+-- ComplianceProfileProposal: AI-drafted per-country compliance-profile proposals awaiting human/counsel review (status pending_review). Never applied automatically.
+CREATE TABLE IF NOT EXISTS "ComplianceProfileProposal" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ComplianceProfileProposal_data_gin" ON "ComplianceProfileProposal" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ComplianceProfileProposal_created" ON "ComplianceProfileProposal" (created_date DESC);

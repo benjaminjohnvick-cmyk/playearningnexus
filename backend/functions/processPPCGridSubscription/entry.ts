@@ -74,7 +74,10 @@ export default __handler(async (req) => {
     let result;
 
     if (plan === 'yearly') {
-      // One-time charge for yearly plan
+      // One-time charge for yearly plan. SCA/PSD2 (EU + global): a card may require Strong Customer
+      // Authentication (3-D Secure). Allowing redirects lets Stripe surface the 3DS challenge; if the intent
+      // comes back needing action we return its client_secret so the frontend completes 3DS and DO NOT
+      // activate until payment actually succeeds.
       const paymentIntent = await stripe.paymentIntents.create({
         amount: planConfig.amount,
         currency: 'usd',
@@ -83,11 +86,18 @@ export default __handler(async (req) => {
         confirm: true,
         description: planConfig.label,
         metadata: { user_id: user.id, plan: 'yearly' },
-        automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
+        automatic_payment_methods: { enabled: true },
+        return_url: (Deno.env.get('APP_URL') || 'https://getgoodsgratis.com') + '/AdBusinessDashboard',
       });
-      result = { type: 'one_time', payment_intent_id: paymentIntent.id, status: paymentIntent.status };
+      result = {
+        type: 'one_time', payment_intent_id: paymentIntent.id, status: paymentIntent.status,
+        client_secret: paymentIntent.client_secret || null,
+        requires_action: paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_confirmation',
+      };
     } else {
-      // Recurring subscription for daily/monthly
+      // Recurring subscription for daily/monthly. SCA-compliant flow: create the subscription INCOMPLETE and
+      // let the first invoice's PaymentIntent carry any 3-D Secure challenge. The subscription only becomes
+      // active once that PaymentIntent succeeds (frontend confirms the client_secret if action is required).
       const priceData = {
         unit_amount: planConfig.amount,
         currency: 'usd',
@@ -98,17 +108,29 @@ export default __handler(async (req) => {
         customer: customerId,
         items: [{ price_data: priceData }],
         default_payment_method: payment_method_id,
+        payment_behavior: 'default_incomplete',
+        payment_settings: { save_default_payment_method: 'on_subscription', payment_method_types: ['card'] },
+        expand: ['latest_invoice.payment_intent'],
         metadata: { user_id: user.id, plan },
       });
-      result = { type: 'subscription', subscription_id: subscription.id, status: subscription.status };
+      const pi = subscription.latest_invoice && subscription.latest_invoice.payment_intent;
+      result = {
+        type: 'subscription', subscription_id: subscription.id, status: subscription.status,
+        payment_status: pi?.status || null, client_secret: pi?.client_secret || null,
+        requires_action: pi?.status === 'requires_action' || pi?.status === 'requires_confirmation',
+      };
     }
 
-    // Mark user as active on PPC grid. For a recurring plan, record the express auto-renew consent + flag so
-    // the strict recurring-billing guard recognizes this subscription as consented (and the cancel path works).
+    // Activate on the grid ONLY when payment actually cleared (no SCA action pending). If 3-D Secure is
+    // required, the seat is left PENDING and the frontend completes authentication with the client_secret;
+    // Stripe activates the subscription once the PaymentIntent succeeds.
+    const paidNow = (result.type === 'one_time' && result.status === 'succeeded')
+      || (result.type === 'subscription' && (result.status === 'active' || result.payment_status === 'succeeded'));
     await base44.asServiceRole.entities.User.update(user.id, {
-      ppc_grid_active: true,
+      ppc_grid_active: paidNow,
+      ppc_grid_pending: !paidNow,
       ppc_grid_plan: plan,
-      ppc_grid_activated_at: new Date().toISOString(),
+      ppc_grid_activated_at: paidNow ? new Date().toISOString() : null,
       ...(isRecurring ? { ppc_auto_renew_consent: true, auto_renew_consent: true, auto_renew_optout: false } : {}),
     });
     if (isRecurring) {
@@ -155,6 +177,7 @@ export default __handler(async (req) => {
       success: true,
       plan,
       ...result,
+      ...(result.requires_action ? { sca_note: "Additional card authentication (3-D Secure) is required. Complete it in the app using the client_secret; your seat activates once authentication succeeds." } : {}),
       survey_optin: surveyOptIn
         ? { opted_in: true, provider: surveyOptIn.provider, note: "You're also set up as a survey-taker. Your surveys come from the third-party providers; availability and reward vary and are not guaranteed." }
         : { opted_in: false, available: advertiserSurveyOptInEnabled(), provider: advertiserSurveyProvider() },
