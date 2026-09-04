@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { snapBool } from "../../sdk/settings.ts";
+import { db } from "../../sdk/db.ts";
+import { snapBool, snapString, setSetting } from "../../sdk/settings.ts";
 import {
   computeDesiredInstances, scaleInfra, infraScaleProvider,
   infraScaleMin, infraScaleMax, infraScalePerInstance, infraScaleMaxStep,
@@ -26,8 +27,25 @@ export default __handler(async (req) => {
     const dryRun = body.dry_run === true || !enabled;
     const provider = infraScaleProvider();
 
-    const load = Math.max(0, Number(body.requests_per_min) || Number(body.load) || 0);
-    const current = Math.max(0, Number(body.current_instances) || infraScaleMin());
+    // Load signal, best-first (mirrors resilientGovernorRun so the scheduler needn't pass metrics):
+    // (1) explicit body.requests_per_min/load, else (2) a proxy from recent activity volume
+    // (InteractionEvent count in the last minute), else 0.
+    let load = Math.max(0, Number(body.requests_per_min) || Number(body.load) || 0);
+    let loadSource = "provided";
+    if (load === 0) {
+      const sinceISO = new Date(Date.now() - 60000).toISOString();
+      const recent = await db.count("InteractionEvent", { created_date: { $gte: sinceISO } }).catch(() => 0);
+      load = Number(recent) || 0; loadSource = "activity-proxy(InteractionEvent/min)";
+    }
+
+    // Current instance count, best-first: (1) explicit body.current_instances, else (2) the count the governor
+    // last applied (tracked in INFRA_SCALE_CURRENT_INSTANCES), else (3) 0 = "never run" so the first tick
+    // reconciles the host up to the minimum. Tracking makes step-limiting and up/down decisions correct across
+    // stateless scheduled runs without querying the host each tick.
+    const trackedStr = snapString("INFRA_SCALE_CURRENT_INSTANCES", "");
+    const tracked = trackedStr === "" ? 0 : Math.max(0, Math.round(Number(trackedStr) || 0));
+    const current = body.current_instances !== undefined ? Math.max(0, Number(body.current_instances) || 0) : tracked;
+
     // Burst-aware ceiling: budget-disciplined soft max normally, emergency hard max when a real surge needs it.
     const ceil = infraScaleCeilingForLoad(load);
     const decision = computeDesiredInstances(load, current, {
@@ -38,10 +56,13 @@ export default __handler(async (req) => {
     let action = { ok: true, provider, desired: decision.desired, applied: false, reason: enabled ? "would act" : "gated off — decision only" };
     if (!dryRun && decision.desired !== current) {
       action = await scaleInfra(provider, decision.desired, decision.reason);
+      // Persist the applied count as the new 'current' so the next tick decides from reality, not an assumption.
+      if (action.applied) await setSetting("INFRA_SCALE_CURRENT_INSTANCES", String(decision.desired), `infraScaleGovernor:${user.email ?? user.id}`).catch(() => null);
     }
 
     return Response.json({
       ok: true, enabled, dry_run: dryRun, provider,
+      load_rpm: load, load_source: loadSource,
       current_instances: current, desired_instances: decision.desired,
       decision: decision.reason, action,
       bounds: {

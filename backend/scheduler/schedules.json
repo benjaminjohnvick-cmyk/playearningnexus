@@ -46,6 +46,12 @@
       "_comment": "Every minute: the scaling-helper AI reads live load and sets RESILIENT_AUTO_STATE so users are auto-switched to on-device mode BEFORE the server tips over (hysteresis prevents flapping). No-op while RESILIENT_MODE_ENABLED is off."
     },
     {
+      "name": "infra-scale-governor",
+      "cron": "* * * * *",
+      "function": "infraScaleController",
+      "_comment": "Every minute: the acting scaling agent reads live load (InteractionEvent/min proxy), computes the desired replica count (min 2 standing, auto-burst up to 8 under load), and sets it via the Railway API — holding the standing floor and scaling out/in automatically. Safe no-op until RAILWAY_TOKEN + RAILWAY_SERVICE_ID + RAILWAY_ENVIRONMENT_ID are set and INFRA_SCALE_ENABLED is on."
+    },
+    {
       "name": "site-maintenance-agent",
       "cron": "*/15 * * * *",
       "function": "maintenanceAgentRun",
