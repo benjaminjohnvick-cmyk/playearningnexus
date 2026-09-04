@@ -46,6 +46,7 @@ export const REVENUE_LEVERS: RevenueLeverDef[] = [
   { key: "offerwall_cpa", category: 1, name: "Offerwall / CPA wall", status: "gated", enable_flag: "OFFERWALL_CPA_ENABLED", ledger_type: "advertising", needs: "an offerwall/CPA network + your publisher account" },
   { key: "rewarded_video", category: 1, name: "Rewarded video", status: "gated", enable_flag: "REWARDED_VIDEO_ENABLED", ledger_type: "advertising", needs: "a rewarded-video ad-network SDK + publisher account" },
   { key: "sponsored_push_email", category: 1, name: "Sponsored push / email", status: "gated", enable_flag: "SPONSORED_PUSH_EMAIL_ENABLED", ledger_type: "advertising", needs: "a paying sponsor + send-infrastructure sign-off" },
+  { key: "earn_hook_rewarded_ads", category: 1, name: "Mobile earn hook → in-app rewarded ads", status: "counsel", enable_flag: "EARN_HOOK_ENABLED", ledger_type: "advertising", note: "One-tap-to-earn widget + user-scheduled reminder → user-initiated in-app rewarded ad; closed-loop points. Needs a rewarded-ad network + counsel. See EARN-HOOK-AND-REMINDER-COMPLIANT-DESIGN.md." },
 
   // 2 — Commerce
   { key: "seller_commission", category: 2, name: "Marketplace seller commission / cash-back margin", status: "built", ledger_type: "seller_commission", setting_key: "MARKETPLACE_SELLER_COMMISSION_PCT" },
@@ -65,7 +66,8 @@ export const REVENUE_LEVERS: RevenueLeverDef[] = [
 
   // 4 — Closed-loop virtual economy (all fully buildable in-model)
   { key: "cosmetics_store", category: 4, name: "Cosmetics store (frames/themes/flair/nameplates/effects)", status: "built", ledger_type: "breakage", setting_key: "COSMETICS_ENABLED" },
-  { key: "site_cash_gifting", category: 4, name: "Site-Cash gifting (user→user, closed-loop spread)", status: "built", ledger_type: "breakage", setting_key: "SITE_CASH_GIFTING_ENABLED" },
+  { key: "gift_boost_platform_funded", category: 4, name: "Gift/boost — PLATFORM-FUNDED (no wallet-to-wallet move)", status: "built", ledger_type: "breakage", setting_key: "GIFT_BOOST_MAX_USD", note: "The compliant default gift path (gift_boost): platform funds the recipient; no value moves between users." },
+  { key: "site_cash_gifting", category: 4, name: "Direct Site-Cash gifting (user→user, p2p)", status: "counsel", enable_flag: "SITE_CASH_GIFTING_ENABLED", ledger_type: "breakage", note: "Moves value between user balances = p2p transfer (money-transmission risk). Gated OFF + counsel; also requires the p2p_transfers flag. Prefer the platform-funded gift/boost above." },
   { key: "earn_boosts", category: 4, name: "Earn boosts (deterministic Site-Cash multiplier)", status: "built", ledger_type: "breakage", setting_key: "EARN_BOOST_ENABLED" },
   { key: "season_pass", category: 4, name: "Season / battle pass (Site-Cash track of cosmetic rewards)", status: "gated", enable_flag: "SEASON_PASS_ENABLED", ledger_type: "breakage", needs: "a priced pass SKU + reward track (roadmap; cosmetics is the reference build)" },
 

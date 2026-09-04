@@ -45,10 +45,16 @@ const LEGAL_BRIEFS: Record<string, string> = {
   COMPLIANCE_AI_RESEARCH_ENABLED: "GLOBAL-COMPLIANCE-AND-LOCALIZATION.md",
   // Revenue-lever COUNSEL gates — each is regulated or closed-loop-breaking. Enabling needs counsel sign-off
   // AND (for the placeholders) a dedicated build; the flag alone earns nothing. See the expansion brief.
+  // Direct user-to-user Site-Cash transfer — a p2p transfer (money-transmission risk); the platform-funded
+  // gift_boost is the compliant default. Requires counsel AND the p2p_transfers flag before it can run.
+  SITE_CASH_GIFTING_ENABLED: "GIFT-BOOST.md",
   FINANCIAL_LEAD_GEN_ENABLED: "REVENUE-STREAMS-EXPANSION.md",
   FX_SPREAD_ENABLED: "REVENUE-STREAMS-EXPANSION.md",
   CRYPTO_PAYMENTS_ENABLED: "REVENUE-STREAMS-EXPANSION.md",
   NFT_MARKETPLACE_ENABLED: "REVENUE-STREAMS-EXPANSION.md",
+  // Mobile earn hook + reminder → in-app rewarded ads. Rewarded-ad policy (user-initiated), notification
+  // consent, no-guaranteed-earnings copy, and store review all apply before this may be turned on.
+  EARN_HOOK_ENABLED: "EARN-HOOK-AND-REMINDER-COMPLIANT-DESIGN.md",
 };
 
 export default __handler(async (req) => {

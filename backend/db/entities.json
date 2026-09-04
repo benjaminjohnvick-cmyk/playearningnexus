@@ -106,6 +106,7 @@
   "DisputeNegotiationSettings",
   "DomainEvent",
   "DynamicPricing",
+  "EarnAdView",
   "EarnBackLedger",
   "EarnBackPlan",
   "EarnBoost",

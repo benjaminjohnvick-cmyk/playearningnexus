@@ -4292,3 +4292,15 @@ CREATE TABLE IF NOT EXISTS "SiteCashTopoff" (
 );
 CREATE INDEX IF NOT EXISTS "SiteCashTopoff_data_gin" ON "SiteCashTopoff" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "SiteCashTopoff_created" ON "SiteCashTopoff" (created_date DESC);
+
+-- EarnAdView: a logged, completed, user-initiated rewarded-ad view credited as closed-loop Site Points. Used
+-- for the daily/lifetime reward cost caps and as an audit trail (points are non-cashable promotional Site Cash).
+CREATE TABLE IF NOT EXISTS "EarnAdView" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "EarnAdView_data_gin" ON "EarnAdView" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "EarnAdView_created" ON "EarnAdView" (created_date DESC);
