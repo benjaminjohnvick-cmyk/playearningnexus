@@ -198,3 +198,32 @@ does nothing. See `REVENUE-STREAMS-EXPANSION.md`.
 
 *Full map, statuses, and the "what each gated lever still needs" list: **REVENUE-STREAMS-EXPANSION.md** and the
 live **RevenueLevers** admin page.*
+
+---
+
+## Settings Appendix — Browser extension (added 2026-09-04)
+
+The browser extension shows OUR OWN inventory on its own surfaces + affiliate cashback; users paid in closed-loop
+Site Points. Master + tracking are counsel-gated. SDK `sdk/extension.ts`; functions `extensionConfig`,
+`extensionEnroll`, `extensionAdServe`, `extensionAdReward`, `extensionAffiliateReward`, `advertiserExtensionClause`.
+Entities `ExtensionReward`, `AffiliateReferral`. Full design: `BROWSER-EXTENSION-ATTENTION-REWARDS-DESIGN.md`.
+
+**Gates (sensitive, default 0, in the Setup Wizard):**
+- `EXTENSION_ENABLED` (master, **counsel-gated** in `LEGAL_BRIEFS`), `EXTENSION_OWN_ADS_ENABLED` (own inventory),
+  `EXTENSION_AFFILIATE_ENABLED` (cashback — needs an affiliate network), `EXTENSION_TRACKING_ENABLED`
+  (the browsing/profiling Layer B — **counsel-gated**; requires explicit user opt-in).
+
+**Posture + config:**
+- `EXTENSION_REWARDS_DEFAULT_ENROLLED` (1, opt-out), `EXTENSION_TRACKING_REQUIRE_OPTIN` (1, keep on),
+  `EXTENSION_ADVERTISER_DEFAULT_ELIGIBLE` (1, B2B opt-out), `EXTENSION_INVENTORY_CLAUSE_VERSION` (v1).
+- **`EXTENSION_WEBSTORE_URL`** (blank) — your published Chrome Web Store listing. The signup opt-in opens it.
+  *(A website can't auto-install an extension — Chrome removed inline install; this is the compliant maximum.)*
+- `EXTENSION_REWARD_PER_IMPRESSION_POINTS` (5), `EXTENSION_AFFILIATE_USER_SHARE_PCT` (0.5),
+  `EXTENSION_REWARD_DAILY_CAP_USD` ($1, sensitive), `EXTENSION_REWARD_LIFETIME_CAP_USD` ($200, sensitive).
+
+**Ad-serve + signup flow:**
+- `extensionAdServe` serves one creative from `extension_eligible` `AdCampaign` rows (house cross-sell fallback);
+  the client renders it, enforces a 5-second view, then credits via `extensionAdReward` (caps enforced).
+- **Signup pre-checked opt-in:** after signup, `AuthForm` → `GetExtension` (`ExtensionInstallPrompt`) shows a
+  default-on/opt-out card that records `install_intent` (via `extensionEnroll`) and auto-opens
+  `EXTENSION_WEBSTORE_URL`. No-ops if the extension isn't live.

@@ -222,6 +222,32 @@ Each of these is where extensions get removed from the store, flagged as adware,
 
 ---
 
+## 9b. Built implementation (2026-09-04) — what's now coded
+
+The backend and the signup flow are built (gated OFF); the extension client is coded to ~100% (only the Web
+Store publish, affiliate-network deep links, and ad creatives remain, which need external accounts).
+
+- **Ad-serve endpoint — `extensionAdServe`** (authenticated, read-only). Returns ONE creative for the
+  extension's own surface: it picks from active `AdCampaign` rows left `extension_eligible` (the disclosed
+  inventory clause), and when there's no paid inventory it returns a **house cross-sell** (refer / Premium /
+  spend) so the slot is never empty and never billed. It never credits — the reward happens only after a real,
+  user-initiated completed view via `extensionAdReward` (which enforces the daily/lifetime caps). Never injects
+  into third-party pages.
+- **Chrome Web Store URL — `EXTENSION_WEBSTORE_URL`** (string setting, default blank). Your published listing
+  URL; the signup opt-in opens it. Returned by `extensionConfig` so the client/site know where to send users.
+- **Signup pre-checked opt-in flow.** A website **cannot auto-install** a Chrome extension (inline install was
+  removed in 2018; sideloading is blocked), so the compliant maximum is built instead: after signup, `AuthForm`
+  routes to the **`GetExtension`** step (`ExtensionInstallPrompt`), a **pre-checked, default-on, opt-out** card.
+  On continue it records the choice via `extensionEnroll({ install_intent })` (stored as `extension_install_intent`
+  so you can nudge non-installers) and **auto-opens `EXTENSION_WEBSTORE_URL`** in a new tab — one click from
+  "Add to Chrome." It no-ops straight through if the extension isn't live or no store URL is set.
+- **Client (the `gg-extension` project).** New-tab surface calls `extensionAdServe`, renders the creative,
+  enforces a 5-second minimum view, then credits via `extensionAdReward`; popup + options (rewards opt-out,
+  shopping-helper permission, off-by-default personalization) + background worker + icons all done. Archived in
+  Bundle 38 under `09 - Browser Extension`.
+
+---
+
 ## 10. Suggested build order (when greenlit)
 
 1. **Advertiser clause + `extension_eligible` flag** — pure backend/terms; no user-facing risk; makes inventory
