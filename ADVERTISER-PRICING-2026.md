@@ -3,7 +3,8 @@
 *Authoritative summary of the current advertiser pricing. Admin-tunable via settings; nothing here is a
 promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 
-> **Reconciled 2026-08-15.** Consistent with the other Get Goods Gratis docs as of this date. The Founding
+> **Reconciled 2026-08-15; re-checked against code 2026-09-04** (fixed two citation drifts: the upgrade-discount
+> setting is `0.055`, not `0.06`, and `FOUNDING_SIGNUP_CREDIT_USD` is retired to `0`). Consistent with the other Get Goods Gratis docs as of this date. The Founding
 > Tier 1 offer, the 5.5% decoupled upgrade discount, the $2,000 premium gift boost, Tier 2 pay-as-you-go, the
 > discontinued free earn-to-unlock tier, and the three OFF-by-default credit products all match the current
 > Get Goods Gratis documents. There is now a public **`/Apply`** page that markets this pricing —
@@ -31,10 +32,11 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
   their $12,000 fee (no return-of-capital signal, same as the upgrade discount). Members claim it from the pool,
   **subject to availability**, and choose how much to apply and to which items. Nothing is owed. (Replaces the
   old $1,000 vesting credit.) See `PREMIUM-GIFT-BOOST.md` and `PREMIUM-BOOST-ADVERTISING.md`.
-- Settings: `FOUNDING_UPGRADE_DISCOUNT_PCT = 0.06`, `FOUNDING_UPGRADE_PRICE_USD = 200000`,
+- Settings: `FOUNDING_UPGRADE_DISCOUNT_PCT = 0.055` (5.5%), `FOUNDING_UPGRADE_PRICE_USD = 200000`,
   `FOUNDING_UPGRADE_DISCOUNT_WINDOW_MONTHS = 12` (window to claim), `TIER2_FOUNDING_DISCOUNT_PERPETUAL = true`
   (founding members keep it for life) / `TIER2_DISCOUNT_FIRST_YEAR_ONLY = true` (non-founding loses it after
-  year one), `FOUNDING_SIGNUP_CREDIT_USD = 1000` (+ condition keys). Code: `backend/sdk/founding-rollover.ts`
+  year one), `FOUNDING_SIGNUP_CREDIT_USD = 0` (**RETIRED** — the sign-up store credit is off; benefit delivered
+  via the premium gift boost instead). Code: `backend/sdk/founding-rollover.ts`
   (claim window) + `backend/sdk/tier2-scaling.ts` (`tier2DiscountRate` applies the per-part rate),
   functions `foundingRolloverStatus` / `foundingUpgradeQuote`, page `/FoundingUpgrade`.
 - **Note:** for maximum daylight from the return-of-capital signal, set the discount % so its dollar result
