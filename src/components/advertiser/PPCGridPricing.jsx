@@ -57,10 +57,18 @@ function CheckoutForm({ plan, user, onSuccess }) {
   const [processing, setProcessing] = useState(false);
   const [cardComplete, setCardComplete] = useState(false);
   const [surveyOptIn, setSurveyOptIn] = useState(false);
+  const [autoRenewConsent, setAutoRenewConsent] = useState(false);
+
+  // Daily/monthly are RECURRING (a negative option) → express auto-renew consent is required (CA ARL/ROSCA).
+  const isRecurring = plan.key === 'monthly' || plan.key === 'daily';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements || !cardComplete) return;
+    if (isRecurring && !autoRenewConsent) {
+      toast.error('Please agree to the auto-renewal terms to continue.');
+      return;
+    }
     setProcessing(true);
 
     try {
@@ -77,7 +85,7 @@ function CheckoutForm({ plan, user, onSuccess }) {
         return;
       }
 
-      // Call backend to create subscription / charge
+      // Call backend to create subscription / charge. Recurring plans require express auto-renew consent.
       const res = await base44.functions.invoke('processPPCGridSubscription', {
         plan: plan.key,
         payment_method_id: paymentMethod.id,
@@ -87,13 +95,43 @@ function CheckoutForm({ plan, user, onSuccess }) {
         // OPTIONAL: also participate as a survey-taker (third-party survey providers). Opt-in only.
         survey_optin: surveyOptIn,
         survey_consent: surveyOptIn ? { accepted: true, terms_version: 'advertiser-surveys-1' } : undefined,
+        // Express consent to the recurring auto-renewal terms (required for daily/monthly).
+        recurring_consent: isRecurring ? { accepted: true, terms_version: 'ppc-grid-recurring-1' } : undefined,
       });
 
-      if (res.data?.success) {
+      const d = res.data || {};
+      if (d.error && !d.requires_action) {
+        toast.error(d.error);
+        setProcessing(false);
+        return;
+      }
+
+      // ── SCA / 3-D Secure ── If the bank requires Strong Customer Authentication, complete the challenge
+      // now with the client_secret the backend returned. The seat activates once the payment succeeds (the
+      // Stripe webhook flips it live server-side).
+      if (d.requires_action && d.client_secret) {
+        toast.message('Confirming with your bank…');
+        const { error: scaError, paymentIntent } = await stripe.confirmCardPayment(d.client_secret);
+        if (scaError) {
+          toast.error(scaError.message || 'Card authentication failed. Please try again.');
+          setProcessing(false);
+          return;
+        }
+        if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
+          toast.success(`🎉 Verified — you're now live on the PPC Ad Grid!`);
+          onSuccess(plan);
+        } else {
+          toast.error('Payment could not be completed. Please try again.');
+        }
+        setProcessing(false);
+        return;
+      }
+
+      if (d.success) {
         toast.success(`🎉 You're now live on the PPC Ad Grid!`);
         onSuccess(plan);
       } else {
-        toast.error(res.data?.error || 'Payment failed. Please try again.');
+        toast.error(d.error || 'Payment failed. Please try again.');
       }
     } catch (err) {
       toast.error(err.message || 'Payment error');
@@ -123,6 +161,23 @@ function CheckoutForm({ plan, user, onSuccess }) {
         {plan.key !== 'yearly' && <p className="text-gray-400 mt-1">Minimum commitment: 1 year ({plan.yearTotal})</p>}
       </div>
 
+      {/* REQUIRED for recurring plans: express consent to auto-renewal (CA ARL / ROSCA). */}
+      {isRecurring && (
+        <label className="flex items-start gap-2.5 bg-gray-800 border border-yellow-500/40 rounded-xl p-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={autoRenewConsent}
+            onChange={(e) => setAutoRenewConsent(e.target.checked)}
+            className="mt-0.5 h-4 w-4 flex-shrink-0 accent-yellow-500"
+          />
+          <span className="text-xs text-gray-300 leading-relaxed">
+            <span className="font-bold text-white">I agree to automatic renewal.</span> My {plan.label.toLowerCase()} plan
+            ({plan.total}) renews automatically until I cancel. I can cancel anytime in my billing settings, and I'll
+            get an advance reminder and a final reminder by email and in-app before each renewal charge.
+          </span>
+        </label>
+      )}
+
       {/* OPTIONAL: also participate as a survey-taker (third-party providers) */}
       <label className="flex items-start gap-2.5 bg-gray-800 border border-gray-600 rounded-xl p-3 cursor-pointer">
         <input
@@ -142,7 +197,7 @@ function CheckoutForm({ plan, user, onSuccess }) {
 
       <Button
         type="submit"
-        disabled={processing || !stripe || !cardComplete}
+        disabled={processing || !stripe || !cardComplete || (isRecurring && !autoRenewConsent)}
         className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-black h-12 text-base gap-2"
       >
         {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</> : <>

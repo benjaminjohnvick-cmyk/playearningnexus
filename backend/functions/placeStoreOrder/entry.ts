@@ -9,6 +9,7 @@ import { adjustUserBalance } from "../../sdk/balance.ts";
 import { recordMoneyFlow } from "../../sdk/paypal.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
 import { siteCashApplyPlan, resolveSiteCashAutoApply } from "../../sdk/site-cash-apply.ts";
+import { paypalConfigured, captureOrder, getOrder } from "../../sdk/paypal-api.ts";
 
 // Server-authoritative store order (product OR online service → pay → AI fulfillment).
 //
@@ -17,7 +18,8 @@ import { siteCashApplyPlan, resolveSiteCashAutoApply } from "../../sdk/site-cash
 //                       10% markup; business accounts are exempt.
 //   • refund_credit   — spends REFUND store credit (refund_credit_balance). NO markup for ANYONE
 //                       (businesses or customers) — refunded credits are always markup-free.
-//   • credit_card     — captured client-side (paypal_order_id); nothing to deduct here.
+//   • credit_card     — the card charge is VERIFIED server-side against PayPal (getOrder/capture) before the
+//                       order is created; a client-supplied paypal_order_id is never trusted on its own.
 //
 // Order kinds: physical_product (ships to an address) or online_service (digital — no shipping).
 // AI fulfillment is fired for both; services are delivered digitally.
@@ -87,19 +89,59 @@ export default __handler(async (req) => {
     // remainder. The client fetched the same figure from checkoutSiteCashQuote and captured card_charge_usd, so
     // the two match. Honors the buyer's own auto-apply preference. Site Cash only lowers the REAL-money (card)
     // charge — balance-funded methods (survey_balance / refund_credit) are already site credit and unchanged.
+    // First COMPUTE the Site-Cash auto-apply plan (do NOT deduct yet) so we know the real card charge to verify.
     let siteCashUsd = 0, pointsApplied = 0;
     let cardCharge = charge;
+    let pendingPlan: { points_applied: number; points_usd: number; card_after_usd: number } | null = null;
     if (payment_method === "credit_card" && resolveSiteCashAutoApply(user as Record<string, unknown>) && (Number(user.points) || 0) > 0) {
       const premium = await isPremiumUser(String(user.id));
       const plan = siteCashApplyPlan({ faceUsd: charge, userPoints: Number(user.points) || 0, isPremium: premium });
-      if (plan.points_applied > 0) {
-        const ok = await adjustUserBalance(String(user.id), -plan.points_applied, { field: "points" });
-        if (ok !== null) {
-          await recordMoneyFlow({ direction: "out", amount_usd: plan.points_usd, kind: "points_redemption_fulfillment", ref: String(product.product_name || product.name || "store_order"), meta: { user_id: user.id, points_applied: plan.points_applied, funded_by: "paypal_business_account", auto_applied: true } }).catch(() => null);
-          siteCashUsd = plan.points_usd;
-          pointsApplied = plan.points_applied;
-          cardCharge = plan.card_after_usd;
+      if (plan.points_applied > 0) { pendingPlan = plan; cardCharge = plan.card_after_usd; }
+    }
+
+    // ── SERVER-SIDE PAYMENT VERIFICATION (credit_card) ──────────────────────────────────────────────────
+    // Do not trust a client-supplied paypal_order_id. Before creating/fulfilling the order we verify the
+    // payment with PayPal server-side: the order must be COMPLETED (capturing it here if the client only
+    // approved it) AND the captured amount must match the real card charge. On any failure we reject and
+    // fulfill nothing. (If the card charge is $0 — fully covered by Site Cash — there is nothing to verify.)
+    if (payment_method === "credit_card" && cardCharge > 0.009) {
+      if (!paypal_order_id) {
+        return Response.json({ error: "Missing payment reference (paypal_order_id) for a card charge." }, { status: 402 });
+      }
+      if (!paypalConfigured()) {
+        return Response.json({ error: "Card payments are unavailable right now (payment processor not configured)." }, { status: 402 });
+      }
+      let paid = false, paidAmt = 0, payStatus = "";
+      try {
+        const got = await getOrder(String(paypal_order_id));
+        payStatus = got.status;
+        if (got.status === "COMPLETED" && got.captured) {
+          paid = true; paidAmt = got.amount_usd;
+        } else if (got.status === "APPROVED") {
+          // Client approved but didn't capture — capture it now, server-side.
+          const cap = await captureOrder(String(paypal_order_id));
+          payStatus = cap.status;
+          if (cap.captured) { paid = true; paidAmt = cap.amount_usd; }
         }
+      } catch (e) {
+        return Response.json({ error: `Could not verify payment: ${(e as Error).message}` }, { status: 402 });
+      }
+      if (!paid) {
+        return Response.json({ error: `Payment not completed (status: ${payStatus || "unknown"}). Your order was not placed and you were not charged.` }, { status: 402 });
+      }
+      // Amount must match the server-computed card charge (1-cent tolerance for rounding).
+      if (Math.abs(paidAmt - cardCharge) > 0.02) {
+        return Response.json({ error: "Payment amount doesn't match the order total. Your order was not placed.", expected_usd: cardCharge, paid_usd: paidAmt }, { status: 402 });
+      }
+    }
+
+    // Payment is verified (or not a card charge) — NOW deduct the Site Cash points and record the money flow.
+    if (pendingPlan) {
+      const ok = await adjustUserBalance(String(user.id), -pendingPlan.points_applied, { field: "points" });
+      if (ok !== null) {
+        await recordMoneyFlow({ direction: "out", amount_usd: pendingPlan.points_usd, kind: "points_redemption_fulfillment", ref: String(product.product_name || product.name || "store_order"), meta: { user_id: user.id, points_applied: pendingPlan.points_applied, funded_by: "paypal_business_account", auto_applied: true } }).catch(() => null);
+        siteCashUsd = pendingPlan.points_usd;
+        pointsApplied = pendingPlan.points_applied;
       }
     }
 

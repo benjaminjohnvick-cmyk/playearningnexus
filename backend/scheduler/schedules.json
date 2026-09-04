@@ -334,6 +334,12 @@
       "cron": "25 10 * * *",
       "function": "premiumAutoRenewSweep",
       "_comment": "Consumer Premium default auto-renewal (owner request): advance + 24h notices (email + inbox) + results-independent renewal INTENT, strict express-consent gate. No-op while PREMIUM_AUTORENEW_ENABLED is off (counsel-gated). Never moves money."
+    },
+    {
+      "name": "daily-order-delay-notice",
+      "cron": "30 11 * * *",
+      "function": "orderDelayNotice",
+      "_comment": "FTC 30-Day Rule: notify buyers of undelivered orders past their ETA (or 30 days) and offer cancel-for-refund. Notification only; never moves money."
     }
   ]
 }

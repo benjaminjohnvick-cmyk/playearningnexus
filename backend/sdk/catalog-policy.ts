@@ -7,18 +7,38 @@
 import { snapList } from "./settings.ts";
 
 const BLOCKED_TERMS = [
-  "alcohol", "beer", "wine", "liquor", "vodka", "whiskey", "tobacco", "cigarette", "cigar", "vape",
-  "nicotine", "firearm", "gun", "ammo", "ammunition", "weapon", "explosive",
-  "cannabis", "marijuana", "weed", "thc", "cbd", "kratom",
-  "prescription", "pharmacy", "medication", "steroid", "adderall", "opioid",
-  "gift card", "giftcard", "gift-card", "gift certificate", "lottery", "casino", "gambling",
-  "sportsbook", "sports bet", "bullion", "gold bar", "cryptocurrency", "bitcoin", "money order",
-  "escort", "pornography", "adult toy",
+  // Alcohol / tobacco / nicotine
+  "alcohol", "beer", "wine", "liquor", "vodka", "whiskey", "whisky", "tequila", "rum", "spirits",
+  "tobacco", "cigarette", "cigar", "vape", "e-cigarette", "e-cig", "juul", "hookah", "shisha",
+  "nicotine", "snus", "chewing tobacco",
+  // Weapons / ammo / explosives
+  "firearm", "gun", "rifle", "pistol", "handgun", "ammo", "ammunition", "weapon", "explosive",
+  "fireworks", "pyrotechnic", "silencer", "suppressor", "tactical knife", "switchblade", "brass knuckles",
+  "stun gun", "taser", "pepper spray", "body armor", "ballistic",
+  // Drugs / controlled / supplements
+  "cannabis", "marijuana", "weed", "thc", "cbd", "delta-8", "delta 8", "delta-9", "kratom", "psilocybin",
+  "magic mushroom", "nitrous oxide", "poppers", "research chemical",
+  "prescription", "pharmacy", "medication", "steroid", "adderall", "opioid", "oxycodone", "xanax",
+  "controlled substance", "vape juice", "nootropic",
+  // Financial / gambling / stored value
+  "gift card", "giftcard", "gift-card", "gift certificate", "lottery", "raffle", "casino", "gambling",
+  "sportsbook", "sports bet", "bullion", "gold bar", "silver bar", "cryptocurrency", "bitcoin", "crypto",
+  "money order", "prepaid card", "visa card", "mastercard gift",
+  // Adult
+  "escort", "pornography", "porn", "adult toy", "sex toy", "aphrodisiac",
+  // Hazmat / regulated / prohibited
+  "pesticide", "hazardous", "hazmat", "corrosive", "compressed gas", "propane", "butane",
+  "lock pick", "lockpick", "skimmer", "spy camera", "gps tracker", "counterfeit", "replica watch",
+  "ivory", "endangered", "live animal", "human remains", "laser pointer", "radar detector",
+  "prescription glasses", "contact lens",
+  // Export-controlled / dual-use
+  "night vision", "military grade", "export controlled", "itar", "encryption device",
 ];
 
 const BLOCKED_CATEGORIES = [
-  "alcohol", "tobacco", "firearms", "weapons", "cannabis", "drugs", "pharmacy", "gambling",
-  "gift_cards", "adult", "financial_instruments",
+  "alcohol", "tobacco", "firearms", "weapons", "ammunition", "cannabis", "drugs", "pharmacy",
+  "supplements", "gambling", "lottery", "gift_cards", "prepaid", "adult", "financial_instruments",
+  "hazmat", "hazardous", "pesticides", "surveillance", "export_controlled", "live_animals",
 ];
 
 export function isBlockedCategory(category?: string | null): boolean {

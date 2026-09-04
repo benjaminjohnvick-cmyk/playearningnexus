@@ -77,6 +77,26 @@ export async function captureOrder(orderId: string): Promise<{ captured: boolean
   };
 }
 
+/** Fetch an order's current status + captured amount — used to VERIFY a payment server-side before fulfilling
+ *  (so a client can't claim a paid order without a real capture). Returns the captured USD when COMPLETED. */
+export async function getOrder(orderId: string): Promise<{ status: string; amount_usd: number; captured: boolean }> {
+  const token = await getAccessToken();
+  const res = await fetch(`${apiBase()}/v2/checkout/orders/${encodeURIComponent(orderId)}`, {
+    headers: { authorization: `Bearer ${token}` },
+  });
+  const j = await res.json().catch(() => ({}));
+  const status = String(j.status || "");
+  const pu = j?.purchase_units?.[0];
+  const cap = pu?.payments?.captures?.[0] || null;
+  const capturedAmt = cap?.amount?.value ? Number(cap.amount.value) : 0;
+  const authAmt = pu?.amount?.value ? Number(pu.amount.value) : 0;
+  return {
+    status,
+    amount_usd: capturedAmt || authAmt,
+    captured: status === "COMPLETED" || String(cap?.status || "") === "COMPLETED",
+  };
+}
+
 /** Send a Payout (e.g. pay a supplier/seller, or fund the points-covered portion). Runs under the owner's
  *  PayPal balance. Returns the payout batch id. */
 export async function createPayout(input: { email: string; amountUsd: number; note?: string; ref?: string }): Promise<{ batch_id: string | null; status: string }> {
