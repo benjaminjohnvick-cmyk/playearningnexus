@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { adultBlockReason } from "../../sdk/age-gate.ts";
 
 export default __handler(async (req) => {
   try {
@@ -19,6 +20,11 @@ export default __handler(async (req) => {
     }
     if (!perk_id) return Response.json({ success: true, skipped: 'no_perk_id_in_batch' });
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // 18+ gate: a user who hasn't verified age (e.g. a federated signup carrying needs_age_verification)
+    // may not realize value by redeeming. The signup gate covers most; this closes the redemption chokepoint.
+    const ageBlock = adultBlockReason(user);
+    if (ageBlock) return Response.json({ error: ageBlock, age_verification_required: true }, { status: 403 });
 
     // Fetch perk
     const perks = await base44.entities.RewardPerk.filter({ id: perk_id });

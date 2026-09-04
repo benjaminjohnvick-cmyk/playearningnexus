@@ -14,6 +14,7 @@
  *   import Settings from './pages/Settings';
  *   
  *   export const PAGES = {
+    "AccessibilityStatement": AccessibilityStatement,
     "FlywheelDashboard": FlywheelDashboard,
     "ProfitOptimization": ProfitOptimization,
  *       "HomePage": HomePage,
@@ -59,6 +60,7 @@ import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import AdGridSurvey from './pages/AdGridSurvey';
 import AIShoppingAssistant from './pages/AIShoppingAssistant';
 import BuyingDesk from './pages/BuyingDesk';
+import AccessibilityStatement from './pages/AccessibilityStatement';
 import OpsConsole from './pages/OpsConsole';
 import FlywheelDashboard from './pages/FlywheelDashboard';
 import ProfitOptimization from './pages/ProfitOptimization';

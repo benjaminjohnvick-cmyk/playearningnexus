@@ -586,6 +586,8 @@ export default function Layout({ children, currentPageName }) {
                 <span aria-hidden="true">·</span>
                 <Link to={createPageUrl('TermsOfService')} className="hover:text-blue-600">Terms</Link>
                 <span aria-hidden="true">·</span>
+                <Link to={createPageUrl('AccessibilityStatement')} className="hover:text-blue-600">Accessibility</Link>
+                <span aria-hidden="true">·</span>
                 <button type="button" onClick={openConsentPreferences} className="hover:text-blue-600 underline">Do Not Sell or Share My Personal Information</button>
                 <span aria-hidden="true">·</span>
                 <button type="button" onClick={openConsentPreferences} className="hover:text-blue-600">Cookie Preferences</button>

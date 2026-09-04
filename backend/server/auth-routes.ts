@@ -4,6 +4,7 @@ import { db } from "../sdk/db.ts";
 import { signJwt, verifyJwt } from "../sdk/auth.ts";
 import { Core } from "../sdk/integrations.ts";
 import { getNumber } from "../sdk/settings.ts";
+import { hashPassword, verifyPassword, isLegacyHash } from "../sdk/password.ts";
 
 const FRONTEND_URL = (Deno.env.get("FRONTEND_URL") ?? "http://localhost:5173").replace(/\/$/, "");
 const RESET_TTL_MIN = Number(Deno.env.get("RESET_TOKEN_TTL_MIN") ?? "60");
@@ -14,17 +15,10 @@ async function sha256Hex(s: string): Promise<string> {
 }
 function randomToken(): string { return hex(crypto.getRandomValues(new Uint8Array(32))); }
 
-async function hash(pw: string): Promise<string> {
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const bits = await crypto.subtle.digest("SHA-256", new Uint8Array([...salt, ...new TextEncoder().encode(pw)]));
-  return btoa(String.fromCharCode(...salt)) + ":" + btoa(String.fromCharCode(...new Uint8Array(bits)));
-}
-async function checkPw(pw: string, stored: string): Promise<boolean> {
-  const [saltB64] = stored.split(":");
-  const salt = Uint8Array.from(atob(saltB64), (c) => c.charCodeAt(0));
-  const bits = await crypto.subtle.digest("SHA-256", new Uint8Array([...salt, ...new TextEncoder().encode(pw)]));
-  return btoa(String.fromCharCode(...salt)) + ":" + btoa(String.fromCharCode(...new Uint8Array(bits))) === stored;
-}
+// Password hashing now uses a slow KDF (bcrypt) via the shared sdk/password module, which also verifies legacy
+// salted-SHA-256 hashes so existing users keep logging in (and get rehashed to bcrypt on next login).
+const hash = hashPassword;
+const checkPw = verifyPassword;
 
 export async function authRoutes(req: Request, pathname: string): Promise<Response> {
   if (pathname === "/auth/signup" && req.method === "POST") {
@@ -70,6 +64,11 @@ export async function authRoutes(req: Request, pathname: string): Promise<Respon
     const user = rows[0];
     if (!user || !user.password_hash || !(await checkPw(password, user.password_hash as string)))
       return Response.json({ error: "Invalid credentials" }, { status: 401 });
+    // Transparent upgrade: if this account still has a legacy salted-SHA-256 hash, rehash to bcrypt now that
+    // we've verified the plaintext. Best-effort — a failure never blocks the login.
+    if (isLegacyHash(String(user.password_hash))) {
+      try { await db.update("User", user.id as string, { password_hash: await hashPassword(password) }); } catch { /* non-fatal */ }
+    }
     const token = await signJwt(user.id as string, { email });
     return Response.json({ token, user: safeUser(user) });
   }

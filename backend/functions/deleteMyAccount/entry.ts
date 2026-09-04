@@ -39,9 +39,15 @@ export default __handler(async (req) => {
     });
 
     // Erase behavioral / AI data collected about the user (not subject to financial retention).
+    // Behavioral / AI / preference data erased on request. NOT financial records (Transaction, Payout,
+    // MoneyLedgerEntry, tax) — those are retained in de-identified form as required by law.
     const ERASE_ENTITIES = [
       "UserJourneyEvent", "UXSessionRecording", "UserAIProfile", "SessionRating",
       "PricingFeedback", "SurveyHonestyAnalysis",
+      // Broadened: more behavioral/preference data (missing entities are skipped).
+      "SurveyResponse", "UserActivity", "PushSubscription", "StepUpVerification",
+      "ChatMessage", "BuddyChatMessage", "Notification", "PayoutPreference", "RespondentTrustScore",
+      "SocialMediaConnection",
     ];
     let erased = 0;
     for (const ent of ERASE_ENTITIES) {

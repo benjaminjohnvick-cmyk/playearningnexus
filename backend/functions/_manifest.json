@@ -847,6 +847,7 @@
   "spendBalance",
   "stepUpChallenge",
   "stepUpVerify",
+  "stripeWebhook",
   "submitAdvertiserApplication",
   "submitExperimentFeedback",
   "submitFeatureVote",

@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { enabledMethods, type StepUpMethod } from "../../sdk/step-up-auth.ts";
+import { verifyPassword } from "../../sdk/password.ts";
 
 // stepUpVerify — records a COMPLETED step-up after the client performed it. The server VALIDATES the proof per
 // method, then writes a StepUpVerification row that the sensitive-action gate (requireStepUp) reads. The actual
@@ -14,18 +15,8 @@ import { enabledMethods, type StepUpMethod } from "../../sdk/step-up-auth.ts";
 //                   by the vendor). Never store the raw biometric; store the vendor's decision + reference.
 // Nothing is recorded unless the proof validates. See BIOMETRIC-AND-STEP-UP-AUTH counsel note for BIPA/GDPR.
 
-// Server-side password verification — identical scheme to login (auth-routes checkPw): the stored value is
-// "base64(salt):base64(sha256(salt+password))". Recompute and constant-form compare.
-async function verifyPassword(pw: string, stored: string): Promise<boolean> {
-  try {
-    const saltB64 = stored.split(":")[0];
-    if (!saltB64) return false;
-    const salt = Uint8Array.from(atob(saltB64), (c) => c.charCodeAt(0));
-    const bits = await crypto.subtle.digest("SHA-256", new Uint8Array([...salt, ...new TextEncoder().encode(pw)]));
-    const recomputed = btoa(String.fromCharCode(...salt)) + ":" + btoa(String.fromCharCode(...new Uint8Array(bits)));
-    return recomputed === stored;
-  } catch { return false; }
-}
+// Server-side password verification uses the SHARED verifier (sdk/password.ts), which checks bcrypt AND legacy
+// salted-SHA-256 hashes — so step-up keeps working after accounts are migrated to bcrypt.
 
 export default __handler(async (req) => {
   try {
