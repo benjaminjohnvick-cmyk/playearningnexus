@@ -369,3 +369,45 @@ outage stops earning.
   the user speaks their own answer).
 - **Anti-scam + answer-wall** are pure code (regex), zero AI cost.
 - Everything above still respects `AI_DAILY_SPEND_CAP_USD` — the global brake covers voice + translation too.
+
+---
+
+## Cost-Floor Update — everything on Llama, defaults floored (2026-09-04)
+
+The cost floor is now the **default posture** (not just a button you click). Every AI/media lever ships routed
+to a **free or cheapest** backend with automatic fallback, so a fresh deploy runs at the floor. The one-click
+**`costFloorProfile`** admin action still exists to force the floor on a running system (and to prefer your own
+self-hosted servers when their URLs are set) — but you no longer *need* to run it to be cheap.
+
+**What's floored by default now:**
+
+| Lever | Floor default | Cost |
+|---|---|---|
+| LLM provider | `groq` (Llama-3.1 on Groq's free tier) | **free** (needs `GROQ_API_KEY`; falls back to OpenAI until set) |
+| Force cheap tier | `AI_FORCE_CHEAP_TIER = 1` — **every** call uses the small Llama model | **free** |
+| Agent model (fallback path) | `gpt-4o-mini` (was `gpt-4o`) | ~cheapest managed if ever used |
+| Cost estimate rate | `AI_COST_PER_1K_TOKENS = 0.0002` (real Groq rate) | makes any cap track the real floor |
+| Images | `cloudflare` FLUX-1-schnell, 4 steps | **free tier** (needs Cloudflare creds; falls back to Bedrock ~$0.01) |
+| Speech-to-text | `groq` Whisper | **free tier** |
+| Text-to-speech | `polly` (was ElevenLabs) + `TTS_CACHE_ENABLED` | Polly **free tier** 1st year, then ~$4/1M chars; repeats cached to $0 |
+| Video render | `none` — concepts/scoring only, no paid render | **$0** until you deliberately set a vendor |
+| Catalog subcategory images | off (top-level tiles only) | ~$10–15 one-time, not ~$300 |
+| Product-feed cache | 3600s | repeated searches don't re-bill |
+
+**Levers still available (opt-in, not defaulted):** set `SELF_LLM_URL` / `SELF_STT_URL` / `SELF_TTS_URL` /
+`SELF_IMAGE_URL` to your own servers → `costFloorProfile` routes to them for **fully $0** AI; set
+`AI_DAILY_SPEND_CAP_USD` to a number for a hard brake (left at 0 = no cap, since free providers already ≈ $0);
+set `REDIS_URL` so the TTS + response caches are shared across instances (bigger cache hit-rate = lower cost).
+
+**Do the new features (cosmetics, gifting, boosts, earn hook, extension, affiliate) add cost? No — near zero.**
+They are closed-loop economy + revenue-side features and use **no AI/media providers**, so nothing here needed a
+cheaper-service swap. Their only new external dependencies are **ad networks** (rewarded ads) and **affiliate
+networks** — and those are **revenue sources that pay you**, not costs, and are free to integrate. So there is no
+"same quality, cheaper service" substitution to make for the new work: the floor above already covers 100% of the
+platform's marginal AI/media cost, and the new features ride on top at ≈ $0 incremental. The one thing to watch is
+**reward payouts** (Site Points), which are already bounded by the per-feature daily/lifetime **cost-governor caps**
+(`EARN_REWARD_*`, `EXTENSION_REWARD_*`, `SITE_CASH_TOPOFF_*`) — those are the cost dials for the new features, and
+they're set conservatively.
+
+**To floor a running system right now:** run `costFloorProfile` (admin) — it reports exactly what it changed and
+is fully reversible.
