@@ -55,6 +55,10 @@ const LEGAL_BRIEFS: Record<string, string> = {
   // Mobile earn hook + reminder → in-app rewarded ads. Rewarded-ad policy (user-initiated), notification
   // consent, no-guaranteed-earnings copy, and store review all apply before this may be turned on.
   EARN_HOOK_ENABLED: "EARN-HOOK-AND-REMINDER-COMPLIANT-DESIGN.md",
+  // Browser extension (master) + its browsing/profiling layer. Chrome Web Store policy, the advertiser-clause
+  // disclosure, affiliate-network terms, and (for the browsing layer) privacy/profiling consent all apply.
+  EXTENSION_ENABLED: "BROWSER-EXTENSION-ATTENTION-REWARDS-DESIGN.md",
+  EXTENSION_TRACKING_ENABLED: "BROWSER-EXTENSION-ATTENTION-REWARDS-DESIGN.md",
 };
 
 export default __handler(async (req) => {

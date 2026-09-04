@@ -4304,3 +4304,27 @@ CREATE TABLE IF NOT EXISTS "EarnAdView" (
 );
 CREATE INDEX IF NOT EXISTS "EarnAdView_data_gin" ON "EarnAdView" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "EarnAdView_created" ON "EarnAdView" (created_date DESC);
+
+-- ExtensionReward: a closed-loop Site-Points reward earned through the browser extension (own-inventory ad view
+-- or affiliate cashback). Used for the daily/lifetime reward cost caps and as an audit trail (non-cashable).
+CREATE TABLE IF NOT EXISTS "ExtensionReward" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "ExtensionReward_data_gin" ON "ExtensionReward" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "ExtensionReward_created" ON "ExtensionReward" (created_date DESC);
+
+-- AffiliateReferral: a CLEAN-ATTRIBUTION log for extension affiliate activity. Records whether an existing
+-- affiliate cookie was present (in which case we do NOT override it) and whether we genuinely referred the sale.
+CREATE TABLE IF NOT EXISTS "AffiliateReferral" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AffiliateReferral_data_gin" ON "AffiliateReferral" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AffiliateReferral_created" ON "AffiliateReferral" (created_date DESC);

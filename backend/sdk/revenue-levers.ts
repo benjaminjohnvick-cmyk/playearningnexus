@@ -47,6 +47,7 @@ export const REVENUE_LEVERS: RevenueLeverDef[] = [
   { key: "rewarded_video", category: 1, name: "Rewarded video", status: "gated", enable_flag: "REWARDED_VIDEO_ENABLED", ledger_type: "advertising", needs: "a rewarded-video ad-network SDK + publisher account" },
   { key: "sponsored_push_email", category: 1, name: "Sponsored push / email", status: "gated", enable_flag: "SPONSORED_PUSH_EMAIL_ENABLED", ledger_type: "advertising", needs: "a paying sponsor + send-infrastructure sign-off" },
   { key: "earn_hook_rewarded_ads", category: 1, name: "Mobile earn hook → in-app rewarded ads", status: "counsel", enable_flag: "EARN_HOOK_ENABLED", ledger_type: "advertising", note: "One-tap-to-earn widget + user-scheduled reminder → user-initiated in-app rewarded ad; closed-loop points. Needs a rewarded-ad network + counsel. See EARN-HOOK-AND-REMINDER-COMPLIANT-DESIGN.md." },
+  { key: "extension_own_ads", category: 1, name: "Browser extension — own advertiser inventory", status: "counsel", enable_flag: "EXTENSION_ENABLED", ledger_type: "advertising", note: "Our own advertiser inventory on the extension's own surfaces (new-tab/popup); never injects/replaces other sites' ads. Users paid in closed-loop points. Needs the published extension + advertisers opted into the inventory clause + counsel. See BROWSER-EXTENSION-ATTENTION-REWARDS-DESIGN.md." },
 
   // 2 — Commerce
   { key: "seller_commission", category: 2, name: "Marketplace seller commission / cash-back margin", status: "built", ledger_type: "seller_commission", setting_key: "MARKETPLACE_SELLER_COMMISSION_PCT" },
@@ -54,6 +55,7 @@ export const REVENUE_LEVERS: RevenueLeverDef[] = [
   { key: "curator_resale", category: 2, name: "Curator resale reward (user resells catalog item)", status: "built", ledger_type: "curator_reward", setting_key: "CURATOR_REWARD_POINTS_PCT" },
   { key: "seller_listing_fees", category: 2, name: "Seller listing / promo fees", status: "built", ledger_type: "business_signup" },
   { key: "affiliate_storefront", category: 2, name: "Affiliate storefront", status: "gated", enable_flag: "AFFILIATE_STOREFRONT_ENABLED", ledger_type: "affiliate_commission", needs: "an affiliate network account + tracking links" },
+  { key: "extension_affiliate", category: 2, name: "Browser extension — affiliate cashback (clean attribution)", status: "gated", enable_flag: "EXTENSION_AFFILIATE_ENABLED", ledger_type: "affiliate_commission", needs: "an affiliate NETWORK publisher account + the published extension; never overrides an existing affiliate cookie. See BROWSER-EXTENSION-ATTENTION-REWARDS-DESIGN.md." },
   { key: "print_on_demand", category: 2, name: "Print-on-demand goods", status: "gated", enable_flag: "PRINT_ON_DEMAND_ENABLED", ledger_type: "sourcing_margin", needs: "a POD supplier API account" },
   { key: "group_buying", category: 2, name: "Group buying", status: "gated", enable_flag: "GROUP_BUYING_ENABLED", ledger_type: "sourcing_margin", needs: "a group-buy supplier + escrow terms" },
 
