@@ -1,6 +1,8 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { advertiserSurveyOptInEnabled, advertiserSurveyProvider, recordAdvertiserSurveyOptIn } from "../../sdk/advertiser-surveys.ts";
+import { recurringRequireConsent } from "../../sdk/recurring-billing-compliance.ts";
+import { recordConsent } from "../../sdk/consent-ledger.ts";
 import Stripe from 'npm:stripe@14.21.0';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'), { apiVersion: '2023-10-16' });
@@ -18,10 +20,24 @@ export default __handler(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { plan, payment_method_id, amount, survey_optin, survey_consent } = await req.json();
+    const { plan, payment_method_id, amount, survey_optin, survey_consent, recurring_consent } = await req.json();
 
     const planConfig = PLANS[plan];
     if (!planConfig) return Response.json({ error: 'Invalid plan' }, { status: 400 });
+
+    // ── STRICT-STANDARD recurring-billing consent gate (CA ARL / ROSCA) ──
+    // The daily/monthly plans create a RECURRING Stripe subscription (a negative option). Under the platform's
+    // strict standard, a recurring auto-charge requires EXPRESS affirmative consent to the recurring terms,
+    // captured here and recorded to the consent ledger. The yearly plan is a one-time charge (no recurring
+    // consent needed). This is the single most important auto-renewal-law lever for a live billing surface.
+    const isRecurring = plan === 'daily' || plan === 'monthly';
+    if (isRecurring && recurringRequireConsent() && !(recurring_consent && recurring_consent.accepted === true)) {
+      return Response.json({
+        error: `This is a recurring ${planConfig.label} that auto-renews until you cancel. To proceed you must accept the auto-renewal terms (recurring_consent.accepted required). You can cancel any time from your billing settings; you'll get advance + final renewal reminders before each charge.`,
+        requires_recurring_consent: true,
+        recurring: { interval: planConfig.interval, amount_usd: planConfig.amount / 100 },
+      }, { status: 400 });
+    }
 
     // OPTIONAL: the advertiser chose, on signup, to ALSO participate as a survey-taker. If they ticked it,
     // they must accept the short consent line. When on, they're flagged to fill out surveys from the
@@ -87,12 +103,22 @@ export default __handler(async (req) => {
       result = { type: 'subscription', subscription_id: subscription.id, status: subscription.status };
     }
 
-    // Mark user as active on PPC grid
+    // Mark user as active on PPC grid. For a recurring plan, record the express auto-renew consent + flag so
+    // the strict recurring-billing guard recognizes this subscription as consented (and the cancel path works).
     await base44.asServiceRole.entities.User.update(user.id, {
       ppc_grid_active: true,
       ppc_grid_plan: plan,
       ppc_grid_activated_at: new Date().toISOString(),
+      ...(isRecurring ? { ppc_auto_renew_consent: true, auto_renew_consent: true, auto_renew_optout: false } : {}),
     });
+    if (isRecurring) {
+      const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null;
+      await recordConsent({
+        user_id: user.id, kind: 'recurring_billing', version: 'ppc-grid-recurring-1', accepted: true,
+        shown: { plan, interval: planConfig.interval, amount_usd: planConfig.amount / 100, cancel: 'anytime in billing settings' },
+        ip, meta: { surface: 'processPPCGridSubscription', plan },
+      }).catch(() => null);
+    }
 
     // Record in AdTransaction
     await base44.asServiceRole.entities.AdTransaction.create({

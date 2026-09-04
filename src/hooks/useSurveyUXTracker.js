@@ -11,6 +11,14 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 
+// STRICT-STANDARD privacy gate (CCPA/CPRA opt-out of sale/share + California CIPA/session-replay). This hook
+// records behavioral signals for fraud prevention. A user who has opted out of behavioral tracking (the
+// "Do Not Sell or Share / Limit Use" control writes gg_tracking_opt_out='1') must NOT be recorded. Fail-safe:
+// if storage is unavailable we treat it as consented for the fraud tool, but any explicit opt-out is honored.
+function behavioralTrackingAllowed() {
+  try { return localStorage.getItem('gg_tracking_opt_out') !== '1'; } catch { return true; }
+}
+
 export function useSurveyUXTracker(userId) {
   const sessionRef = useRef({
     sessionId: `ux_${Date.now()}_${Math.random().toString(36).slice(2)}`,
@@ -83,6 +91,9 @@ export function useSurveyUXTracker(userId) {
   }, []);
 
   const startTracking = useCallback((surveyId) => {
+    // Honor an explicit opt-out: if the user opted out of behavioral tracking, never start a session (so
+    // nothing is recorded or sent). finishTracking short-circuits on a missing startTime.
+    if (!behavioralTrackingAllowed()) return;
     const sess = sessionRef.current;
     sess.surveyId = surveyId;
     sess.startTime = Date.now();

@@ -1,7 +1,11 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { recurringChargeBlockedReason, recurringStrict } from "../../sdk/recurring-billing-compliance.ts";
 
-// Automates: subscription renewals, expiry, downgrade, billing reminders, creator subscriptions
+// Automates: subscription renewals, expiry, downgrade, billing reminders, creator subscriptions.
+// STRICT-STANDARD: an auto-renewal is only applied when the strict recurring-billing guard permits it
+// (express consent on file + not opted out). A subscription flagged auto_renew but WITHOUT consent is not
+// silently renewed — it expires and the holder is asked to confirm. Never a silent negative-option charge.
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -24,8 +28,10 @@ export default __handler(async (req) => {
       const daysUntilExpiry = (endDate - now_) / 86400000;
 
       if (daysUntilExpiry <= 0) {
-        // Expired
-        if (sub.auto_renew) {
+        // Expired. STRICT GUARD: only auto-renew when the recurring-billing guard permits (express consent on
+        // file + not opted out). Otherwise treat it as a non-renewal — never a silent negative-option renewal.
+        const blocked = recurringStrict() ? recurringChargeBlockedReason(sub) : null;
+        if (sub.auto_renew && !blocked) {
           // Auto-renew: extend by 30 days
           await base44.asServiceRole.entities.Subscription.update(sub.id, {
             end_date: new Date(endDate.getTime() + 30 * 86400000).toISOString(),
@@ -33,6 +39,14 @@ export default __handler(async (req) => {
           });
           renewed++;
         } else {
+          if (sub.auto_renew && blocked) {
+            // Wanted to renew but the strict guard blocked it — tell the holder why and how to fix it.
+            await base44.asServiceRole.entities.Notification.create({
+              user_id: sub.user_id, type: 'subscription_renew_needs_consent',
+              title: 'Confirm auto-renew to continue', is_read: false, created_at: now,
+              message: `Your ${sub.plan_type} subscription didn't auto-renew (${blocked}). Turn on auto-renew with consent in your billing settings to continue — no charge until you do.`,
+            }).catch(() => null);
+          }
           // Deactivate
           await base44.asServiceRole.entities.Subscription.update(sub.id, {
             is_active: false,

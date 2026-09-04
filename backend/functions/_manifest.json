@@ -757,6 +757,7 @@
   "recordMatchResult",
   "recordTournamentMatchResult",
   "recordVariantMetric",
+  "recurringBillingOptOut",
   "redeemPointsForGiftCard",
   "redeemRewardPerk",
   "referralAiCopy",
