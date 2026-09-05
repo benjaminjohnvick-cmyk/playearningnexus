@@ -220,23 +220,35 @@ the delivery guarantee frames advertising delivered, never ROI.*
 to review and tighten. It is **not** published in any member-facing document, `/Apply` flow, or marketing
 surface, and must not be used until counsel has (a) chosen between a binding covenant and a non-binding
 statement of intent, (b) confirmed how it interacts with the funds model (`FOUNDING_FUNDS_MODEL`: presale /
-escrow / hybrid — earmarking funds for a purpose can shift the posture toward escrow/custodial treatment), and
-(c) finalized the language and the records/evidence standard. Full analysis and confirm-points are in
-`SESSION-2026-09-05-AUTONOMY-DATA-AND-FOUNDING-TERM-COUNSEL-NOTE.md` (confirm-point 5). Two variants:*
+escrow / hybrid) and the refund/escrow representations, and (c) finalized the language and the records/evidence
+standard. Full analysis and confirm-points are in
+`SESSION-2026-09-05-AUTONOMY-DATA-AND-FOUNDING-TERM-COUNSEL-NOTE.md` (confirm-points 5–6). Two variants:*
+
+**Owner's directed terms (2026-09-05) captured in the drafts below:** (1) founding contributions are
+**non-refundable** and, **once the offer is filled, are the owner's to use at discretion** (this **reverses**
+an earlier "funds only for completing the offer" draft); (2) **after the founding year**, the owner will invest
+in **acquiring a ~200,000-user audience**; and (3) each **founding business gets a free additional year of
+marketing** to that audience as part of the offer. Points 2–3 are forward commitments — counsel to frame the
+200k figure as a **goal, not a guaranteed reachable-audience count**, and to add the **free marketing year** as
+a delivery obligation in the value stack / delivery guarantee (confirm-point 6).
 
 **Variant A — statement of current intent (softer):**
-> "We intend to use founding contributions to build toward launch — specifically, to reach the user base the
-> pre-revenue offer is built around (our 200,000-member target). It is our present intention not to divert
-> these contributions to unrelated purposes. This describes our intent; it is not a guarantee of any outcome or
-> financial return, and it is not a promise that every dollar is escrowed or segregated."
+> "Founding contributions are a non-refundable purchase of advertising and membership — not funds held in trust.
+> Once the founding offer is filled, we may allocate these funds at our discretion. As part of this offer, we
+> intend — after the founding year is complete — to invest in growing the platform's audience toward a
+> 200,000-member base, and to give each founding business an additional year of marketing access to that
+> audience at no extra charge. These statements describe our plans and the value we intend to deliver; they are
+> not a guarantee of any specific audience size, reach, result, revenue, or financial return."
 
 **Variant B — commitment/covenant (stronger; only if counsel advises it can be honored and evidenced):**
-> "We commit that founding contributions will be applied solely toward completing the founding offer — reaching
-> our 200,000-member milestone and the delivery it enables — and will not be spent on unrelated purposes. We
-> will maintain records sufficient to substantiate this use of funds. This is a commitment about how funds are
-> used; it is not, and must not be read as, a promise of any financial return, profit, or investment outcome."
+> "Founding contributions are non-refundable and, once the offer is filled, are ours to allocate as we
+> determine. As part of the founding offer, we commit to provide each founding business a free additional year
+> of marketing access to the platform's user audience following the founding year, and we intend to grow that
+> audience toward a 200,000-member target. We will maintain records of this investment. This is a commitment to
+> deliver the additional marketing year described; the 200,000-member figure is a goal, not a guaranteed count
+> of reachable users, and nothing here is a promise of sales, revenue, profit, or investment return."
 
-*Open questions for counsel: binding vs. intent; escrow/segregation implications; the definition of "completing
-the offer" (which spend categories count — e.g. user-acquisition spend, infrastructure, overhead, founder
-compensation); and the records/evidence standard. This aligns with the offer's existing framing — the founding
-capital is used to acquire the 200,000 premium users — and adds nothing that promises a return.*
+*Open questions for counsel: the non-refundable "owner's discretion after fill" posture vs. the funds model and
+any refund/escrow language it reverses; framing the 200,000-user figure as a goal (not a guaranteed reachable
+audience); and whether the free additional marketing year needs its own delivery-guarantee wording and a line
+in the value stack. It must not read as a promise of a return.*
