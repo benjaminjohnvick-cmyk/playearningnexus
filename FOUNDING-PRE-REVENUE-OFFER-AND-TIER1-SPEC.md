@@ -213,3 +213,30 @@ non-negotiable points — override the setting only to tailor for a jurisdiction
 
 *Counsel may further tailor the wording for a buyer's jurisdiction, but the four points above must survive —
 the delivery guarantee frames advertising delivered, never ROI.*
+
+## Use-of-funds intent letter (DRAFT — for counsel to review & tighten; NOT live)
+
+*This section carries a DRAFT of the owner's use-of-funds commitment so it travels with the offer for counsel
+to review and tighten. It is **not** published in any member-facing document, `/Apply` flow, or marketing
+surface, and must not be used until counsel has (a) chosen between a binding covenant and a non-binding
+statement of intent, (b) confirmed how it interacts with the funds model (`FOUNDING_FUNDS_MODEL`: presale /
+escrow / hybrid — earmarking funds for a purpose can shift the posture toward escrow/custodial treatment), and
+(c) finalized the language and the records/evidence standard. Full analysis and confirm-points are in
+`SESSION-2026-09-05-AUTONOMY-DATA-AND-FOUNDING-TERM-COUNSEL-NOTE.md` (confirm-point 5). Two variants:*
+
+**Variant A — statement of current intent (softer):**
+> "We intend to use founding contributions to build toward launch — specifically, to reach the user base the
+> pre-revenue offer is built around (our 200,000-member target). It is our present intention not to divert
+> these contributions to unrelated purposes. This describes our intent; it is not a guarantee of any outcome or
+> financial return, and it is not a promise that every dollar is escrowed or segregated."
+
+**Variant B — commitment/covenant (stronger; only if counsel advises it can be honored and evidenced):**
+> "We commit that founding contributions will be applied solely toward completing the founding offer — reaching
+> our 200,000-member milestone and the delivery it enables — and will not be spent on unrelated purposes. We
+> will maintain records sufficient to substantiate this use of funds. This is a commitment about how funds are
+> used; it is not, and must not be read as, a promise of any financial return, profit, or investment outcome."
+
+*Open questions for counsel: binding vs. intent; escrow/segregation implications; the definition of "completing
+the offer" (which spend categories count — e.g. user-acquisition spend, infrastructure, overhead, founder
+compensation); and the records/evidence standard. This aligns with the offer's existing framing — the founding
+capital is used to acquire the 200,000 premium users — and adds nothing that promises a return.*
