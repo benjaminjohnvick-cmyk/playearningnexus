@@ -21,6 +21,7 @@ const ACTION_CLS = {
 export default function FeaturePMF() {
   const [board, setBoard] = useState(null);
   const [catalog, setCatalog] = useState(null);
+  const [coverage, setCoverage] = useState(null);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
   const [tier, setTier] = useState(3);
@@ -28,12 +29,14 @@ export default function FeaturePMF() {
   const load = useCallback(async (live) => {
     setLoading(true); setErr('');
     try {
-      const [b, c] = await Promise.all([
+      const [b, c, cov] = await Promise.all([
         base44.functions.invoke('featurePmfScoreboard', live ? { live: true } : {}),
         base44.functions.invoke('advertiserFeatureCatalog', {}),
+        base44.functions.invoke('revenueStreamCoverage', {}),
       ]);
       if (b?.data?.error) setErr(b.data.error); else setBoard(b.data);
       if (!c?.data?.error) setCatalog(c.data);
+      if (!cov?.data?.error) setCoverage(cov.data);
     } catch (e) { setErr(e?.message || 'Failed to load'); }
     setLoading(false);
   }, []);
@@ -148,6 +151,35 @@ export default function FeaturePMF() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Complete revenue-stream coverage — all 45 sub-points */}
+        {coverage?.by_category && (
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="px-4 py-3 border-b border-slate-100 font-semibold text-slate-800 flex items-center justify-between">
+              <span className="flex items-center gap-2"><Layers className="w-4 h-4 text-teal-600" /> All revenue streams — coverage ({coverage.stream_count} across 8 categories)</span>
+              <span className="text-xs font-normal text-slate-400">{coverage.live_count} live · {coverage.tiered_count} tiered · {usd(coverage.total_revenue_usd)} total ({coverage.window_days}d)</span>
+            </div>
+            <div className="divide-y divide-slate-100">
+              {coverage.by_category.map((cat) => (
+                <div key={cat.category} className="px-4 py-2.5">
+                  <div className="flex items-center justify-between text-sm font-medium text-slate-700">
+                    <span>{cat.category}. {cat.name} <span className="text-xs font-normal text-slate-400">({cat.live_count}/{cat.count} live)</span></span>
+                    <span className="text-slate-800">{usd(cat.category_revenue_usd)}</span>
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {cat.streams.map((s) => (
+                      <span key={s.key} title={`${s.status}${s.tiered ? ' · tiered' : ''} · ${usd(s.revenue_usd)}`}
+                        className={`text-[11px] px-1.5 py-0.5 rounded ${s.live ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'} ${s.tiered ? 'ring-1 ring-indigo-300' : ''}`}>
+                        {s.name}{s.tiered ? ' ◆' : ''}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="px-4 py-2 text-[11px] text-slate-400 border-t border-slate-100">◆ = advertiser tier feature (also PMF-ranked above) · green = live · grey = gated/counsel (activates when its prerequisite lands). Every stream is tracked for revenue; the PMF ranking covers the advertiser subset where retention is meaningful.</div>
           </div>
         )}
 

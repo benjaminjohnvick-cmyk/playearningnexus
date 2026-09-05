@@ -130,6 +130,11 @@ export const foundingMissedBonusMult = () => Math.max(1, snapNumber("FOUNDING_MI
 export const foundingFullKeepCapToPrice = () => snapBool("FOUNDING_FULLKEEP_CAP_TO_PRICE", false);
 export const foundingFullKeepCapExplicit = () => Math.max(0, snapNumber("FOUNDING_FULLKEEP_CAP_USD", 0));
 export const foundingFullKeepYears = () => Math.max(1, snapNumber("FOUNDING_FULLKEEP_YEARS", 4));
+// Tier 1 is filled with NO time limit (it stays open until the availability cap is reached); and the founding
+// benefit YEAR is anchored to the date the 200k-user milestone is reached, not to signup.
+export const foundingFillNoTimeLimit = () => snapBool("FOUNDING_FILL_NO_TIME_LIMIT", true);
+export const foundingTermStartsAtMilestone = () => snapBool("FOUNDING_TERM_STARTS_AT_MILESTONE", true);
+export const milestoneUsersReachedAt = () => snapString("FOUNDING_MILESTONE_USERS_REACHED_AT", "");
 
 /** @deprecated The clean Tier 1 model has NO cap (a cap pegged to the payment reads as return-of-capital).
  *  Retained only so any legacy importer resolves; returns the (normally 0) configured cap. */
@@ -153,6 +158,8 @@ export interface FullKeepStatus {
   earned_usd: number;     // cumulative survey earnings recorded (reporting only; NO cap)
   active: boolean;        // is a member-rate override in effect? (a live, non-refunded/cancelled seat)
   ended_reason: string;   // "" | "window_elapsed" | "not_active"
+  term_started?: boolean; // has the founding benefit year begun? (false until the 200k-user milestone)
+  term_start?: string;    // ISO date the benefit year is anchored to ("" until it starts)
   // legacy fields (kept so older callers still resolve; not used for gating in the Tier 1 model)
   cap_usd: number;
   remaining_usd: number;
@@ -166,9 +173,24 @@ export interface FullKeepStatus {
 export function foundingFullKeepStatus(rec: Record<string, unknown>, todayISO: string): FullKeepStatus {
   const earned = Math.max(0, Number(rec.fullkeep_earned_usd) || 0);
   const years = foundingFullKeepYears();
-  const startISO = String(rec.fullkeep_start || rec.credit_start || rec.purchased_at || "");
+  const joinISO = String(rec.fullkeep_start || rec.credit_start || rec.purchased_at || "");
+
+  // The founding benefit YEAR is anchored to the 200k-user milestone (owner-set): it starts on the date the
+  // milestone is reached, or the member's join date if they joined later. Until the milestone is reached the
+  // year has NOT started — the window doesn't count down and the Tier 1 member keeps their in-window rate.
+  let startISO = joinISO;
+  let termStarted = true;
+  if (foundingTermStartsAtMilestone()) {
+    const ms = milestoneUsersReachedAt();
+    if (!ms) {
+      termStarted = false;                 // milestone not reached yet → year not begun
+    } else {
+      startISO = (Date.parse(ms) > Date.parse(joinISO || ms)) ? ms : joinISO;  // later of milestone / join
+    }
+  }
+
   let inWindow = true;
-  if (startISO) {
+  if (termStarted && startISO) {
     const start = Date.parse(startISO), today = Date.parse(todayISO);
     if (!isNaN(start) && !isNaN(today)) {
       inWindow = (today - start) < years * 365.25 * 24 * 3600 * 1000;
@@ -181,9 +203,10 @@ export function foundingFullKeepStatus(rec: Record<string, unknown>, todayISO: s
   // In-window Tier 1 → their 100% rate; out-of-window (or a post-Tier-1 member) → the post-Tier-1 share.
   const share = (tier1 && inWindow) ? inWindowShare : tier1PostSurveySharePct();
   const active = liveSeat;
-  const ended_reason = !liveSeat ? "not_active" : (tier1 && !inWindow) ? "window_elapsed" : "";
+  const ended_reason = !liveSeat ? "not_active" : (tier1 && !termStarted) ? "" : (tier1 && !inWindow) ? "window_elapsed" : "";
   return {
     share, tier1, in_window: inWindow, years, earned_usd: earned, active, ended_reason,
+    term_started: termStarted, term_start: termStarted ? startISO : "",
     cap_usd: 0, remaining_usd: 0, within_window: inWindow,
   };
 }

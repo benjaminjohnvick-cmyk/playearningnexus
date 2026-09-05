@@ -45,6 +45,7 @@ const CATALOG: AdvertiserFeatureDef[] = [
   { key: "audience_pulse", name: "Audience pulse (targeted mini-panel)", tier: 1, base_value_usd: 6000, revenue_type: "audience_panel", status: "live", category: 5, basis: "one small targeted panel/yr at conventional research rates" },
   { key: "in_app_interstitials", name: "In-app full-screen ad placements", tier: 1, base_value_usd: 2000, revenue_type: "advertising", status: "live", gate_flag: "IN_APP_ADS_ENABLED", category: 1, basis: "premium interstitial inventory" },
   { key: "lead_gen_program", name: "Lead / referral fee program", tier: 1, base_value_usd: 1500, revenue_type: "lead_fee", status: "live", category: 6, basis: "qualified-lead routing to the advertiser" },
+  { key: "sponsored_jackpots", name: "Sponsored jackpots / prize placement", tier: 1, base_value_usd: 2500, revenue_type: "sponsored_prize", status: "live", category: 1, basis: "brand-sponsored prize/jackpot, conventional sponsorship rate" },
 
   // ── Tier 2 "Scale" add-ons ──────────────────────────────────────────────────────────────────────────────
   { key: "audience_panels_pro", name: "Audience panels — Pro (5/yr)", tier: 2, base_value_usd: 60000, revenue_type: "audience_panel", status: "live", category: 5, basis: "5 full audience panels/yr, conventional research rates" },
@@ -55,11 +56,14 @@ const CATALOG: AdvertiserFeatureDef[] = [
   { key: "sponsored_push_email", name: "Sponsored push / email placement", tier: 2, base_value_usd: 9000, revenue_type: "advertising", status: "gated", gate_flag: "SPONSORED_PUSH_EMAIL_ENABLED", category: 1, basis: "sponsored message in push/email (activates with send-infra sign-off)" },
   { key: "api_access", name: "Data / reporting API access", tier: 2, base_value_usd: 12000, revenue_type: "white_label", status: "gated", gate_flag: "API_ACCESS_ENABLED", category: 5, basis: "metered API access (activates when key issuance is turned on)" },
   { key: "ai_creative_saas", name: "AI creative studio (self-serve)", tier: 2, base_value_usd: 12000, revenue_type: "dev_creator_cut", status: "gated", gate_flag: "AI_CREATIVE_SAAS_ENABLED", category: 5, basis: "self-serve AI creative generation (activates when the SaaS meter is on)" },
+  { key: "b2b_saas_suite", name: "B2B SaaS suite (Pro/Enterprise)", tier: 2, base_value_usd: 18000, revenue_type: "business_subscription", status: "live", category: 3, basis: "business SaaS subscription (dashboards, seats, analytics) at conventional B2B rates" },
 
   // ── Tier 3 "Unlimited" add-ons ──────────────────────────────────────────────────────────────────────────
   { key: "product_testing_panel", name: "Product-testing panel", tier: 3, base_value_usd: 30000, revenue_type: "audience_panel", status: "gated", gate_flag: "PRODUCT_TESTING_PANEL_ENABLED", category: 5, basis: "managed product-testing panel" },
   { key: "white_label_raas", name: "White-label / Rewards-as-a-Service", tier: 3, base_value_usd: 60000, revenue_type: "white_label", status: "gated", gate_flag: "MULTITENANCY_ENABLED", category: 7, basis: "white-label tenant (activates when a tenant is provisioned)" },
   { key: "survey_routing_arbitrage", name: "Survey-routing arbitrage access", tier: 3, base_value_usd: 12000, revenue_type: "arbitrage_margin", status: "gated", gate_flag: "SURVEY_ROUTING_ARBITRAGE_ENABLED", category: 6, basis: "priority survey-routing (activates when a partner router is connected)" },
+  { key: "hosting_monetization", name: "Managed hosting / infrastructure", tier: 3, base_value_usd: 24000, revenue_type: "white_label", status: "gated", gate_flag: "HOSTING_MONETIZATION_ENABLED", category: 7, basis: "managed hosting resale (activates when the hosting offer is turned on)" },
+  { key: "fraud_as_a_service", name: "Fraud-detection-as-a-Service", tier: 3, base_value_usd: 18000, revenue_type: "white_label", status: "gated", gate_flag: "FRAUD_SAAS_ENABLED", category: 7, basis: "externalized fraud tooling (activates when the FraaS product is turned on)" },
 ];
 
 function valueOverrides(): Record<string, number> {

@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import {
   DOMAINS, resolvePolicy, computeAgreement, autonomyDecision, currentThresholds,
-  autonomyEnabled, autonomyKillSwitch,
+  autonomyEnabled, autonomyKillSwitch, autonomyAutoOkDefault,
 } from "../../sdk/autonomy-kernel.ts";
 
 // autonomyStatus — the Automation Command Center payload: every domain, its class (can-graduate vs permanent
@@ -18,6 +18,7 @@ export default __handler(async (req) => {
 
     const thr = currentThresholds();
     const kill = autonomyKillSwitch();
+    const autoOkDefault = autonomyAutoOkDefault();
 
     const [overridesRows, decisions, feedback] = await Promise.all([
       db.filter("AutonomyDomain", {}, "-created_at", 200).catch(() => []) as Promise<Record<string, unknown>[]>,
@@ -36,7 +37,7 @@ export default __handler(async (req) => {
     for (const f of feedback) { const id = String(f.domain ?? ""); if (id) fbCount[id] = (fbCount[id] || 0) + 1; }
 
     const domains = DOMAINS.map((dom) => {
-      const policy = resolvePolicy(dom.id, overrides[dom.id]);
+      const policy = resolvePolicy(dom.id, overrides[dom.id], autoOkDefault);
       const dRows = decByDomain[dom.id] || [];
       const agree = computeAgreement(dRows.map((r) => ({ decided: String(r.decided ?? ""), tweaked: r.tweaked === true, auto_approved: r.auto_approved === true })));
       const dataSample = (fbCount[dom.id] || 0) + dRows.length;

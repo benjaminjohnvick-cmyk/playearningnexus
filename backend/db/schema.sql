@@ -4341,6 +4341,20 @@ CREATE TABLE IF NOT EXISTS "FeatureUsageEvent" (
 CREATE INDEX IF NOT EXISTS "FeatureUsageEvent_data_gin" ON "FeatureUsageEvent" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "FeatureUsageEvent_created" ON "FeatureUsageEvent" (created_date DESC);
 
+-- FoundingDataSignal: comprehensive FIRST-PARTY product-analytics signals for the pre-revenue / founding panel
+-- (profile, interactions, feature use, surveys, engagement, feedback, referrals, transactions, telemetry,
+-- support). Consent-gated and first-party-only by hard guard (see backend/sdk/founding-data.ts). Feeds the AI
+-- model/optimizer only — no third-party sharing.
+CREATE TABLE IF NOT EXISTS "FoundingDataSignal" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "FoundingDataSignal_data_gin" ON "FoundingDataSignal" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "FoundingDataSignal_created" ON "FoundingDataSignal" (created_date DESC);
+
 -- FeaturePmfSnapshot: the latest computed Feature PMF scoreboard (ranked features + per-tier revenue view).
 CREATE TABLE IF NOT EXISTS "FeaturePmfSnapshot" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

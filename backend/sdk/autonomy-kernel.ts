@@ -59,16 +59,26 @@ export const trustMinRuns = () => Math.max(0, Math.round(snapNumber("AUTONOMY_TR
 export const trustMinAgreement = () => Math.min(1, Math.max(0, snapNumber("AUTONOMY_TRUST_MIN_AGREEMENT", 0.8)));
 export const trustMinData = () => Math.max(0, Math.round(snapNumber("AUTONOMY_TRUST_MIN_DATA", 200)));
 
+const asMode = (v: unknown): Autonomy | null => {
+  const m = String(v ?? "").trim().toLowerCase();
+  return (m === "manual" || m === "earned" || m === "full") ? (m as Autonomy) : null;
+};
+
+/** Owner-delegated default autonomy for the NON-SENSITIVE (auto_ok) domains that have no explicit per-domain
+ *  override. permanent_gate domains ignore this entirely — they are always "manual". Settings-backed (impure);
+ *  pass its result into resolvePolicy so the resolver itself stays pure/testable. */
+export const autonomyAutoOkDefault = (): Autonomy => asMode(snapString("AUTONOMY_AUTO_OK_DEFAULT_MODE", "full")) ?? "full";
+
 export interface Policy { domain: DomainDef; mode: Autonomy; permanent_gate: boolean; }
 
 /** Resolve a domain's live policy: its class + the effective autonomy mode. For auto_ok domains the mode is
- *  the stored override (from the Command Center) if valid, else the domain's default. permanent_gate domains
- *  are forced to "manual" no matter what is stored. Pure. */
-export function resolvePolicy(id: string, overrideMode?: string | null): Policy {
+ *  the stored per-domain override (from the Command Center) if valid, else `autoOkDefaultMode` if valid, else
+ *  the domain's own default. permanent_gate domains are forced to "manual" no matter what is stored. Pure —
+ *  callers pass autonomyAutoOkDefault() for the owner-delegated default. */
+export function resolvePolicy(id: string, overrideMode?: string | null, autoOkDefaultMode?: Autonomy | string | null): Policy {
   const domain = domainById(id) ?? { id, label: id, group: "other", klass: "auto_ok", default_mode: "manual" };
   if (domain.klass === "permanent_gate") return { domain, mode: "manual", permanent_gate: true };
-  const m = String(overrideMode ?? "").trim().toLowerCase();
-  const mode: Autonomy = (m === "manual" || m === "earned" || m === "full") ? m : domain.default_mode;
+  const mode: Autonomy = asMode(overrideMode) ?? asMode(autoOkDefaultMode) ?? domain.default_mode;
   return { domain, mode, permanent_gate: false };
 }
 

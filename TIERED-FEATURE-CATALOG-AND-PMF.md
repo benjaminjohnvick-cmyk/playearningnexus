@@ -62,6 +62,26 @@ rankings and the operational rankings become a before/after.
 - Settings (Scale & Platform): `ADVERTISER_FEATURE_CATALOG_ENABLED`, `ADVERTISER_FEATURE_CATALOG_JSON`,
   `FEATURE_PMF_ENABLED`, `PMF_WEIGHT_RETENTION/ADOPTION/ENGAGEMENT/REVENUE`, `PMF_WINDOW_DAYS`, `PMF_SHRINK_K`.
 
+## Complete revenue-stream coverage — all 45 streams (2026-09-05)
+
+Decision (locked): **track all 45 revenue sub-points; tier the advertiser/business-facing ones.** Two layers:
+
+- **Tiered advertiser features (19)** — the advertiser/business-facing streams are add-on features across
+  Tiers 1–3 and are **PMF-ranked** (retention-weighted). This pass added the remaining business-facing ones to
+  the catalog: **B2B SaaS suite** (T2), **managed hosting** and **fraud-as-a-Service** (T3), and **sponsored
+  jackpots** (T1).
+- **Full coverage map (all 45)** — `revenue-coverage.ts` + `revenueStreamCoverage` cover **every** sub-point
+  across all 8 categories with its real revenue (its RevenueEvent slice), status (built/gated/counsel),
+  live/pending, and whether it's a tiered feature. The user-facing (cosmetics, boosts, season pass),
+  seller-side (commissions, sourcing, affiliate), and structural-fee (BNPL, shipping, FX) streams are **not**
+  advertiser tier features — an advertiser can't "buy" a shipping spread — but they are all **revenue-tracked**
+  so none is invisible. Retention-PMF ranking applies to the advertiser subset (where "do adopters come back"
+  is meaningful); revenue coverage applies to all 45.
+
+Shown on the `FeaturePMF` admin page as the "All revenue streams — coverage" section (grouped by category, with
+per-category revenue), alongside the retention-weighted scoreboard, the per-tier revenue ranking, and the AI
+agent plan.
+
 ## Usage tracking — auto-wired (2026-09-05)
 
 Adoption/engagement now populate **automatically**. Rather than editing every feature function, the tracker is

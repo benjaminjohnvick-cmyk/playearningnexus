@@ -5,7 +5,7 @@ import {
   endorserEligibleToPost, personalizationPrompt, enforceDisclosure, decidePostModeLive,
   endorserPersonalizeEnabled, ENDORSER_ATTR_DIMENSIONS,
 } from "../../sdk/social-endorser-engine.ts";
-import { resolvePolicy } from "../../sdk/autonomy-kernel.ts";
+import { resolvePolicy, autonomyAutoOkDefault } from "../../sdk/autonomy-kernel.ts";
 import { loadCreativeOutcomes, buildCreativePlaybook } from "../../sdk/creative-suite.ts";
 
 // endorserPersonalizePost — the AI social-post ENGINE for the paid-endorser program (the compliant version,
@@ -112,7 +112,7 @@ export default __handler(async (req) => {
     return Response.json({
       ok: true, post_id: post?.id ?? null, action: mode.action, auto: mode.auto, status,
       reason: mode.reason, disclosed: true,
-      social_domain: resolvePolicy("social", overrideRow?.[0]?.mode as string | undefined).mode,
+      social_domain: resolvePolicy("social", overrideRow?.[0]?.mode as string | undefined, autonomyAutoOkDefault()).mode,
       note: mode.action === "autopost"
         ? "Queued for the member's one-tap/confirm flow (auto-posting is ON and trust is earned)."
         : "Held as a #ad-disclosed DRAFT for human approval — auto-posting is off (pending counsel).",

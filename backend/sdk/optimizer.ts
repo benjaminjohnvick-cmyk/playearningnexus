@@ -19,6 +19,7 @@ import { requireExperiment, createExperimentForProposal } from "./experiments.ts
 import { createLiveExperiment, liveEnabled } from "./live-experiments.ts";
 import { topBaseSegment } from "./personalization.ts";
 import { aiPaused, logAiAction } from "./ai-control.ts";
+import { canAutoApplyNonSensitive, autoApplyMode } from "./ai-autonomy.ts";
 
 const ACTOR = "ai-optimizer";
 
@@ -231,6 +232,14 @@ export async function collectSignals(days = 14): Promise<Snapshot> {
   snap.boost_events = recentBoost.length;
   snap.boost_usd = round2(recentBoost.reduce((s: number, b: any) => s + (Number(b.usd_value ?? b.cost_usd ?? b.amount) || 0), 0));
 
+  // Founding data — the pre-revenue panel's comprehensive first-party signals (FoundingDataSignal). Routes the
+  // collected founding data INTO the optimizer's own learning snapshot/trend store, so the AI literally learns
+  // from it and (once live) acts on it. Volume + distinct founding users; never a knob it tunes.
+  const founding = await db.filter("FoundingDataSignal", {}, "-at", 8000).catch(() => []);
+  const recentFounding = founding.filter((f: any) => (f.at ?? f.created_date) >= since);
+  snap.founding_signal_volume = recentFounding.length;
+  snap.founding_active_users = new Set(recentFounding.map((f: any) => String(f.user_id || "")).filter(Boolean)).size;
+
   // Persist each metric as a signal row for trend history.
   const collectedAt = new Date().toISOString();
   for (const [metric, value] of Object.entries(snap)) {
@@ -336,15 +345,24 @@ export async function applyOrQueue(p: Proposal, snap: Snapshot): Promise<ApplyRe
   const mustApprove = !!def.sensitive || !!o?.priceLike;
   const now = new Date().toISOString();
 
+  // AUTO-APPLY-WHEN-LIVE gate: a non-sensitive change is auto-applied only when the global gate is open
+  // (model engaged + autonomy full for non-sensitive + kill switch off + the site is live). Before launch
+  // (or when advisory is chosen) the AI stays recommend-only — the change is recorded as a pending advisory
+  // recommendation instead of being applied. Sensitive/price changes are unaffected — they were already
+  // human-gated above (mustApprove). This can only make the AI MORE conservative, never less.
+  const gateOpen = canAutoApplyNonSensitive();
+  const willApply = !mustApprove && gateOpen;
+
   const rec = await db.create("OptimizationRecommendation", {
     key: p.key, category: def.category, current_value: p.current, proposed_value: p.proposed,
     direction: p.direction, rationale: p.rationale, confidence: p.confidence,
     objective: p.objective, objective_value: p.objectiveValue, sensitive: mustApprove,
-    evidence: snap, status: mustApprove ? "pending" : "auto_applied", created_at: now,
+    evidence: snap, status: willApply ? "auto_applied" : "pending",
+    advisory: !mustApprove && !gateOpen, gate_reason: autoApplyMode().reason, created_at: now,
   }, ACTOR).catch(() => null);
   const recId = (rec as any)?.id;
 
-  if (mustApprove) {
+  if (!willApply) {
     return { key: p.key, status: "pending", from: p.current, to: p.proposed, recommendation_id: recId };
   }
 

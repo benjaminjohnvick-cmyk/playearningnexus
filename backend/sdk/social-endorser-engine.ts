@@ -22,7 +22,7 @@
 
 import { snapBool } from "./settings.ts";
 import { withAdDisclosure, AD_DISCLOSURE } from "./disclosure.ts";
-import { resolvePolicy, autonomyDecision, currentThresholds, autonomyKillSwitch, type TrustSignals } from "./autonomy-kernel.ts";
+import { resolvePolicy, autonomyDecision, currentThresholds, autonomyKillSwitch, autonomyAutoOkDefault, type TrustSignals } from "./autonomy-kernel.ts";
 
 // ── Config (all OFF/strict by default — PENDING COUNSEL) ────────────────────────────────────────────────
 /** Master switch for generating AI-personalized endorser posts at all. OFF by default. */
@@ -136,11 +136,11 @@ export interface PostModeResult { action: PostAction; auto: boolean; reason: str
  *  Pure — takes the trust signals + flags so it is fully unit-testable. */
 export function decidePostMode(
   trust: TrustSignals,
-  opts: { personalizeEnabled: boolean; autopostEnabled: boolean; overrideMode?: string | null; killSwitch?: boolean },
+  opts: { personalizeEnabled: boolean; autopostEnabled: boolean; overrideMode?: string | null; killSwitch?: boolean; autoOkDefault?: string | null },
 ): PostModeResult {
   if (!opts.personalizeEnabled) return { action: "draft", auto: false, reason: "endorser posting disabled (pending counsel) — draft only" };
   if (!opts.autopostEnabled) return { action: "draft", auto: false, reason: "auto-posting off — human approves every post" };
-  const policy = resolvePolicy("social", opts.overrideMode ?? null);
+  const policy = resolvePolicy("social", opts.overrideMode ?? null, opts.autoOkDefault ?? null);
   const decision = autonomyDecision(policy, trust, currentThresholds(), opts.killSwitch ?? false);
   return decision.auto_approve
     ? { action: "autopost", auto: true, reason: decision.reason }
@@ -154,5 +154,6 @@ export function decidePostModeLive(trust: TrustSignals, overrideMode?: string | 
     autopostEnabled: endorserAutopostEnabled(),
     overrideMode,
     killSwitch: autonomyKillSwitch(),
+    autoOkDefault: autonomyAutoOkDefault(),
   });
 }

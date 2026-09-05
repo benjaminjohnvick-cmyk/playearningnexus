@@ -114,6 +114,16 @@ export async function recordFeatureUse(input: {
       meta: input.meta ?? {},
       at: new Date().toISOString(),
     });
+    // Comprehensive founding capture: on the founding panel, mirror feature use into the first-party founding
+    // data store so the AI model learns from it. Best-effort and consent/first-party-guarded inside the
+    // recorder — no-ops for non-founding users or when collection is off.
+    if (input.founding && input.user_id) {
+      const { recordFoundingSignal } = await import("./founding-data.ts");
+      await recordFoundingSignal({
+        user_id: String(input.user_id), category: "feature_use", key: String(input.feature_key || ""),
+        founding: true, meta: { tier: input.tier ?? null, source: "feature_use" },
+      }).catch(() => null);
+    }
   } catch { /* usage logging is best-effort — never break the caller */ }
 }
 

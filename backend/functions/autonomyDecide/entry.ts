@@ -3,6 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import {
   domainById, resolvePolicy, computeAgreement, autonomyDecision, currentThresholds, autonomyKillSwitch,
+  autonomyAutoOkDefault,
 } from "../../sdk/autonomy-kernel.ts";
 
 // autonomyDecide — the reusable GATE any automated process calls before acting. Give it a domain + a proposal;
@@ -26,7 +27,7 @@ export default __handler(async (req) => {
       db.filter("AutonomyDecision", { domain: domainId }, "-created_at", 2000).catch(() => []) as Promise<Record<string, unknown>[]>,
       db.count("FeedbackEvent", { domain: domainId }).catch(() => 0),
     ]);
-    const policy = resolvePolicy(domainId, override?.[0]?.mode as string | undefined);
+    const policy = resolvePolicy(domainId, override?.[0]?.mode as string | undefined, autonomyAutoOkDefault());
     const agree = computeAgreement((decisions || []).map((r) => ({ decided: String(r.decided ?? ""), tweaked: r.tweaked === true, auto_approved: r.auto_approved === true })));
     const dataSample = (Number(fbCount) || 0) + (decisions?.length || 0);
     const decision = autonomyDecision(policy, { approvedRuns: agree.approvedRuns, agreementRate: agree.agreementRate, dataSample }, currentThresholds(), autonomyKillSwitch());
