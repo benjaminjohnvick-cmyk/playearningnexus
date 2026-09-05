@@ -4328,3 +4328,26 @@ CREATE TABLE IF NOT EXISTS "AffiliateReferral" (
 );
 CREATE INDEX IF NOT EXISTS "AffiliateReferral_data_gin" ON "AffiliateReferral" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AffiliateReferral_created" ON "AffiliateReferral" (created_date DESC);
+
+-- FeatureUsageEvent: a light per-use log for advertiser features, feeding the retention-weighted PMF scoreboard
+-- (adoption / engagement / return-rate). `founding` segments the founding PMF panel from the general population.
+CREATE TABLE IF NOT EXISTS "FeatureUsageEvent" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "FeatureUsageEvent_data_gin" ON "FeatureUsageEvent" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "FeatureUsageEvent_created" ON "FeatureUsageEvent" (created_date DESC);
+
+-- FeaturePmfSnapshot: the latest computed Feature PMF scoreboard (ranked features + per-tier revenue view).
+CREATE TABLE IF NOT EXISTS "FeaturePmfSnapshot" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "FeaturePmfSnapshot_data_gin" ON "FeaturePmfSnapshot" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "FeaturePmfSnapshot_created" ON "FeaturePmfSnapshot" (created_date DESC);

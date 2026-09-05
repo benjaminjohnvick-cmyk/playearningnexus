@@ -20,6 +20,7 @@
     "CosmeticsStore": CosmeticsStore,
     "SiteCashExtras": SiteCashExtras,
     "RevenueLevers": RevenueLevers,
+    "FeaturePMF": FeaturePMF,
     "GetExtension": GetExtension,
  *       "HomePage": HomePage,
  *       "Dashboard": Dashboard,
@@ -71,6 +72,7 @@ import ProfitOptimization from './pages/ProfitOptimization';
 import CosmeticsStore from './pages/CosmeticsStore';
 import SiteCashExtras from './pages/SiteCashExtras';
 import RevenueLevers from './pages/RevenueLevers';
+import FeaturePMF from './pages/FeaturePMF';
 import GetExtension from './pages/GetExtension';
 import SetupWizard from './pages/SetupWizard';
 import BusinessDashboard from './pages/BusinessDashboard';

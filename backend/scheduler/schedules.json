@@ -58,6 +58,12 @@
       "_comment": "Every 15 min: the site-maintenance AI sweeps health signals (errors, stuck/failed jobs, stale records, storage, secret expiry), writes a MaintenanceReport, and proposes fixes. Advisory + human-gated; never touches money/identity/secrets/security/code. No-op while MAINTENANCE_AGENT_ENABLED is off."
     },
     {
+      "name": "feature-pmf-scoreboard",
+      "cron": "0 */6 * * *",
+      "function": "featurePmfScoreboardRun",
+      "_comment": "Every 6h: recompute the retention-weighted Feature PMF scoreboard (adoption, engagement, per-feature revenue, return rate) and store a snapshot. Runs continuously so product-market-fit discovery keeps going after launch. No-op while FEATURE_PMF_ENABLED is off."
+    },
+    {
       "name": "daily-ai-goal",
       "cron": "0 8 * * *",
       "function": "generateAIDailyGoal"
