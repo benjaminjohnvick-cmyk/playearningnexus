@@ -69,7 +69,7 @@ export default __handler(async (req) => {
     if (!dryRun && decision.desired !== current) {
       action = await scaleInfra(provider, decision.desired, decision.reason);
       // Persist the applied count as the new 'current' so the next tick decides from reality, not an assumption.
-      if (action.applied) await setSetting("INFRA_SCALE_CURRENT_INSTANCES", String(decision.desired), `infraScaleGovernor:${user.email ?? user.id}`).catch(() => null);
+      if (action.applied) await setSetting("INFRA_SCALE_CURRENT_INSTANCES", String(decision.desired), `infraScaleGovernor:${user?.email ?? user?.id ?? "scheduler"}`).catch(() => null);
     }
 
     return Response.json({
