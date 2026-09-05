@@ -1,6 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
+import { verifyJwt } from "../../sdk/auth.ts";
 import { snapBool, snapString, setSetting } from "../../sdk/settings.ts";
 import {
   computeDesiredInstances, scaleInfra, infraScaleProvider,
@@ -18,11 +19,22 @@ import {
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-    if (user.role !== "admin") return Response.json({ error: "Forbidden (admin only)." }, { status: 403 });
-
     const body = await req.json().catch(() => ({}));
+
+    // Authorize: an admin user (admin panel), OR the scheduler's server-signed service token.
+    // NB: base44.auth.me() THROWS "Unauthorized" (not returns null) when the token's user row is absent —
+    // which is exactly the case for the scheduler's seed-admin service user when that row isn't seeded — so
+    // we catch it instead of letting it 500. A valid server-signed JWT is proof of an internal/scheduler
+    // caller (only the backend holds the signing secret), so we accept that alongside the scheduled marker.
+    const user = await base44.auth.me().catch(() => null);
+    let authorized = user?.role === "admin";
+    if (!authorized && body?.scheduled === true) {
+      const bearer = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+      const payload = bearer ? await verifyJwt(bearer).catch(() => null) : null;
+      if (payload) authorized = true;
+    }
+    if (!authorized) return Response.json({ error: "Forbidden (admin or scheduler only)." }, { status: 403 });
+
     const enabled = snapBool("INFRA_SCALE_ENABLED", false);
     const dryRun = body.dry_run === true || !enabled;
     const provider = infraScaleProvider();
