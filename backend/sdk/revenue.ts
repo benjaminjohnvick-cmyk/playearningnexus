@@ -17,6 +17,7 @@
 import { db } from "./db.ts";
 import { snapNumber, snapBool, snapString } from "./settings.ts";
 import { round2 } from "./premium-ppc.ts";
+import { recordFeatureUseForRevenue } from "./feature-pmf.ts";
 
 export type RevenueType =
   | "grid_fee" | "seller_commission" | "sponsored_placement" | "sourcing_margin" | "affiliate_commission"
@@ -68,6 +69,11 @@ async function writeEvent(kind: "revenue" | "subsidy", input: {
       meta: input.meta ?? {},
       at: new Date().toISOString(),
     });
+    // Auto-wire feature usage: a real revenue event for a catalog feature's type counts as advertiser adoption/
+    // engagement for the PMF scoreboard. Only for actual revenue (not subsidies). Best-effort; never blocks.
+    if (kind === "revenue") {
+      await recordFeatureUseForRevenue(String(input.type), { business_id: input.business_id ?? null, user_id: input.user_id ?? null, meta: input.meta }).catch(() => {});
+    }
     return (row as Record<string, unknown>)?.id as string ?? null;
   } catch { return null; }
 }

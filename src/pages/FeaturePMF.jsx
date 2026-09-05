@@ -10,6 +10,13 @@ import { RefreshCw, TrendingUp, Users, DollarSign, Award, Layers } from 'lucide-
 const usd = (v) => (v == null ? '—' : `$${Number(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`);
 const pct = (v) => (v == null ? '—' : `${(Number(v) * 100).toFixed(0)}%`);
 const scoreCls = (s) => (s >= 66 ? 'bg-emerald-100 text-emerald-700' : s >= 40 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700');
+const ACTION_CLS = {
+  promote: 'bg-emerald-100 text-emerald-700',
+  hold: 'bg-slate-100 text-slate-600',
+  watch: 'bg-sky-100 text-sky-700',
+  fix: 'bg-amber-100 text-amber-700',
+  sunset: 'bg-rose-100 text-rose-700',
+};
 
 export default function FeaturePMF() {
   const [board, setBoard] = useState(null);
@@ -119,7 +126,32 @@ export default function FeaturePMF() {
           </div>
         )}
 
-        <p className="text-xs text-slate-400">Values are advertising value delivered and measured activity — never a revenue or ROI promise. The founding panel is measured as a privilege, not a quota.</p>
+        {/* AI PMF & revenue agent plan */}
+        {board?.agent_plan?.plan && (
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="px-4 py-3 border-b border-slate-100 font-semibold text-slate-800 flex items-center justify-between">
+              <span className="flex items-center gap-2"><Award className="w-4 h-4 text-violet-600" /> AI PMF & revenue agent — action plan</span>
+              <span className="text-xs font-normal text-slate-400">{board.agent_plan.summary?.pending_approvals || 0} awaiting your approval · updated {board.agent_plan.computed_at ? new Date(board.agent_plan.computed_at).toLocaleString() : '—'}</span>
+            </div>
+            <div className="divide-y divide-slate-100">
+              {board.agent_plan.plan.map((p) => (
+                <div key={p.key} className="px-4 py-2.5 flex items-start justify-between gap-4 text-sm">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-slate-800">{p.name}</span>
+                      <span className="text-xs text-slate-400">T{p.tier}</span>
+                      {p.sensitive && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">needs approval</span>}
+                    </div>
+                    <div className="text-xs text-slate-500 mt-0.5">{p.rationale}</div>
+                  </div>
+                  <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-semibold ${ACTION_CLS[p.action] || 'bg-slate-100 text-slate-600'}`}>{p.action}{p.pricing_hint && p.pricing_hint !== 'none' ? ` · price ${p.pricing_hint}` : ''}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <p className="text-xs text-slate-400">Values are advertising value delivered and measured activity — never a revenue or ROI promise. The founding panel is measured as a privilege, not a quota. The AI agent collects signals, ranks fit + revenue, and learns continuously; pricing / tier / money moves are surfaced for your approval — nothing sensitive is auto-applied.</p>
       </div>
     </div>
   );

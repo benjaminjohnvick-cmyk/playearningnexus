@@ -11,7 +11,7 @@
 // The founding role stays a MEASURED PRIVILEGE — we observe what founders do; we never enforce a quota.
 import { db } from "./db.ts";
 import { snapBool, snapNumber } from "./settings.ts";
-import { advertiserFeatureCatalog, type AdvertiserFeatureView } from "./advertiser-features.ts";
+import { advertiserFeatureCatalog, featureKeysForRevenueType, type AdvertiserFeatureView } from "./advertiser-features.ts";
 
 export const featurePmfEnabled = () => snapBool("FEATURE_PMF_ENABLED", true);
 
@@ -115,6 +115,25 @@ export async function recordFeatureUse(input: {
       at: new Date().toISOString(),
     });
   } catch { /* usage logging is best-effort — never break the caller */ }
+}
+
+/** Automatic wiring: called from recordRevenue() so a feature use is logged whenever a feature's revenue books.
+ *  recordRevenue is the shared entry point every advertiser feature already calls, so this populates adoption/
+ *  engagement across ALL revenue-booking features at once — no per-function edits. If the caller tags the event
+ *  with meta.feature_key we attribute precisely; otherwise we credit every catalog feature that books that
+ *  revenue type (the advertiser did engage those features). Best-effort; never throws into the ledger path. */
+export async function recordFeatureUseForRevenue(revenueType: string, ctx: { business_id?: string | null; user_id?: string | null; meta?: Record<string, unknown> }): Promise<void> {
+  if (!featurePmfEnabled()) return;
+  try {
+    const explicit = ctx.meta && typeof (ctx.meta as Record<string, unknown>).feature_key === "string"
+      ? [String((ctx.meta as Record<string, unknown>).feature_key)]
+      : featureKeysForRevenueType(revenueType);
+    if (!explicit.length) return;
+    const uid = (ctx.business_id ?? ctx.user_id ?? null) as string | null;
+    for (const key of explicit) {
+      await recordFeatureUse({ feature_key: key, user_id: uid, meta: { source: "revenue_ledger", revenue_type: revenueType } });
+    }
+  } catch { /* best-effort */ }
 }
 
 // ── Async aggregation → the scoreboard ──────────────────────────────────────────────────────────────────

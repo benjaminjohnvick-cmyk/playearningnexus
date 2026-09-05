@@ -62,10 +62,35 @@ rankings and the operational rankings become a before/after.
 - Settings (Scale & Platform): `ADVERTISER_FEATURE_CATALOG_ENABLED`, `ADVERTISER_FEATURE_CATALOG_JSON`,
   `FEATURE_PMF_ENABLED`, `PMF_WEIGHT_RETENTION/ADOPTION/ENGAGEMENT/REVENUE`, `PMF_WINDOW_DAYS`, `PMF_SHRINK_K`.
 
-## Wiring note (the one hook to finish)
+## Usage tracking — auto-wired (2026-09-05)
 
-The scoreboard fills as features are **used**. Adoption/engagement come from `featureUsageTrack` (or a backend
-call to `recordFeatureUse`), and revenue comes automatically from the RevenueEvent ledger by type. To make
-adoption/engagement fully live, call `featureUsageTrack({ feature_key })` from each feature's entry point (the
-revenue and retention signals already flow from existing data). Until those calls are wired, revenue-per-feature
-and the per-tier revenue ranking work immediately; adoption/engagement populate as the tracker is hooked in.
+Adoption/engagement now populate **automatically**. Rather than editing every feature function, the tracker is
+hooked into `recordRevenue()` (`revenue.ts`) — the shared entry point every advertiser feature already calls to
+book its revenue. `recordFeatureUseForRevenue()` maps the event's `type` to the catalog feature(s) and logs a
+`FeatureUsageEvent` (attributing the advertiser). If a caller tags the event with `meta.feature_key` it's
+precise; otherwise every feature that books that revenue type is credited. Best-effort — it never blocks the
+ledger. A front-end `featureUsageTrack({ feature_key })` call is still available for surfaces that don't book
+revenue on use, but the core adoption/engagement now flows on its own.
+
+## The AI PMF & revenue agent (2026-09-05)
+
+`backend/sdk/pmf-agent.ts` + `pmfRevenueAgentRun` (scheduled every 6h, 20 min after the scoreboard) close the
+loop the owner asked for: an agent that **collects all the feature/site signals, ranks the portfolio for
+product-market fit and increased revenue, and learns** — while **keeping every existing constraint**.
+
+- **Collect** — writes `pmf_score:<key>` and `feature_revenue:<key>` into the shared `OptimizationSignal` trend
+  store, so the whole AI layer sees them.
+- **Plan** — `decideAction()` turns each feature's PMF + revenue into an action: **promote / hold / watch /
+  fix / sunset**, with an advisory pricing hint (raise / hold / lower). Strong fit + above-median revenue →
+  promote and *consider* a price move; strong fit + low revenue → promote to grow adoption first; weak fit +
+  negative retention → sunset candidate; too few adopters → watch (gather more signal).
+- **Learn** — durable `AgentLearningMemory` lessons under agent `pmf_revenue_agent`, so it trends in the
+  existing learning dashboards and compounds with the platform's other self-learning.
+- **Constraints preserved** — the agent writes signals, learning, and an **advisory plan** to `PmfAgentPlan`;
+  it does **not** auto-change money, pricing, tiers, identity, or legal settings. Every sensitive move (price,
+  sunset, fix-with-discount) is flagged `needs approval` — the same human gate the optimizer and Autonomy
+  Kernel already enforce. No ROI claims; the closed loop is untouched. Runs continuously so discovery keeps
+  improving after launch.
+
+Settings: `PMF_AGENT_ENABLED`, `PMF_AGENT_RECOMMEND_PRICING`, `PMF_AGENT_STRONG_SCORE`, `PMF_AGENT_WEAK_SCORE`,
+`PMF_AGENT_MIN_SAMPLE`. The plan is shown on the `FeaturePMF` admin page and returned by `featurePmfScoreboard`.

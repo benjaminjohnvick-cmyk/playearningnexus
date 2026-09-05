@@ -14,6 +14,10 @@ export default __handler(async (req) => {
     const body = await req.json().catch(() => ({}));
     const wantLive = body?.live === true;
 
+    // Latest AI agent plan (advisory action plan), if any — shown alongside the scoreboard.
+    const planRows = await base44.asServiceRole.entities.PmfAgentPlan.filter({}, "-created_date", 1).catch(() => []) as Record<string, unknown>[];
+    const agent_plan = (planRows && planRows.length) ? planRows[0] : null;
+
     if (!wantLive) {
       const rows = await base44.asServiceRole.entities.FeaturePmfSnapshot.filter({}, "-created_date", 1).catch(() => []) as Record<string, unknown>[];
       if (rows && rows.length) {
@@ -21,13 +25,13 @@ export default __handler(async (req) => {
         return Response.json({
           ok: true, enabled: featurePmfEnabled(), source: "snapshot",
           computed_at: s.computed_at ?? s.at, window_days: s.window_days,
-          features: s.features ?? [], by_tier: s.by_tier ?? [],
+          features: s.features ?? [], by_tier: s.by_tier ?? [], agent_plan,
         });
       }
     }
     // No snapshot yet (or a live refresh was requested) — compute on the fly.
     const board = await buildFeaturePmfScoreboard();
-    return Response.json({ ok: true, enabled: featurePmfEnabled(), source: "live", ...board });
+    return Response.json({ ok: true, enabled: featurePmfEnabled(), source: "live", ...board, agent_plan });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });
   }

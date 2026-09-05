@@ -4351,3 +4351,15 @@ CREATE TABLE IF NOT EXISTS "FeaturePmfSnapshot" (
 );
 CREATE INDEX IF NOT EXISTS "FeaturePmfSnapshot_data_gin" ON "FeaturePmfSnapshot" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "FeaturePmfSnapshot_created" ON "FeaturePmfSnapshot" (created_date DESC);
+
+-- PmfAgentPlan: the AI PMF & revenue agent's latest advisory action plan (per-feature promote/hold/watch/fix/
+-- sunset + pricing hints). Advisory only — sensitive/pricing execution stays human-gated.
+CREATE TABLE IF NOT EXISTS "PmfAgentPlan" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "PmfAgentPlan_data_gin" ON "PmfAgentPlan" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "PmfAgentPlan_created" ON "PmfAgentPlan" (created_date DESC);
