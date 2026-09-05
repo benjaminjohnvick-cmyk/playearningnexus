@@ -66,10 +66,16 @@ export default __handler(async (req) => {
     const bursting = decision.desired > ceil.softMax;
 
     let action = { ok: true, provider, desired: decision.desired, applied: false, reason: enabled ? "would act" : "gated off — decision only" };
-    if (!dryRun && decision.desired !== current) {
+    const changed = decision.desired !== current;
+    // Reconcile on EVERY scheduled tick (idempotent), not only when our tracked count changed. This makes the
+    // running instance count always converge to the governor's decision (floor + burst) and self-heals if the
+    // host restarted at a different count — e.g. a deploy dropped it to 1 — instead of trusting a stale tracked
+    // value and skipping. Setting the same replica count is a no-op on the provider side. Manual/admin calls
+    // (no `scheduled` marker) still act only on a real change.
+    if (!dryRun && (changed || body?.scheduled === true)) {
       action = await scaleInfra(provider, decision.desired, decision.reason);
-      // Persist the applied count as the new 'current' so the next tick decides from reality, not an assumption.
-      if (action.applied) await setSetting("INFRA_SCALE_CURRENT_INSTANCES", String(decision.desired), `infraScaleGovernor:${user?.email ?? user?.id ?? "scheduler"}`).catch(() => null);
+      // Track the applied count (used for step-limiting next tick) only when it actually changed.
+      if (action.applied && changed) await setSetting("INFRA_SCALE_CURRENT_INSTANCES", String(decision.desired), `infraScaleGovernor:${user?.email ?? user?.id ?? "scheduler"}`).catch(() => null);
     }
 
     return Response.json({
