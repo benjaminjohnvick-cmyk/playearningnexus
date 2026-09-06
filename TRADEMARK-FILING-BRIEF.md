@@ -36,10 +36,32 @@ separate purchase (not a trademark) and should be registered directly with a reg
 | # | Mark | Type | Suggested USPTO classes (confirm) | Filing basis | Notes |
 |---|---|---|---|---|---|
 | 1 | **Get Goods Gratis** | Standard-character word mark | 35 (online retail / advertising & marketing services), 42 (SaaS/software platform), 9 (downloadable mobile app) | **Intent-to-Use (1(b))** if not yet in commerce, else Use (1(a)) | Core brand — file first. "Gratis"/"Free" is descriptive; counsel may disclaim "Free" or argue the whole is suggestive. |
-| 2 | **"G³" logo (design mark)** | Design/stylized mark | Same classes as #1 | ITU or Use | Protects the visual mark. Specimen: the logo as actually used (app header, store listing). Vector source is in this folder. |
+| 2 | **"G³" logo (design mark)** | Design/stylized mark | Same classes as #1 | ITU or Use | Protects the visual mark. **File as a black-and-white drawing (no color claim) for broadest coverage — see below.** Specimen: the logo as actually used (app header, store listing). |
 | 3 | **Where Global Goods Gather** | Slogan / word mark | 35, 42 | ITU or Use | Slogans are registrable if they function as a source identifier (not merely informational). Keep it a brand tagline, never an earnings/ROI claim. |
 | 4 | **Get Goods Gratis + logo (composite)** | Combined word+design | Same classes | ITU or Use | Optional — some owners file the word mark and the logo separately (broader) rather than one composite. |
 | 5 | **GamerGain** / **PlayEarning Nexus** | Word mark(s) | 35, 41 (entertainment/games), 42, 9 | Use or ITU | Only if actually used in commerce and worth the spend. Counsel to advise; may be legacy. |
+
+### Drawing format: file in BLACK AND WHITE (no color claim) — recommended
+
+**Recommendation: file the logo/design mark as a black-and-white (grayscale) drawing with *no* color
+claimed.** This is the mainstream USPTO practice for the broadest protection, and it's the approach used for
+this brand.
+
+- **Black-and-white / no color claim = broadest.** A drawing with no color claimed protects the mark **in every
+  color combination**. A competitor can't sidestep it just by recoloring the logo.
+- **Claiming color = narrower.** If you claim specific colors (here, navy `#0a142e` / gold `#e8c766`), the
+  registration is **limited to that color scheme**. That is a *narrower* right, not a stronger one — only worth
+  it when the specific color combination is itself the primary thing you want to lock down (e.g., UPS brown,
+  Tiffany blue). This brand is not in that position today.
+- **You can add a color version later.** Owners sometimes file B&W first (breadth) and, once a color scheme
+  becomes a strong source identifier, add a separate color registration. Counsel can revisit that after launch.
+- **The brand colors listed above are for brand/marketing reference only — they are *not* a color claim.** The
+  navy/gold hex values document the house style; they do not narrow the filing.
+
+**Filing drawings to use:** the USPTO-compliant black-and-white JPEGs in
+`Trademarks/Black and White Images/` (mark, slogan, and logo+slogan lockup — grayscale, 250–944 px, 300–350 DPI,
+≤5 MB). The **color** versions are kept as a brand reference only, as `BRAND-COLOR-IMAGES.pdf` in the `05 - PDFs`
+folder — not as trademark drawings.
 
 ### Secondary / feature names — flag for counsel, likely lower priority
 Names used inside the product that *might* function as marks, but several are **descriptive/weak** and may not
@@ -78,6 +100,8 @@ Guarantee"**. Recommendation: **don't file these individually now**; protect the
 5. Put **™** into use on the brand now; move to **®** per mark once each registers.
 6. Revisit secondary/feature names later; keep using **™** on the distinctive ones in the meantime.
 
-*Assets in this folder: `BRAND-AND-TRADEMARK.md` (full brand reference — colors, logo spec, usage),
-`gg-logo.svg` / `gg-logo-mark.svg` / `brand-assets-gg-logo.png` (logo), `favicon*.{svg,png}` (app icon).
-Cross-reference: `FOR-YOUR-ATTORNEY.md`.*
+*Assets in this folder: `BRAND-AND-TRADEMARK.md` (full brand reference — colors, logo spec, usage) and
+`Black and White Images/` — the USPTO-compliant grayscale JPEG drawings to file (mark, slogan, logo+slogan
+lockup). The **color** brand images (logo, slogan lockup, favicons) are kept as a reference PDF,
+`BRAND-COLOR-IMAGES.pdf`, in the `05 - PDFs` folder — not as trademark drawings. Cross-reference:
+`FOR-YOUR-ATTORNEY.md`.*
