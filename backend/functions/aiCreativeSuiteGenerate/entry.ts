@@ -5,7 +5,8 @@ import {
   normalizeTier, creativeSuiteTierCaps, adFormat, formatAllowed,
   screenCreative, scoreCreative, playbookFor, generationsRemaining, allFormatKeys,
 } from "../../sdk/creative-suite.ts";
-import { adBranding, watermarkImageHint } from "../../sdk/ad-branding.ts";
+import { watermarkImageHint } from "../../sdk/ad-branding.ts";
+import { brandingWithAiDisclosure, buildContentCredentials } from "../../sdk/ai-disclosure.ts";
 
 // aiCreativeSuiteGenerate — the "generate" step of the AI Creative Suite. One brief → compliant, brand-aligned
 // variants across every requested ad format, biased by the advertiser's self-learning playbook, each
@@ -117,7 +118,8 @@ For EACH creative return: headline, body, cta, and an attributes object tagging:
           headline: v.headline ?? "", body: v.body ?? "", cta: v.cta ?? "",
           image_prompt: v.image_prompt ?? null, image_url,
           attributes: attrs, score, compliant, violations: screen.violations,
-          branding: adBranding(),   // Get Goods Gratis watermark + website link, stamped on every ad (all tiers)
+          branding: brandingWithAiDisclosure(),   // house watermark + website link + the visible "AI-generated" label
+          content_credentials: buildContentCredentials({ kind: spec.medium, tool: "AI Creative Suite" }),  // C2PA provenance
           status: compliant ? "draft" : "blocked",
           impressions: 0, clicks: 0, created_at: new Date().toISOString(),
         };

@@ -44,7 +44,7 @@ Ad details:
 - Budget spent: $${(adWithData.total_spent || 0).toFixed(2)}
 - Grid tier: ${adWithData.grid_tier || 'Standard'}
 
-Generate improved copy specifically optimized for higher survey completion rates on a gaming platform audience (18-35, gamers). Focus on urgency, rewards, and curiosity.
+Generate improved copy specifically optimized for higher survey completion rates on a retail marketplace audience (18-35, gamers). Focus on urgency, rewards, and curiosity.
 
 Return JSON with:
 - taglines: array of 5 punchy taglines (max 8 words each), ordered best to worst predicted CTR

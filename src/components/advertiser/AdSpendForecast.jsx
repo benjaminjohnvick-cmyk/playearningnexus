@@ -126,7 +126,7 @@ export default function AdSpendForecast({ ads }) {
       inventory_pct: p.inventory,
     }));
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are an expert ad platform analyst. Given this 9-month ad spend forecast data for a gaming platform advertiser:
+      prompt: `You are an expert ad platform analyst. Given this 9-month ad spend forecast data for a retail marketplace advertiser:
 ${JSON.stringify(summaryData, null, 2)}
 
 The advertiser currently has ${ads.length} ads with a weekly velocity of ~$${velocity.toFixed(2)}.

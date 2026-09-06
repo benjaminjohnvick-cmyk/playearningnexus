@@ -6,6 +6,7 @@ import {
   type ScoredConcept, type VideoConcept,
 } from "../../sdk/video-engine.ts";
 import { renderConfig, renderVideoCall } from "../../sdk/video-render.ts";
+import { aiDisclosureVisibleLabel, buildContentCredentials } from "../../sdk/ai-disclosure.ts";
 
 // aiVideoEngineRenderWinners — the PHASED spend gate. Takes the top-scoring compliant concepts, up to the
 // daily render count AND the daily $ cap, writes each a real script + storyboard (and a thumbnail if images
@@ -110,6 +111,9 @@ Return: script (spoken/on-screen lines, timestamped), storyboard (array of {t, s
         script, storyboard, thumbnail_url, video_url: video_url ?? "", render_job_id: rr.job_id ?? null,
         hook_line: String(res?.hook_line ?? ""), render_provider: budget.provider,
         est_cost_usd: budget.est_cost_per_render_usd, rendered_at: now, updated_at: now,
+        // AI-generated disclosure: the visible "AI-generated" label + C2PA/Content-Credentials provenance manifest.
+        ai_disclosure: aiDisclosureVisibleLabel(),
+        content_credentials: buildContentCredentials({ kind: "video", tool: "AI Video Engine" }),
       }).catch(() => null);
       rendered.push({ id: s.id, score: s.score, attributes: s.concept, thumbnail_url, video_url: video_url ?? "", render_status: rr.ok ? "done" : (rr.job_id ? "rendering" : "no_video") });
     }

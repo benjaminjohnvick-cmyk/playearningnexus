@@ -35,7 +35,7 @@ const TEMPLATES = [
     border: 'border-purple-500/30',
     bg: 'bg-purple-500/5',
     badge: 'bg-purple-500/20 text-purple-300',
-    description: 'Acquire high-intent players who complete surveys on gaming platforms.',
+    description: 'Acquire high-intent players who complete surveys on retail marketplaces.',
     industry: 'Gaming',
     targeting: { age_buckets: ['13-17', '18-24', '25-34'], interest_buckets: ['gaming', 'tech', 'sports'] },
     bid: { amount: 0.70, tier: 'Premium', smart: true },

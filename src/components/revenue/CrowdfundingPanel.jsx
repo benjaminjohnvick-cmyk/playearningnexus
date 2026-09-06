@@ -60,7 +60,7 @@ export default function CrowdfundingPanel({ user }) {
     setCreatingPitch(true);
     try {
       const pitch = await base44.integrations.Core.InvokeLLM({
-        prompt: `Write a compelling 2-paragraph crowdfunding pitch for a gaming platform campaign:
+        prompt: `Write a compelling 2-paragraph crowdfunding pitch for a retail marketplace campaign:
         Title: "${form.title}"
         Description: "${form.description}"
         Goal: $${form.goal_amount}

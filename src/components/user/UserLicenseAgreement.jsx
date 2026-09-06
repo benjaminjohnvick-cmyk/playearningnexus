@@ -44,7 +44,7 @@ export default function UserLicenseAgreement({ isOpen, onAccept, onDecline }) {
             <Card className="p-4 bg-blue-50 border-blue-200">
               <h3 className="font-bold text-lg mb-2">Platform Overview</h3>
               <p className="text-gray-700">
-                Welcome to our mobile game discovery platform. By using this service, you agree to the following terms for a 1-year commitment with automatic renewal.
+                Welcome to our mobile global goods marketplace. By using this service, you agree to the following terms for a 1-year commitment with automatic renewal.
               </p>
             </Card>
 

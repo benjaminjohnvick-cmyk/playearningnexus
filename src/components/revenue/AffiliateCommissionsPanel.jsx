@@ -42,7 +42,7 @@ export default function AffiliateCommissionsPanel({ user }) {
     setGeneratingLinks(true);
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `For a gaming platform, suggest the best affiliate program to use for promoting "${customProduct}" and estimate the commission rate and monthly potential revenue. Return JSON.`,
+        prompt: `For a retail marketplace, suggest the best affiliate program to use for promoting "${customProduct}" and estimate the commission rate and monthly potential revenue. Return JSON.`,
         response_json_schema: {
           type: 'object',
           properties: {

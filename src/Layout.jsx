@@ -37,7 +37,6 @@ import {
   Sparkles,
   Store } from
 'lucide-react';
-import GamerGainLogo from '@/components/branding/GamerGainLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
 import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
@@ -554,11 +553,10 @@ export default function Layout({ children, currentPageName }) {
           <div className="max-w-7xl mx-auto px-6 py-12">
             <div className="grid md:grid-cols-4 gap-8">
               <div className="md:col-span-2">
-                <div className="flex items-center gap-2 mb-4">
-                  <GamerGainLogo className="w-10 h-10" />
-                  <span className="flex flex-col leading-none"><span className="text-xl font-bold bg-gradient-to-r from-white to-[#8fc3f5] bg-clip-text text-transparent">Get Goods Gratis (Free)<sup className="text-[9px] align-super ml-0.5">™</sup></span><span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">Where Global Goods Gather</span></span>
+                <div className="mb-4">
+                  <img src="/gg-logo-slogan.svg" alt="Get Goods Gratis (Free) — Where Global Goods Gather" className="h-16 w-auto" draggable={false} />
                 </div>
-                <p className="text-gray-600 text-sm">The premium game discovery platform. Play games, earn rewards, connect with creators.</p>
+                <p className="text-gray-600 text-sm">The global goods marketplace — shop thousands of products, with games, surveys, and rewards along the way.</p>
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-3">Platform</h3>
@@ -580,7 +578,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </div>
             <div className="border-t mt-8 pt-8 text-center text-sm text-gray-500">
-              <p>© 2024 Get Goods Gratis (Free). All rights reserved. | Premium gaming platform</p>
+              <p>© 2026 Get Goods Gratis (Free). All rights reserved. | Global goods marketplace</p>
               <p className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
                 <Link to={createPageUrl('PrivacyPolicy')} className="hover:text-blue-600">Privacy Policy</Link>
                 <span aria-hidden="true">·</span>

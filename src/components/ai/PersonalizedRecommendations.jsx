@@ -66,7 +66,7 @@ export default function PersonalizedRecommendations({ user }) {
       };
 
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an AI recommendation engine for a gaming platform. Based on the user's profile, recommend:
+        prompt: `You are an AI recommendation engine for a retail marketplace. Based on the user's profile, recommend:
         
 1. 3 game recommendations with specific reasons
 2. 3 survey topics that align with their interests

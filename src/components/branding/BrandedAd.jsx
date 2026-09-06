@@ -16,6 +16,11 @@ export default function BrandedAd({ branding, className = '', fill = false, chil
   if (b.enabled === false) return <div className={`${fill ? 'h-full w-full' : ''} ${className}`}>{children}</div>;
   const wm = b.watermark || DEFAULTS.watermark;
   const site = b.website || DEFAULTS.website;
+  const dis = b.ai_disclosure; // AI-generated disclosure label (present on AI-generated creatives)
+  const DIS_POS = {
+    'bottom-right': 'bottom-1 right-1', 'bottom-left': 'bottom-1 left-1',
+    'top-right': 'top-1 right-1', 'top-left': 'top-1 left-1',
+  };
 
   return (
     <div className={`relative overflow-hidden ${fill ? 'h-full w-full flex flex-col' : 'rounded-md'} ${className}`}>
@@ -46,6 +51,15 @@ export default function BrandedAd({ branding, className = '', fill = false, chil
           />
         )}
         <div className={`relative ${fill ? 'h-full w-full' : ''}`} style={{ zIndex: 1 }}>{children}</div>
+        {dis && dis.enabled !== false && dis.label && (
+          <span
+            aria-label={`Disclosure: ${dis.label}`}
+            className={`pointer-events-none select-none absolute ${DIS_POS[dis.position] || DIS_POS['bottom-right']} text-[9px] leading-none font-semibold px-1.5 py-0.5 rounded bg-black/70 text-white`}
+            style={{ zIndex: 2 }}
+          >
+            {dis.label}
+          </span>
+        )}
       </div>
     </div>
   );

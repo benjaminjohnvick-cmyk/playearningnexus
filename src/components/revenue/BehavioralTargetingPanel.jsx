@@ -33,7 +33,7 @@ export default function BehavioralTargetingPanel() {
     setGeneratingSegment(true);
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create a behavioral targeting segment for a gaming platform audience. 
+        prompt: `Create a behavioral targeting segment for a retail marketplace audience. 
         Suggest a creative segment name, define behavioral criteria (2-3 signals), estimated audience size (between 500-5000), and why advertisers would pay a premium for this segment.`,
         response_json_schema: {
           type: 'object',

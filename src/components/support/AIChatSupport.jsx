@@ -42,7 +42,7 @@ export default function AIChatSupport({ user }) {
       setMessages(prev => [...prev, userMsg]);
 
       // Create context about the platform for the AI
-      const context = `You are a helpful customer support assistant for Get Goods Gratis (Free), a gaming platform where users:
+      const context = `You are a helpful customer support assistant for Get Goods Gratis (Free), a retail marketplace where users:
 - Play games and earn money through surveys
 - Need to complete $2 worth of surveys daily to unlock games
 - Can earn points and badges for various activities

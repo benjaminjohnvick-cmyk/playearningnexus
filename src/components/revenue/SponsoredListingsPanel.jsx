@@ -33,7 +33,7 @@ export default function SponsoredListingsPanel({ isAdvertiser: _isAdvertiser = f
     setAiGenerating(true);
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Write a compelling sponsored listing ad for a gaming platform.
+        prompt: `Write a compelling sponsored listing ad for a retail marketplace.
         Product/Service: "${form.title}"
         Generate a punchy description (max 120 chars) and a CTA button text (max 20 chars).`,
         response_json_schema: {

@@ -71,7 +71,7 @@ export default function AdCompetitorIntel({ ads }) {
       const myMemory = myMemories[0];
 
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert ad strategist for a gaming platform. Generate 3 counter-taglines to outcompete this competitor.
+        prompt: `You are an expert ad strategist for a retail marketplace. Generate 3 counter-taglines to outcompete this competitor.
 
 COMPETITOR AD:
 - Brand: ${competitor.brand_name}

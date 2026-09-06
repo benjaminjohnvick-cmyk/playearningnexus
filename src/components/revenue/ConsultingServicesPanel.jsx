@@ -55,7 +55,7 @@ export default function ConsultingServicesPanel({ user: _user }) {
         Service: "${service.name}"
         Price: $${service.price}
         Description: ${service.description}
-        Target audience: gaming platform businesses.
+        Target audience: retail marketplace businesses.
         Make it persuasive and value-focused.`
       });
       setAiProposal(proposal);

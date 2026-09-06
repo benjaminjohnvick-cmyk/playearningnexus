@@ -61,9 +61,9 @@ export default function ReferralFollowUpSystem({ user, isAdmin = false }) {
           
           Key points to mention:
           - It only takes a few minutes to complete a survey
-          - They can earn real money (avg $0.50–$3 per survey)
+          - They can earn rewards and store credit (avg $0.50–$3 in value per survey)
           - Their referrer is rooting for them
-          - There's a daily $3 earning goal
+          - There's a daily $3 rewards goal
           
           Tone: warm, motivating, not pushy. 
           Return ONLY the message body text, no subject line.`

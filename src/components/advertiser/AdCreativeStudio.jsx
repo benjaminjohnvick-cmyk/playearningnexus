@@ -268,7 +268,7 @@ export default function AdCreativeStudio({ userId, ads }) {
     setGenerating(true);
     if (activeTab === 'thumbnails') {
       const { url } = await base44.integrations.Core.GenerateImage({
-        prompt: `Professional ad creative thumbnail for: ${aiPrompt}. Style: bold, eye-catching, gaming platform aesthetic, high contrast, clear text space. No text in image.`,
+        prompt: `Professional ad creative thumbnail for: ${aiPrompt}. Style: bold, eye-catching, retail marketplace aesthetic, high contrast, clear text space. No text in image.`,
       });
       setNewContent(url);
       if (!newName) setNewName(aiPrompt.slice(0, 40));

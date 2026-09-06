@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useAuthOptional } from '@/lib/AuthContext';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
-import GamerGainLogo from '@/components/branding/GamerGainLogo';
 
 // Self-hosted login/signup form, styled to match the Get Goods Gratis (Free) app design system
 // (green logo/wordmark, red CTA, red-50/white background). Replaces Base44's hosted screen.
@@ -56,9 +55,8 @@ export default function AuthForm({ mode = 'login' }) {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <GamerGainLogo className="w-12 h-12" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Get Goods Gratis (Free)</span>
+          <div className="flex justify-center mb-3">
+            <img src="/gg-logo-slogan.svg" alt="Get Goods Gratis (Free) — Where Global Goods Gather" className="h-16 w-auto" draggable={false} />
           </div>
           <p className="text-gray-500 text-sm">{isSignup ? 'Create your account' : 'Sign in to your account'}</p>
         </div>
@@ -122,7 +120,7 @@ export default function AuthForm({ mode = 'login' }) {
         </form>
 
         <p className="text-center text-xs text-gray-400 mt-6">
-          The premium game discovery platform. By continuing you agree to our{' '}
+          The premium global goods marketplace. By continuing you agree to our{' '}
           <Link to="/TermsOfService" className="hover:underline">Terms</Link> and{' '}
           <Link to="/PrivacyPolicy" className="hover:underline">Privacy Policy</Link>.
         </p>

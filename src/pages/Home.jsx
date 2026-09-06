@@ -156,10 +156,10 @@ export default function Home() {
             {/* Left: hero copy + login */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <div className="inline-block px-3 py-1 bg-white/20 rounded-full mb-3">
-                <span className="text-white font-bold text-xs">🎮 Get Goods Gratis (Free) Platform</span>
+                <span className="text-white font-bold text-xs">🛍️ Get Goods Gratis (Free) — Global Goods Marketplace</span>
               </div>
               <h1 className="text-4xl md:text-5xl font-black text-white mb-3 leading-tight">
-                Play Games.<br />Earn Real Money.
+                Shop Global Goods.<br />Play &amp; Earn Rewards.
               </h1>
               {promo?.advertised_value_usd > 0 && (
                 <div className="mb-3">

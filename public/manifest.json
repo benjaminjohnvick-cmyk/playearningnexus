@@ -1,14 +1,14 @@
 {
   "name": "Get Goods Gratis (Free)",
   "short_name": "Get Goods",
-  "description": "Where global goods gather — play, survey, shop, and earn.",
+  "description": "Where global goods gather — shop thousands of global products, plus games, surveys, and rewards.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a142e",
   "theme_color": "#0a142e",
-  "categories": ["games", "entertainment", "shopping", "finance"],
+  "categories": ["shopping", "games", "entertainment", "finance"],
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
