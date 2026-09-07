@@ -27,7 +27,7 @@ about.
 
 *Pure black-and-white line drawing (no gray tones), grayscale format, within 250–944 px on every side, 350 DPI,
 under 5 MB. The AI-generated disclosure label is deliberately excluded (it is regulatory, not brand). Source:
-`Black and White Images/GGG-house-ad-template-BW-USPTO.jpg`.*
+`Black and White Images/AD-BRAND-TEMPLATE-BW-USPTO.jpg`.*
 
 ## 3. Why this is *trade dress*, not a simple design mark
 
@@ -80,7 +80,7 @@ likely need later.
 
 - `TRADEMARK-FILING-BRIEF.md` — marks table (row 6) and the "Recurring brand elements worth filing" section.
 - `WATERMARK-BRIEF.md` — the "G³" watermark, the central brand element inside this frame.
-- `Black and White Images/GGG-house-ad-template-BW-USPTO.jpg` — the filing drawing.
+- `Black and White Images/AD-BRAND-TEMPLATE-BW-USPTO.jpg` — the filing drawing.
 - `BRAND-AND-TRADEMARK.md` — the brand reference.
 
 *Prepared for counsel. Not legal advice — trade-dress protection is fact-specific; whether this frame is

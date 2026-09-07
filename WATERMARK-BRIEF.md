@@ -65,7 +65,7 @@ Even though it needs no separate filing, the watermark does real trademark work:
 - `TRADEMARK-FILING-BRIEF.md` — the marks table (row 2 = the "G³" logo design mark) and the "Recurring brand
   elements worth filing" section.
 - `Black and White Images/GGG-mark-BW-USPTO-900px-350dpi.jpg` — the filing drawing (the mark = the watermark).
-- `Black and White Images/GGG-house-ad-template-BW-USPTO.jpg` — the house-ad template that shows the watermark
+- `Black and White Images/AD-BRAND-TEMPLATE-BW-USPTO.jpg` — the house-ad template that shows the watermark
   in context.
 - `BRAND-AND-TRADEMARK.md` — the brand reference.
 
