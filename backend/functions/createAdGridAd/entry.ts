@@ -3,6 +3,8 @@ import { __handler } from "../../sdk/runtime.ts";
 import { InvokeLLM } from "../../sdk/integrations.ts";
 import { adgridQuestionsPerThumbnail } from "../../sdk/adgrid.ts";
 import { recordContentLicense, contentLicenseVersion } from "../../sdk/content-license.ts";
+import { normalizeAdMediaInput } from "../../sdk/ad-media.ts";
+import { normalizeTargeting } from "../../sdk/ad-targeting.ts";
 
 // createAdGridAd (authenticated advertiser) — create a PPC AdGrid ad: a product thumbnail + 2 survey
 // questions (A-D options) + a product page (name, image, Buy Now). The advertiser writes it by hand, or sets
@@ -56,11 +58,23 @@ export default __handler(async (req) => {
       return Response.json({ error: `Provide ${needQ} questions (or set ai_generate:true).`, got: questions.length }, { status: 400 });
     }
 
+    // Advertiser audio/video creative (optional). Stored raw; the enable-flags are applied at serve-time so
+    // an admin can toggle video/audio availability without rewriting creatives.
+    const media = normalizeAdMediaInput({ media_type: b.media_type, media_url: b.media_url, poster_url: b.poster_url });
+    // Cohort targeting (optional) from the mandatory KYC survey. null = untargeted (serves to everyone).
+    const targeting = normalizeTargeting(b.targeting);
+
     const ad = await base44.asServiceRole.entities.AdGridAd.create({
       advertiser_user_id: user.id,
       product_name: String(b.product_name).slice(0, 200),
       image_url: b.image_url || null,
       product_url: b.product_url || null,
+      // Audio/video creative + poster (poster falls back to image_url at render time).
+      media_type: media.media_type,
+      media_url: media.media_url || null,
+      poster_url: media.poster_url || null,
+      // Cohort targeting from KYC survey answers (null → everyone).
+      targeting: targeting,
       product_page: { description: String(productPage?.description || "").slice(0, 2000) },
       questions,
       // Premium "extra minute" ad-free placement — a 60s full-screen ad a premium member watches once a day

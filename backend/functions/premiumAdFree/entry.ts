@@ -61,7 +61,7 @@ export default __handler(async (req) => {
       }
       // Serve a SPONSORED ad — only from advertisers who opted into this placement (adfree_minute); if none
       // opted in yet, a house ad is served so the member can still earn ad-free.
-      const picked = await pickInterstitialAd(base44, db, { adfreeOnly: true, houseTitle: "Sponsored", houseUrl: "/" });
+      const picked = await pickInterstitialAd(base44, db, { adfreeOnly: true, houseTitle: "Sponsored", houseUrl: "/", user });
       return Response.json({ ok: true, opted_in: true, seconds: adFreeAdSeconds(), ad: picked.ad });
     }
 

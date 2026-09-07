@@ -2,8 +2,19 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Building2, Globe, Image, Tag, DollarSign, Loader2, CheckCircle } from 'lucide-react';
+import { Building2, Globe, Image as ImageIcon, Tag, DollarSign, Loader2, CheckCircle, Video, Music, Users } from 'lucide-react';
 import { toast } from 'sonner';
+
+// Cohort targeting options — mirror the mandatory Know-Your-Customer (welcome) survey (backend/sdk/kyc.ts)
+// so an advertiser targets the same first-party answers all users provide. Keep in sync with kyc.ts.
+const TARGET_GROUPS = [
+  { field: 'categories', label: 'Product categories', options: ['Electronics', 'Computers & Gaming', 'Home & Kitchen', 'Beauty & Personal Care', 'Health & Wellness', 'Clothing & Shoes', 'Toys & Games', 'Sports & Outdoors', 'Automotive', 'Pet Supplies', 'Books & Media', 'Grocery & Gourmet', 'Baby & Kids', 'Tools & Home Improvement', 'Office & School', 'Musical Instruments'] },
+  { field: 'shopping_style', label: 'Shopping style', options: ['Deal hunter — best price wins', 'Brand loyal', 'Premium / quality first', 'Eco-conscious', 'Impulse / trend-driven'] },
+  { field: 'shopping_frequency', label: 'Shops online', options: ['Daily', 'Weekly', 'A few times a month', 'Monthly', 'Rarely'] },
+  { field: 'shopping_budget', label: 'Monthly online spend', options: ['Under $25', '$25–$100', '$100–$250', '$250–$500', '$500+'] },
+  { field: 'device', label: 'Primary device', options: ['Phone', 'Tablet', 'Laptop / Desktop', 'Game console'] },
+  { field: 'game_genres', label: 'Game genres', options: ['Action / Shooter', 'RPG / Adventure', 'Strategy', 'Puzzle / Casual', 'Sports / Racing', 'Simulation', 'MMO / Multiplayer', 'Card / Board'] },
+];
 
 export default function AdSignupForm({ user, onSuccess, prefillData }) {
   const [form, setForm] = useState({
@@ -16,6 +27,25 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
   const [imagePreview, setImagePreview] = useState(prefillData?.image_url || null);
   const [loading, setLoading] = useState(false);
   const [rightsAttested, setRightsAttested] = useState(false);
+
+  // Audio/video creative (optional). The image above doubles as the poster for video/audio.
+  const [mediaType, setMediaType] = useState('image'); // 'image' | 'video' | 'audio'
+  const [mediaUrl, setMediaUrl] = useState(prefillData?.media_url || '');
+
+  // Cohort targeting (optional). criteria = { field: [values] }; empty = untargeted (everyone).
+  const [targeting, setTargeting] = useState({});   // { categories: [...], shopping_style: [...], ... }
+  const [matchMode, setMatchMode] = useState('any'); // 'any' | 'all'
+
+  const toggleTarget = (field, value) => {
+    setTargeting((t) => {
+      const cur = new Set(t[field] || []);
+      cur.has(value) ? cur.delete(value) : cur.add(value);
+      const next = { ...t };
+      if (cur.size) next[field] = Array.from(cur); else delete next[field];
+      return next;
+    });
+  };
+  const targetedCount = Object.keys(targeting).length;
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -57,6 +87,13 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
         businessId = newClient.id;
       }
 
+      // Optional audio/video creative (image_url doubles as the poster). Honored at serve-time by the
+      // interstitial renderer; falls back to the image if video/audio is turned off.
+      const media_type = (mediaType === 'video' || mediaType === 'audio') && mediaUrl.trim() ? mediaType : 'image';
+      const media_url = media_type === 'image' ? null : mediaUrl.trim();
+      // Optional cohort targeting from the KYC survey (null = untargeted → everyone).
+      const targetingPayload = targetedCount ? { enabled: true, match: matchMode, criteria: targeting } : null;
+
       const listing = await base44.entities.AdListing.create({
         business_id: businessId,
         owner_user_id: user.id,
@@ -64,6 +101,10 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
         tagline: form.tagline,
         landing_url: form.landing_url,
         image_url,
+        media_type,
+        media_url,
+        poster_url: image_url,
+        targeting: targetingPayload,
         budget_limit: Number(form.budget_limit),
         status: 'pending',
         rights_attested: true,
@@ -84,10 +125,10 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Image upload */}
+      {/* Image upload (doubles as the poster/thumbnail for a video or audio ad) */}
       <div>
         <label htmlFor="ad-image-input" className="block text-sm font-bold text-gray-300 mb-2 flex items-center gap-1">
-          <Image className="w-4 h-4" /> Ad Thumbnail Image
+          <ImageIcon className="w-4 h-4" /> Ad Thumbnail Image
         </label>
         <div
           className="border-2 border-dashed border-gray-600 rounded-2xl p-6 text-center cursor-pointer hover:border-yellow-500 transition-colors"
@@ -100,13 +141,115 @@ export default function AdSignupForm({ user, onSuccess, prefillData }) {
             <img src={imagePreview} alt="preview" className="w-32 h-32 object-cover rounded-xl mx-auto" />
           ) : (
             <div>
-              <Image className="w-10 h-10 text-gray-500 mx-auto mb-2" />
+              <ImageIcon className="w-10 h-10 text-gray-500 mx-auto mb-2" />
               <p className="text-gray-400 text-sm">Click to upload your ad image</p>
               <p className="text-gray-600 text-xs">JPG, PNG, WebP — square recommended</p>
             </div>
           )}
           <input id="ad-image-input" type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
         </div>
+      </div>
+
+      {/* Ad format — image / video / audio */}
+      <div>
+        <label className="block text-sm font-bold text-gray-300 mb-2 flex items-center gap-1">
+          <Video className="w-4 h-4" /> Ad Format
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { v: 'image', label: 'Image', Icon: ImageIcon },
+            { v: 'video', label: 'Video', Icon: Video },
+            { v: 'audio', label: 'Audio', Icon: Music },
+          ].map(({ v, label, Icon }) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setMediaType(v)}
+              className={`flex flex-col items-center gap-1 rounded-xl border py-3 text-xs font-semibold transition-colors ${mediaType === v ? 'border-yellow-500 bg-yellow-500/10 text-yellow-300' : 'border-gray-700 bg-gray-800/60 text-gray-400 hover:border-gray-500'}`}
+            >
+              <Icon className="w-5 h-5" /> {label}
+            </button>
+          ))}
+        </div>
+        {(mediaType === 'video' || mediaType === 'audio') && (
+          <div className="mt-3">
+            <label htmlFor="ad-media-url" className="block text-xs font-medium text-gray-400 mb-1">
+              {mediaType === 'video' ? 'Video URL (MP4)' : 'Audio URL (MP3)'}
+            </label>
+            <Input
+              id="ad-media-url"
+              type="url"
+              value={mediaUrl}
+              onChange={(e) => setMediaUrl(e.target.value)}
+              placeholder={mediaType === 'video' ? 'https://…/your-ad.mp4' : 'https://…/your-ad.mp3'}
+              className="bg-gray-800 border-gray-600 text-white placeholder-gray-500"
+            />
+            <p className="text-gray-500 text-xs mt-1">
+              Plays full-screen with the ad countdown. Video autoplays muted with a tap-for-sound control; the image above is used as the {mediaType === 'audio' ? 'backdrop' : 'poster'}. Keep it short (≤60s recommended).
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Cohort targeting — from the mandatory KYC (welcome) survey */}
+      <div className="rounded-xl border border-gray-700 bg-gray-800/40 p-3">
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-sm font-bold text-gray-300 flex items-center gap-1">
+            <Users className="w-4 h-4" /> Target Audience <span className="text-gray-500 font-normal">(optional)</span>
+          </label>
+          {targetedCount > 0 && (
+            <button type="button" onClick={() => setTargeting({})} className="text-xs text-gray-400 hover:text-white underline">Clear</button>
+          )}
+        </div>
+        <p className="text-gray-500 text-xs mb-2">
+          Reach a specific cohort based on members' own answers to our welcome survey. Leave everything unselected to reach everyone. Applies to both the in-app ads and social-media distribution.
+        </p>
+
+        {targetedCount > 1 && (
+          <div className="flex items-center gap-2 mb-3 text-xs">
+            <span className="text-gray-400">Match</span>
+            <div className="inline-flex rounded-lg overflow-hidden border border-gray-700">
+              {['any', 'all'].map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setMatchMode(m)}
+                  className={`px-3 py-1 font-semibold ${matchMode === m ? 'bg-yellow-500 text-black' : 'bg-gray-800 text-gray-400'}`}
+                >
+                  {m === 'any' ? 'ANY selected' : 'ALL selected'}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+          {TARGET_GROUPS.map((g) => (
+            <div key={g.field}>
+              <p className="text-xs font-semibold text-gray-400 mb-1">{g.label}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {g.options.map((opt) => {
+                  const on = (targeting[g.field] || []).includes(opt);
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => toggleTarget(g.field, opt)}
+                      className={`rounded-full px-2.5 py-1 text-[11px] border transition-colors ${on ? 'border-yellow-500 bg-yellow-500/15 text-yellow-200' : 'border-gray-700 bg-gray-800/60 text-gray-400 hover:border-gray-500'}`}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-gray-500 text-[11px] mt-2">
+          {targetedCount === 0
+            ? 'No targeting — your ad reaches everyone.'
+            : `Targeting ${targetedCount} attribute${targetedCount === 1 ? '' : 's'}. Only members whose survey answers match will see this ad.`}
+        </p>
       </div>
 
       {/* Brand name */}

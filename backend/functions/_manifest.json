@@ -11,6 +11,8 @@
   "adGridSessionStatus",
   "adScheduledReports",
   "adSentimentScanner",
+  "adTargetingAiStatus",
+  "adTargetingLearn",
   "addCatalogToStorefront",
   "addWishlistProducts",
   "adminAlertNotifier",

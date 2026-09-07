@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ShoppingCart, Heart, ExternalLink, Check, X, Grid3x3 } from 'lucide-react';
+import { Loader2, ShoppingCart, Heart, ExternalLink, Check, X, Grid3x3, Volume2, VolumeX, Play } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**
@@ -22,6 +22,17 @@ export default function AdGridSurvey() {
   const [session, setSession] = useState({ gross_usd: 0, goal_usd: 8, complete: false });
   const [done, setDone] = useState({});               // ad_id -> true
   const [endLinks, setEndLinks] = useState(null);
+  const [adMuted, setAdMuted] = useState(true);        // ad video starts muted (autoplay policy)
+  const [audioTap, setAudioTap] = useState(false);     // audio autoplay blocked → show tap-to-play
+  const videoRef = useRef(null);
+  const audioRef = useRef(null);
+
+  // The advertiser's video/audio plays continuously (loops) through the whole question set for this ad,
+  // until the user finishes and the product page shows.
+  const hasVideo = !!(active && active.media_type === 'video' && active.media_url);
+  const hasAudio = !!(active && active.media_type === 'audio' && active.media_url);
+  const toggleAdMute = () => { const v = videoRef.current; if (!v) return; v.muted = !v.muted; setAdMuted(v.muted); if (!v.muted) { try { v.play?.(); } catch { /* ignore */ } } };
+  const startAdAudio = () => { const a = audioRef.current; if (!a) return; try { a.play?.().then(() => setAudioTap(false)).catch(() => setAudioTap(true)); } catch { setAudioTap(true); } };
 
   const load = async () => {
     setLoading(true);
@@ -123,7 +134,7 @@ export default function AdGridSurvey() {
       {/* Question / product-page modal */}
       {active && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className={`w-full ${(hasVideo || hasAudio) && !productPage ? 'max-w-2xl' : 'max-w-md'} rounded-2xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto`}>
             <div className="flex items-start justify-between mb-2">
               <h3 className="text-lg font-bold">{active.product_name}</h3>
               <button onClick={() => setActive(null)} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
@@ -131,29 +142,57 @@ export default function AdGridSurvey() {
 
             {!productPage ? (
               <>
-                {active.questions.filter((q) => !q.is_interest).map((q, i) => (
-                  <div key={i} className="mb-3">
-                    <div className="text-sm font-semibold mb-1">{q.q}</div>
-                    <div className="flex flex-wrap gap-2">
-                      {q.options.map((opt, oi) => (
-                        <button key={oi} onClick={() => setChoices((c) => ({ ...c, [i]: opt }))}
-                          className={`px-3 py-1 rounded-full text-sm border ${choices[i] === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-slate-200'}`}>
-                          {String.fromCharCode(65 + oi)}. {opt}
-                        </button>
-                      ))}
+                {/* Advertiser video/audio — plays continuously (loops) through this ad's whole question set */}
+                {hasVideo && (
+                  <div className="relative mb-4 rounded-xl overflow-hidden bg-black" style={{ aspectRatio: '16 / 9' }}>
+                    <video ref={videoRef} src={active.media_url} poster={active.poster_url || active.image_url || undefined}
+                      className="w-full h-full object-contain bg-black" autoPlay loop muted={adMuted} playsInline controls={false} />
+                    <button type="button" onClick={toggleAdMute}
+                      className="absolute bottom-2 right-2 z-10 flex items-center gap-1 rounded-full bg-black/60 text-white text-xs px-3 py-1.5 hover:bg-black/80">
+                      {adMuted ? <><VolumeX className="w-4 h-4" /> Tap for sound</> : <><Volume2 className="w-4 h-4" /> Sound on</>}
+                    </button>
+                  </div>
+                )}
+                {hasAudio && (
+                  <div className="relative mb-4 rounded-xl overflow-hidden">
+                    {(active.poster_url || active.image_url)
+                      ? <img src={active.poster_url || active.image_url} alt={active.product_name} className="w-full h-40 object-cover" />
+                      : <div className="h-40 bg-gradient-to-br from-indigo-100 to-emerald-100 flex items-center justify-center text-5xl">🛍️</div>}
+                    <audio ref={audioRef} src={active.media_url} autoPlay loop onError={() => setAudioTap(false)} onCanPlay={startAdAudio} />
+                    {audioTap && (
+                      <button type="button" onClick={startAdAudio} className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <span className="flex items-center gap-2 rounded-full bg-white/90 text-black text-sm font-semibold px-4 py-2"><Play className="w-4 h-4" /> Tap to play</span>
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Survey questions — in a bar beneath the video */}
+                <div className={(hasVideo || hasAudio) ? 'rounded-xl bg-slate-50 p-3' : ''}>
+                  {active.questions.filter((q) => !q.is_interest).map((q, i) => (
+                    <div key={i} className="mb-3">
+                      <div className="text-sm font-semibold mb-1">{q.q}</div>
+                      <div className="flex flex-wrap gap-2">
+                        {q.options.map((opt, oi) => (
+                          <button key={oi} onClick={() => setChoices((c) => ({ ...c, [i]: opt }))}
+                            className={`px-3 py-1 rounded-full text-sm border ${choices[i] === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-slate-200'}`}>
+                            {String.fromCharCode(65 + oi)}. {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mb-4">
+                    <div className="text-sm font-semibold mb-1">Are you interested in this product?</div>
+                    <div className="flex gap-2">
+                      <button onClick={() => setInterested(true)} className={`px-4 py-1 rounded-full text-sm border ${interested === true ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white border-slate-200'}`}>Yes</button>
+                      <button onClick={() => setInterested(false)} className={`px-4 py-1 rounded-full text-sm border ${interested === false ? 'bg-rose-600 text-white border-rose-600' : 'bg-white border-slate-200'}`}>No (don't show again)</button>
                     </div>
                   </div>
-                ))}
-                <div className="mb-4">
-                  <div className="text-sm font-semibold mb-1">Are you interested in this product?</div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setInterested(true)} className={`px-4 py-1 rounded-full text-sm border ${interested === true ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white border-slate-200'}`}>Yes</button>
-                    <button onClick={() => setInterested(false)} className={`px-4 py-1 rounded-full text-sm border ${interested === false ? 'bg-rose-600 text-white border-rose-600' : 'bg-white border-slate-200'}`}>No (don't show again)</button>
-                  </div>
+                  <Button className="w-full" onClick={submit} disabled={submitting}>
+                    {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit & continue'}
+                  </Button>
                 </div>
-                <Button className="w-full" onClick={submit} disabled={submitting}>
-                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit & continue'}
-                </Button>
               </>
             ) : (
               <>

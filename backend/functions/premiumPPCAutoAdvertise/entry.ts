@@ -9,6 +9,7 @@ import { withAdDisclosure } from "../../sdk/disclosure.ts";
 import { hasDoubled, socialPostingOrderTarget } from "../../sdk/premium-ppc.ts";
 import { aiPaused, logAiAction } from "../../sdk/ai-control.ts";
 import { adLearningInsights, prioritizeByLearning, AD_AGENT } from "../../sdk/ad-learning.ts";
+import { normalizeTargeting, userMatchesTargeting } from "../../sdk/ad-targeting.ts";
 
 // premiumPPCAutoAdvertise (INTERNAL/ADMIN, scheduled) — the AI advertising engine for the PPC network.
 // For each PAYING advertiser that hasn't yet DOUBLED their investment (received ≥ $10k in orders), the
@@ -51,6 +52,8 @@ export default __handler(async (req) => {
     // Consenting survey-members and their connected social accounts.
     const optedIn = await base44.asServiceRole.entities.User.filter({ ppc_social_ads_opt_in: true }, "-created_date", 5000).catch(() => []) as any[];
     const optedIds = new Set(optedIn.map((u) => u.id));
+    // Each consenting member's first-party KYC cohort, for advertiser targeting (below).
+    const optedKyc = new Map<string, Record<string, unknown>>(optedIn.map((u) => [String(u.id), (u.kyc_answers as Record<string, unknown>) || {}]));
 
     let posts = 0; const perAdvertiser: Record<string, number> = {};
     outer:
@@ -68,6 +71,11 @@ export default __handler(async (req) => {
       }
       const content = withAdDisclosure(copy);
 
+      // Cohort targeting: if this advertiser's active creative carries a targeting cohort, only post to
+      // consenting members whose KYC answers match it (untargeted → every consenting member, as before).
+      const advAd = (await base44.asServiceRole.entities.AdGridAd.filter({ advertiser_user_id: adv.id, status: "active" }, "-created_date", 1).catch(() => []) as any[])[0];
+      const advTargeting = normalizeTargeting(advAd?.targeting);
+
       // Queue it on consenting members' connected accounts, serving learned best-performing platforms
       // first so the per-run cap favors where members actually post.
       const conns = prioritizeByLearning(
@@ -80,6 +88,7 @@ export default __handler(async (req) => {
         if (usedForThisAdv >= maxUsersPerAdvertiser) break;
         if (!optedIds.has(conn.user_id)) continue;                 // only consenting members
         if (conn.user_id === adv.id) continue;                     // don't post the advertiser's own ad to themselves
+        if (!userMatchesTargeting(advTargeting, optedKyc.get(String(conn.user_id)))) continue; // cohort targeting
         await base44.asServiceRole.entities.SocialMediaPost.create({
           user_id: conn.user_id, platform: conn.platform, content,
           status: postStatus, auto_posted: true, post_type: "premium_ppc_ad",

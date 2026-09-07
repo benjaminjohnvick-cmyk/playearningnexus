@@ -3,6 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { withAdDisclosure } from "../../sdk/disclosure.ts";
 import { normalizeTier, socialAmpEnabledForTier, socialPostContribution } from "../../sdk/social-amplification.ts";
+import { normalizeTargeting, userMatchesTargeting, targetingSummary } from "../../sdk/ad-targeting.ts";
 
 // socialAmplifyDistribute — queue an advertiser's AI social ad to consenting members (all three tiers) for
 // one-tap posting. Only opted-in members with connected accounts, #ad-disclosed. Creates queued SocialMediaPost
@@ -22,12 +23,18 @@ export default __handler(async (req) => {
     const disclosed = withAdDisclosure(content);         // FTC #ad disclosure
     const limit = Math.max(1, Math.min(Number(body.limit) || 500, 2000));
 
+    // Optional cohort targeting from the mandatory KYC survey: post only to consenting members whose KYC
+    // answers match the advertiser's chosen cohort. null → untargeted (every opted-in member is eligible).
+    const targeting = normalizeTargeting(body.targeting);
+
     // Eligible = members who opted in to social ads. Bounded batch per call.
     const members = await base44.asServiceRole.entities.User
       .filter({ ppc_social_ads_opt_in: true }, "-created_date", limit).then((r: any) => r || []).catch(() => []) as Record<string, unknown>[];
 
-    let queued = 0, projectedReach = 0, projectedImpressions = 0, projectedValue = 0;
+    let queued = 0, projectedReach = 0, projectedImpressions = 0, projectedValue = 0, skippedByCohort = 0;
     for (const m of members) {
+      // Cohort targeting: skip opted-in members who don't match the advertiser's chosen cohort.
+      if (!userMatchesTargeting(targeting, m.kyc_answers as Record<string, unknown> | undefined)) { skippedByCohort++; continue; }
       const reach = Math.max(0, Number(m.social_reach) || 0);
       if (reach <= 0) continue;
       const c = socialPostContribution(reach);
@@ -42,6 +49,7 @@ export default __handler(async (req) => {
 
     return Response.json({
       success: true, tier, queued,
+      cohort: targetingSummary(targeting), skipped_by_cohort: skippedByCohort,
       projected: { reach: projectedReach, impressions: projectedImpressions, value_usd: Math.round(projectedValue * 100) / 100 },
       note: "Queued to opted-in members for one-tap, #ad-disclosed posting. Reach counts as delivered ad value once each member confirms they posted.",
     });

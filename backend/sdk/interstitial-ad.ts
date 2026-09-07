@@ -11,6 +11,9 @@ import { foundingInterstitialPriority, activeFoundingAdOwners } from "./founding
 import { activeEarnedAdOwners } from "./earned-advertiser.ts";
 import { activeMakeGoodOwners } from "./delivery-guarantee.ts";
 import { houseCrossSellEnabled, pickHouseCrossSell } from "./cross-promo.ts";
+import { resolveAdMedia } from "./ad-media.ts";
+import { normalizeTargeting, userMatchesTargeting } from "./ad-targeting.ts";
+import { loadTargetingModel, rankByLearnedAffinity } from "./ad-targeting-ai.ts";
 
 export type PickedInterstitial = {
   ad: Record<string, unknown>;
@@ -32,6 +35,16 @@ export async function pickInterstitialAd(base44: any, db: any, opts?: { ppcPrior
   // offer); an advertiser is in unless they explicitly opted out (adfree_minute_optout === true). If every
   // eligible creative has opted out, falls through to the house ad below.
   if (opts?.adfreeOnly) slots = (slots || []).filter((s) => s.adfree_minute_optout !== true);
+
+  // Cohort targeting: keep only creatives whose targeting matches THIS user's Know-Your-Customer answers.
+  // Untargeted creatives always pass; if nothing matches, the house fallback below still fills the slot.
+  const kycAnswers = (opts?.user?.kyc_answers as Record<string, unknown> | undefined) ?? null;
+  slots = (slots || []).filter((s) => userMatchesTargeting(normalizeTargeting(s.targeting), kycAnswers));
+
+  // Self-learning relevance bias: order the matching slots by learned cohort affinity for this user, so each
+  // priority tier's first-match picks the most relevant creative. No-op when the AI layer is off or untrained.
+  const learnedModel = await loadTargetingModel(db).catch(() => null);
+  slots = rankByLearnedAffinity(slots, learnedModel, kycAnswers);
 
   let pick = (slots || [])[0] || null;
   let foundingOwnerId: string | null = null;
@@ -87,7 +100,10 @@ export async function pickInterstitialAd(base44: any, db: any, opts?: { ppcPrior
   //    (its ad_id matches no advertiser). Falls back to the plain house ad if cross-sell is turned off.
   let ad: Record<string, unknown>;
   if (pick) {
-    ad = { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser, earned_advertiser: earnedAdvertiser, makegood: !!makegoodOwnerId, makegood_owner_id: makegoodOwnerId };
+    ad = { ad_id: pick.id, title: pick.title || pick.product_name || pick.advertiser_name || "Sponsored", image_url: pick.image_url || "", url: pick.landing_url || pick.product_url || "", founding: !!foundingOwnerId, founding_owner_id: foundingOwnerId, ppc_advertiser: ppcAdvertiser, earned_advertiser: earnedAdvertiser, makegood: !!makegoodOwnerId, makegood_owner_id: makegoodOwnerId,
+      // Advertiser audio/video creative (falls back to the poster/thumbnail image when video/audio is
+      // disabled or absent). The renderer plays this; the mandatory countdown is unchanged.
+      ...resolveAdMedia(pick) };
   } else if (houseCrossSellEnabled()) {
     ad = pickHouseCrossSell(opts?.user);
   } else {

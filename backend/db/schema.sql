@@ -3404,6 +3404,18 @@ CREATE TABLE IF NOT EXISTS "AdGridAd" (
 CREATE INDEX IF NOT EXISTS "AdGridAd_data_gin" ON "AdGridAd" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AdGridAd_created" ON "AdGridAd" (created_date DESC);
 
+-- AdTargetingModel: singleton holding the self-learning ad-targeting model (ad-targeting-ai.ts). data:
+-- { singleton:"ad_targeting", model:{version,updated_at,events,creatives,cohort_global}, autonomy, updated_by }
+CREATE TABLE IF NOT EXISTS "AdTargetingModel" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdTargetingModel_data_gin" ON "AdTargetingModel" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdTargetingModel_created" ON "AdTargetingModel" (created_date DESC);
+
 -- AdImpression: a served ad impression (e.g. the 30s survey interstitial). Feeds your own ad-revenue
 -- reporting (flywheel #1). data: { user_id, ad_id, placement, seconds, day }
 CREATE TABLE IF NOT EXISTS "AdImpression" (

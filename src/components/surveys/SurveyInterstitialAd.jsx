@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2, X } from 'lucide-react';
 import BrandedAd from '@/components/branding/BrandedAd';
+import AdMedia from '@/components/ads/AdMedia';
 
 /**
  * SurveyInterstitialAd — the mandatory full-screen ad shown BETWEEN surveys for non-premium users
@@ -58,6 +59,9 @@ export default function SurveyInterstitialAd({ onDone }) {
     );
   }
 
+  // If a video/audio ad ends before the countdown, unlock "Continue" early (unless disabled by the ad).
+  const onMediaEnded = () => { if (ad?.unlock_on_end !== false) setLeft(0); };
+
   const done = left <= 0;
   return (
     // TRUE full-screen: fills the entire viewport edge to edge.
@@ -70,14 +74,7 @@ export default function SurveyInterstitialAd({ onDone }) {
       {/* Ad fills the whole screen */}
       <div className="flex-1 min-h-0">
         <BrandedAd branding={ad?.branding} fill>
-          {ad?.image_url
-            ? <img src={ad.image_url} alt={ad.title || 'Ad'} className="h-full w-full object-cover" />
-            : (
-              <div className="h-full w-full bg-gradient-to-b from-slate-900 to-black flex flex-col items-center justify-center text-center text-white p-8">
-                <div className="text-3xl font-bold">{ad?.title || 'Sponsored'}</div>
-                <div className="text-white/70 text-base mt-3 max-w-md">Thanks for supporting Get Goods Gratis.</div>
-              </div>
-            )}
+          <AdMedia ad={ad} onEnded={onMediaEnded} />
         </BrandedAd>
       </div>
 

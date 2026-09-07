@@ -4,6 +4,9 @@ import { db } from "../../sdk/db.ts";
 import { adgridThumbnailsPerSession, adgridThumbnailPrice, INTEREST_QUESTION } from "../../sdk/adgrid.ts";
 import { isPremiumUser } from "../../sdk/survey-reward.ts";
 import { adGridAccess } from "../../sdk/adgrid-access.ts";
+import { normalizeTargeting, userMatchesTargeting } from "../../sdk/ad-targeting.ts";
+import { resolveAdMedia } from "../../sdk/ad-media.ts";
+import { rankByLearnedAffinity, loadTargetingModel } from "../../sdk/ad-targeting-ai.ts";
 
 // adGridFeed (authenticated) — the daily grid of thumbnails. Premium users always get it; non-premium users
 // get it from the non-reserved slice (or with a reallocated slot), else they're told to use BitLabs. Each
@@ -40,12 +43,28 @@ export default __handler(async (req) => {
     }
 
     const ads = await base44.asServiceRole.entities.AdGridAd.filter({ status: "active" }, "-created_date", 500).catch(() => []) as Record<string, unknown>[];
-    const eligible = (ads || []).filter((a) => !notInterested.has(String(a.id)) && !answeredToday.has(String(a.id)));
+    // Cohort targeting: a targeted PPC ad only shows to users whose Know-Your-Customer answers match its
+    // cohort; untargeted ads show to everyone. Same matcher used by the interstitial + social placements.
+    const kycAnswers = (user?.kyc_answers as Record<string, unknown> | undefined) ?? null;
+    let eligible = (ads || []).filter((a) =>
+      !notInterested.has(String(a.id)) &&
+      !answeredToday.has(String(a.id)) &&
+      userMatchesTargeting(normalizeTargeting(a.targeting), kycAnswers),
+    );
+
+    // Self-learning AI layer: order the eligible ads by learned cohort affinity for THIS user (a relevance
+    // bias only — it never excludes an ad or changes an advertiser's chosen targeting). No-ops when the
+    // model is empty or the AI layer is off/killed.
+    const model = await loadTargetingModel(db).catch(() => null);
+    eligible = rankByLearnedAffinity(eligible, model, kycAnswers);
 
     const thumbnails = eligible.slice(0, n).map((a) => ({
       ad_id: a.id,
       product_name: a.product_name,
       image_url: a.image_url || null,
+      // Advertiser audio/video creative (falls back to the thumbnail image when off/absent). The PPC survey
+      // UI plays the video with the questions in a bar beneath it.
+      ...resolveAdMedia(a),
       questions: [
         ...((a.questions as any[]) || []).map((q) => ({ q: q.q, options: q.options })),
         { q: INTEREST_QUESTION, options: ["Yes", "No"], is_interest: true },   // permanent Option E
