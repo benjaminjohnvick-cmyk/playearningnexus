@@ -87,6 +87,7 @@ const CF_API_TOKEN = Deno.env.get("CLOUDFLARE_API_TOKEN");
 const GROQ_MODEL_MAP: Record<string, string> = {
   gpt_5_mini: Deno.env.get("GROQ_MODEL_SMALL") ?? "llama-3.1-8b-instant",
   gpt_5: Deno.env.get("GROQ_MODEL_LARGE") ?? "llama-3.3-70b-versatile",
+  frontier: Deno.env.get("GROQ_MODEL_LARGE") ?? "llama-3.3-70b-versatile", // Groq has no frontier model — use its largest
   default: Deno.env.get("GROQ_MODEL_SMALL") ?? "llama-3.1-8b-instant",
 };
 
@@ -94,6 +95,7 @@ const GROQ_MODEL_MAP: Record<string, string> = {
 const MODEL_MAP: Record<string, string> = {
   gpt_5_mini: Deno.env.get("LLM_MODEL_SMALL") ?? "gpt-4o-mini",
   gpt_5: Deno.env.get("LLM_MODEL_LARGE") ?? "gpt-4o",
+  frontier: Deno.env.get("LLM_MODEL_FRONTIER") ?? "gpt-6-astra", // opt-in frontier tier (see ai-models.ts)
   default: Deno.env.get("LLM_MODEL_DEFAULT") ?? "gpt-4o-mini",
 };
 
@@ -103,6 +105,7 @@ const MODEL_MAP: Record<string, string> = {
 const CLAUDE_MODEL_MAP: Record<string, string> = {
   gpt_5_mini: Deno.env.get("CLAUDE_MODEL_SMALL") ?? "claude-3-5-haiku-latest",
   gpt_5: Deno.env.get("CLAUDE_MODEL_LARGE") ?? "claude-3-5-sonnet-latest",
+  frontier: Deno.env.get("CLAUDE_MODEL_FRONTIER") ?? "claude-3-5-sonnet-latest", // Anthropic's top model (no Astra on this provider)
   // Cheap tier by DEFAULT (matches the OpenAI default, which is already gpt-4o-mini). The ~190 call
   // sites that don't name a model do simple structured work and run cheap on both providers; sites that
   // need real reasoning pass model:"gpt_5" explicitly. Owner can override globally via CLAUDE_MODEL_DEFAULT.
@@ -113,17 +116,33 @@ const CLAUDE_MODEL_MAP: Record<string, string> = {
 function resolveModelId(alias?: string, providerOverride?: string): string {
   let key = alias ?? "default";
   // Cost floor: dump EVERYTHING into the cheap tier (small Llama). Only downgrades the known tier aliases —
-  // raw model ids (llama…, claude…, contains "/") pass through untouched.
-  if ((key === "gpt_5" || key === "gpt_5_mini" || key === "default") && snapBool("AI_FORCE_CHEAP_TIER", false)) {
+  // raw model ids (llama…, claude…, contains "/") pass through untouched. NOTE: this also downgrades the
+  // opt-in "frontier" tier, so the global cost brake stays absolute — turn AI_FORCE_CHEAP_TIER OFF to let
+  // the frontier model (e.g. Astra) actually run for the jobs the ai-models.ts router points at it.
+  if ((key === "gpt_5" || key === "gpt_5_mini" || key === "frontier" || key === "default") && snapBool("AI_FORCE_CHEAP_TIER", false)) {
     key = "gpt_5_mini";
   }
   // Provider + per-tier model IDs are admin-adjustable live (DB override → env → default).
   const provider = providerOverride ?? snapString("LLM_PROVIDER", LLM_PROVIDER);
+  if (provider === "gateway") {
+    // Unified gateway (OpenRouter-style, OpenAI-compatible): the registry may name a full provider-prefixed
+    // id (e.g. "openai/gpt-6-astra", "anthropic/claude-…") — pass those straight through. Tier aliases map to
+    // configurable gateway ids so "always the latest from each company" is just a settings change.
+    if (key.includes("/") || key.startsWith("gpt-") || key.startsWith("claude") || key.startsWith("llama") || /^o[0-9]/.test(key)) return key;
+    const gwmap: Record<string, string> = {
+      gpt_5_mini: snapString("GATEWAY_MODEL_SMALL", "openai/gpt-4o-mini"),
+      gpt_5: snapString("GATEWAY_MODEL_LARGE", "openai/gpt-4o"),
+      frontier: snapString("GATEWAY_MODEL_FRONTIER", "openai/gpt-6-astra"),
+      default: snapString("GATEWAY_MODEL_SMALL", "openai/gpt-4o-mini"),
+    };
+    return gwmap[key] ?? gwmap.default;
+  }
   if (provider === "groq") {
     if (key.startsWith("llama") || key.includes("/")) return key;
     const gmap: Record<string, string> = {
       gpt_5_mini: snapString("GROQ_MODEL_SMALL", GROQ_MODEL_MAP.gpt_5_mini),
       gpt_5: snapString("GROQ_MODEL_LARGE", GROQ_MODEL_MAP.gpt_5),
+      frontier: snapString("GROQ_MODEL_LARGE", GROQ_MODEL_MAP.frontier),
       default: snapString("GROQ_MODEL_SMALL", GROQ_MODEL_MAP.default),
     };
     return gmap[key] ?? gmap.default;
@@ -135,13 +154,17 @@ function resolveModelId(alias?: string, providerOverride?: string): string {
     const cmap: Record<string, string> = {
       gpt_5_mini: snapString("CLAUDE_MODEL_SMALL", CLAUDE_MODEL_MAP.gpt_5_mini),
       gpt_5: snapString("CLAUDE_MODEL_LARGE", CLAUDE_MODEL_MAP.gpt_5),
+      frontier: snapString("CLAUDE_MODEL_FRONTIER", CLAUDE_MODEL_MAP.frontier),
       default: snapString("CLAUDE_MODEL_DEFAULT", CLAUDE_MODEL_MAP.default),
     };
     return cmap[key] ?? cmap.default;
   }
+  // default: OpenAI. Raw OpenAI ids (gpt-6-astra, o3, …) and gateway-style "vendor/model" ids pass through.
+  if (key.startsWith("gpt-") || key.includes("/") || /^o[0-9]/.test(key)) return key;
   const mmap: Record<string, string> = {
     gpt_5_mini: snapString("LLM_MODEL_SMALL", MODEL_MAP.gpt_5_mini),
     gpt_5: snapString("LLM_MODEL_LARGE", MODEL_MAP.gpt_5),
+    frontier: snapString("LLM_MODEL_FRONTIER", MODEL_MAP.frontier),
     default: snapString("LLM_MODEL_DEFAULT", MODEL_MAP.default),
   };
   return mmap[key] ?? mmap.default;
@@ -190,6 +213,35 @@ async function invokeLLMRaw(args: LLMArgs): Promise<unknown> {
     } catch (e) {
       if (!OPENAI_KEY) throw e;   // no managed fallback — surface the Groq error
       // else fall through to OpenAI
+    }
+  }
+
+  if (provider === "gateway") {
+    // Unified model gateway (OpenRouter-style, OpenAI-compatible). One key reaches every company's models by
+    // id, and adding "the latest model" is a settings change — no new provider branch. Falls back to OpenAI
+    // on error if an OpenAI key is set. See AI-MODEL-MODULE-AND-AUTONOMY-MAP.md.
+    const gwUrl = snapString("AI_GATEWAY_URL", "https://openrouter.ai/api/v1/chat/completions");
+    const gwKey = Deno.env.get("AI_GATEWAY_KEY") || Deno.env.get("OPENROUTER_API_KEY") || "";
+    try {
+      const r = await fetch(gwUrl, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${gwKey}` },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: "system", content: sys }, { role: "user", content: args.prompt + (wantJson ? `\n\nJSON schema: ${JSON.stringify(args.response_json_schema)}` : "") }],
+          ...(wantJson ? { response_format: { type: "json_object" } } : {}),
+        }),
+      });
+      if (!r.ok) throw Object.assign(new Error(`Gateway ${r.status}`), { status: r.status });
+      const j = await r.json();
+      const text = j?.choices?.[0]?.message?.content ?? "";
+      const usd = estimateLlmCostUsd((Number(j?.usage?.prompt_tokens) || 0) + (Number(j?.usage?.completion_tokens) || 0));
+      try { addAiSpend(usd); } catch { /* best-effort */ }
+      recordProviderUse("llm", usd);
+      return wantJson ? safeJson(text) : text;
+    } catch (e) {
+      if (!OPENAI_KEY) throw e;   // no managed fallback — surface the gateway error
+      // else fall through to the OpenAI path below
     }
   }
 

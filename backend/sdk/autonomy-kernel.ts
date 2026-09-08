@@ -38,13 +38,25 @@ export const DOMAINS: DomainDef[] = [
   { id: "matching", label: "Survey / offer matching", group: "ops", klass: "auto_ok", default_mode: "manual" },
   { id: "onboarding", label: "Onboarding flows", group: "ops", klass: "auto_ok", default_mode: "manual" },
   { id: "support_answer", label: "Support answer drafts", group: "ops", klass: "auto_ok", default_mode: "manual" },
+  // ── auto_ok expansion: the operational loop of "running the business" — reversible, bounded, high-volume ──
+  { id: "ad_optimization", label: "Ad delivery optimization (within budget caps)", group: "revenue", klass: "auto_ok", default_mode: "manual", note: "Reallocates delivery INSIDE fixed budget/rate caps — never raises spend (that's a gate)." },
+  { id: "content_calendar", label: "Content calendar scheduling", group: "content", klass: "auto_ok", default_mode: "manual" },
+  { id: "seo_metadata", label: "SEO metadata & on-page copy", group: "content", klass: "auto_ok", default_mode: "manual" },
+  { id: "personalization_home", label: "Homepage / feed personalization", group: "revenue", klass: "auto_ok", default_mode: "manual" },
+  { id: "analytics_report", label: "Analytics & performance reporting", group: "ops", klass: "auto_ok", default_mode: "manual" },
+  { id: "doc_generation", label: "Internal document & report generation", group: "ops", klass: "auto_ok", default_mode: "manual", note: "Drafts INTERNAL docs/reports (frontier model ok). Publishing EXTERNAL/legal content stays gated (legal_content)." },
+  { id: "ops_monitor", label: "Infra / anomaly monitoring & suggestions", group: "ops", klass: "auto_ok", default_mode: "manual", note: "Watches and recommends; changing infra/security config is gated (security_config)." },
+  { id: "moderation_triage", label: "Content moderation triage (flag & queue)", group: "risk", klass: "auto_ok", default_mode: "manual", note: "Flags and queues only — the actual ban/removal is gated (account_action)." },
   // ── permanent_gate: money / identity / legal / risk — NEVER auto ──
   { id: "payout", label: "Payouts / withdrawals", group: "money", klass: "permanent_gate", note: "Money out — money-transmission risk. AI prepares; human releases." },
   { id: "refund", label: "Refunds (above threshold)", group: "money", klass: "permanent_gate" },
   { id: "billing_change", label: "Billing / subscription changes", group: "money", klass: "permanent_gate", note: "Negative-option-billing risk — counsel-gated." },
+  { id: "advertiser_billing", label: "Advertiser pricing / billing changes", group: "money", klass: "permanent_gate", note: "What advertisers are charged — money & contract terms." },
   { id: "kyc_tax", label: "KYC / tax (W-9 / 1099)", group: "identity", klass: "permanent_gate" },
+  { id: "data_sharing", label: "External data sharing / exports", group: "identity", klass: "permanent_gate", note: "Sharing user data with third parties — privacy-gated (GDPR/CCPA)." },
   { id: "dispute", label: "Disputes / chargebacks", group: "risk", klass: "permanent_gate" },
   { id: "account_action", label: "Bans / account actions", group: "risk", klass: "permanent_gate" },
+  { id: "security_config", label: "Security / infra configuration changes", group: "risk", klass: "permanent_gate", note: "Prohibited-action class — human only, never delegated to the model." },
   { id: "legal_content", label: "Legal / public terms & claims", group: "legal", klass: "permanent_gate" },
 ];
 

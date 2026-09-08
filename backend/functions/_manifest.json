@@ -111,6 +111,7 @@
   "aiMarketingCopyGenerator",
   "aiMarketplaceQualityVetting",
   "aiModelReadiness",
+  "aiModelStatus",
   "aiOnboardingPersonalizer",
   "aiOptimizerRun",
   "aiOrchestrator",

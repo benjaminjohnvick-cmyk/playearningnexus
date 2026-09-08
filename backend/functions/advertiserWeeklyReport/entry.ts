@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import { computeAdvertiserMetrics, benchmarkComparison, ppcBenchmarks, advertiserReportsEnabled } from "../../sdk/advertiser-metrics.ts";
+import { modelForJob } from "../../sdk/ai-models.ts";
 
 // advertiserWeeklyReport (scheduled service-role, or manual per-advertiser) — the automatic weekly AI
 // performance report for EVERY advertiser across ALL tiers/offers. It measures the conventional PPC metric set
@@ -44,6 +45,7 @@ export default __handler(async (req) => {
       if (metrics.substantiated) {
         try {
           const ai = await base44.asServiceRole.integrations.Core.InvokeLLM({
+            model: modelForJob("document"),   // routed via ai-models.ts (document job → frontier when enabled, else cheap)
             prompt: `You are a PPC performance analyst. Using ONLY these measured weekly metrics for one advertiser, ` +
               `write a 1-sentence plain summary and 3-5 specific, actionable recommendations to improve results. ` +
               `Compare to standard PPC benchmarks. NEVER promise or guarantee a return or ROI — recommend, don't promise.\n\n` +
