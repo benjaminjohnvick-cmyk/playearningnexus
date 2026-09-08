@@ -45,6 +45,9 @@ export default __handler(async (req) => {
     const exceptions: Array<{ severity: number; type: string; domain?: string; label?: string; detail: string; count?: number }> = [];
     const domainCards: Record<string, unknown>[] = [];
     let autoDomains = 0, earningDomains = 0;
+    // Coverage toward "the whole reversible loop is routed through the kernel": an auto_ok domain counts as
+    // WIRED once it has at least one gated decision on record (i.e. a real action flows through gateAndRun).
+    let autoOkTotal = 0, autoOkWired = 0;
 
     // Global brakes → top-level exceptions.
     if (!autonomyEnabled()) exceptions.push({ severity: 5, type: "autonomy_off", detail: "Autonomy platform is OFF — nothing runs automatically." });
@@ -65,6 +68,8 @@ export default __handler(async (req) => {
 
       if (!policy.permanent_gate && policy.mode === "full") autoDomains++;
       if (!policy.permanent_gate && policy.mode === "earned") earningDomains++;
+      const wired = rows.length > 0;
+      if (dom.klass === "auto_ok") { autoOkTotal++; if (wired) autoOkWired++; }
 
       // Per-domain exceptions.
       if (failed > 0) exceptions.push({ severity: 4, type: "failed_action", domain: dom.id, label: dom.label, count: failed, detail: `${failed} auto-action(s) FAILED in ${dom.label} — review and retry or fix.` });
@@ -78,7 +83,7 @@ export default __handler(async (req) => {
 
       domainCards.push({
         id: dom.id, label: dom.label, group: dom.group, klass: dom.klass,
-        mode: policy.mode, permanent_gate: policy.permanent_gate,
+        mode: policy.mode, permanent_gate: policy.permanent_gate, wired,
         applied, failed, awaiting: awaiting.length, stale,
         agreement: Math.round(agree.agreementRate * 100) / 100, approved_runs: agree.approvedRuns, decisions: agree.humanDecisions,
       });
@@ -98,6 +103,8 @@ export default __handler(async (req) => {
         domains: DOMAINS.length, auto_domains: autoDomains, earning_domains: earningDomains,
         pending_total: (pendingRows || []).length, exceptions_total: exceptions.length,
         window_decisions: (recent || []).length,
+        auto_ok_total: autoOkTotal, auto_ok_wired: autoOkWired,
+        coverage_pct: autoOkTotal > 0 ? Math.round((autoOkWired / autoOkTotal) * 100) : 0,
       },
       exceptions: exceptions.slice(0, 50),
       domains: domainCards,

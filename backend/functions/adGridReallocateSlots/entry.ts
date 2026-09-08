@@ -6,6 +6,7 @@ import {
   engagementScore, reallocEligible, rankCandidates,
   reallocLookbackDays, reallocMinDailyTakeUsd, reallocMaxGrantsPerDay,
 } from "../../sdk/reallocation.ts";
+import { gateAndRun } from "../../sdk/autonomy-gate.ts";
 
 // adGridReallocateSlots (INTERNAL/ADMIN, scheduled) — reallocate unused premium AdGrid slots to the best
 // non-premium earners for the day. Premium members with no earning activity today are treated as no-shows;
@@ -59,23 +60,31 @@ export default __handler(async (req) => {
 
     const winners = rankCandidates(fresh, releasable);
 
-    // 3) Grant + notify.
-    let granted = 0;
+    // 3) Grant + notify — ROUTED THROUGH THE AUTONOMY KERNEL (ad_optimization domain). Reallocation only moves
+    // inventory within the daily grant cap; it auto-applies once that domain has earned autonomy AND the global
+    // live gate is open, otherwise the batch is queued for the overseer (nothing is granted this run).
     const expires = `${today}T23:59:59.999Z`;
-    for (const w of winners) {
-      await base44.asServiceRole.entities.AdGridSlotGrant.create({
-        user_id: w.user_id, granted_date: today, source: "reallocation",
-        engagement: w.engagement, consistent_days: w.consistent_days, expires_at: expires, used: false,
-      }).catch(() => null);
-      await base44.asServiceRole.entities.Notification.create({
-        user_id: w.user_id, type: "reward",
-        title: "⚡ Premium-speed surveys unlocked today",
-        message: "You've earned a one-day pass to our highest-paying surveys — jump in before the day ends.",
-      }).catch(() => null);
-      granted++;
-    }
+    const gate = await gateAndRun("ad_optimization",
+      { summary: `Reallocate ${winners.length} unused premium AdGrid slot(s)`, caps: { max_grants_per_day: reallocMaxGrantsPerDay() }, reversible: true, proposal: { winners: winners.length, date: today } },
+      async () => {
+        let g = 0;
+        for (const w of winners) {
+          await base44.asServiceRole.entities.AdGridSlotGrant.create({
+            user_id: w.user_id, granted_date: today, source: "reallocation",
+            engagement: w.engagement, consistent_days: w.consistent_days, expires_at: expires, used: false,
+          }).catch(() => null);
+          await base44.asServiceRole.entities.Notification.create({
+            user_id: w.user_id, type: "reward",
+            title: "⚡ Premium-speed surveys unlocked today",
+            message: "You've earned a one-day pass to our highest-paying surveys — jump in before the day ends.",
+          }).catch(() => null);
+          g++;
+        }
+        return g;
+      });
+    const granted = gate.executed ? (gate.result ?? 0) : 0;
 
-    return Response.json({ success: true, granted, releasable, candidates: candidates.length, date: today });
+    return Response.json({ success: true, granted, queued: gate.pending, gate_reason: gate.reason, releasable, candidates: candidates.length, date: today });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

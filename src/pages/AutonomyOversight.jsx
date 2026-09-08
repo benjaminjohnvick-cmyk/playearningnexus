@@ -84,8 +84,9 @@ export default function AutonomyOversight() {
       </div>
 
       {/* Global brakes / summary tiles */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
         <Tile label="Domains" value={s.domains} />
+        <Tile label="Loop routed" value={`${s.coverage_pct ?? 0}%`} sub={`${s.auto_ok_wired ?? 0}/${s.auto_ok_total ?? 0} wired`} accent={(s.coverage_pct ?? 0) >= 100 ? 'emerald' : 'blue'} />
         <Tile label="On auto" value={s.auto_domains} accent="emerald" />
         <Tile label="Earning trust" value={s.earning_domains} accent="blue" />
         <Tile label="Pending approvals" value={s.pending_total} accent={s.pending_total ? 'amber' : undefined} />
@@ -158,7 +159,10 @@ export default function AutonomyOversight() {
             {domains.map((d) => (
               <div key={d.id} className="rounded-md border border-slate-200 p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <div className="text-sm font-medium">{d.label}</div>
+                  <div className="text-sm font-medium flex items-center gap-1.5">
+                    {!d.permanent_gate && <span title={d.wired ? 'routed through the kernel' : 'not yet wired'} className={`inline-block w-2 h-2 rounded-full ${d.wired ? 'bg-emerald-500' : 'bg-slate-300'}`} />}
+                    {d.label}
+                  </div>
                   <Badge className={modeBadge(d.mode, d.permanent_gate)}>{d.permanent_gate ? 'gated' : d.mode}</Badge>
                 </div>
                 <div className="mt-1 text-xs text-slate-500 flex flex-wrap gap-x-3 gap-y-0.5">
@@ -178,13 +182,14 @@ export default function AutonomyOversight() {
   );
 }
 
-function Tile({ label, value, accent }) {
+function Tile({ label, value, accent, sub }) {
   const cls = accent === 'emerald' ? 'text-emerald-600' : accent === 'blue' ? 'text-blue-600'
     : accent === 'amber' ? 'text-amber-600' : accent === 'red' ? 'text-red-600' : 'text-slate-800';
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-3">
       <div className="text-xs text-slate-500">{label}</div>
       <div className={`text-2xl font-bold ${cls}`}>{value ?? 0}</div>
+      {sub && <div className="text-[10px] text-slate-400 mt-0.5">{sub}</div>}
     </div>
   );
 }

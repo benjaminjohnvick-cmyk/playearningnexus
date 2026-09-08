@@ -37,11 +37,25 @@ What it does, every time:
 It **fails closed**: any internal error means *not executed* (queued), never a throw into the caller. And it
 carries an `undoRef` so an auto-applied action stays reversible from the oversight view.
 
-**First live wiring:** `autoPublishContentCalendar` previously auto-approved draft posts unconditionally. It now
-routes that approval through the `content_calendar` domain — so it auto-approves only once that domain has earned
-autonomy and the global live gate is open; otherwise the drafts wait and are queued for review. Nothing is lost;
-the action simply graduates instead of always firing. This is the template for routing the rest of the
-operational loop through the kernel.
+**Live wirings so far** (each previously acted unconditionally; each now graduates through its domain, with a
+safe fallback of "queue for the overseer" when not yet earned):
+
+- `autoPublishContentCalendar` → **content_calendar** — auto-approving scheduled posts.
+- `autoActivityFeedPersonalizer` → **personalization_home** — the daily personalized-recommendation refresh.
+- `adGridReallocateSlots` → **ad_optimization** — reallocating unused premium ad slots within the daily cap.
+- `advertiserWeeklyReport` also routes its writer through the model router's `document` job (see the model-module note).
+
+Each is the same one-line pattern (`gateAndRun("<domain>", …, run)`), so routing the remaining operational
+sites is mechanical, one action at a time.
+
+## 2a. Coverage — measuring "how much of the loop is routed"
+
+The oversight endpoint reports **coverage**: an `auto_ok` domain counts as *wired* once at least one real action
+has flowed through `gateAndRun` for it (it has a decision on record). The dashboard shows this as a **"Loop
+routed" %** tile (`auto_ok_wired / auto_ok_total`) and a green/grey dot on each domain card. That number is the
+honest progress meter toward "the whole reversible loop runs through the kernel" — it climbs as each remaining
+operational action gets its one-line wiring, and it deliberately excludes the permanent-gate spine (which never
+routes to auto by design).
 
 ## 2. The exception dashboard — `autonomyOversight` + `AutonomyOversight.jsx`
 
@@ -75,9 +89,11 @@ non-code part — have counsel confirm the irreducible permanent-gate list for y
 ## Files
 
 - **New:** `backend/sdk/autonomy-gate.ts`, `backend/sdk/autonomy-gate.test.ts` (6/6),
-  `backend/functions/autonomyOversight/entry.ts`, `src/pages/AutonomyOversight.jsx`.
-- **Changed:** `backend/functions/autoPublishContentCalendar/entry.ts` (routed through the gate),
-  `backend/functions/_manifest.json`, `backend/sdk/settings.ts` (`AUTONOMY_PENDING_STALE_HOURS`),
+  `backend/functions/autonomyOversight/entry.ts` (now with the coverage map), `src/pages/AutonomyOversight.jsx`.
+- **Routed through the gate:** `backend/functions/autoPublishContentCalendar/entry.ts` (content_calendar),
+  `backend/functions/autoActivityFeedPersonalizer/entry.ts` (personalization_home),
+  `backend/functions/adGridReallocateSlots/entry.ts` (ad_optimization).
+- **Changed:** `backend/functions/_manifest.json`, `backend/sdk/settings.ts` (`AUTONOMY_PENDING_STALE_HOURS`),
   `src/Layout.jsx` (admin nav entry).
 
 ## Related
