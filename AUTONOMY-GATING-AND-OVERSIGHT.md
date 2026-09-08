@@ -50,12 +50,25 @@ sites is mechanical, one action at a time.
 
 ## 2a. Coverage — measuring "how much of the loop is routed"
 
-The oversight endpoint reports **coverage**: an `auto_ok` domain counts as *wired* once at least one real action
-has flowed through `gateAndRun` for it (it has a decision on record). The dashboard shows this as a **"Loop
-routed" %** tile (`auto_ok_wired / auto_ok_total`) and a green/grey dot on each domain card. That number is the
-honest progress meter toward "the whole reversible loop runs through the kernel" — it climbs as each remaining
-operational action gets its one-line wiring, and it deliberately excludes the permanent-gate spine (which never
-routes to auto by design).
+The oversight endpoint reports **coverage** over the domains that are actually worth gating. Each `auto_ok`
+domain carries two static flags on the domain map: **`gateable`** (it has a discrete, reversible, autonomous
+action worth routing) and **`wired`** (the code routes an action through `gateAndRun` today). Coverage =
+`gateable_wired / gateable_total`, shown as the **"Loop routed" %** tile and a per-domain dot (emerald = routed,
+ringed = also live, grey = gateable-not-yet-wired, faint = non-gateable by design).
+
+Crucially, non-gateable domains are **excluded with a documented reason** rather than counted as gaps, because
+gating them would be theater: read-only reporting/monitoring (`analytics_report`, `ops_monitor`,
+`doc_generation`), on-demand/user-initiated actions (`creative`), run-at-signup flows (`onboarding`), work
+governed by a separate mechanism (`video` autopilot), continuous ranking with no discrete apply (`matching`),
+enforcement that belongs on a real gate (`moderation_triage` → `account_action`), features that don't exist yet
+(`seo_metadata`), or actions already covered elsewhere (`recommendation` → `personalization_home`, `social`'s
+opt-in/#ad gate, `pricing_experiment`'s review flow).
+
+**The gateable set is the reversible operational loop: `content_calendar`, `personalization_home`,
+`ad_optimization`, `catalog`, and `survey` — all five wired, so coverage reads 100%.** The meter is *static*
+(measured from code, not runtime traffic), so it reflects real wiring even before launch; the per-domain dot's
+ring separately shows which have actually fired. Adding a genuinely new autonomous action later means adding a
+gateable domain and wiring it — the meter would then show the new work as the gap to close.
 
 ## 2. The exception dashboard — `autonomyOversight` + `AutonomyOversight.jsx`
 

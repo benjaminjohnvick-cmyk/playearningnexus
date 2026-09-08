@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { gateAndRun } from "../../sdk/autonomy-gate.ts";
 
 export default __handler(async (req) => {
   try {
@@ -9,49 +10,59 @@ export default __handler(async (req) => {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const userGroups = await base44.asServiceRole.entities.UserGroup.list('-group_number');
-    const now = new Date();
-    const rotations = [];
+    // Featured-game rotation — ROUTED THROUGH THE AUTONOMY KERNEL (catalog domain). Rotating which game is
+    // featured is reversible merchandising; it auto-applies once the catalog domain has earned autonomy AND the
+    // global live gate is open, otherwise the batch is queued for the overseer (nothing rotates this run).
+    const gate = await gateAndRun("catalog",
+      { summary: "Rotate featured games for eligible user groups", reversible: true },
+      async () => {
+        const userGroups = await base44.asServiceRole.entities.UserGroup.list('-group_number');
+        const now = new Date();
+        const rotations = [];
 
-    for (const group of userGroups) {
-      if (!group.is_active) continue;
+        for (const group of userGroups) {
+          if (!group.is_active) continue;
 
-      // Check if rotation is needed (6 days since last featured)
-      const daysSince = group.featured_game_start_date
-        ? (now - new Date(group.featured_game_start_date)) / (1000 * 60 * 60 * 24)
-        : 999;
+          // Check if rotation is needed (6 days since last featured)
+          const daysSince = group.featured_game_start_date
+            ? (now - new Date(group.featured_game_start_date)) / (1000 * 60 * 60 * 24)
+            : 999;
 
-      if (daysSince < 6) continue;
+          if (daysSince < 6) continue;
 
-      // Find next game to feature: priority games first, then queue
-      const priorityGames = await base44.asServiceRole.entities.Game.filter({ priority_payment: true, status: 'approved' });
-      const queuedGames = await base44.asServiceRole.entities.Game.filter({ status: 'approved' }, 'queue_position');
+          // Find next game to feature: priority games first, then queue
+          const priorityGames = await base44.asServiceRole.entities.Game.filter({ priority_payment: true, status: 'approved' });
+          const queuedGames = await base44.asServiceRole.entities.Game.filter({ status: 'approved' }, 'queue_position');
 
-      const nextGame = priorityGames[0] || queuedGames[0];
-      if (!nextGame) continue;
+          const nextGame = priorityGames[0] || queuedGames[0];
+          if (!nextGame) continue;
 
-      // Move old featured game to library
-      if (group.current_featured_game_id) {
-        await base44.asServiceRole.entities.Game.update(group.current_featured_game_id, { status: 'library' });
-      }
+          // Move old featured game to library
+          if (group.current_featured_game_id) {
+            await base44.asServiceRole.entities.Game.update(group.current_featured_game_id, { status: 'library' });
+          }
 
-      // Feature new game
-      await base44.asServiceRole.entities.Game.update(nextGame.id, {
-        status: 'featured',
-        featured_start_date: now.toISOString(),
-        featured_end_date: new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString(),
-        user_group_id: group.id,
+          // Feature new game
+          await base44.asServiceRole.entities.Game.update(nextGame.id, {
+            status: 'featured',
+            featured_start_date: now.toISOString(),
+            featured_end_date: new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString(),
+            user_group_id: group.id,
+          });
+
+          await base44.asServiceRole.entities.UserGroup.update(group.id, {
+            current_featured_game_id: nextGame.id,
+            featured_game_start_date: now.toISOString(),
+          });
+
+          rotations.push({ group: group.group_number, game: nextGame.title });
+        }
+
+        return { rotations, checked: userGroups.length };
       });
 
-      await base44.asServiceRole.entities.UserGroup.update(group.id, {
-        current_featured_game_id: nextGame.id,
-        featured_game_start_date: now.toISOString(),
-      });
-
-      rotations.push({ group: group.group_number, game: nextGame.title });
-    }
-
-    return Response.json({ ok: true, rotations, checked: userGroups.length });
+    if (!gate.executed) return Response.json({ ok: true, rotations: [], queued: gate.pending, gate_reason: gate.reason });
+    return Response.json({ ok: true, rotations: gate.result?.rotations ?? [], checked: gate.result?.checked ?? 0 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

@@ -1,7 +1,10 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { gateAndRun } from "../../sdk/autonomy-gate.ts";
 
-// Scheduled: runs every hour to auto-distribute surveys to matched users
+// Scheduled: runs every hour to auto-distribute surveys to matched users — ROUTED THROUGH THE AUTONOMY KERNEL
+// (survey domain). The distribution pass auto-runs once the survey domain has earned autonomy AND the global
+// live gate is open; otherwise it's queued for the overseer (no notifications sent this run). Reversible.
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -9,6 +12,10 @@ export default __handler(async (req) => {
     // Get all active surveys
     const activeSurveys = await base44.asServiceRole.entities.PPCSurvey.filter({ status: 'active' });
     if (!activeSurveys.length) return Response.json({ message: 'No active surveys' });
+
+    const gate = await gateAndRun("survey",
+      { summary: `Auto-distribute ${activeSurveys.length} active survey(s) to matched users`, reversible: true },
+      async () => {
 
     // Get all users
     const users = await base44.asServiceRole.entities.User.list();
@@ -70,7 +77,11 @@ Should this user be notified about this survey? Return match_score (0-100) and n
       }
     }
 
-    return Response.json({ success: true, notifications_sent: notificationsSent, surveys_processed: activeSurveys.length });
+    return notificationsSent;
+      });
+
+    if (!gate.executed) return Response.json({ success: true, notifications_sent: 0, surveys_processed: activeSurveys.length, queued: gate.pending, gate_reason: gate.reason });
+    return Response.json({ success: true, notifications_sent: gate.result ?? 0, surveys_processed: activeSurveys.length });
   } catch (error) {
     console.error('AI auto-distribute error:', error);
     return Response.json({ error: error.message }, { status: 500 });

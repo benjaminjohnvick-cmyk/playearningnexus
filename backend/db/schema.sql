@@ -4389,3 +4389,16 @@ CREATE TABLE IF NOT EXISTS "PmfAgentPlan" (
 );
 CREATE INDEX IF NOT EXISTS "PmfAgentPlan_data_gin" ON "PmfAgentPlan" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "PmfAgentPlan_created" ON "PmfAgentPlan" (created_date DESC);
+
+-- SeoMetadata: AI-generated SEO + AI-search metadata per entity (page/product/app/advertiser_listing/category):
+-- meta tags, JSON-LD structured data, an AI-search answer snippet, keywords, and FAQ. One record per entity.
+CREATE TABLE IF NOT EXISTS "SeoMetadata" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "SeoMetadata_data_gin" ON "SeoMetadata" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "SeoMetadata_created" ON "SeoMetadata" (created_date DESC);
+CREATE INDEX IF NOT EXISTS "SeoMetadata_entity" ON "SeoMetadata" ((data->>'entity_type'), (data->>'entity_id'));

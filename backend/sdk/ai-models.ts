@@ -65,6 +65,7 @@ export const JOBS: JobRoute[] = [
   { job: "reasoning", label: "Reasoning / decisions", defaultModel: "standard", fallback: ["cheap"], group: "general" },
   { job: "ad_copy", label: "Ad copy generation", defaultModel: "cheap", fallback: ["standard"], group: "content" },
   { job: "creative", label: "Creative concepting", defaultModel: "standard", fallback: ["cheap"], group: "content" },
+  { job: "seo", label: "SEO & AI-search optimization", defaultModel: "standard", fallback: ["cheap"], group: "content" },
   { job: "document", label: "Document / report generation", defaultModel: "astra", fallback: ["standard", "cheap"], group: "documents" },
   { job: "ops_reasoning", label: "Operations reasoning (autonomy)", defaultModel: "standard", fallback: ["cheap"], group: "ops" },
   { job: "support", label: "Support answer drafts", defaultModel: "cheap", fallback: ["standard"], group: "ops" },

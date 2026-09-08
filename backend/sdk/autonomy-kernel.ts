@@ -22,31 +22,41 @@ export interface DomainDef {
   group: string;                 // content | revenue | ops | money | identity | risk | legal
   klass: DomainClass;
   default_mode: Autonomy;        // starting autonomy for auto_ok domains (permanent_gate is always manual)
+  gateable?: boolean;            // true = this domain has a discrete, reversible, autonomous action routed
+                                 //        through gateAndRun (it counts toward the "loop routed" coverage).
+                                 //        Read-only (reporting/monitoring), on-demand, run-at-signup, or
+                                 //        separately-governed domains (e.g. video autopilot) are NOT gateable.
+  wired?: boolean;               // true = the code actually routes an action through the gate today. Coverage =
+                                 //        wired gateable / total gateable, so it reflects real wiring, not runtime.
   note?: string;
 }
 
 // The initial domain map. auto_ok domains can graduate; permanent_gate domains never do (compliance spine).
 export const DOMAINS: DomainDef[] = [
   // ── auto_ok: safe, reversible, high-volume — graduate on data ──
-  { id: "video", label: "Video creative", group: "content", klass: "auto_ok", default_mode: "manual", note: "Reference implementation (video autopilot)." },
-  { id: "creative", label: "Ad creative", group: "content", klass: "auto_ok", default_mode: "manual" },
-  { id: "social", label: "Social posts", group: "content", klass: "auto_ok", default_mode: "manual" },
-  { id: "survey", label: "Survey design", group: "content", klass: "auto_ok", default_mode: "manual" },
-  { id: "recommendation", label: "Recommendations / personalization", group: "revenue", klass: "auto_ok", default_mode: "manual" },
-  { id: "pricing_experiment", label: "Pricing experiments", group: "revenue", klass: "auto_ok", default_mode: "manual", note: "Experiments only — not live price changes without a gate." },
-  { id: "catalog", label: "Catalog / merchandising", group: "revenue", klass: "auto_ok", default_mode: "manual" },
-  { id: "matching", label: "Survey / offer matching", group: "ops", klass: "auto_ok", default_mode: "manual" },
-  { id: "onboarding", label: "Onboarding flows", group: "ops", klass: "auto_ok", default_mode: "manual" },
-  { id: "support_answer", label: "Support answer drafts", group: "ops", klass: "auto_ok", default_mode: "manual" },
+  // `gateable` = has a discrete, reversible, autonomous action routed through gateAndRun (counts toward
+  // "loop routed" coverage). Non-gateable auto_ok domains are excluded from coverage WITH a reason, because
+  // gating them would be theater: read-only reporting/monitoring, on-demand/user-initiated actions,
+  // run-at-signup flows, or work governed by a separate mechanism (video autopilot).
+  { id: "video", label: "Video creative", group: "content", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Governed by the dedicated video-autopilot graduated-autonomy mechanism (separate)." },
+  { id: "creative", label: "Ad creative", group: "content", klass: "auto_ok", default_mode: "manual", gateable: false, note: "On-demand, user-initiated generation with its own quota/caps + AI-disclosure gate." },
+  { id: "social", label: "Social posts", group: "content", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Distribution gated by explicit member opt-in + FTC #ad consent (its own gate)." },
+  { id: "survey", label: "Survey design / distribution", group: "content", klass: "auto_ok", default_mode: "manual", gateable: true, wired: true },
+  { id: "recommendation", label: "Recommendations / personalization", group: "revenue", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Covered by the personalization_home domain (same recommendation write)." },
+  { id: "pricing_experiment", label: "Pricing experiments", group: "revenue", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Runs under the experiment + global-review promotion flow; live prices stay gated." },
+  { id: "catalog", label: "Catalog / merchandising", group: "revenue", klass: "auto_ok", default_mode: "manual", gateable: true, wired: true },
+  { id: "matching", label: "Survey / offer matching", group: "ops", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Continuous ranking, no discrete apply to gate." },
+  { id: "onboarding", label: "Onboarding flows", group: "ops", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Runs at signup; must be immediate, not queued behind approval." },
+  { id: "support_answer", label: "Support answer drafts", group: "ops", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Drafts only — a human sends the reply." },
   // ── auto_ok expansion: the operational loop of "running the business" — reversible, bounded, high-volume ──
-  { id: "ad_optimization", label: "Ad delivery optimization (within budget caps)", group: "revenue", klass: "auto_ok", default_mode: "manual", note: "Reallocates delivery INSIDE fixed budget/rate caps — never raises spend (that's a gate)." },
-  { id: "content_calendar", label: "Content calendar scheduling", group: "content", klass: "auto_ok", default_mode: "manual" },
-  { id: "seo_metadata", label: "SEO metadata & on-page copy", group: "content", klass: "auto_ok", default_mode: "manual" },
-  { id: "personalization_home", label: "Homepage / feed personalization", group: "revenue", klass: "auto_ok", default_mode: "manual" },
-  { id: "analytics_report", label: "Analytics & performance reporting", group: "ops", klass: "auto_ok", default_mode: "manual" },
-  { id: "doc_generation", label: "Internal document & report generation", group: "ops", klass: "auto_ok", default_mode: "manual", note: "Drafts INTERNAL docs/reports (frontier model ok). Publishing EXTERNAL/legal content stays gated (legal_content)." },
-  { id: "ops_monitor", label: "Infra / anomaly monitoring & suggestions", group: "ops", klass: "auto_ok", default_mode: "manual", note: "Watches and recommends; changing infra/security config is gated (security_config)." },
-  { id: "moderation_triage", label: "Content moderation triage (flag & queue)", group: "risk", klass: "auto_ok", default_mode: "manual", note: "Flags and queues only — the actual ban/removal is gated (account_action)." },
+  { id: "ad_optimization", label: "Ad delivery optimization (within budget caps)", group: "revenue", klass: "auto_ok", default_mode: "manual", gateable: true, wired: true, note: "Reallocates delivery INSIDE fixed budget/rate caps — never raises spend (that's a gate)." },
+  { id: "content_calendar", label: "Content calendar scheduling", group: "content", klass: "auto_ok", default_mode: "manual", gateable: true, wired: true },
+  { id: "seo_metadata", label: "SEO metadata & on-page copy", group: "content", klass: "auto_ok", default_mode: "manual", gateable: true, wired: true, note: "AI SEO / AI-search generation (seoGenerateMetadata) routes through here." },
+  { id: "personalization_home", label: "Homepage / feed personalization", group: "revenue", klass: "auto_ok", default_mode: "manual", gateable: true, wired: true },
+  { id: "analytics_report", label: "Analytics & performance reporting", group: "ops", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Read-only reporting — no user-facing state change to gate." },
+  { id: "doc_generation", label: "Internal document & report generation", group: "ops", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Internal drafts; report content already routes via the document model job. No user-facing apply." },
+  { id: "ops_monitor", label: "Infra / anomaly monitoring & suggestions", group: "ops", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Read-only monitoring; suggestions only. Changing config is gated (security_config)." },
+  { id: "moderation_triage", label: "Content moderation triage (flag & queue)", group: "risk", klass: "auto_ok", default_mode: "manual", gateable: false, note: "Enforcement (hide/remove) belongs to account_action gate; pure flag/queue has no separate autonomous apply." },
   // ── permanent_gate: money / identity / legal / risk — NEVER auto ──
   { id: "payout", label: "Payouts / withdrawals", group: "money", klass: "permanent_gate", note: "Money out — money-transmission risk. AI prepares; human releases." },
   { id: "refund", label: "Refunds (above threshold)", group: "money", klass: "permanent_gate" },

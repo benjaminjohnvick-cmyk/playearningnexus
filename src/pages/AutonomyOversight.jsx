@@ -86,7 +86,7 @@ export default function AutonomyOversight() {
       {/* Global brakes / summary tiles */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
         <Tile label="Domains" value={s.domains} />
-        <Tile label="Loop routed" value={`${s.coverage_pct ?? 0}%`} sub={`${s.auto_ok_wired ?? 0}/${s.auto_ok_total ?? 0} wired`} accent={(s.coverage_pct ?? 0) >= 100 ? 'emerald' : 'blue'} />
+        <Tile label="Loop routed" value={`${s.coverage_pct ?? 0}%`} sub={`${s.gateable_wired ?? 0}/${s.gateable_total ?? 0} gateable`} accent={(s.coverage_pct ?? 0) >= 100 ? 'emerald' : 'blue'} />
         <Tile label="On auto" value={s.auto_domains} accent="emerald" />
         <Tile label="Earning trust" value={s.earning_domains} accent="blue" />
         <Tile label="Pending approvals" value={s.pending_total} accent={s.pending_total ? 'amber' : undefined} />
@@ -160,7 +160,8 @@ export default function AutonomyOversight() {
               <div key={d.id} className="rounded-md border border-slate-200 p-3">
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-sm font-medium flex items-center gap-1.5">
-                    {!d.permanent_gate && <span title={d.wired ? 'routed through the kernel' : 'not yet wired'} className={`inline-block w-2 h-2 rounded-full ${d.wired ? 'bg-emerald-500' : 'bg-slate-300'}`} />}
+                    {!d.permanent_gate && d.gateable && <span title={d.wired ? (d.active ? 'routed & active' : 'routed through the kernel') : 'gateable — not yet wired'} className={`inline-block w-2 h-2 rounded-full ${d.wired ? (d.active ? 'bg-emerald-500 ring-2 ring-emerald-200' : 'bg-emerald-500') : 'bg-slate-300'}`} />}
+                    {!d.permanent_gate && !d.gateable && <span title={d.note || 'not gated by design'} className="inline-block w-2 h-2 rounded-full bg-slate-200" />}
                     {d.label}
                   </div>
                   <Badge className={modeBadge(d.mode, d.permanent_gate)}>{d.permanent_gate ? 'gated' : d.mode}</Badge>
