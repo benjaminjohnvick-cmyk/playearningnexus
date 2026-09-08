@@ -7,10 +7,11 @@
 🧍 **OWNER** (only you can; needs your identity/card) · 🛠 **DEVELOPER** (following the kit) ·
 🤖 **SCRIPT** (`launch.sh` does it) · ⏳ **WAIT** (external review/approval; nobody can rush it).
 
-**Cost of the developer's part:** with the automation now in the kit (see the cheat-sheet at the
-bottom), the 🛠 steps total **~30–45 hours at $75/hour = ~$2,250–$3,375** for the full PWA + Android +
-iOS launch — or **~$2,850–$4,275 with the user-capacity load test**. The 🧍 owner steps and the fixed
-fees (Apple $99/yr, Google $25, domain, hosting) are separate — see `GamerGain-Launch-Estimate.pdf`.
+**Cost of the developer's part:** the 🛠 steps total **$3,000 = 40 hours at $75/hour** for the FULL scope —
+web PWA + Android + native iOS + AWS auto-scaling + the user-capacity load test, everything ON from day one
+(nothing omitted). Developer labor only; see **`DEV-COST-3000-FULL-SCOPE.md`** (the single source of truth
+for this number). The 🧍 owner steps and the fixed fees (Apple $99/yr, Google $25, domain, hosting) are
+separate — see `GamerGain-Launch-Estimate.pdf`.
 The per-phase hours below are the pre-automation figures; the cheat-sheet scripts bring them down.
 
 ---
@@ -79,7 +80,7 @@ an account and get the key for each, then write them into `API-KEYS-WORKSHEET.md
 2. Fill in the keys worksheet (Phase 1).
 3. Get the legal pages lawyer-reviewed (Phase 6).
 4. Approve going live.
-Everything else is the developer following the kit — **~30–45 hours, ~$2,250–$3,375 at $75/hr** (with the new automation).
+Everything else is the developer following the kit — **$3,000 = 40 hours at $75/hr** for the full scope (see `DEV-COST-3000-FULL-SCOPE.md`).
 
 ---
 

@@ -4,7 +4,7 @@ These are **built into the codebase and off by default**. Each is a single env v
 change, no redeploy of a different build. They exist so that "run Claude for the AI" and "scale up
 when traffic comes" are **flips a developer sets in the Railway Variables UI**, not billable rework.
 Because they were pre-built into the kit, they add **$0 to the launch estimate** — the estimate stays
-flat at **~30–45 h (~$2,250–$3,375)** for the full PWA + Android + iOS launch.
+flat at the definitive **$3,000 = 40 h @ $75/hr** for the full scope (see `DEV-COST-3000-FULL-SCOPE.md`).
 
 ---
 
