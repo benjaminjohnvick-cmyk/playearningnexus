@@ -17,6 +17,9 @@ file it. **Not legal advice** — registrability and the filing are counsel's to
 - **Associated brand:** Get Goods Gratis (Free) — the slogan is the brand's tagline, typically shown beneath the
   wordmark/logo.
 - **Presentation:** always in **title case** — "Where Global Goods Gather" — as four words, unpunctuated.
+- **Brand lockup (current usage):** the tagline is the top line of a two-tier lockup, with the functional
+  descriptor **"Buy Anything Available Online"** on a lighter second line beneath it. The tagline is the
+  trademark; the descriptor is an unregistered marketing line — it is **not** part of the filed mark (see §4a).
 
 ## 2. The slogan drawing (for a stylized/design filing, if desired)
 
@@ -50,6 +53,29 @@ three G's of **G**et **G**oods **G**ratis), tying the slogan to the mark family.
   sentence in body copy.
 - **Symbol:** use **™** on prominent uses now to assert common-law rights; move to **®** only **after** a federal
   registration issues.
+
+### 4a. The two-tier lockup — tagline + descriptor "Buy Anything Available Online"
+
+Current brand usage pairs the tagline with a functional descriptor in a two-tier lockup:
+
+> **Where Global Goods Gather**
+> *Buy Anything Available Online*
+
+- **Roles are distinct.** The top line is the **trademark** — a suggestive, source-identifying tagline. The
+  second line, **"Buy Anything Available Online,"** is a **descriptive marketing descriptor** that states what
+  the platform does; it is **unregistered** and used as ordinary marketing copy, not as a mark.
+- **Why keep them separate.** Descriptive phrases are weak trademarks (they would need a showing of acquired
+  distinctiveness to register). Keeping the descriptor as an unregistered line preserves the strong, registrable
+  tagline as the filed mark while still communicating the benefit. Counsel: do **not** fold the descriptor into
+  the filed mark; the standard-character (and optional stylized) filings remain the tagline alone.
+- **Where it appears (website + app):** the logo-plus-slogan lockup (`gg-logo-slogan.svg`) used in the site
+  footer and the sign-in/sign-up screen now carries the descriptor as its second line; the header wordmark lockup
+  shows it as a small third line; the app-store listing carries it as the brand tagline. The trademark **drawing
+  files stay the tagline only** (the descriptor is not part of the registrable mark).
+- **Compliance:** "Buy Anything Available Online" is a **shopping/access** statement, never an earnings, income,
+  or ROI claim — consistent with §6. "Anything" is marketing puffery tied to the shopping widget / "find the real
+  thing" retailer search; a soft qualifier ("almost anything," "anything sold online") is optional if counsel
+  prefers to avoid an absolute claim.
 
 ## 5. Why it functions as a trademark (not merely informational)
 

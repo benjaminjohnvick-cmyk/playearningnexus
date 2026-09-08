@@ -56,7 +56,7 @@ export default function AuthForm({ mode = 'login' }) {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
-            <img src="/gg-logo-slogan.svg" alt="Get Goods Gratis (Free) — Where Global Goods Gather" className="h-16 w-auto" draggable={false} />
+            <img src="/gg-logo-slogan.svg" alt="Get Goods Gratis (Free) — Where Global Goods Gather — Buy Anything Available Online" className="h-16 w-auto" draggable={false} />
           </div>
           <p className="text-gray-500 text-sm">{isSignup ? 'Create your account' : 'Sign in to your account'}</p>
         </div>

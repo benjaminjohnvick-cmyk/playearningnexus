@@ -12,7 +12,8 @@ legal review is faster and better grounded. Current as of 2026-09-06.*
 **Get Goods Gratis (Free)** is an 18-and-over **retail / e-commerce marketplace** — a website plus companion
 mobile apps — where people shop for goods and, alongside the storefront, can play games, take surveys, and
 engage with advertising to earn on-platform store credit that is spent on those same goods. Its tagline is
-**"Where Global Goods Gather"** and its intended web address is **getgoodsgratis.com**. The defining feature
+**"Where Global Goods Gather"** — paired in the brand lockup with the descriptor **"Buy Anything Available
+Online"** — and its intended web address is **getgoodsgratis.com**. The defining feature
 is a **closed-loop economy**: everyday users never receive cash — what they earn stays as non-cashable
 **store credit ("Site Cash")** usable only inside the platform — while **real money flows only between the
 platform and businesses** (advertisers who buy campaigns, and partners such as affiliates and developers who

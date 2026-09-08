@@ -12,6 +12,7 @@ attorney can lift it straight from this document to file.*
 |---|---|
 | **Brand name** | **Get Goods Gratis (Free)** |
 | **Slogan / tagline** | **"Where Global Goods Gather"** |
+| **Marketing descriptor** | **"Buy Anything Available Online"** — second line of the brand lockup, beneath the tagline (unregistered marketing line, not a filed mark) |
 | **Intended web address** | **getgoodsgratis.com** *(potential — verify availability & register)* |
 | **Logo mark** | "G³" monogram (three G's — **G**et **G**oods **G**ratis) in a rounded square with a keyline border |
 
@@ -47,6 +48,10 @@ attorney can lift it straight from this document to file.*
 ### Slogan usage
 
 - Present the slogan as **"Where Global Goods Gather"** (title case), typically beneath the wordmark.
+- **Two-tier lockup:** the tagline is shown on top with the functional descriptor **"Buy Anything Available
+  Online"** on a lighter line beneath it — in the footer, the sign-in/sign-up screen, the header wordmark lockup,
+  and the app-store listing. The tagline is the trademark; the descriptor is an **unregistered marketing line**,
+  never folded into the filed mark, and the filing drawings stay the tagline only.
 - Today it appears in the site footer (under the wordmark) in the app UI. It is a **brand tagline**, not a claim
   about earnings, returns, or results — keep it descriptive of the marketplace, consistent with the platform's
   advertising-value (never revenue/ROI) compliance posture.

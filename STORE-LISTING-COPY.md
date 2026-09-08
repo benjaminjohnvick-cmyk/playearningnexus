@@ -5,6 +5,7 @@ Ready-to-paste store metadata for submission. Fill the few [BRACKETS]. Written t
 
 ## Names & identifiers
 - **App name:** GamerGain
+- **Brand tagline (lockup):** Where Global Goods Gather — Buy Anything Available Online
 - **Subtitle (Apple, ≤30 chars):** Play, earn points, shop
 - **Short description (Play, ≤80 chars):** Complete surveys and tasks, earn points, and shop a global marketplace.
 - **Bundle ID / Package:** [com.yourco.gamergain]
@@ -32,7 +33,7 @@ you're in.
 Highlights:
 - Earn points from surveys, offers, and daily tasks
 - Local currency and language, automatically
-- A huge, always-growing product catalog
+- A huge, always-growing product catalog — buy anything available online, with one-tap "find the real thing" search across major retailers
 - Buy with points or card; members can sell their own items with privacy
 - Personalized recommendations and a helpful in-app assistant
 

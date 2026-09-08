@@ -326,6 +326,9 @@ export default function Layout({ children, currentPageName }) {
                     <span className="text-[10px] font-semibold uppercase tracking-wide text-blue-200/70 mt-0.5">
                       Where Global Goods Gather
                     </span>
+                    <span className="text-[9px] font-medium uppercase tracking-wide text-blue-200/50 mt-0.5">
+                      Buy Anything Available Online
+                    </span>
                   </span>
                 </Link>
                 <MegaContestButton />
@@ -556,7 +559,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="grid md:grid-cols-4 gap-8">
               <div className="md:col-span-2">
                 <div className="mb-4">
-                  <img src="/gg-logo-slogan.svg" alt="Get Goods Gratis (Free) — Where Global Goods Gather" className="h-16 w-auto" draggable={false} />
+                  <img src="/gg-logo-slogan.svg" alt="Get Goods Gratis (Free) — Where Global Goods Gather — Buy Anything Available Online" className="h-16 w-auto" draggable={false} />
                 </div>
                 <p className="text-gray-600 text-sm">The global goods marketplace — shop thousands of products, with games, surveys, and rewards along the way.</p>
               </div>
