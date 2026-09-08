@@ -30,6 +30,10 @@ export default function ForgotPassword() {
             <GamerGainLogo className="w-12 h-12" />
             <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Get Goods Gratis (Free)</span>
           </div>
+          <div className="mb-2">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Where Global Goods Gather</p>
+            <p className="text-[10px] font-medium uppercase tracking-wide text-gray-400">Buy Anything Available Online</p>
+          </div>
           <p className="text-gray-500 text-sm">Reset your password — we'll email you a link.</p>
         </div>
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">

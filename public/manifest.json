@@ -1,7 +1,7 @@
 {
   "name": "Get Goods Gratis (Free)",
   "short_name": "Get Goods",
-  "description": "Where global goods gather — shop thousands of global products, plus games, surveys, and rewards.",
+  "description": "Where global goods gather. Buy anything available online — shop thousands of global products, plus games, surveys, and rewards.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
