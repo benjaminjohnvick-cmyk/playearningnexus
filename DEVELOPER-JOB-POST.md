@@ -51,9 +51,10 @@ a build-from-scratch project. I have a complete handoff brief and setup docs rea
 **Nice to have:** experience with payments (Stripe/PayPal), earn-money/rewards app store policies,
 serverless/JWT auth.
 
-**Scope & budget:** Working from the pre-built execution kit, estimated **~30–45 hours at $75/hour
-(~$2,250–$3,375)** for the full PWA + Android + iOS launch, **plus ~8–12 h (~$600–900) for a load test**
-that measures user capacity — total **~$2,850–$4,275** (automation-expanded kit). Please quote **fixed-price for the milestones
+**Scope & budget:** Working from the pre-built execution kit, estimated **$3,000 = 40 hours at $75/hour**
+for the FULL scope — web PWA + Android + native iOS + AWS auto-scaling + a user-capacity load test, with
+every feature ON from day one (nothing omitted). Developer labor only; see `DEV-COST-3000-FULL-SCOPE.md`
+for the hour-by-hour breakdown. Please quote **fixed-price for the milestones
 below**, or an hourly rate + estimated hours. Milestones: (1) running locally + smoke test green,
 (2) deployed to a staging URL, (3) production web launch, (4) both apps submitted.
 

@@ -15,6 +15,11 @@
 > - **Recurring: AI / media / email $0/mo** on free tiers (locked in by `npm run cost:floor`); hosting
 >   ~$10–30/mo; LLM capped ~$5–40/mo. **Optional** AWS auto-scaling + full load test adds up to a
 >   ~$3,100–$4,800 all-in ceiling.
+> - **⭐ DEFINITIVE DEVELOPMENT COST (full scope): $3,000 = 40 hours @ $75/hr** — web PWA + Android + **native
+>   iOS + AWS auto-scaling + the load test + all features ON**, nothing omitted. This is developer labor only
+>   (fixed fees + recurring spend are separate). See **`DEV-COST-3000-FULL-SCOPE.md`** for the hour-by-hour
+>   breakdown; it is the single source of truth for the development-cost number and supersedes any different
+>   *labor* figure elsewhere.
 >
 > *Older single figures in these docs (e.g. "$3,750–$4,950" or "under $3,900") predate the kit/automation
 > that trimmed the developer hours; the number above is current.*

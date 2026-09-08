@@ -15,6 +15,11 @@
 > - **Recurring: AI / media / email $0/mo** on free tiers (locked in by `npm run cost:floor`); hosting
 >   ~$10–30/mo; LLM capped ~$5–40/mo. **Optional** AWS auto-scaling + full load test adds up to a
 >   ~$3,100–$4,800 all-in ceiling.
+> - **⭐ DEFINITIVE DEVELOPMENT COST (full scope): $3,000 = 40 hours @ $75/hr** — web PWA + Android + **native
+>   iOS + AWS auto-scaling + the load test + all features ON**, nothing omitted. This is developer labor only
+>   (fixed fees + recurring spend are separate). See **`DEV-COST-3000-FULL-SCOPE.md`** for the hour-by-hour
+>   breakdown; it is the single source of truth for the development-cost number and supersedes any different
+>   *labor* figure elsewhere.
 >
 > *Older single figures in these docs (e.g. "$3,750–$4,950" or "under $3,900") predate the kit/automation
 > that trimmed the developer hours; the number above is current.*
@@ -244,6 +249,27 @@ sentiment, support triage, catalog text. What benefits from the 70B (turn the fo
 multi-step reasoning, dispute adjudication, and anything doing careful math. Image generation is separate —
 it's already on Cloudflare FLUX free tier; set a `SELF_IMAGE_URL` (SDXL/FLUX) to take it to $0 on your own GPU.
 
+**NEW — the autonomous AGENTS now run on free Llama too.** Previously the agent runtime (`agents-runtime/
+agent-runtime.ts`) only spoke OpenAI or Anthropic, so every agent step (oversight, optimizer, growth, dispute
+prep, etc.) billed OpenAI `gpt-4o`. It now has a **Groq branch** (Groq's API is OpenAI-compatible): when
+`GROQ_API_KEY` is set it routes agents to `llama-3.3-70b-versatile` (the 70B, for reliable tool-calling; the
+few `mini` pins use `llama-3.1-8b-instant`) — **$0 on the free tier** — and **falls back to OpenAI automatically
+if Groq errors or is rate-limited**, so agents never break. This closes the last non-Llama LLM path; with a
+Groq key, *all* text generation on the platform — user-facing AI **and** the agents — runs free. Only offload
+things that are free or cheaper on Llama (they are — Groq's free tier, then ~$0.0001/1k tokens vs `gpt-4o`);
+TTS and images aren't LLM work and stay on their own free tiers (Polly / Cloudflare FLUX).
+
+**NEW — the expanded one-click floor** (`costFloorProfile`) now also: routes images to **Cloudflare's free
+FLUX** (was leaving them on a paid provider), sets **`VIDEO_ENGINE_RENDER_PROVIDER=none`** (the video engine
+still generates concepts, polls, and learns for free — you only pay when you deliberately wire a render
+vendor), turns on **TTS caching**, sets a realistic free-tier cost estimate so any spend cap tracks reality,
+and reports the two env "free unlocks" (`REDIS_URL` shared cache, `DATABASE_REPLICA_URL` read replica) plus
+whether agents are on free Llama. It changes only settings — never a feature flag — so **everything stays on**.
+
+**Load test before launch.** After applying the floor, run `LOAD-TEST-PLAN.md` (k6/artillery against
+`/health`, a read path, and a write path at target RPS) to confirm the free tiers hold under concurrency. The
+scale-hardening indexes and read-replica routing are already in place; the load test just proves it.
+
 ## Lowest legal & compliance cost — launch on the "straightforward" versions
 
 The cheapest way to keep legal spend near zero at launch is the same trick we used on Tier 2 (pay-as-you-go,
@@ -348,3 +374,84 @@ outage stops earning.
   the user speaks their own answer).
 - **Anti-scam + answer-wall** are pure code (regex), zero AI cost.
 - Everything above still respects `AI_DAILY_SPEND_CAP_USD` — the global brake covers voice + translation too.
+
+---
+
+## Cost-Floor Update — everything on Llama, defaults floored (2026-09-04)
+
+The cost floor is now the **default posture** (not just a button you click). Every AI/media lever ships routed
+to a **free or cheapest** backend with automatic fallback, so a fresh deploy runs at the floor. The one-click
+**`costFloorProfile`** admin action still exists to force the floor on a running system (and to prefer your own
+self-hosted servers when their URLs are set) — but you no longer *need* to run it to be cheap.
+
+**What's floored by default now:**
+
+| Lever | Floor default | Cost |
+|---|---|---|
+| LLM provider | `groq` (Llama-3.1 on Groq's free tier) | **free** (needs `GROQ_API_KEY`; falls back to OpenAI until set) |
+| Force cheap tier | `AI_FORCE_CHEAP_TIER = 1` — **every** call uses the small Llama model | **free** |
+| Agent model (fallback path) | `gpt-4o-mini` (was `gpt-4o`) | ~cheapest managed if ever used |
+| Cost estimate rate | `AI_COST_PER_1K_TOKENS = 0.0002` (real Groq rate) | makes any cap track the real floor |
+| Images | `cloudflare` FLUX-1-schnell, 4 steps | **free tier** (needs Cloudflare creds; falls back to Bedrock ~$0.01) |
+| Speech-to-text | `groq` Whisper | **free tier** |
+| Text-to-speech | `polly` (was ElevenLabs) + `TTS_CACHE_ENABLED` | Polly **free tier** 1st year, then ~$4/1M chars; repeats cached to $0 |
+| Video render | `none` — concepts/scoring only, no paid render | **$0** until you deliberately set a vendor |
+| Catalog subcategory images | off (top-level tiles only) | ~$10–15 one-time, not ~$300 |
+| Product-feed cache | 3600s | repeated searches don't re-bill |
+
+**Levers still available (opt-in, not defaulted):** set `SELF_LLM_URL` / `SELF_STT_URL` / `SELF_TTS_URL` /
+`SELF_IMAGE_URL` to your own servers → `costFloorProfile` routes to them for **fully $0** AI; set
+`AI_DAILY_SPEND_CAP_USD` to a number for a hard brake (left at 0 = no cap, since free providers already ≈ $0);
+set `REDIS_URL` so the TTS + response caches are shared across instances (bigger cache hit-rate = lower cost).
+
+**Do the new features (cosmetics, gifting, boosts, earn hook, extension, affiliate) add cost? No — near zero.**
+They are closed-loop economy + revenue-side features and use **no AI/media providers**, so nothing here needed a
+cheaper-service swap. Their only new external dependencies are **ad networks** (rewarded ads) and **affiliate
+networks** — and those are **revenue sources that pay you**, not costs, and are free to integrate. So there is no
+"same quality, cheaper service" substitution to make for the new work: the floor above already covers 100% of the
+platform's marginal AI/media cost, and the new features ride on top at ≈ $0 incremental. The one thing to watch is
+**reward payouts** (Site Points), which are already bounded by the per-feature daily/lifetime **cost-governor caps**
+(`EARN_REWARD_*`, `EXTENSION_REWARD_*`, `SITE_CASH_TOPOFF_*`) — those are the cost dials for the new features, and
+they're set conservatively.
+
+**To floor a running system right now:** run `costFloorProfile` (admin) — it reports exactly what it changed and
+is fully reversible.
+
+---
+
+## Revenue-expansion levers — built, mostly gated OFF, turn on post-launch (2026-09-04)
+
+Everything below is **already coded** and either live (closed-loop) or **gated OFF + counsel** so it ships safe
+and can be switched on later. None of it is required to launch, and none changes the under-5k number (the cost
+floor keeps AI ≈$0 and these are revenue-side). Each gated `*_ENABLED` flag **auto-appears in the Setup Wizard**;
+turning one on is one toggle (plus, where noted, an external account and counsel sign-off).
+
+**Live at launch — closed-loop, on by default, no external account:**
+
+- **Cosmetics store** (`COSMETICS_ENABLED`, on) — Site-Cash sink, near-100% margin.
+- **Earn boosts + purchase-linked stacking + loyalty top-off** (`EARN_BOOST_ENABLED`, `PURCHASE_BOOST_*`,
+  `SITE_CASH_TOPOFF_*`, on) — the self-perpetuating Site-Cash sink; capped cost governors.
+- **Revenue-Levers registry** (`REVENUE_LEVERS_REGISTRY_ENABLED`, on) — the admin governance page.
+
+**Post-launch — gated OFF; flip the wizard flag + connect the account + clear counsel:**
+
+| Lever | Flag | What it needs to turn on |
+|---|---|---|
+| Browser extension — own-inventory ads | `EXTENSION_ENABLED` + `EXTENSION_OWN_ADS_ENABLED` | Publish the extension to the Chrome Web Store · set `EXTENSION_WEBSTORE_URL` · counsel |
+| Browser extension — affiliate cashback | `EXTENSION_AFFILIATE_ENABLED` | An affiliate NETWORK publisher account (CJ/Rakuten/Impact/…) + the postback wired (see AFFILIATE-POSTBACK-INTEGRATION-SPEC.md) |
+| Browser extension — browsing/personalization layer | `EXTENSION_TRACKING_ENABLED` | Explicit user opt-in + privacy policy + counsel (highest-sensitivity) |
+| Mobile earn hook + reminder + continuous earn | `EARN_HOOK_ENABLED` | A rewarded-ad network + the native widget/notification build (mobile app) + counsel |
+| Direct Site-Cash gifting (p2p) | `SITE_CASH_GIFTING_ENABLED` | The counsel-gated `p2p_transfers` flag + counsel (prefer the platform-funded gift/boost, which is already on) |
+| Offerwall/CPA, rewarded video, sponsored push/email | `OFFERWALL_CPA_ENABLED`, `REWARDED_VIDEO_ENABLED`, `SPONSORED_PUSH_EMAIL_ENABLED` | The respective ad-network account |
+| Affiliate storefront · print-on-demand · group buying | `AFFILIATE_STOREFRONT_ENABLED`, `PRINT_ON_DEMAND_ENABLED`, `GROUP_BUYING_ENABLED` | Affiliate network · POD supplier API · group-buy supplier |
+| Family plan · Pro tools · season pass | `FAMILY_PLAN_ENABLED`, `PRO_TOOLS_ENABLED`, `SEASON_PASS_ENABLED` | A priced SKU (no external account) |
+| Product-testing panels · API access · AI-creative SaaS | `PRODUCT_TESTING_PANEL_ENABLED`, `API_ACCESS_ENABLED`, `AI_CREATIVE_SAAS_ENABLED` | A paying buyer + (for API) key issuance/metering |
+| White-label / hosting / fraud-SaaS | `MULTITENANCY_ENABLED`, `HOSTING_MONETIZATION_ENABLED`, `FRAUD_SAAS_ENABLED` | A tenant/buyer + (hosting) moderation + DMCA agent |
+| Expedited fulfillment · partner payout fee · survey-routing arbitrage | `EXPEDITED_FULFILLMENT_ENABLED`, `PARTNER_PAYOUT_FEE_ENABLED`, `SURVEY_ROUTING_ARBITRAGE_ENABLED` | A priced SKU · the payout rail live · a partner router |
+
+**Counsel-only (no mechanism built; leave off):** `FINANCIAL_LEAD_GEN_ENABLED`, `FX_SPREAD_ENABLED`,
+`CRYPTO_PAYMENTS_ENABLED`, `NFT_MARKETPLACE_ENABLED` — each requires an attorney's yes *and* a dedicated build.
+
+*Bottom line: launch with the closed-loop set on (≈$0) and everything else gated OFF; flip levers post-launch as
+you connect accounts and clear counsel. Full map + live status: the **RevenueLevers** admin page and
+**REVENUE-STREAMS-EXPANSION.md**.*

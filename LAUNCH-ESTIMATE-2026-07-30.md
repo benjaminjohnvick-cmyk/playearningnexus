@@ -16,6 +16,10 @@
 > - **Full launch — web PWA + Android + native iOS: ~$2,900–$4,000 year-one all-in.** Developer labor
 >   ~$2,050–$3,150 (≈ 28–42 hours @ $75/hr) — deploy, test, submit, and stand up the scheduler; no product build.
 > - **Shoestring — web PWA + Android (iOS as fast-follow): ~$2,000–$2,800.**
+> - **⭐ DEFINITIVE DEVELOPMENT COST (full scope): $3,000 = 40 hours @ $75/hr** — web PWA + Android + **native
+>   iOS + AWS auto-scaling + the load test + all features ON**, nothing omitted. This is one-time developer
+>   LABOR — distinct from the ~$3,000 *monthly-budget runtime cap* mentioned below. See
+>   **`DEV-COST-3000-FULL-SCOPE.md`**, the single source of truth for the development-cost number.
 > - **Hard external cash floor: ~$139** all three platforms (Apple $99/yr + Google Play $25 + domain ~$15);
 >   **~$40** shoestring (no Apple fee — the PWA covers iPhone via Safari).
 > - **Recurring: AI / media / email $0/mo** — free tiers + the one-click cost floor; with `AI_FORCE_CHEAP_TIER`

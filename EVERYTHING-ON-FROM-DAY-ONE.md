@@ -42,5 +42,8 @@ The earn-and-spend closed loop launches **fully** without any of these.
 
 Because everything is prebuilt and ON, the launch cost is **deploy + test + submit only** — no product
 development. That is why year-one lands at ~$1,800–$2,800 all-in (developer labor separate), with the
-AI/media/email layer at **$0/mo** on free tiers and hosting the only recurring cost (~$5–20/mo). Every
-estimate in this bundle assumes this posture: **on, up, and running from the get-go.**
+AI/media/email layer at **$0/mo** on free tiers and hosting the only recurring cost (~$5–20/mo). The
+definitive **development cost** for the full scope — web PWA + Android + native iOS + AWS auto-scaling +
+the load test + all features on — is **$3,000 = 40 hours @ $75/hr** (see `DEV-COST-3000-FULL-SCOPE.md`,
+the single source of truth for that number). Every estimate in this bundle assumes this posture: **on, up,
+and running from the get-go.**
