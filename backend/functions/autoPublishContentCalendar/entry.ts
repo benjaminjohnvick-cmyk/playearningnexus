@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { gateAndRun } from "../../sdk/autonomy-gate.ts";
 
 export default __handler(async (req) => {
   try {
@@ -23,28 +24,29 @@ export default __handler(async (req) => {
     for (const schedule of schedules) {
       if (schedule.status !== 'active') continue;
 
-      // Find posts scheduled for today (auto-approve if still draft, then publish)
-      let todayPosts = schedule.scheduled_posts?.filter(
-        p => p.post_date === today && (p.status === 'approved' || p.status === 'draft') && p.posted_date === undefined
-      ) || [];
-
-      // Auto-approve any draft posts for today
-      const updatedPosts = schedule.scheduled_posts.map(p => {
-        if (p.post_date === today && p.status === 'draft') {
-          return { ...p, status: 'approved', approved_by: 'system_auto', approved_date: new Date().toISOString() };
-        }
-        return p;
-      });
-
-      if (updatedPosts !== schedule.scheduled_posts) {
-        await base44.asServiceRole.entities.AffiliateContentSchedule.update(schedule.id, {
-          scheduled_posts: updatedPosts
-        });
-        schedule.scheduled_posts = updatedPosts;
-        todayPosts = schedule.scheduled_posts?.filter(
-          p => p.post_date === today && p.status === 'approved' && p.posted_date === undefined
-        ) || [];
+      // Auto-approve draft posts for today — ROUTED THROUGH THE AUTONOMY KERNEL (content_calendar domain).
+      // It only auto-approves once that domain has earned autonomy AND the global live gate is open; otherwise
+      // gateAndRun queues the batch for the human overseer and the drafts simply wait (nothing is lost). This is
+      // how this action graduates from human-approved to autonomous on the same rules as every other domain.
+      const drafts = (schedule.scheduled_posts || []).filter(p => p.post_date === today && p.status === 'draft');
+      if (drafts.length) {
+        await gateAndRun("content_calendar",
+          { subjectId: schedule.id, summary: `Auto-approve ${drafts.length} scheduled post(s) for ${today}`, reversible: true, proposal: { date: today, count: drafts.length } },
+          async () => {
+            const updatedPosts = schedule.scheduled_posts.map(p =>
+              (p.post_date === today && p.status === 'draft')
+                ? { ...p, status: 'approved', approved_by: 'ai_autonomy', approved_date: new Date().toISOString() }
+                : p);
+            await base44.asServiceRole.entities.AffiliateContentSchedule.update(schedule.id, { scheduled_posts: updatedPosts });
+            schedule.scheduled_posts = updatedPosts;
+            return drafts.length;
+          });
       }
+
+      // Publish only posts that are APPROVED (either approved earlier, or just auto-approved by the gate above).
+      const todayPosts = schedule.scheduled_posts?.filter(
+        p => p.post_date === today && p.status === 'approved' && p.posted_date === undefined
+      ) || [];
 
       for (const post of todayPosts) {
         try {
