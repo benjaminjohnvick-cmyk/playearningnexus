@@ -10,6 +10,22 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+  			// Brand blue scale — midnight blue (deep) → royal blue (accent).
+  			// Deliberately shifted off Amex's bright azure (#016FD0, ~208°) to a
+  			// royal/indigo hue (~222°) to keep the brand in its own lane.
+  			blue: {
+  				'50': '#f0f5fe',
+  				'100': '#e2eafb',
+  				'200': '#c2d2f2',
+  				'300': '#93aee4',
+  				'400': '#5f88d4',
+  				'500': '#3f6cc0',
+  				'600': '#2e5aac',
+  				'700': '#223a86',
+  				'800': '#1a2a5e',
+  				'900': '#111c44',
+  				'950': '#0b1531'
+  			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
