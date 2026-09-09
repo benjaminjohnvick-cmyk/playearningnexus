@@ -112,6 +112,17 @@ CREATE TABLE IF NOT EXISTS "AdCreativeTest" (
 CREATE INDEX IF NOT EXISTS "AdCreativeTest_data_gin" ON "AdCreativeTest" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "AdCreativeTest_created" ON "AdCreativeTest" (created_date DESC);
 
+-- AdEngagement: one row per Interested/Buy Now click on an advertisement (the engagement-signals layer).
+CREATE TABLE IF NOT EXISTS "AdEngagement" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "AdEngagement_data_gin" ON "AdEngagement" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "AdEngagement_created" ON "AdEngagement" (created_date DESC);
+
 -- AdLearningMemory: 15 properties
 CREATE TABLE IF NOT EXISTS "AdLearningMemory" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

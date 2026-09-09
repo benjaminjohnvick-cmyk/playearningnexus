@@ -12,6 +12,7 @@
   "AdAsset",
   "AdCampaign",
   "AdCreativeTest",
+  "AdEngagement",
   "AdGridAd",
   "AdGridResponse",
   "AdGridSession",

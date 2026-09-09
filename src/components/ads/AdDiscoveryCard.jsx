@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Zap, TrendingUp } from "lucide-react";
+import AdActionBar from "./AdActionBar";
 
 const difficultyColor = {
   Easy: "bg-green-100 text-green-700",
@@ -77,6 +78,10 @@ export default function AdDiscoveryCard({ ad, boosted = false, onEngage }) {
         >
           Start
         </Button>
+      </div>
+
+      <div className="mt-3 pt-3 border-t border-gray-100">
+        <AdActionBar ad={ad} placement="discovery" />
       </div>
     </Card>
   );
