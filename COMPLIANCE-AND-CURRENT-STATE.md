@@ -42,7 +42,7 @@ automation terms (Meta/TikTok/X/LinkedIn) and FTC #ad adequacy.
 ---
 
 ## 1. The product in one paragraph
-A play-to-earn web and mobile platform. Members complete surveys, offers, and activities to earn
+A retail rewards web and mobile platform. Members complete surveys, offers, and activities to earn
 **points**, a closed-loop unit worth one cent of the local currency for in-Service pricing. Points are
 spent inside the Service — in a store and a Facebook-Marketplace-style marketplace. Real-money cash-out
 is not enabled; card charging is off by default. An AI system generates an original product catalog,

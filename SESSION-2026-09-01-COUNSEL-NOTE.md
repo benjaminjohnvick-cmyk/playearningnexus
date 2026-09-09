@@ -1,5 +1,7 @@
 # Counsel Note — Features added 2026-09-01
 
+> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`.
+
 Plain-English brief for legal review of two feature sets added this session. Written for an attorney;
 nothing here is a legal conclusion. Both are gated OFF by default; the money model, closed-loop Site Cash,
 18+ gate, answer-wall, and moderation are unchanged.

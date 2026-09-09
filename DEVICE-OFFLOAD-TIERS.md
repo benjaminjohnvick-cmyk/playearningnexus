@@ -29,7 +29,7 @@ which saves the most raw server cost.
 
 ## Tier 3 — Device-hosted game sessions (built: foundation)
 
-This is the multiplayer-"listen server" idea applied to the part it fits: the **live play-to-earn game sessions**
+This is the multiplayer-"listen server" idea applied to the part it fits: the **live hosted game/media sessions**
 and casual multiplayer rooms. A user's device (or a peer among the players) hosts the *session* — the current
 round, positions, transient scores, room chat — because that state is throwaway. If the host drops, the session
 migrates to another player or ends and **no one loses anything real**, exactly like a player-hosted match.

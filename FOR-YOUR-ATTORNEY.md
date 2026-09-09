@@ -1,5 +1,7 @@
 # For Your Attorney — Compliance Review Checklist
 
+> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`. **Add to the review list:** the games→retail pivot (decision record linked above).
+
 *A short hand-off of the items that need a lawyer's sign-off before launch or before a gated feature is
 turned on. The platform is already built to the conservative posture described below; each item names the
 exact switch that keeps it safe until you clear it. This document is a plain-English map for counsel, not

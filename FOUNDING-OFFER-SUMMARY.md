@@ -7,7 +7,7 @@ the authoritative documents. If any detail elsewhere conflicts with this page, f
 ## The offer, in brief
 
 - **Founding Advertiser (Tier 1)** — a limited introductory advertising + membership offer on a closed-loop,
-  18+ play-to-earn / survey-rewards platform.
+  18+ retail rewards / survey-rewards platform.
 - **200,000 founding-advertiser slots.** Open until 200,000 founding advertisers enroll, then it closes and
   becomes the standard Tier 1 offer at **+30% ($16,900/year)**. Founders keep their founding price for life.
 - **Price — $13,000/year**, billed as **$1,000 every 4 weeks across 13 cycles**, for a **4-year package**.

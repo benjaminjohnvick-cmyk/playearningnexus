@@ -17,7 +17,7 @@ Earn points by completing surveys and tasks, then spend them in a Facebook-style
 local pricing in your currency. New rewards and products added continually.
 
 ## Description (both stores)
-GamerGain is a play-to-earn platform where your time turns into points you can actually use.
+GamerGain is a retail rewards platform where your time turns into points you can actually use.
 
 Earn points by completing surveys, offers, and daily activities. Points are worth one cent of your
 local currency inside the app, so what you see is always in your own money.

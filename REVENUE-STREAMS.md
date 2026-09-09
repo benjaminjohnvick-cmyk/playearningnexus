@@ -42,7 +42,7 @@ it).
 |---|---|---|---|
 | B13 | **Advertising** | `buySponsoredPlacement` with a `slot` → records `advertising`. | Define ad slots + price. |
 | B14 | **Breakage** | `revenueReport` estimates it: outstanding closed-loop points × `BREAKAGE_RECOGNITION_PCT` (0.15). Reporting-only. | Review the estimate; recognize per your accounting. |
-| B15 | **Sponsored jackpots/tournaments** | `recordRevenue({type:"sponsored_prize"})`; a brand funds the prize pool for exposure. | Add a sponsor to a prize pool; log the sponsorship. |
+| B15 | **Sponsored jackpots/prize competitions** | `recordRevenue({type:"sponsored_prize"})`; a brand funds the prize pool for exposure. | Add a sponsor to a prize pool; log the sponsorship. |
 | B16 | **Developer/creator cut** | `devCreatorCutPct()` + `DEV_CREATOR_PLATFORM_CUT_PCT` (0.20); record `dev_creator_cut`. | Wire into the dev/creator payout (apply the cut, log it). |
 | B17 | **White-label / API licensing** | `recordRevenue({type:"white_label"})`; existing `APIAccessKey`. | Close licensing deals; log the fee. |
 | B18 | **BNPL merchant fee** | **Wired** in `affirmConfirm` — records `bnpl_merchant_fee` = order × `BNPL_MERCHANT_FEE_PCT`. | Set the % your BNPL partner pays. |

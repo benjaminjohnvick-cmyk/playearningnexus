@@ -1,4 +1,6 @@
 # Hiring Kit — GamerGain / PlayEarning Nexus
+
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
 Two things you can use right away: a **job post** to publish (Upwork/LinkedIn/etc.), and a set of
 **screening questions** (with what a good answer looks like) to make sure a candidate actually knows
 the stack before you hire.
@@ -10,7 +12,7 @@ the stack before you hire.
 **Title:** Full-Stack Dev to Deploy & Launch an Existing Web + Mobile App (Deno + Postgres + React + Capacitor)
 
 **Overview**
-I have a finished codebase for a play-to-earn web app (surveys, games, referrals, rewards) and need
+I have a finished codebase for a retail-first rewards web app (a shop-anything-online storefront, plus surveys, a searchable games category, referrals, and rewards) and need
 an experienced full-stack developer to **deploy it and ship it to web + the app stores**. The code is
 written and on GitHub — this is a configuration, integration, deployment, and app-submission job, not
 a build-from-scratch project. I have a complete handoff brief and setup docs ready for you.

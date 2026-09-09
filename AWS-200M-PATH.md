@@ -50,7 +50,7 @@ simpler, safer, and is the thing that actually scales — which is what you're r
 
 ## Where the device tiers fit
 
-The device tiers already built (reads + compute on the phone, and now peer-hosted game sessions) shave a large
+The device tiers already built (reads + compute on the phone, and now peer-hosted compute sessions) shave a large
 chunk of load off the servers, so the central AWS bill is smaller than "run everything centrally" implies. But
 they are an *optimization on top of* the AWS path, not a replacement for it. The money-and-inventory database
 stays on Aurora; the devices carry reads, per-user compute, and disposable session hosting.

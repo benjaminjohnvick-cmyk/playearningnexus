@@ -1,5 +1,7 @@
 # Counsel Brief — Live Hosting, Monetization, Streaming & AI-Host Features
 
+> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`. **Note:** live hosting / streaming / screen-mirroring and skill tournaments are **separate** features from the games retail category and are not changed by this pivot.
+
 **Purpose:** This brief summarizes the compliance-relevant features added in the latest build so counsel can
 review them before any are enabled. **Every feature described here ships gated OFF by default** and appears in
 the operator Setup Wizard; none is live until an operator turns it on. Several items are flagged as needing legal

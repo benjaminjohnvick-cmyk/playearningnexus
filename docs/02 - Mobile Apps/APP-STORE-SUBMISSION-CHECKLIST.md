@@ -1,8 +1,19 @@
 # PlayEarning Nexus — App Store Pre-Submission Checklist
 
+> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`.
+
 Work top to bottom before you upload to **Google Play** or the **Apple App Store**. Anything marked **BLOCKER** will get your app rejected or delayed if skipped. Companion docs: `MASTER-LAUNCH-GUIDE.md`, `MOBILE-APP-WRAPPER-GUIDE.md`, `LEGAL-PAGES-GUIDE.md`, `COMPLIANCE-AND-ASSUMPTIONS.md`.
 
 Because this app involves **earning money, payouts, referrals, and prize pools**, it gets extra scrutiny from both stores. Budget time for at least one round of review questions.
+
+> **Ongoing changes are store-review-free.** After the initial submission, day-to-day changes do **not**
+> require another App Store / Play review. The AI self-learning + live-experiment system only ever flips
+> server **config/flags/UI variants**, which installed apps read at request time (no review). Human-built
+> **web-layer** changes (React screens, logic, styles) ship to installed native apps via the **OTA live-update
+> channel** (`MOBILE-OTA-LIVE-UPDATES.md`) — also no review, applied on next open with no downtime. You only
+> return to the store for genuinely **native** additions: a new native plugin, a new OS permission, or a change
+> to the app's core purpose. Set the OTA channel up once (see that doc) and nearly all future change is
+> gate-free across web, PWA, and native.
 
 ---
 
@@ -45,7 +56,7 @@ Play requires you to declare what data you collect and why.
 This is where earn-money apps most often get rejected. Review your flows against **current** store policies before submitting.
 
 - [ ] **Apple Guideline 3.1 (In-App Purchase):** if you sell any *digital* goods/credit, Apple generally requires IAP. Cash-out of *real* earned money is different — make the distinction explicit in review notes.
-- [ ] **Apple Guideline 4.2 (minimum functionality):** present as a real app (games, surveys, referrals), not a repackaged website.
+- [ ] **Apple Guideline 4.2 (minimum functionality):** present as a real app (retail storefront, surveys, games category, referrals), not a repackaged website.
 - [ ] **Google Play real-money / rewards policies:** confirm the prize pool and referral rewards comply; keep them **skill/merit-based** per `COMPLIANCE-AND-ASSUMPTIONS.md`.
 - [ ] **FTC #ad disclosure** is enforced on referral posts (already wired in code) — keep it, reviewers may check.
 - [ ] **Region gating:** decide which regions the earning/prize/shared-wallet features are available in, and gate accordingly (money-transmitter and sweepstakes laws vary by state/country).

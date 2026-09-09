@@ -1,5 +1,19 @@
 # PlayEarning Nexus — Changes Summary
 
+## Session — games → retail category pivot (2026-09-09)
+
+Repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category**,
+matching every other category ("the Uber of retail" — hold no inventory; users search for any game available online
+and buy or download it through the store). Mockups updated (standalone game/tournament pages + game nav removed;
+`InAppGameStore` rebuilt as a search-any-game category with AI-generated original cover art, visible "AI-generated"
+labels, age checks at checkout, digital-refund disclosure, no loot boxes, "not endorsed" disclaimer). Product/marketing
+docs reworded retail-first. Legal/compliance/patent/trademark docs carry a dated **PENDING COUNSEL REVIEW** header
+pointing to `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`; patent claim reframing and a revised trademark Nice-class
+list are flagged as **proposals for counsel** (not filed/amended here). Backend Game entities/functions
+(`enterTournament`, `distributeTournamentPrizes`, `GameCheckoutModal`, `game_library`, device-hosted sessions) are
+unchanged and still accurately described in the technical docs. Skill tournaments / prize competitions remain a
+**separate** feature, unaffected by this pivot.
+
 ## Session — hosting arc, social shop, agents, tutorial (this session)
 
 All new features ship GATED OFF and auto-appear in the Setup Wizard (enforced by an audit check). Invariant held

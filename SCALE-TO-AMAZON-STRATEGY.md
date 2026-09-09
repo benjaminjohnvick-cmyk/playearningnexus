@@ -24,7 +24,7 @@ brands/researchers pay you for verified attention and **aggregated, consented** 
 ## 2. Rewards-as-a-service — the "Stripe of loyalty" (B2B2C)
 
 License the closed-loop wallet + earning engine + anti-fraud + survey routing + marketplace so other brands
-run *their* rewards/play-to-earn on your rails; you take a SaaS fee + transaction cut. Revenue scales with
+run *their* rewards program on your rails; you take a SaaS fee + transaction cut. Revenue scales with
 *other companies'* user bases.
 
 - **Coded now (foundation):** a `Tenant` layer (`Tenant` entity + `tenant.ts` resolver + `tenantRegistry`).

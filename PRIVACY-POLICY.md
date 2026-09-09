@@ -11,7 +11,7 @@ protects personal information when you use our website, progressive web app, and
 > regional laws) before you rely on it.
 
 ## 1. Who we are
-GamerGain operates a play-to-earn platform where users complete activities to earn points and use those
+GamerGain operates a retail rewards platform where users complete activities to earn points and use those
 points in a store and marketplace. The data controller is GamerGain; contact details are in Section 12.
 
 ## 2. Information we collect

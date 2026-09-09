@@ -7,7 +7,7 @@ has reviewed the offer, the mechanics, and every piece of marketing copy.
 
 ## 1. What the offer is
 
-A limited **Founding Advertiser (Tier 1)** introductory offer on a closed-loop, 18+ play-to-earn /
+A limited **Founding Advertiser (Tier 1)** introductory offer on a closed-loop, 18+ retail rewards /
 survey-rewards platform (GamerGain / PlayEarning Nexus). It bundles **two things that are kept deliberately
 separate**:
 

@@ -98,7 +98,7 @@ You already have web push. For native push, add `@capacitor/push-notifications` 
 ---
 
 ## ⚠️ App Store review reality (read before you submit)
-- **Apple Guideline 4.2 ("minimum functionality"):** Apple rejects apps that are just a repackaged website. Your app is feature-rich (games, surveys, referrals, notifications), which helps, but present it as an app, not a website link.
+- **Apple Guideline 4.2 ("minimum functionality"):** Apple rejects apps that are just a repackaged website. Your app is feature-rich (retail storefront, surveys, games category, referrals, notifications), which helps, but present it as an app, not a website link.
 - **Earning / rewards / payments:** Apps where users earn money or make payments get extra scrutiny. Apple generally requires **in-app purchase** for digital goods and has rules about "earn money" incentives; cash-out and real-money features can trigger review pushback. Google has its own rewards/gambling policies. Have your payments and rewards flows reviewed against both stores' current policies before submitting.
 - **Skill contests / prizes / money pooling:** the skill-tournament and shared-wallet features may need region gating and clear terms (tie in with `COMPLIANCE-AND-ASSUMPTIONS.md`).
 - **Privacy:** both stores require a privacy policy URL and a data-safety / privacy-nutrition-label disclosure. Prepare these first.

@@ -56,7 +56,7 @@ _Written July 21, 2026 for the current self-hosted stack (React frontend · Deno
 | **Database (primary)** | **RDS for PostgreSQL, Multi-AZ** | `db.r6g.xlarge` (4 vCPU / 32 GB) as a starting point; size from load test | All writes. Multi-AZ = automatic failover. The one component that does **not** clone like containers. |
 | **Database (reads)** | **RDS read replica(s)** | 1–2 replicas | Offload heavy reads (leaderboards, referral lookups, analytics) from the primary. Route read-only queries to replicas. |
 | **Cache** | **ElastiCache (Redis)** | `cache.r6g.large`, 1 primary + 1 replica | Absorbs the hottest reads so they never hit Postgres — especially the **prize-pool widget** (15s poll) and leaderboard. Also holds sessions/rate-limit counters. |
-| **Async work queue** | **SQS** (standard) + **worker Fargate service** | worker: 2–10 tasks | **Critical for a play-to-earn app.** LLM/email/SMS/payout calls go on the queue; workers drain at your provider's allowed rate. A traffic spike becomes queue depth, not failed requests. |
+| **Async work queue** | **SQS** (standard) + **worker Fargate service** | worker: 2–10 tasks | **Critical for a retail rewards app.** LLM/email/SMS/payout calls go on the queue; workers drain at your provider's allowed rate. A traffic spike becomes queue depth, not failed requests. |
 | **File storage** | **S3** | 1 bucket | User uploads / generated files (replaces Base44 file storage). |
 | **Secrets** | **Secrets Manager** (or SSM Parameter Store) | — | Every secret env var from `CONFIG-AND-SECRETS.md`. Injected into ECS tasks; never committed. |
 | **Observability** | **CloudWatch** (+ optional Sentry) | — | Logs, metrics, and the alarms that trigger scaling and page you. |

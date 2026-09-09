@@ -1,32 +1,60 @@
-# Marketplace (retail) module
+# GamerGain / PlayEarning Nexus
 
-Retail is consolidated here. The storefront and its **Games subsection** (the app store + the game
-store) now have a single organized home.
+> **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
 
+A retail-first rewards platform — shop for anything available online, with optional store credit earned through surveys, a searchable games category, referrals, and rewards. **Self-hosted** — this app no longer
+uses Base44; it runs on its own React frontend + a Deno backend + PostgreSQL.
+
+## 🚀 One-click deploy (no terminal)
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new?template=https://github.com/benjaminjohnvick-cmyk/playearningnexus)
+
+Click the button, sign in to Railway, and it imports this repo. Then, in the new project:
+**(1)** add a **PostgreSQL** database (Railway → *+ New* → *Database* → *PostgreSQL*),
+**(2)** on the backend service set **Root Directory = `backend`** (it auto-reads `backend/railway.json`), and
+**(3)** paste your keys as service **Variables** — the easiest way to get them is the **setup wizard**:
+open `deploy-kit/wizard/index.html` (double-click the file), fill in the blanks, and it generates your
+env for copy-paste. Full walkthrough (and the automatic push-to-deploy pipeline): see
+**`deploy-kit/CONTINUOUS-DEPLOYMENT-AND-ONE-CLICK.md`**.
+
+Everything ships **on by default** — no feature-enablement steps. The only switches that stay off are the
+legally-gated ones (card charging, cash-out, etc.), which you enable later once their prerequisites are met.
+
+## Architecture
+- **Frontend:** React + Vite PWA (208 pages). Talks to the backend over HTTP via `src/api/base44Client.js`.
+- **Backend:** self-hosted **Deno** service in `/backend` — 526 HTTP function routes, 239 Postgres
+  tables, JWT + Google auth, an agent runtime, and a cron scheduler. Docker + docker-compose included.
+- **Database:** PostgreSQL (schema in `backend/db/schema.sql`).
+- **Native apps:** Capacitor wrapper for Android + iOS (wrapper-only; regenerated, not committed).
+
+## Run it locally
+**Backend + database:**
 ```
-src/modules/marketplace/
-  index.js            ← retail module surface (Marketplace, PhysicalStore, DigitalStore, + games)
-  Marketplace.jsx     ← re-export entry
-  PhysicalStore.jsx   ← re-export entry
-  DigitalStore.jsx    ← re-export entry
-  games/              ← the app store + game store, as a subsection of the marketplace
-    index.js
-    Store.jsx / InAppGameStore.jsx / InAppStore.jsx / VirtualStore.jsx
-    GameStore.jsx / GameDetail.jsx / GameGuides.jsx / GameVotingHub.jsx / FeaturedGameDashboard.jsx
+cd backend
+cp .env.example .env        # set DATABASE_URL, AUTH_JWT_SECRET, OPENAI_API_KEY, etc.
+docker compose up --build   # starts Postgres (loads schema.sql) + the backend on :8000
+```
+Health check: http://localhost:8000/health
+
+**Frontend:**
+```
+cp .env.example .env.local  # set VITE_NEXUS_API_URL=http://localhost:8000
+npm install
+npm run dev
 ```
 
-## Why the page files still live in `src/pages/`
+## Configuration
+- Backend secrets → `backend/.env` (see `CONFIG-AND-SECRETS.md` and `backend/.env.example`).
+- Frontend public config → `.env.local` (`VITE_NEXUS_API_URL` is the main one).
 
-The router (`src/pages.config.js`) is **auto-generated** and **auto-registers every file in
-`src/pages/`** as a route. Physically moving the page files out of `src/pages/` would deregister their
-routes and change the site — the opposite of "keep the functionality and layout the same." So the files
-stay in `src/pages/` for the router, and this module holds **re-export entry points**: it is the
-organized home and the import surface for all app-store / game-store code. `App.jsx` loads the store /
-game pages **through this module** (e.g. `import('@/modules/marketplace/games/Store')`).
+## Where to go next
+- **Get it running & tested:** `backend/PHASE-2-RUNBOOK.md`
+- **Full launch sequence:** `MASTER-LAUNCH-GUIDE.md`
+- **Hand to a developer:** `DEVELOPER-HANDOFF-BRIEF.md`
+- **Native apps:** `MOBILE-APP-WRAPPER-GUIDE.md` + `APP-STORE-SUBMISSION-CHECKLIST.md`
+- **How the Base44 removal was done (reference):** `DE-BASE44-REWORK.md`, `BASE44-TO-SELFHOSTED-MAP.md`
 
-Nothing about the running app changes — same URLs, same pages, same navigation, same layout. This is
-purely an internal reorganization so the store + game store live inside the retail marketplace, in a
-games subsection.
-
-If the router is later changed to register pages from module folders too, these re-export files can be
-swapped for the real page sources with no other edits.
+## Deploy (production)
+Build the frontend (`npm run build` → static `dist/`) and host it (Amplify/CloudFront/etc.). Deploy
+the Deno backend as a container (Render/Railway/Fly.io/AWS) with a managed Postgres, and set the SPA
+history fallback (`404/403 → /index.html`). Details in `MASTER-LAUNCH-GUIDE.md`.

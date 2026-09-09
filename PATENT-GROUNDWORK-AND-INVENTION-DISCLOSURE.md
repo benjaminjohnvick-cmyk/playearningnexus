@@ -1,5 +1,7 @@
 # Invention Disclosure & Patent Groundwork — Get Goods Gratis (Free) / GamerGain / PlayEarning Nexus
 
+> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`. **Action for patent counsel:** per decision #2, consider reframing claim language around retail/rewards with games as one searchable category (proposal only — no claims are amended in this document).
+
 **Prepared for patent counsel.** This document is the technical groundwork for evaluating and filing patent
 protection on the platform's website, mobile applications, and back-end software. It describes the system's
 architecture and its novel features and methods so counsel can assess **patent-eligibility (35 U.S.C. §101),
@@ -30,7 +32,7 @@ distinctive UI, and separate trademark/copyright coverage).
 
 ## 1. Field of the invention
 
-Computer-implemented systems and methods for an **integrated, closed-loop "play/earn-to-shop" digital
+Computer-implemented systems and methods for an **integrated, closed-loop "earn-to-shop" digital
 marketplace** that unifies (a) a consumer rewards economy funded by advertisers rather than by consumer markup,
 (b) an artificial-intelligence advertising engine that generates, tests, and optimizes creative across owned and
 social surfaces, and (c) a platform-wide **graduated-autonomy automation framework** by which AI progressively

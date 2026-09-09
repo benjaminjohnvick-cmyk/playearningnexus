@@ -10,7 +10,7 @@ legal review is faster and better grounded. Current as of 2026-09-06.*
 ## 1. In one paragraph
 
 **Get Goods Gratis (Free)** is an 18-and-over **retail / e-commerce marketplace** — a website plus companion
-mobile apps — where people shop for goods and, alongside the storefront, can play games, take surveys, and
+mobile apps — where people shop for goods and, alongside the storefront, can browse a searchable games category, take surveys, and
 engage with advertising to earn on-platform store credit that is spent on those same goods. Its tagline is
 **"Where Global Goods Gather"** — paired in the brand lockup with the descriptor **"Buy Anything Available
 Online"** — and its intended web address is **getgoodsgratis.com**. The defining feature
@@ -25,15 +25,18 @@ operations, with **permanent human/compliance gates** on anything touching money
 ## 2. What the site is (and is not)
 
 - **It is** a consumer retail marketplace that bundles shopping with optional earn-and-reward mechanics
-  (surveys, games, attention/ad engagement, referrals, and a skill-based prize competition), funded by
+  (surveys, a searchable games category, attention/ad engagement, referrals, and a skill-based prize competition), funded by
   business advertising rather than by marking goods up to the consumer.
 - **It is not** a bank, a money-transmitter, an investment or lending service, a cash-out "get paid" app, or
   a gambling site. Consumer balances are **closed-loop store credit**, not money; the prize competition is
   **skill/merit-based with a free entry option**, not a random-draw lottery.
-- **Positioning note for counsel:** the brand recently repositioned from a "play games, earn" framing to a
-  **retail-first** identity ("a retail website that offers games"). Marketing copy across the site now leads
-  with shopping; games/surveys/rewards are presented as secondary features. This matters for how the product
-  is characterized (retail commerce vs. a rewards/gaming app).
+- **Positioning note for counsel:** the brand repositioned from a "play games, earn" framing to a
+  **retail-first** identity. Games are now **one searchable store category** among others, not a pillar and not a
+  curated catalog: users search for any game available online and buy or download it through the store, on the
+  **same zero-inventory sourcing/fulfillment model as every other product** (the store holds no inventory).
+  Marketing copy across the site now leads with shopping; surveys/rewards and the games category are presented as
+  secondary features. This matters for how the product is characterized (retail commerce vs. a rewards/gaming app).
+  See `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md` for the full decision record. `PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).`
 
 ---
 
@@ -41,7 +44,7 @@ operations, with **permanent human/compliance gates** on anything touching money
 
 | Audience | What they do | Money direction |
 |---|---|---|
-| **Consumers (users)** | Shop for goods; optionally earn store credit by taking surveys, playing games, engaging with ads, and referring others; redeem credit for goods. Must be **18+**. | They spend money on goods and/or earn **non-cashable** store credit. **No cash is ever paid out to them.** |
+| **Consumers (users)** | Shop for goods; optionally earn store credit by taking surveys, engaging with ads, and referring others; redeem credit for goods. Must be **18+**. | They spend money on goods and/or earn **non-cashable** store credit. **No cash is ever paid out to them.** |
 | **Business advertisers** | Buy advertising campaigns and placements (tiered products, sponsored listings, boosts) to reach the user base. | They **pay real money to the platform.** |
 | **Partners (affiliates / developers / endorsers)** | Refer business or supply integrations/content; receive a revenue share. | They **receive real money** as vendor/revenue-share payouts (1099-reported). |
 | **Platform operator / admins** | Operate the marketplace, approve gated features, run compliance controls. | Receives advertiser revenue; pays partner shares and fulfills goods. |
@@ -51,7 +54,7 @@ operations, with **permanent human/compliance gates** on anything touching money
 ## 4. What a user can do (core features & flows)
 
 - **Shop the marketplace** — browse and acquire goods; store credit and/or payment methods apply at checkout.
-- **Earn store credit** — complete surveys, play games, engage with advertising/attention units, and complete
+- **Earn store credit** — complete surveys, engage with advertising/attention units, and complete
   daily/goal-based activities. Earnings accrue as **Site Cash** (closed-loop credit), never cash.
 - **Refer others** — a **single-tier** referral program (no multi-level/downline structure); referral rewards
   are tied to real activity and are clawback-gated against fraud.

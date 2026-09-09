@@ -61,13 +61,13 @@ network/self-funding. Only include an item in an advertised total if the value i
 8. Profile customization, avatars, badges (digital cosmetics) — [Z].
 9. VIP / status tiers (perceived exclusivity) — [Z].
 10. Earning guides & financial-literacy mini-courses — [Z] (one-time to make).
-11. Early access to new features/games — [Z].
+11. Early access to new features — [Z].
 12. Localized experience: 56 currencies, 24 languages, your country's flag — [Z].
 13. Buyer protection / AI-managed escrow on marketplace orders — [Z].
 14. "Find the real thing" price-comparison search across major retailers — [Z].
 15. Privacy controls: data export, delete, opt-out — [Z] (trust value).
 16. Customer support + dispute resolution — [Z].
-17. Community: forums, guilds, squads, leaderboards, tournaments — [Z].
+17. Community: forums, guilds, squads, leaderboards, community events — [Z].
 18. Ad-free experience (only counts if you'd otherwise run ads) — [Z].
 
 **Advertiser / partner-funded — [P] net-positive to you**
@@ -75,7 +75,7 @@ network/self-funding. Only include an item in an advertised total if the value i
     **no in-app-purchase charges** — a time-boxed window whose IAP cost is covered (up to a cap), funded
     by the advertiser revenue from those offers. Net cost ≤ $0 as long as the offer revenue ≥ the cap.
     **Implemented:** `dailyBoostStatus` / `claimDailyBoost` (opens a 5-minute `free_app_time_until`
-    window + credit cap the game store honors at checkout).
+    window + credit cap the store honors at checkout).
 20. Retailer cash-back via affiliate links — "up to X% back," network-funded — [P].
 21. Offerwall sign-up bonuses & free trials — advertiser-funded — [P].
 22. Free gift cards earned from completing offers — advertiser-funded — [P].
@@ -105,7 +105,7 @@ network/self-funding. Only include an item in an advertised total if the value i
 
 ### The Daily Boost callout (your idea, made legal & net-neutral)
 Frame it as: **"Earn $4 in offers today → your next 20 minutes are on us"** — a credit covering in-app
-purchases and app-install costs **within GamerGain's own games/store** (not third-party App Store
+purchases and app-install costs **within GamerGain's own store** (not third-party App Store
 charges, which Apple/Google control). Because the $4 comes from **advertiser offers that pay you**, the
 credit you hand back is funded by that revenue, so it's net-neutral-to-positive. Keep the credit value
 **below** your average offer payout so it never goes underwater, cap it per day, and word it as "on us
@@ -164,7 +164,7 @@ Single source of truth: store the number in `WELCOME_REWARDS_TOTAL` (and the com
   12-mo expiry), applied to platform-catalog purchases in `purchaseMarketplaceListing`; balance via
   `welcomeCreditStatus`. Cost is platform margin only (never subsidizes member sellers).
 - **Daily Boost** — `dailyBoostStatus` / `claimDailyBoost` (earn $4/day → 5-minute free-app window +
-  capped IAP credit the game store honors). Net-neutral, funded by offer revenue.
+  capped IAP credit the store honors). Net-neutral, funded by offer revenue.
 - **Advertised figure** — `ADVERTISED_VALUE_TOTAL` (default $2,000) + `WELCOME_REWARDS_TOTAL` ($1,460)
   as single-source settings; shown in the marketplace welcome banner with the "up to" + disclosure.
 - **Affirm BNPL** — real-goods financing (see `AFFIRM-BNPL-SETUP.md`), with the "Pay over time with
@@ -173,7 +173,7 @@ Single source of truth: store the number in `WELCOME_REWARDS_TOTAL` (and the com
   cash-back via affiliate, cosmetics, buyer protection) — which is what makes the figure substantiable.
 
 ### Remaining seams (need your data/keys, not new build)
-- The game-store IAP checkout should check `free_app_time_until` / `app_time_credit_usd` to honor the
+- The store IAP checkout should check `free_app_time_until` / `app_time_credit_usd` to honor the
   free window (one guard in the IAP flow).
 - Place the `ADVERTISED_VALUE_TOTAL` figure on the signup/landing hero and welcome email (the banner is
   live in the marketplace; reuse the same setting on other surfaces).
