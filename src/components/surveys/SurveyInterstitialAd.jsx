@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Loader2, X } from 'lucide-react';
 import BrandedAd from '@/components/branding/BrandedAd';
 import AdMedia from '@/components/ads/AdMedia';
+import AdActionBar from '@/components/ads/AdActionBar';
 
 /**
  * SurveyInterstitialAd — the mandatory full-screen ad shown BETWEEN surveys for non-premium users
@@ -81,6 +82,11 @@ export default function SurveyInterstitialAd({ onDone }) {
       {/* Bottom action bar */}
       <div className="relative z-10 bg-black/80 backdrop-blur px-4 pb-[env(safe-area-inset-bottom)] pt-3 space-y-2">
         {ad?.title && <div className="text-sm font-medium text-white/90 text-center truncate">{ad.title}</div>}
+        {(ad?.ad_id || (ad?.url && ad.url !== '/')) && (
+          <div className="max-w-md mx-auto">
+            <AdActionBar ad={ad} placement="survey_interstitial" />
+          </div>
+        )}
         <button
           disabled={!done}
           onClick={() => finish(ad?.ad_id, ad?.founding_owner_id)}

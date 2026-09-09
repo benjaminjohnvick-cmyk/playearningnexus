@@ -7,6 +7,7 @@ import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe, ArrowRig
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
+import AdActionBar from '@/components/ads/AdActionBar';
 import { InteractionTracker, markCompleted } from '@/lib/clickVerification';
 import SocialAdCreator from '@/components/ppc/SocialAdCreator';
 
@@ -270,6 +271,12 @@ function SuccessModal({ ad, onVisit, onBack, adsClickedToday }) {
         >
           <ExternalLink className="w-4 h-4" /> Visit {ad.brand} Now →
         </Button>
+        <div className="mb-2">
+          <AdActionBar
+            ad={{ id: ad.id, ad_id: ad.id, title: ad.brand, product_name: ad.brand, url: ad.site, product_url: ad.site, image_url: ad.image }}
+            placement="ppc_mosaic"
+          />
+        </div>
         <Button variant="ghost" className="w-full text-gray-400 text-sm" onClick={onBack}>
           ← Back to Ad Grid
         </Button>

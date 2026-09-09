@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
+import AdActionBar from '@/components/ads/AdActionBar';
 import { InteractionTracker, hasAlreadyCompleted, markCompleted } from '@/lib/clickVerification';
 
 // ─── Business Ad Data ──────────────────────────────────────────────────────────
@@ -242,6 +243,12 @@ function SuccessModal({ ad, onVisit, onBack }) {
         >
           <ExternalLink className="w-4 h-4" /> Visit {ad.brand} Now →
         </Button>
+        <div className="mb-2">
+          <AdActionBar
+            ad={{ id: ad.id, ad_id: ad.id, title: ad.brand, product_name: ad.brand, url: ad.site, product_url: ad.site, image_url: ad.image }}
+            placement="google_overlay"
+          />
+        </div>
         <Button variant="ghost" className="w-full text-gray-400 text-sm" onClick={onBack}>
           ← Back to Ad Grid
         </Button>
