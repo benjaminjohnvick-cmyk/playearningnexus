@@ -57,9 +57,12 @@
 
 **What it does.** In the advertiser value stack, live-shopping placement and livestream→social distribution are shown as **included** features at **no extra price** (~$13,000 of conventional value combined), marked "included — activates after counsel sign-off." The system reports a *listed/delivered value ratio*, never a revenue or ROI promise.
 
+**What it does (value-match-to-price).** Every advertiser tier now carries a guarantee that its **total included value is at least the price the advertiser pays**. When the summed conventional value of a tier's features is below the price, a **guaranteed bonus-inventory block ("value-match")** tops the total up to the price floor — the same mechanism the Tier 2 value stack already uses. Concretely: Tier 1 lists ~$27,400 of value against a ~$13,000 price (already above, no top-up); Tier 2 is topped up to ~$216,667 (its price); Tier 3 to $400,000 (its price). No individual feature's stated value is inflated — the gap to price is filled only by guaranteed delivery of real bonus inventory. Still reported as advertising value delivered, never a revenue or ROI promise.
+
 **Questions for counsel:**
 - Is the "included, activates after counsel sign-off" framing acceptable — i.e., showing a feature's conventional value in the package while it is disabled, so long as it is clearly not yet delivering and not promised as a return?
 - Any concern with attaching a specific dollar "conventional value" to these placements in advertiser-facing materials?
+- **Value-match-to-price:** is it acceptable to represent that each tier delivers *at least* the price paid in advertising value, where any shortfall is met with guaranteed bonus impression inventory (not cash, not a refund, and explicitly not an ROI/revenue guarantee)? This mirrors the Tier 2 value-match block already in place. Please confirm the disclosure wording ("advertising value delivered, value-matched to your spend; not a guarantee of your revenue or return").
 
 ---
 

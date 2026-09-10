@@ -114,3 +114,15 @@ product-market fit and increased revenue, and learns** — while **keeping every
 
 Settings: `PMF_AGENT_ENABLED`, `PMF_AGENT_RECOMMEND_PRICING`, `PMF_AGENT_STRONG_SCORE`, `PMF_AGENT_WEAK_SCORE`,
 `PMF_AGENT_MIN_SAMPLE`. The plan is shown on the `FeaturePMF` admin page and returned by `featurePmfScoreboard`.
+
+## Value-match to price (every tier delivers ≥ what they pay)
+
+`tierFeatureRollup` now enforces a **value-match-to-price floor** (`ADVERTISER_VALUE_MATCH_TO_PRICE`, on by
+default): when a tier's summed feature value is below the price the advertiser pays, a guaranteed bonus-inventory
+top-up (`value_match_to_price_usd`) raises the reported total (`total_offer_value_usd`) to the price. So Tier 1
+(~$27,400 of value vs ~$13,000 price) is already above and untouched, while Tier 2 tops up to ~$216,667 and Tier
+3 to $400,000 — each tier's total included value is at least its price. No single feature's conventional value is
+inflated; the gap is filled only by guaranteed delivery, mirroring the Tier 2 value-match block. The advertiser
+value-stack table (`FeaturePMF`) shows the top-up as a distinct "Value-match guarantee" line plus a "Total
+included value ≥ price ✓" row. Advertising value delivered — never a revenue or ROI promise. See
+`LIVESTREAM-ADVERTISING-COUNSEL-BRIEF.md` §6.
