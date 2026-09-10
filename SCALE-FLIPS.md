@@ -65,6 +65,11 @@ per viewer. Kill switch: `BROADCAST_STATE_PUBLISH_ENABLED=0`.
 Until this is set, viewers fall back to the origin poll — which is already short-cache + `stale-while-revalidate`,
 so it's correct and cheap either way; this just moves the last bit of metadata load onto the edge.
 
+**Bonus (same bucket, no extra flip):** general media uploads (AI catalog images, `UploadFile`) now share this
+R2 bucket by default — with `HLS_STORAGE_BUCKET` + `HLS_S3_*` creds set, uploads land here too (under
+`uploads/`/`catalog/`) and serve from the same CDN base. Override with `S3_*` to use a separate store; plain
+AWS S3 still works with no endpoint set. See `INFRA-PROVISIONING-RUNBOOK.md`, Part A.
+
 ---
 
 ## What's NOT a code flip

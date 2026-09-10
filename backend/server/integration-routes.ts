@@ -49,14 +49,13 @@ async function generateSpeech(args: { text?: string; voice?: string }): Promise<
 // file_url. (If your frontend previously sent bytes to UploadFile, switch it to: request
 // URLs here, then PUT the File to upload_url — see PHASE-3-NOTES.md.)
 async function uploadFile(_req: Request, args: { filename?: string }): Promise<Response> {
-  const bucket = Deno.env.get("S3_BUCKET");
-  if (!bucket) {
+  const { uploadFileUrls, uploadConfigured } = await import("../sdk/aws/s3.ts");
+  if (!uploadConfigured()) {
     return Response.json(
-      { error: "UploadFile not configured", hint: "Set S3_BUCKET + AWS creds (see PHASE-3-NOTES.md)." },
+      { error: "UploadFile not configured", hint: "Set S3_BUCKET + AWS creds, or reuse the R2 broadcast bucket (HLS_STORAGE_BUCKET + HLS_S3_* creds). See INFRA-PROVISIONING-RUNBOOK.md." },
       { status: 501 },
     );
   }
-  const { uploadFileUrls } = await import("../sdk/aws/s3.ts");
   const urls = await uploadFileUrls(args.filename ?? "file.bin");
   return Response.json(urls);
 }

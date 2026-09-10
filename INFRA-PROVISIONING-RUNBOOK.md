@@ -106,11 +106,17 @@ HLS_PLAYBACK_BASE_URL=https://cdn.yourdomain.com
 Redeploy/restart, then `node deploy-kit/env-check.mjs` → **Broadcast state → CDN** should read **ACTIVE**.
 (“QVC broadcast (HLS/CDN)” needs Part C's `LIVEKIT_EGRESS_URL` too before it flips.)
 
-> **General media uploads note:** the app's *general* image/upload helper (`sdk/aws/s3.ts`, used for AI catalog
-> images) currently signs the **AWS S3** host format, not a custom R2 endpoint — so it works with AWS S3 today,
-> not R2. The broadcast **state.json** publisher (this scaling work) fully supports R2. If you want *all* media
-> on R2 too, that's a small code change (point the upload helper at the same `presignPut` endpoint path) — ask
-> and I'll wire it.
+> **General media uploads — now on the same bucket.** The app's general image/upload helper (`sdk/aws/s3.ts`,
+> used for AI catalog images and `UploadFile`) is R2-aware and **shares this bucket by default**: with the env
+> above set, media uploads land in the same R2 bucket (under an `uploads/` or `catalog/` prefix) and are served
+> from the same `HLS_PLAYBACK_BASE_URL` CDN — no extra config. It falls back through `S3_ACCESS_KEY_ID` →
+> `HLS_S3_ACCESS_KEY_ID` → `AWS_ACCESS_KEY_ID`, so the Part A token just works. To point general uploads at a
+> *separate* store instead, set the `S3_*` overrides (`S3_BUCKET`, `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, …); with no
+> endpoint set it uses plain AWS S3 exactly as before.
+>
+> One R2 note for browser uploads via `UploadFile` (the presigned-PUT flow): add a **CORS policy** on the R2
+> bucket allowing your site origin + the `PUT` method, or the browser PUT is blocked. Server-side `uploadBytes`
+> (catalog images) needs no CORS.
 
 ---
 

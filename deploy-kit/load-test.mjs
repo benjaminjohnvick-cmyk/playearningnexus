@@ -406,6 +406,11 @@ check(/publishBroadcastState\(room, buildBroadcastState/.test(sf), 'sessionFeatu
 const sbs = read('backend/functions/sessionBroadcastStart/entry.ts');
 check((sbs.match(/publishBroadcastState\(/g) || []).length >= 2, 'sessionBroadcastStart seeds state on start AND clears it on stop');
 check(/Scale levers/.test(read('deploy-kit/env-check.mjs')), 'env-check prints the scale-levers activation readout');
+// General media uploads share the R2/HLS bucket by default (one bucket for everything).
+const s3 = read('backend/sdk/aws/s3.ts');
+check(/HLS_STORAGE_BUCKET/.test(s3) && /HLS_S3_ACCESS_KEY_ID/.test(s3), 'general uploads default to the same R2 bucket + creds as broadcast (S3_* overrides optional)');
+check(/presignPut/.test(s3) && /presignS3Put/.test(s3), 'upload helper is endpoint-aware: R2/MinIO via presignPut, AWS unchanged via presignS3Put');
+check(/uploadConfigured/.test(read('backend/server/integration-routes.ts')), 'UploadFile route accepts the shared bucket (not just S3_BUCKET)');
 
 // ============================================================================================================
 console.log('');
