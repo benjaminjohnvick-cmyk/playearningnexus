@@ -32,16 +32,35 @@ const PLATFORM_PROMPTS = {
   tiktok: (ads, postNum) => `Write a TikTok caption (under 160 chars) for a video showing the GamerGain Million Dollar Ad Grid — ${ads.slice(0,4).map(a=>a.brand).join(', ')} & more. Click ads, take 4 quick surveys ($0.40), earn $0.20 each! Trending hashtags: #MillionDollarHomepage #EarnMoney #SideHustle #GamerGain #TikTokMadeMeDoIt. Link: gamergain.app/GoogleAdsOverlay Post ${postNum}.`,
 };
 
+// Build the in-app landing link a scheduled post points at. The landing renders the same Buy Now +
+// Interested bar, so clicks from these auto-posts feed the same AdEngagement data + AI ad-ranker
+// (placement "social_landing:auto") and the advertiser's stats — unifying scheduled social with in-app.
+function buildLandingUrl(ad) {
+  const q = new URLSearchParams({
+    ad: ad.brand || '', brand: ad.brand || '', site: ad.site || '',
+    image: ad.image || '', tag: ad.tagline || '', src: 'auto',
+  });
+  return `https://gamergain.app/AdLanding?${q.toString()}`;
+}
+
 async function generatePostContent(base44, platform, postNum) {
+  // Feature one brand per post (rotated) and point its CTA at the in-app landing.
+  const featured = BUSINESS_ADS[(postNum - 1 + Math.floor(Math.random() * BUSINESS_ADS.length)) % BUSINESS_ADS.length];
+  const landing = buildLandingUrl(featured);
+  const cta = `\n🛒 Buy it or tap ♥ Interested → ${landing}`;
+
   const promptFn = PLATFORM_PROMPTS[platform];
-  if (!promptFn) return `🎮 Discover GamerGain.app — click ads, take quick surveys, earn real money! #GamerGain`;
+  if (!promptFn) {
+    return { content: `🎮 Discover GamerGain.app — click ads, take quick surveys, earn real money!${cta} #GamerGain`, ad_id: featured.brand, landing_url: landing };
+  }
 
   const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
     prompt: promptFn(BUSINESS_ADS, postNum),
   });
 
   const raw = typeof result === 'string' ? result : (result?.text || result?.content || JSON.stringify(result));
-  return withAdDisclosure(raw); // FTC: every auto-posted promotional caption carries a sponsorship disclosure
+  // FTC: every auto-posted promotional caption carries a sponsorship disclosure; then the buy/interested CTA.
+  return { content: withAdDisclosure(raw) + cta, ad_id: featured.brand, landing_url: landing };
 }
 
 async function postToSocialPlatform(connection, content) {
@@ -149,7 +168,7 @@ export default __handler(async (req) => {
 
       for (let postNum = 1; postNum <= postsPerPlatform; postNum++) {
         try {
-          const content = await generatePostContent(base44, connection.platform, postNum);
+          const { content, ad_id, landing_url } = await generatePostContent(base44, connection.platform, postNum);
           const postResult = await postToSocialPlatform(connection, content);
 
           // Save record to SocialMediaPost entity
@@ -159,6 +178,9 @@ export default __handler(async (req) => {
             content,
             post_id: postResult.postId,
             status: postResult.simulated ? 'simulated' : 'published',
+            ad_id: ad_id || null,
+            landing_url: landing_url || null,
+            source: 'auto_scheduler',
             posted_at: new Date().toISOString(),
           }).catch(() => null); // non-critical
 
