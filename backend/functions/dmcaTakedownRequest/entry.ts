@@ -45,6 +45,21 @@ export default __handler(async (req) => {
       }).catch(() => null);
     }
 
+    // If the notice targets a hosted live session, end it and record a repeat-infringer STRIKE against the host
+    // (this is what drives the DMCA repeat-infringer termination policy — see host-moderation.ts).
+    if (infringing_content_id && content_type === "GameSession") {
+      const sess = (await base44.asServiceRole.entities.GameSession.filter({ id: infringing_content_id }).catch(() => []))[0]
+        || (await base44.asServiceRole.entities.GameSession.filter({ session_id: infringing_content_id }).catch(() => []))[0];
+      if (sess?.id) {
+        await base44.asServiceRole.entities.GameSession.update(sess.id, { status: "ended", moderation_status: "dmca_removed", hls_url: "" }).catch(() => null);
+        await base44.asServiceRole.entities.HostModerationEvent.create({
+          session_id: sess.session_id ?? infringing_content_id, host_player_id: String(sess.host_player_id ?? ""),
+          type: "takedown", reason: `DMCA takedown: ${copyrighted_work}`, actor: complainant_email, strike: true,
+          dmca_request_id: record.id, at: new Date().toISOString(),
+        }).catch(() => null);
+      }
+    }
+
     // Notify the designated agent.
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: snapString("DMCA_AGENT_EMAIL", snapString("EMAIL_FROM", "admin@gamergain.app")),

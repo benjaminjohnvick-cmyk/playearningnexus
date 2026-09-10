@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Radio, ShoppingBag, Heart, Loader2, AlertTriangle, Users } from 'lucide-react';
+import { Radio, ShoppingBag, Heart, Loader2, AlertTriangle, Users, Flag } from 'lucide-react';
 import { toast } from 'sonner';
 import AdMedia from '@/components/ads/AdMedia';
 
@@ -188,6 +188,16 @@ export default function WatchSession() {
     toast.success('Marked interested.');
   };
 
+  const report = async () => {
+    try {
+      const res = await base44.functions.invoke('sessionReport', { room, reason: 'inappropriate content' });
+      const d = res?.data || res || {};
+      if (d.suspended) { toast.success('Reported — this session was suspended for review.'); setPhase('ended'); cleanup(); }
+      else if (d.ok) { toast.success('Reported. Thank you — our team will review.'); }
+      else { toast.message('Report received.'); }
+    } catch { toast.error('Could not send the report.'); }
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       {/* Between-products AD BREAK — a targeted audio/video ad from the ad ecosystem, plays before the next product. */}
@@ -227,7 +237,10 @@ export default function WatchSession() {
             <video ref={videoRef} autoPlay playsInline muted={mode === 'hls'} controls={mode === 'hls'} className="w-full bg-black aspect-video object-contain" />
             <div className="p-3 flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-sm font-semibold text-red-600"><Radio className="w-4 h-4" /> LIVE</span>
-              {mode === 'hls' && <span className="flex items-center gap-1.5 text-[11px] text-gray-400"><Users className="w-3.5 h-3.5" /> Broadcast</span>}
+              <div className="flex items-center gap-3">
+                {mode === 'hls' && <span className="flex items-center gap-1.5 text-[11px] text-gray-400"><Users className="w-3.5 h-3.5" /> Broadcast</span>}
+                <button onClick={report} className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-red-600" title="Report this stream"><Flag className="w-3.5 h-3.5" /> Report</button>
+              </div>
             </div>
           </CardContent></Card>
 

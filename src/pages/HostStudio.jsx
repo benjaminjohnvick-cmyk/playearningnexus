@@ -42,6 +42,7 @@ export default function HostStudio() {
       });
       const d = res?.data || res || {};
       if (d.enabled === false) { setErr('Hosting is turned off (SESSION_HOSTING_ENABLED).'); setPhase('error'); return; }
+      if (d.host_blocked) { setErr(d.error || 'Hosting is suspended for this account due to repeated content violations.'); setPhase('error'); return; }
       if (d.configured === false) { setPhase('unconfigured'); return; }
       if (!d.ok || !d.token) { setErr(d.error || 'Could not start the session.'); setPhase('error'); return; }
 
@@ -92,6 +93,13 @@ export default function HostStudio() {
     if (!roomRef.current) return;
     if (!product.name) { toast.error('Add a product name first.'); return; }
     try {
+      // AI moderation on the product text first (rules-first + cheap Llama). A block refuses the feature.
+      try {
+        const m = await base44.functions.invoke('sessionModerationScan', { room, kind: 'product', text: `${product.name} ${product.url}` });
+        const mv = (m?.data || m || {}).verdict;
+        if (mv?.action === 'block') { toast.error('That product was blocked by moderation.'); return; }
+      } catch { /* non-blocking: moderation off or unavailable */ }
+
       // Validate + set via the backend — enforces the advertised-products-only rule and attaches the advertiser
       // linkage. A non-advertised product is refused here (create an ad for it first).
       const res = await base44.functions.invoke('sessionFeatured', { room, action: 'set', product });

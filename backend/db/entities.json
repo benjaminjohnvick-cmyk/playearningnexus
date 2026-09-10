@@ -163,6 +163,7 @@
   "GuildMember",
   "GuildReward",
   "HeadToHeadContest",
+  "HostModerationEvent",
   "Household",
   "IAPAdvertisingCredit",
   "IdempotencyKey",

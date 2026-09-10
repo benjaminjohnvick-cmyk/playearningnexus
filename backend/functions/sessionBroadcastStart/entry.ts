@@ -3,6 +3,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { snapBool } from "../../sdk/settings.ts";
 import { broadcastEnabled, broadcastConfigured, egressUrl, hlsUrlForRoom, hlsKeyPrefix, lowLatencyHls } from "../../sdk/broadcast.ts";
+import { aiModerationEnabled } from "../../sdk/host-moderation.ts";
 
 // sessionBroadcastStart — turns a hosted session into a QVC-scale BROADCAST: it starts a LiveKit Egress
 // room-composite HLS egress and records the resulting CDN playlist URL on the GameSession. Once set, the token
@@ -20,6 +21,8 @@ export default __handler(async (req) => {
   try {
     if (!snapBool("SESSION_HOSTING_ENABLED", false)) return Response.json({ ok: true, enabled: false });
     if (!broadcastEnabled()) return Response.json({ ok: true, enabled: true, broadcast_enabled: false, note: "HOSTING_BROADCAST_ENABLED is off." });
+    // Public broadcast REQUIRES the moderation layer to be on (moderation + reporting must cover a public audience).
+    if (!aiModerationEnabled()) return Response.json({ ok: false, enabled: true, moderation_required: true, error: "Public broadcast requires AI moderation (HOSTING_AI_MODERATION_ENABLED) to be enabled." }, { status: 409 });
 
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();

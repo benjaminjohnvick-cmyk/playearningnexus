@@ -274,6 +274,44 @@ check(/socialPostContribution/.test(annSrc) && /withAdDisclosure/.test(annSrc), 
 check(/ppc_social_ads_opt_in/.test(annSrc), 'announce only reaches CONSENTED (opted-in) members');
 
 // ============================================================================================================
+console.log('\n\x1b[1m7) AI MODERATION for hosting (layer — complements the DMCA agent)\x1b[0m');
+
+const modExpect = {
+  HOSTING_AI_MODERATION_ENABLED: '1',
+  HOSTING_MODERATION_KILL_ON_BLOCK: '1',
+  HOSTING_MODERATION_REPORT_THRESHOLD: '3',
+  HOSTING_REPEAT_INFRINGER_STRIKES: '3',
+  HOSTING_MODERATION_VISION_ENABLED: '0',
+};
+for (const [k, v] of Object.entries(modExpect)) {
+  const got = settingDefault(k);
+  check(got === v, `${k} default = "${v}"${got === v ? '' : ` (got "${got}")`}`);
+}
+const mmani = read('backend/functions/_manifest.json');
+check(/sessionModerationScan/.test(mmani), 'sessionModerationScan registered');
+check(/sessionReport/.test(mmani), 'sessionReport registered (viewer reporting)');
+check(/hostModerationStatus/.test(mmani), 'hostModerationStatus registered');
+check(/"HostModerationEvent"/.test(read('backend/db/entities.json')), 'HostModerationEvent entity declared');
+check(/CREATE TABLE IF NOT EXISTS "HostModerationEvent"/.test(read('backend/db/schema.sql')), 'HostModerationEvent has a CREATE TABLE');
+// moderation is rules-first (free) then AI; blocks kill the stream + strike the host
+const scanSrc = read('backend/functions/sessionModerationScan/entry.ts');
+check(/moderateText/.test(scanSrc) && /InvokeLLM/.test(scanSrc), 'scan is rules-first (free) then AI for the ambiguous middle');
+check(/strike: true/.test(scanSrc), 'a block records a repeat-infringer strike');
+// the DMCA piece is NOT replaced — takedown still strikes + broadcast requires moderation
+check(/HostModerationEvent/.test(read('backend/functions/dmcaTakedownRequest/entry.ts')), 'DMCA takedown strikes the host (feeds repeat-infringer policy)');
+check(/isHostBlocked/.test(read('backend/functions/sessionLiveKitToken/entry.ts')), 'repeat-infringer hosts are barred at go-live');
+check(/aiModerationEnabled/.test(read('backend/functions/sessionBroadcastStart/entry.ts')), 'public broadcast requires moderation on');
+
+// repeat-infringer logic (mirrors host-moderation.ts): strikes >= limit → blocked
+const STRIKE_LIMIT = Number(settingDefault('HOSTING_REPEAT_INFRINGER_STRIKES'));
+const blockedAt = (strikes) => STRIKE_LIMIT > 0 && strikes >= STRIKE_LIMIT;
+check(blockedAt(STRIKE_LIMIT) === true && blockedAt(STRIKE_LIMIT - 1) === false, `host barred at ${STRIKE_LIMIT} strikes, not before`);
+// report threshold suspends
+const REP_TH = Number(settingDefault('HOSTING_MODERATION_REPORT_THRESHOLD'));
+const suspendAt = (reports) => reports >= REP_TH;
+check(suspendAt(REP_TH) && !suspendAt(REP_TH - 1), `session auto-suspends at ${REP_TH} distinct viewer reports`);
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

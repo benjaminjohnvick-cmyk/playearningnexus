@@ -4,6 +4,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { snapBool } from "../../sdk/settings.ts";
 import { hostingFloor } from "../../sdk/cost-floor.ts";
 import { broadcastEnabled, shouldServeHls, lowLatencyHls } from "../../sdk/broadcast.ts";
+import { isHostBlocked } from "../../sdk/host-moderation.ts";
 
 // sessionLiveKitToken — mints a LiveKit access token (HS256 JWT) so a member can join a hosted-session room on
 // YOUR self-hosted LiveKit SFU. The SFU (battle-tested clients + server) does the real WebRTC/NAT/scale work, so
@@ -47,6 +48,11 @@ export default __handler(async (req) => {
     const role = String(b.role || "viewer").toLowerCase() === "host" ? "host" : "viewer";
     const contentType = String(b.content_type || "game").toLowerCase();
     if (!room) return Response.json({ error: "room required" }, { status: 400 });
+
+    // Repeat-infringer termination: a host who reached the strike limit is barred from hosting.
+    if (role === "host" && await isHostBlocked(String(user.id))) {
+      return Response.json({ ok: false, host_blocked: true, error: "Hosting is suspended for this account due to repeated content violations." }, { status: 403 });
+    }
 
     // Non-game hosting (screen mirror / stream) needs the gate + a content-policy acknowledgment.
     if (role === "host" && contentType !== "game") {
