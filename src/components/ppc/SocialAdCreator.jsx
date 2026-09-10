@@ -34,7 +34,7 @@ Brands clicked: ${clickedAds.map(a => a.brand).join(', ')}
 For each brand, create 1 short social media post (max 280 characters) that:
 1. Promotes the brand's product/service
 2. Mentions they found it on Get Goods Gratis (Free)
-3. Includes a call to action
+3. Includes a clear call to action to BUY IT or SAVE IT — e.g., "🛒 Buy it or tap ♥ Interested (link below)"
 4. Includes relevant emojis
 5. Ends with: "via @Get Goods Gratis (Free) 🎮 gamergain.app"
 
@@ -60,13 +60,26 @@ Keep each post engaging, natural, and platform-friendly.`,
         }
       });
 
-      // Map back images/sites from clickedAds
+      // Map back images/sites from clickedAds; build the in-app landing link (carries the Buy Now +
+      // Interested bar, so social-sourced clicks feed the same AdEngagement data + AI ranker).
       const posts = (result.posts || []).map(post => {
         const original = clickedAds.find(a => a.brand === post.brand) || {};
+        const brand_site = original.site || post.brand_site;
+        const brand_image = original.image || post.brand_image;
+        const q = new URLSearchParams({
+          ad: String(original.id ?? ''),
+          brand: post.brand || '',
+          site: brand_site || '',
+          image: brand_image || '',
+          tag: original.tagline || '',
+          src: 'social',
+        });
         return {
           ...post,
-          brand_image: original.image || post.brand_image,
-          brand_site: original.site || post.brand_site,
+          brand_image,
+          brand_site,
+          ad_id: original.id ?? '',
+          landing_url: `https://gamergain.app/AdLanding?${q.toString()}`,
           platforms: PLATFORMS.map(p => p.id), // default all platforms
           approved: false,
         };
@@ -108,14 +121,17 @@ Keep each post engaging, natural, and platform-friendly.`,
     let count = 0;
     for (const ad of toPublish) {
       for (const platform of ad.platforms) {
+        const cta = ad.landing_url ? `\n🛒 Buy it or tap ♥ Interested → ${ad.landing_url}` : '';
         await base44.entities.SocialMediaPost.create({
           user_id: user?.id,
           platform,
-          content: ad.post_text + '\n' + (ad.hashtags || []).join(' '),
+          content: ad.post_text + cta + '\n' + (ad.hashtags || []).join(' '),
           status: 'published',
           brand_name: ad.brand,
           brand_image: ad.brand_image,
-          brand_url: ad.brand_site,
+          brand_url: ad.landing_url || ad.brand_site,
+          landing_url: ad.landing_url || null,
+          ad_id: ad.ad_id ?? null,
           posted_at: new Date().toISOString(),
           source: 'ppc_ad_creator',
         }).catch(() => null);
@@ -230,6 +246,9 @@ Keep each post engaging, natural, and platform-friendly.`,
                   {/* Post text */}
                   <div className="bg-gray-800 rounded-xl p-3 mb-3">
                     <p className="text-gray-200 text-xs leading-relaxed">{ad.post_text}</p>
+                    {ad.landing_url && (
+                      <p className="text-emerald-400 text-[10px] mt-1 truncate">🛒 Buy it or tap ♥ Interested → {ad.landing_url}</p>
+                    )}
                     {ad.hashtags?.length > 0 && (
                       <p className="text-purple-400 text-[10px] mt-1">{ad.hashtags.join(' ')}</p>
                     )}
