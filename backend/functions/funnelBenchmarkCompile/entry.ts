@@ -33,27 +33,29 @@ export default __handler(async (req) => {
     const nowISO = new Date().toISOString();
     const today = nowISO.slice(0, 10);
 
-    const journeys = await db.filter("FunnelJourney", { kind: "active" }, "-created_date", 20000).catch(() => []) as Record<string, unknown>[];
-
-    // Gather each customer's real result, grouped by product (only windows that have CLOSED).
+    // Gather each customer's real result, grouped by product (only windows that have CLOSED). Stream the
+    // journeys in bounded memory (keyset scan): byProduct holds only the per-product result values (bounded by
+    // products × customers), never the full journey table, and nothing is dropped by a 20k cap as it grows.
     const byProduct: Record<string, number[]> = {};
     const seen = new Set<string>();
-    for (const j of journeys) {
-      const userId = String(j.user_id ?? "");
-      const key = String(j.current_key ?? "");
-      const product = findProduct(key);
-      if (!userId || !product) continue;
-      const dedup = `${userId}:${key}`;
-      if (seen.has(dedup)) continue;
-      const windowStart = String(j.window_start ?? j.committed_at ?? "");
-      const windowDays = Number(j.window_days) || product.window_days;
-      const startMs = Date.parse(windowStart);
-      if (!Number.isFinite(startMs) || (Date.now() - startMs) < windowDays * 86400000) continue; // window still open
-      seen.add(dedup);
-      const result = product.metric === "attributed_sales"
-        ? await attributedSalesUsd(db, userId, windowStart).catch(() => 0)
-        : Number((await earnHistory(userId, Math.max(1, windowDays)).catch(() => ({ totalUsd: 0 } as { totalUsd: number }))).totalUsd) || 0;
-      (byProduct[key] ||= []).push(Math.max(0, result));
+    for await (const batch of db.scan("FunnelJourney", { kind: "active" }, 1000)) {
+      for (const j of batch) {
+        const userId = String(j.user_id ?? "");
+        const key = String(j.current_key ?? "");
+        const product = findProduct(key);
+        if (!userId || !product) continue;
+        const dedup = `${userId}:${key}`;
+        if (seen.has(dedup)) continue;
+        const windowStart = String(j.window_start ?? j.committed_at ?? "");
+        const windowDays = Number(j.window_days) || product.window_days;
+        const startMs = Date.parse(windowStart);
+        if (!Number.isFinite(startMs) || (Date.now() - startMs) < windowDays * 86400000) continue; // window still open
+        seen.add(dedup);
+        const result = product.metric === "attributed_sales"
+          ? await attributedSalesUsd(db, userId, windowStart).catch(() => 0)
+          : Number((await earnHistory(userId, Math.max(1, windowDays)).catch(() => ({ totalUsd: 0 } as { totalUsd: number }))).totalUsd) || 0;
+        (byProduct[key] ||= []).push(Math.max(0, result));
+      }
     }
 
     const computed: Array<Record<string, unknown>> = [];

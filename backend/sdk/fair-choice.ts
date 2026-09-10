@@ -50,18 +50,27 @@ export interface ChoiceTally { topic: string; impressions: number; picks: number
 
 /** Tally impressions + picks into an EXPOSURE-NORMALIZED ranking. pick_rate = picks ÷ impressions, so more
  *  exposure never inflates a topic. Topics with no impressions are excluded (can't be judged fairly). Pure. */
-export function tallyChoices(events: ChoiceEvent[]): ChoiceTally[] {
-  const acc: Record<string, { impressions: number; picks: number }> = {};
-  for (const e of events || []) {
-    if (!e?.topic) continue;
-    const a = (acc[e.topic] ??= { impressions: 0, picks: 0 });
-    if (e.kind === "impression") a.impressions++;
-    else if (e.kind === "pick") a.picks++;
-  }
+// Incremental accumulator (for STREAMING large event sets via db.scan without holding them all in memory).
+// State is bounded by the number of DISTINCT topics, not by event count. tallyChoices() below is the
+// array-at-once wrapper over the same math, so callers and tests are unaffected.
+export type ChoiceAcc = Record<string, { impressions: number; picks: number }>;
+export function newChoiceAcc(): ChoiceAcc { return {}; }
+export function addChoice(acc: ChoiceAcc, e: ChoiceEvent): void {
+  if (!e?.topic) return;
+  const a = (acc[e.topic] ??= { impressions: 0, picks: 0 });
+  if (e.kind === "impression") a.impressions++;
+  else if (e.kind === "pick") a.picks++;
+}
+export function rankChoiceAcc(acc: ChoiceAcc): ChoiceTally[] {
   return Object.entries(acc)
     .filter(([, s]) => s.impressions > 0)
     .map(([topic, s]) => ({ topic, impressions: s.impressions, picks: s.picks, pick_rate: Math.round((s.picks / s.impressions) * 10000) / 10000 }))
     .sort((a, b) => b.pick_rate - a.pick_rate || b.impressions - a.impressions);
+}
+export function tallyChoices(events: ChoiceEvent[]): ChoiceTally[] {
+  const acc = newChoiceAcc();
+  for (const e of events || []) addChoice(acc, e);
+  return rankChoiceAcc(acc);
 }
 
 /** Fairness diagnostic: how balanced exposure actually was across topics (max ÷ min impressions). A value

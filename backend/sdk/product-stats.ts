@@ -45,31 +45,28 @@ export interface ProductStat {
 
 interface OrderRow { [k: string]: unknown }
 
-/** Aggregate order rows into per-product stats. `todayISO` stamps the basis. Pure + deterministic. */
-export function computeProductStats(rows: OrderRow[], todayISO: string): ProductStat[] {
-  const itemField = productStatsItemField();
-  const amountField = productStatsAmountField();
-  const statusField = productStatsStatusField();
-  const excluded = productStatsExcludedStatuses();
+// Incremental accumulator (for STREAMING large Order sets via db.scan). State is the per-product groups —
+// bounded by the number of DISTINCT products (each holding its order amounts + a distinct-buyer set), never the
+// full raw Order rows. addOrder() applies the same status/amount/item guards as the array path.
+export type ProductStatsAcc = Record<string, { amounts: number[]; buyers: Set<string> }>;
+export function newProductStatsAcc(): ProductStatsAcc { return {}; }
+export function addOrder(acc: ProductStatsAcc, r: OrderRow): void {
+  const status = String(r[productStatsStatusField()] ?? "").toLowerCase();
+  if (status && productStatsExcludedStatuses().has(status)) return;
+  const amt = Number(r[productStatsAmountField()]);
+  if (!Number.isFinite(amt) || amt <= 0) return;
+  const item = String(r[productStatsItemField()] ?? "").trim();
+  if (!item) return;
+  (acc[item] ||= { amounts: [], buyers: new Set() });
+  acc[item].amounts.push(amt);
+  if (r.user_id) acc[item].buyers.add(String(r.user_id));
+}
+export function finalizeProductStats(acc: ProductStatsAcc, todayISO: string): ProductStat[] {
   const method = productStatsMethod();
   const minSample = productStatsMinSample();
   const today = (todayISO || "").slice(0, 10);
-
-  const groups: Record<string, { amounts: number[]; buyers: Set<string> }> = {};
-  for (const r of rows || []) {
-    const status = String(r[statusField] ?? "").toLowerCase();
-    if (status && excluded.has(status)) continue;
-    const amt = Number(r[amountField]);
-    if (!Number.isFinite(amt) || amt <= 0) continue;
-    const item = String(r[itemField] ?? "").trim();
-    if (!item) continue;
-    (groups[item] ||= { amounts: [], buyers: new Set() });
-    groups[item].amounts.push(amt);
-    if (r.user_id) groups[item].buyers.add(String(r.user_id));
-  }
-
   const out: ProductStat[] = [];
-  for (const [item, g] of Object.entries(groups)) {
+  for (const [item, g] of Object.entries(acc)) {
     const n = g.amounts.length;
     const total = g.amounts.reduce((s, x) => s + x, 0);
     const value = method === "average" ? total / n : median(g.amounts);
@@ -83,6 +80,13 @@ export function computeProductStats(rows: OrderRow[], todayISO: string): Product
   }
   out.sort((a, b) => b.sample_size - a.sample_size);
   return out;
+}
+
+/** Aggregate order rows into per-product stats. `todayISO` stamps the basis. Pure + deterministic. */
+export function computeProductStats(rows: OrderRow[], todayISO: string): ProductStat[] {
+  const acc = newProductStatsAcc();
+  for (const r of rows || []) addOrder(acc, r);
+  return finalizeProductStats(acc, todayISO);
 }
 
 export interface ProductStatView {

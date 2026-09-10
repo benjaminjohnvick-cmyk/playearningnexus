@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
 import { db } from "../../sdk/db.ts";
-import { computeProductStats, productStatsEnabled, productStatsSourceEntity } from "../../sdk/product-stats.ts";
+import { newProductStatsAcc, addOrder, finalizeProductStats, productStatsEnabled, productStatsSourceEntity } from "../../sdk/product-stats.ts";
 
 // productStatsCompile (INTERNAL/ADMIN, meant to be SCHEDULED) — aggregates real Orders per product and stores
 // one ProductStat row per product (units, buyers, median/avg revenue, AOV), marking it published once the
@@ -21,8 +21,14 @@ export default __handler(async (req) => {
 
     const nowISO = new Date().toISOString();
     const entity = productStatsSourceEntity();
-    const rows = await base44.asServiceRole.entities[entity].filter({}, "-created_date", 50000).catch(() => []) as Record<string, unknown>[];
-    const stats = computeProductStats(rows || [], nowISO);
+    // Stream every order in bounded memory (keyset scan): the accumulator holds per-product amounts + a
+    // distinct-buyer set (bounded by product count), never the full order table — and nothing is truncated by a
+    // 50k cap as order volume grows.
+    const acc = newProductStatsAcc();
+    for await (const batch of db.scan(entity, {}, 2000)) {
+      for (const r of batch) addOrder(acc, r);
+    }
+    const stats = finalizeProductStats(acc, nowISO);
 
     let written = 0;
     if (!dryRun) {

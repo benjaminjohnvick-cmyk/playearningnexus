@@ -31,14 +31,17 @@ export default __handler(async (req) => {
 
     const pending = await db.filter("EndorserConversion", { status: "pending" }, "-created_at", 3000).catch(() => []) as Record<string, unknown>[];
 
-    // Per-member paid-so-far this day/period (from already-rewarded rows) so caps hold across sweeps.
-    const rewarded = await db.filter("EndorserConversion", { status: "rewarded" }, "-created_at", 20000).catch(() => []) as Record<string, unknown>[];
+    // Per-member paid-so-far this day/period (from already-rewarded rows) so caps hold across sweeps. Stream the
+    // rewarded history in bounded memory (keyset scan) — the per-member totals are bounded by member count, and
+    // no reward is missed by a 20k cap as history accumulates, so the caps stay correct.
     const paidDay: Record<string, number> = {}, paidPeriod: Record<string, number> = {};
     const periodStart = new Date(Date.now() - 28 * 86400000).toISOString();
-    for (const r of rewarded) {
-      const m = String(r.member_id); const amt = Number(r.reward_usd) || 0;
-      if (String(r.day) === today) paidDay[m] = (paidDay[m] || 0) + amt;
-      if (String(r.rewarded_at ?? r.created_at ?? "") >= periodStart) paidPeriod[m] = (paidPeriod[m] || 0) + amt;
+    for await (const batch of db.scan("EndorserConversion", { status: "rewarded" }, 2000)) {
+      for (const r of batch) {
+        const m = String(r.member_id); const amt = Number(r.reward_usd) || 0;
+        if (String(r.day) === today) paidDay[m] = (paidDay[m] || 0) + amt;
+        if (String(r.rewarded_at ?? r.created_at ?? "") >= periodStart) paidPeriod[m] = (paidPeriod[m] || 0) + amt;
+      }
     }
 
     const paidOut: Record<string, unknown>[] = [];

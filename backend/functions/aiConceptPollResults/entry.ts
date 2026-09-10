@@ -1,7 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
-import { conceptPollEnabled, tallyBestWorst, rankConcepts, totalVotes, pollMinVotes } from "../../sdk/concept-polling.ts";
+import { conceptPollEnabled, rankConcepts, totalVotes, pollMinVotes, newConceptAcc, addVote, finalizeConceptAcc } from "../../sdk/concept-polling.ts";
 
 // aiConceptPollResults — tally a poll's votes into a MaxDiff/head-to-head ranking of which concepts poll
 // higher, joined with each concept's creative attributes. Admin only.
@@ -21,9 +21,13 @@ export default __handler(async (req) => {
     else poll = ((await db.filter("ConceptPoll", {}, "-created_at", 1).catch(() => [])) as Record<string, unknown>[])[0] ?? null;
     if (!poll) return Response.json({ error: "Poll not found." }, { status: 404 });
 
-    const votes = await db.filter("ConceptPollVote", { poll_id: poll.id }, "-created_at", 20000).catch(() => []) as Record<string, unknown>[];
-    const raw = (votes || []).map((v) => ({ set: (v.set as string[]) || [], best: String(v.best ?? ""), worst: v.worst ? String(v.worst) : undefined }));
-    const tally = tallyBestWorst(raw);
+    // Stream this poll's votes in bounded memory (per-concept accumulator, bounded by the poll's concept count)
+    // so a viral poll with more than the old 20k cap is still tallied fully and correctly.
+    const acc = newConceptAcc();
+    for await (const batch of db.scan("ConceptPollVote", { poll_id: poll.id }, 2000)) {
+      for (const v of batch) addVote(acc, { set: (v.set as string[]) || [], best: String(v.best ?? ""), worst: v.worst ? String(v.worst) : undefined });
+    }
+    const tally = finalizeConceptAcc(acc);
     const ranked = rankConcepts(tally);
 
     const pool = (poll.pool as Record<string, unknown>[]) || [];

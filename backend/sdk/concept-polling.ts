@@ -86,19 +86,28 @@ export interface ConceptTally { id: string; appearances: number; best: number; w
 
 /** Roll up best-worst votes into a per-concept MaxDiff score = (best − worst) / appearances, in [-1, 1].
  *  A concept chosen best every time → +1; chosen worst every time → −1; never distinguished → 0. Pure. */
-export function tallyBestWorst(votes: RawVote[]): ConceptTally[] {
-  const acc: Record<string, { appearances: number; best: number; worst: number }> = {};
-  for (const raw of votes || []) {
-    const v = normalizeVote(raw);
-    if (!v) continue;
-    for (const id of v.set) (acc[id] ??= { appearances: 0, best: 0, worst: 0 }).appearances++;
-    (acc[v.best] ??= { appearances: 0, best: 0, worst: 0 }).best++;
-    if (v.worst) (acc[v.worst] ??= { appearances: 0, best: 0, worst: 0 }).worst++;
-  }
+// Incremental accumulator (for STREAMING a poll's votes via db.scan without holding them all in memory). State
+// is bounded by the number of DISTINCT concepts in the poll, not by vote count. tallyBestWorst() is the
+// array-at-once wrapper over the same math, so callers and tests are unaffected.
+export type ConceptAcc = Record<string, { appearances: number; best: number; worst: number }>;
+export function newConceptAcc(): ConceptAcc { return {}; }
+export function addVote(acc: ConceptAcc, raw: RawVote): void {
+  const v = normalizeVote(raw);
+  if (!v) return;
+  for (const id of v.set) (acc[id] ??= { appearances: 0, best: 0, worst: 0 }).appearances++;
+  (acc[v.best] ??= { appearances: 0, best: 0, worst: 0 }).best++;
+  if (v.worst) (acc[v.worst] ??= { appearances: 0, best: 0, worst: 0 }).worst++;
+}
+export function finalizeConceptAcc(acc: ConceptAcc): ConceptTally[] {
   return Object.entries(acc).map(([id, s]) => ({
     id, appearances: s.appearances, best: s.best, worst: s.worst,
     score: Math.round(((s.best - s.worst) / Math.max(1, s.appearances)) * 10000) / 10000,
   }));
+}
+export function tallyBestWorst(votes: RawVote[]): ConceptTally[] {
+  const acc = newConceptAcc();
+  for (const raw of votes || []) addVote(acc, raw);
+  return finalizeConceptAcc(acc);
 }
 
 /** Rank concepts best-first (score, then more appearances = more reliable). */

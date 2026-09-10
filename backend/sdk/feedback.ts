@@ -93,23 +93,35 @@ export function feedbackToWeight(f: { kind: FeedbackKind; value: number }): numb
 
 export interface FeedbackRow { kind: FeedbackKind; value: number; weight?: number; }
 
+// Incremental accumulator (for STREAMING large FeedbackEvent sets via db.scan without holding them all in
+// memory). One tiny struct per surface/domain key — bounded by the number of DISTINCT keys, not by row count.
+export interface FeedbackAgg { count: number; net: number; positives: number; negatives: number; reports: number; }
+export function newFeedbackAgg(): FeedbackAgg { return { count: 0, net: 0, positives: 0, negatives: 0, reports: 0 }; }
+export function addFeedback(agg: FeedbackAgg, r: FeedbackRow): void {
+  const w = typeof r.weight === "number" ? r.weight : feedbackToWeight(r);
+  agg.count++;
+  agg.net += w;
+  if (w > 0) agg.positives++; else if (w < 0) agg.negatives++;
+  if (r.kind === "report") agg.reports++;
+}
+export function finalizeFeedback(agg: FeedbackAgg): {
+  count: number; net_weight: number; avg_weight: number; positives: number; negatives: number; reports: number;
+} {
+  return {
+    count: agg.count,
+    net_weight: Math.round(agg.net * 1000) / 1000,
+    avg_weight: agg.count ? Math.round((agg.net / agg.count) * 1000) / 1000 : 0,
+    positives: agg.positives, negatives: agg.negatives, reports: agg.reports,
+  };
+}
+
 /** Aggregate a set of feedback events for a surface/subject into a headline score and counts. Pure. */
 export function aggregateFeedback(rows: FeedbackRow[]): {
   count: number; net_weight: number; avg_weight: number; positives: number; negatives: number; reports: number;
 } {
-  let net = 0, pos = 0, neg = 0, reports = 0;
-  for (const r of rows || []) {
-    const w = typeof r.weight === "number" ? r.weight : feedbackToWeight(r);
-    net += w;
-    if (w > 0) pos++; else if (w < 0) neg++;
-    if (r.kind === "report") reports++;
-  }
-  const count = (rows || []).length;
-  return {
-    count, net_weight: Math.round(net * 1000) / 1000,
-    avg_weight: count ? Math.round((net / count) * 1000) / 1000 : 0,
-    positives: pos, negatives: neg, reports,
-  };
+  const agg = newFeedbackAgg();
+  for (const r of rows || []) addFeedback(agg, r);
+  return finalizeFeedback(agg);
 }
 
 // ── DB bridge ───────────────────────────────────────────────────────────────────────────────────────────

@@ -56,15 +56,38 @@ the read-only HLS path and never touches the counter at all. Tunable via `SESSIO
   stalling the auto-suspend threshold → new atomic `db.appendToSetArray` (add-if-absent) keeps the distinct
   count race-safe.
 
+## 7. Admin dashboards & scheduled jobs — streamed aggregation, no truncation caps (done)
+
+Eight admin/internal endpoints aggregated by loading a big capped array into memory:
+`filter(entity, {}, sort, 10000–200000)`. Two problems as data grows: the cap **silently truncates** the
+aggregate (wrong numbers past the cap), and the whole set is materialized in memory per call. `platformInsights`
+was the worst — two 200,000-row loads (ConsentRecord + User) joined in memory.
+
+Fix: each now streams with `db.scan()` (keyset pagination, one bounded batch at a time) and accumulates into
+**bounded state** — counters keyed by topic / surface / domain / product / member, whose size is the number of
+distinct keys, never the row count. The tally math stays the single source of truth in the SDK: each helper got
+an incremental accumulator (`newX`/`addX`/`finalizeX`) and the original array function became a thin wrapper
+over it, so unit tests and any other callers are unchanged.
+
+- Dashboards (admin): `trendChoiceResults`, `feedbackStatus`, `aiConceptPollResults`, `aiConceptPollLearn`,
+  `platformInsights`. (`feedbackStatus`'s "recent reports" now comes from a small dedicated indexed query —
+  globally recent, not just recent within the old cap.)
+- Scheduled jobs: `productStatsCompile`, `funnelBenchmarkCompile`, and `endorserRewardSweep` (only its cap-math
+  read over already-rewarded rows was streamed — the money/payout loop is byte-for-byte unchanged).
+
+SDK accumulators added: `fair-choice` (addChoice/rankChoiceAcc), `feedback` (addFeedback/finalizeFeedback),
+`concept-polling` (addVote/finalizeConceptAcc), `product-stats` (addOrder/finalizeProductStats).
+
 ## Reusable primitives added
 
 - `backend/sdk/ttl-cache.ts` — `cached(key, ttlMs, loader)` with single-flight; `invalidate(key)`; bounded `sweep`.
 - `backend/sdk/db.ts` — `appendToSetArray(entity, id, field, value)` (atomic add-if-absent to a JSONB array).
+- Streaming accumulators in `fair-choice.ts`, `feedback.ts`, `concept-polling.ts`, `product-stats.ts` (the array
+  tally functions are now thin wrappers over them, so anything can stream large sets via `db.scan()`).
 
-## Candidates noted but NOT changed (lower priority, non-live-burst)
+## Status
 
-Several dashboard/aggregation endpoints (`funnelBenchmarkCompile`, `productStatsCompile`, `aiConceptPollResults`,
-`platformInsights`, `feedbackStatus`, `trendChoiceResults`, `endorserRewardSweep`) do large filters. They are
-infrequent (admin/scheduled/dashboard) rather than live-event bursts, so they were left as-is to avoid changing
-aggregation semantics. If any becomes a hot per-user path, the same `cached()` + `db.scan()`/`db.count()`
-patterns apply.
+The known code-fixable scaling bottlenecks — the QVC broadcast tier, the metadata poll, the leaderboard board,
+the live-session bursts, and the admin-dashboard / scheduled-job aggregations — are all addressed. What remains
+is genuinely infra (DB read-replica via `DATABASE_REPLICA_URL`, LiveKit/SFU node autoscaling, CDN egress) rather
+than code, and the scaffolding for those is already in place behind flags.

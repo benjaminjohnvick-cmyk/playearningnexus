@@ -370,6 +370,30 @@ check(/appendToSetArray\("GameSession"/.test(read('backend/functions/sessionRepo
 check(/async appendToSetArray/.test(read('backend/sdk/db.ts')), 'db.appendToSetArray (atomic add-if-absent) is available');
 
 // ============================================================================================================
+console.log('\n\x1b[1m10) ADMIN DASHBOARDS at scale — streamed aggregation, no silent-truncation caps\x1b[0m');
+// SDK accumulators exist (streaming single-source-of-truth; array functions are thin wrappers).
+check(/export function addChoice/.test(read('backend/sdk/fair-choice.ts')) && /export function rankChoiceAcc/.test(read('backend/sdk/fair-choice.ts')), 'fair-choice: streaming accumulator (addChoice/rankChoiceAcc)');
+check(/export function addFeedback/.test(read('backend/sdk/feedback.ts')) && /export function finalizeFeedback/.test(read('backend/sdk/feedback.ts')), 'feedback: streaming accumulator (addFeedback/finalizeFeedback)');
+check(/export function addVote/.test(read('backend/sdk/concept-polling.ts')) && /export function finalizeConceptAcc/.test(read('backend/sdk/concept-polling.ts')), 'concept-polling: streaming accumulator (addVote/finalizeConceptAcc)');
+check(/export function addOrder/.test(read('backend/sdk/product-stats.ts')) && /export function finalizeProductStats/.test(read('backend/sdk/product-stats.ts')), 'product-stats: streaming accumulator (addOrder/finalizeProductStats)');
+// Each dashboard/job streams with db.scan and no longer pulls a big capped array.
+const streamed = {
+  'trendChoiceResults': 'TrendChoiceEvent',
+  'feedbackStatus': 'FeedbackEvent',
+  'aiConceptPollResults': 'ConceptPollVote',
+  'aiConceptPollLearn': 'ConceptPollVote',
+  'platformInsights': 'User',
+  'productStatsCompile': null,
+  'funnelBenchmarkCompile': 'FunnelJourney',
+  'endorserRewardSweep': 'EndorserConversion',
+};
+for (const [fn, _entity] of Object.entries(streamed)) {
+  const src = read(`backend/functions/${fn}/entry.ts`);
+  check(/db\.scan\(/.test(src), `${fn} streams with db.scan (bounded memory)`);
+  check(!/filter\([^)]*,\s*(?:10000|20000|50000|200000)\)/.test(src), `${fn} no longer loads a 10k–200k capped array`);
+}
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

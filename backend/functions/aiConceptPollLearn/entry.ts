@@ -1,7 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
-import { conceptPollEnabled, tallyBestWorst, pollLearningRows, totalVotes, pollMinVotes } from "../../sdk/concept-polling.ts";
+import { conceptPollEnabled, pollLearningRows, totalVotes, pollMinVotes, newConceptAcc, addVote, finalizeConceptAcc } from "../../sdk/concept-polling.ts";
 import { recordVideoOutcome, type VideoConcept } from "../../sdk/video-engine.ts";
 
 // aiConceptPollLearn — turn a poll's results into learning signals for the SAME video playbook: each concept's
@@ -22,9 +22,12 @@ export default __handler(async (req) => {
     const poll = await db.get("ConceptPoll", pollId).catch(() => null) as Record<string, unknown> | null;
     if (!poll) return Response.json({ error: "Poll not found." }, { status: 404 });
 
-    const votes = await db.filter("ConceptPollVote", { poll_id: pollId }, "-created_at", 20000).catch(() => []) as Record<string, unknown>[];
-    const raw = (votes || []).map((v) => ({ set: (v.set as string[]) || [], best: String(v.best ?? ""), worst: v.worst ? String(v.worst) : undefined }));
-    const tally = tallyBestWorst(raw);
+    // Stream this poll's votes in bounded memory (per-concept accumulator) so learning sees every vote, not a cap.
+    const acc = newConceptAcc();
+    for await (const batch of db.scan("ConceptPollVote", { poll_id: pollId }, 2000)) {
+      for (const v of batch) addVote(acc, { set: (v.set as string[]) || [], best: String(v.best ?? ""), worst: v.worst ? String(v.worst) : undefined });
+    }
+    const tally = finalizeConceptAcc(acc);
 
     const votesTotal = totalVotes(tally, Number(poll.set_size) || 2);
     const minVotes = pollMinVotes();

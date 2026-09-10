@@ -28,22 +28,27 @@ export default __handler(async (req) => {
 
     // Consent gate: only users who opted into research use are counted. Aggregate their bucket, nothing else.
     // Consent lives in the canonical ConsentRecord ledger (kind-based, `accepted`), not a separate table.
-    const consents = await db.filter("ConsentRecord", { kind: "research", accepted: true }, "-created_date", 200000).catch(() => []) as Record<string, unknown>[];
-    const consentedIds = new Set((consents || []).map((c) => String(c.user_id)));
+    // STREAM both tables in bounded memory (keyset scan) — the only thing held is the consented-id set (needed
+    // for the join) and the small per-bucket counts, never the full ConsentRecord / User tables materialized.
+    const consentedIds = new Set<string>();
+    for await (const batch of db.scan("ConsentRecord", { kind: "research", accepted: true }, 5000)) {
+      for (const c of batch) { const uid = String(c.user_id ?? ""); if (uid) consentedIds.add(uid); }
+    }
 
     const buckets: Record<string, number> = {};
     let total = 0;
     if (consentedIds.size > 0) {
-      // Aggregate consented users only, by the requested dimension. Bounded scan.
-      const users = await db.filter("User", {}, "-created_date", 200000).catch(() => []) as Record<string, unknown>[];
-      for (const u of users || []) {
-        if (!consentedIds.has(String(u.id))) continue;
-        let key = "unknown";
-        if (dimension === "country") key = String(u.country || "unknown");
-        else if (dimension === "tier") key = u.is_premium ? "premium" : "standard";
-        else if (dimension === "activity") key = (Number(u.total_earnings) || 0) > 0 ? "active" : "new";
-        buckets[key] = (buckets[key] || 0) + 1;
-        total++;
+      // Aggregate consented users only, by the requested dimension.
+      for await (const batch of db.scan("User", {}, 5000)) {
+        for (const u of batch) {
+          if (!consentedIds.has(String(u.id))) continue;
+          let key = "unknown";
+          if (dimension === "country") key = String(u.country || "unknown");
+          else if (dimension === "tier") key = u.is_premium ? "premium" : "standard";
+          else if (dimension === "activity") key = (Number(u.total_earnings) || 0) > 0 ? "active" : "new";
+          buckets[key] = (buckets[key] || 0) + 1;
+          total++;
+        }
       }
     }
 
