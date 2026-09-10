@@ -26,6 +26,46 @@ export function metricDef(key: string): MetricDef {
 export interface RankRow { user_id: string; value: number }
 export interface RankedEntry { user_id: string; rank: number; value: number }
 
+// --- Precomputed GLOBAL snapshot -----------------------------------------------------------------
+// The GLOBAL board can't be recomputed per request without scanning DailyEarnings/User/Referral (tens of
+// thousands of rows). Instead a scheduled job (leaderboardSnapshot) precomputes the ranking with bounded
+// db.scan() and stores it in the LeaderboardSnapshot entity; the leaderboard function reads it O(1).
+
+/** Every metric gets a precomputed global snapshot. */
+export const SNAPSHOT_METRICS: string[] = LEADERBOARD_METRICS.map((m) => m.key);
+
+/** How many ranked entries a global snapshot keeps. Serves any display slice (limit maxes at 50) AND lets a
+ *  caller's own rank be resolved without loading the whole table. Beyond this depth, my_rank reads as null. */
+export const SNAPSHOT_TOP = 2000;
+
+/** Rolling window (days, inclusive of today) for the activity metrics (earner/surveys/streak). */
+export const LEADERBOARD_WINDOW_DAYS = 7;
+
+/** UTC day string (YYYY-MM-DD) marking the start of the rolling activity window. */
+export function windowCutoff(now: number = Date.now()): string {
+  return new Date(now - (LEADERBOARD_WINDOW_DAYS - 1) * 86400000).toISOString().slice(0, 10);
+}
+
+export interface SnapshotEntry { user_id: string; rank: number; value: number }
+export interface LeaderboardSnapshotDoc {
+  metric: string;
+  scope: "global";
+  entries: SnapshotEntry[];   // top SNAPSHOT_TOP, already ranked (value desc)
+  total_ranked: number;
+  computed_at: string;
+}
+
+/** Build the stored snapshot document for a metric from fully-ranked rows (top SNAPSHOT_TOP kept). */
+export function toSnapshotDoc(metric: string, ranked: RankedEntry[], computedAt: string = new Date().toISOString()): LeaderboardSnapshotDoc {
+  return {
+    metric,
+    scope: "global",
+    entries: ranked.slice(0, SNAPSHOT_TOP).map((e) => ({ user_id: e.user_id, rank: e.rank, value: e.value })),
+    total_ranked: ranked.length,
+    computed_at: computedAt,
+  };
+}
+
 /** Rank rows by value desc, assigning 1-based ranks (ties share the same rank number). */
 export function rankRows(rows: RankRow[]): RankedEntry[] {
   const sorted = [...rows].sort((a, b) => (Number(b.value) || 0) - (Number(a.value) || 0));

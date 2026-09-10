@@ -528,6 +528,9 @@
   "scope": "owner",
   "owner_field": "user_id"
  },
+ "LeaderboardSnapshot": {
+  "scope": "admin"
+ },
  "LiveEvent": {
   "scope": "global"
  },

@@ -48,6 +48,20 @@ Until those are set, `sessionBroadcastStart` returns `configured:false` (a safe 
 
 ---
 
+## Scaling the metadata, not just the video (poll → CDN)
+
+The video already scales — one HLS feed off the CDN serves an unlimited crowd. The one thing that *didn't* scale with it was the little **metadata poll**: HLS viewers aren't in the WebRTC room, so they can't receive the host's "feature this product" / "ad break now" data ping. They poll `sessionFeatured` for it. Naively, 100k viewers polling an origin function every few seconds is 100k×/tick of origin load — the crowd moved off the SFU only to pile onto a function.
+
+Two changes fix that so the poll scales with the video:
+
+1. **The origin poll is now short-cache + SWR.** `sessionFeatured` (GET) returns `cache-control: public, max-age=3, stale-while-revalidate=15`. Any CDN/edge in front of the origin collapses a viewer burst into ~one origin hit every few seconds instead of one per viewer — the state only changes when the host advances a product, so a 3s cache is invisible to viewers.
+
+2. **Viewers prefer a static CDN state file.** When broadcast is configured, the room's state (featured product + ad-break marker) belongs next to the HLS segments as `<base>/<room>/state.json` (`stateUrlForRoom`). The player learns this `state_url` from its first origin poll, then polls the **CDN object** — edge-served, essentially free, and it scales exactly like the video does. If the object isn't published yet, the client falls back to the (now-cacheable) origin poll, so it's always safe.
+
+The client poll interval also widened from 4s to 8s — featured-product and ad-break changes are human-paced, so 8s is plenty and halves the request rate. Publishing `state.json` to the bucket (from the host/egress side) is the switch that lights the CDN path fully; until then the SWR-cached origin already removes the per-viewer origin cost.
+
+---
+
 ## The one honest tradeoff
 
 The broadcast audience is **not** sub-second live — HLS adds ~2–6 seconds (low-latency HLS ~2–4s). For watch-and-buy that's exactly right and is what every large live-shopping platform does. Anyone who needs true real-time interaction (the host, co-hosts, a small VIP group) stays on the WebRTC tier and keeps sub-second latency. You get both at once, on the same feed.

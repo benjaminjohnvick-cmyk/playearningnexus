@@ -2,6 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { snapBool } from "../../sdk/settings.ts";
 import { checkStreamable, advertisedProductsOnly } from "../../sdk/advertised-products.ts";
+import { broadcastConfigured, stateUrlForRoom } from "../../sdk/broadcast.ts";
 
 // sessionFeatured — the featured-product channel for BROADCAST (HLS) viewers, who aren't in the WebRTC room and
 // so can't receive the host's data-channel "feature_product" ping. The host mirrors the current featured product
@@ -27,10 +28,19 @@ export default __handler(async (req) => {
     if (!sess) return Response.json({ error: "unknown session" }, { status: 404 });
 
     if (method !== "POST") {
-      return Response.json({
+      // Broadcast viewers should poll the CDN state file (state_url), not this origin function — one static
+      // object serves the whole crowd. We still hand back a short-cache copy here so the FIRST poll (and any
+      // viewer before the CDN object exists) is served, and so the client can learn its state_url.
+      const body = {
         ok: true, room, featured_product: sess.featured_product ?? null, broadcast: !!sess.hls_url,
         ad_break_at: sess.ad_break_at ?? null,
         ad_break_between_products: snapBool("HOSTING_AD_BREAK_BETWEEN_PRODUCTS", true),
+        state_url: broadcastConfigured() ? stateUrlForRoom(room) : null,
+      };
+      // Short shared cache + SWR so a CDN/edge in front of the origin collapses a viewer burst into one
+      // origin hit every few seconds instead of one per viewer per interval.
+      return new Response(JSON.stringify(body), {
+        headers: { "content-type": "application/json", "cache-control": "public, max-age=3, stale-while-revalidate=15" },
       });
     }
 

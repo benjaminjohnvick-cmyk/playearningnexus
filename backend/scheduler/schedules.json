@@ -200,6 +200,12 @@
       "function": "leaderboardReset"
     },
     {
+      "name": "leaderboard-global-snapshot",
+      "cron": "*/15 * * * *",
+      "function": "leaderboardSnapshot",
+      "_comment": "Every 15 min: precompute the GLOBAL friendly-competition rankings (all 6 metrics) with bounded db.scan aggregation and store one LeaderboardSnapshot row per metric. The user-facing leaderboard function then reads global scope O(1) instead of scanning up to 50k DailyEarnings / 5k Users / 50k Referrals per request. Friends scope stays on-the-fly (small, $in-scoped)."
+    },
+    {
       "name": "ai-experiment-evaluate",
       "cron": "0 */6 * * *",
       "function": "aiExperimentEvaluate"

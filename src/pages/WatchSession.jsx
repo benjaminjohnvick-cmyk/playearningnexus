@@ -33,6 +33,7 @@ export default function WatchSession() {
   const adTimerRef = useRef(null);
   const adBusyRef = useRef(false);
   const lastAdBreakRef = useRef(null);
+  const stateUrlRef = useRef(null);   // CDN state.json URL (learned from the first API poll), if broadcast is configured
 
   const cleanup = useCallback(() => {
     try { roomRef.current?.disconnect?.(); } catch { /* ignore */ } roomRef.current = null;
@@ -68,23 +69,44 @@ export default function WatchSession() {
   }, [room, endAdBreak]);
 
   // Poll the featured product for HLS viewers (they're not in the WebRTC room, so they can't get the data ping).
+  // SCALE: when broadcast is configured, the host mirrors this state to a static CDN object (state.json) that
+  // sits next to the HLS segments. Each viewer polls THAT off the CDN — so the metadata poll scales with the
+  // video (edge-served, ~free) instead of hitting the origin sessionFeatured function once per viewer per tick.
+  // We learn the state_url from the first origin poll, then prefer the CDN. If the CDN object isn't there yet
+  // (host hasn't published it), we fall back to the origin call, which is now short-cache + SWR friendly.
+  const applyState = useCallback((d) => {
+    if (!d) return;
+    if (d.featured_product) setFeatured(d.featured_product);
+    // A new ad_break_at stamp means the host moved to the next product → run an ad break for this viewer.
+    if (d.ad_break_at && d.ad_break_at !== lastAdBreakRef.current) {
+      const first = lastAdBreakRef.current === null;
+      lastAdBreakRef.current = d.ad_break_at;
+      if (!first) runAdBreak();
+    }
+  }, [runAdBreak]);
+
   const startFeaturedPolling = useCallback(() => {
     const tick = async () => {
+      // Prefer the CDN state file once we know it.
+      const stateUrl = stateUrlRef.current;
+      if (stateUrl) {
+        try {
+          const r = await fetch(stateUrl, { cache: 'no-store' });
+          if (r.ok) { applyState(await r.json()); return; }
+          // 404/403 → object not published yet; fall through to the origin poll this tick.
+        } catch { /* network blip → fall through to origin */ }
+      }
       try {
         const res = await base44.functions.invoke('sessionFeatured', { room });
         const d = res?.data || res || {};
-        if (d.featured_product) setFeatured(d.featured_product);
-        // A new ad_break_at stamp means the host moved to the next product → run an ad break for this viewer.
-        if (d.ad_break_at && d.ad_break_at !== lastAdBreakRef.current) {
-          const first = lastAdBreakRef.current === null;
-          lastAdBreakRef.current = d.ad_break_at;
-          if (!first) runAdBreak();
-        }
+        if (d.state_url && !stateUrlRef.current) stateUrlRef.current = d.state_url;   // learn it once
+        applyState(d);
       } catch { /* ignore */ }
     };
     tick();
-    pollRef.current = setInterval(tick, 4000);
-  }, [room]);
+    // Wider interval (8s): the CDN object is cheap, and 8s is plenty for featured-product / ad-break changes.
+    pollRef.current = setInterval(tick, 8000);
+  }, [room, applyState]);
 
   const playHls = useCallback(async (hlsUrl) => {
     const video = videoRef.current;

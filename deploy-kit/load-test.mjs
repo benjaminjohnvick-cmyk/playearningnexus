@@ -327,6 +327,27 @@ const suspendAt = (reports) => reports >= REP_TH;
 check(suspendAt(REP_TH) && !suspendAt(REP_TH - 1), `session auto-suspends at ${REP_TH} distinct viewer reports`);
 
 // ============================================================================================================
+console.log('\n\x1b[1m8) LEADERBOARD at scale — global board served from a precompute, not a 50k-row scan\x1b[0m');
+const lbMani = read('backend/functions/_manifest.json');
+check(/"leaderboardSnapshot"/.test(lbMani), 'leaderboardSnapshot registered in the manifest');
+check(/leaderboard-global-snapshot|leaderboardSnapshot/.test(read('backend/scheduler/schedules.json')), 'leaderboardSnapshot scheduled (every 15 min)');
+check(/"LeaderboardSnapshot"/.test(read('backend/db/entities.json')), 'LeaderboardSnapshot entity declared');
+check(/CREATE TABLE IF NOT EXISTS "LeaderboardSnapshot"/.test(read('backend/db/schema.sql')), 'LeaderboardSnapshot has a CREATE TABLE');
+check(/"LeaderboardSnapshot"[\s\S]*?"scope": "admin"/.test(read('backend/db/rls-policy.json')), 'LeaderboardSnapshot is admin-scoped (internal/service only)');
+const lbWriter = read('backend/functions/leaderboardSnapshot/entry.ts');
+check(/db\.scan\(/.test(lbWriter), 'snapshot writer aggregates with bounded db.scan (not a giant filter)');
+check(/toSnapshotDoc/.test(lbWriter), 'snapshot writer stores ranked top-N via toSnapshotDoc');
+const lbReader = read('backend/functions/leaderboard/entry.ts');
+check(/LeaderboardSnapshot/.test(lbReader), 'global scope reads the precomputed LeaderboardSnapshot');
+check(/\$in/.test(lbReader), 'friends scope is tightly $in-scoped to the friend set (no full-table scan)');
+// compliance still holds: financial metrics stay rank-only in the reader
+check(/def\.financial \? null/.test(lbReader), 'financial metrics (earner/saver) stay RANK-ONLY — no dollar amount leaves the function');
+// the SNAPSHOT_TOP depth is large enough to resolve realistic ranks
+const lbSdk = read('backend/sdk/leaderboard.ts');
+const topDepth = Number((lbSdk.match(/SNAPSHOT_TOP\s*=\s*(\d+)/) || [])[1] || 0);
+check(topDepth >= 1000, `snapshot keeps a deep ranked list (top ${topDepth}) so my_rank resolves without a full scan`);
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

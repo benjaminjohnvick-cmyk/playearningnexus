@@ -1282,6 +1282,19 @@ CREATE TABLE IF NOT EXISTS "LeaderboardEntry" (
 CREATE INDEX IF NOT EXISTS "LeaderboardEntry_data_gin" ON "LeaderboardEntry" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "LeaderboardEntry_created" ON "LeaderboardEntry" (created_date DESC);
 
+-- LeaderboardSnapshot: precomputed GLOBAL friendly-competition rankings (one row per metric). Written by the
+-- leaderboardSnapshot scheduled job (bounded db.scan aggregation); read O(1) by the leaderboard function so the
+-- hot path never scans DailyEarnings/User/Referral per request. Internal/admin only (see rls-policy.json).
+CREATE TABLE IF NOT EXISTS "LeaderboardSnapshot" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "LeaderboardSnapshot_data_gin" ON "LeaderboardSnapshot" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "LeaderboardSnapshot_created" ON "LeaderboardSnapshot" (created_date DESC);
+
 -- LiveEvent: 16 properties
 CREATE TABLE IF NOT EXISTS "LiveEvent" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

@@ -667,6 +667,7 @@
   "layawayStatus",
   "leaderboard",
   "leaderboardReset",
+  "leaderboardSnapshot",
   "learnFraudPatternsAI",
   "learningDistill",
   "learningInsights",

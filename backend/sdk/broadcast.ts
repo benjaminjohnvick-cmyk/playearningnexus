@@ -27,6 +27,15 @@ export function hlsKeyPrefix(room: string): string {
   return `${safe}/`;
 }
 
+/** Public CDN URL for a room's broadcast STATE file (featured product / ad-break marker), colocated with the
+ *  HLS segments. Broadcast (HLS) viewers poll THIS static object off the CDN instead of hitting the origin
+ *  sessionFeatured function once per viewer — so the metadata poll scales with the video, not with the origin. */
+export function stateUrlForRoom(room: string): string {
+  const base = hlsPlaybackBase();
+  const safe = String(room || "").replace(/[^\w:.\-]/g, "");
+  return base ? `${base}/${safe}/state.json` : "";
+}
+
 /** Should a room's PASSIVE viewers be served HLS instead of a WebRTC subscription?
  *  True when broadcast is on AND (the room has an HLS stream already OR the audience has crossed the auto
  *  threshold). Host + interactive guests are routed separately (always WebRTC). Pure. */
