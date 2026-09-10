@@ -15,6 +15,7 @@
 > - **Recurring: AI / media / email $0/mo** on free tiers (locked in by `npm run cost:floor`); hosting
 >   ~$10–30/mo; LLM capped ~$5–40/mo. **Optional** AWS auto-scaling + full load test adds up to a
 >   ~$3,100–$4,800 all-in ceiling.
+> - **Live hosting / screen-share (LiveKit): $0 at launch** — ships gated OFF + counsel-gated, so no media infra runs until you enable it (built in-session; **adds $0 dev cost** and **$0 legal cost** at launch, same pattern as the other gated features). When enabled it adds an **optional** self-hosted LiveKit SFU + coturn TURN + **video bandwidth** runtime cost that scales with viewer-minutes (a small SFU + TURN ≈ $20–60/mo before bandwidth). **Not part of the ~$2,900–$4,000 year-one all-in figure.**
 > - **⭐ DEFINITIVE DEVELOPMENT COST (full scope): $3,000 = 40 hours @ $75/hr** — web PWA + Android + **native
 >   iOS + AWS auto-scaling + the load test + all features ON**, nothing omitted. Developer labor only (fixed
 >   fees + recurring spend separate). See **`DEV-COST-3000-FULL-SCOPE.md`** — the single source of truth for the

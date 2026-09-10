@@ -63,6 +63,13 @@ const LEGAL_BRIEFS: Record<string, string> = {
   // next session until the booked time). Pairing-safety, voice-note consent, minors, mandatory pairing,
   // moderation/mandatory-reporting, data retention and notification consent all apply — see the brief.
   BUDDY_NEXT_SESSION_BOOKING_ENABLED: "BUDDY-CHAT-LEGAL-BRIEF.md",
+  // Hosted live sessions (LiveKit) — screen mirroring / live streaming / live shopping. Public UGC video +
+  // screen sharing needs moderation, a registered DMCA agent, 18+, recording/consent rules, and (for selling)
+  // seller KYC/tax. All counsel-gated; do not enable until the hosting brief is cleared. See the brief.
+  SESSION_HOSTING_ENABLED: "HOSTING-MONETIZATION-STREAMING-COUNSEL-BRIEF.md",
+  HOSTING_ALLOW_NONGAME: "HOSTING-MONETIZATION-STREAMING-COUNSEL-BRIEF.md",
+  HOSTING_LIVE_SHOPPING_ENABLED: "HOSTING-MONETIZATION-STREAMING-COUNSEL-BRIEF.md",
+  HOSTING_MONETIZATION_ENABLED: "HOSTING-MONETIZATION-STREAMING-COUNSEL-BRIEF.md",
 };
 
 export default __handler(async (req) => {

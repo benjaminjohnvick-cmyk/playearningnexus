@@ -9,7 +9,7 @@
 
 > ## ⭐ Development cost: **$3,000** — 40 hours @ **$75/hour**, full scope, everything ON from the get-go.
 
-"Development cost" = **developer labor only**, at **$75/hour**. Forty hours × $75 = **$3,000**. Nothing in the
+Live hosting / screen-share (LiveKit) is **included in scope at $0 added dev cost** (built in-session; ships gated OFF + counsel-gated, so it does not change these 40 hours or the launch estimate). "Development cost" = **developer labor only**, at **$75/hour**. Forty hours × $75 = **$3,000**. Nothing in the
 scope below is left out.
 
 ## What "full scope" includes — nothing omitted

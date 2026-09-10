@@ -863,6 +863,7 @@
   "sessionControl",
   "sessionEnd",
   "sessionHostAssign",
+  "sessionLiveKitToken",
   "sessionRecording",
   "sessionRewardValidate",
   "sessionSimulcast",

@@ -25,6 +25,7 @@
 > - **Recurring: AI / media / email $0/mo** — free tiers + the one-click cost floor; with `AI_FORCE_CHEAP_TIER`
 >   on, every call runs on Llama-8B so the LLM line is now ~$0–20/mo (was $5–40). Hosting ~$10–35/mo (backend +
 >   Postgres + the always-on **scheduler** service). **Legal $0** at launch (credit features off).
+> - **Live hosting / screen-share (LiveKit): $0 at launch** — ships gated OFF + counsel-gated, so no media infra runs until you enable it (built in-session; **adds $0 dev cost** and **$0 legal cost** at launch, same pattern as the other gated features). When enabled it adds an **optional** self-hosted LiveKit SFU + coturn TURN + **video bandwidth** runtime cost that scales with viewer-minutes (a small SFU + TURN ≈ $20–60/mo before bandwidth). **Not part of the ~$2,900–$4,000 year-one all-in figure.**
 > - **Standing auto-scaling is now ON from day one** (governor `AUTO_SCALE_ENABLED=1`, Railway provider, min 2
 >   instances) — and the full-scale ceiling is now **hard-capped at ~$3,000** by a codeable monthly-budget lever
 >   (`INFRA_SCALE_MONTHLY_BUDGET_USD`, default $48/mo → ≤ 4 steady-state replicas ≈ $576/yr), down from the old
