@@ -2,27 +2,75 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Radio, ShoppingBag, Heart, Loader2, AlertTriangle } from 'lucide-react';
+import { Radio, ShoppingBag, Heart, Loader2, AlertTriangle, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**
- * WatchSession — a viewer joins a hosted session on the self-hosted LiveKit SFU and watches the host's screen.
- * If the host features a product (live shopping), the viewer sees it and can Buy (liveShoppingOrder, Site Cash)
- * or mark Interested. Gated behind SESSION_HOSTING_ENABLED. Room comes from ?room= in the URL.
+ * WatchSession — a viewer watches a hosted session. Two modes, chosen by the server:
+ *  • webrtc — interactive, sub-second, on the LiveKit SFU (the host + early viewers).
+ *  • hls    — QVC-scale BROADCAST: once a feed goes broadcast (or the crowd is large), passive viewers stream
+ *             HLS over the CDN (no SFU load), so one feed scales to a huge audience (~2–6s latency). Buying still
+ *             works via liveShoppingOrder; the featured product is polled from sessionFeatured.
+ * Gated behind SESSION_HOSTING_ENABLED. Room comes from ?room= in the URL.
  */
 export default function WatchSession() {
   const params = new URLSearchParams(window.location.search);
   const room = (params.get('room') || '').trim();
 
   const [phase, setPhase] = useState('idle');   // idle | connecting | live | ended | error | unconfigured
+  const [mode, setMode] = useState('webrtc');   // webrtc | hls
   const [err, setErr] = useState('');
   const [featured, setFeatured] = useState(null);
   const [buying, setBuying] = useState(false);
   const roomRef = useRef(null);
   const videoRef = useRef(null);
+  const hlsRef = useRef(null);
+  const pollRef = useRef(null);
 
-  const cleanup = useCallback(() => { try { roomRef.current?.disconnect?.(); } catch { /* ignore */ } roomRef.current = null; }, []);
+  const cleanup = useCallback(() => {
+    try { roomRef.current?.disconnect?.(); } catch { /* ignore */ } roomRef.current = null;
+    try { hlsRef.current?.destroy?.(); } catch { /* ignore */ } hlsRef.current = null;
+    if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+  }, []);
   useEffect(() => cleanup, [cleanup]);
+
+  // Poll the featured product for HLS viewers (they're not in the WebRTC room, so they can't get the data ping).
+  const startFeaturedPolling = useCallback(() => {
+    const tick = async () => {
+      try {
+        const res = await base44.functions.invoke('sessionFeatured', { room });
+        const d = res?.data || res || {};
+        if (d.featured_product) setFeatured(d.featured_product);
+      } catch { /* ignore */ }
+    };
+    tick();
+    pollRef.current = setInterval(tick, 4000);
+  }, [room]);
+
+  const playHls = useCallback(async (hlsUrl) => {
+    const video = videoRef.current;
+    if (!video || !hlsUrl) return;
+    // Safari (and iOS) play HLS natively; other browsers use hls.js.
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = hlsUrl; video.play?.().catch(() => {});
+      return;
+    }
+    try {
+      const mod = await import('hls.js');
+      const Hls = mod.default || mod;
+      if (Hls.isSupported()) {
+        const hls = new Hls({ lowLatencyMode: true, backBufferLength: 30 });
+        hlsRef.current = hls;
+        hls.loadSource(hlsUrl);
+        hls.attachMedia(video);
+        video.play?.().catch(() => {});
+      } else {
+        video.src = hlsUrl; // last resort
+      }
+    } catch {
+      video.src = hlsUrl;
+    }
+  }, []);
 
   const join = async () => {
     if (!room) { setErr('No room specified.'); setPhase('error'); return; }
@@ -32,8 +80,24 @@ export default function WatchSession() {
       const d = res?.data || res || {};
       if (d.enabled === false) { setErr('Hosting is turned off.'); setPhase('error'); return; }
       if (d.configured === false) { setPhase('unconfigured'); return; }
-      if (!d.ok || !d.token) { setErr(d.error || 'Could not join the session.'); setPhase('error'); return; }
 
+      // ── Broadcast (HLS/CDN) — the QVC-scale path for the mass audience ──
+      if (d.mode === 'hls' && d.hls_url) {
+        setMode('hls');
+        if (d.featured_product) setFeatured(d.featured_product);
+        setPhase('live');
+        await playHls(d.hls_url);
+        startFeaturedPolling();
+        return;
+      }
+
+      // ── WebRTC (interactive) ──
+      if (!d.ok || !d.token) {
+        if (d.room_full) { setErr('This room is full on the interactive tier — try again shortly (the host can open broadcast to admit everyone).'); }
+        else { setErr(d.error || 'Could not join the session.'); }
+        setPhase('error'); return;
+      }
+      setMode('webrtc');
       const LK = await import('livekit-client');
       const lkRoom = new LK.Room({ adaptiveStream: true });
       roomRef.current = lkRoom;
@@ -68,7 +132,7 @@ export default function WatchSession() {
       const d = res?.data || res || {};
       if (d.ok || d.order_id || d.success) {
         toast.success(`Ordered ${featured.name}! Paid in Site Cash.`);
-        notifyHost({ type: 'buy', product_name: featured.name });
+        if (mode === 'webrtc') notifyHost({ type: 'buy', product_name: featured.name });
       } else if (d.needed_points) {
         toast.error(`Not enough Site Cash — need ${d.needed_points} points.`);
       } else {
@@ -78,7 +142,11 @@ export default function WatchSession() {
     finally { setBuying(false); }
   };
 
-  const interested = () => { notifyHost({ type: 'interested', product_name: featured?.name }); toast.success('Marked interested.'); };
+  const interested = () => {
+    if (mode === 'hls') { base44.functions.invoke('sessionFeatured', { room, action: 'interested' }).catch(() => {}); }
+    else { notifyHost({ type: 'interested', product_name: featured?.name }); }
+    toast.success('Marked interested.');
+  };
 
   return (
     <div className="max-w-2xl mx-auto p-4">
@@ -92,14 +160,17 @@ export default function WatchSession() {
       )}
       {phase === 'connecting' && <Card><CardContent className="p-8 text-center text-gray-500"><Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" /> Joining…</CardContent></Card>}
       {phase === 'unconfigured' && <Card><CardContent className="p-6 text-center"><AlertTriangle className="w-10 h-10 mx-auto text-amber-500 mb-2" /><p className="text-sm text-gray-500">Live sessions aren't available yet (media server not connected).</p></CardContent></Card>}
-      {phase === 'error' && <Card><CardContent className="p-6 text-center"><AlertTriangle className="w-10 h-10 mx-auto text-red-500 mb-2" /><p className="text-sm text-red-700">{err}</p></CardContent></Card>}
+      {phase === 'error' && <Card><CardContent className="p-6 text-center"><AlertTriangle className="w-10 h-10 mx-auto text-red-500 mb-2" /><p className="text-sm text-red-700">{err}</p><Button variant="outline" className="mt-3" onClick={join}>Try again</Button></CardContent></Card>}
       {phase === 'ended' && <Card><CardContent className="p-8 text-center text-gray-500">The host ended the session.</CardContent></Card>}
 
       {phase === 'live' && (
         <div className="space-y-4">
           <Card><CardContent className="p-0 overflow-hidden">
-            <video ref={videoRef} autoPlay playsInline className="w-full bg-black aspect-video object-contain" />
-            <div className="p-3 flex items-center gap-1.5 text-sm font-semibold text-red-600"><Radio className="w-4 h-4" /> LIVE</div>
+            <video ref={videoRef} autoPlay playsInline muted={mode === 'hls'} controls={mode === 'hls'} className="w-full bg-black aspect-video object-contain" />
+            <div className="p-3 flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-sm font-semibold text-red-600"><Radio className="w-4 h-4" /> LIVE</span>
+              {mode === 'hls' && <span className="flex items-center gap-1.5 text-[11px] text-gray-400"><Users className="w-3.5 h-3.5" /> Broadcast</span>}
+            </div>
           </CardContent></Card>
 
           {featured && (

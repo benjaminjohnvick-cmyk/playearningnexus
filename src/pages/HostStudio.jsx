@@ -18,6 +18,7 @@ export default function HostStudio() {
   const [viewers, setViewers] = useState(0);
   const [room, setRoom] = useState('');
   const [limits, setLimits] = useState(null);
+  const [broadcasting, setBroadcasting] = useState(false);
   const [product, setProduct] = useState({ name: '', price: '', url: '' });
   const roomRef = useRef(null);
   const previewRef = useRef(null);
@@ -90,11 +91,34 @@ export default function HostStudio() {
     if (!roomRef.current) return;
     if (!product.name) { toast.error('Add a product name first.'); return; }
     try {
+      // WebRTC viewers get it instantly over the data channel…
       const data = new TextEncoder().encode(JSON.stringify({ type: 'feature_product', product }));
       await roomRef.current.localParticipant.publishData(data, { reliable: true });
+      // …and broadcast (HLS) viewers get it by polling sessionFeatured, so mirror it there too.
+      base44.functions.invoke('sessionFeatured', { room, action: 'set', product }).catch(() => {});
       toast.success(`Featured "${product.name}" to your viewers.`);
     } catch { toast.error('Could not feature the product.'); }
   };
+
+  // Turn the feed into a QVC-scale broadcast: passive viewers then stream via the CDN (unbounded), host stays on WebRTC.
+  const goBroadcast = async () => {
+    if (!room || broadcasting) return;
+    try {
+      const res = await base44.functions.invoke('sessionBroadcastStart', { room });
+      const d = res?.data || res || {};
+      if (d.started || d.already || d.mode === 'hls') { setBroadcasting(true); toast.success('Broadcast on — your feed can now serve a large audience.'); }
+      else if (d.configured === false) { toast.message('Broadcast needs the media server’s HLS/CDN configured (LIVEKIT_EGRESS_URL + HLS_PLAYBACK_BASE_URL).'); }
+      else { toast.error(d.error || 'Could not start broadcast.'); }
+    } catch { toast.error('Could not start broadcast.'); }
+  };
+
+  // Auto-open broadcast as the interactive room approaches its WebRTC cap, so growth is served by the CDN.
+  useEffect(() => {
+    if (phase !== 'live' || broadcasting) return;
+    const cap = limits?.max_viewers || 50;
+    if (viewers >= Math.max(1, Math.floor(cap * 0.8))) goBroadcast();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewers, phase, broadcasting]);
 
   const copyLink = () => { try { navigator.clipboard.writeText(viewerLink); toast.success('Viewer link copied.'); } catch { /* ignore */ } };
 
@@ -151,6 +175,17 @@ export default function HostStudio() {
                 Cost-saver: {Math.round(limits.max_bitrate_kbps)} kbps · {limits.max_width}×{limits.max_height} · {limits.max_framerate} fps · up to {limits.max_viewers} viewers (~{limits.gb_per_viewer_hour} GB/viewer-hr)
               </div>
             )}
+          </CardContent></Card>
+
+          <Card><CardContent className="p-4">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <div className="text-sm font-semibold">{broadcasting ? 'Broadcasting to a big audience (HLS/CDN)' : 'Serve a large audience'}</div>
+                <div className="text-[11px] text-gray-400">{broadcasting ? 'Passive viewers stream over the CDN — no per-room limit. You stay on low-latency WebRTC.' : 'Switch on broadcast to go past the interactive cap and reach a QVC-scale crowd (~2–6s latency for the crowd).'}</div>
+              </div>
+              {!broadcasting && <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white gap-1.5 shrink-0" onClick={goBroadcast}><Radio className="w-4 h-4" /> Go broadcast</Button>}
+              {broadcasting && <span className="text-xs font-semibold text-green-600 shrink-0">● On</span>}
+            </div>
           </CardContent></Card>
 
           <Card><CardContent className="p-4">

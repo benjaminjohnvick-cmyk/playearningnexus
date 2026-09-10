@@ -864,6 +864,8 @@
   "sessionCaptureIngest",
   "sessionControl",
   "sessionEnd",
+  "sessionBroadcastStart",
+  "sessionFeatured",
   "sessionHostAssign",
   "sessionLiveKitToken",
   "sessionRecording",

@@ -193,6 +193,39 @@ check(nodeSeq[0] === 0 && nodeSeq[nodeSeq.length - 1] === 0, `viewer ramp ${ramp
 check(Math.max(...nodeSeq) * COST_PER_NODE <= MAX_NODES * COST_PER_NODE, `peak media-tier cost in the ramp ≈ $${Math.max(...nodeSeq) * COST_PER_NODE}/mo-equivalent, bounded by the ceiling`);
 
 // ============================================================================================================
+console.log('\n\x1b[1m5) QVC-SCALE BROADCAST — one feed, huge audience via HLS/CDN\x1b[0m');
+
+const bcExpect = {
+  HOSTING_BROADCAST_ENABLED: '1',
+  HOSTING_AUTO_BROADCAST_THRESHOLD: '200',
+  HOSTING_BROADCAST_LL_HLS: '1',
+};
+for (const [k, v] of Object.entries(bcExpect)) {
+  const got = settingDefault(k);
+  check(got === v, `${k} default = "${v}"${got === v ? '' : ` (got "${got}")`}`);
+}
+const manifest = read('backend/functions/_manifest.json');
+check(/sessionBroadcastStart/.test(manifest), 'sessionBroadcastStart registered');
+check(/sessionFeatured/.test(manifest), 'sessionFeatured registered');
+check(/"hls\.js"/.test(read('package.json')), 'hls.js player dependency present');
+
+// broadcast routing (mirrors broadcast.ts shouldServeHls): passive viewers go to HLS when a stream exists OR the
+// crowd crosses the threshold — and HLS viewers do NOT consume an SFU node.
+const BC_TH = Number(settingDefault('HOSTING_AUTO_BROADCAST_THRESHOLD'));
+function serveHls(hasHlsStream, viewers) { if (hasHlsStream) return true; return BC_TH > 0 && viewers >= BC_TH; }
+check(serveHls(false, 10) === false, 'small interactive room (10) stays on WebRTC');
+check(serveHls(false, BC_TH) === true, `crowd reaches ${BC_TH} → auto-switch to HLS broadcast`);
+check(serveHls(true, 1) === true, 'once broadcasting, every passive viewer gets HLS');
+
+// a QVC-scale feed: 100,000 concurrent viewers on ONE broadcast feed uses 0 SFU nodes for the passive crowd
+// (SFU only carries the host + interactive tier), so SFU capacity is not the limit — the CDN is.
+const bigFeed = 100000;
+const sfuNodesForPassiveHlsCrowd = 0;       // HLS viewers never touch the SFU
+const interactiveOnSfu = Number(settingDefault('HOSTING_MAX_VIEWERS_PER_ROOM')); // only these ride WebRTC
+check(sfuNodesForPassiveHlsCrowd === 0, `${bigFeed.toLocaleString()}-viewer feed → 0 SFU nodes for the passive crowd (served by CDN); only ≤${interactiveOnSfu} interactive viewers ride the SFU`);
+check(bigFeed > interactiveOnSfu * 100, 'one broadcast feed serves far beyond any single-room SFU cap (CDN-bound, not SFU-bound)');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

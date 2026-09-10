@@ -3,6 +3,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { snapBool } from "../../sdk/settings.ts";
 import { hostingFloor } from "../../sdk/cost-floor.ts";
+import { broadcastEnabled, shouldServeHls, lowLatencyHls } from "../../sdk/broadcast.ts";
 
 // sessionLiveKitToken — mints a LiveKit access token (HS256 JWT) so a member can join a hosted-session room on
 // YOUR self-hosted LiveKit SFU. The SFU (battle-tested clients + server) does the real WebRTC/NAT/scale work, so
@@ -75,14 +76,34 @@ export default __handler(async (req) => {
       }
     }
 
-    // Enforce the per-room viewer cap (floor lever): count viewer tokens already minted for this room and refuse
-    // to admit more than HOSTING_MAX_VIEWERS_PER_ROOM. Best-effort (tracked on the GameSession row).
-    if (role === "viewer" && floor.mode) {
+    // Viewer routing. QVC-scale: the mass PASSIVE audience is served HLS over the CDN (no SFU load) once the
+    // feed is in broadcast mode or the crowd crosses the auto-threshold — so one feed scales to huge numbers.
+    // Only interactive WebRTC viewers (below that) count against the SFU per-room cap.
+    if (role === "viewer") {
       const sess = (await base44.asServiceRole.entities.GameSession
         .filter({ session_id: room }).catch(() => []))[0];
       const current = Number(sess?.viewer_tokens ?? 0);
-      if (current >= floor.maxViewersPerRoom) {
-        return Response.json({ ok: false, room_full: true, error: `Room is at capacity (${floor.maxViewersPerRoom} viewers).`, limits: floorLimits(floor) }, { status: 409 });
+      const hasHls = !!(sess?.hls_url);
+
+      if (shouldServeHls({ hasHlsStream: hasHls, viewers: current })) {
+        if (hasHls) {
+          // Broadcast is live → hand back the HLS stream. This viewer never touches the SFU.
+          return Response.json({
+            ok: true, enabled: true, configured: true, mode: "hls",
+            hls_url: String(sess?.hls_url), ll_hls: lowLatencyHls(),
+            room, role, featured_product: sess?.featured_product ?? null,
+          });
+        }
+        // Crowd crossed the auto-threshold but the HLS stream isn't started yet → signal the host to start it.
+        // Meanwhile still admit to WebRTC (up to the SFU cap) so no one is turned away during the handoff.
+      }
+
+      if (floor.mode && current >= floor.maxViewersPerRoom) {
+        return Response.json({
+          ok: false, room_full: true, broadcast_recommended: broadcastEnabled(),
+          error: `Room is at WebRTC capacity (${floor.maxViewersPerRoom}). Start broadcast (HLS) to serve a larger audience.`,
+          limits: floorLimits(floor),
+        }, { status: 409 });
       }
       if (sess?.id) {
         await base44.asServiceRole.entities.GameSession.update(sess.id, { viewer_tokens: current + 1 }).catch(() => null);
@@ -106,7 +127,7 @@ export default __handler(async (req) => {
       await livekitKey(apiSecret),
     );
 
-    return Response.json({ ok: true, enabled: true, configured: true, token, url, identity, name, room, role, can_publish: canPublish, limits: floorLimits(floor) });
+    return Response.json({ ok: true, enabled: true, configured: true, mode: "webrtc", token, url, identity, name, room, role, can_publish: canPublish, limits: floorLimits(floor) });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });
   }
