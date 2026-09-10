@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
+import { db } from "../../sdk/db.ts";
 import { snapBool } from "../../sdk/settings.ts";
 import { reportThreshold, recordModEvent } from "../../sdk/host-moderation.ts";
 
@@ -22,18 +23,26 @@ export default __handler(async (req) => {
     const sess = (await base44.asServiceRole.entities.GameSession.filter({ session_id: room }).catch(() => []))[0];
     if (!sess) return Response.json({ error: "unknown session" }, { status: 404 });
 
-    // Count distinct reporters (one report per viewer per session).
-    const reporters: string[] = Array.isArray(sess.reporters) ? sess.reporters.map(String) : [];
-    const already = reporters.includes(String(user.id));
-    if (!already) reporters.push(String(user.id));
+    // Count distinct reporters (one report per viewer per session). Atomic set-append so a burst of DIFFERENT
+    // reporters can't lose each other to a read-then-write race (which would stall the auto-suspend threshold).
+    let reporters: string[] = Array.isArray(sess.reporters) ? sess.reporters.map(String) : [];
+    if (sess.id) {
+      const updated = await db.appendToSetArray("GameSession", String(sess.id), "reporters", String(user.id)).catch(() => null);
+      if (updated && Array.isArray((updated as Record<string, unknown>).reporters)) {
+        reporters = ((updated as Record<string, unknown>).reporters as unknown[]).map(String);
+      } else if (!reporters.includes(String(user.id))) {
+        reporters.push(String(user.id));
+      }
+    }
     const reports = reporters.length;
 
     const threshold = reportThreshold();
     const suspend = reports >= threshold && String(sess.status) !== "ended";
 
     if (sess.id) {
-      await base44.asServiceRole.entities.GameSession.update(sess.id, {
-        reporters, report_count: reports,
+      // Persist the distinct count, and suspend once the threshold is crossed (idempotent under a race).
+      await db.update("GameSession", String(sess.id), {
+        report_count: reports,
         ...(suspend ? { status: "ended", moderation_status: "suspended_reports", hls_url: "" } : {}),
       }).catch(() => null);
     }

@@ -297,6 +297,22 @@ export const db = {
       return r.rows[0] ? rowToDoc(entity, r.rows[0]) : null;
     });
   },
+  // Atomic "append to a JSONB array ONLY IF ABSENT" (set semantics, no read-modify-write race). Appends `value`
+  // to data->field iff the array doesn't already contain it, and returns the resulting row either way — so a
+  // caller can count distinct members race-safely (e.g. distinct reporters of a live session under a burst,
+  // where a read-then-write would drop concurrent additions).
+  async appendToSetArray(entity: string, id: string, field: string, value: unknown) {
+    const f = String(field).replace(/[^a-zA-Z0-9_]/g, "");
+    const v = JSON.stringify(value);
+    const sql = `UPDATE ${quoteTbl(entity)} SET data = jsonb_set(data, '{${f}}', COALESCE(data->'${f}', '[]'::jsonb) || $2::jsonb), updated_date = now() WHERE id = $1 AND NOT (COALESCE(data->'${f}', '[]'::jsonb) @> $2::jsonb) RETURNING *`;
+    return await withClient(async (c) => {
+      const r = await c.queryObject<Record<string, unknown>>(sql, [id, v]);
+      if (r.rows[0]) return rowToDoc(entity, r.rows[0]);
+      // Value already present (or row gone) → return the current row unchanged so the caller still sees state.
+      const cur = await c.queryObject<Record<string, unknown>>(`SELECT * FROM ${quoteTbl(entity)} WHERE id = $1`, [id]);
+      return cur.rows[0] ? rowToDoc(entity, cur.rows[0]) : null;
+    });
+  },
   // Atomic numeric increment on a JSONB field (no read-modify-write race, no CAS retry). COALESCE treats an
   // ABSENT field as 0, so the first write works even when the key doesn't exist yet. `delta` may be negative.
   async incrementField(entity: string, id: string, field: string, delta: number): Promise<number | null> {

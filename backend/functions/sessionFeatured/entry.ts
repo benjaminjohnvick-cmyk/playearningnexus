@@ -3,6 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { snapBool } from "../../sdk/settings.ts";
 import { checkStreamable, advertisedProductsOnly } from "../../sdk/advertised-products.ts";
 import { broadcastConfigured, stateUrlForRoom } from "../../sdk/broadcast.ts";
+import { db } from "../../sdk/db.ts";
 
 // sessionFeatured — the featured-product channel for BROADCAST (HLS) viewers, who aren't in the WebRTC room and
 // so can't receive the host's data-channel "feature_product" ping. The host mirrors the current featured product
@@ -49,7 +50,9 @@ export default __handler(async (req) => {
     const isHost = String(sess.host_player_id ?? "") === String(user.id) || String(sess.started_by ?? "") === (user.email ?? user.id);
 
     if (action === "interested") {
-      if (sess.id) await base44.asServiceRole.entities.GameSession.update(sess.id, { interest_count: Number(sess.interest_count ?? 0) + 1 }).catch(() => null);
+      // Atomic increment — a featured product can draw a burst of "interested" taps at once; a read-then-write
+      // would lose updates (every racer reads the same value and writes value+1), undercounting the signal.
+      if (sess.id) await db.incrementField("GameSession", String(sess.id), "interest_count", 1).catch(() => null);
       return Response.json({ ok: true, room, interested: true });
     }
 

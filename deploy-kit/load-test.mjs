@@ -348,6 +348,28 @@ const topDepth = Number((lbSdk.match(/SNAPSHOT_TOP\s*=\s*(\d+)/) || [])[1] || 0)
 check(topDepth >= 1000, `snapshot keeps a deep ranked list (top ${topDepth}) so my_rank resolves without a full scan`);
 
 // ============================================================================================================
+console.log('\n\x1b[1m9) LIVE-SESSION BURST control — thundering-herd reads collapsed, counters made atomic\x1b[0m');
+// Shared TTL + single-flight cache exists and is single-flight (dedupes concurrent misses).
+const ttlCache = read('backend/sdk/ttl-cache.ts');
+check(/export async function cached/.test(ttlCache), 'ttl-cache: cached() helper present');
+check(/inflight\.(get|set)/.test(ttlCache), 'ttl-cache is single-flight (concurrent callers dedupe to one loader)');
+// Ad-break burst: the shared ad inventory / owner sets / model are served from the burst cache, not re-read per viewer.
+const inter = read('backend/sdk/interstitial-ad.ts');
+check(/from "\.\/ttl-cache\.ts"/.test(inter), 'interstitial selector imports the burst cache');
+check(/cached\("interstitial:active"/.test(inter), 'active-ad inventory is burst-cached (one read per isolate/window, not per viewer)');
+check(/AdGridAd\.filter\(\{ status: "active" \}, "-created_date", activeAdsMax\(\)\)/.test(inter), 'active-ad load is bounded by a cap (no unbounded per-request load)');
+check(/cached\("interstitial:model"/.test(inter) && /cached\("interstitial:paying"/.test(inter), 'targeting model + paying-advertiser set are burst-cached & shared');
+// Go-live token burst: per-room session read is cached, and the SFU-cap counter is atomic (no lost-update race).
+const tok = read('backend/functions/sessionLiveKitToken/entry.ts');
+check(/cached\("session:" \+ room/.test(tok), 'go-live: per-room session lookup is burst-cached (single-flight)');
+check(/incrementField\("GameSession", String\(sess\.id\), "viewer_tokens", 1\)/.test(tok), 'viewer admission reserves the SFU slot ATOMICALLY (cap holds under a concurrent burst)');
+check(/"viewer_tokens", -1\)/.test(tok), 'over-cap reservation is released atomically (no permanent leak)');
+// Featured-product interest + distinct-reporter counts are race-safe under a burst.
+check(/incrementField\("GameSession", String\(sess\.id\), "interest_count", 1\)/.test(read('backend/functions/sessionFeatured/entry.ts')), 'featured-product "interested" tally is atomic (burst-safe)');
+check(/appendToSetArray\("GameSession"/.test(read('backend/functions/sessionReport/entry.ts')), 'distinct-reporter set-append is atomic (auto-suspend threshold can\'t be stalled by a race)');
+check(/async appendToSetArray/.test(read('backend/sdk/db.ts')), 'db.appendToSetArray (atomic add-if-absent) is available');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

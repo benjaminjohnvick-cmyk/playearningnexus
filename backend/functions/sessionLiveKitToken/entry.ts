@@ -1,10 +1,19 @@
 import { create, getNumericDate } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { snapBool } from "../../sdk/settings.ts";
+import { db } from "../../sdk/db.ts";
+import { snapBool, snapNumber } from "../../sdk/settings.ts";
 import { hostingFloor } from "../../sdk/cost-floor.ts";
 import { broadcastEnabled, shouldServeHls, lowLatencyHls } from "../../sdk/broadcast.ts";
 import { isHostBlocked } from "../../sdk/host-moderation.ts";
+import { cached, invalidate } from "../../sdk/ttl-cache.ts";
+
+// Go-live burst control: a live (especially popular) stream draws a CROWD requesting tokens at once, each
+// reading the SAME room's GameSession row. That per-room lookup is served from a short-TTL, single-flight cache
+// so the burst collapses to one read per isolate per window. The room's slow-changing fields (hls_url, id,
+// featured_product) are all we take from it; the WebRTC admission COUNT is never trusted from this cache —
+// it's reserved atomically below so the SFU cap holds exactly under concurrency.
+const sessionCacheMs = () => Math.max(0, Math.round(snapNumber("SESSION_LOOKUP_CACHE_MS", 2000)));
 
 // sessionLiveKitToken — mints a LiveKit access token (HS256 JWT) so a member can join a hosted-session room on
 // YOUR self-hosted LiveKit SFU. The SFU (battle-tested clients + server) does the real WebRTC/NAT/scale work, so
@@ -79,6 +88,7 @@ export default __handler(async (req) => {
           content_type: contentType, transport: "livekit", status: "active",
           monetization: snapBool("HOSTING_LIVE_SHOPPING_ENABLED", false) ? "live_shopping_5050" : "none",
         }).catch(() => null);
+        invalidate("session:" + room); // let viewers see the new room immediately (don't wait out the cache TTL)
       }
     }
 
@@ -86,33 +96,41 @@ export default __handler(async (req) => {
     // feed is in broadcast mode or the crowd crosses the auto-threshold — so one feed scales to huge numbers.
     // Only interactive WebRTC viewers (below that) count against the SFU per-room cap.
     if (role === "viewer") {
-      const sess = (await base44.asServiceRole.entities.GameSession
-        .filter({ session_id: room }).catch(() => []))[0];
-      const current = Number(sess?.viewer_tokens ?? 0);
+      // Burst-cached, single-flight per-room lookup (collapses a go-live crowd's identical reads to one).
+      const sess = await cached("session:" + room, sessionCacheMs(), () =>
+        base44.asServiceRole.entities.GameSession
+          // deno-lint-ignore no-explicit-any
+          .filter({ session_id: room }).then((r: any) => (r && r[0]) || null).catch(() => null)) as Record<string, unknown> | null;
       const hasHls = !!(sess?.hls_url);
 
-      if (shouldServeHls({ hasHlsStream: hasHls, viewers: current })) {
-        if (hasHls) {
-          // Broadcast is live → hand back the HLS stream. This viewer never touches the SFU.
-          return Response.json({
-            ok: true, enabled: true, configured: true, mode: "hls",
-            hls_url: String(sess?.hls_url), ll_hls: lowLatencyHls(),
-            room, role, featured_product: sess?.featured_product ?? null,
-          });
-        }
-        // Crowd crossed the auto-threshold but the HLS stream isn't started yet → signal the host to start it.
-        // Meanwhile still admit to WebRTC (up to the SFU cap) so no one is turned away during the handoff.
-      }
-
-      if (floor.mode && current >= floor.maxViewersPerRoom) {
+      // Mass-audience HLS path: read-only, no counter — this viewer never touches the SFU. This is where the
+      // bulk of any big crowd goes, so the burst is served entirely from the cached read.
+      if (hasHls && shouldServeHls({ hasHlsStream: true, viewers: Number(sess?.viewer_tokens ?? 0) })) {
         return Response.json({
-          ok: false, room_full: true, broadcast_recommended: broadcastEnabled(),
-          error: `Room is at WebRTC capacity (${floor.maxViewersPerRoom}). Start broadcast (HLS) to serve a larger audience.`,
-          limits: floorLimits(floor),
-        }, { status: 409 });
+          ok: true, enabled: true, configured: true, mode: "hls",
+          hls_url: String(sess?.hls_url), ll_hls: lowLatencyHls(),
+          room, role, featured_product: sess?.featured_product ?? null,
+        });
       }
+      // Below broadcast (or before HLS is up): admit to the interactive WebRTC tier, but RESERVE the slot
+      // atomically so the SFU cap holds exactly under a concurrent burst (the old read-then-write undercounted
+      // — every racer read the same value and wrote value+1, so the counter never caught up and the cap could
+      // be blown right through). incrementField is a single atomic UPDATE and returns the authoritative count.
       if (sess?.id) {
-        await base44.asServiceRole.entities.GameSession.update(sess.id, { viewer_tokens: current + 1 }).catch(() => null);
+        if (floor.mode) {
+          const n = await db.incrementField("GameSession", String(sess.id), "viewer_tokens", 1).catch(() => null);
+          if (n !== null && n > floor.maxViewersPerRoom) {
+            await db.incrementField("GameSession", String(sess.id), "viewer_tokens", -1).catch(() => null); // release
+            invalidate("session:" + room); // reflect the settled count sooner
+            return Response.json({
+              ok: false, room_full: true, broadcast_recommended: broadcastEnabled(),
+              error: `Room is at WebRTC capacity (${floor.maxViewersPerRoom}). Start broadcast (HLS) to serve a larger audience.`,
+              limits: floorLimits(floor),
+            }, { status: 409 });
+          }
+        } else {
+          await db.incrementField("GameSession", String(sess.id), "viewer_tokens", 1).catch(() => null);
+        }
       }
     }
 
