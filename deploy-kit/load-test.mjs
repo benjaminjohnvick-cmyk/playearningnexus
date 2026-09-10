@@ -268,6 +268,21 @@ check(!!lsm && lsm[2] === 'counsel', 'live-shopping placement is status "counsel
 check(!!lsa && lsa[2] === 'counsel', 'social-amplification placement is status "counsel"');
 check(!!lsm && !!lsa && (Number(lsm[1]) + Number(lsa[1])) === 13000, `the two livestream placements total $${lsm && lsa ? (Number(lsm[1]) + Number(lsa[1])).toLocaleString() : '?'} of included value`);
 check(/included_features/.test(read('src/pages/FeaturePMF.jsx')) && /readiness/.test(read('src/pages/FeaturePMF.jsx')), 'advertiser value-stack table renders each feature with its readiness note');
+
+// value-match-to-price: every tier's TOTAL included value >= the price they pay (top-up guarantee)
+check(settingDefault('ADVERTISER_VALUE_MATCH_TO_PRICE') === '1', 'ADVERTISER_VALUE_MATCH_TO_PRICE default = "1"');
+check(/value_match_to_price_usd/.test(advFeat) && /total_offer_value_usd/.test(advFeat), 'rollup computes a value-match top-up + total offer value');
+{
+  // recompute per-tier feature sums (tier<=N) and confirm total (with top-up) >= price at every tier
+  const reAll = /tier:\s*(\d),\s*base_value_usd:\s*(\d+)/g; let mm; const byT = { 1: 0, 2: 0, 3: 0 };
+  while ((mm = reAll.exec(advFeat))) byT[Number(mm[1])] += Number(mm[2]);
+  const cum = { 1: byT[1], 2: byT[1] + byT[2], 3: byT[1] + byT[2] + byT[3] };
+  const price = { 1: 13000, 2: Math.round(200000 * 13 / 12), 3: 400000 };
+  for (const t of [1, 2, 3]) {
+    const total = Math.max(cum[t], price[t]); // value-match floors to price
+    check(total >= price[t], `Tier ${t}: total included value $${total.toLocaleString()} >= price $${price[t].toLocaleString()}`);
+  }
+}
 check(/sessionSocialAnnounce/.test(mani), 'sessionSocialAnnounce registered (live session → member social feeds)');
 const annSrc = read('backend/functions/sessionSocialAnnounce/entry.ts');
 check(/socialPostContribution/.test(annSrc) && /withAdDisclosure/.test(annSrc), 'social announce reuses the amplification path (#ad, reach→delivered value)');

@@ -114,6 +114,11 @@ export function featuresForContext(tier: FeatureTier, opts?: { founding?: boolea
   return all.filter((f) => f.tier <= tier);       // standard: this tier and below
 }
 
+/** Value-match-to-price guarantee: when a tier's summed feature value is below the price the advertiser pays, a
+ *  guaranteed bonus-inventory block tops it up to the price floor — so every tier delivers AT LEAST what they
+ *  pay. Mirrors the Tier 2 value-stack's existing "value-match block". On by default. */
+export const valueMatchToPriceEnabled = () => snapBool("ADVERTISER_VALUE_MATCH_TO_PRICE", true);
+
 export interface TierFeatureRollup {
   tier: FeatureTier;
   founding: boolean;
@@ -123,23 +128,34 @@ export interface TierFeatureRollup {
   pending_count: number;
   added_delivered_value_usd: number;   // live features' value — what the ratio climb is built on
   added_listed_value_usd: number;      // all included features' conventional value (live + pending)
+  value_match_to_price_usd: number;    // guaranteed bonus-inventory top-up so total >= price (0 if not needed)
+  total_offer_value_usd: number;       // added_listed + top-up = max(added_listed, price): value >= what they pay
+  meets_price_floor: boolean;          // total_offer_value_usd >= price_usd (always true when the guarantee is on)
 }
 
 /** The catalog value LAYERED onto a tier — additive, holding the price. `added_delivered_value_usd` is what a
  *  combined value stack would add to the tier total (so the delivered-value ratio climbs); pending (gated/
- *  counsel) features are listed but add $0 until live. This does NOT mutate the tested tier value stacks. */
+ *  counsel) features are listed but add $0 until live. A value-match-to-price top-up guarantees the TOTAL offer
+ *  value is at least the tier price. This does NOT mutate the tested tier value stacks. */
 export function tierFeatureRollup(tier: FeatureTier, opts?: { founding?: boolean; priceUsd?: number }): TierFeatureRollup {
   const features = featuresForContext(tier, opts);
   const live = features.filter((f) => f.live);
+  const price = Math.max(0, Number(opts?.priceUsd ?? foundingPriceUsd()) || 0);
+  const addedListed = Math.round(features.reduce((s, f) => s + f.value_usd, 0) * 100) / 100;
+  const topup = valueMatchToPriceEnabled() ? Math.max(0, Math.round((price - addedListed) * 100) / 100) : 0;
+  const total = Math.round((addedListed + topup) * 100) / 100;
   return {
     tier,
     founding: !!opts?.founding,
-    price_usd: Math.max(0, Number(opts?.priceUsd ?? foundingPriceUsd()) || 0),
+    price_usd: price,
     features,
     live_count: live.length,
     pending_count: features.length - live.length,
     added_delivered_value_usd: Math.round(live.reduce((s, f) => s + f.delivered_value_usd, 0) * 100) / 100,
-    added_listed_value_usd: Math.round(features.reduce((s, f) => s + f.value_usd, 0) * 100) / 100,
+    added_listed_value_usd: addedListed,
+    value_match_to_price_usd: topup,
+    total_offer_value_usd: total,
+    meets_price_floor: total >= price,
   };
 }
 

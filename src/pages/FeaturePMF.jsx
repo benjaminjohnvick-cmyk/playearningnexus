@@ -82,7 +82,7 @@ export default function FeaturePMF() {
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-100 font-semibold text-slate-800 flex items-center justify-between gap-2">
               <span className="flex items-center gap-2"><Layers className="w-4 h-4 text-indigo-600" /> Tier {tier} value stack — included at the same price</span>
-              <span className="text-xs font-normal text-slate-500">listed value {usd(catTier.added_listed_value_usd)} · delivered {usd(catTier.added_delivered_value_usd)}</span>
+              <span className="text-xs font-normal text-slate-500">total value {usd(catTier.total_offer_value_usd ?? catTier.added_listed_value_usd)} vs price {usd(catTier.price_usd)}{catTier.meets_price_floor ? ' ✓' : ''}</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -101,10 +101,22 @@ export default function FeaturePMF() {
                       </td>
                     </tr>
                   ))}
+                  {catTier.value_match_to_price_usd > 0 && (
+                    <tr className="border-t border-slate-100 bg-indigo-50/40">
+                      <td className="px-4 py-2 font-medium text-slate-800">Value-match guarantee (bonus inventory to price floor)</td>
+                      <td className="px-4 py-2 text-slate-600">{usd(catTier.value_match_to_price_usd)}</td>
+                      <td className="px-4 py-2"><span className="text-emerald-600 text-xs font-medium">● guaranteed</span></td>
+                    </tr>
+                  )}
+                  <tr className="border-t-2 border-slate-200 font-semibold">
+                    <td className="px-4 py-2 text-slate-900">Total included value</td>
+                    <td className="px-4 py-2 text-slate-900">{usd(catTier.total_offer_value_usd ?? catTier.added_listed_value_usd)}</td>
+                    <td className="px-4 py-2 text-[11px] text-slate-500">≥ price {usd(catTier.price_usd)}{catTier.meets_price_floor ? ' ✓' : ''}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
-            <div className="px-4 py-2 text-[11px] text-slate-400 border-t border-slate-100">Conventional/listed values — advertising value included at the held price, never a revenue or ROI guarantee.</div>
+            <div className="px-4 py-2 text-[11px] text-slate-400 border-t border-slate-100">Conventional/listed values — advertising value included at the held price. When features sum below the price, a guaranteed bonus-inventory block tops the total up to the price floor. Value delivered, never a revenue or ROI guarantee.</div>
           </div>
         )}
 

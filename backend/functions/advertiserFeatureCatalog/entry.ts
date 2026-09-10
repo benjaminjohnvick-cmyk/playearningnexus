@@ -36,6 +36,9 @@ export default __handler(async (req) => {
         pending_count: r.pending_count,
         added_delivered_value_usd: r.added_delivered_value_usd,
         added_listed_value_usd: r.added_listed_value_usd,
+        value_match_to_price_usd: r.value_match_to_price_usd,
+        total_offer_value_usd: r.total_offer_value_usd,
+        meets_price_floor: r.meets_price_floor,
       })),
       founding: {
         note: "Founding / pre-revenue Tier 1 includes the ENTIRE catalog free — the founding privilege and PMF panel.",
