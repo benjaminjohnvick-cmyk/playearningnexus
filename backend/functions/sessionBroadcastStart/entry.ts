@@ -3,6 +3,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { snapBool } from "../../sdk/settings.ts";
 import { broadcastEnabled, broadcastConfigured, egressUrl, hlsUrlForRoom, hlsKeyPrefix, lowLatencyHls } from "../../sdk/broadcast.ts";
+import { publishBroadcastState, buildBroadcastState } from "../../sdk/broadcast-state.ts";
 import { aiModerationEnabled } from "../../sdk/host-moderation.ts";
 
 // sessionBroadcastStart — turns a hosted session into a QVC-scale BROADCAST: it starts a LiveKit Egress
@@ -64,6 +65,8 @@ export default __handler(async (req) => {
       const egressId = String(b.egress_id || sess.egress_id || "");
       if (egressId) await call("StopEgress", { egress_id: egressId }).catch(() => null);
       if (sess.id) await base44.asServiceRole.entities.GameSession.update(sess.id, { hls_url: "", broadcast_mode: "", egress_id: "" }).catch(() => null);
+      // Tell any lingering broadcast viewers (polling the CDN) that broadcast has ended.
+      await publishBroadcastState(room, buildBroadcastState({ ...sess, hls_url: "" })).catch(() => null);
       return Response.json({ ok: true, enabled: true, configured: true, stopped: true, room });
     }
 
@@ -94,6 +97,9 @@ export default __handler(async (req) => {
     if (sess.id) {
       await base44.asServiceRole.entities.GameSession.update(sess.id, { hls_url: hlsUrl, broadcast_mode: ll ? "ll_hls" : "hls", egress_id: String(egressId) }).catch(() => null);
     }
+    // Seed the CDN state file so the first broadcast viewers immediately get the current featured product from
+    // the edge (no-op unless state publishing is configured).
+    await publishBroadcastState(room, buildBroadcastState({ ...sess, hls_url: hlsUrl })).catch(() => null);
     return Response.json({ ok: true, enabled: true, configured: true, started: true, mode: "hls", hls_url: hlsUrl, egress_id: String(egressId), room, note: "Broadcast started — passive viewers now stream via the CDN (unbounded), host stays on WebRTC." });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });

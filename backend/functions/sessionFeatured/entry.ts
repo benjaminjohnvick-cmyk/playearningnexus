@@ -3,6 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { snapBool } from "../../sdk/settings.ts";
 import { checkStreamable, advertisedProductsOnly } from "../../sdk/advertised-products.ts";
 import { broadcastConfigured, stateUrlForRoom } from "../../sdk/broadcast.ts";
+import { publishBroadcastState, buildBroadcastState } from "../../sdk/broadcast-state.ts";
 import { db } from "../../sdk/db.ts";
 
 // sessionFeatured — the featured-product channel for BROADCAST (HLS) viewers, who aren't in the WebRTC room and
@@ -61,6 +62,9 @@ export default __handler(async (req) => {
       if (!isHost && user.role !== "admin") return Response.json({ error: "Only the host or an admin can start an ad break." }, { status: 403 });
       const at = new Date().toISOString();
       if (sess.id) await base44.asServiceRole.entities.GameSession.update(sess.id, { ad_break_at: at }).catch(() => null);
+      // Mirror to the CDN state file so broadcast viewers polling the edge pick up the ad break (no-op unless
+      // the session is broadcasting AND state publishing is configured).
+      if (sess.hls_url) await publishBroadcastState(room, buildBroadcastState({ ...sess, ad_break_at: at })).catch(() => null);
       return Response.json({ ok: true, room, ad_break_at: at });
     }
 
@@ -77,6 +81,9 @@ export default __handler(async (req) => {
     // Attach the advertiser linkage so the streamed product is tied to its ad campaign (attribution).
     const featured = { ...product, ad_grid_ad_id: gate.match?.ad_grid_ad_id ?? null, advertiser_user_id: gate.match?.advertiser_user_id ?? null };
     if (sess.id) await base44.asServiceRole.entities.GameSession.update(sess.id, { featured_product: featured }).catch(() => null);
+    // Mirror the new featured product to the CDN state file for broadcast (HLS) viewers polling the edge
+    // (no-op unless the session is broadcasting AND state publishing is configured).
+    if (sess.hls_url) await publishBroadcastState(room, buildBroadcastState({ ...sess, featured_product: featured })).catch(() => null);
     return Response.json({ ok: true, room, featured_product: featured, advertised_only: advertisedProductsOnly() });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });

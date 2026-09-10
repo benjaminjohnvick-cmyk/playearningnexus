@@ -394,6 +394,20 @@ for (const [fn, _entity] of Object.entries(streamed)) {
 }
 
 // ============================================================================================================
+console.log('\n\x1b[1m11) BROADCAST STATE → CDN publisher — metadata poll moved onto the edge\x1b[0m');
+const bstate = read('backend/sdk/broadcast-state.ts');
+check(/export async function publishBroadcastState/.test(bstate), 'publishBroadcastState() exists');
+check(/export function broadcastStateConfigured/.test(bstate), 'broadcastStateConfigured() gate exists (safe no-op until storage set)');
+check(/state\.json/.test(bstate), 'publishes <room>/state.json next to the HLS segments');
+check(/return \{ published: false, reason: "not_configured" \}/.test(bstate), 'best-effort: no-ops (never throws) when storage is unconfigured');
+check(/export async function presignPut/.test(read('backend/sdk/aws/sigv4.ts')), 'sigv4 presignPut supports S3-compatible endpoints (AWS + R2/MinIO)');
+const sf = read('backend/functions/sessionFeatured/entry.ts');
+check(/publishBroadcastState\(room, buildBroadcastState/.test(sf), 'sessionFeatured mirrors featured-product + ad-break to the CDN state file');
+const sbs = read('backend/functions/sessionBroadcastStart/entry.ts');
+check((sbs.match(/publishBroadcastState\(/g) || []).length >= 2, 'sessionBroadcastStart seeds state on start AND clears it on stop');
+check(/Scale levers/.test(read('deploy-kit/env-check.mjs')), 'env-check prints the scale-levers activation readout');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

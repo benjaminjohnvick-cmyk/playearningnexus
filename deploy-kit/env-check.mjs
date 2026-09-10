@@ -64,6 +64,19 @@ console.log('  (survey interstitial, marketplace-equiv hold, shopping cashback) 
 console.log('  \x1b[2m→ AI/media/email $0/mo on free tiers; only recurring cost is hosting (~$5–20/mo).');
 console.log('    Pin every lever + set a spend cap:  npm run cost:floor   (or  node deploy-kit/cost-floor.mjs --cap 5)\x1b[0m');
 
+// Scale levers — the code for each is already wired; each ACTIVATES when you set its env group (no code change).
+// Presence-only (can't ping a replica/LiveKit/CDN without connecting), so this is turnkey guidance, not a probe.
+console.log('\nScale levers (code wired — activate with env)\n' + '-'.repeat(52));
+const sline = (label, on, onText, offText) => `  ${label.padEnd(24)} ${on ? '\x1b[1;32mACTIVE\x1b[0m  ' + onText : '\x1b[2mready\x1b[0m   ' + offText}`;
+const lkScale = !!(g('LIVEKIT_SCALE_PROVIDER') && (g('RAILWAY_TOKEN') || g('LIVEKIT_SCALE_WEBHOOK_URL')));
+const bcast = !!(g('LIVEKIT_EGRESS_URL') && g('HLS_PLAYBACK_BASE_URL'));
+const statePub = !!(g('HLS_STORAGE_BUCKET') && (g('HLS_S3_ACCESS_KEY_ID') || g('AWS_ACCESS_KEY_ID')) && (g('HLS_S3_SECRET_ACCESS_KEY') || g('AWS_SECRET_ACCESS_KEY')));
+console.log(sline('DB read replica', !!g('DATABASE_REPLICA_URL'), 'reads served from the replica', 'set DATABASE_REPLICA_URL — offloads every read'));
+console.log(sline('LiveKit SFU autoscale', lkScale, 'SFU nodes scale on live viewers', 'set LIVEKIT_SCALE_PROVIDER + RAILWAY_TOKEN/… (or LIVEKIT_SCALE_WEBHOOK_URL)'));
+console.log(sline('QVC broadcast (HLS/CDN)', bcast, 'passive crowd served via the CDN', 'set LIVEKIT_EGRESS_URL + HLS_PLAYBACK_BASE_URL'));
+console.log(sline('Broadcast state → CDN', statePub, 'featured/ad-break served from the edge', 'set HLS_STORAGE_BUCKET + write creds (HLS_S3_* or AWS_*)'));
+console.log('  \x1b[2mAll four are safe no-ops until set; the app runs correctly without them. See SCALE-FLIPS.md.\x1b[0m');
+
 console.log('-'.repeat(52));
 console.log(bad.length ? `\n${bad.length} item(s) need attention before deploy.` : `\nAll configured keys valid. ✓`);
 process.exit(bad.length ? 1 : 0);

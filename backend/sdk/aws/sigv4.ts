@@ -50,6 +50,43 @@ export async function presignS3Put(creds: AwsCreds, bucket: string, key: string,
   return `https://${host}${canonicalUri}?${canonicalQuery}&X-Amz-Signature=${sig}`;
 }
 
+/** Presign an S3-COMPATIBLE PUT URL against any endpoint (AWS S3, Cloudflare R2, MinIO, …). Generalizes
+ *  presignS3Put: pass a custom `endpoint` host and `pathStyle:true` for R2/MinIO (which address the bucket in
+ *  the path, not the host). With no endpoint it behaves exactly like presignS3Put (AWS virtual-host style). */
+export async function presignPut(
+  creds: AwsCreds,
+  bucket: string,
+  key: string,
+  opts?: { endpoint?: string; pathStyle?: boolean; expires?: number; region?: string },
+): Promise<string> {
+  const region = (opts?.region || creds.region || "us-east-1");
+  const endpoint = (opts?.endpoint || "").replace(/^https?:\/\//, "").replace(/\/+$/, "");
+  const pathStyle = !!opts?.pathStyle;
+  const expires = opts?.expires ?? 900;
+  // Host + canonical path depend on addressing style.
+  const host = endpoint
+    ? (pathStyle ? endpoint : `${bucket}.${endpoint}`)
+    : `${bucket}.s3.${region}.amazonaws.com`;
+  const keyPath = "/" + key.split("/").map((s) => uriEncode(s, false)).join("/");
+  const canonicalUri = (endpoint && pathStyle) ? `/${uriEncode(bucket, false)}${keyPath}` : keyPath;
+
+  const { amz, date } = amzDate();
+  const scope = `${date}/${region}/s3/aws4_request`;
+  const q = new URLSearchParams({
+    "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
+    "X-Amz-Credential": `${creds.accessKeyId}/${scope}`,
+    "X-Amz-Date": amz,
+    "X-Amz-Expires": String(expires),
+    "X-Amz-SignedHeaders": "host",
+  });
+  if (creds.sessionToken) q.set("X-Amz-Security-Token", creds.sessionToken);
+  const canonicalQuery = [...q.entries()].map(([k, v]) => `${uriEncode(k)}=${uriEncode(v)}`).sort().join("&");
+  const canonicalReq = ["PUT", canonicalUri, canonicalQuery, `host:${host}\n`, "host", "UNSIGNED-PAYLOAD"].join("\n");
+  const sts = ["AWS4-HMAC-SHA256", amz, scope, await sha256Hex(canonicalReq)].join("\n");
+  const sig = hex(await hmac(await signingKey(creds.secretAccessKey, date, region, "s3"), sts));
+  return `https://${host}${canonicalUri}?${canonicalQuery}&X-Amz-Signature=${sig}`;
+}
+
 /** Encode each path segment (slashes preserved). */
 const encodeSegments = (p: string) => p.split("/").map((s) => uriEncode(s, true)).join("/");
 

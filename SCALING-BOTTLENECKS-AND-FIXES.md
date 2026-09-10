@@ -13,9 +13,11 @@ scales to essentially unlimited concurrent viewers with zero SFU load. See `QVC-
 HLS viewers can't get the host's in-room "feature this product / ad break" data ping, so they poll
 `sessionFeatured`. Naively that's one origin hit per viewer per tick. Fix: the GET is short-cache + SWR
 (`max-age=3, stale-while-revalidate=15`) so an edge collapses a burst to ~one origin hit every few seconds,
-and viewers prefer a static CDN `state.json` (`stateUrlForRoom`) that scales like the video. Publishing
-`state.json` from the host/egress side is the switch that lights the CDN path fully; until then the SWR-cached
-origin already removes the per-viewer cost.
+and viewers prefer a static CDN `state.json` (`stateUrlForRoom`) that scales like the video. The `state.json`
+**publisher is now wired** (`backend/sdk/broadcast-state.ts`): `sessionFeatured` (feature / ad-break) and
+`sessionBroadcastStart` (start / stop) mirror the room's `{featured_product, ad_break_at}` to `<room>/state.json`
+in the HLS bucket via a presigned PUT (AWS S3 or R2/MinIO via `HLS_S3_ENDPOINT`). It is a safe no-op until the
+storage write creds are set (see SCALE-FLIPS.md, lever 4); until then the SWR-cached origin carries it.
 
 ## 3. Leaderboard global board — precompute instead of per-request scan (done)
 
@@ -87,7 +89,12 @@ SDK accumulators added: `fair-choice` (addChoice/rankChoiceAcc), `feedback` (add
 
 ## Status
 
-The known code-fixable scaling bottlenecks — the QVC broadcast tier, the metadata poll, the leaderboard board,
-the live-session bursts, and the admin-dashboard / scheduled-job aggregations — are all addressed. What remains
-is genuinely infra (DB read-replica via `DATABASE_REPLICA_URL`, LiveKit/SFU node autoscaling, CDN egress) rather
-than code, and the scaffolding for those is already in place behind flags.
+The known code-fixable scaling bottlenecks — the QVC broadcast tier, the metadata poll (now including the CDN
+`state.json` publisher), the leaderboard board, the live-session bursts, and the admin-dashboard /
+scheduled-job aggregations — are all addressed **in code**. Every remaining lever is now wired and ships as a
+safe no-op, ACTIVATED purely by setting its env group (no code change): DB read-replica
+(`DATABASE_REPLICA_URL`), LiveKit/SFU node autoscaling (`LIVEKIT_SCALE_PROVIDER` + target), QVC broadcast
+(`LIVEKIT_EGRESS_URL` + `HLS_PLAYBACK_BASE_URL`), and the broadcast-state publisher (`HLS_STORAGE_BUCKET` +
+write creds). **See `SCALE-FLIPS.md`** for the exact env per lever, and `node deploy-kit/env-check.mjs` (the
+"Scale levers" readout) to see which are ACTIVE vs ready. The only non-code work left is provisioning the
+underlying infra (replica, Egress service, object store + CDN) and its credentials.
