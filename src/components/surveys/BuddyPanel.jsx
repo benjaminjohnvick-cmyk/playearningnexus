@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Loader2, Send, Flag, UserPlus, Lock, Heart, Mic, Square, Play, Clock } from 'lucide-react';
+import { Users, Loader2, Send, Flag, UserPlus, Lock, Heart, Mic, Square, Play, Clock, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 import ChatPrefsBar from './ChatPrefsBar';
 import GroupSessionPanel from './GroupSessionPanel';
 import { onSurveyActivity } from '@/lib/activityPing';
+import { notificationService } from '@/lib/notificationService';
 
 const CHEERS = ['Keep going! 🔥', "You've got this 💪", 'Almost there!', 'Nice pace! 👏', 'One more 👍', "Let's finish strong 🚀"];
 
@@ -113,7 +114,27 @@ export default function BuddyPanel() {
   const [bookTime, setBookTime] = useState('09:00');
   const [booking, setBooking] = useState(false);
   const [rebooking, setRebooking] = useState(false);
+  const [notifOk, setNotifOk] = useState(() => typeof Notification !== 'undefined' && Notification.permission === 'granted');
+
+  // A booked session is only useful if we can remind them at that time — the reminder is an in-app/push
+  // notification. So booking REQUIRES notifications to be enabled: if they aren't, we ask for permission
+  // (and subscribe) right here, and only proceed once granted.
+  const ensureNotifications = async () => {
+    if (typeof Notification === 'undefined') { toast.error("This device can't show reminders."); return false; }
+    if (Notification.permission === 'granted') { setNotifOk(true); return true; }
+    if (Notification.permission === 'denied') {
+      toast.error('Notifications are blocked — enable them in your browser/app settings so we can remind you at your booked time.');
+      return false;
+    }
+    try { await notificationService.requestPermission(); } catch { /* ignore */ }
+    const ok = typeof Notification !== 'undefined' && Notification.permission === 'granted';
+    setNotifOk(ok);
+    if (!ok) toast.error('Turn on notifications so we can remind you at your booked time.');
+    return ok;
+  };
+
   const bookNext = async (pref) => {
+    if (!(await ensureNotifications())) return;   // must be able to remind them at the booked time
     setBooking(true);
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -309,6 +330,12 @@ export default function BuddyPanel() {
                 <div className="text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-violet-500" /> Meet on Buddy Chat again tomorrow?
                 </div>
+                {!notifOk && (
+                  <div className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-2 py-1.5 mb-2 flex items-center gap-1.5 flex-wrap">
+                    <Bell className="w-3.5 h-3.5 flex-shrink-0" /> Turn on notifications so we can remind you at your booked time.
+                    <button className="underline font-semibold" onClick={ensureNotifications}>Enable</button>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 flex-wrap">
                   <input
                     type="time"
