@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Loader2, Send, Flag, UserPlus, Lock, Heart, Mic, Square, Play } from 'lucide-react';
+import { Users, Loader2, Send, Flag, UserPlus, Lock, Heart, Mic, Square, Play, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import ChatPrefsBar from './ChatPrefsBar';
 import GroupSessionPanel from './GroupSessionPanel';
@@ -105,6 +105,29 @@ export default function BuddyPanel() {
     if (status?.pair_id) { try { await base44.functions.invoke('buddyReport', { pair_id: status.pair_id, reason: '' }); } catch { /* ignore */ } }
     if (mandatory) { toast.message('Finding you a new buddy…'); await match(); }
     else { setSolo(true); toast.message("You're earning solo now."); }
+  };
+
+  // End-of-session next-chat booking — available to EVERY tier (premium + non-premium) when the admin has
+  // turned on BUDDY_NEXT_SESSION_BOOKING_ENABLED. The user picks a local time for tomorrow and whether to
+  // meet the SAME buddy again ("keep") or be matched with SOMEONE NEW ("new"); Buddy Chat auto-opens then.
+  const [bookTime, setBookTime] = useState('09:00');
+  const [booking, setBooking] = useState(false);
+  const [rebooking, setRebooking] = useState(false);
+  const bookNext = async (pref) => {
+    setBooking(true);
+    try {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const r = await base44.functions.invoke('buddyScheduleNext', { local_time: bookTime, timezone, match_preference: pref });
+      if (r.data?.ok && r.data?.enabled !== false) {
+        toast.success(pref === 'new'
+          ? `Booked ${r.data.local_time} tomorrow — we'll match you with someone new.`
+          : `Booked ${r.data.local_time} tomorrow — see you then!`);
+        setRebooking(false); await load();
+      } else {
+        toast.error(r.data?.note || r.data?.error || 'Could not book your next session.');
+      }
+    } catch { toast.error('Could not book your next session.'); }
+    finally { setBooking(false); }
   };
 
   const report = async () => {
@@ -271,6 +294,39 @@ export default function BuddyPanel() {
               )}
             </div>
           </>
+        )}
+
+        {/* End-of-session next-chat booking — every tier (premium + non-premium) when enabled by admin */}
+        {status?.booking_enabled && (
+          <div className="mt-4 pt-3 border-t border-slate-100">
+            {status.next_session?.booked && !rebooking ? (
+              <div className="text-xs text-emerald-700 font-semibold flex items-center gap-1.5 flex-wrap">
+                <Clock className="w-3.5 h-3.5" /> Next chat booked for {status.next_session.local_time} tomorrow
+                <button className="text-slate-400 underline ml-1" onClick={() => setRebooking(true)}>change</button>
+              </div>
+            ) : (
+              <div>
+                <div className="text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-violet-500" /> Meet on Buddy Chat again tomorrow?
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <input
+                    type="time"
+                    value={bookTime}
+                    onChange={(e) => setBookTime(e.target.value)}
+                    className="border border-slate-200 rounded-md px-2 py-1 text-sm"
+                    aria-label="Time to meet again tomorrow"
+                  />
+                  <Button size="sm" disabled={booking} onClick={() => bookNext('keep')}>Meet again</Button>
+                  <Button size="sm" variant="outline" disabled={booking} onClick={() => bookNext('new')}>Find someone new</Button>
+                  {status.next_session?.booked && (
+                    <button className="text-xs text-slate-400 underline" onClick={() => setRebooking(false)}>cancel</button>
+                  )}
+                </div>
+                <div className="text-[10px] text-slate-400 mt-1">Buddy Chat auto-opens at your time — buddies who pick the same moment across timezones are matched together.</div>
+              </div>
+            )}
+          </div>
         )}
       </CardContent>
     </Card>
