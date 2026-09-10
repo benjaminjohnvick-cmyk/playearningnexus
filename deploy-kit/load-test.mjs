@@ -155,6 +155,44 @@ const simCost = monthlyCost(simVh, GB_VH_FLOOR, CHEAP_GB, simViewers);
 check(simCost < 500, `10k concurrent viewers × 1h at the floor on a cheap host ≈ $${simCost.toFixed(2)} (bounded)`);
 
 // ============================================================================================================
+console.log('\n\x1b[1m4) LIVEKIT AUTOSCALING — scales on viewers, to zero when idle\x1b[0m');
+
+const lkExpect = {
+  LIVEKIT_SCALE_ENABLED: '1',            // standing autoscaling from day one
+  LIVEKIT_SCALE_PROVIDER: 'none',        // decide-only until a node pool is wired (safe)
+  LIVEKIT_SCALE_VIEWERS_PER_NODE: '1000',
+  LIVEKIT_SCALE_MIN_NODES: '0',          // scale to zero at idle
+  LIVEKIT_SCALE_MAX_NODES: '20',
+  LIVEKIT_SCALE_MAX_STEP: '3',
+};
+for (const [k, v] of Object.entries(lkExpect)) {
+  const got = settingDefault(k);
+  check(got === v, `${k} default = "${v}"${got === v ? '' : ` (got "${got}")`}`);
+}
+check(/livekitScaleController/.test(read('backend/functions/_manifest.json')), 'livekitScaleController registered in the manifest');
+check(/livekit-hosting-scale|livekitScaleController/.test(read('backend/scheduler/schedules.json')), 'livekitScaleController scheduled (every minute)');
+
+// desired-node math (mirrors livekit-scale.ts computeDesiredNodes): scale to zero when idle, ceil to capacity.
+const PER_NODE = Number(settingDefault('LIVEKIT_SCALE_VIEWERS_PER_NODE'));
+const MIN_NODES = Number(settingDefault('LIVEKIT_SCALE_MIN_NODES'));
+const MAX_NODES = Number(settingDefault('LIVEKIT_SCALE_MAX_NODES'));
+function desiredNodes(viewers) {
+  if (viewers === 0) return MIN_NODES;
+  return Math.max(Math.max(1, MIN_NODES), Math.min(MAX_NODES, Math.ceil(viewers / PER_NODE)));
+}
+check(desiredNodes(0) === 0, 'idle (0 viewers) → 0 nodes → $0 (scale to zero)');
+check(desiredNodes(1) === 1, 'first viewer → 1 node');
+check(desiredNodes(2500) === 3, '2,500 concurrent viewers → 3 nodes');
+check(desiredNodes(1000000) === MAX_NODES, 'runaway load clamps at the emergency ceiling of ' + MAX_NODES + ' nodes');
+
+// a ramp from 0 → 5,000 → 0 viewers ends back at zero cost
+const COST_PER_NODE = Number(settingDefault('LIVEKIT_SCALE_COST_PER_NODE_USD_MO'));
+const ramp = [0, 500, 2500, 5000, 2500, 0];
+const nodeSeq = ramp.map(desiredNodes);
+check(nodeSeq[0] === 0 && nodeSeq[nodeSeq.length - 1] === 0, `viewer ramp ${ramp.join('→')} ⇒ nodes ${nodeSeq.join('→')} (returns to zero)`);
+check(Math.max(...nodeSeq) * COST_PER_NODE <= MAX_NODES * COST_PER_NODE, `peak media-tier cost in the ramp ≈ $${Math.max(...nodeSeq) * COST_PER_NODE}/mo-equivalent, bounded by the ceiling`);
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

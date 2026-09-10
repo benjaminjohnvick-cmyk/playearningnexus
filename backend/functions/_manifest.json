@@ -675,6 +675,7 @@
   "liveExperimentStatus",
   "liveExperimentTick",
   "liveShoppingOrder",
+  "livekitScaleController",
   "liveVariants",
   "livestreamChannelBuild",
   "livestreamChannels",

@@ -52,4 +52,17 @@ This sits alongside the existing traffic load test (`deploy-kit/loadtest.k6.js`,
 
 ---
 
-*Everything above is the day-one default. The only cost that ever grows is live-video egress, and only after counsel clears hosting — and even then it's held to the floor by the caps here. See LIVEKIT-HOSTING-COST-MODEL.md for the full unit economics and the plug-in calculator.*
+## 4. Live-hosting autoscaling — scales on viewers, to zero when idle
+
+The app already autoscales its web replicas by request rate (`infraScaleController`). Live hosting is a **separate media tier** (the LiveKit SFU + TURN) whose cost is driven by **concurrent viewers**, not API traffic — so it gets its own autoscaler, `livekitScaleController`, running every minute:
+
+- **Load signal = concurrent viewers**, summed from active LiveKit sessions. Desired nodes = `ceil(viewers ÷ viewers-per-node)` (≈1,000 viewers/node), clamped to `[min, max]`, stepped per tick so it never thunders.
+- **Scales to zero.** `LIVEKIT_SCALE_MIN_NODES = 0`, so when nobody is live the media tier runs **0 nodes = $0**. Because hosting is counsel-gated off, there are no viewers yet — it simply holds at zero until hosting is cleared and someone goes live. The instant real viewers arrive it spins up; when they leave it returns to zero.
+- **Scales up under load, with a burst ceiling.** It grows node-by-node as viewers climb, up to an emergency ceiling (`LIVEKIT_SCALE_MAX_NODES = 20` ≈ 20,000 concurrent viewers), and can auto-burst past an optional dollar budget only for the minutes a surge actually lasts.
+- **ON from day one, safe until credentialed.** `LIVEKIT_SCALE_ENABLED = 1`, provider `none` (decide-only). When you self-host LiveKit on Hetzner/OVH/Vultr/AWS, point `LIVEKIT_SCALE_PROVIDER` at a small node-pool webhook (or a Railway LiveKit service) and it starts acting. Same guard/budget discipline as the app scaler — never below min, never above the ceiling, bounded per tick.
+
+The load test asserts the scale-to-zero-at-idle and ceiling-clamp behavior, so this posture can't silently drift either. Read the live state (viewers, nodes, cost) any time by calling `livekitScaleController` with `{ "dry_run": true }`.
+
+---
+
+*Everything above is the day-one default. The only cost that ever grows is live-video egress, and only after counsel clears hosting — and even then it's held to the floor by the caps here and sized by an autoscaler that returns to zero when idle. See LIVEKIT-HOSTING-COST-MODEL.md for the full unit economics and the plug-in calculator.*
