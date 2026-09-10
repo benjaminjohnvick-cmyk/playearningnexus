@@ -226,6 +226,47 @@ check(sfuNodesForPassiveHlsCrowd === 0, `${bigFeed.toLocaleString()}-viewer feed
 check(bigFeed > interactiveOnSfu * 100, 'one broadcast feed serves far beyond any single-room SFU cap (CDN-bound, not SFU-bound)');
 
 // ============================================================================================================
+console.log('\n\x1b[1m6) LIVESTREAM ↔ ADVERTISING — advertised-only + audio/video ad breaks\x1b[0m');
+
+const adExpect = {
+  HOSTING_ADVERTISED_PRODUCTS_ONLY: '1',
+  HOSTING_AD_BREAK_BETWEEN_PRODUCTS: '1',
+  HOSTING_AD_BREAK_SECONDS: '15',
+};
+for (const [k, v] of Object.entries(adExpect)) {
+  const got = settingDefault(k);
+  check(got === v, `${k} default = "${v}"${got === v ? '' : ` (got "${got}")`}`);
+}
+const mani = read('backend/functions/_manifest.json');
+check(/sessionAdBreak/.test(mani), 'sessionAdBreak registered');
+check(/sessionFeatured/.test(mani), 'sessionFeatured registered');
+// the ad break draws from the shared inventory + records revenue like the in-app interstitial
+const adbSrc = read('backend/functions/sessionAdBreak/entry.ts');
+check(/pickInterstitialAd/.test(adbSrc), 'ad break uses the shared ad inventory (pickInterstitialAd)');
+check(/AdImpression/.test(adbSrc) && /livestream_ad_break/.test(adbSrc), 'ad break records an AdImpression (your ad revenue)');
+// advertised-only gate is wired into both featuring and selling
+check(/checkStreamable/.test(read('backend/functions/sessionFeatured/entry.ts')), 'featuring a product is gated to advertised products');
+check(/checkStreamable/.test(read('backend/functions/liveShoppingOrder/entry.ts')), 'selling a product is gated to advertised products');
+
+// advertised-only decision (mirrors advertised-products.ts): only a product matching an active ad passes.
+const norm = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const activeAds = [{ product_name: 'Wireless Earbuds' }, { product_name: 'Yoga Mat' }];
+const isAdvertised = (name) => activeAds.some((a) => norm(a.product_name) === norm(name));
+const RULE_ON = settingDefault('HOSTING_ADVERTISED_PRODUCTS_ONLY') === '1';
+function streamable(name) { return RULE_ON ? isAdvertised(name) : true; }
+check(streamable('wireless earbuds') === true, 'advertised product ("wireless earbuds") can be streamed');
+check(streamable('Random Non-Advertised Thing') === false, 'non-advertised product is refused (advertised-only)');
+
+// live streaming is an INCLUDED advertiser placement (same price, more value) + shared to member social feeds
+const advFeat = read('backend/sdk/advertiser-features.ts');
+check(/live_shopping_placement/.test(advFeat), 'live-shopping is an included advertiser placement (in the value stack)');
+check(/livestream_social_amplification/.test(advFeat), 'livestream→member-social-feeds is an included advertiser placement');
+check(/sessionSocialAnnounce/.test(mani), 'sessionSocialAnnounce registered (live session → member social feeds)');
+const annSrc = read('backend/functions/sessionSocialAnnounce/entry.ts');
+check(/socialPostContribution/.test(annSrc) && /withAdDisclosure/.test(annSrc), 'social announce reuses the amplification path (#ad, reach→delivered value)');
+check(/ppc_social_ads_opt_in/.test(annSrc), 'announce only reaches CONSENTED (opted-in) members');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

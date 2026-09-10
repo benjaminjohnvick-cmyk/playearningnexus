@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MonitorUp, Radio, Users, ShoppingBag, Copy, X, Loader2, AlertTriangle } from 'lucide-react';
+import { MonitorUp, Radio, Users, ShoppingBag, Copy, X, Loader2, AlertTriangle, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**
@@ -22,6 +22,7 @@ export default function HostStudio() {
   const [product, setProduct] = useState({ name: '', price: '', url: '' });
   const roomRef = useRef(null);
   const previewRef = useRef(null);
+  const hasFeaturedRef = useRef(false);
 
   const viewerLink = room ? `${window.location.origin}/WatchSession?room=${encodeURIComponent(room)}` : '';
 
@@ -91,13 +92,35 @@ export default function HostStudio() {
     if (!roomRef.current) return;
     if (!product.name) { toast.error('Add a product name first.'); return; }
     try {
-      // WebRTC viewers get it instantly over the data channel…
-      const data = new TextEncoder().encode(JSON.stringify({ type: 'feature_product', product }));
-      await roomRef.current.localParticipant.publishData(data, { reliable: true });
-      // …and broadcast (HLS) viewers get it by polling sessionFeatured, so mirror it there too.
-      base44.functions.invoke('sessionFeatured', { room, action: 'set', product }).catch(() => {});
+      // Validate + set via the backend — enforces the advertised-products-only rule and attaches the advertiser
+      // linkage. A non-advertised product is refused here (create an ad for it first).
+      const res = await base44.functions.invoke('sessionFeatured', { room, action: 'set', product });
+      const d = res?.data || res || {};
+      if (d.ok === false) { toast.error(d.error || 'Only advertised products can be featured — create an ad for it first.'); return; }
+      const fp = d.featured_product || product;
+
+      // Between products: run an audio/video AD BREAK first (skip before the very first product).
+      if (hasFeaturedRef.current) {
+        base44.functions.invoke('sessionFeatured', { room, action: 'ad_break' }).catch(() => {});   // HLS viewers
+        try { await roomRef.current.localParticipant.publishData(new TextEncoder().encode(JSON.stringify({ type: 'ad_break' })), { reliable: true }); } catch { /* ignore */ }
+      }
+      hasFeaturedRef.current = true;
+
+      // Then feature the product: WebRTC viewers get it over the data channel; HLS viewers are already set above.
+      try { await roomRef.current.localParticipant.publishData(new TextEncoder().encode(JSON.stringify({ type: 'feature_product', product: fp })), { reliable: true }); } catch { /* ignore */ }
       toast.success(`Featured "${product.name}" to your viewers.`);
     } catch { toast.error('Could not feature the product.'); }
+  };
+
+  // Announce this live session to members' connected social feeds (#ad, consented) — reaches their social
+  // audiences and counts toward the advertiser's delivered value. No-ops until counsel enables the social flag.
+  const shareToSocial = async (quiet) => {
+    try {
+      const res = await base44.functions.invoke('sessionSocialAnnounce', { room, base_url: window.location.origin });
+      const d = res?.data || res || {};
+      if (d.ok && d.social_enabled && d.queued >= 0) { if (!quiet) toast.success(`Shared to member social feeds (${d.queued} queued, ~${(d.projected_reach || 0).toLocaleString()} reach).`); }
+      else if (d.social_enabled === false && !quiet) { toast.message('Sharing to social feeds turns on after counsel clears it (HOSTING_SOCIAL_SIMULCAST_ENABLED).'); }
+    } catch { if (!quiet) toast.error('Could not share to social feeds.'); }
   };
 
   // Turn the feed into a QVC-scale broadcast: passive viewers then stream via the CDN (unbounded), host stays on WebRTC.
@@ -106,7 +129,11 @@ export default function HostStudio() {
     try {
       const res = await base44.functions.invoke('sessionBroadcastStart', { room });
       const d = res?.data || res || {};
-      if (d.started || d.already || d.mode === 'hls') { setBroadcasting(true); toast.success('Broadcast on — your feed can now serve a large audience.'); }
+      if (d.started || d.already || d.mode === 'hls') {
+        setBroadcasting(true);
+        toast.success('Broadcast on — your feed can now serve a large audience.');
+        shareToSocial(true); // also push it to member social feeds (silent; no-ops until enabled)
+      }
       else if (d.configured === false) { toast.message('Broadcast needs the media server’s HLS/CDN configured (LIVEKIT_EGRESS_URL + HLS_PLAYBACK_BASE_URL).'); }
       else { toast.error(d.error || 'Could not start broadcast.'); }
     } catch { toast.error('Could not start broadcast.'); }
@@ -186,6 +213,10 @@ export default function HostStudio() {
               {!broadcasting && <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white gap-1.5 shrink-0" onClick={goBroadcast}><Radio className="w-4 h-4" /> Go broadcast</Button>}
               {broadcasting && <span className="text-xs font-semibold text-green-600 shrink-0">● On</span>}
             </div>
+            <div className="mt-3 pt-3 border-t flex items-center justify-between gap-2">
+              <div className="text-[11px] text-gray-400">Share this live session to members' social feeds (#ad, consented) to reach their audiences.</div>
+              <Button size="sm" variant="outline" className="gap-1.5 shrink-0" onClick={() => shareToSocial(false)}><Share2 className="w-4 h-4" /> Share to feeds</Button>
+            </div>
           </CardContent></Card>
 
           <Card><CardContent className="p-4">
@@ -197,7 +228,8 @@ export default function HostStudio() {
           </CardContent></Card>
 
           <Card><CardContent className="p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold mb-2"><ShoppingBag className="w-4 h-4" /> Feature a product (live shopping)</div>
+            <div className="flex items-center gap-2 text-sm font-semibold mb-1"><ShoppingBag className="w-4 h-4" /> Feature a product (live shopping)</div>
+            <div className="text-[11px] text-gray-400 mb-2">Only advertised products can be featured — it must have an active ad campaign. Moving to the next product runs a short audio/video ad break for viewers.</div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
               <Input placeholder="Product name" value={product.name} onChange={(e) => setProduct((p) => ({ ...p, name: e.target.value }))} />
               <Input placeholder="Price (e.g. 29.99)" value={product.price} onChange={(e) => setProduct((p) => ({ ...p, price: e.target.value }))} />

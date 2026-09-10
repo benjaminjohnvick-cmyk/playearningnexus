@@ -4,6 +4,7 @@ import { db } from "../../sdk/db.ts";
 import { snapBool, getNumber } from "../../sdk/settings.ts";
 import { pointValueUsd, recordRevenue } from "../../sdk/revenue.ts";
 import { marketplaceFee, payoutCurrency } from "../../sdk/hosting-monetization.ts";
+import { checkStreamable } from "../../sdk/advertised-products.ts";
 
 // liveShoppingOrder — places an order from a live-shopping / QVC-style hosted session and feeds it into the
 // EXISTING order → fulfillment → funds-release pipeline (nothing new for moving money). The buyer pays in SITE
@@ -36,6 +37,9 @@ export default __handler(async (req) => {
     if (!["live_shopping_5050", "retail_5050"].includes(String(sess.monetization || ""))) {
       return Response.json({ error: "this session is not a retail / live-shopping session" }, { status: 409 });
     }
+    // Advertising-ecosystem gate: only advertised products can be sold on a livestream.
+    const streamable = await checkStreamable(base44, { name: itemName, url: String(body?.item?.url || "") });
+    if (!streamable.ok) return Response.json({ ok: false, advertised_only: true, error: streamable.reason }, { status: 403 });
     const sellerId = String(body?.seller_id || sess.host_player_id || sess.started_by || "");
     const sellerIsBusiness = body?.seller_is_business !== false; // live-shopping sellers are businesses by default
 

@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Radio, ShoppingBag, Heart, Loader2, AlertTriangle, Users } from 'lucide-react';
 import { toast } from 'sonner';
+import AdMedia from '@/components/ads/AdMedia';
 
 /**
  * WatchSession — a viewer watches a hosted session. Two modes, chosen by the server:
@@ -22,17 +23,49 @@ export default function WatchSession() {
   const [err, setErr] = useState('');
   const [featured, setFeatured] = useState(null);
   const [buying, setBuying] = useState(false);
+  const [adBreak, setAdBreak] = useState(null);   // { ad, seconds } — the between-products audio/video ad
+  const [adLeft, setAdLeft] = useState(0);
+  const [adUnlocked, setAdUnlocked] = useState(false);
   const roomRef = useRef(null);
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
   const pollRef = useRef(null);
+  const adTimerRef = useRef(null);
+  const adBusyRef = useRef(false);
+  const lastAdBreakRef = useRef(null);
 
   const cleanup = useCallback(() => {
     try { roomRef.current?.disconnect?.(); } catch { /* ignore */ } roomRef.current = null;
     try { hlsRef.current?.destroy?.(); } catch { /* ignore */ } hlsRef.current = null;
     if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    if (adTimerRef.current) { clearInterval(adTimerRef.current); adTimerRef.current = null; }
   }, []);
   useEffect(() => cleanup, [cleanup]);
+
+  // Run a between-products AD BREAK: fetch a targeted audio/video ad and play it before the next product.
+  const endAdBreak = useCallback((ad) => {
+    if (adTimerRef.current) { clearInterval(adTimerRef.current); adTimerRef.current = null; }
+    if (ad?.id || ad) { base44.functions.invoke('sessionAdBreak', { room, completed: true, ad_id: ad?.id || 'house' }).catch(() => {}); }
+    setAdBreak(null); setAdUnlocked(false); adBusyRef.current = false;
+  }, [room]);
+
+  const runAdBreak = useCallback(async () => {
+    if (adBusyRef.current) return;
+    adBusyRef.current = true;
+    try {
+      const res = await base44.functions.invoke('sessionAdBreak', { room });
+      const d = res?.data || res || {};
+      if (!d.required || !d.ad) { adBusyRef.current = false; return; }
+      const secs = Number(d.seconds) || 15;
+      setAdBreak({ ad: d.ad }); setAdLeft(secs); setAdUnlocked(false);
+      adTimerRef.current = setInterval(() => {
+        setAdLeft((n) => {
+          if (n <= 1) { endAdBreak(d.ad); return 0; }
+          return n - 1;
+        });
+      }, 1000);
+    } catch { adBusyRef.current = false; }
+  }, [room, endAdBreak]);
 
   // Poll the featured product for HLS viewers (they're not in the WebRTC room, so they can't get the data ping).
   const startFeaturedPolling = useCallback(() => {
@@ -41,6 +74,12 @@ export default function WatchSession() {
         const res = await base44.functions.invoke('sessionFeatured', { room });
         const d = res?.data || res || {};
         if (d.featured_product) setFeatured(d.featured_product);
+        // A new ad_break_at stamp means the host moved to the next product → run an ad break for this viewer.
+        if (d.ad_break_at && d.ad_break_at !== lastAdBreakRef.current) {
+          const first = lastAdBreakRef.current === null;
+          lastAdBreakRef.current = d.ad_break_at;
+          if (!first) runAdBreak();
+        }
       } catch { /* ignore */ }
     };
     tick();
@@ -108,6 +147,7 @@ export default function WatchSession() {
         try {
           const msg = JSON.parse(new TextDecoder().decode(payload));
           if (msg?.type === 'feature_product' && msg.product) setFeatured(msg.product);
+          else if (msg?.type === 'ad_break') runAdBreak();
         } catch { /* ignore */ }
       });
       lkRoom.on(LK.RoomEvent.Disconnected, () => setPhase('ended'));
@@ -150,6 +190,24 @@ export default function WatchSession() {
 
   return (
     <div className="max-w-2xl mx-auto p-4">
+      {/* Between-products AD BREAK — a targeted audio/video ad from the ad ecosystem, plays before the next product. */}
+      {adBreak && (
+        <div className="fixed inset-0 z-50 bg-black flex flex-col">
+          <div className="flex items-center justify-between px-4 py-2 text-[11px] text-white/70">
+            <span>Ad</span>
+            <span>{adUnlocked ? 'You can continue' : `Resuming in ${adLeft}s`}</span>
+          </div>
+          <div className="flex-1 min-h-0">
+            <AdMedia ad={adBreak.ad} onEnded={() => setAdUnlocked(true)} />
+          </div>
+          <div className="p-3 text-center">
+            <Button className="bg-white text-black hover:bg-gray-200" disabled={!adUnlocked && adLeft > 0} onClick={() => endAdBreak(adBreak.ad)}>
+              {adUnlocked || adLeft <= 0 ? 'Continue watching' : `Continue in ${adLeft}s`}
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-2 mb-4"><Radio className="w-6 h-6 text-red-500" /><h1 className="text-2xl font-black text-gray-900">Watch</h1></div>
 
       {phase === 'idle' && (

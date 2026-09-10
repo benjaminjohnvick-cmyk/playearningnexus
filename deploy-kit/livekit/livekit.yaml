@@ -1,0 +1,25 @@
+# Reference LiveKit config (the entrypoint renders this from env at runtime — this copy is for reading/editing).
+# Multi-node ready: every replica points at the SAME Redis, so they coordinate rooms as one cluster. That's
+# what makes horizontal replica scaling (which livekitScaleController drives) actually work.
+
+port: 7880                 # HTTP/WebSocket signaling — the port Railway exposes publicly (→ wss:// over 443)
+
+rtc:
+  tcp_port: 7881           # ICE over TCP: media fallback used when UDP isn't reachable (the Railway case)
+  port_range_start: 50000  # UDP media range — used only where UDP ingress exists (a VPS); harmless on Railway
+  port_range_end: 50200
+  use_external_ip: true
+
+redis:                     # REQUIRED for multi-node — shared bus + node routing across replicas
+  address: REDIS_HOST:REDIS_PORT
+  password: REDIS_PASSWORD
+
+keys:                      # api_key: api_secret — the app's sessionLiveKitToken signs tokens with this pair
+  LIVEKIT_API_KEY: LIVEKIT_API_SECRET
+
+turn:
+  enabled: false           # not needed here; ICE/TCP above covers restrictive networks. Enable + add certs
+                           # only if you later run a dedicated TURN over TLS.
+
+logging:
+  level: info

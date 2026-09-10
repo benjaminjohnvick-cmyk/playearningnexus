@@ -46,6 +46,11 @@ const CATALOG: AdvertiserFeatureDef[] = [
   { key: "in_app_interstitials", name: "In-app full-screen ad placements", tier: 1, base_value_usd: 2000, revenue_type: "advertising", status: "live", gate_flag: "IN_APP_ADS_ENABLED", category: 1, basis: "premium interstitial inventory" },
   { key: "lead_gen_program", name: "Lead / referral fee program", tier: 1, base_value_usd: 1500, revenue_type: "lead_fee", status: "live", category: 6, basis: "qualified-lead routing to the advertiser" },
   { key: "sponsored_jackpots", name: "Sponsored jackpots / prize placement", tier: 1, base_value_usd: 2500, revenue_type: "sponsored_prize", status: "live", category: 1, basis: "brand-sponsored prize/jackpot, conventional sponsorship rate" },
+  // Live streaming is INCLUDED in every tier at NO extra price — the advertiser's existing spend now also buys
+  // live-shopping video placement and its distribution to members' social feeds, so delivered value (and ROI)
+  // climbs while the price holds. Gated to activate after counsel clears hosting.
+  { key: "live_shopping_placement", name: "Live-shopping / livestream placement", tier: 1, base_value_usd: 8000, revenue_type: "advertising", status: "gated", gate_flag: "SESSION_HOSTING_ENABLED", category: 1, basis: "live-shopping video placement (host features & sells the advertiser's product live; audio/video ad breaks); activates after counsel sign-off" },
+  { key: "livestream_social_amplification", name: "Livestream shared to member social feeds", tier: 1, base_value_usd: 4000, revenue_type: "advertising", status: "gated", gate_flag: "HOSTING_SOCIAL_SIMULCAST_ENABLED", category: 1, basis: "the advertiser's live session is announced to consenting members' connected social feeds (#ad), adding social reach/impressions; activates after counsel sign-off" },
 
   // ── Tier 2 "Scale" add-ons ──────────────────────────────────────────────────────────────────────────────
   { key: "audience_panels_pro", name: "Audience panels — Pro (5/yr)", tier: 2, base_value_usd: 60000, revenue_type: "audience_panel", status: "live", category: 5, basis: "5 full audience panels/yr, conventional research rates" },

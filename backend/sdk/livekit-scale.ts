@@ -93,19 +93,26 @@ export async function scaleLivekit(provider: LkScaleProvider, desired: number, r
       return { ok: r, provider, desired, applied: r, reason: r ? "LiveKit scaling webhook called" : "webhook call failed" };
     }
 
-    // railway — set the LiveKit service's replica count.
+    // railway — set the LiveKit service's replica count via serviceInstanceUpdate. For a single-region service
+    // `numReplicas` is correct; for a multi-region service Railway requires the count under `multiRegionConfig`
+    // (a bare numReplicas updates the UI but doesn't scale actual instances). Set LIVEKIT_RAILWAY_REGION to the
+    // service's region to use the multi-region shape; leave it empty for the single-region default.
     const token = (snapString("RAILWAY_TOKEN", "") || "").trim();
     const serviceId = (snapString("LIVEKIT_RAILWAY_SERVICE_ID", "") || "").trim();
     const envId = (snapString("LIVEKIT_RAILWAY_ENVIRONMENT_ID", "") || "").trim();
     if (!token || !serviceId || !envId) return { ok: false, provider, desired, applied: false, reason: "RAILWAY_TOKEN / LIVEKIT_RAILWAY_SERVICE_ID / LIVEKIT_RAILWAY_ENVIRONMENT_ID not all set" };
-    const query = `mutation($serviceId:String!,$environmentId:String!,$replicas:Int!){ serviceInstanceUpdate(serviceId:$serviceId, environmentId:$environmentId, input:{ numReplicas:$replicas }) }`;
+    const region = (snapString("LIVEKIT_RAILWAY_REGION", "") || "").trim();
+    const input: Record<string, unknown> = region
+      ? { multiRegionConfig: { [region]: { numReplicas: desired } } }
+      : { numReplicas: desired };
+    const query = `mutation($serviceId:String!,$environmentId:String!,$input:ServiceInstanceUpdateInput!){ serviceInstanceUpdate(serviceId:$serviceId, environmentId:$environmentId, input:$input) }`;
     const r = await fetch("https://backboard.railway.app/graphql/v2", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-      body: JSON.stringify({ query, variables: { serviceId, environmentId: envId, replicas: desired } }),
+      body: JSON.stringify({ query, variables: { serviceId, environmentId: envId, input } }),
     }).then((x) => x.json()).catch(() => null) as Record<string, unknown> | null;
     const ok = !!r && !r.errors;
-    return { ok, provider, desired, applied: ok, reason: ok ? `Railway LiveKit replicas set to ${desired}` : "Railway API error (verify ids/scopes)" };
+    return { ok, provider, desired, applied: ok, reason: ok ? `Railway LiveKit replicas set to ${desired}${region ? ` in ${region}` : ""}` : "Railway API error (verify ids/scopes/region)" };
   } catch (e) {
     return { ok: false, provider, desired, applied: false, reason: String((e as Error)?.message || e) };
   }
