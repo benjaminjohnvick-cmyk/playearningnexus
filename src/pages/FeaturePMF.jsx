@@ -77,6 +77,37 @@ export default function FeaturePMF() {
           )}
         </div>
 
+        {/* Value stack — every included feature with its conventional value + readiness (advertiser-facing) */}
+        {catTier?.included_features?.length > 0 && (
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="px-4 py-3 border-b border-slate-100 font-semibold text-slate-800 flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2"><Layers className="w-4 h-4 text-indigo-600" /> Tier {tier} value stack — included at the same price</span>
+              <span className="text-xs font-normal text-slate-500">listed value {usd(catTier.added_listed_value_usd)} · delivered {usd(catTier.added_delivered_value_usd)}</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 text-slate-500 text-left">
+                  <tr><th className="px-4 py-2">Included feature</th><th className="px-4 py-2">Conventional value</th><th className="px-4 py-2">Status</th></tr>
+                </thead>
+                <tbody>
+                  {catTier.included_features.map((f) => (
+                    <tr key={f.key} className="border-t border-slate-100">
+                      <td className="px-4 py-2 font-medium text-slate-800">{f.name}</td>
+                      <td className="px-4 py-2 text-slate-600">{usd(f.value_usd)}</td>
+                      <td className="px-4 py-2">
+                        {f.live
+                          ? <span className="text-emerald-600 text-xs font-medium">● live — delivering now</span>
+                          : <span className="text-amber-600 text-xs font-medium">○ {f.readiness}</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="px-4 py-2 text-[11px] text-slate-400 border-t border-slate-100">Conventional/listed values — advertising value included at the held price, never a revenue or ROI guarantee.</div>
+          </div>
+        )}
+
         {/* Overall ranked scoreboard */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100 font-semibold text-slate-800 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-indigo-600" /> Ranked by PMF score (retention-weighted)</div>

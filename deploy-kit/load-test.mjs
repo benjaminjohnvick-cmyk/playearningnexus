@@ -261,6 +261,13 @@ check(streamable('Random Non-Advertised Thing') === false, 'non-advertised produ
 const advFeat = read('backend/sdk/advertiser-features.ts');
 check(/live_shopping_placement/.test(advFeat), 'live-shopping is an included advertiser placement (in the value stack)');
 check(/livestream_social_amplification/.test(advFeat), 'livestream→member-social-feeds is an included advertiser placement');
+// both surface as counsel-gated ("included — activates after counsel sign-off") and total $13k
+const lsm = /live_shopping_placement"[^}]*base_value_usd:\s*(\d+)[^}]*status:\s*"(\w+)"/.exec(advFeat);
+const lsa = /livestream_social_amplification"[^}]*base_value_usd:\s*(\d+)[^}]*status:\s*"(\w+)"/.exec(advFeat);
+check(!!lsm && lsm[2] === 'counsel', 'live-shopping placement is status "counsel" (shows "activates after counsel sign-off")');
+check(!!lsa && lsa[2] === 'counsel', 'social-amplification placement is status "counsel"');
+check(!!lsm && !!lsa && (Number(lsm[1]) + Number(lsa[1])) === 13000, `the two livestream placements total $${lsm && lsa ? (Number(lsm[1]) + Number(lsa[1])).toLocaleString() : '?'} of included value`);
+check(/included_features/.test(read('src/pages/FeaturePMF.jsx')) && /readiness/.test(read('src/pages/FeaturePMF.jsx')), 'advertiser value-stack table renders each feature with its readiness note');
 check(/sessionSocialAnnounce/.test(mani), 'sessionSocialAnnounce registered (live session → member social feeds)');
 const annSrc = read('backend/functions/sessionSocialAnnounce/entry.ts');
 check(/socialPostContribution/.test(annSrc) && /withAdDisclosure/.test(annSrc), 'social announce reuses the amplification path (#ad, reach→delivered value)');
