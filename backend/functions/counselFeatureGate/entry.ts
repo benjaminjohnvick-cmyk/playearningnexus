@@ -59,6 +59,10 @@ const LEGAL_BRIEFS: Record<string, string> = {
   // disclosure, affiliate-network terms, and (for the browsing layer) privacy/profiling consent all apply.
   EXTENSION_ENABLED: "BROWSER-EXTENSION-ATTENTION-REWARDS-DESIGN.md",
   EXTENSION_TRACKING_ENABLED: "BROWSER-EXTENSION-ATTENTION-REWARDS-DESIGN.md",
+  // Buddy Chat next-session booking (schedules members to meet again at a set time; matches strangers, holds the
+  // next session until the booked time). Pairing-safety, voice-note consent, minors, mandatory pairing,
+  // moderation/mandatory-reporting, data retention and notification consent all apply — see the brief.
+  BUDDY_NEXT_SESSION_BOOKING_ENABLED: "BUDDY-CHAT-LEGAL-BRIEF.md",
 };
 
 export default __handler(async (req) => {
