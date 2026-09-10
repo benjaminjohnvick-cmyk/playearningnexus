@@ -153,15 +153,15 @@ export default function PPCNetworkPricing() {
           <CardContent className="p-6">
             <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-yellow-600" />
-              The 2× ROI Guarantee
+              The 2× Value Guarantee
             </h3>
             <div className="bg-yellow-400 rounded-xl p-4 mb-4">
-              <p className="font-black text-gray-900">We keep advertising until you double your ROI</p>
-              <p className="text-sm text-gray-800 mt-1">$5,000/year → we guarantee at least $10,000 in orders (2× your investment)</p>
+              <p className="font-black text-gray-900">We keep advertising until you've received at least 2× your spend in advertising value</p>
+              <p className="text-sm text-gray-800 mt-1">$5,000/year → at least $10,000 in delivered advertising value (2× your spend), value-matched to what you pay — not a guarantee of orders, revenue, or ROI</p>
             </div>
             <ul className="space-y-2">
               {[
-                'Get Goods Gratis (Free) continues to run your ads at no extra charge until 2× ROI is reached',
+                'Get Goods Gratis (Free) continues to run your ads at no extra charge until 2× the value is delivered',
                 'Tracking and reporting provided in real time',
                 'Guaranteed reach to ALL active platform users',
                 'AI-optimized ad placement for maximum engagement',

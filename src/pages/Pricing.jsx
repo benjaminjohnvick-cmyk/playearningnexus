@@ -49,8 +49,8 @@ export default function Pricing() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-6">
             <ShieldCheck className="w-10 h-10 text-yellow-800 mx-auto mb-2" />
-            <h2 className="text-2xl font-black text-gray-900">The Get Goods Gratis (Free) Double Guarantee</h2>
-            <p className="text-gray-700 text-sm mt-1">We don't stop working until you've won — twice. Applies to both paid business tiers.</p>
+            <h2 className="text-2xl font-black text-gray-900">The Get Goods Gratis (Free) Double Value Guarantee</h2>
+            <p className="text-gray-700 text-sm mt-1">We keep delivering advertising value until you've received at least twice your spend — value delivered, not a promise of your revenue or return. Applies to both paid business tiers.</p>
             <p className="text-gray-700 text-sm mt-1 font-semibold">💸 Developers can pay for either tier using their Get Goods Gratis (Free) developer earnings — zero out-of-pocket.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
@@ -63,15 +63,15 @@ export default function Pricing() {
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <Star className="w-4 h-4 text-yellow-500 flex-shrink-0" />
-                    <span>We work until you earn <strong>{g.roi}</strong> in ROI (2× your investment)</span>
+                    <span>We deliver at least <strong>{g.roi}</strong> in advertising value (2× your spend)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Star className="w-4 h-4 text-yellow-500 flex-shrink-0" />
-                    <span>PLUS <strong>{g.ads}</strong> in FREE AI platform advertising (additional 2×)</span>
+                    <span>PLUS <strong>{g.ads}</strong> in FREE AI platform advertising (an additional 2× in value)</span>
                   </div>
                   <div className="mt-2 bg-yellow-50 rounded-lg p-2 text-center">
                     <p className="font-black text-yellow-800">{g.total}</p>
-                    <p className="text-xs text-gray-500">guaranteed delivered value</p>
+                    <p className="text-[11px] text-gray-500">Advertising value delivered — at least what you pay, value-matched to your spend. Any shortfall is met with guaranteed bonus inventory. Not a revenue or ROI guarantee.</p>
                   </div>
                 </div>
               </div>
@@ -145,7 +145,7 @@ export default function Pricing() {
                     🏆 Paid Business Tiers
                   </Badge>
                   <h2 className="text-3xl md:text-4xl font-black mb-3">What Everything Costs — Paid Tiers</h2>
-                  <p className="text-purple-200 max-w-2xl mx-auto">Both paid tiers include AppLovin-style AI ad mediation, user acquisition campaigns, a $3,000/yr platform subscription + PPC survey ads. Backed by our ironclad 2× Double Guarantee.</p>
+                  <p className="text-purple-200 max-w-2xl mx-auto">Both paid tiers include AppLovin-style AI ad mediation, user acquisition campaigns, a $3,000/yr platform subscription + PPC survey ads. Backed by our 2× value-delivered guarantee — advertising value matched to your spend, never a revenue or ROI promise.</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-10">
@@ -251,8 +251,8 @@ export default function Pricing() {
                 <div className="bg-yellow-400 rounded-2xl p-8 text-gray-900">
                   <div className="text-center mb-6">
                     <ShieldCheck className="w-12 h-12 text-yellow-800 mx-auto mb-3" />
-                    <h3 className="text-2xl font-black">The Get Goods Gratis (Free) Double Guarantee</h3>
-                    <p className="text-gray-700 mt-1">We don't stop working until you've won — twice.</p>
+                    <h3 className="text-2xl font-black">The Get Goods Gratis (Free) Double Value Guarantee</h3>
+                    <p className="text-gray-700 mt-1">We keep delivering advertising value until you've received at least twice your spend — value delivered, not a revenue or ROI guarantee.</p>
                     <p className="text-gray-700 mt-1 font-semibold text-sm">💸 Developers: pay for either tier directly from your Get Goods Gratis (Free) developer earnings — no out-of-pocket required.</p>
                   </div>
                   <div className="grid md:grid-cols-2 gap-6">
@@ -265,15 +265,15 @@ export default function Pricing() {
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center gap-2">
                             <Star className="w-4 h-4 text-yellow-500" />
-                            <span>We work until you earn <strong>{g.roi}</strong> in measurable ROI (2× your investment)</span>
+                            <span>We deliver at least <strong>{g.roi}</strong> in measured advertising value (2× your spend)</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Star className="w-4 h-4 text-yellow-500" />
-                            <span>PLUS <strong>{g.ads}</strong> in FREE AI platform advertising (an additional 2×)</span>
+                            <span>PLUS <strong>{g.ads}</strong> in FREE AI platform advertising (an additional 2× in value)</span>
                           </div>
                           <div className="mt-3 bg-yellow-50 rounded-lg p-3 text-center">
                             <p className="font-black text-yellow-800 text-lg">{g.total}</p>
-                            <p className="text-xs text-gray-500">guaranteed delivered value</p>
+                            <p className="text-[11px] text-gray-500">Advertising value delivered — at least what you pay, value-matched to your spend. Any shortfall is met with guaranteed bonus inventory. Not a revenue or ROI guarantee.</p>
                           </div>
                         </div>
                       </div>

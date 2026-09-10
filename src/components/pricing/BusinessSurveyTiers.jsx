@@ -105,7 +105,7 @@ const tiers = [
         ],
       },
     ],
-    highlight: '2× ROI guarantee on product surveys. Data collection survey fees ($0.95/response) completely waived. Pay from earnings.',
+    highlight: '2× value guarantee on product surveys — at least 2× your spend in delivered value, value-matched to what you pay (not a revenue or ROI promise). Data collection survey fees ($0.95/response) completely waived. Pay from earnings.',
     guarantee: true,
   },
 ];

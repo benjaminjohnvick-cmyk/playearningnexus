@@ -23,7 +23,7 @@ const TIERS = [
     price: '$0/mo',
     rev_share: '25%',
     earnout_multiple: '4x',
-    guarantee: 'We work with you until you earn 2x your setup cost',
+    guarantee: 'We deliver at least 2x your setup cost in value (value-matched to your spend; not a revenue or ROI guarantee)',
     features: [
       'Full white-label branding',
       'Up to 1,000 users',
@@ -41,7 +41,7 @@ const TIERS = [
     price: '$0/mo',
     rev_share: '25%',
     earnout_multiple: '4x',
-    guarantee: 'We work with you until you earn 2x your setup cost',
+    guarantee: 'We deliver at least 2x your setup cost in value (value-matched to your spend; not a revenue or ROI guarantee)',
     features: [
       'Everything in Starter',
       'Up to 10,000 users',
@@ -60,7 +60,7 @@ const TIERS = [
     price: '$0/mo',
     rev_share: '25%',
     earnout_multiple: '4x',
-    guarantee: 'We work with you until you earn 2x your setup cost',
+    guarantee: 'We deliver at least 2x your setup cost in value (value-matched to your spend; not a revenue or ROI guarantee)',
     features: [
       'Everything in Growth',
       'Unlimited users',
@@ -120,7 +120,7 @@ Tier: ${TIERS[selectedTier].name}
 Domain: ${form.domain || 'pending setup'}
 Revenue share: 25% of all survey revenue
 Earn-out option: 4x revenue multiple buyout available
-Guarantee: We work with them until they earn 2x what they invested
+Guarantee: we deliver at least 2x what they invested in value, value-matched to their spend (not a revenue or ROI guarantee)
 
 Provide 3 quick wins they can do in the first 30 days to start earning.
 Keep it under 150 words, friendly tone.`,
@@ -455,7 +455,7 @@ Keep it under 150 words, friendly tone.`,
                 <CardContent className="pt-6">
                   <Shield className="w-8 h-8 text-emerald-400 mb-2" />
                   <h4 className="text-white font-bold">Guarantee Active</h4>
-                  <p className="text-emerald-300 text-sm mt-1">We work with you until you earn 2x your investment. No exceptions.</p>
+                  <p className="text-emerald-300 text-sm mt-1">We deliver at least 2x your investment in value, value-matched to your spend — advertising/platform value delivered, not a revenue or ROI guarantee.</p>
                 </CardContent>
               </Card>
               <Card className="bg-amber-900/40 border-amber-600">
