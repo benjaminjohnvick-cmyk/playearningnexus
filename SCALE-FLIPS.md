@@ -17,16 +17,20 @@ Every read in the app already routes through the data layer's `withReadClient`, 
 is set and **falls back to the primary automatically if the replica is unreachable**. Writes always go to the
 primary. Nothing else to change.
 
-- Provision a read replica of your primary Postgres (Railway/Neon/RDS all offer this in a click or two).
+- **Railway does NOT offer managed read replicas** (its HA replicas are failover-only — no read endpoint). If
+  your Postgres is on Railway, the practical path is to move it to a provider with instant read replicas —
+  **Neon** (one-click read replica, gives a separate read connection string) or **RDS** — when read volume
+  actually demands it. See the runbook (`INFRA-PROVISIONING-RUNBOOK.md`, Part B).
 - Optional: `PG_REPLICA_POOL_SIZE` (defaults to `PG_POOL_SIZE`).
 - Caveat: replica lag is eventual. The app tolerates this (reads are list/dashboard/leaderboard paths); it's the
   standard read-replica tradeoff, not a bug.
+- Lowest-priority lever: only pays off once reads actually strain the primary — likely not pre-launch.
 
 ## 2. LiveKit SFU autoscale — nodes scale with live viewers, to zero at idle
 
-**Set:** `LIVEKIT_SCALE_PROVIDER` **and** either the Railway target (`RAILWAY_TOKEN` +
-`RAILWAY_SERVICE_ID` + `RAILWAY_ENVIRONMENT_ID`) **or** a node-pool `LIVEKIT_SCALE_WEBHOOK_URL`
-(+ `LIVEKIT_SCALE_WEBHOOK_SECRET`). The controller (`LIVEKIT_SCALE_ENABLED`) is **on by default** and scheduled
+**Set:** `LIVEKIT_SCALE_PROVIDER=railway` **and** the Railway target (`RAILWAY_TOKEN` +
+`LIVEKIT_RAILWAY_SERVICE_ID` + `LIVEKIT_RAILWAY_ENVIRONMENT_ID`) **or** `LIVEKIT_SCALE_PROVIDER=webhook` + a
+node-pool `LIVEKIT_SCALE_WEBHOOK_URL` (+ `LIVEKIT_SCALE_WEBHOOK_SECRET`). The controller (`LIVEKIT_SCALE_ENABLED`) is **on by default** and scheduled
 every minute — it simply no-ops until a provider + target are set. Optional tuning:
 `LIVEKIT_SCALE_VIEWERS_PER_NODE`, `LIVEKIT_SCALE_MIN_NODES` / `LIVEKIT_SCALE_MAX_NODES`,
 `LIVEKIT_SCALE_MONTHLY_BUDGET_USD`.
