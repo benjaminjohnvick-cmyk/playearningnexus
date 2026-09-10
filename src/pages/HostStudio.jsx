@@ -17,6 +17,7 @@ export default function HostStudio() {
   const [err, setErr] = useState('');
   const [viewers, setViewers] = useState(0);
   const [room, setRoom] = useState('');
+  const [limits, setLimits] = useState(null);
   const [product, setProduct] = useState({ name: '', price: '', url: '' });
   const roomRef = useRef(null);
   const previewRef = useRef(null);
@@ -58,7 +59,17 @@ export default function HostStudio() {
       lkRoom.on(LK.RoomEvent.Disconnected, () => { setPhase('idle'); setViewers(0); });
 
       await lkRoom.connect(d.url, d.token);
-      await lkRoom.localParticipant.setScreenShareEnabled(true); // prompts the OS screen picker
+      // Honor the server cost-floor caps (bitrate/resolution/framerate) so a screen-share never generates more
+      // egress than allowed. simulcast:false keeps a single low-bitrate layer — cheapest for a storefront share.
+      const lim = d.limits || {};
+      setLimits(lim.cap ? lim : null);
+      const captureOptions = lim.cap
+        ? { resolution: { width: lim.max_width || 640, height: lim.max_height || 360, frameRate: lim.max_framerate || 15 } }
+        : undefined;
+      const publishOptions = lim.cap
+        ? { simulcast: false, videoEncoding: { maxBitrate: (lim.max_bitrate_kbps || 800) * 1000, maxFramerate: lim.max_framerate || 15 } }
+        : undefined;
+      await lkRoom.localParticipant.setScreenShareEnabled(true, captureOptions, publishOptions); // prompts the OS screen picker
       // Local preview of what you're sharing
       const pub = lkRoom.localParticipant.getTrackPublication?.(LK.Track.Source.ScreenShare);
       const track = pub?.videoTrack || pub?.track;
@@ -135,6 +146,11 @@ export default function HostStudio() {
               <span className="flex items-center gap-1.5 text-sm text-gray-600"><Users className="w-4 h-4" /> {viewers} watching</span>
               <Button size="sm" variant="destructive" className="gap-1" onClick={endLive}><X className="w-4 h-4" /> End</Button>
             </div>
+            {limits && (
+              <div className="px-3 pb-2 -mt-1 text-[11px] text-gray-400">
+                Cost-saver: {Math.round(limits.max_bitrate_kbps)} kbps · {limits.max_width}×{limits.max_height} · {limits.max_framerate} fps · up to {limits.max_viewers} viewers (~{limits.gb_per_viewer_hour} GB/viewer-hr)
+              </div>
+            )}
           </CardContent></Card>
 
           <Card><CardContent className="p-4">

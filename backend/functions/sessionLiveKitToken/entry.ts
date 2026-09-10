@@ -2,6 +2,7 @@ import { create, getNumericDate } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { snapBool } from "../../sdk/settings.ts";
+import { hostingFloor } from "../../sdk/cost-floor.ts";
 
 // sessionLiveKitToken — mints a LiveKit access token (HS256 JWT) so a member can join a hosted-session room on
 // YOUR self-hosted LiveKit SFU. The SFU (battle-tested clients + server) does the real WebRTC/NAT/scale work, so
@@ -17,6 +18,13 @@ async function livekitKey(secret: string): Promise<CryptoKey> {
     "raw", new TextEncoder().encode(secret),
     { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"],
   );
+}
+
+// The cost-floor encoding limits the client must honor when it publishes its screen share.
+function floorLimits(f: ReturnType<typeof hostingFloor>) {
+  return f.mode
+    ? { cap: true, max_bitrate_kbps: f.maxBitrateKbps, max_width: f.maxWidth, max_height: f.maxHeight, max_framerate: f.maxFramerate, max_viewers: f.maxViewersPerRoom, gb_per_viewer_hour: Number(f.gbPerViewerHour.toFixed(3)) }
+    : { cap: false };
 }
 
 export default __handler(async (req) => {
@@ -49,6 +57,10 @@ export default __handler(async (req) => {
       }
     }
 
+    // Cost-floor caps (bitrate/resolution/framerate/room size) — live by default, returned so the client
+    // encodes at the floor and no session generates more egress than allowed. See cost-floor.ts.
+    const floor = hostingFloor();
+
     // Register the hosted session so the live-shopping order path (liveShoppingOrder) and reward validation can
     // find it. A host session where live shopping is enabled is tagged as a live-shopping/retail session.
     if (role === "host") {
@@ -60,6 +72,20 @@ export default __handler(async (req) => {
           content_type: contentType, transport: "livekit", status: "active",
           monetization: snapBool("HOSTING_LIVE_SHOPPING_ENABLED", false) ? "live_shopping_5050" : "none",
         }).catch(() => null);
+      }
+    }
+
+    // Enforce the per-room viewer cap (floor lever): count viewer tokens already minted for this room and refuse
+    // to admit more than HOSTING_MAX_VIEWERS_PER_ROOM. Best-effort (tracked on the GameSession row).
+    if (role === "viewer" && floor.mode) {
+      const sess = (await base44.asServiceRole.entities.GameSession
+        .filter({ session_id: room }).catch(() => []))[0];
+      const current = Number(sess?.viewer_tokens ?? 0);
+      if (current >= floor.maxViewersPerRoom) {
+        return Response.json({ ok: false, room_full: true, error: `Room is at capacity (${floor.maxViewersPerRoom} viewers).`, limits: floorLimits(floor) }, { status: 409 });
+      }
+      if (sess?.id) {
+        await base44.asServiceRole.entities.GameSession.update(sess.id, { viewer_tokens: current + 1 }).catch(() => null);
       }
     }
 
@@ -80,7 +106,7 @@ export default __handler(async (req) => {
       await livekitKey(apiSecret),
     );
 
-    return Response.json({ ok: true, enabled: true, configured: true, token, url, identity, name, room, role, can_publish: canPublish });
+    return Response.json({ ok: true, enabled: true, configured: true, token, url, identity, name, room, role, can_publish: canPublish, limits: floorLimits(floor) });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });
   }
