@@ -24,8 +24,11 @@ Plug-and-play setup guide for provisioning the Get Goods Gratis backend on **Rai
 
 - **Add now (required to charge cards):** Stripe, PayPal.
 - **Already live (free tier, $0):** Groq, Cloudflare Workers AI, Cloudflare R2, Brevo email.
-- **Optional levers:** OpenAI/Anthropic (AI fallback), BitLabs (survey wall), Twilio (SMS),
-  AWS (alt email/voice/image), product-feed/affiliate, Redis (shared cache), Neon (read replica).
+- **Survey providers (supply networks, 11):** BitLabs (live) plus CPX Research, TheoremReach, Pollfish,
+  InBrain.ai, TapResearch, Cint (Lucid), AdGate, ayeT-Studios, Revlum, Prodege — each auto-activates when its
+  API key is set (`PROVIDER_<NAME>_ENABLED` defaults on). More networks = more survey supply / earning hours.
+- **Optional levers:** OpenAI/Anthropic (AI fallback), Twilio (SMS), AWS (alt email/voice/image),
+  product-feed/affiliate, Redis (shared cache), Neon (read replica).
 
 ## PayPal secret — one canonical name
 

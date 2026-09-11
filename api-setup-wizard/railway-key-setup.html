@@ -171,7 +171,7 @@
   <section id="directory">
     <div class="sec-head">
       <h3>All APIs at a glance</h3>
-      <span class="count">13 services · 2 required, rest optional</span>
+      <span class="count">12 rows · 2 required · 11 survey networks in their own section</span>
     </div>
     <p class="lead">Every third-party service the backend integrates with. <span class="st add" style="font-family:inherit">Add now</span> = required to charge cards. <span class="st done" style="font-family:inherit">Live</span> = already set and free. <span class="st opt" style="font-family:inherit">Optional</span> = adds a capability but nothing breaks without it.</p>
     <div class="dirwrap">
@@ -185,7 +185,7 @@
           <tr><td class="api"><a href="#r2">Cloudflare R2</a></td><td class="powers">Media/video storage + CDN playback</td><td class="cost">$0 free</td><td><span class="st done">live</span></td></tr>
           <tr><td class="api"><a href="#brevo">Brevo</a></td><td class="powers">Transactional email</td><td class="cost">$0 / 300 day</td><td><span class="st done">live</span></td></tr>
           <tr><td class="api"><a href="#openai">OpenAI / Anthropic</a></td><td class="powers">AI fallback if Groq is down</td><td class="cost">usage</td><td><span class="st opt">optional</span></td></tr>
-          <tr><td class="api"><a href="#bitlabs">BitLabs</a></td><td class="powers">Third-party survey wall (extra earnings)</td><td class="cost">rev-share</td><td><span class="st opt">optional</span></td></tr>
+          <tr><td class="api"><a href="#surveys">Survey networks ×11</a></td><td class="powers">Third-party survey supply — BitLabs live + 10 more to switch on</td><td class="cost">rev-share</td><td><span class="st done">1 live</span></td></tr>
           <tr><td class="api"><a href="#twilio">Twilio</a></td><td class="powers">SMS notifications / phone verification</td><td class="cost">usage</td><td><span class="st opt">optional</span></td></tr>
           <tr><td class="api"><a href="#aws">AWS (SES / Polly / Bedrock)</a></td><td class="powers">Alt email, voice, image provider</td><td class="cost">usage</td><td><span class="st opt">optional</span></td></tr>
           <tr><td class="api"><a href="#feed">Product-feed / affiliate</a></td><td class="powers">Assistant searches beyond your catalog</td><td class="cost">varies</td><td><span class="st opt">optional</span></td></tr>
@@ -324,6 +324,172 @@
     </div>
   </section>
 
+  <!-- SECTION: SURVEY PROVIDERS -->
+  <section id="surveys">
+    <div class="sec-head">
+      <h3>Survey providers — supply networks</h3><span class="pill done">1 live · 10 ready</span>
+      <span class="count">11 networks · more supply = more earning hours</span>
+    </div>
+    <p class="lead">The member survey wall is fed by a <b>multi-provider supply registry</b> (<span class="mono">survey-providers.ts</span>). BitLabs is live at launch; the other ten are wired and dormant. Each network's enable flag (<span class="mono">PROVIDER_&lt;NAME&gt;_ENABLED</span>) defaults <b>on</b>, so a provider <b>auto-activates the moment its API key is set</b> — no flag flip needed. To hold one off even with a key present, set its flag to <span class="mono">0</span>. Keys live in env/DB, never in a URL.</p>
+
+    <div class="note"><b>These are revenue, not cost.</b> Survey networks pay you rev-share on completed surveys — adding keys turns on more inventory (more surveys available to members), it doesn't add a bill. Onboarding each one means applying as a publisher and getting approved.</div>
+
+    <div class="raw">
+      <div class="top"><span class="lbl"># Survey providers — Railway raw block</span>
+        <button class="copy" data-copy="surv">Copy block</button></div>
+      <pre id="raw-surv"><span class="c"># BitLabs — LIVE default network (API token + postback secret)</span>
+<span class="k">BITLABS_API_KEY</span>=REPLACE_ME
+<span class="k">BITLABS_WEBHOOK_SECRET</span>=REPLACE_ME
+<span class="c"># --- add any below to switch on more supply (auto-activates once its key is set) ---</span>
+<span class="c"># CPX Research (needs both)</span>
+<span class="k">CPX_APP_ID</span>=REPLACE_ME
+<span class="k">CPX_SECRET</span>=REPLACE_ME
+<span class="k">THEOREMREACH_API_KEY</span>=REPLACE_ME
+<span class="k">POLLFISH_API_KEY</span>=REPLACE_ME
+<span class="k">INBRAIN_API_KEY</span>=REPLACE_ME
+<span class="k">TAPRESEARCH_API_KEY</span>=REPLACE_ME
+<span class="k">CINT_API_KEY</span>=REPLACE_ME
+<span class="k">ADGATE_API_KEY</span>=REPLACE_ME
+<span class="k">AYET_API_KEY</span>=REPLACE_ME
+<span class="k">REVLUM_API_KEY</span>=REPLACE_ME
+<span class="k">PRODEGE_API_KEY</span>=REPLACE_ME</pre>
+    </div>
+
+    <div class="rows" style="margin-top:14px">
+      <!-- BITLABS (live) -->
+      <label class="row done"><input type="checkbox" class="chk" data-id="BITLABS" checked><div class="body">
+        <div class="name"><span class="var">BITLABS_API_KEY</span> · <span class="var">BITLABS_WEBHOOK_SECRET</span><button class="copy" data-copy-text="BITLABS_API_KEY">Copy</button></div>
+        <div class="meta"><b>Live — launch network.</b> Flag <span class="mono">PROVIDER_BITLABS_ENABLED</span> (on). <a href="https://www.bitlabs.ai" target="_blank" rel="noopener">bitlabs.ai</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — BitLabs publisher keys</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Apply for a <b>publisher</b> account at <a href="https://www.bitlabs.ai" target="_blank" rel="noopener">bitlabs.ai</a>; create an app/placement once approved.</li>
+            <li>Copy the app's <b>API token</b> → <span class="mono">BITLABS_API_KEY</span> (the backend also accepts <span class="mono">BITLABS_API_TOKEN</span> / <span class="mono">BITLABS_APP_TOKEN</span>).</li>
+            <li>Set a <b>postback/callback secret</b> and point BitLabs' reward callback at your app's BitLabs webhook → <span class="mono">BITLABS_WEBHOOK_SECRET</span> (this is how completed surveys credit the member securely).</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- CPX -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="CPX"><div class="body">
+        <div class="name"><span class="var">CPX_APP_ID</span> · <span class="var">CPX_SECRET</span><button class="copy" data-copy-text="CPX_APP_ID">Copy</button></div>
+        <div class="meta">CPX Research offerwall. Needs <b>both</b> values. Flag <span class="mono">PROVIDER_CPX_ENABLED</span>. <a href="https://publisher.cpx-research.com" target="_blank" rel="noopener">cpx-research.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — CPX Research</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Register as a publisher at <a href="https://publisher.cpx-research.com" target="_blank" rel="noopener">CPX Research</a> and create an app.</li>
+            <li>Copy the <b>App ID</b> → <span class="mono">CPX_APP_ID</span> and the <b>secure-hash secret</b> → <span class="mono">CPX_SECRET</span>.</li>
+            <li>Set the postback/redirect URL in the CPX dashboard to your app's CPX callback. It activates once both values are set.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- THEOREMREACH -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="THEOREMREACH"><div class="body">
+        <div class="name"><span class="var">THEOREMREACH_API_KEY</span><button class="copy" data-copy-text="THEOREMREACH_API_KEY">Copy</button></div>
+        <div class="meta">TheoremReach offerwall. Flag <span class="mono">PROVIDER_THEOREMREACH_ENABLED</span>. <a href="https://theoremreach.com" target="_blank" rel="noopener">theoremreach.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — TheoremReach</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Sign up as a publisher at <a href="https://theoremreach.com" target="_blank" rel="noopener">theoremreach.com</a> and create an app.</li>
+            <li>Copy the app's <b>API key</b> → <span class="mono">THEOREMREACH_API_KEY</span>.</li>
+            <li>Set the reward-callback URL in their dashboard to your app's TheoremReach webhook.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- POLLFISH -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="POLLFISH"><div class="body">
+        <div class="name"><span class="var">POLLFISH_API_KEY</span><button class="copy" data-copy-text="POLLFISH_API_KEY">Copy</button></div>
+        <div class="meta">Pollfish API supply. Flag <span class="mono">PROVIDER_POLLFISH_ENABLED</span>. <a href="https://www.pollfish.com" target="_blank" rel="noopener">pollfish.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — Pollfish</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Create a publisher account at <a href="https://www.pollfish.com" target="_blank" rel="noopener">pollfish.com</a> and register your app.</li>
+            <li>Copy the <b>API key</b> from the dashboard → <span class="mono">POLLFISH_API_KEY</span>.</li>
+            <li>Configure the reward callback to your app's Pollfish webhook. Activates once the key is set.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- INBRAIN -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="INBRAIN"><div class="body">
+        <div class="name"><span class="var">INBRAIN_API_KEY</span><button class="copy" data-copy-text="INBRAIN_API_KEY">Copy</button></div>
+        <div class="meta">InBrain.ai offerwall. Flag <span class="mono">PROVIDER_INBRAIN_ENABLED</span>. <a href="https://inbrain.ai" target="_blank" rel="noopener">inbrain.ai</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — InBrain.ai</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Apply as a publisher at <a href="https://inbrain.ai" target="_blank" rel="noopener">inbrain.ai</a>; create an app once approved.</li>
+            <li>Copy the app's <b>API key / client secret</b> → <span class="mono">INBRAIN_API_KEY</span>.</li>
+            <li>Set the reward callback in their dashboard to your app's InBrain webhook.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- TAPRESEARCH -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="TAPRESEARCH"><div class="body">
+        <div class="name"><span class="var">TAPRESEARCH_API_KEY</span><button class="copy" data-copy-text="TAPRESEARCH_API_KEY">Copy</button></div>
+        <div class="meta">TapResearch offerwall. Flag <span class="mono">PROVIDER_TAPRESEARCH_ENABLED</span>. <a href="https://www.tapresearch.com" target="_blank" rel="noopener">tapresearch.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — TapResearch</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Sign up as a publisher at <a href="https://www.tapresearch.com" target="_blank" rel="noopener">tapresearch.com</a> and add your app.</li>
+            <li>Copy the <b>API token</b> → <span class="mono">TAPRESEARCH_API_KEY</span>.</li>
+            <li>Point the reward callback at your app's TapResearch webhook.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- CINT -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="CINT"><div class="body">
+        <div class="name"><span class="var">CINT_API_KEY</span><button class="copy" data-copy-text="CINT_API_KEY">Copy</button></div>
+        <div class="meta">Cint / Lucid Marketplace API — large enterprise supply for scale. Flag <span class="mono">PROVIDER_CINT_ENABLED</span>. <a href="https://www.cint.com" target="_blank" rel="noopener">cint.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — Cint (Lucid)</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Onboard as a supply partner with <a href="https://www.cint.com" target="_blank" rel="noopener">Cint</a> (this is a sales/contract process — enterprise).</li>
+            <li>Once granted marketplace API access, copy your <b>API key</b> → <span class="mono">CINT_API_KEY</span>.</li>
+            <li>Configure the entry/callback URLs per their integration guide.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- ADGATE -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="ADGATE"><div class="body">
+        <div class="name"><span class="var">ADGATE_API_KEY</span><button class="copy" data-copy-text="ADGATE_API_KEY">Copy</button></div>
+        <div class="meta">AdGate Media offerwall. Flag <span class="mono">PROVIDER_ADGATE_ENABLED</span>. <a href="https://adgatemedia.com" target="_blank" rel="noopener">adgatemedia.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — AdGate Media</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Apply as a publisher at <a href="https://adgatemedia.com" target="_blank" rel="noopener">adgatemedia.com</a> and create a wall/tool.</li>
+            <li>Copy the <b>API key</b> → <span class="mono">ADGATE_API_KEY</span>.</li>
+            <li>Set the postback URL to your app's AdGate callback.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- AYET -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="AYET"><div class="body">
+        <div class="name"><span class="var">AYET_API_KEY</span><button class="copy" data-copy-text="AYET_API_KEY">Copy</button></div>
+        <div class="meta">ayeT-Studios offerwall. Flag <span class="mono">PROVIDER_AYET_ENABLED</span>. <a href="https://www.ayetstudios.com" target="_blank" rel="noopener">ayetstudios.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — ayeT-Studios</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Register as a publisher at <a href="https://www.ayetstudios.com" target="_blank" rel="noopener">ayetstudios.com</a> and add a placement.</li>
+            <li>Copy the <b>API key</b> → <span class="mono">AYET_API_KEY</span>.</li>
+            <li>Set the reward callback to your app's ayeT webhook.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- REVLUM -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="REVLUM"><div class="body">
+        <div class="name"><span class="var">REVLUM_API_KEY</span><button class="copy" data-copy-text="REVLUM_API_KEY">Copy</button></div>
+        <div class="meta">Revlum offerwall. Flag <span class="mono">PROVIDER_REVLUM_ENABLED</span>. <a href="https://revlum.com" target="_blank" rel="noopener">revlum.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — Revlum</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Sign up as a publisher at <a href="https://revlum.com" target="_blank" rel="noopener">revlum.com</a> and create an offerwall.</li>
+            <li>Copy the <b>API key</b> → <span class="mono">REVLUM_API_KEY</span>.</li>
+            <li>Set the postback URL to your app's Revlum callback.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- PRODEGE -->
+      <label class="row opt"><input type="checkbox" class="chk" data-id="PRODEGE"><div class="body">
+        <div class="name"><span class="var">PRODEGE_API_KEY</span><button class="copy" data-copy-text="PRODEGE_API_KEY">Copy</button></div>
+        <div class="meta">Prodege (MySoapbox / Swagbucks) API supply. Flag <span class="mono">PROVIDER_PRODEGE_ENABLED</span>. <a href="https://www.prodege.com" target="_blank" rel="noopener">prodege.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — Prodege</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Onboard as a supply/publisher partner with <a href="https://www.prodege.com" target="_blank" rel="noopener">Prodege</a> (sales/contract process).</li>
+            <li>Once granted API access, copy your <b>API key</b> → <span class="mono">PRODEGE_API_KEY</span>.</li>
+            <li>Configure the reward callback per their integration docs.</li>
+          </ol></div>
+        </details></div></label>
+    </div>
+  </section>
+
   <!-- SECTION: OPTIONAL -->
   <section id="optional">
     <div class="sec-head">
@@ -341,9 +507,6 @@
 <span class="k">AI_DAILY_SPEND_CAP_USD</span>=5
 <span class="c"># AI fallback if Groq is ever down (Groq stays primary, $0)</span>
 <span class="k">OPENAI_API_KEY</span>=sk-REPLACE_ME
-<span class="c"># BitLabs third-party survey wall (extra earning source)</span>
-<span class="k">BITLABS_API_KEY</span>=REPLACE_ME
-<span class="k">BITLABS_WEBHOOK_SECRET</span>=REPLACE_ME
 <span class="c"># Twilio SMS (notifications / phone verification)</span>
 <span class="k">TWILIO_ACCOUNT_SID</span>=REPLACE_ME
 <span class="k">TWILIO_AUTH_TOKEN</span>=REPLACE_ME
@@ -375,18 +538,6 @@
           <div class="steps-body"><ol class="stepslist">
             <li><b>OpenAI:</b> go to <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>, sign in, <b>Create new secret key</b>, copy it (<span class="mono">sk-…</span>) → <span class="mono">OPENAI_API_KEY</span>. Add a small billing balance so the fallback can actually fire.</li>
             <li><b>Anthropic (alternative):</b> go to <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → <b>API Keys → Create Key</b> → <span class="mono">ANTHROPIC_API_KEY</span>. Set either one, not both.</li>
-          </ol></div>
-        </details></div></label>
-
-      <!-- BITLABS -->
-      <label class="row opt" id="bitlabs"><input type="checkbox" class="chk" data-id="BITLABS"><div class="body">
-        <div class="name"><span class="var">BITLABS_API_KEY</span> · <span class="var">BITLABS_WEBHOOK_SECRET</span><button class="copy" data-copy-text="BITLABS_API_KEY">Copy</button></div>
-        <div class="meta">A third-party survey wall — an extra earning source for members on top of your own surveys. <a href="https://www.bitlabs.ai" target="_blank" rel="noopener">bitlabs.ai</a></div>
-        <details class="steps"><summary><span class="chev">›</span> Step-by-step — BitLabs publisher keys</summary>
-          <div class="steps-body"><ol class="stepslist">
-            <li>Apply for a <b>publisher</b> account at <a href="https://www.bitlabs.ai" target="_blank" rel="noopener">bitlabs.ai</a> and create an app/placement once approved.</li>
-            <li>In the publisher dashboard, copy your app's <b>API token</b> → <span class="mono">BITLABS_API_KEY</span>.</li>
-            <li>Set a <b>callback/postback secret</b> and point BitLabs' reward callback at your app's BitLabs webhook URL → <span class="mono">BITLABS_WEBHOOK_SECRET</span> (this is how completed surveys credit the member securely).</li>
           </ol></div>
         </details></div></label>
 
@@ -481,15 +632,28 @@ PAYPAL_ENV=sandbox
 # needed for PayPal return/cancel redirects + optional payout receiver:
 PUBLIC_SITE_URL=https://yourdomain.com
 PAYPAL_BUSINESS_EMAIL=you@business.com`,
+    surv: `# BitLabs — LIVE default network (API token + postback secret)
+BITLABS_API_KEY=REPLACE_ME
+BITLABS_WEBHOOK_SECRET=REPLACE_ME
+# --- add any below to switch on more supply (auto-activates once its key is set) ---
+# CPX Research (needs both)
+CPX_APP_ID=REPLACE_ME
+CPX_SECRET=REPLACE_ME
+THEOREMREACH_API_KEY=REPLACE_ME
+POLLFISH_API_KEY=REPLACE_ME
+INBRAIN_API_KEY=REPLACE_ME
+TAPRESEARCH_API_KEY=REPLACE_ME
+CINT_API_KEY=REPLACE_ME
+ADGATE_API_KEY=REPLACE_ME
+AYET_API_KEY=REPLACE_ME
+REVLUM_API_KEY=REPLACE_ME
+PRODEGE_API_KEY=REPLACE_ME`,
     opt: `# Turn on the cost-floor watchdog
 COST_WATCHDOG_ENABLED=1
 # AI runaway brake
 AI_DAILY_SPEND_CAP_USD=5
 # AI fallback if Groq is down
 OPENAI_API_KEY=sk-REPLACE_ME
-# BitLabs third-party survey wall
-BITLABS_API_KEY=REPLACE_ME
-BITLABS_WEBHOOK_SECRET=REPLACE_ME
 # Twilio SMS
 TWILIO_ACCOUNT_SID=REPLACE_ME
 TWILIO_AUTH_TOKEN=REPLACE_ME
