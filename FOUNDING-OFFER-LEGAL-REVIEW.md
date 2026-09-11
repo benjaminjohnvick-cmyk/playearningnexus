@@ -34,11 +34,23 @@ founding advertiser is provisioned at the platform's **highest (Tier 3 / Unlimit
 tier-gated product feature** (e.g., maximum AI creative generations, all ad formats, unlimited concurrent
 experiments and multivariate testing, the full campaign-automation ceiling, and image/video/brand-kit/
 localization/auto-refresh tooling), at no additional charge, controlled by the operator flag
-`FOUNDING_MAX_SCALE_ENABLED` (default on). This is a **product-feature/capability entitlement only**; it does
-**not** increase the delivered **ad-impression volume** (the 200,000/yr allotment and its capacity-paced,
-deliver-until-met guarantee are unchanged), and it carries **no revenue, sales, or ROI promise** — it is
-additional advertising value delivered, framed strictly as features provided. *This wording is new and is
-flagged below as pending counsel review.*
+`FOUNDING_MAX_SCALE_ENABLED` (default on). Scope and limits, stated conservatively:
+
+- (i) it is a **product-feature / capability-access grant only** — **no** cash, credit, or monetary value is
+  conveyed or promised;
+- (ii) it does **not** increase the delivered **ad-impression volume** (the 200,000/yr allotment and its
+  capacity-paced, deliver-until-met guarantee are unchanged);
+- (iii) it carries **no revenue, sales, performance, or ROI representation** — features provided, not outcomes;
+- (iv) it does **not** alter the founding offer's price, its non-refundable presale terms, or any other term of
+  the offer; and
+- (v) it is an operator-controlled feature setting that may be adjusted or discontinued platform-wide; it is
+  described here as **advertising value delivered**, not a contractual guarantee that any specific tool remains
+  available for any period.
+
+*Drafted conservatively (features/value framing, no earnings claim). **For counsel to confirm:** whether
+extending the highest capability tier to founders at no charge warrants any added disclosure in the founding
+terms — e.g., that included features may change — and whether the tier-comparison presentation should carry a
+"features and value delivered, not results" note.*
 
 **Category exclusivity:** each founding advertiser is the **only founding advertiser in their category** — a
 scarcity/positioning perk, not a financial promise.
@@ -165,7 +177,8 @@ advertiser gate.
 - Store-credit grant: `FOUNDING_STORE_CREDIT_POINTS` (800,000 ≈ $2,000, non-cashable, released over the term).
 - Max-scale feature entitlement: `FOUNDING_MAX_SCALE_ENABLED` (default on) — founders resolve to the Tier 3 /
   Unlimited **capability** level for every tier-gated feature; does **not** change the delivered ad-impression
-  volume. *(New; wording pending counsel review — see §1.)*
+  volume. *(Operator setting; feature-access grant only — see §1 for the full scope/limits and the one point for
+  counsel to confirm.)*
 - Launch gates: `FOUNDING_LAUNCH_MILESTONE_FOUNDERS` (200,000) and `FOUNDING_LAUNCH_MILESTONE_PREMIUM_USERS`
   (200,000).
 - Funds model: `FOUNDING_FUNDS_MODEL` = presale | escrow | hybrid (currently **presale**, non-refundable).

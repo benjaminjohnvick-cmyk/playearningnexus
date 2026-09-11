@@ -1,9 +1,11 @@
 # Counsel review note — 2026-09-11 additions
 
-**Purpose.** Two new passages were added to the packet in the 2026-09-11 work session and are marked *pending
-counsel review*. This note isolates them and frames the specific questions for counsel so they can be cleared
-(or revised) before they are treated as final. Nothing here changes the existing compliance spine — both were
-drafted conservatively (capability/value-delivered framing, no revenue/ROI promise).
+**Purpose.** Two passages were added to the packet in the 2026-09-11 work session. The drafting has since been
+**tightened to be conservative and self-limiting**, so the *substance is finalized* — what remains is the one
+legal confirmation and the patent-eligibility assessment that only counsel can give. This note isolates each
+passage, shows its current (tightened) wording, and states the specific point for counsel. Nothing changes the
+existing compliance spine: features/value-delivered framing only, no revenue/sales/ROI representation, and no
+change to the non-refundable presale terms.
 
 ---
 
@@ -11,16 +13,15 @@ drafted conservatively (capability/value-delivered framing, no revenue/ROI promi
 
 **Where:** `FOUNDING-OFFER-LEGAL-REVIEW.md` §1 (new paragraph) and §6 (operator-controls list).
 
-**What changed (verbatim):**
-> "Max-scale feature entitlement (capability, not ad volume). In addition to the included features above, a
-> founding advertiser is provisioned at the platform's highest (Tier 3 / Unlimited) capability level for every
-> tier-gated product feature (e.g., maximum AI creative generations, all ad formats, unlimited concurrent
-> experiments and multivariate testing, the full campaign-automation ceiling, and image/video/brand-kit/
-> localization/auto-refresh tooling), at no additional charge, controlled by the operator flag
-> `FOUNDING_MAX_SCALE_ENABLED` (default on). This is a product-feature/capability entitlement only; it does not
-> increase the delivered ad-impression volume (the 200,000/yr allotment and its capacity-paced,
-> deliver-until-met guarantee are unchanged), and it carries no revenue, sales, or ROI promise — it is
-> additional advertising value delivered, framed strictly as features provided."
+**Current (tightened) wording — scope and limits, stated conservatively:** a founding advertiser is provisioned
+at the platform's highest (Tier 3 / Unlimited) capability level for every tier-gated product feature, at no
+additional charge (`FOUNDING_MAX_SCALE_ENABLED`, default on), expressly limited to: (i) a **capability-access
+grant only** — no cash, credit, or monetary value conveyed or promised; (ii) **no** increase in delivered
+ad-impression volume (the 200,000/yr allotment and its guarantee are unchanged); (iii) **no** revenue, sales,
+performance, or ROI representation — features, not outcomes; (iv) **no** change to the offer's price or
+non-refundable presale terms; and (v) an operator-controlled setting that may be adjusted or discontinued,
+described as advertising value delivered, not a contractual guarantee that any specific tool remains available.
+(Full text in `FOUNDING-OFFER-LEGAL-REVIEW.md` §1.)
 
 **Questions for counsel:**
 
@@ -41,20 +42,17 @@ drafted conservatively (capability/value-delivered framing, no revenue/ROI promi
 
 ## 2. Full-screen watch-gated AdGrid interaction (patent disclosure)
 
-**Where:** `PATENT-FEATURE-AND-FUNCTION-DISCLOSURE-BRIEF.md` new §1.16 (stamped "DRAFT — pending counsel /
-patent-attorney review").
+**Where:** `PATENT-FEATURE-AND-FUNCTION-DISCLOSURE-BRIEF.md` new §1.16 — framed as a complete feature disclosure
+for counsel's novelty & claim-scope assessment (not a novelty opinion).
 
-**What changed (verbatim):**
-> "A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which all entry points lead) reworked as a
-> full-screen experience: the shopper taps one tile in the grid and it opens a full-screen takeover in which the
-> advertiser's video/audio creative loops continuously through a fixed 30-second watch gate (30s × 16 ads = 8
-> minutes of metered attention); only when the gate clears do the survey questions appear beneath the
-> still-looping ad, the shopper submits (credited server-side), the real product Buy-Now page reveals, and the
-> shopper swipes — or uses on-screen arrows — straight to the next ad, so the entire multi-ad session is driven
-> by a single grid tap. Candidate inventive angles: (C) the tap-once → looping watch-gate → questions-beneath →
-> server-credited submit → swipe-to-next-ad interaction as one continuous full-screen unit; (A) the PPC network
-> advertising feature is shared across all three advertiser tiers; and (B) the Founding tier receives the maximum
-> (Tier 3) capability level of every feature, free (a capability grant, not an impression-volume grant)."
+**What's disclosed:** the reworked full-screen AdGrid interaction — a single grid **tap** opens a full-screen
+takeover where the advertiser's creative **loops through a fixed 30-second watch gate**, the survey **questions
+appear beneath the still-looping ad**, the shopper **submits (server-credited)**, the **product Buy-Now page
+reveals**, and the shopper **swipes to the next ad**, the whole multi-ad session driven by one tap. **Honest
+steer for counsel:** of the flagged angles, **(C)** — that technical interaction as one continuous full-screen
+unit — is the one most plausibly claimable; **(A)** shared-across-tiers and **(B)** founding-max-capability are
+business-model/offer choices and are likely **not** separately patentable (included for completeness). (Full
+text in §1.16.)
 
 **Questions for patent counsel:**
 
