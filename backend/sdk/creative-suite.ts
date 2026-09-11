@@ -144,6 +144,22 @@ export const suiteEnabled = () => snapBool("CREATIVE_SUITE_ENABLED", true);
 export const normalizeTier = (t: unknown): SuiteTier =>
   (t === "tier3" || t === "tier2") ? t : "tier1";
 
+/** True when an advertiser record is a founding advertiser (the founding privilege). */
+export const isFoundingAdvertiser = (rec: unknown): boolean => {
+  const r = rec as Record<string, unknown> | null | undefined;
+  return !!(r && (r.is_founding === true || r.founding === true));
+};
+
+/** The EFFECTIVE capability tier for an advertiser. A founding advertiser gets the MAX (tier3) level of every
+ *  feature — the founding privilege is "all features, most scaled up, free" — so they always resolve to tier3
+ *  caps regardless of their stored/requested tier. Everyone else uses their normalized tier. Gated by
+ *  FOUNDING_MAX_SCALE_ENABLED (default on) so it can be turned off without a deploy. */
+export const foundingMaxScaleEnabled = () => snapBool("FOUNDING_MAX_SCALE_ENABLED", true);
+export function effectiveTier(tierInput: unknown, opts?: { founding?: boolean }): SuiteTier {
+  if (opts?.founding && foundingMaxScaleEnabled()) return "tier3";
+  return normalizeTier(tierInput);
+}
+
 function allowedFormats(key: string, fallback: string[]): string[] {
   const raw = snapString(key, "");
   if (!raw.trim()) return fallback;

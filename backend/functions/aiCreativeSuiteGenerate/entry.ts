@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import {
-  normalizeTier, creativeSuiteTierCaps, adFormat, formatAllowed,
+  normalizeTier, effectiveTier, isFoundingAdvertiser, creativeSuiteTierCaps, adFormat, formatAllowed,
   screenCreative, scoreCreative, playbookFor, generationsRemaining, allFormatKeys,
 } from "../../sdk/creative-suite.ts";
 import { watermarkImageHint } from "../../sdk/ad-branding.ts";
@@ -19,7 +19,7 @@ export default __handler(async (req) => {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json().catch(() => ({}));
-    const tier = normalizeTier(body.tier);
+    const tier = effectiveTier(body.tier, { founding: isFoundingAdvertiser(user) }); // founding → max (tier3) caps
     const caps = creativeSuiteTierCaps(tier);
     if (!caps.enabled) return Response.json({ error: "The AI Creative Suite is currently disabled." }, { status: 403 });
 

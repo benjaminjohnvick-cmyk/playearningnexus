@@ -1,7 +1,7 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
-import { normalizeTier, creativeSuiteTierCaps } from "../../sdk/creative-suite.ts";
+import { normalizeTier, effectiveTier, isFoundingAdvertiser, creativeSuiteTierCaps } from "../../sdk/creative-suite.ts";
 
 // aiCreativeSuiteExperiment — launch an A/B (or, for eligible tiers, multivariate) test from generated
 // CreativeAsset variants. Tier-gates concurrency and multivariate. Creates an AdCreativeTest row linking the
@@ -14,7 +14,7 @@ export default __handler(async (req) => {
     if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json().catch(() => ({}));
-    const tier = normalizeTier(body.tier);
+    const tier = effectiveTier(body.tier, { founding: isFoundingAdvertiser(user) }); // founding → max (tier3) caps
     const caps = creativeSuiteTierCaps(tier);
     if (!caps.enabled) return Response.json({ error: "The AI Creative Suite is currently disabled." }, { status: 403 });
 

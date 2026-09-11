@@ -497,6 +497,20 @@ const createGridAd = read('backend/functions/createAdGridAd/entry.ts');
 check(!/tier\s*[<>=!]|requireTier|min_tier|founding.*only/i.test(createGridAd), 'createAdGridAd has NO tier gate — any advertiser tier can place a grid ad');
 
 // ============================================================================================================
+console.log('\n\x1b[1m17) FOUNDING TIER — gets the MAX (tier3) scale of every feature, free\x1b[0m');
+const cs = read('backend/sdk/creative-suite.ts');
+check(/export function effectiveTier[\s\S]*?founding[\s\S]*?return "tier3"/.test(cs), 'effectiveTier() maps a founding advertiser to tier3 (max) caps');
+check(/export const isFoundingAdvertiser/.test(cs), 'isFoundingAdvertiser() helper exists (is_founding / founding)');
+check(/foundingMaxScaleEnabled|FOUNDING_MAX_SCALE_ENABLED/.test(cs), 'founding max-scale is gated by FOUNDING_MAX_SCALE_ENABLED (default on)');
+check(/"FOUNDING_MAX_SCALE_ENABLED"[\s\S]*?default: "1"/.test(read('backend/sdk/settings.ts')), 'FOUNDING_MAX_SCALE_ENABLED registered, default ON');
+// Every creative-suite endpoint resolves founding → max caps (not the client-supplied tier).
+for (const fn of ['aiCreativeSuiteGenerate','aiCreativeSuiteStatus','aiCreativeSuiteExperiment','aiCreativeSuiteLearn']) {
+  check(/effectiveTier\([\s\S]*?isFoundingAdvertiser\(user\)/.test(read(`backend/functions/${fn}/entry.ts`)), `${fn} resolves founding → max (tier3) caps`);
+}
+// The add-on catalog already hands founding the WHOLE set free — the other half of "all features".
+check(/if \(opts\?\.founding\) return all;/.test(read('backend/sdk/advertiser-features.ts')), 'founding still gets the WHOLE add-on catalog free (featuresForContext)');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

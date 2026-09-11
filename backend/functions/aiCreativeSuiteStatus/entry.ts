@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { db } from "../../sdk/db.ts";
 import {
-  normalizeTier, creativeSuiteTierCaps, effectiveAutonomy, AD_FORMATS,
+  normalizeTier, effectiveTier, isFoundingAdvertiser, creativeSuiteTierCaps, effectiveAutonomy, AD_FORMATS,
   playbookFor, playbookRecommendations, generationsRemaining, isFatigued,
 } from "../../sdk/creative-suite.ts";
 
@@ -17,7 +17,7 @@ export default __handler(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const url = new URL(req.url);
-    const tier = normalizeTier(body?.tier ?? url.searchParams.get("tier"));
+    const tier = effectiveTier(body?.tier ?? url.searchParams.get("tier"), { founding: isFoundingAdvertiser(user) }); // founding → max (tier3) caps
     const caps = creativeSuiteTierCaps(tier);
     const today = new Date().toISOString();
 
