@@ -11,6 +11,11 @@ The advertiser AdGrid alone (~$3,540 margin per matched user/year) already out-e
 (~$146/user/year) by ~24×, so dropping the customer markup is affordable many times over — the constraint
 is advertiser supply, not money.
 
+**PPC AdGrid is open to advertisers across all tiers (2026-09-11).** Every advertiser — Tier 1 (Founding),
+Tier 2 (Scale) and Tier 3 (Unlimited) — can run PPC placements on the premium AdGrid: users watch the
+advertiser's product, answer its questions, and are credited, and the advertiser pays per engagement. This
+widens advertiser supply into the AdGrid across the whole tier stack.
+
 ## What's wired
 
 Businesses interact through the new **`BusinessPortal`** page (sign up, subscribe, buy placement, book a

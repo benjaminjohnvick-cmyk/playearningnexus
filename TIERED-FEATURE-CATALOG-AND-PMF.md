@@ -15,7 +15,13 @@ are **advertising value delivered / measured activity** — never a revenue or R
    the truest PMF signal; adoption, engagement, and per-feature revenue fill in the rest.
 4. **Founding role — a measured privilege, not a quota.** Founding / pre-revenue Tier 1 gets the **whole
    catalog free** and is the PMF panel; the AI *observes* what founders use — it never enforces a quota
-   (which keeps it clear of the "paying for feedback" line).
+   (which keeps it clear of the "paying for feedback" line). **New 2026-09-11:** on top of that free catalog, a
+   founding advertiser (`is_founding`) now also resolves to the **Tier 3 / Unlimited capability level for every
+   tier-gated feature** — the most scaled-up version of each, free (e.g. max AI Creative Suite generations, all
+   ad formats, unlimited concurrent experiments, multivariate testing, the full autonomy ceiling, predictive
+   learning, image/video/brand-kit/localization). Gated by `FOUNDING_MAX_SCALE_ENABLED` (default **ON**). This
+   maxes feature **capability**, **not** delivered ad-impression **volume** — the impression allotment is
+   unchanged.
 
 ## The tiered feature catalog
 
@@ -24,11 +30,17 @@ a conventional value, a readiness (**live / gated / counsel**), and the RevenueE
 gated/counsel feature is listed as *"included — activates when its prerequisite lands"* and contributes **$0**
 of claimed value until it is live (same rule as the value stacks: every line respects its own toggle).
 
+- **Shared across all tiers:** PPC network advertising on the premium **AdGrid** (catalog key
+  `ppc_grid_placement`, tier `1` — which in this catalog means *included in Tiers 1, 2 AND 3* — status **live**,
+  category **advertising**). Every advertiser, Tier 1 (Founding), Tier 2 (Scale) and Tier 3 (Unlimited), can run
+  their product on the AdGrid: users watch it, answer its questions, and are credited, and the advertiser pays
+  per engagement (PPC). *(Added 2026-09-11.)*
 - **Tier 1:** sponsored survey campaign, audience pulse, in-app interstitials, lead-gen program.
 - **Tier 2 "Scale":** Pro audience panels, brand-lift studies, competitive reports, plus gated offerwall/CPA,
   rewarded video, sponsored push/email, API access, self-serve AI creative studio.
 - **Tier 3 "Unlimited":** product-testing panel, white-label/RaaS, survey-routing arbitrage — all tiers below.
-- **Founding:** the entire catalog, free.
+- **Founding:** the entire catalog, free — **plus** every tier-gated feature dialed to its Tier 3 / Unlimited
+  capability ceiling (`FOUNDING_MAX_SCALE_ENABLED`, default on; caps capability, not impression volume).
 
 `advertiserFeatureCatalog` (read) returns the catalog + a per-tier rollup: live vs. pending counts and the
 **delivered value added** (what makes the ratio climb, price held). Layered **additively** — it does not mutate

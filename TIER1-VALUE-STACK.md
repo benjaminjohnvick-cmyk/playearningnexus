@@ -49,6 +49,13 @@ Every value is admin-tunable (`TIER1_VALUE_*` settings, or a full `TIER1_VALUE_C
 line), and each feature line respects its existing on/off toggle, so the stack always reflects what's actually
 delivered.
 
+> **Founding note:** a **founding advertiser** (`is_founding`) receives the **maximum (Tier 3 / Unlimited)
+> capability level of every stacked feature above**, free (`FOUNDING_MAX_SCALE_ENABLED`, default ON) — maximum
+> AI creative generations, all ad formats, unlimited concurrent experiments and multivariate testing, the full
+> campaign-automation ceiling, and the full image/video/brand-kit/localization/auto-refresh tooling. This maxes
+> feature **capability**, not the delivered ad-impression **volume** — the impression lines above are unchanged
+> — and, as with the rest of the stack, it describes **advertising value delivered**, never revenue or ROI.
+
 ## The value-match guarantee (holding the 2x honestly)
 
 If the honestly-valued included lines ever fall **below** the target (default 2× = $26,000) — because an admin

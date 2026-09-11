@@ -77,6 +77,19 @@ delivery guarantee — no fixed year-one volume is promised, and any shortfall i
 26. **Locked-in renewal rate** (kept from the current stack; now framed as the for-life price lock in #14)
 27. **Early access** to new surfaces (kept from the current stack; folded into #21)
 
+### Max-scale feature entitlement — every feature at Tier 3 / Unlimited, free
+
+On top of the entire add-on catalog above, a founding advertiser (`is_founding`) resolves to the **Tier 3 /
+Unlimited capability level for every tier-gated feature** — e.g. maximum AI Creative Suite generations, all ad
+formats, unlimited concurrent experiments, multivariate testing, the full autonomy ceiling, predictive
+learning, and image / video / brand-kit / localization / auto-refresh. This is the **most scaled-up version of
+every feature, at no extra cost**, gated by `FOUNDING_MAX_SCALE_ENABLED` (default ON).
+
+**Capability, not volume — state this accurately.** This maxes feature **capability**, not delivered
+ad-impression **volume**: the founding impression allotment (#1, #2, #17) is unchanged and still governed by
+the capacity-paced, deliver-until-met guarantee. No revenue/ROI promise attaches — it is additional
+**advertising value delivered** (capability access), never a return.
+
 ## Phase 2 — Tier 1 (takes over when the 200,000th slot fills)
 
 Same compliant core, founder-only perks removed so the founding deal stays clearly the best.
@@ -195,6 +208,15 @@ guaranteed), zero return/ROI promise.
 - Founding perks surfaced on `/Apply` (founding price lock, Founding Partner badge, for-life Tier 2 discount,
   100%-for-life earn-share, category exclusivity); post-founding Tier 1 drops the founder-only ones and keeps
   AI concierge support. Tests: 61 pass; build + audit clean.
+
+## Built (2026-09-11)
+
+- **Founding max-scale feature entitlement** (`FOUNDING_MAX_SCALE_ENABLED`, default ON): a founding advertiser
+  (`is_founding`) resolves to the **Tier 3 / Unlimited** capability level for every tier-gated feature
+  (maximum AI Creative Suite generations, all ad formats, unlimited concurrent experiments, multivariate
+  testing, full autonomy ceiling, predictive learning, image/video/brand-kit/localization/auto-refresh) — on
+  top of the existing free add-on catalog. **Caps feature capability, not ad-impression volume** (the founding
+  impression allotment is unchanged); no revenue/ROI promise — advertising value delivered only.
 
 ## Finalized delivery disclosure (2026-08-21)
 

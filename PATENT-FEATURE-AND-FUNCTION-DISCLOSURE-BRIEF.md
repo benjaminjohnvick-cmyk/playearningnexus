@@ -68,6 +68,11 @@ An AI pipeline that places and sources store orders within a per-order dollar ca
 ### 1.15 One-command multi-provider cost floor with revenue offsets
 A single operator command that pins every AI/DB/external-API lever to its cheapest tier at once (cheaper model tiers, caching, provider fallbacks), paired with revenue-offset levers that fund the residual runtime floor — an efficiency-without-feature-loss mechanism. *Engines: `deploy-kit/cost-floor.mjs`, `settings` cost levers. Docs: `COST-LEVERS-CODEABLE.md`, `COST-FLOOR-AND-LOW-LEGAL.md`.*
 
+### 1.16 Full-screen single-tap watch-gated PPC ad-grid survey interaction
+> **⚠️ DRAFT — pending counsel / patent-attorney review (added 2026-09-11).** Not yet vetted for novelty or claim scope.
+
+A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all entry points lead**) reworked as a **full-screen experience**: the shopper taps **one** tile in the grid and it opens a **full-screen takeover** in which the advertiser's video/audio creative **loops continuously through a fixed 30-second watch gate** (30s × 16 ads = 8 minutes of metered attention); only when the gate clears do the survey **questions appear beneath the still-looping ad**, the shopper **submits (credited server-side)**, the **real product Buy-Now page reveals**, and the shopper **swipes — or uses on-screen arrows — straight to the next ad**, so the entire multi-ad session is driven by a **single grid tap**. Candidate inventive angles: (C) the tap-once → looping watch-gate → questions-beneath → server-credited submit → swipe-to-next-ad interaction as one continuous full-screen unit; (A) the **PPC network advertising feature is shared across all three advertiser tiers (Tier 1 / 2 / 3 all included)**; and (B) the **Founding tier receives the maximum (Tier 3) capability level of every feature, free** (a capability grant, not an impression-volume grant). *Engines: `adgrid.ts`, `adgrid-access.ts`, `ad-media.ts`, `advertiser-features.ts`. Surface: `AdGridSurvey`. Docs: `AD-MEDIA-AND-TARGETING-DESIGN.md`, `TIERED-FEATURE-CATALOG-AND-PMF.md`.*
+
 *Beyond these highlights, the inventory that follows lists the full 983 functions, 195 engines, 272 surfaces, and 364 entities so counsel can spot additional candidates the highlights don't call out.*
 
 ---

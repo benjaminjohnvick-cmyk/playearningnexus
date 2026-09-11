@@ -17,6 +17,12 @@ the authoritative documents. If any detail elsewhere conflicts with this page, f
 - **Included** — premium membership, AI campaign manager + concierge support, AI creative, A/B testing,
   analytics, sentiment insights, and a **$2,000 Site Cash grant** (non-cashable store credit, released over the
   term).
+- **Every feature at its maximum (Tier 3) capability level, free** — on top of the full add-on catalog above, a
+  founding advertiser resolves to the **Tier 3 / Unlimited** capability level for every tier-gated feature
+  (maximum AI Creative Suite generations, all ad formats, unlimited concurrent experiments, multivariate
+  testing, the full autonomy ceiling, predictive learning, image/video/brand-kit/localization/auto-refresh),
+  at no extra cost (`FOUNDING_MAX_SCALE_ENABLED`, default ON). This maxes feature **capability**, not delivered
+  ad-impression **volume** — the founding impression allotment above is unchanged.
 - **Membership survey perk** — keep **100% of your own** third-party survey earnings for 4 years as Site Cash
   (non-cashable), a better **share** with **no cap** and **no promised amount**, not a return of the price;
   reverts to the standard 75% share afterward or for post-close members.

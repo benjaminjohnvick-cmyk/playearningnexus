@@ -3,7 +3,7 @@
 *Authoritative summary of the current advertiser pricing. Admin-tunable via settings; nothing here is a
 promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 
-> **Reconciled 2026-08-15; re-checked against code 2026-09-04** (fixed two citation drifts: the upgrade-discount
+> **Reconciled 2026-08-15; re-checked against code 2026-09-04; updated 2026-09-11** (fixed two citation drifts: the upgrade-discount
 > setting is `0.055`, not `0.06`, and `FOUNDING_SIGNUP_CREDIT_USD` is retired to `0`). Consistent with the other Get Goods Gratis docs as of this date. The Founding
 > Tier 1 offer, the 5.5% decoupled upgrade discount, the $2,000 premium gift boost, Tier 2 pay-as-you-go, the
 > discontinued free earn-to-unlock tier, and the three OFF-by-default credit products all match the current
@@ -13,6 +13,10 @@ promise of returns. Not legal advice — the revenue-share is counsel-gated.*
 
 ## Paid advertiser (PPC / Tier 1)
 
+- **PPC network advertising is included for all three tiers (2026-09-11).** Every advertiser — Tier 1
+  (Founding), Tier 2 (Scale) and Tier 3 (Unlimited) — can advertise on the premium PPC AdGrid network: their
+  product runs in the AdGrid, users watch it and answer its questions and are credited, and the advertiser pays
+  per engagement.
 - **Price: $12,000 per year, or $1,000 per month — paid upfront.**
 - Settings: `PPC_GRID_ANNUAL_PRICE = 12000`, `PPC_GRID_MONTHLY_PRICE = 1000`,
   `FOUNDING_ADVERTISER_PRICE_USD = 12000`, `FOUNDING_ADVERTISER_MONTHLY_PRICE_USD = 1000`.

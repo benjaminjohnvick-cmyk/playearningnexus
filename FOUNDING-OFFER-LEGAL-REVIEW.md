@@ -29,6 +29,17 @@ campaign manager + concierge support, AI-written creative, A/B testing, analytic
 **$2,000 Site Cash grant** (800,000 points, released over the term) — closed-loop, non-cashable store credit,
 decoupled from the price paid.
 
+**Max-scale feature entitlement (capability, not ad volume).** In addition to the included features above, a
+founding advertiser is provisioned at the platform's **highest (Tier 3 / Unlimited) capability level for every
+tier-gated product feature** (e.g., maximum AI creative generations, all ad formats, unlimited concurrent
+experiments and multivariate testing, the full campaign-automation ceiling, and image/video/brand-kit/
+localization/auto-refresh tooling), at no additional charge, controlled by the operator flag
+`FOUNDING_MAX_SCALE_ENABLED` (default on). This is a **product-feature/capability entitlement only**; it does
+**not** increase the delivered **ad-impression volume** (the 200,000/yr allotment and its capacity-paced,
+deliver-until-met guarantee are unchanged), and it carries **no revenue, sales, or ROI promise** — it is
+additional advertising value delivered, framed strictly as features provided. *This wording is new and is
+flagged below as pending counsel review.*
+
 **Category exclusivity:** each founding advertiser is the **only founding advertiser in their category** — a
 scarcity/positioning perk, not a financial promise.
 
@@ -152,6 +163,9 @@ advertiser gate.
   `TIER1_POST_PLATFORM_FEE_PCT` (0.25 = member keeps 75%).
 - Perk window: `FOUNDING_FULLKEEP_YEARS` (4); no cap (`FOUNDING_FULLKEEP_CAP_TO_PRICE` = **off**).
 - Store-credit grant: `FOUNDING_STORE_CREDIT_POINTS` (800,000 ≈ $2,000, non-cashable, released over the term).
+- Max-scale feature entitlement: `FOUNDING_MAX_SCALE_ENABLED` (default on) — founders resolve to the Tier 3 /
+  Unlimited **capability** level for every tier-gated feature; does **not** change the delivered ad-impression
+  volume. *(New; wording pending counsel review — see §1.)*
 - Launch gates: `FOUNDING_LAUNCH_MILESTONE_FOUNDERS` (200,000) and `FOUNDING_LAUNCH_MILESTONE_PREMIUM_USERS`
   (200,000).
 - Funds model: `FOUNDING_FUNDS_MODEL` = presale | escrow | hybrid (currently **presale**, non-refundable).

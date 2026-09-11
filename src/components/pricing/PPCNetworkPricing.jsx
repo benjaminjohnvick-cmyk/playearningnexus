@@ -32,6 +32,7 @@ export default function PPCNetworkPricing() {
           Your ads are shown to <strong>all users</strong> on the platform. Annual budget: <strong>$5,000/year (paid upfront)</strong>.
           Users who connect a credit card can receive <strong>$1,460 upfront</strong> (a year's worth of survey revenue).
           Includes 30-second video ads, survey question ads, and a <strong>2× ROI guarantee</strong>.
+          The premium PPC AdGrid is <strong>open to advertisers across all three tiers</strong> — Tier 1 Founding, Tier 2 Scale, and Tier 3 Unlimited can all advertise on the PPC network.
         </p>
       </div>
 
@@ -164,6 +165,7 @@ export default function PPCNetworkPricing() {
                 'Get Goods Gratis (Free) continues to run your ads at no extra charge until 2× the value is delivered',
                 'Tracking and reporting provided in real time',
                 'Guaranteed reach to ALL active platform users',
+                'Open to advertisers on all three tiers — Founding, Scale & Unlimited',
                 'AI-optimized ad placement for maximum engagement',
                 'Zero bot traffic — every view is a verified human',
               ].map((item, i) => (

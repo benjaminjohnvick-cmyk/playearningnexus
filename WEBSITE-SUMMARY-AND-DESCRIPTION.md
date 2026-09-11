@@ -3,7 +3,7 @@
 *A plain-language overview of the website and apps, prepared for counsel. Its purpose is to orient a lawyer
 to **what the platform is, who uses it, what it does, and how it makes money** before turning to the
 issue-specific documents in this packet. **Not legal advice** — it is a description of the product so that a
-legal review is faster and better grounded. Current as of 2026-09-06.*
+legal review is faster and better grounded. Current as of 2026-09-11.*
 
 ---
 
@@ -55,7 +55,11 @@ operations, with **permanent human/compliance gates** on anything touching money
 
 - **Shop the marketplace** — browse and acquire goods; store credit and/or payment methods apply at checkout.
 - **Earn store credit** — complete surveys, engage with advertising/attention units, and complete
-  daily/goal-based activities. Earnings accrue as **Site Cash** (closed-loop credit), never cash.
+  daily/goal-based activities. The core ad-engagement surface is a **full-screen ad-grid experience**: the user
+  taps **one** ad tile, which opens a full-screen takeover where the advertiser's video/audio loops through a
+  short (30-second) watch gate; the questions then appear beneath the still-looping ad, the user submits
+  (credited server-side), the real product page reveals, and the user **swipes straight to the next ad** —
+  tapping the grid only once. Earnings accrue as **Site Cash** (closed-loop credit), never cash.
 - **Refer others** — a **single-tier** referral program (no multi-level/downline structure); referral rewards
   are tied to real activity and are clawback-gated against fraud.
 - **Enter the prize competition** — a **skill/merit-based** prize pool with a genuine **no-purchase-necessary
@@ -89,7 +93,10 @@ The economic model is the single most important thing for a legal reviewer to un
 
 The platform is **advertiser-funded**. Revenue streams include tiered advertiser products (**Tier 1 entry,
 Tier 2 "Scale," Tier 3 "Unlimited"**), a **founding pre-revenue offer** for early businesses, sponsored
-listings and premium boosts, affiliate/partner revenue share, and other B2B advertising products. Detailed
+listings and premium boosts, affiliate/partner revenue share, and other B2B advertising products.
+**PPC network advertising is a shared feature included across all three tiers (Tier 1/2/3).** The **founding
+pre-revenue offer grants the maximum (Tier 3) capability level of every feature, free** — a capability grant,
+not an impression-volume one. Detailed
 mechanics, pricing, and the auto-renew/deposit terms live in the monetization and pricing documents
 (`PROFIT-FLYWHEEL-AND-MONETIZATION-BLUEPRINT.md`, `REVENUE-STREAMS-EXPANSION.md`, `ADVERTISER-PRICING-2026.md`,
 and the Tier 2 items in `FOR-YOUR-ATTORNEY.md` §8–§9).

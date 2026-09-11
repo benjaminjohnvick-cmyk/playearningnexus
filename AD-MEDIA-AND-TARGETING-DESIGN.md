@@ -4,16 +4,19 @@
 creatives** (interstitial + PPC network), **cohort targeting** from the mandatory Know-Your-Customer (KYC)
 survey across every ad surface, a **self-learning AI targeting layer** matching the platform's AI posture, and
 the **gap fixes** that make targeting consistent everywhere. **Not legal advice** — the privacy/advertising
-questions flagged below are for counsel. Current as of 2026-09-07.*
+questions flagged below are for counsel. Current as of 2026-09-11.*
 
 ---
 
 ## 1. What was added (summary)
 
 1. **Audio & video ad creatives.** Advertisers may supply an **image, video, or audio** creative — for the
-   full-screen **interstitial** placements *and* the **PPC ad grid**. In the PPC grid the video plays with the
-   survey questions in a bar beneath it, and it **loops continuously through that advertiser's whole question
-   set** until the shopper finishes.
+   full-screen **interstitial** placements *and* the **PPC ad grid**. **The PPC grid is now a full-screen
+   experience:** the shopper taps **one** tile and it opens a full-screen takeover where the advertiser's
+   video/audio **loops through a 30-second watch gate** (30s × 16 ads = 8 minutes total); the questions then
+   appear beneath the still-looping ad, the shopper submits (credited server-side), the real product Buy-Now
+   page reveals, and they **swipe (or use on-screen arrows) straight to the next ad** — they tap the grid only
+   once.
 2. **Cohort targeting from the KYC survey — on every ad surface.** Advertisers can target a specific cohort from
    the first-party welcome-survey answers. Targeting now applies to **(a) the in-app interstitial ads, (b) the
    PPC ad grid, (c) the social-media (endorser) distribution, and (d) the premium PPC auto-advertise engine.**
@@ -34,9 +37,13 @@ questions flagged below are for counsel. Current as of 2026-09-07.*
 - **Interstitial placements** (between-survey + in-app full-screen): the creative plays inside the ad slot with
   the mandatory **countdown unchanged**; a clip that ends early can unlock "Continue" early
   (`AD_MEDIA_UNLOCK_ON_END`). Video autoplays **muted with a tap-for-sound** control.
-- **PPC ad grid:** the advertiser's **video plays above the survey questions**, which sit in a bar beneath it,
-  and it **loops through the entire question set** for that advertiser until the shopper submits and the product
-  page appears. Audio ads play over the thumbnail/poster the same way.
+- **PPC ad grid (full-screen takeover):** the shopper taps **one** tile in the grid and it opens a **full-screen
+  takeover**. The advertiser's **video/audio loops through a 30-second watch gate** (30s × 16 ads = 8 minutes
+  total); when the gate clears the **questions appear beneath the still-looping ad**, the shopper submits (the
+  answer is **credited server-side**), the **real product Buy-Now page reveals**, and the shopper **swipes — or
+  uses on-screen arrows — straight to the next ad**. They tap the grid only once. Audio ads loop over the
+  thumbnail/poster the same way. **`AdGridSurvey` is the single canonical grid and all entry points lead to
+  it.**
 - **Rights & disclosure unchanged:** the advertiser attests content rights (DMCA); house branding still applies;
   the AI-generated disclosure label + C2PA provenance apply only to AI-generated creatives.
 
@@ -49,7 +56,8 @@ questions flagged below are for counsel. Current as of 2026-09-07.*
 - **Applies to:**
   - **In-app interstitial ads** — the selector filters candidates to matching creatives (house ad fills if none
     match).
-  - **PPC ad grid** — the grid feed only shows a targeted PPC ad to users whose answers match.
+  - **PPC ad grid** (the single canonical `AdGridSurvey` full-screen experience) — the grid feed only shows a
+    targeted PPC ad to users whose answers match.
   - **Social-media (endorser) distribution** — an advertiser's post is queued only to consenting, opted-in
     members whose answers match (still `#ad`-disclosed, still opt-in).
   - **Premium PPC auto-advertise** — the AI engine posts each advertiser's ad only to consenting members matching
@@ -120,7 +128,9 @@ questions flagged below are for counsel. Current as of 2026-09-07.*
   `backend/functions/premiumPPCAutoAdvertise/entry.ts` (cohort filter — gap fix),
   `backend/functions/premiumAdFree/entry.ts` (pass user for targeting — gap fix),
   `backend/sdk/settings.ts` (flags), `backend/db/schema.sql` (`AdTargetingModel`),
-  `backend/functions/_manifest.json`, `src/pages/AdGridSurvey.jsx` (PPC video + questions-at-bottom),
+  `backend/functions/_manifest.json`, `src/pages/AdGridSurvey.jsx` (the single canonical grid — full-screen
+  single-tap takeover: 30s looping watch gate → questions-beneath → server-side submit → product Buy-Now page →
+  swipe-to-next),
   `src/components/ads/InAppInterstitialAd.jsx`, `src/components/surveys/SurveyInterstitialAd.jsx`,
   `src/components/advertiser/AdSignupForm.jsx` (advertiser format + targeting UI).
 

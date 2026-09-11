@@ -145,7 +145,7 @@ export default function Pricing() {
                     🏆 Paid Business Tiers
                   </Badge>
                   <h2 className="text-3xl md:text-4xl font-black mb-3">What Everything Costs — Paid Tiers</h2>
-                  <p className="text-purple-200 max-w-2xl mx-auto">Both paid tiers include AppLovin-style AI ad mediation, user acquisition campaigns, a $3,000/yr platform subscription + PPC survey ads. Backed by our 2× value-delivered guarantee — advertising value matched to your spend, never a revenue or ROI promise.</p>
+                  <p className="text-purple-200 max-w-2xl mx-auto">Both paid tiers include AppLovin-style AI ad mediation, user acquisition campaigns, a $3,000/yr platform subscription + PPC survey ads. Premium PPC AdGrid network advertising is included across all three advertiser tiers — Tier 1 Founding, Tier 2 Scale, and Tier 3 Unlimited can each advertise on the PPC network. Backed by our 2× value-delivered guarantee — advertising value matched to your spend, never a revenue or ROI promise.</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-10">
@@ -167,6 +167,7 @@ export default function Pricing() {
                       adBonus: '$29,998',
                       features: [
                         'Managed end-to-end ad monetization (all 5 ad formats)',
+                        'Premium PPC AdGrid network advertising included (every tier can advertise on the PPC network — Founding, Scale & Unlimited)',
                         'AI-powered MAX-style ad mediation & waterfall',
                         'Real-time bid optimization every 15 minutes',
                         'User Acquisition campaigns (CPI $0.50–$3, CPA, ROAS)',
@@ -193,6 +194,7 @@ export default function Pricing() {
                       adBonus: '$59,998',
                       features: [
                         'Everything in Full-Service, plus:',
+                        'Premium PPC AdGrid network advertising included (PPC is open to advertisers on all three tiers — Founding, Scale & Unlimited)',
                         'AXON-style AI engine — predicts LTV, churn, conversion prob.',
                         'Playable ads & native offerwall (CPM up to $60)',
                         'Connected TV (CTV) ad inventory access',

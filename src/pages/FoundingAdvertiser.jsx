@@ -103,6 +103,23 @@ export default function FoundingAdvertiser() {
         </CardContent>
       </Card>
 
+      {/* Founding privilege — every feature delivered at its maximum (Tier 3) capability level, free. */}
+      <Card className="mb-6 border-amber-300 bg-gradient-to-br from-amber-50 to-yellow-50">
+        <CardContent className="p-5">
+          <div className="flex items-center gap-2 text-sm font-semibold text-amber-900 mb-2"><ShieldCheck className="w-4 h-4" /> A founding privilege — every feature maxed out, free</div>
+          <p className="text-xs text-slate-700 leading-relaxed">
+            As a Tier 1 Founding advertiser you receive the <strong>most scaled-up version of every feature</strong> — the full
+            Tier 3 (Unlimited) capability level of everything — <strong>included free</strong> as your founding privilege. That means
+            the <strong>maximum creative generations</strong>, <strong>every ad format</strong>, <strong>unlimited experiments &amp; A/B tests</strong>,
+            <strong> full campaign automation &amp; optimization</strong>, and <strong>premium PPC AdGrid network advertising</strong> — all at
+            their top capability tier, with no upgrade required.
+          </p>
+          <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+            This describes the features and capability level delivered to Founding members — it is not a promise of revenue, orders, or return.
+          </p>
+        </CardContent>
+      </Card>
+
       {/* Everything included with the advertising package — real delivered features/services. */}
       {Array.isArray(data.value?.included) && data.value.included.length > 0 && (
         <Card className="mb-6 border-emerald-200 bg-emerald-50/50">
