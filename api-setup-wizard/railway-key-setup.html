@@ -1,0 +1,550 @@
+<title>Railway Key Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f7f6fb; --surface:#ffffff; --surface-2:#f2f0f9; --ink:#1a1922; --muted:#6a6678;
+    --line:#e5e2ef; --line-strong:#d6d2e6;
+    --accent:#5a49d6; --accent-ink:#4737b8; --accent-wash:#efecfb;
+    --done:#12885a; --done-wash:#e6f4ec; --done-line:#bfe4cf;
+    --add:#b5680b; --add-wash:#fbf1e2; --add-line:#f0dcb8;
+    --opt:#5a6474; --opt-wash:#eef1f5; --opt-line:#d9dfe8;
+    --shadow:0 1px 2px rgba(26,25,34,.05), 0 8px 24px -12px rgba(26,25,34,.14);
+  }
+  :root:not([data-theme="light"]){ @media (prefers-color-scheme: dark){
+    --bg:#121019; --surface:#1b1926; --surface-2:#221f30; --ink:#ece9f4; --muted:#9a95ab;
+    --line:#2c2940; --line-strong:#3a3652;
+    --accent:#9384f2; --accent-ink:#a99cf6; --accent-wash:#241f3d;
+    --done:#48c98b; --done-wash:#16281f; --done-line:#28513c;
+    --add:#e6a955; --add-wash:#2c2314; --add-line:#4d3d1c;
+    --opt:#98a3b4; --opt-wash:#20242c; --opt-line:#343b47;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#121019; --surface:#1b1926; --surface-2:#221f30; --ink:#ece9f4; --muted:#9a95ab;
+    --line:#2c2940; --line-strong:#3a3652;
+    --accent:#9384f2; --accent-ink:#a99cf6; --accent-wash:#241f3d;
+    --done:#48c98b; --done-wash:#16281f; --done-line:#28513c;
+    --add:#e6a955; --add-wash:#2c2314; --add-line:#4d3d1c;
+    --opt:#98a3b4; --opt-wash:#20242c; --opt-line:#343b47;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans",system-ui,sans-serif;
+    line-height:1.55; margin:0; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:920px; margin:0 auto; padding-inline:20px; padding-block:0 72px;}
+  code,kbd,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;}
+  h1,h2,h3{text-wrap:balance; line-height:1.15; margin:0;}
+  a{color:var(--accent-ink); text-underline-offset:2px;}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink); font-weight:600;}
+
+  /* header */
+  header{position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+  .hbar{max-width:920px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .hbar h1{font-size:19px; font-weight:700; letter-spacing:-.01em;}
+  .hbar .tag{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted); border:1px solid var(--line-strong); border-radius:999px; padding:2px 9px;}
+  .progress{margin-left:auto; display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted);}
+  .bar{width:130px; height:7px; border-radius:999px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line);}
+  .bar>i{display:block; height:100%; width:0; background:var(--accent); transition:width .3s ease;}
+
+  .hero{padding-block:34px 10px;}
+  .hero h2{font-size:30px; font-weight:700; letter-spacing:-.02em;}
+  .hero p{color:var(--muted); max-width:64ch; margin:12px 0 0; font-size:16px;}
+
+  /* step flow */
+  .flow{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:24px 0 8px;}
+  .flow .step{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:13px 14px; box-shadow:var(--shadow);}
+  .flow .n{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--accent-ink); font-weight:600;}
+  .flow .t{font-weight:600; font-size:14px; margin-top:3px;}
+  .flow .d{font-size:12.5px; color:var(--muted); margin-top:2px;}
+
+  section{margin-top:34px;}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:12px; flex-wrap:wrap;}
+  .sec-head h3{font-size:18px; font-weight:700;}
+  .sec-head .count{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted);}
+  .pill{font-size:11.5px; font-weight:600; padding:2px 9px; border-radius:999px; letter-spacing:.02em; font-family:"IBM Plex Mono",monospace;}
+  .pill.done{color:var(--done); background:var(--done-wash); border:1px solid var(--done-line);}
+  .pill.add{color:var(--add); background:var(--add-wash); border:1px solid var(--add-line);}
+  .pill.opt{color:var(--opt); background:var(--opt-wash); border:1px solid var(--opt-line);}
+
+  .lead{color:var(--muted); font-size:14.5px; margin:0 0 14px;}
+  .note{border-left:3px solid var(--add); background:var(--add-wash); color:var(--ink); padding:11px 14px; border-radius:0 8px 8px 0; font-size:13.5px; margin:14px 0;}
+  .note b{color:var(--add);}
+
+  /* at-a-glance directory */
+  .dirwrap{overflow-x:auto; border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); background:var(--surface);}
+  table.dir{border-collapse:collapse; width:100%; font-size:13.5px; min-width:640px;}
+  table.dir th{text-align:left; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600; padding:11px 14px; border-bottom:1px solid var(--line-strong); background:var(--surface-2);}
+  table.dir td{padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top;}
+  table.dir tr:last-child td{border-bottom:none;}
+  table.dir td.api{font-weight:600; white-space:nowrap;}
+  table.dir td.api a{text-decoration:none;}
+  table.dir td.powers{color:var(--muted);}
+  table.dir .st{font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600; padding:2px 8px; border-radius:999px; white-space:nowrap;}
+  table.dir .st.done{color:var(--done); background:var(--done-wash); border:1px solid var(--done-line);}
+  table.dir .st.add{color:var(--add); background:var(--add-wash); border:1px solid var(--add-line);}
+  table.dir .st.opt{color:var(--opt); background:var(--opt-wash); border:1px solid var(--opt-line);}
+  table.dir td.cost{font-family:"IBM Plex Mono",monospace; font-size:12.5px; white-space:nowrap;}
+
+  /* raw block */
+  .raw{background:var(--surface); border:1px solid var(--line-strong); border-radius:14px; box-shadow:var(--shadow); overflow:hidden; margin:8px 0 4px;}
+  .raw .top{display:flex; align-items:center; gap:10px; padding:11px 14px; border-bottom:1px solid var(--line); background:var(--surface-2);}
+  .raw .top .lbl{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--ink);}
+  .raw pre{margin:0; padding:14px 16px; overflow-x:auto; font-family:"IBM Plex Mono",monospace; font-size:12.5px; line-height:1.7; color:var(--ink);}
+  .raw pre .c{color:var(--muted);}
+  .raw pre .k{color:var(--accent-ink); font-weight:500;}
+
+  button.copy{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; cursor:pointer;
+    border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); border-radius:8px; padding:5px 11px; transition:all .15s;}
+  button.copy:hover{border-color:var(--accent); color:var(--accent-ink);}
+  button.copy.ok{background:var(--done-wash); border-color:var(--done-line); color:var(--done);}
+  .raw .top button.copy{margin-left:auto;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  /* variable rows */
+  .rows{display:flex; flex-direction:column; gap:10px;}
+  .row{display:grid; grid-template-columns:26px 1fr; gap:12px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:13px 15px; box-shadow:var(--shadow);}
+  .row.done{border-left:3px solid var(--done);}
+  .row.add{border-left:3px solid var(--add);}
+  .row.opt{border-left:3px solid var(--opt);}
+  .row .chk{width:20px; height:20px; margin-top:2px; accent-color:var(--accent); cursor:pointer;}
+  .row .body{min-width:0;}
+  .row .name{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .row .name .var{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:14px; color:var(--ink); word-break:break-all;}
+  .row .name button.copy{padding:2px 8px; font-size:11px;}
+  .row .meta{font-size:13.5px; color:var(--muted); margin-top:5px;}
+  .row .meta .src{color:var(--ink);}
+  .row .flag{display:inline-block; margin-top:7px; font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--accent-ink); background:var(--accent-wash); border:1px solid var(--line); border-radius:7px; padding:2px 8px;}
+  .checked .var{text-decoration:line-through; text-decoration-color:var(--muted); opacity:.7;}
+
+  /* step-by-step accordion */
+  details.steps{margin-top:10px; border:1px solid var(--line); border-radius:10px; background:var(--surface-2); overflow:hidden;}
+  details.steps>summary{cursor:pointer; list-style:none; padding:8px 12px; font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; color:var(--accent-ink); display:flex; align-items:center; gap:8px;}
+  details.steps>summary::-webkit-details-marker{display:none;}
+  details.steps>summary .chev{transition:transform .18s ease; display:inline-block;}
+  details.steps[open]>summary .chev{transform:rotate(90deg);}
+  details.steps>summary:hover{color:var(--accent);}
+  details.steps .steps-body{padding:4px 16px 14px 16px; border-top:1px solid var(--line);}
+  ol.stepslist{margin:12px 0 0; padding-left:20px; font-size:13.5px; color:var(--ink);}
+  ol.stepslist li{margin:0 0 9px; line-height:1.5;}
+  ol.stepslist li .mono, .meta .mono, .final .mono, .lead .mono{font-family:"IBM Plex Mono",monospace; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:.92em;}
+  ol.stepslist li b{color:var(--ink);}
+
+  .final{background:var(--accent-wash); border:1px solid var(--line-strong); border-radius:14px; padding:18px 20px; margin-top:14px; box-shadow:var(--shadow);}
+  .final h3{font-size:16px; margin-bottom:6px;}
+  .final p{margin:6px 0 0; font-size:14px; color:var(--ink);}
+  footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:12.5px;}
+  @media (max-width:640px){ .flow{grid-template-columns:1fr 1fr;} .hero h2{font-size:24px;} }
+</style>
+
+<header>
+  <div class="hbar">
+    <h1>Railway Key Setup</h1>
+    <span class="tag">Get Goods Gratis · backend service</span>
+    <div class="progress">
+      <span id="ptext">0 of 0</span>
+      <span class="bar"><i id="pbar"></i></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <span class="eyebrow">Plug-and-play</span>
+    <h2>Every API the app uses — where to get each key, and how, step by step.</h2>
+    <p>Each service is read from a Railway <strong>environment variable</strong>. The free-tier stack is already
+      in and running at $0 — the only set you <em>must</em> add is <strong>payments</strong>; the rest are
+      optional levers. Below: the full API list at a glance, then each one with a copy-paste block, its paired
+      flag, and a <strong>Step-by-step</strong> guide to create the account and find the key.</p>
+  </div>
+
+  <div class="flow">
+    <div class="step"><div class="n">01</div><div class="t">Gather</div><div class="d">Open each API's <b>Step-by-step</b> guide below and copy the key it names.</div></div>
+    <div class="step"><div class="n">02</div><div class="t">Paste</div><div class="d">Railway → your service → <b>Variables</b> → <b>Raw Editor</b> → paste a block.</div></div>
+    <div class="step"><div class="n">03</div><div class="t">Flip flags</div><div class="d">Turn on any paired feature flag (e.g. <span class="mono">card_charging</span>).</div></div>
+    <div class="step"><div class="n">04</div><div class="t">Self-test</div><div class="d">Run <span class="mono">provisioningSelfTest</span> — green/red per provider.</div></div>
+  </div>
+
+  <!-- SECTION: DIRECTORY -->
+  <section id="directory">
+    <div class="sec-head">
+      <h3>All APIs at a glance</h3>
+      <span class="count">13 services · 2 required, rest optional</span>
+    </div>
+    <p class="lead">Every third-party service the backend integrates with. <span class="st add" style="font-family:inherit">Add now</span> = required to charge cards. <span class="st done" style="font-family:inherit">Live</span> = already set and free. <span class="st opt" style="font-family:inherit">Optional</span> = adds a capability but nothing breaks without it.</p>
+    <div class="dirwrap">
+      <table class="dir">
+        <thead><tr><th>API / service</th><th>Powers</th><th>Cost</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="api"><a href="#stripe">Stripe</a></td><td class="powers">Card checkout, survey charges, payouts</td><td class="cost">usage %</td><td><span class="st add">add now</span></td></tr>
+          <tr><td class="api"><a href="#paypal">PayPal</a></td><td class="powers">Card orders + payouts to sellers/members</td><td class="cost">usage %</td><td><span class="st add">add now</span></td></tr>
+          <tr><td class="api"><a href="#groq">Groq</a></td><td class="powers">LLM, speech-to-text, autonomous agents</td><td class="cost">$0 free</td><td><span class="st done">live</span></td></tr>
+          <tr><td class="api"><a href="#cloudflare">Cloudflare Workers AI</a></td><td class="powers">Image generation (FLUX)</td><td class="cost">$0 free</td><td><span class="st done">live</span></td></tr>
+          <tr><td class="api"><a href="#r2">Cloudflare R2</a></td><td class="powers">Media/video storage + CDN playback</td><td class="cost">$0 free</td><td><span class="st done">live</span></td></tr>
+          <tr><td class="api"><a href="#brevo">Brevo</a></td><td class="powers">Transactional email</td><td class="cost">$0 / 300 day</td><td><span class="st done">live</span></td></tr>
+          <tr><td class="api"><a href="#openai">OpenAI / Anthropic</a></td><td class="powers">AI fallback if Groq is down</td><td class="cost">usage</td><td><span class="st opt">optional</span></td></tr>
+          <tr><td class="api"><a href="#bitlabs">BitLabs</a></td><td class="powers">Third-party survey wall (extra earnings)</td><td class="cost">rev-share</td><td><span class="st opt">optional</span></td></tr>
+          <tr><td class="api"><a href="#twilio">Twilio</a></td><td class="powers">SMS notifications / phone verification</td><td class="cost">usage</td><td><span class="st opt">optional</span></td></tr>
+          <tr><td class="api"><a href="#aws">AWS (SES / Polly / Bedrock)</a></td><td class="powers">Alt email, voice, image provider</td><td class="cost">usage</td><td><span class="st opt">optional</span></td></tr>
+          <tr><td class="api"><a href="#feed">Product-feed / affiliate</a></td><td class="powers">Assistant searches beyond your catalog</td><td class="cost">varies</td><td><span class="st opt">optional</span></td></tr>
+          <tr><td class="api"><a href="#redis">Redis (Railway)</a></td><td class="powers">Shared cache across instances</td><td class="cost">~$0–5</td><td><span class="st opt">optional</span></td></tr>
+          <tr><td class="api"><a href="#neon">Neon</a></td><td class="powers">Read-replica DB offload</td><td class="cost">$0 free</td><td><span class="st opt">optional</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION: PAYMENTS -->
+  <section id="payments">
+    <div class="sec-head">
+      <h3>Add now — Payments</h3><span class="pill add">to add</span>
+      <span class="count">Stripe + PayPal · 1 flag</span>
+    </div>
+    <p class="lead">The one remaining set of real keys. Card checkout and payouts stay off until these are set and the flag is flipped.</p>
+
+    <div class="note"><b>Two gates before you turn this on.</b> Money-out is a permanent compliance line — clear it
+      with your lawyer first. And these are payment credentials, so <b>you enter them yourself</b> — they should
+      never be handled by anyone else.</div>
+
+    <div class="raw">
+      <div class="top"><span class="lbl"># Payments — Railway raw block</span>
+        <button class="copy" data-copy="pay">Copy block</button></div>
+      <pre id="raw-pay"><span class="c"># Stripe — dashboard.stripe.com (Live mode)</span>
+<span class="k">STRIPE_SECRET_KEY</span>=sk_live_REPLACE_ME
+<span class="k">STRIPE_WEBHOOK_SECRET</span>=whsec_REPLACE_ME
+<span class="c"># PayPal — developer.paypal.com</span>
+<span class="k">PAYPAL_CLIENT_ID</span>=REPLACE_ME
+<span class="k">PAYPAL_SECRET</span>=REPLACE_ME
+<span class="c"># sandbox while testing, then flip to live:</span>
+<span class="k">PAYPAL_ENV</span>=sandbox
+<span class="c"># needed for PayPal return/cancel redirects + optional payout receiver:</span>
+<span class="k">PUBLIC_SITE_URL</span>=https://yourdomain.com
+<span class="k">PAYPAL_BUSINESS_EMAIL</span>=you@business.com</pre>
+    </div>
+
+    <div class="rows" style="margin-top:14px">
+      <!-- STRIPE -->
+      <label class="row add" id="stripe"><input type="checkbox" class="chk" data-id="STRIPE_SECRET_KEY"><div class="body">
+        <div class="name"><span class="var">STRIPE_SECRET_KEY</span> <span class="var" style="color:var(--muted)">+ STRIPE_WEBHOOK_SECRET</span><button class="copy" data-copy-text="STRIPE_SECRET_KEY">Copy</button></div>
+        <div class="meta"><span class="src">Stripe</span> — card checkout, survey charges, payouts. <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener">dashboard.stripe.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — get your Stripe keys</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Go to <a href="https://dashboard.stripe.com" target="_blank" rel="noopener">dashboard.stripe.com</a> and sign in (or create the account). Complete <b>Activate account</b> — Stripe won't issue live keys until your business details are verified.</li>
+            <li>Toggle to <b>Live mode</b> (switch at the top-right — it must not say "Test mode").</li>
+            <li><b>Developers → API keys</b>. Under <b>Secret key</b> click <b>Reveal live key</b>, copy the value (<span class="mono">sk_live_…</span>) → this is <span class="mono">STRIPE_SECRET_KEY</span>.</li>
+            <li><b>Developers → Webhooks → Add endpoint</b>. For the URL, use your deployed <span class="mono">stripeWebhook</span> function URL (your Railway domain + the stripeWebhook route). Select events <span class="mono">payment_intent.succeeded</span> and <span class="mono">checkout.session.completed</span>, then <b>Add endpoint</b>.</li>
+            <li>Open the endpoint you just made and copy its <b>Signing secret</b> (<span class="mono">whsec_…</span>) → this is <span class="mono">STRIPE_WEBHOOK_SECRET</span>.</li>
+            <li>Paste both into Railway → Variables. Done.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- PAYPAL -->
+      <label class="row add" id="paypal"><input type="checkbox" class="chk" data-id="PAYPAL_CLIENT_ID"><div class="body">
+        <div class="name"><span class="var">PAYPAL_CLIENT_ID</span> · <span class="var">PAYPAL_SECRET</span><button class="copy" data-copy-text="PAYPAL_CLIENT_ID">Copy</button></div>
+        <div class="meta"><span class="src">PayPal</span> — card orders and payouts route through your PayPal business account. <a href="https://developer.paypal.com/dashboard/applications" target="_blank" rel="noopener">developer.paypal.com</a></div>
+        <span class="flag">resolved: the SDK and all payout functions now read a single <b>PAYPAL_SECRET</b> (legacy PAYPAL_SECRET_KEY still works as a fallback)</span>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — get your PayPal keys</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Go to <a href="https://developer.paypal.com/dashboard/applications" target="_blank" rel="noopener">developer.paypal.com</a> and log in with your PayPal <b>Business</b> account.</li>
+            <li><b>Apps &amp; Credentials.</b> Start on the <b>Sandbox</b> tab to test; switch to <b>Live</b> when you go real. Click <b>Create App</b> (type: Merchant / REST), name it, create it, then open it.</li>
+            <li>Copy the <b>Client ID</b> → <span class="mono">PAYPAL_CLIENT_ID</span>. Click <b>Show</b> under <b>Secret</b> and copy it → <span class="mono">PAYPAL_SECRET</span>. (The whole backend now reads this one name; if you already set the old <span class="mono">PAYPAL_SECRET_KEY</span> it still works as a fallback.)</li>
+            <li>Set <span class="mono">PAYPAL_ENV=sandbox</span> while testing; change it to <span class="mono">live</span> only after a clean sandbox run. (Advanced: <span class="mono">PAYPAL_API_BASE</span> can override the URL directly, but <span class="mono">PAYPAL_ENV</span> is the simple switch.)</li>
+            <li>Set <span class="mono">PUBLIC_SITE_URL</span> to your live domain — PayPal uses it for the buyer's return/cancel redirects. Optionally set <span class="mono">PAYPAL_BUSINESS_EMAIL</span> to the PayPal address that should receive payouts.</li>
+            <li>After counsel clears money-out, turn the <b>card_charging</b> flag ON (next row). Keys alone don't start charging.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- FLAG -->
+      <label class="row add"><input type="checkbox" class="chk" data-id="flag_card_charging"><div class="body">
+        <div class="name"><span class="var">FLAG · card_charging</span></div>
+        <div class="meta">After counsel clears money-out, turn the <span class="mono">card_charging</span> flag <b>ON</b> in the admin Compliance / Feature Flags panel. This is what actually switches on card checkout — keys alone don't.</div></div></label>
+    </div>
+  </section>
+
+  <!-- SECTION: ALREADY LIVE -->
+  <section id="live">
+    <div class="sec-head">
+      <h3>Already live — free-tier stack</h3><span class="pill done">done · $0</span>
+      <span class="count">verify only — steps included in case you rotate a key</span>
+    </div>
+    <p class="lead">These are set and running. Listed with steps so you can re-fetch or rotate any key. No action unless one shows red in the self-test.</p>
+    <div class="rows">
+      <!-- GROQ -->
+      <label class="row done" id="groq"><input type="checkbox" class="chk" data-id="GROQ_API_KEY" checked><div class="body">
+        <div class="name"><span class="var">GROQ_API_KEY</span></div>
+        <div class="meta">Groq free tier — Llama (LLM + your autonomous agents) and Whisper (speech-to-text), $0. <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — get a Groq key</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Go to <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> and sign in (free — Google/GitHub sign-in works).</li>
+            <li><b>API Keys → Create API Key.</b> Name it (e.g. "ggg-backend") and create.</li>
+            <li>Copy the key immediately (it's shown once) → <span class="mono">GROQ_API_KEY</span>. Paste into Railway.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- CLOUDFLARE WORKERS AI -->
+      <label class="row done" id="cloudflare"><input type="checkbox" class="chk" data-id="CLOUDFLARE" checked><div class="body">
+        <div class="name"><span class="var">CLOUDFLARE_ACCOUNT_ID</span> · <span class="var">CLOUDFLARE_API_TOKEN</span></div>
+        <div class="meta">Cloudflare Workers AI (FLUX image generation) — free tier, commercially licensed. <a href="https://dash.cloudflare.com" target="_blank" rel="noopener">dash.cloudflare.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — get the Cloudflare AI credentials</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Go to <a href="https://dash.cloudflare.com" target="_blank" rel="noopener">dash.cloudflare.com</a> and sign in.</li>
+            <li>Your <b>Account ID</b> is on the right sidebar of any domain, or under <b>Workers &amp; Pages → Overview</b> → copy it → <span class="mono">CLOUDFLARE_ACCOUNT_ID</span>.</li>
+            <li>Top-right profile → <b>My Profile → API Tokens → Create Token</b>. Use the <b>Workers AI</b> template (or a custom token with <b>Account → Workers AI → Read</b>). Create it.</li>
+            <li>Copy the token (shown once) → <span class="mono">CLOUDFLARE_API_TOKEN</span>. Paste both into Railway.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- R2 -->
+      <label class="row done" id="r2"><input type="checkbox" class="chk" data-id="R2" checked><div class="body">
+        <div class="name"><span class="var">HLS_STORAGE_BUCKET</span> · <span class="var">HLS_S3_ENDPOINT</span> · <span class="var">HLS_S3_ACCESS_KEY_ID</span> · <span class="var">HLS_S3_SECRET_ACCESS_KEY</span> · <span class="var">HLS_S3_REGION</span> · <span class="var">HLS_PLAYBACK_BASE_URL</span></div>
+        <div class="meta">Cloudflare R2 object store + CDN (bucket <span class="mono">ggg-media</span>) — the six media vars. Swap <span class="mono">HLS_PLAYBACK_BASE_URL</span> to a real domain before production (r2.dev is rate-limited).</div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — R2 storage keys</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>In the Cloudflare dashboard → <b>R2</b>. Your bucket <span class="mono">ggg-media</span> is already there → its name is <span class="mono">HLS_STORAGE_BUCKET</span>.</li>
+            <li><b>R2 → Manage R2 API Tokens → Create API token</b> with <b>Object Read &amp; Write</b>. Create it.</li>
+            <li>Copy the <b>Access Key ID</b> → <span class="mono">HLS_S3_ACCESS_KEY_ID</span> and the <b>Secret Access Key</b> → <span class="mono">HLS_S3_SECRET_ACCESS_KEY</span> (shown once).</li>
+            <li>The token page shows the S3 <b>endpoint</b> <span class="mono">https://&lt;account-id&gt;.r2.cloudflarestorage.com</span> → <span class="mono">HLS_S3_ENDPOINT</span>. Region is <span class="mono">auto</span> → <span class="mono">HLS_S3_REGION</span>.</li>
+            <li>For <span class="mono">HLS_PLAYBACK_BASE_URL</span>, connect a custom domain to the bucket (R2 → bucket → Settings → Public access / Custom domain) and use that URL for production.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- BREVO -->
+      <label class="row done" id="brevo"><input type="checkbox" class="chk" data-id="EMAIL" checked><div class="body">
+        <div class="name"><span class="var">EMAIL_PROVIDER</span>=brevo · <span class="var">BREVO_API_KEY</span> · <span class="var">EMAIL_FROM</span></div>
+        <div class="meta">Brevo email, free 300/day. <span class="mono">EMAIL_FROM</span> must be a <b>Verified</b> Brevo sender — the self-test checks this for you.</div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — Brevo email key</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Go to <a href="https://www.brevo.com" target="_blank" rel="noopener">brevo.com</a> and create a free account (300 emails/day).</li>
+            <li>Top-right menu → <b>SMTP &amp; API → API Keys → Generate a new API key</b>. Copy it → <span class="mono">BREVO_API_KEY</span>, and set <span class="mono">EMAIL_PROVIDER=brevo</span>.</li>
+            <li><b>Senders, Domains &amp; Dedicated IPs → Senders → Add a sender</b>, then confirm the verification email. That verified address is <span class="mono">EMAIL_FROM</span>.</li>
+          </ol></div>
+        </details></div></label>
+    </div>
+  </section>
+
+  <!-- SECTION: OPTIONAL -->
+  <section id="optional">
+    <div class="sec-head">
+      <h3>Optional — capabilities, scaling &amp; convenience</h3><span class="pill opt">optional</span>
+      <span class="count">nothing here blocks launch</span>
+    </div>
+    <p class="lead">Each falls back gracefully when unset. Add whichever lever you want.</p>
+
+    <div class="raw">
+      <div class="top"><span class="lbl"># Optional — Railway raw block</span>
+        <button class="copy" data-copy="opt">Copy block</button></div>
+      <pre id="raw-opt"><span class="c"># Turn on the cost-floor watchdog (this session's build)</span>
+<span class="k">COST_WATCHDOG_ENABLED</span>=1
+<span class="c"># AI runaway brake — a few dollars is plenty (free-tier calls don't count)</span>
+<span class="k">AI_DAILY_SPEND_CAP_USD</span>=5
+<span class="c"># AI fallback if Groq is ever down (Groq stays primary, $0)</span>
+<span class="k">OPENAI_API_KEY</span>=sk-REPLACE_ME
+<span class="c"># BitLabs third-party survey wall (extra earning source)</span>
+<span class="k">BITLABS_API_KEY</span>=REPLACE_ME
+<span class="k">BITLABS_WEBHOOK_SECRET</span>=REPLACE_ME
+<span class="c"># Twilio SMS (notifications / phone verification)</span>
+<span class="k">TWILIO_ACCOUNT_SID</span>=REPLACE_ME
+<span class="k">TWILIO_AUTH_TOKEN</span>=REPLACE_ME
+<span class="k">TWILIO_PHONE_NUMBER</span>=+1XXXXXXXXXX
+<span class="c"># Product-feed discovery (assistant searches beyond your catalog)</span>
+<span class="k">PRODUCT_FEED_API_BASE</span>=REPLACE_ME
+<span class="k">PRODUCT_FEED_API_KEY</span>=REPLACE_ME
+<span class="k">AFFILIATE_TAG</span>=REPLACE_ME
+<span class="c"># Shared cache across instances (add a Railway Redis, paste its URL)</span>
+<span class="k">REDIS_URL</span>=REPLACE_ME
+<span class="c"># Free read-replica offload (Neon) — read routing is already built</span>
+<span class="k">DATABASE_REPLICA_URL</span>=REPLACE_ME</pre>
+    </div>
+
+    <div class="rows" style="margin-top:14px">
+      <label class="row opt"><input type="checkbox" class="chk" data-id="COST_WATCHDOG_ENABLED"><div class="body">
+        <div class="name"><span class="var">COST_WATCHDOG_ENABLED</span><button class="copy" data-copy-text="COST_WATCHDOG_ENABLED">Copy</button></div>
+        <div class="meta">Set to <span class="mono">1</span> to switch on the read-only cost-floor watchdog (alerts before any free tier tips into paid). No account needed — just the flag.</div></div></label>
+
+      <label class="row opt"><input type="checkbox" class="chk" data-id="AI_DAILY_SPEND_CAP_USD"><div class="body">
+        <div class="name"><span class="var">AI_DAILY_SPEND_CAP_USD</span><button class="copy" data-copy-text="AI_DAILY_SPEND_CAP_USD">Copy</button></div>
+        <div class="meta">A number (e.g. <span class="mono">5</span>) — a hard daily brake on paid AI spend. Free Groq/Cloudflare calls don't count against it. No account needed.</div></div></label>
+
+      <!-- OPENAI -->
+      <label class="row opt" id="openai"><input type="checkbox" class="chk" data-id="OPENAI_API_KEY"><div class="body">
+        <div class="name"><span class="var">OPENAI_API_KEY</span> <span class="var" style="color:var(--muted)">or ANTHROPIC_API_KEY</span><button class="copy" data-copy-text="OPENAI_API_KEY">Copy</button></div>
+        <div class="meta">Optional AI fallback — Groq is primary and free; this only kicks in if Groq is unavailable.</div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — OpenAI or Anthropic key</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li><b>OpenAI:</b> go to <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>, sign in, <b>Create new secret key</b>, copy it (<span class="mono">sk-…</span>) → <span class="mono">OPENAI_API_KEY</span>. Add a small billing balance so the fallback can actually fire.</li>
+            <li><b>Anthropic (alternative):</b> go to <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → <b>API Keys → Create Key</b> → <span class="mono">ANTHROPIC_API_KEY</span>. Set either one, not both.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- BITLABS -->
+      <label class="row opt" id="bitlabs"><input type="checkbox" class="chk" data-id="BITLABS"><div class="body">
+        <div class="name"><span class="var">BITLABS_API_KEY</span> · <span class="var">BITLABS_WEBHOOK_SECRET</span><button class="copy" data-copy-text="BITLABS_API_KEY">Copy</button></div>
+        <div class="meta">A third-party survey wall — an extra earning source for members on top of your own surveys. <a href="https://www.bitlabs.ai" target="_blank" rel="noopener">bitlabs.ai</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — BitLabs publisher keys</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Apply for a <b>publisher</b> account at <a href="https://www.bitlabs.ai" target="_blank" rel="noopener">bitlabs.ai</a> and create an app/placement once approved.</li>
+            <li>In the publisher dashboard, copy your app's <b>API token</b> → <span class="mono">BITLABS_API_KEY</span>.</li>
+            <li>Set a <b>callback/postback secret</b> and point BitLabs' reward callback at your app's BitLabs webhook URL → <span class="mono">BITLABS_WEBHOOK_SECRET</span> (this is how completed surveys credit the member securely).</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- TWILIO -->
+      <label class="row opt" id="twilio"><input type="checkbox" class="chk" data-id="TWILIO"><div class="body">
+        <div class="name"><span class="var">TWILIO_ACCOUNT_SID</span> · <span class="var">TWILIO_AUTH_TOKEN</span> · <span class="var">TWILIO_PHONE_NUMBER</span><button class="copy" data-copy-text="TWILIO_ACCOUNT_SID">Copy</button></div>
+        <div class="meta">SMS notifications and phone verification. Without it those paths are simply skipped. <a href="https://www.twilio.com/console" target="_blank" rel="noopener">twilio.com/console</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — Twilio SMS keys</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Create an account at <a href="https://www.twilio.com" target="_blank" rel="noopener">twilio.com</a>. On the <b>Console</b> home, copy <b>Account SID</b> → <span class="mono">TWILIO_ACCOUNT_SID</span> and <b>Auth Token</b> → <span class="mono">TWILIO_AUTH_TOKEN</span>.</li>
+            <li><b>Phone Numbers → Buy a number</b> with SMS capability (or use a trial number). Copy it in E.164 form (<span class="mono">+1…</span>) → <span class="mono">TWILIO_PHONE_NUMBER</span>.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- AWS -->
+      <label class="row opt" id="aws"><input type="checkbox" class="chk" data-id="AWS"><div class="body">
+        <div class="name"><span class="var">AWS_ACCESS_KEY_ID</span> · <span class="var">AWS_SECRET_ACCESS_KEY</span> · <span class="var">AWS_REGION</span><button class="copy" data-copy-text="AWS_ACCESS_KEY_ID">Copy</button></div>
+        <div class="meta"><b>Only if</b> you'd rather run email on Amazon SES, voice on Polly, or images on Bedrock instead of the free Cloudflare + Brevo stack. Not needed while on the free stack. <a href="https://console.aws.amazon.com" target="_blank" rel="noopener">console.aws.amazon.com</a></div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — AWS credentials</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>In the AWS console → <b>IAM → Users → Create user</b>. Give it programmatic access with the policies you need (<span class="mono">AmazonSESFullAccess</span> for email, <span class="mono">AmazonPollyFullAccess</span> for voice, Bedrock access for images).</li>
+            <li>Create an <b>access key</b> for that user → copy <b>Access key ID</b> → <span class="mono">AWS_ACCESS_KEY_ID</span> and <b>Secret access key</b> → <span class="mono">AWS_SECRET_ACCESS_KEY</span> (shown once).</li>
+            <li>Set <span class="mono">AWS_REGION</span> (e.g. <span class="mono">us-east-1</span>). To use SES email, also set <span class="mono">EMAIL_PROVIDER=ses</span>, verify a sender, and request production access to leave the SES sandbox.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- PRODUCT FEED -->
+      <label class="row opt" id="feed"><input type="checkbox" class="chk" data-id="PRODUCT_FEED"><div class="body">
+        <div class="name"><span class="var">PRODUCT_FEED_API_BASE</span> · <span class="var">PRODUCT_FEED_API_KEY</span> · <span class="var">AFFILIATE_TAG</span></div>
+        <div class="meta">Your affiliate/product-feed network. Lets the shopping assistant search beyond your own catalog. Until set, it searches your catalog only.</div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — product-feed / affiliate</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Join a product-feed / affiliate network (e.g. Amazon Associates PA-API, Rakuten, Impact, or a datafeed provider) and get API access.</li>
+            <li>Set <span class="mono">PRODUCT_FEED_API_BASE</span> to the network's API base URL and <span class="mono">PRODUCT_FEED_API_KEY</span> to your issued key.</li>
+            <li>Set <span class="mono">AFFILIATE_TAG</span> to your tracking/affiliate ID so referral credit is attributed to you.</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- REDIS -->
+      <label class="row opt" id="redis"><input type="checkbox" class="chk" data-id="REDIS_URL"><div class="body">
+        <div class="name"><span class="var">REDIS_URL</span><button class="copy" data-copy-text="REDIS_URL">Copy</button></div>
+        <div class="meta">Shares the TTS/translation cache across instances (bigger savings at scale). Per-instance caching works fine without it.</div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — Railway Redis</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>In your Railway project → <b>New → Database → Add Redis</b>.</li>
+            <li>Open the Redis service → <b>Variables / Connect</b> → copy the connection URL Railway generated (<span class="mono">redis://…</span>).</li>
+            <li>Set it as <span class="mono">REDIS_URL</span> on your backend service. (Inside the same Railway project you can also reference it as a shared variable.)</li>
+          </ol></div>
+        </details></div></label>
+
+      <!-- NEON -->
+      <label class="row opt" id="neon"><input type="checkbox" class="chk" data-id="DATABASE_REPLICA_URL"><div class="body">
+        <div class="name"><span class="var">DATABASE_REPLICA_URL</span><button class="copy" data-copy-text="DATABASE_REPLICA_URL">Copy</button></div>
+        <div class="meta">A Postgres read replica — offloads <b>all</b> reads off the primary with zero code change (routing is already built). Railway has no managed replicas, so use Neon.</div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — Neon read replica</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>Create a free project at <a href="https://neon.tech" target="_blank" rel="noopener">neon.tech</a> (or open your existing one).</li>
+            <li>Enable a <b>read replica</b> (Neon → project → Branches/Compute → add a read-replica compute) and copy its <b>connection string</b>.</li>
+            <li>Set it as <span class="mono">DATABASE_REPLICA_URL</span>. Reads route to it automatically; if it's unset the app just uses the primary.</li>
+          </ol></div>
+        </details></div></label>
+    </div>
+  </section>
+
+  <div class="final">
+    <h3>Last step — verify with the self-test</h3>
+    <p>In the admin app, run the <span class="mono">provisioningSelfTest</span> function. It pings each provider
+      with a free verify call and returns <b style="color:var(--done)">green</b> / <b style="color:var(--add)">red</b>
+      per key — including whether <span class="mono">EMAIL_FROM</span> is a verified sender — so you know a key
+      actually works instead of waiting for a feature to break. Anything red comes with the exact fix.</p>
+  </div>
+
+  <footer>
+    Sources are the live codebase (<span class="mono">setupStatus</span>, <span class="mono">paypal-api.ts</span>,
+    <span class="mono">.env.example</span>, the payment/payout functions). Variable names, sources and flags are
+    exact as of this build. Payments are counsel-gated and yours to enter. Progress on this page is saved in your
+    browser only.
+  </footer>
+</div>
+
+<script>
+  const rawText = {
+    pay: `# Stripe — dashboard.stripe.com (Live mode)
+STRIPE_SECRET_KEY=sk_live_REPLACE_ME
+STRIPE_WEBHOOK_SECRET=whsec_REPLACE_ME
+# PayPal — developer.paypal.com (set BOTH secret names, same value)
+PAYPAL_CLIENT_ID=REPLACE_ME
+PAYPAL_SECRET=REPLACE_ME
+PAYPAL_SECRET_KEY=REPLACE_ME
+# sandbox while testing, then flip to live:
+PAYPAL_ENV=sandbox
+# needed for PayPal return/cancel redirects + optional payout receiver:
+PUBLIC_SITE_URL=https://yourdomain.com
+PAYPAL_BUSINESS_EMAIL=you@business.com`,
+    opt: `# Turn on the cost-floor watchdog
+COST_WATCHDOG_ENABLED=1
+# AI runaway brake
+AI_DAILY_SPEND_CAP_USD=5
+# AI fallback if Groq is down
+OPENAI_API_KEY=sk-REPLACE_ME
+# BitLabs third-party survey wall
+BITLABS_API_KEY=REPLACE_ME
+BITLABS_WEBHOOK_SECRET=REPLACE_ME
+# Twilio SMS
+TWILIO_ACCOUNT_SID=REPLACE_ME
+TWILIO_AUTH_TOKEN=REPLACE_ME
+TWILIO_PHONE_NUMBER=+1XXXXXXXXXX
+# Product-feed discovery
+PRODUCT_FEED_API_BASE=REPLACE_ME
+PRODUCT_FEED_API_KEY=REPLACE_ME
+AFFILIATE_TAG=REPLACE_ME
+# Shared cache
+REDIS_URL=REPLACE_ME
+# Read-replica offload (Neon)
+DATABASE_REPLICA_URL=REPLACE_ME`
+  };
+
+  function flash(btn, label){ const o=btn.textContent; btn.textContent=label; btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent=o; btn.classList.remove('ok');}, 1400); }
+  async function copy(text){ try{ await navigator.clipboard.writeText(text); return true; }catch{
+    try{ const t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select();
+      document.execCommand('copy'); t.remove(); return true; }catch{ return false; } } }
+
+  document.addEventListener('click', async (e)=>{
+    const b=e.target.closest('button.copy'); if(!b) return;
+    e.preventDefault();
+    const block=b.getAttribute('data-copy'); const text=b.getAttribute('data-copy-text');
+    const ok = await copy(block ? rawText[block] : text);
+    if(ok) flash(b, block ? 'Copied ✓' : '✓');
+  });
+
+  // progress + persistence
+  const KEY='ggg_railway_wizard_v1';
+  const boxes=[...document.querySelectorAll('.chk')];
+  let saved={}; try{ saved=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch{}
+  function paint(cb){ cb.closest('.row')?.classList.toggle('checked', cb.checked); }
+  function update(){
+    const total=boxes.length, done=boxes.filter(b=>b.checked).length;
+    document.getElementById('ptext').textContent=done+' of '+total;
+    document.getElementById('pbar').style.width=(total? (done/total*100):0)+'%';
+  }
+  boxes.forEach(cb=>{
+    const id=cb.getAttribute('data-id');
+    if(id in saved) cb.checked=saved[id];
+    paint(cb);
+    cb.addEventListener('change', ()=>{
+      saved[id]=cb.checked; try{ localStorage.setItem(KEY, JSON.stringify(saved)); }catch{}
+      paint(cb); update();
+    });
+  });
+  update();
+
+  // smooth-scroll for the directory anchor links, and open the target's steps
+  document.querySelectorAll('table.dir a[href^="#"]').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      const id=a.getAttribute('href').slice(1); const el=document.getElementById(id);
+      if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'center'});
+        const d=el.querySelector('details.steps'); if(d) d.open=true; }
+    });
+  });
+</script>

@@ -12,7 +12,7 @@ import { emitEvent } from "../../sdk/events.ts";
 // This is fully automated — money arrives in the recipient's Venmo balance instantly.
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
-const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
+const PAYPAL_SECRET_KEY = (Deno.env.get('PAYPAL_SECRET') || Deno.env.get('PAYPAL_SECRET_KEY'));
 const PAYPAL_BASE = 'https://api-m.paypal.com'; // Live endpoint
 
 async function getPayPalAccessToken() {

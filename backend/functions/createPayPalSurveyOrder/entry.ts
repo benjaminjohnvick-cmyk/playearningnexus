@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get('PAYPAL_CLIENT_ID');
-const PAYPAL_SECRET_KEY = Deno.env.get('PAYPAL_SECRET_KEY');
+const PAYPAL_SECRET_KEY = (Deno.env.get('PAYPAL_SECRET') || Deno.env.get('PAYPAL_SECRET_KEY'));
 const PAYPAL_BASE = 'https://api-m.sandbox.paypal.com'; // switch to api-m.paypal.com for live
 
 async function getPayPalAccessToken() {

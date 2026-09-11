@@ -74,7 +74,7 @@ export default __handler(async (req) => {
     // ── 3. Fetch PayPal payouts ────────────────────────────────────────────────
     let totalPayPal = 0;
     const PAYPAL_CLIENT = Deno.env.get('PAYPAL_CLIENT_ID');
-    const PAYPAL_SECRET = Deno.env.get('PAYPAL_SECRET_KEY');
+    const PAYPAL_SECRET = (Deno.env.get('PAYPAL_SECRET') || Deno.env.get('PAYPAL_SECRET_KEY'));
     const paypalPayoutRecords = periodPayouts.filter(p => p.method === 'paypal' && p.external_transaction_id);
 
     // Use internal PayPal records as the source of truth for PayPal total

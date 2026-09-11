@@ -169,7 +169,7 @@ async function processStripePayment(payout, base44) {
 async function processPayPalPayment(payout, base44) {
   try {
     const paypalClientId = Deno.env.get('PAYPAL_CLIENT_ID');
-    const paypalSecret = Deno.env.get('PAYPAL_SECRET_KEY');
+    const paypalSecret = (Deno.env.get('PAYPAL_SECRET') || Deno.env.get('PAYPAL_SECRET_KEY'));
     if (!paypalClientId || !paypalSecret) throw new Error('PayPal credentials not configured');
 
     // Get access token

@@ -13,7 +13,7 @@ export default __handler(async (req) => {
       const paypalRes = await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${btoa(`${Deno.env.get('PAYPAL_CLIENT_ID')}:${Deno.env.get('PAYPAL_SECRET_KEY')}`)}`,
+          'Authorization': `Basic ${btoa(`${Deno.env.get('PAYPAL_CLIENT_ID')}:${(Deno.env.get('PAYPAL_SECRET') || Deno.env.get('PAYPAL_SECRET_KEY'))}`)}`,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: 'grant_type=client_credentials',
