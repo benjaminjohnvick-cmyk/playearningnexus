@@ -3,7 +3,7 @@
 *Prepared for the owner and trademark counsel as part of the Trademarks packet. It explains the branded ad
 template, why it is **trade dress** (not a simple design mark), what to claim, and the realistic path to
 protection. **Not legal advice** — registrability and the filing are counsel's to determine, and trade dress in
-particular is a fact-specific, higher-bar question. Current as of 2026-09-07.*
+particular is a fact-specific, higher-bar question. Current as of 2026-09-11.*
 
 ---
 
@@ -20,6 +20,15 @@ fixed brand elements arranged the same way every time:
 with the advertiser's own creative dropped into the middle. Whatever product a given ad promotes, the *frame*
 makes it recognizable as coming from Get Goods Gratis. That consistent overall look is the thing this brief is
 about.
+
+> **Two distinct assets — note for counsel (2026-09-11).** The branded frame described here (**trade dress** — the
+> overall look and arrangement) and the **"G³" design mark** (a standard design trademark, which is *also* the
+> semi-transparent **watermark** stamped behind the ad) are **two separate IP assets on two separate filing
+> tracks**, documented by two separate briefs: **this** brief for the frame/trade dress, and **`WATERMARK-BRIEF`**
+> for the G³ mark. The frame *contains* the watermark but is **not** itself the watermark. The black-and-white
+> USPTO drawing files are likewise separate: **`AD-BRAND-FRAME-BW-USPTO.jpg`** (this frame / trade dress) and
+> **`GGG-mark-BW-USPTO-900px-350dpi.jpg`** (the G³ mark / watermark). *(This note was added after an image file
+> was corrected from a "watermark" name to `AD-BRAND-FRAME`, to keep the two assets clearly distinct.)*
 
 ## 2. The filing drawing (USPTO-compliant, black-and-white)
 
