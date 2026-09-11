@@ -15,7 +15,7 @@ your time, and the owner-provided accounts/fees are separate.)
 ---
 
 ## 1. Architecture in 30 seconds
-- **Frontend:** React + Vite **PWA** (208 pages). All server calls go through one module,
+- **Frontend:** React + Vite **PWA** (276 pages). All server calls go through one module,
   `src/api/base44Client.js`, over HTTP. Configured with `VITE_NEXUS_API_URL`.
 - **Backend:** self-hosted **Deno** service in `/backend` (formerly Base44). It mounts **526
   functions** as HTTP routes, has **239 Postgres tables**, JWT + Google auth, an agent runtime,
@@ -27,7 +27,7 @@ your time, and the owner-provided accounts/fees are separate.)
   (surveys), OpenAI or Anthropic (LLM), SendGrid or SES (email), Google OAuth, S3 (uploads).
 
 ## 2. What's already done — do NOT rebuild
-Full frontend + backend; auth (signup/login/password-reset/Google); all 526 functions converted to
+Full frontend + backend; auth (signup/login/password-reset/Google); all 1,009 functions converted to
 the self-hosted SDK; the 239-table schema; row-level security; agent runtime; scheduler; migration
 tooling; brand-matched auth screens; and the GamerGain icon set. It **compiles and passes syntax
 checks, and the DB layer is validated against real Postgres** — but it has **not been booted

@@ -21,7 +21,7 @@ Everything ships **on by default** — no feature-enablement steps. The only swi
 legally-gated ones (card charging, cash-out, etc.), which you enable later once their prerequisites are met.
 
 ## Architecture
-- **Frontend:** React + Vite PWA (208 pages). Talks to the backend over HTTP via `src/api/base44Client.js`.
+- **Frontend:** React + Vite PWA (276 pages). Talks to the backend over HTTP via `src/api/base44Client.js`.
 - **Backend:** self-hosted **Deno** service in `/backend` — 526 HTTP function routes, 239 Postgres
   tables, JWT + Google auth, an agent runtime, and a cron scheduler. Docker + docker-compose included.
 - **Database:** PostgreSQL (schema in `backend/db/schema.sql`).
