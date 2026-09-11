@@ -1,4 +1,4 @@
-<title>API Setup Wizard</title>
+<title>Setup, Domain & Deploy Wizard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -141,8 +141,8 @@
 
 <header>
   <div class="hbar">
-    <h1>API Setup Wizard</h1>
-    <span class="tag">Get Goods Gratis · API keys</span>
+    <h1>Setup, Domain &amp; Deploy Wizard</h1>
+    <span class="tag">Get Goods Gratis · Railway</span>
     <div class="progress">
       <span id="ptext">0 of 0</span>
       <span class="bar"><i id="pbar"></i></span>
@@ -153,25 +153,26 @@
 <div class="wrap">
   <div class="hero">
     <span class="eyebrow">Plug-and-play</span>
-    <h2>Every API the app uses — where to get each key, and how, step by step.</h2>
-    <p>Each service is read from a Railway <strong>environment variable</strong>. The free-tier stack is already
-      in and running at $0 — the only set you <em>must</em> add is <strong>payments</strong>; the rest are
-      optional levers. Below: the full API list at a glance, then each one with a copy-paste block, its paired
-      flag, and a <strong>Step-by-step</strong> guide to create the account and find the key.</p>
+    <h2>Set your API keys, put the app on your own domain, and deploy — step by step.</h2>
+    <p>Every service is read from a Railway <strong>environment variable</strong>. The free-tier stack is already
+      in and running at $0; the only keys you <em>must</em> add are <strong>payments</strong>. This wizard covers
+      all three go-live pieces: the <strong>API keys</strong> (with a step-by-step guide per service), a
+      <strong>custom domain</strong>, and the <strong>deploy</strong>. Your app is already live on Railway — the
+      steps below take it to your own domain.</p>
   </div>
 
   <div class="flow">
-    <div class="step"><div class="n">01</div><div class="t">Gather</div><div class="d">Open each API's <b>Step-by-step</b> guide below and copy the key it names.</div></div>
+    <div class="step"><div class="n">01</div><div class="t">Keys</div><div class="d">Open each API's <b>Step-by-step</b> guide and copy the key it names.</div></div>
     <div class="step"><div class="n">02</div><div class="t">Paste</div><div class="d">Railway → your service → <b>Variables</b> → <b>Raw Editor</b> → paste a block.</div></div>
-    <div class="step"><div class="n">03</div><div class="t">Flip flags</div><div class="d">Turn on any paired feature flag (e.g. <span class="mono">card_charging</span>).</div></div>
-    <div class="step"><div class="n">04</div><div class="t">Self-test</div><div class="d">Run <span class="mono">provisioningSelfTest</span> — green/red per provider.</div></div>
+    <div class="step"><div class="n">03</div><div class="t">Domain</div><div class="d">Point your custom domain at Railway, then switch the domain env vars over.</div></div>
+    <div class="step"><div class="n">04</div><div class="t">Deploy &amp; test</div><div class="d">Push to <span class="mono">main</span> (auto-deploys), then run <span class="mono">provisioningSelfTest</span>.</div></div>
   </div>
 
   <!-- SECTION: DIRECTORY -->
   <section id="directory">
     <div class="sec-head">
-      <h3>All APIs at a glance</h3>
-      <span class="count">12 rows · 2 required · 11 survey networks in their own section</span>
+      <h3>Everything at a glance</h3>
+      <span class="count">APIs + custom domain &amp; deploy · 11 survey networks in their own section</span>
     </div>
     <p class="lead">Every third-party service the backend integrates with. <span class="st add" style="font-family:inherit">Add now</span> = required to charge cards. <span class="st done" style="font-family:inherit">Live</span> = already set and free. <span class="st opt" style="font-family:inherit">Optional</span> = adds a capability but nothing breaks without it.</p>
     <div class="dirwrap">
@@ -191,6 +192,7 @@
           <tr><td class="api"><a href="#feed">Product-feed / affiliate</a></td><td class="powers">Assistant searches beyond your catalog</td><td class="cost">varies</td><td><span class="st opt">optional</span></td></tr>
           <tr><td class="api"><a href="#redis">Redis (Railway)</a></td><td class="powers">Shared cache across instances</td><td class="cost">~$0–5</td><td><span class="st opt">optional</span></td></tr>
           <tr><td class="api"><a href="#neon">Neon</a></td><td class="powers">Read-replica DB offload</td><td class="cost">$0 free</td><td><span class="st opt">optional</span></td></tr>
+          <tr><td class="api"><a href="#deploy">Custom domain &amp; deploy</a></td><td class="powers">Point your domain at Railway + go-live env vars</td><td class="cost">~$12/yr</td><td><span class="st add">go-live</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -602,6 +604,88 @@
     </div>
   </section>
 
+  <!-- SECTION: CUSTOM DOMAIN & DEPLOY -->
+  <section id="deploy">
+    <div class="sec-head">
+      <h3>Custom domain &amp; deploy</h3><span class="pill add">go-live</span>
+      <span class="count">put the app on your own domain, then redeploy</span>
+    </div>
+    <p class="lead">The app is <b>already deployed on Railway</b> and live at its <span class="mono">.up.railway.app</span>
+      URLs (frontend service <span class="mono">getgreen</span>, backend service <span class="mono">playearningnexus</span>,
+      project <span class="mono">passionate-presence</span>). All services <b>auto-deploy on every push to GitHub
+      <span class="mono">main</span></b>. To put it on your own domain: register the domain, point it at Railway,
+      then switch the domain-aware env vars over.</p>
+
+    <div class="note"><b>You do the purchase and DNS.</b> Registering a domain is a purchase, and DNS records are
+      changed at your registrar — those two steps are yours to do (I don't buy domains or change your registrar
+      settings). Everything else is Railway + env vars.</div>
+
+    <div class="rows">
+      <label class="row add" id="deploy-domain"><input type="checkbox" class="chk" data-id="DOMAIN_ON_RAILWAY"><div class="body">
+        <div class="name"><span class="var">Point your domain at Railway</span></div>
+        <div class="meta">Add the domain to the <span class="mono">getgreen</span> (website) service; Railway issues HTTPS automatically once DNS resolves (~2 min).</div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — custom domain on Railway</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li><b>Register a domain</b> at a registrar — Cloudflare, Namecheap, GoDaddy, or Squarespace (~$12/yr). This is a purchase you make. (Target was <span class="mono">GetGreen.com</span>; if it's taken, alternatives like <span class="mono">getgreen.shop</span>, <span class="mono">.app</span>, <span class="mono">.store</span>, or <span class="mono">joingetgreen.com</span> work.)</li>
+            <li>In Railway, open project <span class="mono">passionate-presence</span> → the <b>getgreen</b> service → <b>Settings → Networking → + Custom Domain</b>. Enter your domain (e.g. <span class="mono">www.yourdomain.com</span>).</li>
+            <li>Railway returns a <b>CNAME target</b>. At your registrar's DNS, add a <b>CNAME</b> record pointing your domain to that target. For a root/apex domain (<span class="mono">yourdomain.com</span> with no <span class="mono">www</span>), use the registrar's <b>ALIAS/ANAME</b> record, or host DNS at Cloudflare (its CNAME-flattening allows a CNAME at the apex).</li>
+            <li><b>SSL certificate — automatic, free, nothing to buy.</b> As soon as the DNS record resolves, Railway <b>provisions a TLS/SSL certificate for you via Let's Encrypt</b> and serves the domain over <span class="mono">https://</span> (auto-renewing). You do <b>not</b> buy a certificate, generate a CSR, or upload anything — the domain shows "Active" with a lock icon in ~2 minutes once DNS is live. (Don't pay a registrar's upsell for an SSL cert; Railway's is included.)</li>
+            <li><b>If the certificate doesn't issue:</b> it's almost always DNS — confirm the CNAME/ALIAS actually resolves to Railway's target (<span class="mono">nslookup yourdomain.com</span>), and check you have no <b>CAA record</b> blocking Let's Encrypt (either remove it or add one allowing <span class="mono">letsencrypt.org</span>). Railway retries automatically once DNS is correct.</li>
+            <li><b>If you put Cloudflare in front</b> (DNS proxied / orange cloud): Cloudflare issues its own free <b>Universal SSL</b> at the edge — turn Universal SSL on and set SSL/TLS mode to <b>Full (strict)</b> so it trusts Railway's origin certificate. Either path (Railway direct, or Cloudflare in front) gives you HTTPS at no cost.</li>
+            <li><b>Optional:</b> to serve the API on your domain too, add a second custom domain like <span class="mono">api.yourdomain.com</span> to the <b>playearningnexus</b> (backend) service the same way — it gets its own auto-issued certificate — then set the frontend's <span class="mono">VITE_NEXUS_API_URL</span> to it (below).</li>
+          </ol></div>
+        </details></div></label>
+    </div>
+
+    <p class="lead" style="margin-top:18px">Once the domain is live, set these so redirects, links, media, and CORS use it instead of the Railway URLs:</p>
+    <div class="raw">
+      <div class="top"><span class="lbl"># Domain env vars — Railway raw block</span>
+        <button class="copy" data-copy="deploy">Copy block</button></div>
+      <pre id="raw-deploy"><span class="c"># Set on the BACKEND (playearningnexus) service once your domain is live:</span>
+<span class="k">PUBLIC_SITE_URL</span>=https://www.yourdomain.com
+<span class="k">APP_URL</span>=https://www.yourdomain.com
+<span class="k">FRONTEND_URL</span>=https://www.yourdomain.com
+<span class="c"># was * (open) — lock CORS to your domain in production:</span>
+<span class="k">CORS_ORIGIN</span>=https://www.yourdomain.com
+<span class="c"># only if you gave the BACKEND its own domain (api.yourdomain.com):</span>
+<span class="k">BACKEND_URL</span>=https://api.yourdomain.com
+<span class="c"># R2 media playback — swap off the rate-limited r2.dev to your CDN domain:</span>
+<span class="k">HLS_PLAYBACK_BASE_URL</span>=https://media.yourdomain.com
+<span class="c"># Set on the FRONTEND (getgreen) service — points the site at the backend:</span>
+<span class="k">VITE_NEXUS_API_URL</span>=https://api.yourdomain.com</pre>
+    </div>
+
+    <div class="rows" style="margin-top:14px">
+      <label class="row add"><input type="checkbox" class="chk" data-id="PUBLIC_SITE_URL_DOMAIN"><div class="body">
+        <div class="name"><span class="var">PUBLIC_SITE_URL</span> · <span class="var">APP_URL</span> · <span class="var">FRONTEND_URL</span><button class="copy" data-copy-text="PUBLIC_SITE_URL">Copy</button></div>
+        <div class="meta">Your live domain. Drives PayPal/Affirm <b>return &amp; cancel redirects</b> (<span class="mono">PUBLIC_SITE_URL</span>), the app base (<span class="mono">APP_URL</span>), and <b>password-reset links</b> (<span class="mono">FRONTEND_URL</span>). Set all three on the backend service.</div></div></label>
+
+      <label class="row add"><input type="checkbox" class="chk" data-id="CORS_ORIGIN_DOMAIN"><div class="body">
+        <div class="name"><span class="var">CORS_ORIGIN</span><button class="copy" data-copy-text="CORS_ORIGIN">Copy</button></div>
+        <div class="meta">Defaults to <span class="mono">*</span> (any origin). In production, lock it to your domain so only your site can call the API.</div></div></label>
+
+      <label class="row opt"><input type="checkbox" class="chk" data-id="BACKEND_URL_DOMAIN"><div class="body">
+        <div class="name"><span class="var">BACKEND_URL</span> · <span class="var">VITE_NEXUS_API_URL</span><button class="copy" data-copy-text="BACKEND_URL">Copy</button></div>
+        <div class="meta">Only needed if you gave the backend its own subdomain (<span class="mono">api.yourdomain.com</span>). Set <span class="mono">BACKEND_URL</span> on the backend and point the frontend's <span class="mono">VITE_NEXUS_API_URL</span> at it. Otherwise leave the working <span class="mono">.up.railway.app</span> backend URL as-is.</div></div></label>
+
+      <label class="row opt"><input type="checkbox" class="chk" data-id="HLS_PLAYBACK_DOMAIN"><div class="body">
+        <div class="name"><span class="var">HLS_PLAYBACK_BASE_URL</span><button class="copy" data-copy-text="HLS_PLAYBACK_BASE_URL">Copy</button></div>
+        <div class="meta">Media/video playback base. Swap off the rate-limited <span class="mono">r2.dev</span> to a real CDN domain (an R2 custom domain, e.g. <span class="mono">media.yourdomain.com</span>) before production.</div></div></label>
+
+      <label class="row add" id="deploy-push"><input type="checkbox" class="chk" data-id="DEPLOY_PUSH"><div class="body">
+        <div class="name"><span class="var">Deploy / redeploy</span></div>
+        <div class="meta">Every service auto-rebuilds when you push to GitHub <span class="mono">main</span>.</div>
+        <details class="steps"><summary><span class="chev">›</span> Step-by-step — deploy &amp; verify</summary>
+          <div class="steps-body"><ol class="stepslist">
+            <li>After changing variables in Railway, the service <b>redeploys automatically</b>. For code changes: edit locally → <span class="mono">git add</span> → <span class="mono">git commit</span> → <span class="mono">git push</span>; Railway rebuilds the backend and frontend on push to <span class="mono">main</span>.</li>
+            <li>Confirm the backend is healthy: <span class="mono">GET /health</span> returns <span class="mono">{"ok":true, ...}</span>.</li>
+            <li>Open your custom domain in a browser — the site should load over HTTPS. Create a test account to confirm the logged-in flow end to end.</li>
+            <li>Run <span class="mono">provisioningSelfTest</span> (below) to confirm every key resolved on the live deploy.</li>
+          </ol></div>
+        </details></div></label>
+    </div>
+  </section>
+
   <div class="final">
     <h3>Last step — verify with the self-test</h3>
     <p>In the admin app, run the <span class="mono">provisioningSelfTest</span> function. It pings each provider
@@ -611,10 +695,11 @@
   </div>
 
   <footer>
-    Sources are the live codebase (<span class="mono">setupStatus</span>, <span class="mono">paypal-api.ts</span>,
-    <span class="mono">.env.example</span>, the payment/payout functions). Variable names, sources and flags are
-    exact as of this build. Payments are counsel-gated and yours to enter. Progress on this page is saved in your
-    browser only.
+    Sources are the live codebase and deploy tracker (<span class="mono">setupStatus</span>,
+    <span class="mono">paypal-api.ts</span>, <span class="mono">survey-providers.ts</span>,
+    <span class="mono">.env.example</span>, <span class="mono">RAILWAY-DEPLOY-STATUS.md</span>). Variable names,
+    sources, flags and service names are exact as of this build. Payments are counsel-gated and yours to enter;
+    the domain purchase and DNS are yours to do. Progress on this page is saved in your browser only.
   </footer>
 </div>
 
@@ -648,6 +733,18 @@ ADGATE_API_KEY=REPLACE_ME
 AYET_API_KEY=REPLACE_ME
 REVLUM_API_KEY=REPLACE_ME
 PRODEGE_API_KEY=REPLACE_ME`,
+    deploy: `# Set on the BACKEND (playearningnexus) service once your domain is live:
+PUBLIC_SITE_URL=https://www.yourdomain.com
+APP_URL=https://www.yourdomain.com
+FRONTEND_URL=https://www.yourdomain.com
+# was * (open) — lock CORS to your domain in production:
+CORS_ORIGIN=https://www.yourdomain.com
+# only if you gave the BACKEND its own domain (api.yourdomain.com):
+BACKEND_URL=https://api.yourdomain.com
+# R2 media playback — swap off the rate-limited r2.dev to your CDN domain:
+HLS_PLAYBACK_BASE_URL=https://media.yourdomain.com
+# Set on the FRONTEND (getgreen) service — points the site at the backend:
+VITE_NEXUS_API_URL=https://api.yourdomain.com`,
     opt: `# Turn on the cost-floor watchdog
 COST_WATCHDOG_ENABLED=1
 # AI runaway brake
