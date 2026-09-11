@@ -78,11 +78,11 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 >
 > *Honest steer for counsel: of the three angles, **(C)** — the technical interaction (single tap → continuous-loop watch gate → questions beneath the still-playing creative → server-credited submit → swipe-to-next as one full-screen unit) — is the one most plausibly claimable. **(A)** shared-across-tiers and **(B)** founding-max-capability are business-model / offer choices and are likely **not** separately patentable; they are listed for completeness, not as independent claims.*
 
-*Beyond these highlights, the inventory that follows lists the full 983 functions, 195 engines, 272 surfaces, and 364 entities so counsel can spot additional candidates the highlights don't call out.*
+*Beyond these highlights, the inventory that follows lists the full 1,009 functions, 214 engines, 276 surfaces, and 368 entities so counsel can spot additional candidates the highlights don't call out.*
 
 ---
 
-## 2. Software engines (SDK modules) — 197
+## 2. Software engines (SDK modules) — 214  *(the 14 most-recent are listed in §6)*
 
 *Each engine is a self-contained module implementing one subsystem's logic. Descriptions are the module's own header summary from source.*
 
@@ -286,7 +286,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 3. Complete backend function inventory — 983
+## 3. Complete backend function inventory — 1,009  *(the 26 most-recent are listed in §6)*
 
 *Every backend function (HTTP endpoint, scheduled job, or entity-automation), grouped by domain. Each description is sourced from the function's own code header.*
 
@@ -1338,7 +1338,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 4. User-facing surfaces (pages) — 272
+## 4. User-facing surfaces (pages) — 276  *(the 4 most-recent are listed in §6)*
 
 *Each is a distinct application screen/route in the web + mobile app.*
 
@@ -1346,7 +1346,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 5. Data model — persisted entity types (364)
+## 5. Data model — persisted entity types (368)  *(the 4 most-recent are listed in §6)*
 
 *Each is a stored record type in the platform's database (Postgres JSONB-backed).*
 
@@ -1410,3 +1410,70 @@ The platform exposes ~1,200 admin-configurable capability flags — every one a 
 - **SMS Opt-In** — 1 flags
 
 *(The complete flag list with defaults and help text is in `ADMIN-SETTINGS-README.md` / `backend/sdk/settings.ts`.)*
+
+
+---
+
+## 6. Inventory delta — most recently added
+
+*These items were added to the codebase after the §2–§5 sweep was last taken, and are folded into the totals above. Listed here so the inventory is complete and counsel can assess the newest features. (Regenerate/refresh with `deploy-kit/inventory-drift-check.mjs`.)*
+
+### 6.1 Functions (26)
+
+- `adEngagementRank` — the AI ad-optimization read: given the caller and a set of candidate ads,
+- `adEngagementRecord` — the write behind the two ad buttons on every advertisement.
+- `adEngagementStats` — the advertiser-facing view of the two ad buttons.
+- `adTargetingAiStatus` — admin READ of the self-learning ad-targeting layer: whether it's enabled/killed, its
+- `adTargetingLearn` — the self-learning pass. Samples recent PPC responses (each is a creative VIEW with an
+- `advertiserSeoAssist` — an advertiser optimizes their OWN product/landing listing for SEO
+- `aiDisclosureStatus` — admin READ of the AI-generated content disclosure layer: whether the visible
+- `aiModelStatus` — admin READ of the swappable AI-model module: the model registry (including the frontier
+- `autonomyOversight` — the EXCEPTION-BASED oversight dashboard for the autonomy platform. Instead of
+- `costFloorStatus` — admin READ of the "everything at the floor" state: whether AI runs entirely on Meta's Llama
+- `costWatchdogRun` — the cost-floor watchdog. On a schedule it checks that nothing is about to start costing
+- `hostModerationStatus` — read the live-hosting moderation posture: whether AI moderation is on, the thresholds,
+- `leaderboardSnapshot` — precomputes the GLOBAL friendly-competition rankings so the
+- `livekitScaleController` — autoscaling for the LIVE-HOSTING media tier (LiveKit SFU + TURN). The app autoscaler
+- `provisioningSelfTest` — actively verifies that each free-tier provider credential actually WORKS,
+- `seoAuditRun` — audit SEO / AI-search readiness and return the prioritized gaps. Read-only.
+- `seoGenerateMetadata` — AI-generate SEO + AI-search metadata for ONE entity (page / product /
+- `seoLlmsTxt` — generate the llms.txt manifest, the emerging standard that tells AI answer engines what
+- `seoStatus` — a read of the SEO / AI-search configuration + coverage: whether SEO and AI-search are on,
+- `sessionAdBreak` — the audio/video AD BREAK that runs between product segments of a hosted livestream. It draws
+- `sessionBroadcastStart` — turns a hosted session into a QVC-scale BROADCAST: it starts a LiveKit Egress
+- `sessionFeatured` — the featured-product channel for BROADCAST (HLS) viewers, who aren't in the WebRTC room and
+- `sessionLiveKitToken` — Go-live burst control: a live (especially popular) stream draws a CROWD requesting tokens at once, each
+- `sessionModerationScan` — the AI moderation LAYER for a live session's content. Rules-first (free) handles the
+- `sessionReport` — a viewer reports a live session. Distinct reporters are counted; at HOSTING_MODERATION_REPORT_
+- `sessionSocialAnnounce` — puts a LIVE hosted session onto members' SOCIAL FEEDS. Reuses the existing
+
+### 6.2 Engines (14)
+
+- **`ad-engagement`** — ad-engagement.ts — the "engagement signals" layer for the Autonomous Advertising Engine.
+- **`ad-targeting-ai`** — ad-targeting-ai.ts — the self-learning, self-improving layer over ad cohort targeting.
+- **`ad-targeting`** — ad-targeting.ts — advertiser cohort targeting from first-party Know-Your-Customer (KYC) survey data.
+- **`advertised-products`** — advertised-products.ts — the bridge that makes the livestream a placement of the ADVERTISING ecosystem:
+- **`ai-disclosure`** — ai-disclosure.ts — AI-generated content disclosure layer for the creative / video pipeline.
+- **`ai-models`** — ai-models.ts — the ONE swappable AI-model registry + per-job routing map.
+- **`autonomy-gate`** — autonomy-gate.ts — the in-process reusable GATE that routes any operational action through the Autonomy
+- **`broadcast-state`** — broadcast-state.ts — the PUBLISHER that lights up the CDN metadata path for QVC-scale broadcast.
+- **`cost-watchdog`** — cost-watchdog.ts — the pure decision core for the cost-floor watchdog. It answers one question: "is anything
+- **`host-moderation`** — host-moderation.ts — the AI MODERATION LAYER for live hosting. It is exactly that: a layer that catches
+- **`livekit-scale`** — livekit-scale.ts — autoscaling for the LIVE-HOSTING media tier (LiveKit SFU + TURN), the mirror of
+- **`provisioning-selftest`** — provisioning-selftest.ts — actively VERIFY that each free-tier provider credential really works, instead of
+- **`seo`** — seo.ts — AI-powered SEO **and** AI-search (answer-engine / "GEO") optimization for the website, the app
+- **`ttl-cache`** — ttl-cache.ts — a tiny in-process TTL cache with SINGLE-FLIGHT (in-flight dedupe), for HOT SHARED reads that a
+
+### 6.3 Persisted entities (4)
+
+- **AdEngagement**
+- **CostWatchdogReport**
+- **HostModerationEvent**
+- **LeaderboardSnapshot**
+
+### 6.4 User-facing surfaces / pages (4)
+
+- **AdLanding**
+- **AutonomyOversight**
+- **HostStudio**
+- **WatchSession**
