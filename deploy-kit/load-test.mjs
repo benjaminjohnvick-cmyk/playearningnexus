@@ -413,6 +413,45 @@ check(/presignPut/.test(s3) && /presignS3Put/.test(s3), 'upload helper is endpoi
 check(/uploadConfigured/.test(read('backend/server/integration-routes.ts')), 'UploadFile route accepts the shared bucket (not just S3_BUCKET)');
 
 // ============================================================================================================
+console.log('\n\x1b[1m12) AUTO-RENEW across ALL tiers — results-gated, opt-out, never auto-charges\x1b[0m');
+const st = read('backend/sdk/settings.ts');
+check(/"TIER_AUTORENEW_TIERS"[\s\S]*?default: "1,2,3"/.test(st), 'auto-renew applies to ALL tiers by default (1,2,3)');
+const tar = read('backend/sdk/tier-autorenew.ts');
+check(/\["1", "2", "3"\]/.test(tar) && /\[1, 2, 3\]/.test(tar), 'tier fallback in code is 1/2/3 (matches the setting)');
+// The compliance guardrails must all still hold at their safe defaults.
+check(/"TIER_AUTORENEW_ENABLED"[\s\S]*?default: "0"/.test(st), 'master switch still OFF by default (counsel-gated)');
+check(/"TIER_AUTORENEW_RESULTS_GATED"[\s\S]*?default: "1"/.test(st), 'results-gate ON by default (only renews if the numbers support it)');
+check(/"TIER_AUTORENEW_DEFAULT_ENROLLED"[\s\S]*?default: "1"/.test(st), 'opt-out posture: enrolled by default, user can opt out');
+check(/"TIER_AUTORENEW_REQUIRE_CONSENT"[\s\S]*?default: "1"/.test(st), 'express-consent required by default (no auto-charge without consent)');
+const sweep = read('backend/functions/tierAutoRenewSweep/entry.ts');
+check(/pending_gated_payment_path/.test(sweep) && !/chargeCard|capturePayment|createCharge|stripe/i.test(sweep), 'sweep records renewal INTENT only — never charges (money stays on the gated path)');
+check(/results >= yearCost \* mult/.test(sweep), 'renewal requires prior-year results to clear the gate');
+check(/tierYearCost\(rec, tier\)/.test(sweep), 'year cost is tier-aware (Tier 1/2/3 priced correctly)');
+// Flywheel leverage: scale-up is an INVITE only, never an automatic tier change or charge.
+check(/"TIER_AUTORENEW_SCALEUP_ENABLED"[\s\S]*?default: "1"/.test(st), 'results-based scale-up invite ON by default');
+check(/export function scaleUpTarget/.test(tar) && /Never triggers a charge or an automatic change/.test(tar), 'scale-up is a suggestion only (no automatic tier change / no larger charge without opt-in)');
+check(/scaleup_invites: scaledUp/.test(sweep), 'sweep reports scale-up invites separately (auditable)');
+// Reminder-only mode: the "use it now, no lawyer" path — opt-in, click-to-renew, never auto-charges/advances.
+check(/"TIER_AUTORENEW_REMINDER_ENABLED"/.test(st), 'reminder-only mode switch exists');
+const gate = read('backend/functions/counselFeatureGate/entry.ts');
+const legalBlock = (gate.match(/LEGAL_BRIEFS[\s\S]*?\{([\s\S]*?)\n\};/) || ['', ''])[1];
+check(/TIER_AUTORENEW_ENABLED:/.test(legalBlock) && !/TIER_AUTORENEW_REMINDER_ENABLED/.test(legalBlock), 'auto-charge switch is counsel-gated (in LEGAL_BRIEFS); reminder-only switch is NOT (usable without counsel)');
+check(/export function autoRenewMode/.test(tar), 'autoRenewMode() selects charge / reminder / off');
+check(/reminder mode never advances the term itself/.test(sweep) && /advertiserRenewAgree/.test(sweep), 'reminder mode never auto-advances — advertiser renews affirmatively via advertiserRenewAgree');
+check(/export function renewPromptCopy/.test(tar), 'reminder mode uses affirmative click-to-renew copy (not "will auto-renew unless you opt out")');
+
+// ============================================================================================================
+console.log('\n\x1b[1m13) GATE CLASSIFICATION — every gated *_ENABLED flag is explicitly legal-vs-operational\x1b[0m');
+const cfgGate = read('backend/functions/counselFeatureGate/entry.ts');
+check(/const OPERATIONAL_FLAGS = new Set/.test(cfgGate), 'counselFeatureGate has an explicit OPERATIONAL_FLAGS list');
+check(/const isUnclassified = /.test(cfgGate) && /needsCounsel = \(k: string\) => isLegal\(k\) \|\| isUnclassified\(k\)/.test(cfgGate), 'runtime is fail-safe: unclassified gate → counsel-required (strictest), not silently operational');
+check(/UNCLASSIFIED gated feature/.test(cfgGate), 'enabling an unclassified gate is refused with a clear message');
+check(/STRUCTURAL 7/.test(read('deploy-kit/audit.mjs')), 'audit enforces the classification (build fails on an unclassified gate)');
+// The two auto-renew gates are classified the way they should be.
+check(/TIER_AUTORENEW_ENABLED: "TIER-AUTORENEW-COMPLIANCE-COUNSEL-NOTE\.md"/.test(cfgGate), 'auto-charge auto-renew is classified LEGAL (needs counsel)');
+check(/"TIER_AUTORENEW_REMINDER_ENABLED"/.test((cfgGate.match(/OPERATIONAL_FLAGS[\s\S]*?\]\)/) || [''])[0]), 'reminder-only auto-renew is classified OPERATIONAL (no counsel)');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

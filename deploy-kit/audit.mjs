@@ -170,6 +170,40 @@ const WIZARD_EXCLUDE = {
   }
 }
 
+// ---- STRUCTURAL 7: every gated *_ENABLED flag is explicitly classified legal-vs-operational ----
+// A gated flag that reaches the wizard (sensitive boolean, default off, key ends _ENABLED) MUST be classified in
+// counselFeatureGate as either LEGAL (in LEGAL_BRIEFS, with a counsel brief) or OPERATIONAL (in OPERATIONAL_FLAGS).
+// A flag in NEITHER is "unclassified": the runtime treats it as counsel-required (strictest), and this build
+// FAILS — so the legal-vs-operational judgment can never be silently missed when a new gate is added.
+{
+  const cfg = read(path.join(ROOT, 'backend/functions/counselFeatureGate/entry.ts')) || '';
+  const legalBlock = (cfg.match(/LEGAL_BRIEFS[\s\S]*?\{([\s\S]*?)\n\};/) || [])[1] || '';
+  const legalKeys = new Set([...legalBlock.matchAll(/^\s*([A-Z0-9_]+):\s*"/gm)].map((x) => x[1]));
+  const opBlock = (cfg.match(/OPERATIONAL_FLAGS[\s\S]*?\[([\s\S]*?)\]/) || [])[1] || '';
+  const opKeys = new Set([...opBlock.matchAll(/"([A-Z0-9_]+)"/g)].map((x) => x[1]));
+
+  const s = read(path.join(ROOT, 'backend/sdk/settings.ts')) || '';
+  const objRe = /\{\s*key:\s*"([^"]+)"([\s\S]*?)\}/g;
+  let m;
+  while ((m = objRe.exec(s))) {
+    const key = m[1], body = m[2];
+    if (!key.endsWith('_ENABLED')) continue;
+    if (!/type:\s*"boolean"/.test(body)) continue;
+    if (!/default:\s*"0"/.test(body)) continue;
+    if (!/sensitive:\s*true/.test(body)) continue;             // only the gates that reach the wizard
+    const inLegal = legalKeys.has(key), inOp = opKeys.has(key);
+    if (inLegal && inOp) {
+      fail('backend/functions/counselFeatureGate/entry.ts',
+        `gated flag "${key}" is in BOTH LEGAL_BRIEFS and OPERATIONAL_FLAGS — it must be exactly one. Remove it from one.`);
+    } else if (!inLegal && !inOp) {
+      fail('backend/functions/counselFeatureGate/entry.ts',
+        `gated flag "${key}" is UNCLASSIFIED: add it to LEGAL_BRIEFS (with its counsel brief) if it carries any ` +
+        `legal/compliance question, else to OPERATIONAL_FLAGS in counselFeatureGate/entry.ts — the ` +
+        `legal-vs-operational call must be explicit for every gate.`);
+    }
+  }
+}
+
 // ---- GUARDRAIL LINTS (advisory) -------------------------------------------
 const fnFiles = walkTs('backend/functions');
 for (const f of fnFiles) {

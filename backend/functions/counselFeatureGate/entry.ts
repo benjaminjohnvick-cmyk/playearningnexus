@@ -72,6 +72,28 @@ const LEGAL_BRIEFS: Record<string, string> = {
   HOSTING_MONETIZATION_ENABLED: "HOSTING-MONETIZATION-STREAMING-COUNSEL-BRIEF.md",
 };
 
+// OPERATIONAL flags — gated *_ENABLED features consciously classified as NOT needing counsel (they turn on with
+// a normal confirm:true). This list exists so the legal-vs-operational call is EXPLICIT for every gate, not a
+// silent default: a gated flag that is in NEITHER this list nor LEGAL_BRIEFS is treated as unclassified and
+// falls back to the STRICTEST posture (needs COUNSEL_APPROVED) at runtime, and the audit build FAILS until it's
+// classified (deploy-kit/audit.mjs, STRUCTURAL 7). To add a new operational gate, list it here with confidence
+// it carries no legal/compliance question; if it might, put it in LEGAL_BRIEFS with its brief instead.
+const OPERATIONAL_FLAGS = new Set<string>([
+  "AFFILIATE_STOREFRONT_ENABLED", "AI_CREATIVE_SAAS_ENABLED", "AI_HOSTED_SESSIONS_ENABLED", "API_ACCESS_ENABLED",
+  "AUTO_LOCALIZE_ENABLED", "AUTO_TRANSLATE_ENABLED", "BUDDYCHAT_SOCIAL_SHOP_ENABLED", "BUDDY_PROFILE_BROWSE_ENABLED",
+  "CATALOG_AUTO_LOCALIZE_ENABLED", "CURRENCY_LIVE_FX_ENABLED", "EXPEDITED_FULFILLMENT_ENABLED",
+  "EXTENSION_AFFILIATE_ENABLED", "EXTENSION_OWN_ADS_ENABLED", "FAMILY_PLAN_ENABLED", "FOUNDING_RAMPUP_BONUS_ENABLED",
+  "FRAUD_SAAS_ENABLED", "GROUP_BUYING_ENABLED", "HOSTING_CLIPS_ENABLED", "HOSTING_MODERATION_VISION_ENABLED",
+  "HOSTING_ONDEMAND_ENABLED", "HOSTING_PAID_ACCESS_ENABLED", "HOSTING_RECORDING_ENABLED",
+  "HOSTING_REMOTE_CONTROL_ENABLED", "HOSTING_SOCIAL_SIMULCAST_ENABLED", "HOSTING_THIRD_PARTY_SELLERS_ENABLED",
+  "HOSTING_TOURNAMENTS_ENABLED", "LANGUAGE_REFERENCE_ENABLED", "MAINTENANCE_AGENT_ENABLED", "MOBILE_OTA_ENABLED",
+  "MULTITENANCY_ENABLED", "OFFERWALL_CPA_ENABLED", "OMNI_CHANNEL_LIVESTREAM_ENABLED", "PARTNER_PAYOUT_FEE_ENABLED",
+  "PRINT_ON_DEMAND_ENABLED", "PRODUCT_TESTING_PANEL_ENABLED", "PRO_TOOLS_ENABLED", "RESILIENT_MODE_ENABLED",
+  "REWARDED_VIDEO_ENABLED", "SEASON_PASS_ENABLED", "SPONSORED_PUSH_EMAIL_ENABLED", "STEP_UP_ENABLED",
+  "SURVEY_AUTO_TRANSLATE_ENABLED", "SURVEY_ROUTING_ARBITRAGE_ENABLED", "SURVEY_TEST_FIRST_ENABLED",
+  "TIER_AUTORENEW_REMINDER_ENABLED", "TUTORIAL_ENABLED",
+]);
+
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -83,22 +105,34 @@ export default __handler(async (req) => {
     const flags = gatedBooleanFlags();
     const KEYS = new Set(flags.map((f) => f.key));
     const isLegal = (k: string) => k in LEGAL_BRIEFS;
+    const isOperational = (k: string) => OPERATIONAL_FLAGS.has(k);
+    const isUnclassified = (k: string) => !isLegal(k) && !isOperational(k);
+    // Fail-safe classification: a flag that's LEGAL or UNCLASSIFIED needs the counsel acknowledgment to enable.
+    // Only a flag EXPLICITLY listed operational turns on with a normal confirm — so a new gate that nobody
+    // classified can never be silently enabled as "operational"; it defaults to the strictest posture.
+    const needsCounsel = (k: string) => isLegal(k) || isUnclassified(k);
 
     const all = await effectiveSettings().catch(() => []) as Array<{ key: string; value: string }>;
     const valOf = (k: string) => String((all.find((s) => s.key === k)?.value ?? "0")) === "1";
-    const describe = () => flags.map((f) => ({ key: f.key, label: f.label, category: f.category, legal: isLegal(f.key), brief: LEGAL_BRIEFS[f.key] ?? null, enabled: valOf(f.key) }));
+    const describe = () => flags.map((f) => ({ key: f.key, label: f.label, category: f.category, legal: isLegal(f.key), operational: isOperational(f.key), unclassified: isUnclassified(f.key), brief: LEGAL_BRIEFS[f.key] ?? null, enabled: valOf(f.key) }));
 
     const wantEnable: string[] = body.enable === "all" ? flags.map((f) => f.key)
       : Array.isArray(body.enable) ? body.enable.filter((k: string) => KEYS.has(k)) : [];
     const wantDisable: string[] = Array.isArray(body.disable) ? body.disable.filter((k: string) => KEYS.has(k)) : [];
 
-    // Enabling a LEGAL flag needs the counsel acknowledgment; an operational one needs any confirm.
-    const enablingLegal = wantEnable.some((k) => isLegal(k));
+    // Enabling a LEGAL or UNCLASSIFIED flag needs the counsel acknowledgment; an explicitly-operational one
+    // needs any confirm. (Unclassified → strictest, so a forgotten classification can't be silently enabled.)
+    const enablingCounsel = wantEnable.some(needsCounsel);
+    const enablingUnclassified = wantEnable.filter(isUnclassified);
     if (wantEnable.length) {
-      if (enablingLegal && body.confirm !== "COUNSEL_APPROVED") {
-        return Response.json({ ok: false, needs_confirm: "COUNSEL_APPROVED", message: "Enabling a counsel-gated (legal) feature requires confirm:\"COUNSEL_APPROVED\" — enable each only after your attorney signs off on that specific one.", features: describe() });
+      if (enablingCounsel && body.confirm !== "COUNSEL_APPROVED") {
+        return Response.json({ ok: false, needs_confirm: "COUNSEL_APPROVED",
+          message: enablingUnclassified.length
+            ? `Refusing to enable UNCLASSIFIED gated feature(s) [${enablingUnclassified.join(", ")}] — they're in neither LEGAL_BRIEFS nor OPERATIONAL_FLAGS, so they default to counsel-required. Classify them in counselFeatureGate first (and the build will fail until you do).`
+            : "Enabling a counsel-gated (legal) feature requires confirm:\"COUNSEL_APPROVED\" — enable each only after your attorney signs off on that specific one.",
+          unclassified: enablingUnclassified, features: describe() });
       }
-      if (!enablingLegal && body.confirm !== true && body.confirm !== "COUNSEL_APPROVED") {
+      if (!enablingCounsel && body.confirm !== true && body.confirm !== "COUNSEL_APPROVED") {
         return Response.json({ ok: false, needs_confirm: true, message: "Enabling a gated feature requires confirm:true.", features: describe() });
       }
     }
