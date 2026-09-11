@@ -467,6 +467,26 @@ check(!/setSetting\(|\.update\(/.test(cwFn.replace(/db\.create\("CostWatchdogRep
 check(/OPERATIONAL_FLAGS[\s\S]*?"COST_WATCHDOG_ENABLED"[\s\S]*?\]\)/.test(read('backend/functions/counselFeatureGate/entry.ts')), 'COST_WATCHDOG_ENABLED classified operational (no counsel — passes the STRUCTURAL 7 lint)');
 
 // ============================================================================================================
+console.log('\n\x1b[1m15) PROVISIONING SELF-TEST — actively verifies each free-tier key works (read-only, $0)\x1b[0m');
+const pstMani = read('backend/functions/_manifest.json');
+check(/"provisioningSelfTest"/.test(pstMani), 'provisioningSelfTest registered in the manifest');
+const pstCore = read('backend/sdk/provisioning-selftest.ts');
+check(/export function summarize/.test(pstCore), 'pure summarize() aggregator exists (unit-testable, no I/O)');
+check(/overall: failed\.length === 0 \? "green" : "red"/.test(pstCore), 'green iff every CONFIGURED check passed');
+check(/const skipped = checks\.filter\(\(c\) => !c\.configured\)/.test(pstCore), 'a provider you have not set up is "skipped", never a failure');
+// It pings each provider's FREE verify endpoint — no generation, no send.
+check(/api\.groq\.com\/openai\/v1\/models/.test(pstCore), 'Groq check hits the free models list (not a paid completion)');
+check(/api\.cloudflare\.com\/client\/v4\/user\/tokens\/verify/.test(pstCore), 'Cloudflare check hits the free token-verify endpoint');
+check(/api\.brevo\.com\/v3\/account/.test(pstCore) && /api\.brevo\.com\/v3\/senders/.test(pstCore), 'Brevo check verifies the key AND that EMAIL_FROM is a verified sender');
+check(/is not a Brevo sender|NOT verified\/active/.test(pstCore), 'the #1 email gotcha (unverified EMAIL_FROM) is caught with a clear fix');
+check(/__provisioning-selftest\/probe\.txt/.test(pstCore) && /overwritten every run — never accumulates/.test(pstCore), 'R2 check writes ONE fixed idempotent probe object (free, never accumulates)');
+// Non-billable + read-only: no email send, no image/chat generation, no settings change.
+check(!/\/v3\/smtp\/email|ai\/run\/|chat\/completions/.test(pstCore), 'self-test never calls a billable send/generation endpoint');
+const pstFn = read('backend/functions/provisioningSelfTest/entry.ts');
+check(/user\.role !== "admin"/.test(pstFn), 'provisioningSelfTest is admin-only');
+check(!/setSetting\(|db\.create\(|db\.update\(|\.update\(/.test(pstFn), 'function is READ-ONLY — returns results, writes no entity, changes no setting');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');
