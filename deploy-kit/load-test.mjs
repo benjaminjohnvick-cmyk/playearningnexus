@@ -452,6 +452,21 @@ check(/TIER_AUTORENEW_ENABLED: "TIER-AUTORENEW-COMPLIANCE-COUNSEL-NOTE\.md"/.tes
 check(/"TIER_AUTORENEW_REMINDER_ENABLED"/.test((cfgGate.match(/OPERATIONAL_FLAGS[\s\S]*?\]\)/) || [''])[0]), 'reminder-only auto-renew is classified OPERATIONAL (no counsel)');
 
 // ============================================================================================================
+console.log('\n\x1b[1m14) COST-FLOOR WATCHDOG — alerts before any free tier tips into paid (read-only)\x1b[0m');
+const cwMani = read('backend/functions/_manifest.json');
+check(/"costWatchdogRun"/.test(cwMani), 'costWatchdogRun registered in the manifest');
+check(/cost-floor-watchdog|costWatchdogRun/.test(read('backend/scheduler/schedules.json')), 'cost watchdog is scheduled');
+check(/"CostWatchdogReport"/.test(read('backend/db/entities.json')), 'CostWatchdogReport entity declared');
+check(/CREATE TABLE IF NOT EXISTS "CostWatchdogReport"/.test(read('backend/db/schema.sql')), 'CostWatchdogReport has a CREATE TABLE');
+check(/"CostWatchdogReport"[\s\S]*?"scope": "admin"/.test(read('backend/db/rls-policy.json')), 'CostWatchdogReport is admin-scoped');
+const cwCore = read('backend/sdk/cost-watchdog.ts');
+check(/export function assessCostFloor/.test(cwCore), 'pure assessCostFloor() core exists');
+check(/paid_key_exposed/.test(cwCore) && /a PAID path, not the free Llama tier/.test(cwCore), 'catches posture drift (paid provider / exposed paid key)');
+const cwFn = read('backend/functions/costWatchdogRun/entry.ts');
+check(!/setSetting\(|\.update\(/.test(cwFn.replace(/db\.create\("CostWatchdogReport"/g, '')), 'watchdog is READ-ONLY — it creates a report + notifications, never changes settings');
+check(/OPERATIONAL_FLAGS[\s\S]*?"COST_WATCHDOG_ENABLED"[\s\S]*?\]\)/.test(read('backend/functions/counselFeatureGate/entry.ts')), 'COST_WATCHDOG_ENABLED classified operational (no counsel — passes the STRUCTURAL 7 lint)');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

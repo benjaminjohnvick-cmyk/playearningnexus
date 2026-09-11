@@ -200,6 +200,12 @@
       "function": "leaderboardReset"
     },
     {
+      "name": "cost-floor-watchdog",
+      "cron": "0 */6 * * *",
+      "function": "costWatchdogRun",
+      "_comment": "Every 6h: the cost-floor watchdog checks that nothing is about to start costing money — posture (LLM_PROVIDER=groq, cheap tier on, IMAGE_PROVIDER=cloudflare, free email sender, no exposed paid key) + best-effort daily usage vs each free-tier cap. Writes a CostWatchdogReport and notifies admins on drift/overage. Read-only. No-op while COST_WATCHDOG_ENABLED is off."
+    },
+    {
       "name": "leaderboard-global-snapshot",
       "cron": "*/15 * * * *",
       "function": "leaderboardSnapshot",

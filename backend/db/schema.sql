@@ -4162,6 +4162,17 @@ CREATE TABLE IF NOT EXISTS "MaintenanceReport" (
 CREATE INDEX IF NOT EXISTS "MaintenanceReport_data_gin" ON "MaintenanceReport" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "MaintenanceReport_created" ON "MaintenanceReport" (created_date DESC);
 
+-- CostWatchdogReport: each cost-floor watchdog run's findings (admin-only; written by costWatchdogRun).
+CREATE TABLE IF NOT EXISTS "CostWatchdogReport" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "CostWatchdogReport_data_gin" ON "CostWatchdogReport" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "CostWatchdogReport_created" ON "CostWatchdogReport" (created_date DESC);
+
 -- GameSession: Tier-3 peer-hosted session record + reward validation (source of truth for a session's identity)
 CREATE TABLE IF NOT EXISTS "GameSession" (
   id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,

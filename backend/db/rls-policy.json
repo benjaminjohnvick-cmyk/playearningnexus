@@ -247,6 +247,9 @@
  "CosmeticItem": {
   "scope": "global"
  },
+ "CostWatchdogReport": {
+  "scope": "admin"
+ },
  "CreatorPayout": {
   "scope": "owner",
   "owner_field": "user_id"
