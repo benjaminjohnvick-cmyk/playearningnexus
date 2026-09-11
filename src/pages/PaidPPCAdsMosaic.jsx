@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe, ArrowRight, RefreshCw, ChevronDown } from 'lucide-react';
+import { ExternalLink, CheckCircle, Loader2, DollarSign, Share2, Globe, ArrowRight, RefreshCw, ChevronDown, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import AdGridReferralBox from '@/components/adgrid/AdGridReferralBox';
@@ -14,6 +14,8 @@ import SocialAdCreator from '@/components/ppc/SocialAdCreator';
 const REQUIRED_DAILY_CLICKS = 16;
 const ADS_PER_PAGE = 16; // Part G: exactly 16 ads shown at a time
 const EARNINGS_PER_CLICK = 0.25; // user's share (50% of $0.50 CPC)
+const AD_VIEW_SECONDS = 30; // required watch time before the questions unlock — 30s × 16 ads = 8 min total (matches the interstitial countdown convention)
+const SWIPE_THRESHOLD = 60; // px of horizontal drag that counts as a swipe to the next/previous ad
 
 function getDailyKey(userId) {
   return `ppc_daily_clicks_${userId}_${new Date().toDateString()}`;
@@ -154,133 +156,189 @@ function AdCell({ ad, isUnlocked, onClick }) {
   );
 }
 
-function SurveyModal({ ad, step, onAnswer, onClose, adsClickedToday }) {
-  const question = step >= 1 && step <= 4 ? SURVEY_QUESTIONS[step - 1] : null;
-  if (!question || !ad) return null;
+// The ad itself — a looping video when the ad carries one, otherwise the still image. Rendered ONCE and kept
+// mounted across the watch → questions phases so it never reloads or restarts while the user answers: the ad
+// "loops the whole time" until they finish. Falls back to the image cleanly for the current image-only ad set.
+function AdHero({ ad, badge }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.88, y: 24 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.88, y: 24 }}
-        className="bg-gray-900 border border-gray-700 rounded-3xl shadow-2xl max-w-sm w-full p-6"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Task counter top-right */}
-        <div className="flex items-center justify-between mb-3">
-          <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
-            className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center gap-1">
-            <Globe className="w-3 h-3" /> Get Goods Gratis (Free).app
-          </a>
-          <div className="bg-yellow-500/20 border border-yellow-500/40 rounded-lg px-2 py-1 text-xs font-bold text-yellow-300">
-            Tasks completed: {adsClickedToday} of {REQUIRED_DAILY_CLICKS}
-          </div>
+    <div className="rounded-2xl overflow-hidden bg-gray-900 relative">
+      {ad.video
+        ? <video src={ad.video} poster={ad.image} autoPlay loop muted playsInline className="w-full h-64 object-cover" />
+        : <img src={ad.image} alt={ad.brand} className="w-full h-64 object-cover" />}
+      {badge && (
+        <div className="absolute top-3 right-3 bg-black/70 text-white text-xs font-bold rounded-full px-3 py-1">
+          {badge}
         </div>
-        <div className="flex items-center gap-3 mb-5 bg-gray-800 rounded-2xl p-3">
-          <img src={ad.image} alt={ad.brand} className="w-14 h-14 object-cover rounded-xl flex-shrink-0" />
-          <div>
-            <p className="font-black text-white">{ad.brand}</p>
-            <p className="text-gray-400 text-xs italic">"{ad.tagline}"</p>
-            <p className="text-gray-500 text-[10px]">{ad.site}</p>
-          </div>
-        </div>
-        <div className="flex gap-1.5 mb-4">
-          {[1, 2, 3, 4].map(n => (
-            <div key={n} className={`h-2 flex-1 rounded-full transition-all duration-300 ${n <= step ? 'bg-yellow-400' : 'bg-gray-700'}`} />
-          ))}
-        </div>
-        <div className="flex items-center justify-between mb-4">
-          <Badge className="bg-yellow-500 text-black font-bold text-xs px-3">Q{step} of 4 · +$0.10</Badge>
-          <span className="text-gray-400 text-xs">Total reward: <span className="text-yellow-400 font-bold">$0.40</span></span>
-        </div>
-        <p className="text-white font-bold text-sm mb-4">{question.q}</p>
-        <div className="grid grid-cols-2 gap-2">
-          {question.opts.map((opt, i) => (
-            <Button
-              key={i}
-              variant="outline"
-              className="h-12 text-sm border-gray-600 text-white hover:bg-yellow-500 hover:text-black hover:border-yellow-400 transition-all"
-              onClick={() => onAnswer(step, opt)}
-            >
-              {opt}
-            </Button>
-          ))}
-        </div>
-        <p className="text-center text-gray-500 text-[10px] mt-4">
-          You earn ${EARNINGS_PER_CLICK.toFixed(2)} · Get Goods Gratis (Free) earns ${EARNINGS_PER_CLICK.toFixed(2)} · Business gets discovered
-        </p>
-      </motion.div>
-    </motion.div>
+      )}
+    </div>
   );
 }
 
-function SuccessModal({ ad, onVisit, onBack, adsClickedToday }) {
+// AdFullScreen — the tapped ad as a TRUE full-screen takeover (desktop + app), matching the interstitial
+// convention: a 35-second watch gate (countdown), then the 4 survey questions, then the earned state. Users
+// swipe left/right — or use the ◀ / ▶ arrows — to move to the next ad once the current one is finished.
+function AdFullScreen({
+  ad, phase, surveyStep, adsClickedToday, loading,
+  index, total, canPrev, canNext,
+  onWatchComplete, onAnswer, onVisit, onClose, onPrev, onNext,
+}) {
+  const [secsLeft, setSecsLeft] = useState(AD_VIEW_SECONDS);
+  const touchRef = useRef(null);
+
+  // Reset the watch countdown whenever the ad changes (a new ad must be watched afresh).
+  useEffect(() => { setSecsLeft(AD_VIEW_SECONDS); }, [ad?.id]);
+  // Tick down only during the watch phase.
+  useEffect(() => {
+    if (phase !== 'watch' || secsLeft <= 0) return;
+    const t = setTimeout(() => setSecsLeft(s => Math.max(0, s - 1)), 1000);
+    return () => clearTimeout(t);
+  }, [phase, secsLeft, ad?.id]);
+
   if (!ad) return null;
+  const watched = secsLeft <= 0;
+  const question = phase === 'survey' && surveyStep >= 1 && surveyStep <= 4 ? SURVEY_QUESTIONS[surveyStep - 1] : null;
   const remaining = Math.max(0, REQUIRED_DAILY_CLICKS - adsClickedToday);
+
+  const handleTouchStart = (e) => { touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; };
+  const handleTouchEnd = (e) => {
+    const s = touchRef.current; touchRef.current = null;
+    if (!s) return;
+    const dx = e.changedTouches[0].clientX - s.x;
+    const dy = e.changedTouches[0].clientY - s.y;
+    if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return; // must be a decisive horizontal swipe
+    if (dx < 0 && canNext) onNext();
+    else if (dx > 0 && canPrev) onPrev();
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] bg-black flex flex-col"
+      onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}
     >
-      <motion.div
-        initial={{ scale: 0.88 }}
-        animate={{ scale: 1 }}
-        className="bg-gray-900 border border-green-500 rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center"
-        style={{ boxShadow: '0 0 40px rgba(34,197,94,0.25)' }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
-            className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center gap-1">
-            <Globe className="w-3 h-3" /> Get Goods Gratis (Free).app
-          </a>
-          <div className={`rounded-lg px-2 py-1 text-xs font-bold border ${adsClickedToday >= REQUIRED_DAILY_CLICKS ? 'bg-green-500/20 border-green-500/40 text-green-300' : 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300'}`}>
-            Tasks completed: {adsClickedToday} of {REQUIRED_DAILY_CLICKS}
-          </div>
+      {/* Header: close · self-promo · task counter */}
+      <div className="relative z-10 flex items-center justify-between gap-2 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2">
+        <button onClick={onClose} aria-label="Close ad" className="text-white/70 hover:text-white p-1 -ml-1 flex-shrink-0">
+          <X className="w-6 h-6" />
+        </button>
+        <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
+          className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center gap-1 truncate">
+          <Globe className="w-3 h-3 flex-shrink-0" /> Get Goods Gratis (Free).app
+        </a>
+        <div className={`rounded-lg px-2 py-1 text-xs font-bold border whitespace-nowrap flex-shrink-0 ${adsClickedToday >= REQUIRED_DAILY_CLICKS ? 'bg-green-500/20 border-green-500/40 text-green-300' : 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300'}`}>
+          Tasks {adsClickedToday}/{REQUIRED_DAILY_CLICKS}
         </div>
-        <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-3" />
-        <h3 className="text-2xl font-black text-white mb-1">🎉 +${EARNINGS_PER_CLICK.toFixed(2)} Earned!</h3>
-        {remaining > 0 && (
-          <p className="text-yellow-400 text-xs font-semibold mb-1">
-            {remaining} more ad{remaining !== 1 ? 's' : ''} needed to reach today's minimum
-          </p>
-        )}
-        {remaining === 0 && (
-          <p className="text-green-400 text-xs font-semibold mb-1">✅ Daily minimum reached! You can keep clicking for more earnings.</p>
-        )}
-        <p className="text-gray-400 text-sm mb-4">Ad clicked! You've unlocked <span className="text-white font-bold">{ad.brand}</span></p>
-        <div className="bg-gray-800 rounded-2xl p-4 mb-5 text-left">
-          <img src={ad.image} alt={ad.brand} className="w-full h-32 object-cover rounded-xl mb-3" />
-          <p className="font-black text-white text-lg">{ad.brand}</p>
-          <p className="text-gray-400 text-xs italic mb-1">"{ad.tagline}"</p>
-          <a href={ad.site} target="_blank" rel="noopener noreferrer"
-            className="text-blue-400 text-xs underline hover:text-blue-300 flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> {ad.site}
-          </a>
+      </div>
+
+      {/* Body — one readable column. The ad hero stays mounted (video keeps looping) through watch + questions. */}
+      <div className="flex-1 overflow-y-auto px-4">
+        <div className="max-w-md mx-auto w-full flex flex-col justify-center min-h-full py-4">
+          {/* Persistent looping ad — shown the WHOLE time the user watches and answers (not a shrinking thumbnail). */}
+          {phase !== 'done' && (
+            <div className="mb-4">
+              <AdHero ad={ad} badge={phase === 'watch' ? (watched ? 'Ad complete' : `Ad · ${secsLeft}s`) : 'Sponsored'} />
+              <p className="font-black text-white text-2xl mt-3">{ad.brand}</p>
+              <p className="text-gray-400 text-sm italic mb-1">"{ad.tagline}"</p>
+              <a href={ad.site} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-xs underline hover:text-blue-300 inline-flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> {ad.site}
+              </a>
+            </div>
+          )}
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${ad.id}-${phase}`}
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2 }}
+              className="w-full"
+            >
+              {phase === 'watch' && (
+              <>
+                {/* Countdown progress bar — the ad loops above while this fills */}
+                <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden mb-4 mt-1">
+                  <div className="h-full bg-yellow-400 transition-all duration-1000 ease-linear" style={{ width: `${((AD_VIEW_SECONDS - secsLeft) / AD_VIEW_SECONDS) * 100}%` }} />
+                </div>
+                <Button
+                  disabled={!watched}
+                  onClick={onWatchComplete}
+                  className={`w-full h-14 text-base font-bold rounded-xl gap-2 ${watched ? 'bg-yellow-500 text-black hover:bg-yellow-400' : 'bg-white/10 text-white/60 cursor-not-allowed'}`}
+                >
+                  {watched ? <>Answer 4 questions → earn ${EARNINGS_PER_CLICK.toFixed(2)}</> : <>Viewing ad… {secsLeft}s</>}
+                </Button>
+                <p className="text-center text-gray-500 text-[10px] mt-3">Watch the full {AD_VIEW_SECONDS}-second ad to unlock the questions and your reward.</p>
+              </>
+            )}
+
+            {phase === 'survey' && question && (
+              <>
+                <div className="flex gap-1.5 mb-4 mt-1">
+                  {[1, 2, 3, 4].map(n => (<div key={n} className={`h-2 flex-1 rounded-full transition-all duration-300 ${n <= surveyStep ? 'bg-yellow-400' : 'bg-gray-700'}`} />))}
+                </div>
+                <div className="flex items-center justify-between mb-4">
+                  <Badge className="bg-yellow-500 text-black font-bold text-xs px-3">Q{surveyStep} of 4 · +$0.10</Badge>
+                  <span className="text-gray-400 text-xs">Total reward: <span className="text-yellow-400 font-bold">$0.40</span></span>
+                </div>
+                <p className="text-white font-bold text-base mb-4">{question.q}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {question.opts.map((opt, i) => (
+                    <Button key={i} variant="outline" className="h-14 text-sm border-gray-600 text-white hover:bg-yellow-500 hover:text-black hover:border-yellow-400 transition-all" onClick={() => onAnswer(surveyStep, opt)}>
+                      {opt}
+                    </Button>
+                  ))}
+                </div>
+                <p className="text-center text-gray-500 text-[10px] mt-4">You earn ${EARNINGS_PER_CLICK.toFixed(2)} · Get Goods Gratis (Free) earns ${EARNINGS_PER_CLICK.toFixed(2)} · Business gets discovered</p>
+              </>
+            )}
+
+            {phase === 'done' && (
+              <div className="text-center">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-3" />
+                <h3 className="text-3xl font-black text-white mb-1">🎉 +${EARNINGS_PER_CLICK.toFixed(2)} Earned!</h3>
+                {remaining > 0 && (<p className="text-yellow-400 text-sm font-semibold mb-1">{remaining} more ad{remaining !== 1 ? 's' : ''} needed to reach today's minimum</p>)}
+                {remaining === 0 && (<p className="text-green-400 text-sm font-semibold mb-1">✅ Daily minimum reached! You can keep clicking for more earnings.</p>)}
+                <p className="text-gray-400 text-sm mb-4">You've unlocked <span className="text-white font-bold">{ad.brand}</span></p>
+                <div className="bg-gray-800 rounded-2xl p-4 mb-5 text-left">
+                  <img src={ad.image} alt={ad.brand} className="w-full h-48 object-cover rounded-xl mb-3" />
+                  <p className="font-black text-white text-lg">{ad.brand}</p>
+                  <p className="text-gray-400 text-xs italic mb-1">"{ad.tagline}"</p>
+                  <a href={ad.site} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-xs underline hover:text-blue-300 flex items-center gap-1">
+                    <ExternalLink className="w-3 h-3 flex-shrink-0" /> {ad.site}
+                  </a>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-black h-14 gap-2 text-base rounded-xl mb-2" onClick={onVisit}>
+                  <ExternalLink className="w-4 h-4" /> Visit {ad.brand} Now →
+                </Button>
+                <div className="mb-3">
+                  <AdActionBar ad={{ id: ad.id, ad_id: ad.id, title: ad.brand, product_name: ad.brand, url: ad.site, product_url: ad.site, image_url: ad.image }} placement="ppc_mosaic" />
+                </div>
+                {canNext
+                  ? <p className="text-center text-gray-400 text-xs">Swipe left or tap <span className="text-white font-semibold">Next ▶</span> for the next ad</p>
+                  : <p className="text-center text-gray-500 text-xs">Last ad in this set — a fresh set of 16 loads automatically.</p>}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
         </div>
-        <Button
-          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-black h-12 gap-2 text-sm rounded-xl mb-2"
-          onClick={onVisit}
-        >
-          <ExternalLink className="w-4 h-4" /> Visit {ad.brand} Now →
+      </div>
+
+      {/* Footer nav: ◀ Prev · position · Next ▶ (Next unlocks once the current ad is finished) */}
+      <div className="relative z-10 flex items-center justify-between gap-3 px-4 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] border-t border-white/10">
+        <Button variant="ghost" disabled={!canPrev} onClick={onPrev} aria-label="Previous ad"
+          className={`gap-1 ${canPrev ? 'text-white hover:text-white' : 'text-white/30'}`}>
+          <ChevronLeft className="w-5 h-5" /> Prev
         </Button>
-        <div className="mb-2">
-          <AdActionBar
-            ad={{ id: ad.id, ad_id: ad.id, title: ad.brand, product_name: ad.brand, url: ad.site, product_url: ad.site, image_url: ad.image }}
-            placement="ppc_mosaic"
-          />
-        </div>
-        <Button variant="ghost" className="w-full text-gray-400 text-sm" onClick={onBack}>
-          ← Back to Ad Grid
+        <span className="text-xs text-white/60 tabular-nums">{index + 1} / {total}</span>
+        <Button variant="ghost" disabled={!canNext} onClick={onNext} aria-label="Next ad"
+          className={`gap-1 ${canNext ? 'text-white hover:text-white' : 'text-white/30'}`}>
+          Next <ChevronRight className="w-5 h-5" />
         </Button>
-      </motion.div>
+      </div>
+
+      {loading && (
+        <div className="absolute inset-0 z-20 bg-black/70 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-yellow-400 animate-spin" />
+        </div>
+      )}
     </motion.div>
   );
 }
@@ -289,6 +347,7 @@ export default function PaidPPCAdsMosaic() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [activeAd, setActiveAd] = useState(null);
+  const [adPhase, setAdPhase] = useState('watch'); // 'watch' (30s gate) → 'survey' (4 Qs) → 'done' (earned)
   const [surveyStep, setSurveyStep] = useState(0);
   const [surveyDone, setSurveyDone] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -377,6 +436,24 @@ export default function PaidPPCAdsMosaic() {
 
   const _gridCols = 4; // 4×4 = 16 ads always
 
+  // Open an ad in the full-screen experience. A not-yet-earned ad starts at the 30s watch gate; an already-earned
+  // ad (e.g. swiped back to) opens straight to its 'done' state so it can never be re-credited.
+  const startAd = (ad) => {
+    setBotBlocked(false);
+    setActiveAd(ad);
+    setSurveyStep(0);
+    if (unlockedAds.includes(ad.id)) {
+      if (trackerRef.current) { trackerRef.current.destroy(); trackerRef.current = null; }
+      setSurveyDone(true);
+      setAdPhase('done');
+    } else {
+      if (trackerRef.current) trackerRef.current.destroy();
+      trackerRef.current = new InteractionTracker();
+      setSurveyDone(false);
+      setAdPhase('watch');
+    }
+  };
+
   const handleAdClick = (ad) => {
     if (!user) {
       toast.error('Please sign in to earn rewards');
@@ -396,12 +473,13 @@ export default function PaidPPCAdsMosaic() {
       toast.info(`⏰ You already clicked ${ad.brand} today. Come back in 24 hours.`);
       return;
     }
-    setBotBlocked(false);
-    if (trackerRef.current) trackerRef.current.destroy();
-    trackerRef.current = new InteractionTracker();
-    setActiveAd(ad);
+    startAd(ad);
+  };
+
+  // Watch gate finished (30s) → open the 4 survey questions.
+  const handleWatchComplete = () => {
+    setAdPhase('survey');
     setSurveyStep(1);
-    setSurveyDone(false);
   };
 
   const handleAnswer = (questionIdx, _answer) => {
@@ -484,6 +562,7 @@ export default function PaidPPCAdsMosaic() {
       }).catch(() => {});
 
       setSurveyDone(true);
+      setAdPhase('done');
       setSessionClickedAds(prev => prev.some(a => a.id === activeAd.id) ? prev : [...prev, activeAd]);
 
       if (dailyData.count === REQUIRED_DAILY_CLICKS) {
@@ -497,9 +576,23 @@ export default function PaidPPCAdsMosaic() {
 
   const handleVisitSite = () => {
     window.open(activeAd?.site, '_blank');
-    setActiveAd(null);
-    setSurveyDone(false);
   };
+
+  // Close the full-screen ad and return to the mosaic.
+  const closeAd = () => {
+    if (trackerRef.current) { trackerRef.current.destroy(); trackerRef.current = null; }
+    setActiveAd(null);
+    setSurveyStep(0);
+    setSurveyDone(false);
+    setAdPhase('watch');
+  };
+
+  // Swipe / arrow navigation across the current 16-ad set. Next unlocks only once the current ad is finished.
+  const activeIndex = activeAd ? currentPageAds.findIndex(a => a.id === activeAd.id) : -1;
+  const canPrevAd = activeIndex > 0;
+  const canNextAd = surveyDone && activeIndex >= 0 && activeIndex < currentPageAds.length - 1;
+  const goPrevAd = () => { if (activeIndex > 0) startAd(currentPageAds[activeIndex - 1]); };
+  const goNextAd = () => { if (activeIndex >= 0 && activeIndex < currentPageAds.length - 1) startAd(currentPageAds[activeIndex + 1]); };
 
   const handleShareGrid = async () => {
     const shareText = `🎮 The Get Goods Gratis (Free) Million Dollar Ad Grid — click brand ads, answer 4 questions, earn $0.20 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/PaidPPCAdsMosaic`;
@@ -740,21 +833,23 @@ export default function PaidPPCAdsMosaic() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {surveyStep >= 1 && surveyStep <= 4 && activeAd && !surveyDone && (
-          <SurveyModal
+        {activeAd && (
+          <AdFullScreen
             ad={activeAd}
-            step={surveyStep}
+            phase={adPhase}
+            surveyStep={surveyStep}
+            adsClickedToday={adsClickedToday}
+            loading={loading}
+            index={activeIndex < 0 ? 0 : activeIndex}
+            total={currentPageAds.length}
+            canPrev={canPrevAd}
+            canNext={canNextAd}
+            onWatchComplete={handleWatchComplete}
             onAnswer={handleAnswer}
-            onClose={() => { setActiveAd(null); setSurveyStep(0); }}
-            adsClickedToday={adsClickedToday}
-          />
-        )}
-        {surveyDone && activeAd && (
-          <SuccessModal
-            ad={activeAd}
             onVisit={handleVisitSite}
-            onBack={() => { setActiveAd(null); setSurveyDone(false); }}
-            adsClickedToday={adsClickedToday}
+            onClose={closeAd}
+            onPrev={goPrevAd}
+            onNext={goNextAd}
           />
         )}
         {loading && (

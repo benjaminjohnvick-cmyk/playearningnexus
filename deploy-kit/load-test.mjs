@@ -487,6 +487,16 @@ check(/user\.role !== "admin"/.test(pstFn), 'provisioningSelfTest is admin-only'
 check(!/setSetting\(|db\.create\(|db\.update\(|\.update\(/.test(pstFn), 'function is READ-ONLY — returns results, writes no entity, changes no setting');
 
 // ============================================================================================================
+console.log('\n\x1b[1m16) PPC NETWORK ACROSS ALL THREE TIERS — advertisers on every tier can advertise on the AdGrid\x1b[0m');
+const ppcTierCatalog = read('backend/sdk/advertiser-features.ts');
+check(/key: "ppc_grid_placement"[\s\S]*?tier: 1/.test(ppcTierCatalog), 'PPC network advertising is in the advertiser catalog as a tier-1 feature (shared across tiers 1, 2 & 3)');
+check(/featuresForContext[\s\S]*?f\.tier <= tier/.test(ppcTierCatalog), 'featuresForContext includes a tier-1 feature in EVERY tier (tier <= N)');
+check(/key: "ppc_grid_placement"[\s\S]*?status: "live"/.test(ppcTierCatalog), 'PPC network placement is live (delivering), not gated off');
+// The advertiser-side create path must not be tier-gated.
+const createGridAd = read('backend/functions/createAdGridAd/entry.ts');
+check(!/tier\s*[<>=!]|requireTier|min_tier|founding.*only/i.test(createGridAd), 'createAdGridAd has NO tier gate — any advertiser tier can place a grid ad');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

@@ -44,6 +44,10 @@ const CATALOG: AdvertiserFeatureDef[] = [
   { key: "sponsored_survey_campaign", name: "Sponsored survey / quiz campaign", tier: 1, base_value_usd: 2400, revenue_type: "advertising", status: "live", category: 1, basis: "branded survey placement, conventional sponsored-content rate" },
   { key: "audience_pulse", name: "Audience pulse (targeted mini-panel)", tier: 1, base_value_usd: 6000, revenue_type: "audience_panel", status: "live", category: 5, basis: "one small targeted panel/yr at conventional research rates" },
   { key: "in_app_interstitials", name: "In-app full-screen ad placements", tier: 1, base_value_usd: 2000, revenue_type: "advertising", status: "live", gate_flag: "IN_APP_ADS_ENABLED", category: 1, basis: "premium interstitial inventory" },
+  // PPC network / AdGrid placement is SHARED across ALL THREE tiers (tier:1 = included in tiers 1, 2 and 3). Every
+  // advertiser, on any tier, can advertise on the PPC AdGrid — their product runs in the grid, users watch it,
+  // answer its questions, and are credited; the advertiser pays per engagement (PPC).
+  { key: "ppc_grid_placement", name: "PPC network advertising (AdGrid placement)", tier: 1, base_value_usd: 5000, revenue_type: "advertising", status: "live", category: 1, basis: "advertiser's product placed in the premium PPC AdGrid, shared across all three tiers; conventional annual PPC network placement (~$5,000/yr)" },
   { key: "lead_gen_program", name: "Lead / referral fee program", tier: 1, base_value_usd: 1500, revenue_type: "lead_fee", status: "live", category: 6, basis: "qualified-lead routing to the advertiser" },
   { key: "sponsored_jackpots", name: "Sponsored jackpots / prize placement", tier: 1, base_value_usd: 2500, revenue_type: "sponsored_prize", status: "live", category: 1, basis: "brand-sponsored prize/jackpot, conventional sponsorship rate" },
   // Live streaming is INCLUDED in every tier at NO extra price — the advertiser's existing spend now also buys

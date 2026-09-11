@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 export default function PPCWelcomePopup({ onClose }) {
   const handleCTA = () => {
     onClose();
-    window.location.href = '/PaidPPCAdsMosaic';
+    window.location.href = '/AdGridSurvey'; // canonical ad grid (real advertisers + full-screen watch/answer/swipe)
   };
 
   return (
