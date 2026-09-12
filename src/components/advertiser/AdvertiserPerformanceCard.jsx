@@ -3,9 +3,11 @@ import { base44 } from '@/api/base44Client';
 import { BarChart3, Loader2, TrendingUp, TrendingDown, Minus, Sparkles } from 'lucide-react';
 
 // AdvertiserPerformanceCard — the AI performance report surfaced for the advertiser: the conventional PPC metric
-// set measured from real activity, each benchmarked against standard PPC norms, plus the latest AI summary +
-// recommendations. Reads the read-only advertiserPerformance endpoint. It measures and benchmarks actual
-// performance; it NEVER guarantees an ROI, and below the data threshold it says "still gathering data".
+// set measured from real activity (CTR/CPC/CPA/ROAS) each benchmarked against standard PPC norms, PLUS the full
+// network-standard metric set (eCPM, CPM, CPP, IPM, windowed D1–D365 ROAS) and the new-vs-existing audience
+// breakdown from adMetricsReport, plus the latest AI summary + recommendations. Reads the read-only
+// advertiserPerformance + adMetricsReport endpoints. It measures and benchmarks actual performance; it NEVER
+// guarantees an ROI, and below the data threshold it says "still gathering data".
 const VERDICT = {
   above: { color: 'text-emerald-400', Icon: TrendingUp, label: 'above benchmark' },
   below: { color: 'text-red-400', Icon: TrendingDown, label: 'below benchmark' },
@@ -14,8 +16,11 @@ const VERDICT = {
 };
 const unitFmt = (v, unit) => (unit === '$' ? `$${Number(v).toLocaleString()}` : unit === 'x' ? `${v}×` : `${v}${unit}`);
 
+const money = (v) => `$${Number(v || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+
 export default function AdvertiserPerformanceCard() {
   const [data, setData] = useState(null);
+  const [net, setNet] = useState(null); // full network metric set from adMetricsReport
   const [loading, setLoading] = useState(true);
   const [revAmount, setRevAmount] = useState('');
   const [revBusy, setRevBusy] = useState(false);
@@ -30,6 +35,14 @@ export default function AdvertiserPerformanceCard() {
       setData(null);
     } finally {
       setLoading(false);
+    }
+    // Full network metric set (eCPM/CPM/CPP/IPM, windowed ROAS, audience breakdown). Best-effort — the
+    // report still renders the conventional set if this is disabled or errors.
+    try {
+      const nres = await base44.functions.invoke('adMetricsReport', { scope: 'advertiser' });
+      setNet(nres && nres.enabled !== false ? nres : null);
+    } catch {
+      setNet(null);
     }
   };
 
@@ -90,6 +103,53 @@ export default function AdvertiserPerformanceCard() {
               );
             })}
           </div>
+
+          {/* Full network metric set (eCPM, CPM, CPP, IPM, windowed ROAS) from adMetricsReport. */}
+          {net && net.metrics && (
+            <div className="mt-3">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2">Network metrics</div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {[
+                  { k: 'eCPM', v: money(net.metrics.ecpm_usd) },
+                  { k: 'CPM', v: money(net.metrics.cpm_usd) },
+                  { k: 'CPP', v: money(net.metrics.cpp_usd) },
+                  { k: 'IPM', v: Number(net.metrics.ipm || 0).toLocaleString() },
+                  { k: 'D7 ROAS', v: `${net.metrics.ad_roas_d7 || 0}×` },
+                  { k: 'D28 ROAS', v: `${net.metrics.ad_roas_d28 || 0}×` },
+                ].map((t) => (
+                  <div key={t.k} className="bg-black/30 rounded-xl p-3 border border-gray-800">
+                    <div className="text-[11px] uppercase tracking-wider text-gray-500">{t.k}</div>
+                    <div className="text-white font-black text-base">{t.v}</div>
+                  </div>
+                ))}
+              </div>
+
+              {Array.isArray(net.metrics.windowed) && net.metrics.windowed.length > 0 && (
+                <div className="mt-2 bg-black/30 rounded-xl p-3 border border-gray-800">
+                  <div className="text-[11px] uppercase tracking-wider text-gray-500 mb-1.5">ROAS by window (realized, trailing)</div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1">
+                    {net.metrics.windowed.map((w) => (
+                      <div key={w.window_days} className="text-xs">
+                        <span className="text-gray-500">D{w.window_days}</span>{' '}
+                        <span className="text-white font-bold">{w.ad_roas || 0}×</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {net.audience_breakdown && net.audience_breakdown.sampled > 0 && (
+                <div className="mt-2 bg-black/30 rounded-xl p-3 border border-gray-800">
+                  <div className="text-[11px] uppercase tracking-wider text-gray-500 mb-1.5">Audience — new vs existing (measured purchases)</div>
+                  <div className="flex items-center gap-4 text-xs">
+                    <div><span className="text-emerald-400 font-bold">{net.audience_breakdown.new.conversions}</span> <span className="text-gray-500">new</span></div>
+                    <div><span className="text-blue-400 font-bold">{net.audience_breakdown.existing.conversions}</span> <span className="text-gray-500">existing</span></div>
+                    <div className="text-gray-400">{net.audience_breakdown.new_share_pct}% new</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {rep && (rep.summary || (rep.recommendations && rep.recommendations.length > 0)) && (
             <div className="mt-4 bg-black/30 rounded-xl p-3 border border-gray-800">
