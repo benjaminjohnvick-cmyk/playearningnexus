@@ -126,3 +126,23 @@ stamped with the advertiser, and sums the ones in a "counted" (paid/fulfilled) s
 - For business advertisers this is commercial revenue-based financing (far lighter than consumer credit) —
   but the moment it becomes a fixed amount owed regardless of sales, it's a loan. Do not cross that line.
 - Have commercial-finance counsel review the revenue-share terms + disclosures before enabling.
+
+## Ad-network metrics + demographic & audience targeting (2026-09 update)
+
+**Full network-standard metric set (measured, never guaranteed).** Advertisers now get the complete
+mobile-ad-network metric set, computed from real platform activity: **eCPM, CPM, IPM, CPP**, and the windowed
+**ROAS curve (D1 / D3 / D7 / D14 / D28 / D90 / D365)**, plus the publisher-side yield metrics — **fill rate,
+ARPDAU and retention (D1 / D7 / D28)**. Every figure is measured and shown with its basis; the platform never
+guarantees an ROI. (Engine: `ad-metrics.ts`; on-demand read: `adMetricsReport`.)
+
+**Tracked over time and AI-optimized.** A scheduled sweep (`adMetricsSweep`) tracks each metric as history
+(`OptimizationSignal` + `AgentLearningMemory` — no new tables) and runs an AI optimizer that biases delivery
+from measured results. Every automatic action is reversible and routed through the autonomy kernel
+(`ad_optimization`): it auto-applies on trust or queues a human review, and it **never raises spend and never
+touches billing or payouts** (those stay permanently gated).
+
+**Demographic + new-vs-existing targeting.** On top of the interest/behavior cohorts, advertisers can target
+**demographics — age range, gender, country and region** — and **audience type (new vs existing users)**,
+matched against users' own non-identifying profile data (never an individual). Advertisers set an
+**`optimize_for`** objective — **ROAS, new-user acquisition, or existing-user retention** — that steers the AI
+delivery optimizer. (Engine: `ad-audience.ts`.)

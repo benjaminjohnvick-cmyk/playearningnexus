@@ -22,6 +22,19 @@ const US_STATES = [
 
 const AGE_BUCKETS = ['13-17', '18-24', '25-34', '35-44', '45-54', '55+'];
 const INTEREST_BUCKETS = ['gaming', 'sports', 'tech', 'fashion', 'finance', 'health', 'music', 'travel', 'food', 'education'];
+const GENDER_BUCKETS = ['male', 'female', 'nonbinary', 'other'];
+// New-vs-existing audience: chase acquisition (new) or retention/repeat (existing), or reach everyone.
+const AUDIENCE_TYPES = [
+  { value: 'all', label: 'Everyone' },
+  { value: 'new', label: 'New users' },
+  { value: 'existing', label: 'Existing users' },
+];
+// What the AI optimizes delivery toward (measured, never a guaranteed return).
+const OPTIMIZE_OBJECTIVES = [
+  { value: 'roas', label: 'ROAS (default)' },
+  { value: 'new_users', label: 'Acquire new users' },
+  { value: 'existing_users', label: 'Deepen existing users' },
+];
 
 function ToggleChip({ label, selected, onToggle }) {
   return (
@@ -41,7 +54,7 @@ function ToggleChip({ label, selected, onToggle }) {
 
 export default function AdTargeting({ ads }) {
   const [selectedAdId, setSelectedAdId] = useState(ads[0]?.id || '');
-  const [rule, setRule] = useState({ countries: [], us_states: [], age_buckets: [], interest_buckets: [] });
+  const [rule, setRule] = useState({ countries: [], us_states: [], age_buckets: [], interest_buckets: [], gender: [], audience_type: 'all', optimize_for: 'roas' });
   const [existingRuleId, setExistingRuleId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
@@ -58,10 +71,13 @@ export default function AdTargeting({ ads }) {
           us_states: r.us_states || [],
           age_buckets: r.age_buckets || [],
           interest_buckets: r.interest_buckets || [],
+          gender: r.gender || [],
+          audience_type: r.audience_type || 'all',
+          optimize_for: r.optimize_for || 'roas',
         });
       } else {
         setExistingRuleId(null);
-        setRule({ countries: [], us_states: [], age_buckets: [], interest_buckets: [] });
+        setRule({ countries: [], us_states: [], age_buckets: [], interest_buckets: [], gender: [], audience_type: 'all', optimize_for: 'roas' });
       }
       setFetching(false);
     });
@@ -75,6 +91,7 @@ export default function AdTargeting({ ads }) {
         : [...prev[field], value],
     }));
   };
+  const setField = (field, value) => setRule(prev => ({ ...prev, [field]: value }));
 
   const handleSave = async () => {
     setLoading(true);
@@ -91,7 +108,8 @@ export default function AdTargeting({ ads }) {
   };
 
   const isTargeted = rule.countries.length > 0 || rule.us_states.length > 0 ||
-    rule.age_buckets.length > 0 || rule.interest_buckets.length > 0;
+    rule.age_buckets.length > 0 || rule.interest_buckets.length > 0 ||
+    (rule.gender?.length > 0) || (rule.audience_type && rule.audience_type !== 'all');
 
   if (ads.length === 0) {
     return <div className="text-center py-10 text-gray-500 text-sm">Submit an ad first to configure targeting.</div>;
@@ -174,6 +192,19 @@ export default function AdTargeting({ ads }) {
             </div>
           </div>
 
+          {/* Gender */}
+          <div>
+            <p className="text-xs font-bold text-gray-400 mb-2 flex items-center gap-1.5">
+              <Users className="w-3 h-3" /> Gender
+              {rule.gender?.length > 0 && <Badge className="bg-gray-700 text-gray-300 text-[10px]">{rule.gender.length} selected</Badge>}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {GENDER_BUCKETS.map(g => (
+                <ToggleChip key={g} label={g} selected={(rule.gender || []).includes(g)} onToggle={() => toggle('gender', g)} />
+              ))}
+            </div>
+          </div>
+
           {/* Interests */}
           <div>
             <p className="text-xs font-bold text-gray-400 mb-2 flex items-center gap-1.5">
@@ -184,6 +215,31 @@ export default function AdTargeting({ ads }) {
                 <ToggleChip key={i} label={i} selected={rule.interest_buckets.includes(i)} onToggle={() => toggle('interest_buckets', i)} />
               ))}
             </div>
+          </div>
+
+          {/* Audience type — new vs existing users */}
+          <div>
+            <p className="text-xs font-bold text-gray-400 mb-2 flex items-center gap-1.5">
+              <Users className="w-3 h-3" /> Audience
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {AUDIENCE_TYPES.map(a => (
+                <ToggleChip key={a.value} label={a.label} selected={rule.audience_type === a.value} onToggle={() => setField('audience_type', a.value)} />
+              ))}
+            </div>
+          </div>
+
+          {/* AI optimization objective */}
+          <div>
+            <p className="text-xs font-bold text-gray-400 mb-2 flex items-center gap-1.5">
+              <Zap className="w-3 h-3" /> Optimize delivery for
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {OPTIMIZE_OBJECTIVES.map(o => (
+                <ToggleChip key={o.value} label={o.label} selected={rule.optimize_for === o.value} onToggle={() => setField('optimize_for', o.value)} />
+              ))}
+            </div>
+            <p className="text-[10px] text-gray-500 mt-1.5">The AI biases delivery toward your objective from measured results — it never raises your spend and never guarantees a return.</p>
           </div>
 
           <Button
