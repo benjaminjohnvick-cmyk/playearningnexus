@@ -286,7 +286,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 3. Complete backend function inventory — 1,011  *(the 28 most-recent are listed in §6)*
+## 3. Complete backend function inventory — 1,012  *(the 29 most-recent are listed in §6)*
 
 *Every backend function (HTTP endpoint, scheduled job, or entity-automation), grouped by domain. Each description is sourced from the function's own code header.*
 
@@ -1418,7 +1418,7 @@ The platform exposes ~1,200 admin-configurable capability flags — every one a 
 
 *These items were added to the codebase after the §2–§5 sweep was last taken, and are folded into the totals above. Listed here so the inventory is complete and counsel can assess the newest features. (Regenerate/refresh with `deploy-kit/inventory-drift-check.mjs`.)*
 
-### 6.1 Functions (28)
+### 6.1 Functions (29)
 
 - `adEngagementRank` — the AI ad-optimization read: given the caller and a set of candidate ads,
 - `adEngagementRecord` — the write behind the two ad buttons on every advertisement.
@@ -1428,6 +1428,7 @@ The platform exposes ~1,200 admin-configurable capability flags — every one a 
 - `adTargetingAiStatus` — admin READ of the self-learning ad-targeting layer: whether it's enabled/killed, its
 - `adTargetingLearn` — the self-learning pass. Samples recent PPC responses (each is a creative VIEW with an
 - `advertiserSeoAssist` — an advertiser optimizes their OWN product/landing listing for SEO
+- `aiTrendSocialAds` — reactive, current-events social ADS for the business (in the spirit of Mint Mobile's topical marketing): rides the live brand-safe trend pool (the Google-Trends daily searches the AI Video Engine curates), has the AI write an on-brand news-jacking ad per hot trend, and queues them as #ad-disclosed own ads to consenting members (member-approval by default), biased by the self-learning loop and tracked in the ad-metrics own-ad social performance.
 - `aiDisclosureStatus` — admin READ of the AI-generated content disclosure layer: whether the visible
 - `aiModelStatus` — admin READ of the swappable AI-model module: the model registry (including the frontier
 - `autonomyOversight` — the EXCEPTION-BASED oversight dashboard for the autonomy platform. Instead of

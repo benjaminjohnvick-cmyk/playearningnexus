@@ -529,6 +529,13 @@ check(/AUDIENCE_TYPES\s*=\s*\["all", "new", "existing"\]/.test(adAud), 'new-vs-e
 check(/OPTIMIZE_OBJECTIVES\s*=\s*\["roas", "new_users", "existing_users"\]/.test(adAud), 'optimize_for objectives: roas, new_users, existing_users');
 check(/userMatchesAudience/.test(read('backend/sdk/ad-targeting.ts')), 'targeting matcher evaluates demographics + audience type');
 check(/optimize_for: normalizeObjective/.test(read('backend/functions/createAdGridAd/entry.ts')), 'advertisers set optimize_for at ad creation');
+// Own-business AI social ads: measured + tracked like advertisers, and trend-reactive (Mint-Mobile style).
+check(/export async function computeOwnAdSocialMetrics/.test(read('backend/sdk/ad-metrics.ts')), 'own-business AI social ads have a measured metric set (computeOwnAdSocialMetrics)');
+check(/recordAdMetricSnapshot\("social_own"/.test(read('backend/functions/adMetricsSweep/entry.ts')), 'own-ad social performance is tracked over time in the sweep');
+check(/own_ad_social/.test(read('src/components/admin/PublisherMetricsPanel.jsx')), 'admin publisher panel surfaces own-ad social performance');
+check(/usableTrends/.test(read('backend/functions/aiTrendSocialAds/entry.ts')) && /platform_own_ad/.test(read('backend/functions/aiTrendSocialAds/entry.ts')), 'aiTrendSocialAds generates trend-reactive own ads from the live brand-safe trend pool');
+check(/"AI_TREND_SOCIAL_ADS_ENABLED"[\s\S]*?default: "1"/.test(read('backend/sdk/settings.ts')), 'AI_TREND_SOCIAL_ADS_ENABLED registered, default ON');
+check(/"daily-trend-social-ads"/.test(read('backend/scheduler/schedules.json')), 'trend social ads are scheduled (after the morning trend refresh)');
 
 // ============================================================================================================
 console.log('');

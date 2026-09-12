@@ -5,6 +5,7 @@ import {
   computeAdNetworkAdvertiserMetrics,
   computePublisherAdMetrics,
   computeAudienceBreakdown,
+  computeOwnAdSocialMetrics,
   AD_METRIC_DEFINITIONS,
   adMetricsEnabled,
 } from "../../sdk/ad-metrics.ts";
@@ -34,10 +35,13 @@ export default __handler(async (req) => {
       const denied = await requireInternalOrAdmin(req);
       if (denied) return denied;
       const publisher = await computePublisherAdMetrics(windowDays);
+      const ownAdSocial = await computeOwnAdSocialMetrics(windowDays);
       const learning = await adMetricLearning(30, "publisher");
+      const ownLearning = await adMetricLearning(30, "social_own");
       return Response.json({
         enabled: true, scope, window_days: windowDays,
-        publisher, trends: learning.trends,
+        publisher, own_ad_social: ownAdSocial,
+        trends: learning.trends, own_ad_trends: ownLearning.trends,
         definitions: AD_METRIC_DEFINITIONS,
         disclaimer: "Monetization figures are measured from real ad serving and shown with their basis.",
       });

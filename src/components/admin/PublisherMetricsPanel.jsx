@@ -114,6 +114,44 @@ export default function PublisherMetricsPanel() {
         </div>
       </div>
 
+      {/* Your business — AI social ads (platform_own_ad), measured + AI-tracked like advertisers */}
+      {data.own_ad_social && (
+        <div className="mt-5 pt-4 border-t border-gray-200">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2">Your business — AI social ads</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {(() => {
+              const s = data.own_ad_social;
+              const oTrend = (m) => (data.own_ad_trends || []).find((t) => t.metric === m);
+              const cells = [
+                { k: 'Ads queued', v: num(s.posts), metric: null },
+                { k: 'Post rate', v: `${s.post_rate_pct || 0}%`, metric: 'post_rate_pct' },
+                { k: 'Reach', v: num(s.reach), metric: null },
+                { k: 'Engagement rate', v: `${s.engagement_rate_pct || 0}%`, metric: 'engagement_rate_pct' },
+                { k: 'Attributed rev', v: money(s.attributed_revenue_usd), metric: null },
+                { k: 'Rev / 1k reach', v: money(s.rev_per_1k_reach_usd), metric: 'rev_per_1k_reach_usd' },
+              ];
+              return cells.map((c) => {
+                const tr = c.metric ? oTrend(c.metric) : null;
+                const dir = tr ? (DIR[tr.direction] || DIR.flat) : null;
+                const DirIcon = dir?.Icon;
+                return (
+                  <div key={c.k} className="bg-gray-50 rounded-xl p-3 border border-gray-200">
+                    <div className="text-[11px] uppercase tracking-wider text-gray-500">{c.k}</div>
+                    <div className="text-gray-900 font-black text-lg">{c.v}</div>
+                    {tr && dir && (
+                      <div className={`text-[11px] flex items-center gap-1 ${dir.color}`}>
+                        <DirIcon className="w-3 h-3" /> {tr.direction} · {tr.samples} pts
+                      </div>
+                    )}
+                  </div>
+                );
+              });
+            })()}
+          </div>
+          <p className="text-[11px] text-gray-500 mt-2">{data.own_ad_social.basis} Tracked and AI-optimized on the same self-learning loop as advertiser ads.</p>
+        </div>
+      )}
+
       <p className="text-[11px] text-gray-500 mt-4">{p.basis}</p>
       {data.disclaimer && <p className="text-[11px] text-gray-400 mt-1">{data.disclaimer}</p>}
     </Card>

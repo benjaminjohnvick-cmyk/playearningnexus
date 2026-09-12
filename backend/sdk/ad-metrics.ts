@@ -235,6 +235,56 @@ export async function computeRetention(sampleUsers = 2000): Promise<{ window_day
   return out;
 }
 
+// ---------- own-business AI social ads (platform_own_ad) — measured performance for the metrics dashboard ----------
+export interface OwnAdSocialMetrics {
+  window_days: number;
+  posts: number;               // own-business AI ads queued in the window
+  posted: number;              // posted or auto-posted by members
+  dismissed: number;           // skipped by members (a negative learning signal)
+  reach: number;               // total follower reach of members who posted
+  engagement: number;          // likes / engagements measured on those posts
+  attributed_revenue_usd: number;
+  post_rate_pct: number;       // posted / (posted + dismissed) — how often members actually post your ad
+  engagement_rate_pct: number; // engagement / reach
+  rev_per_1k_reach_usd: number;// attributed revenue per 1,000 reach (the social eCPM-equivalent)
+  substantiated: boolean;
+  basis: string;
+}
+
+/** Measured performance of the platform's OWN AI social ads (post_type "platform_own_ad") — the business's own
+ *  reactive/organic ads posted to consenting members. Same measured-not-guaranteed posture. Best-effort. */
+export async function computeOwnAdSocialMetrics(windowDays = 7): Promise<OwnAdSocialMetrics> {
+  const w = Math.max(1, Math.round(windowDays));
+  const since = daysAgoISO(w);
+  const out: OwnAdSocialMetrics = {
+    window_days: w, posts: 0, posted: 0, dismissed: 0, reach: 0, engagement: 0, attributed_revenue_usd: 0,
+    post_rate_pct: 0, engagement_rate_pct: 0, rev_per_1k_reach_usd: 0, substantiated: false,
+    basis: "No own-business AI social ads in the window yet.",
+  };
+  try {
+    const posts = (await db.filter("SocialMediaPost", { post_type: "platform_own_ad", created_date: { $gte: since } }, "-created_date", 5000).catch(() => [])) as Record<string, unknown>[];
+    out.posts = posts.length;
+    for (const p of posts) {
+      const st = String(p.status ?? "");
+      if (st === "posted" || p.auto_posted === true) out.posted += 1;
+      else if (st === "dismissed") out.dismissed += 1;
+      out.reach += Number(p.social_reach ?? p.reach) || 0;
+      out.engagement += Number(p.engagement ?? p.likes) || 0;
+      out.attributed_revenue_usd += Number(p.attributed_revenue_usd) || 0;
+    }
+    out.attributed_revenue_usd = r2(out.attributed_revenue_usd);
+    const acted = out.posted + out.dismissed;
+    out.post_rate_pct = acted > 0 ? pct2(out.posted / acted) : 0;
+    out.engagement_rate_pct = out.reach > 0 ? pct2(out.engagement / out.reach) : 0;
+    out.rev_per_1k_reach_usd = out.reach > 0 ? r2((out.attributed_revenue_usd / out.reach) * 1000) : 0;
+    out.substantiated = out.posts >= 5;
+    out.basis = out.posts > 0
+      ? `${out.posts} own-business AI ad(s) over ${w}d: ${out.posted} posted / ${out.dismissed} skipped, ${out.reach.toLocaleString()} reach.`
+      : `No own-business AI social ads in ${w}d yet.`;
+  } catch { /* leave zeros */ }
+  return out;
+}
+
 // ---------- metric dictionary (what each metric IS — surfaced by the report) ----------
 export interface MetricDef { key: string; name: string; side: "advertiser" | "publisher"; formula: string; definition: string; }
 export const AD_METRIC_DEFINITIONS: MetricDef[] = [

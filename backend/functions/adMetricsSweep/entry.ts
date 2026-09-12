@@ -7,6 +7,7 @@ import { aiPaused } from "../../sdk/ai-control.ts";
 import {
   computePublisherAdMetrics,
   computeAdNetworkAdvertiserMetrics,
+  computeOwnAdSocialMetrics,
   adMetricsEnabled,
   adMetricsAiOptimizationEnabled,
 } from "../../sdk/ad-metrics.ts";
@@ -33,9 +34,11 @@ export default __handler(async (req) => {
     const windowDays = Math.max(1, Math.round(Number(body.window_days) || 7));
     const optimize = adMetricsAiOptimizationEnabled() && !(await aiPaused().catch(() => false));
 
-    // Step 1 — platform monetization metrics + track.
+    // Step 1 — platform monetization metrics + own-business AI social ads + track both.
     const publisher = await computePublisherAdMetrics(windowDays);
     await recordAdMetricSnapshot("publisher", publisher as unknown as Record<string, unknown>, windowDays);
+    const ownAdSocial = await computeOwnAdSocialMetrics(windowDays);
+    await recordAdMetricSnapshot("social_own", ownAdSocial as unknown as Record<string, unknown>, windowDays);
 
     // Step 2 — per-advertiser: metrics, track, optimize through the gate.
     const objectives = await activeAdvertiserObjectives();
@@ -76,7 +79,7 @@ export default __handler(async (req) => {
 
     return Response.json({
       enabled: true, window_days: windowDays, optimized: optimize,
-      publisher, advertisers: results,
+      publisher, own_ad_social: ownAdSocial, advertisers: results,
       summary: { count: advertisers.length, boosted, cut, varied, steady, auto_applied: applied, queued_for_review: queued },
       note: "Metrics tracked as OptimizationSignal history; delivery actions routed through the autonomy kernel (ad_optimization) — reversible, no spend increase, billing untouched.",
     });

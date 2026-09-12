@@ -22,7 +22,7 @@ const r2 = (n: number) => Math.round((Number(n) || 0) * 100) / 100;
 export const AD_METRICS_AGENT = "ad_metrics_optimizer";
 
 /** The metrics we track over time (each becomes an OptimizationSignal row per sweep). */
-const TRACKED = ["roas", "ctr_pct", "conv_rate_pct", "cpa_usd", "cpp_usd", "ecpm_usd", "fill_rate_pct", "arpdau_usd"] as const;
+const TRACKED = ["roas", "ctr_pct", "conv_rate_pct", "cpa_usd", "cpp_usd", "ecpm_usd", "fill_rate_pct", "arpdau_usd", "post_rate_pct", "engagement_rate_pct", "rev_per_1k_reach_usd"] as const;
 
 /** Record a metric snapshot as learning signals — this is the TRACKING step (history the optimizer reads).
  *  Best-effort; never throws into the sweep. `scope` is "advertiser:<id>" or "publisher". */

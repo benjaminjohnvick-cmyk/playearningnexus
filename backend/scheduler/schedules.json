@@ -382,6 +382,12 @@
       "cron": "20 7 * * *",
       "function": "adMetricsSweep",
       "_comment": "MEASURE->TRACK->LEARN->IMPROVE for the ad metric set: computes publisher + per-advertiser network metrics, tracks them as OptimizationSignal history, and runs the AI delivery optimizer through the autonomy kernel (ad_optimization). Reversible, no spend increase."
+    },
+    {
+      "name": "daily-trend-social-ads",
+      "cron": "40 8 * * *",
+      "function": "aiTrendSocialAds",
+      "_comment": "Reactive, current-events social ADS for the business (Mint-Mobile style) from the live brand-safe trend pool, right after the morning trend refresh. Queued disclosed to consenting members (member-approval by default); tracked in the ad-metrics own-ad social performance."
     }
   ]
 }
