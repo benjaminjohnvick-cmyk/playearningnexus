@@ -1,6 +1,6 @@
 # Compliance & Current State
 
-**Prepared: July 28, 2026. Updated: July 29, 2026 (GamerGain 8).** A statement of how GamerGain /
+**Prepared: July 28, 2026. Updated: July 29, 2026 (Get Goods Gratis 8).** A statement of how Get Goods Gratis /
 PlayEarning Nexus works today and its posture on the issues that can be addressed in code. It is not legal
 advice; have counsel review it against your jurisdictions before launch.
 
@@ -137,4 +137,4 @@ legal are ready; prohibited-item blocking in the marketplace; compliance keys ex
 optimization; disclosed affiliate links; behavioral-recording opt-out, data export, and account
 deletion available to every user.
 
-<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
+<!-- last synced to remote: 2026-07-29 (Get Goods Gratis 9) -->

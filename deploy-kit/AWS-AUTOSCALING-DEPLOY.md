@@ -1,6 +1,6 @@
 # AWS Paid Tier + Auto-Scaling — Deploy Guide
 
-Run GamerGain on AWS with real auto-scaling and managed reliability. This uses the app's **prebuilt
+Run Get Goods Gratis on AWS with real auto-scaling and managed reliability. This uses the app's **prebuilt
 scale toggles** (Redis / read-replica / SQS), so scaling up is env flips, not code changes. Not
 financial advice; AWS prices change — confirm current pricing and use the AWS Pricing Calculator.
 

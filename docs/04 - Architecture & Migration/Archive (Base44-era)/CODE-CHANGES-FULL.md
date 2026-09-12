@@ -52,7 +52,7 @@ base44/.app.jsonc
 ```jsonc
 {
   "description": "Top-level super-agent that runs the self-growing ecosystem: it turns survey data (internal + external company surveys), feature votes, and suggestions into AI-generated games, features, services, and content — with human-review gates on anything risky.",
-  "instructions": "You are GamerGain's Autonomous Ecosystem Super-Agent. Your mandate is to let the platform grow itself from real demand data, safely.\n\n**PRIMARY LOOP (run on cadence, default daily):**\n1. Run autonomousEcosystemEngine. It ingests demand from every survey source (internal Surveys, external company PPC + BitLabs responses, FeatureVoteSurvey votes, UserSuggestions, GameVotes), generates AI insight on what to build next, and delegates creation across the active pillars.\n2. Check EcosystemConfig first: only act on pillars in active_pillars, and only when demand exceeds min_signal_threshold. If autonomous_mode is off, do nothing unless a human forces a run.\n3. After each run, review the EcosystemRunLog: confirm what was generated and surface anything marked requires_review to an admin.\n\n**PILLARS & DELEGATION:**\n- Surveys: generateAISurvey, runSurveyIntelligence — keep the survey supply matched to company + user demand.\n- Features: generateWeeklyFeatureVoteSurvey → concludeWeeklyFeatureVote → aiAutomaticFeatureImplementation.\n- Games: aiGameCreatorFromFeedback for winning game demand.\n- Services/Products: autoFeedbackAndProductEngine, publishWinningSurveyProduct.\n- Content: aiGenerateContentLibrary.\n- Ongoing ops: delegate to masterOrchestrator and aiOrchestrator (they already run fraud, retention, churn, payouts, learning).\n\n**SAFETY — NON-NEGOTIABLE:**\n- You GENERATE and QUEUE. You do not silently ship anything in human_review_categories (payments, auth, payouts, security) — those ALWAYS require explicit human approval.\n- Only items flagged low-risk and only when auto_deploy_enabled is true may be auto-applied.\n- Every cycle must be logged to EcosystemRunLog for auditability.\n- If error rate is high or signal looks manipulated (fraud), pause and alert an admin instead of acting.\n\n**GOAL:** A platform whose games, features, services, and surveys are continuously shaped by what users and partner companies actually want — measurable each cycle in EcosystemRunLog.",
+  "instructions": "You are Get Goods Gratis's Autonomous Ecosystem Super-Agent. Your mandate is to let the platform grow itself from real demand data, safely.\n\n**PRIMARY LOOP (run on cadence, default daily):**\n1. Run autonomousEcosystemEngine. It ingests demand from every survey source (internal Surveys, external company PPC + BitLabs responses, FeatureVoteSurvey votes, UserSuggestions, GameVotes), generates AI insight on what to build next, and delegates creation across the active pillars.\n2. Check EcosystemConfig first: only act on pillars in active_pillars, and only when demand exceeds min_signal_threshold. If autonomous_mode is off, do nothing unless a human forces a run.\n3. After each run, review the EcosystemRunLog: confirm what was generated and surface anything marked requires_review to an admin.\n\n**PILLARS & DELEGATION:**\n- Surveys: generateAISurvey, runSurveyIntelligence — keep the survey supply matched to company + user demand.\n- Features: generateWeeklyFeatureVoteSurvey → concludeWeeklyFeatureVote → aiAutomaticFeatureImplementation.\n- Games: aiGameCreatorFromFeedback for winning game demand.\n- Services/Products: autoFeedbackAndProductEngine, publishWinningSurveyProduct.\n- Content: aiGenerateContentLibrary.\n- Ongoing ops: delegate to masterOrchestrator and aiOrchestrator (they already run fraud, retention, churn, payouts, learning).\n\n**SAFETY — NON-NEGOTIABLE:**\n- You GENERATE and QUEUE. You do not silently ship anything in human_review_categories (payments, auth, payouts, security) — those ALWAYS require explicit human approval.\n- Only items flagged low-risk and only when auto_deploy_enabled is true may be auto-applied.\n- Every cycle must be logged to EcosystemRunLog for auditability.\n- If error rate is high or signal looks manipulated (fraud), pause and alert an admin instead of acting.\n\n**GOAL:** A platform whose games, features, services, and surveys are continuously shaped by what users and partner companies actually want — measurable each cycle in EcosystemRunLog.",
   "tool_configs": [
     { "type": "backend_function", "function_name": "autonomousEcosystemEngine", "reason": "Run one full ecosystem growth cycle" },
     { "type": "backend_function", "function_name": "generateAISurvey", "reason": "Generate new surveys from demand" },
@@ -81,7 +81,7 @@ base44/.app.jsonc
 ```jsonc
 {
   "description": "Runs the data-driven weekly growth loop: publishes the mandatory paid feature/game vote survey, correlates responses, ranks by votes, and hands the winning idea to the auto-implementation planner.",
-  "instructions": "You operate GamerGain's weekly, data-driven roadmap loop. Your job is to turn user demand into shipped features.\n\n**WEEKLY CADENCE:**\n1. START OF WEEK (Monday): Run generateWeeklyFeatureVoteSurvey to publish that week's mandatory $0.10 feature/game vote survey, built from the most-upvoted UserSuggestions and pending FeatureMockups. This notifies active users.\n2. DURING THE WEEK: Users vote via the Weekly Feature Vote page (submitFeatureVote credits their $0.10 and prevents double-voting).\n3. END OF WEEK (after closes_at): Run concludeWeeklyFeatureVote to tally responses, rank candidates by vote count, pick the winner, generate an implementation spec, and record a FeatureMockup flagged for implementation.\n4. HANDOFF: concludeWeeklyFeatureVote calls aiAutomaticFeatureImplementation with the winning spec. Treat items it marks 'auto_deploy' as safe to ship; route 'manual_review' items to a human before shipping. For winning NEW GAMES, you may also call aiGameCreatorFromFeedback.\n\n**RULES:**\n- Never open two active surveys in the same week.\n- Rank strictly by number of votes/responses; break ties by most total engagement, then earliest suggestion.\n- Only auto-implement low-risk, clearly-specified items; anything touching payments, auth, or payouts is ALWAYS manual review.\n- Keep an audit trail: the FeatureVoteSurvey record holds the winner, votes, and generated spec.\n\n**GOAL:** Every week, the feature users most want moves measurably closer to shipping.",
+  "instructions": "You operate Get Goods Gratis's weekly, data-driven roadmap loop. Your job is to turn user demand into shipped features.\n\n**WEEKLY CADENCE:**\n1. START OF WEEK (Monday): Run generateWeeklyFeatureVoteSurvey to publish that week's mandatory $0.10 feature/game vote survey, built from the most-upvoted UserSuggestions and pending FeatureMockups. This notifies active users.\n2. DURING THE WEEK: Users vote via the Weekly Feature Vote page (submitFeatureVote credits their $0.10 and prevents double-voting).\n3. END OF WEEK (after closes_at): Run concludeWeeklyFeatureVote to tally responses, rank candidates by vote count, pick the winner, generate an implementation spec, and record a FeatureMockup flagged for implementation.\n4. HANDOFF: concludeWeeklyFeatureVote calls aiAutomaticFeatureImplementation with the winning spec. Treat items it marks 'auto_deploy' as safe to ship; route 'manual_review' items to a human before shipping. For winning NEW GAMES, you may also call aiGameCreatorFromFeedback.\n\n**RULES:**\n- Never open two active surveys in the same week.\n- Rank strictly by number of votes/responses; break ties by most total engagement, then earliest suggestion.\n- Only auto-implement low-risk, clearly-specified items; anything touching payments, auth, or payouts is ALWAYS manual review.\n- Keep an audit trail: the FeatureVoteSurvey record holds the winner, votes, and generated spec.\n\n**GOAL:** Every week, the feature users most want moves measurably closer to shipping.",
   "tool_configs": [
     {
       "type": "backend_function",
@@ -129,7 +129,7 @@ base44/.app.jsonc
 ```jsonc
 {
   "description": "Runs the weekly rotating-platform referral contest end to end, DAILY and automatically, with legal/ethical guardrails: opt-in participation, FTC-disclosed posts, compliant auto-posting only for connected+consenting users, and fair reward crediting.",
-  "instructions": "You run GamerGain's referral contest fully automatically, once per day, via autoReferralContestDaily.\n\n**DAILY LOOP (autoReferralContestDaily does all of this):**\n1. Lifecycle: conclude the finished week and open the next week's campaign, rotating the platform (Twitter/X -> Instagram -> Facebook -> TikTok -> LinkedIn).\n2. Compliant auto-posting: post on a user's behalf ONLY when they have connected that account via OAuth (SocialMediaConnection is_active), enabled auto_posting_enabled, and accepted the agreement (MLMNode accepted_ula) — and only within the 12h rate limit. Every auto-post carries an FTC '#ad' disclosure and unique AI copy (generateAndPostAffiliateAds).\n3. Everyone else gets an OPTIONAL reminder — never a forced or silent post. Users may also post manually via submitReferralPost.\n4. Fairness: sweep-credit rewards pending longer than the grace period (creditPendingReferralPostRewards grace_days) so earned money is never forfeited. Normal path still credits pending rewards on survey completion.\n\n**HARD RULES (do not violate):**\n- Participation is OPT-IN and voluntary. Never make posting or surveys mandatory or penalize users for skipping.\n- Never post to a user's personal account without explicit OAuth connection + auto_posting opt-in + accepted agreement.\n- Every referral/affiliate post MUST include an FTC disclosure (#ad). No undisclosed endorsements.\n- Respect platform rate limits and Terms of Service; vary content per user to avoid spam/inauthentic-behavior flags. If a platform token is invalid, stop and require re-auth.\n- Two tracks (business_referral, user_referral) on separate leaderboards; real conversions still earn the standard 5% commission (autoReferralCommissions).\n- The 'best platform' rule is a positive nudge (optional double bonus), never a punishment.\n\n**GOAL:** A hands-off, compliant weekly referral engine that distributes across platforms, respects users and platform rules, and never forfeits earned rewards.",
+  "instructions": "You run Get Goods Gratis's referral contest fully automatically, once per day, via autoReferralContestDaily.\n\n**DAILY LOOP (autoReferralContestDaily does all of this):**\n1. Lifecycle: conclude the finished week and open the next week's campaign, rotating the platform (Twitter/X -> Instagram -> Facebook -> TikTok -> LinkedIn).\n2. Compliant auto-posting: post on a user's behalf ONLY when they have connected that account via OAuth (SocialMediaConnection is_active), enabled auto_posting_enabled, and accepted the agreement (MLMNode accepted_ula) — and only within the 12h rate limit. Every auto-post carries an FTC '#ad' disclosure and unique AI copy (generateAndPostAffiliateAds).\n3. Everyone else gets an OPTIONAL reminder — never a forced or silent post. Users may also post manually via submitReferralPost.\n4. Fairness: sweep-credit rewards pending longer than the grace period (creditPendingReferralPostRewards grace_days) so earned money is never forfeited. Normal path still credits pending rewards on survey completion.\n\n**HARD RULES (do not violate):**\n- Participation is OPT-IN and voluntary. Never make posting or surveys mandatory or penalize users for skipping.\n- Never post to a user's personal account without explicit OAuth connection + auto_posting opt-in + accepted agreement.\n- Every referral/affiliate post MUST include an FTC disclosure (#ad). No undisclosed endorsements.\n- Respect platform rate limits and Terms of Service; vary content per user to avoid spam/inauthentic-behavior flags. If a platform token is invalid, stop and require re-auth.\n- Two tracks (business_referral, user_referral) on separate leaderboards; real conversions still earn the standard 5% commission (autoReferralCommissions).\n- The 'best platform' rule is a positive nudge (optional double bonus), never a punishment.\n\n**GOAL:** A hands-off, compliant weekly referral engine that distributes across platforms, respects users and platform rules, and never forfeits earned rewards.",
   "tool_configs": [
     { "type": "backend_function", "function_name": "autoReferralContestDaily", "reason": "Run the entire contest end to end, daily" },
     { "type": "backend_function", "function_name": "generateWeeklyReferralCampaign", "reason": "Open the weekly rotating-platform campaign" },
@@ -1231,7 +1231,7 @@ Deno.serve(async (req) => {
     if (entityName === 'WeeklyEvent' && event?.type === 'create') {
       const weeklyEvent = data;
       const promo = await base44.integrations.Core.InvokeLLM({
-        prompt: `Write a hype notification for this GamerGain weekly event: "${weeklyEvent.title || 'Weekly Event'}" — ${weeklyEvent.description || ''}. Prize: ${weeklyEvent.prize || 'rewards'}. Max 100 chars.`,
+        prompt: `Write a hype notification for this Get Goods Gratis weekly event: "${weeklyEvent.title || 'Weekly Event'}" — ${weeklyEvent.description || ''}. Prize: ${weeklyEvent.prize || 'rewards'}. Max 100 chars.`,
         response_json_schema: { type: "object", properties: { message: { type: "string" } } }
       });
       const users = await base44.asServiceRole.entities.User.list('-created_date', 50);
@@ -3852,7 +3852,7 @@ import {
   Megaphone,
   Store } from
 'lucide-react';
-import GamerGainLogo from '@/components/branding/GamerGainLogo';
+import GetGoodsGratisLogo from '@/components/branding/GetGoodsGratisLogo';
 import SupportChatButton from '@/components/support/SupportChatButton';
 import LogoutPromptModal from '@/components/user/LogoutPromptModal';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
@@ -4070,10 +4070,10 @@ export default function Layout({ children, currentPageName }) {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <Link to={createPageUrl('Home')} className="flex items-center gap-2 group">
                   <div className="group-hover:scale-110 transition-transform">
-                    <GamerGainLogo className="w-10 h-10" />
+                    <GetGoodsGratisLogo className="w-10 h-10" />
                   </div>
                   <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent hidden sm:inline">
-                    GamerGain
+                    Get Goods Gratis
                   </span>
                 </Link>
                 <MegaContestButton />
@@ -4278,8 +4278,8 @@ export default function Layout({ children, currentPageName }) {
             <div className="grid md:grid-cols-4 gap-8">
               <div className="md:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
-                  <GamerGainLogo className="w-10 h-10" />
-                  <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">GamerGain</span>
+                  <GetGoodsGratisLogo className="w-10 h-10" />
+                  <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Get Goods Gratis</span>
                 </div>
                 <p className="text-gray-600 text-sm">The premium game discovery platform. Play games, earn rewards, connect with creators.</p>
               </div>
@@ -4303,7 +4303,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </div>
             <div className="border-t mt-8 pt-8 text-center text-sm text-gray-500">
-              <p>© 2024 GamerGain. All rights reserved. | Premium gaming platform</p>
+              <p>© 2024 Get Goods Gratis. All rights reserved. | Premium gaming platform</p>
             </div>
           </div>
         </footer>
@@ -4585,7 +4585,7 @@ export default function AutoCreatorFeature({ user }) {
     const ctx = buildContext();
     try {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a viral social media content expert. Create engaging posts for a GamerGain user who earns real money by playing games and completing surveys.
+        prompt: `You are a viral social media content expert. Create engaging posts for a Get Goods Gratis user who earns real money by playing games and completing surveys.
 
 User stats:
 - Total earnings: $${ctx.totalEarned}
@@ -5476,7 +5476,7 @@ const MORE_INFO_ITEMS = [
   {
     icon: <Bot className="w-5 h-5 text-purple-500" />,
     title: '🤖 AI Social Media Engine — Auto-Connected',
-    desc: 'GamerGain\'s AI Social Media Engine connects to all your detected social accounts and immediately generates short-form viral scripts tailored for TikTok, Instagram Reels, Twitter, Facebook, and Snapchat. These AI-written posts use trending hashtags, are scheduled for peak engagement hours, and include your referral link — completely hands-free. Your first 2 posts per platform are scheduled instantly.'
+    desc: 'Get Goods Gratis\'s AI Social Media Engine connects to all your detected social accounts and immediately generates short-form viral scripts tailored for TikTok, Instagram Reels, Twitter, Facebook, and Snapchat. These AI-written posts use trending hashtags, are scheduled for peak engagement hours, and include your referral link — completely hands-free. Your first 2 posts per platform are scheduled instantly.'
   },
   {
     icon: <Bot className="w-5 h-5 text-pink-500" />,
@@ -5506,7 +5506,7 @@ const MORE_INFO_ITEMS = [
   {
     icon: <DollarSign className="w-5 h-5 text-green-500" />,
     title: '$5 Direct Referral Credit',
-    desc: 'When a user you directly referred hits their first $8 earning milestone, you receive a one-time $5 website credit bonus automatically. These credits are spendable on GamerGain instantly.'
+    desc: 'When a user you directly referred hits their first $8 earning milestone, you receive a one-time $5 website credit bonus automatically. These credits are spendable on Get Goods Gratis instantly.'
   },
   {
     icon: <TrendingUp className="w-5 h-5 text-orange-500" />,
@@ -5526,7 +5526,7 @@ const MORE_INFO_ITEMS = [
   {
     icon: <Lock className="w-5 h-5 text-gray-500" />,
     title: 'User License Agreement (ULA)',
-    desc: 'By approving, you authorize GamerGain\'s AI to post content on your connected social accounts. You can revoke this at any time from your Affiliate MLM Dashboard. We will never post anything offensive, illegal, or off-brand. All AI-generated content is brand-safe and compliant.'
+    desc: 'By approving, you authorize Get Goods Gratis\'s AI to post content on your connected social accounts. You can revoke this at any time from your Affiliate MLM Dashboard. We will never post anything offensive, illegal, or off-brand. All AI-generated content is brand-safe and compliant.'
   },
 ];
 
@@ -5696,7 +5696,7 @@ Respond as JSON: { "detected_platforms": ["tiktok","instagram","twitter","facebo
       try {
         const request = new window.PaymentRequest(
           [{ supportedMethods: 'basic-card', data: { supportedNetworks: ['visa', 'mastercard', 'amex', 'discover'] } }],
-          { total: { label: 'Link Card to GamerGain', amount: { currency: 'USD', value: '0.00' } } },
+          { total: { label: 'Link Card to Get Goods Gratis', amount: { currency: 'USD', value: '0.00' } } },
           { requestPayerName: true, requestPayerEmail: false }
         );
         const canPay = await request.canMakePayment();
@@ -6224,7 +6224,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
     setShowSocialManager(false);
   };
 
-  // Unified GamerGain Search bar (always product compare mode)
+  // Unified Get Goods Gratis Search bar (always product compare mode)
   if (variant === 'compact') {
     return (
       <div className="relative bg-gradient-to-r from-blue-700 to-indigo-700 w-full">
@@ -6232,7 +6232,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
           {/* Logo/Branding */}
           <div className="flex items-center gap-1 text-white min-w-fit flex-shrink-0">
             <Zap className="w-4 h-4" />
-            <span className="font-bold text-sm hidden lg:inline">GamerGain</span>
+            <span className="font-bold text-sm hidden lg:inline">Get Goods Gratis</span>
           </div>
 
           {/* Unified Search + Compare Bar */}
@@ -6417,7 +6417,7 @@ Return AT LEAST 6 listings if they exist. Sort from lowest price to highest pric
               </div>
 
               <div className="px-3 pb-3">
-                <p className="text-[10px] text-gray-400 text-center">Prices are real-time estimates · Click any link to buy directly · Order via GamerGain available in the <Link to={createPageUrl('InAppGameStore')} className="text-blue-500 underline">Game Store</Link></p>
+                <p className="text-[10px] text-gray-400 text-center">Prices are real-time estimates · Click any link to buy directly · Order via Get Goods Gratis available in the <Link to={createPageUrl('InAppGameStore')} className="text-blue-500 underline">Game Store</Link></p>
               </div>
             </motion.div>
           )}
@@ -7457,13 +7457,13 @@ const Facebook = (props) => <svg {...props} viewBox="0 0 24 24" fill="currentCol
 
 const SHARE_MESSAGES = {
   twitter: [
-    (link) => `🎮 I'm earning real money playing games & taking surveys on GamerGain! Join me and we BOTH get rewarded 💰 → ${link} #GamerGain #EarnOnline`,
-    (link) => `Imagine getting paid to play games 🕹️ That's GamerGain. Use my link and start earning today → ${link}`,
-    (link) => `Just hit another referral milestone on @GamerGainApp 🏆 You can earn too — ${link} #PassiveIncome #Gamers`,
+    (link) => `🎮 I'm earning real money playing games & taking surveys on Get Goods Gratis! Join me and we BOTH get rewarded 💰 → ${link} #GetGoodsGratis #EarnOnline`,
+    (link) => `Imagine getting paid to play games 🕹️ That's Get Goods Gratis. Use my link and start earning today → ${link}`,
+    (link) => `Just hit another referral milestone on @GetGoodsGratis 🏆 You can earn too — ${link} #PassiveIncome #Gamers`,
   ],
   facebook: [
-    (link) => `🎮 I've been using GamerGain to earn money by playing games and completing surveys, and it's been amazing!\n\nSign up with my link and we both get a bonus when you start earning:\n👉 ${link}\n\nLet's grow together! 💰`,
-    (link) => `Have you tried GamerGain yet? I've been earning real cash playing games 🕹️\n\nUse my referral link to join — you get a bonus and so do I:\n${link}`,
+    (link) => `🎮 I've been using Get Goods Gratis to earn money by playing games and completing surveys, and it's been amazing!\n\nSign up with my link and we both get a bonus when you start earning:\n👉 ${link}\n\nLet's grow together! 💰`,
+    (link) => `Have you tried Get Goods Gratis yet? I've been earning real cash playing games 🕹️\n\nUse my referral link to join — you get a bonus and so do I:\n${link}`,
   ],
 };
 
@@ -7520,7 +7520,7 @@ export default function SocialShareHub({ user, referralLink }) {
     enabled: !!user,
   });
 
-  const link = referralLink || `https://gamergain.app/ref/${user?.id?.slice(0, 8)}`;
+  const link = referralLink || `https://getgoodsgratis.app/ref/${user?.id?.slice(0, 8)}`;
 
   const twitterMessage = SHARE_MESSAGES.twitter[msgIdx % SHARE_MESSAGES.twitter.length](link);
   const facebookMessage = SHARE_MESSAGES.facebook[msgIdx % SHARE_MESSAGES.facebook.length](link);
@@ -9320,7 +9320,7 @@ export default function ContestEntries() {
               <p>• Contest entries are earned by hitting referral milestones. More entries = better odds.</p>
               <p>• Prize pool = 10% of quarterly after-tax profits, distributed to the winner.</p>
               <p>• Winner is drawn randomly at end of quarter — higher entry count increases your chance.</p>
-              <p>• Prize must be used for GamerGain store credit or survey creation.</p>
+              <p>• Prize must be used for Get Goods Gratis store credit or survey creation.</p>
               <p>• Contest resets quarterly. Previous entries do not carry over.</p>
             </div>
           </CardContent>
@@ -9377,7 +9377,7 @@ const CORE_TASKS = [
     bg: 'bg-blue-50 border-blue-200',
     badgeBg: 'bg-blue-600',
     title: 'Task 2 — Daily Shop Search (−$0.05)',
-    description: 'Use the Shop button on the GamerGain search widget to search for 1 product. $0.05 is auto-deducted. The product is added to your Wishlist, and you receive contest entries automatically.',
+    description: 'Use the Shop button on the Get Goods Gratis search widget to search for 1 product. $0.05 is auto-deducted. The product is added to your Wishlist, and you receive contest entries automatically.',
     action: { label: 'Open Store & Search', path: 'InAppGameStore' },
     points: 10,
     note: '−$0.05 + contest entries awarded',
@@ -9426,8 +9426,8 @@ const EXTRA_MANDATORY_TASKS = [
     color: 'text-orange-600',
     bg: 'bg-orange-50 border-orange-200',
     badgeBg: 'bg-orange-600',
-    title: 'Download the GamerGain Search Widget',
-    description: 'Install the GamerGain search widget for automatic ad earnings and contest entries.',
+    title: 'Download the Get Goods Gratis Search Widget',
+    description: 'Install the Get Goods Gratis search widget for automatic ad earnings and contest entries.',
     action: { label: 'Download Widget', path: 'PPCMarketplace' },
     points: 10,
   },
@@ -9471,7 +9471,7 @@ const EXTRA_MANDATORY_TASKS = [
     bg: 'bg-yellow-50 border-yellow-200',
     badgeBg: 'bg-yellow-600',
     title: 'Check Referral Prize Pool',
-    description: 'View your contest entries and current ranking for the GamerGain prize pool.',
+    description: 'View your contest entries and current ranking for the Get Goods Gratis prize pool.',
     action: { label: 'View Contest', path: 'ReferralContest' },
     points: 5,
   },
@@ -9572,7 +9572,7 @@ export default function DailyTodoList() {
     setLoadingAi(true);
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Generate 5 personalized daily earn-section tasks for GamerGain user ${u?.full_name || 'User'} (earnings: $${(u?.total_earnings || 0).toFixed(2)}).
+        prompt: `Generate 5 personalized daily earn-section tasks for Get Goods Gratis user ${u?.full_name || 'User'} (earnings: $${(u?.total_earnings || 0).toFixed(2)}).
 Available pages: Surveys, PPCMarketplace, InAppGameStore, ReferralDashboard, Tournaments, Guilds, AchievementsPage, DailyEarningStreak, GlobalLeaderboard, Wishlist, Withdrawal, RewardsMarketplace, ReferralContest, CreatorDashboard, ExploreSurveys.
 Tasks should focus on earning activities. Return JSON array: id, title, description, icon_name (lucide icon name), path, points (5-25).`,
         response_json_schema: {
@@ -10279,7 +10279,7 @@ export default function ReferralDashboard() {
           </TabsContent>
 
           <TabsContent value="share" className="mt-5">
-            <SocialShareHub user={user} referralLink={`https://gamergain.app/ref/${user.id?.slice(0,8)}`} />
+            <SocialShareHub user={user} referralLink={`https://getgoodsgratis.app/ref/${user.id?.slice(0,8)}`} />
           </TabsContent>
 
           <TabsContent value="live" className="mt-5">
@@ -12291,7 +12291,7 @@ export default function SocialMediaSetup() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">🤖 AI Social Engine Activated!</h2>
               <p className="text-gray-600 mb-4 text-sm">
-                Your accounts are connected. Now GamerGain's AI will automatically:
+                Your accounts are connected. Now Get Goods Gratis's AI will automatically:
               </p>
               <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border-2 border-purple-200 p-5 mb-5 text-left space-y-3">
                 {[

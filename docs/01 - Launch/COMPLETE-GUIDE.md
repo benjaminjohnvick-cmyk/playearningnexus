@@ -1,4 +1,4 @@
-# GamerGain / PlayEarning Nexus — Complete Guide (All-in-One)
+# Get Goods Gratis / PlayEarning Nexus — Complete Guide (All-in-One)
 
 _Regenerated July 21, 2026 from the current, self-hosted guides. **No Base44.** This single document stitches together every launch, mobile, legal, and architecture guide so you can read or print everything in one place. Each section below is the same file that lives on its own in the folders._
 
@@ -35,7 +35,7 @@ Repo: https://github.com/benjaminjohnvick-cmyk/playearningnexus
 
 _Source file: `04 - Architecture & Migration/README.md`_
 
-# GamerGain / PlayEarning Nexus
+# Get Goods Gratis / PlayEarning Nexus
 
 A play-to-earn platform (surveys, games, referrals, rewards). **Self-hosted** — this app no longer
 uses Base44; it runs on its own React frontend + a Deno backend + PostgreSQL.
@@ -474,7 +474,7 @@ This runbook covers **API keys and web deploy** only. For the mobile apps, conti
 
 _Source file: `01 - Launch/CONFIG-AND-SECRETS.md`_
 
-# GamerGain / PlayEarning Nexus — Configuration, API Keys & Auth Inventory
+# Get Goods Gratis / PlayEarning Nexus — Configuration, API Keys & Auth Inventory
 ### Self-hosted stack (Base44 removed)
 
 ## Summary — no secrets are stored in the code
@@ -683,7 +683,7 @@ See `MIGRATION-PLAN.md` for the full phase breakdown and cost/risk notes.
 
 _Source file: `01 - Launch/DEVELOPER-HANDOFF-BRIEF.md`_
 
-# Developer Handoff Brief — GamerGain / PlayEarning Nexus
+# Developer Handoff Brief — Get Goods Gratis / PlayEarning Nexus
 ### Scope: launch on **web + native apps (Android & iOS)**
 
 You're being brought in to **stand up, deploy, and ship** an app whose code is already written.
@@ -709,7 +709,7 @@ don't consume your time).
 ## 2. What's already done — do NOT rebuild
 Full frontend + backend; auth (signup/login/password-reset/Google); all 526 functions converted to
 the self-hosted SDK; the 239-table schema; row-level security; agent runtime; scheduler; migration
-tooling; brand-matched auth screens; and the GamerGain icon set. It **compiles and passes syntax
+tooling; brand-matched auth screens; and the Get Goods Gratis icon set. It **compiles and passes syntax
 checks, and the DB layer is validated against real Postgres** — but it has **not been booted
 end-to-end as a live service yet.** That first boot is your Phase A.
 
@@ -728,7 +728,7 @@ end-to-end as a live service yet.** That first boot is your Phase A.
 - **Domain**, a **hosting account**, an **Apple Developer** account ($99/yr) and **Google Play
   Console** account ($25). iOS work needs a **Mac with Xcode**.
 - **Legal pages** completed + lawyer-reviewed (templates + `LEGAL-PAGES-GUIDE.md`).
-- The **app icon** is already in the repo (GamerGain green "G", `assets/icon.png`).
+- The **app icon** is already in the repo (Get Goods Gratis green "G", `assets/icon.png`).
 
 ## 5. Where to spend care (known gotchas)
 - **Deno, not Node** — the backend runs on Deno; deploy with a Deno-capable container (Dockerfile
@@ -770,7 +770,7 @@ end-to-end as a live service yet.** That first boot is your Phase A.
 
 _Source file: `01 - Launch/DEVELOPER-JOB-POST.md`_
 
-# Hiring Kit — GamerGain / PlayEarning Nexus
+# Hiring Kit — Get Goods Gratis / PlayEarning Nexus
 Two things you can use right away: a **job post** to publish (Upwork/LinkedIn/etc.), and a set of
 **screening questions** (with what a good answer looks like) to make sure a candidate actually knows
 the stack before you hire.

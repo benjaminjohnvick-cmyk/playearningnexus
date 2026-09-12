@@ -1,8 +1,8 @@
-# GamerGain — Launch Cost Estimate
+# Get Goods Gratis — Launch Cost Estimate
 
 > ## ⭐ CURRENT RECONCILED ESTIMATE — 2026-08-03
 >
-> **All GamerGain launch-cost docs use these figures. Where an older number appears anywhere below, this
+> **All Get Goods Gratis launch-cost docs use these figures. Where an older number appears anywhere below, this
 > banner supersedes it.** (Reflects everything built through 2026-08-03: the scale flywheels + Services page,
 > the opt-in shopping extension, and the one-command cost floor.)
 >
@@ -28,7 +28,7 @@
 
 **Prepared 2026-07-28 · Brand-new estimate · Figures are planning targets, not quotes**
 
-This estimate covers a complete launch of GamerGain / PlayEarning Nexus — the web PWA plus native
+This estimate covers a complete launch of Get Goods Gratis / PlayEarning Nexus — the web PWA plus native
 Android and iOS apps, with a load test held in reserve. It reflects the platform as it stands today:
 the AI-generated product catalog, the Facebook-Marketplace-style marketplace, serverless-GPU catalog
 imagery, country-by-country localization (currency, language, and flag), welcome rewards, the Daily
@@ -101,7 +101,7 @@ Development cost is identical across both — the difference is first-year opera
 Launch the web PWA and Android now, and add the native iOS app as a fast-follow once revenue covers it.
 This removes the 5–9 iOS development hours (~$375–$675), the $99/yr Apple fee, and the single biggest
 budget risk — App Store rejection rounds, which are common for money-earning apps. Crucially, iPhone
-users are **not** locked out: the PWA installs and runs on iOS Safari, so everyone can use GamerGain on
+users are **not** locked out: the PWA installs and runs on iOS Safari, so everyone can use Get Goods Gratis on
 day one. Because the app is a Capacitor wrapper and the iOS CI config already exists, adding iOS later is
 a flip, not a rebuild.
 

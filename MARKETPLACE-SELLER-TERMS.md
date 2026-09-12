@@ -2,7 +2,7 @@
 
 **Effective date: July 28, 2026** · Version 2026-07-28
 
-These Seller Terms apply when you list an item on the GamerGain marketplace (including relisting an item
+These Seller Terms apply when you list an item on the Get Goods Gratis marketplace (including relisting an item
 you own). They supplement, and are part of, the Terms of Service. Not legal advice — have counsel review
 before launch.
 

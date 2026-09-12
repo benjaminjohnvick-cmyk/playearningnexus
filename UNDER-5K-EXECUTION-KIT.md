@@ -1,8 +1,8 @@
-# Under-$5K Execution Kit — GamerGain / PlayEarning Nexus
+# Under-$5K Execution Kit — Get Goods Gratis / PlayEarning Nexus
 
 > ## ⭐ CURRENT RECONCILED ESTIMATE — 2026-08-03
 >
-> **All GamerGain launch-cost docs use these figures. Where an older number appears anywhere below, this
+> **All Get Goods Gratis launch-cost docs use these figures. Where an older number appears anywhere below, this
 > banner supersedes it.** (Reflects everything built through 2026-08-03: the scale flywheels + Services page,
 > the opt-in shopping extension, and the one-command cost floor.)
 >

@@ -2,7 +2,7 @@
 
 **Effective date: July 28, 2026**
 
-This notice explains the cookies, local storage, and tracking GamerGain (the "Service") uses. It
+This notice explains the cookies, local storage, and tracking Get Goods Gratis (the "Service") uses. It
 supplements the Privacy Policy. Not legal advice; in the EU/UK, non-essential storage generally requires
 consent — confirm your consent flow with counsel.
 

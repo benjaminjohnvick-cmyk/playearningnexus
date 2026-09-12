@@ -2,7 +2,7 @@
 
 > ## ⭐ CURRENT RECONCILED ESTIMATE — 2026-08-03
 >
-> **All GamerGain launch-cost docs use these figures. Where an older number appears anywhere below, this
+> **All Get Goods Gratis launch-cost docs use these figures. Where an older number appears anywhere below, this
 > banner supersedes it.** (Reflects everything built through 2026-08-03: the scale flywheels + Services page,
 > the opt-in shopping extension, and the one-command cost floor.)
 >
@@ -197,4 +197,4 @@ native apps later when you want them; nothing about the web launch has to be red
 and shaves a few hundred dollars off the web phase; the floor on the *full* (web+mobile) launch is held up
 by store review and owner tasks, not by anything left in the code.
 
-<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
+<!-- last synced to remote: 2026-07-29 (Get Goods Gratis 9) -->

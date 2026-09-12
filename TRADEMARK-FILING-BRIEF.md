@@ -28,7 +28,7 @@ separate purchase (not a trademark) and should be registered directly with a reg
 | **Marketing descriptor (not a filed mark)** | **"Buy Anything Available Online"** — unregistered line beneath the tagline in the brand lockup |
 | **Logo / design mark** | the **"G³" (G-cubed) monogram** — a serif G with a superscript 3 in a rounded square |
 | **Intended web address (domain, not a TM)** | **getgoodsgratis.com** *(verify availability & register with a registrar)* |
-| **Other names in the codebase** | **GamerGain**, **PlayEarning Nexus** *(legacy/internal — counsel to decide if either is used in commerce and worth protecting)* |
+| **Other names in the codebase** | **Get Goods Gratis**, **PlayEarning Nexus** *(legacy/internal — counsel to decide if either is used in commerce and worth protecting)* |
 
 ## Marks to consider registering
 
@@ -41,7 +41,7 @@ separate purchase (not a trademark) and should be registered directly with a reg
 | 2 | **"G³" logo (design mark)** | Design/stylized mark | Same classes as #1 | ITU or Use | Protects the visual mark. File the black-and-white drawing shown below. Specimen: the logo as actually used (app header, store listing). |
 | 3 | **Where Global Goods Gather** | Slogan / word mark | 35, 42 | ITU or Use | Slogans are registrable if they function as a source identifier (not merely informational). Keep it a brand tagline, never an earnings/ROI claim. **The paired descriptor "Buy Anything Available Online" is intentionally NOT filed — it is descriptive; keep it an unregistered marketing line beneath this tagline (see SLOGAN-WRITE-UP.md §4a).** |
 | 4 | **Get Goods Gratis + logo (composite)** | Combined word+design | Same classes | ITU or Use | Optional — some owners file the word mark and the logo separately (broader) rather than one composite. |
-| 5 | **GamerGain** / **PlayEarning Nexus** | Word mark(s) | 35, 41 (entertainment/games), 42, 9 | Use or ITU | Only if actually used in commerce and worth the spend. Counsel to advise; may be legacy. |
+| 5 | **Get Goods Gratis** / **PlayEarning Nexus** | Word mark(s) | 35, 41 (entertainment/games), 42, 9 | Use or ITU | Only if actually used in commerce and worth the spend. Counsel to advise; may be legacy. |
 | 6 | **House-ad brand template** (branded creative frame) | Trade dress / design mark | 35 | ITU or Use | The consistent branded "shell" stamped on every AI-generated ad — the top website-link bar + the "G³" watermark + frame — that makes any creative recognizably yours. **Trade-dress/design candidate; counsel to assess distinctiveness + non-functionality.** File the black-and-white drawing shown below. |
 
 ### Filing drawings (USPTO-compliant, black-and-white)

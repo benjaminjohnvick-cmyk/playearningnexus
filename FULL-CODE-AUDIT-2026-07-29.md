@@ -72,7 +72,7 @@ These are confirmed by the audit; they were held back from this batch to keep ea
 **Compliance (medium):**
 - `distributeTournamentPrizes` — pays prizes with no jurisdiction / registration hold (entry gates but
   payout doesn't). Mirror `processWeeklyJackpot`.
-- FTC `#ad` disclosure missing on several auto-post paths: `aiContentGeneratorAndShare`, `postGamerGainAds`,
+- FTC `#ad` disclosure missing on several auto-post paths: `aiContentGeneratorAndShare`, `postGetGoodsGratisAds`,
   `aiViralContentPublisher`, `mosaicAutoShareSocialMedia`, `automaticSocialPostingScheduler`. Wrap with
   `withAdDisclosure()`.
 - Agent-runtime + TTS LLM calls bypass the global `AI_DAILY_SPEND_CAP_USD` and `ai_paused` (they call
@@ -115,7 +115,7 @@ Commits `43b252e` (2A) → `74c59bb` (2G). What Pass 2 closed:
 - **Compliance uniformity (2D/2G):** jurisdiction + 18+ + sweepstakes-registration gate added to
   distributeTournamentPrizes and processRewardPayout (contest wins); jackpot-entry grants in
   autoProfileSetup and autoWishlistShareLifecycle gated on jurisdiction; FTC `withAdDisclosure()` now wraps
-  every auto-posted promo (postGamerGainAds, aiContentGeneratorAndShare, aiViralContentPublisher,
+  every auto-posted promo (postGetGoodsGratisAds, aiContentGeneratorAndShare, aiViralContentPublisher,
   mosaicAutoShareSocialMedia, automaticSocialPostingScheduler, autoMarketingCampaignLauncher,
   growthContentEngine); `MAINTENANCE_MODE` now gates `/agents/*` before dispatch.
 - **AI data coverage (2E/2F):** `collectSignals()` now also reads Referral, Payout, MarketplaceListing,

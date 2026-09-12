@@ -105,7 +105,7 @@ network/self-funding. Only include an item in an advertised total if the value i
 
 ### The Daily Boost callout (your idea, made legal & net-neutral)
 Frame it as: **"Earn $4 in offers today → your next 20 minutes are on us"** — a credit covering in-app
-purchases and app-install costs **within GamerGain's own store** (not third-party App Store
+purchases and app-install costs **within Get Goods Gratis's own store** (not third-party App Store
 charges, which Apple/Google control). Because the $4 comes from **advertiser offers that pay you**, the
 credit you hand back is funded by that revenue, so it's net-neutral-to-positive. Keep the credit value
 **below** your average offer payout so it never goes underwater, cap it per day, and word it as "on us

@@ -2,8 +2,8 @@
 
 **Effective date: July 28, 2026** · Version 2026-07-28
 
-These Terms of Service ("Terms") are a binding agreement between you and GamerGain ("GamerGain,"
-"we," "us"). They govern your access to and use of the GamerGain website, progressive web app, and
+These Terms of Service ("Terms") are a binding agreement between you and Get Goods Gratis ("Get Goods Gratis,"
+"we," "us"). They govern your access to and use of the Get Goods Gratis website, progressive web app, and
 mobile applications (together, the "Service"). By creating an account or using the Service, you agree to
 these Terms. If you do not agree, do not use the Service.
 
@@ -47,7 +47,7 @@ are not responsible for third-party content or determinations.
 
 ## 5. Marketplace
 The Service includes a marketplace with three kinds of listings:
-- **Platform catalog** — original products offered by GamerGain and handled through our AI-managed order
+- **Platform catalog** — original products offered by Get Goods Gratis and handled through our AI-managed order
   process;
 - **Member listings** — items listed by other users, who are responsible for shipping and for the
   accuracy of their listings;
@@ -73,7 +73,7 @@ or privacy; upload unlawful, harmful, or infringing content; or misrepresent you
 
 ## 8. Content and intellectual property
 The Service, including its original catalog listings, generated images, taxonomy, text, and software,
-is owned by GamerGain or its licensors and is protected by intellectual-property laws. We grant you a
+is owned by Get Goods Gratis or its licensors and is protected by intellectual-property laws. We grant you a
 limited, revocable, non-exclusive, non-transferable license to use the Service for its intended
 purpose. Content you submit remains yours, but you grant us a license to host, display, and use it to
 operate and improve the Service.
@@ -105,13 +105,13 @@ extent permitted by law. We do not warrant that the Service will be uninterrupte
 secure, or that any particular amount of points, earnings, or results can be achieved.
 
 ## 14. Limitation of liability
-To the fullest extent permitted by law, GamerGain will not be liable for indirect, incidental, special,
+To the fullest extent permitted by law, Get Goods Gratis will not be liable for indirect, incidental, special,
 consequential, or punitive damages, or for lost profits or lost points, arising from your use of the
 Service. Our total liability for any claim relating to the Service will not exceed the greater of the
 amount you paid us in the twelve months before the claim or USD 100.
 
 ## 15. Indemnification
-You agree to indemnify and hold GamerGain harmless from claims and expenses arising out of your use of
+You agree to indemnify and hold Get Goods Gratis harmless from claims and expenses arising out of your use of
 the Service, your content, or your violation of these Terms or applicable law.
 
 ## 16. Changes
@@ -120,7 +120,7 @@ reasonable steps to notify you (which may include requiring re-acceptance). Cont
 take effect constitutes acceptance.
 
 ## 17. Governing law and disputes
-These Terms are governed by the laws of the jurisdiction in which GamerGain is established, without
+These Terms are governed by the laws of the jurisdiction in which Get Goods Gratis is established, without
 regard to conflict-of-laws rules. The specific governing law, venue, and any arbitration or class-action
 terms must be finalized with counsel and inserted here before launch.
 

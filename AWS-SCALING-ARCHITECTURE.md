@@ -1,4 +1,4 @@
-# GamerGain / PlayEarning Nexus — AWS Scaling Architecture (one-pager)
+# Get Goods Gratis / PlayEarning Nexus — AWS Scaling Architecture (one-pager)
 
 **Goal:** run the self-hosted stack on AWS so it comfortably serves **200,000 registered users** (≈10,000–30,000 concurrent at peak) with auto-scaling, without the database or third-party providers becoming the ceiling.
 

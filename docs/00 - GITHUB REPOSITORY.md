@@ -1,4 +1,4 @@
-# GamerGain / PlayEarning Nexus — GitHub Repository
+# Get Goods Gratis / PlayEarning Nexus — GitHub Repository
 
 ## Your repository (the live source of truth)
 

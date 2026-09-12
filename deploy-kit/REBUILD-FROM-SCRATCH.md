@@ -1,6 +1,6 @@
 # Rebuild the Whole Site From Scratch
 
-This repo (and `GamerGain-SOURCE-CODE.zip`) is a complete, self-contained copy of the app. From it you
+This repo (and `Get Goods Gratis-SOURCE-CODE.zip`) is a complete, self-contained copy of the app. From it you
 can reconstruct the **entire running site** with one command — no re-coding, no guesswork.
 
 > Honest note: nothing can "auto-generate" an app's code from nothing — **the source in this repo is
@@ -41,13 +41,13 @@ The site runs immediately. To turn on AI, payments, email, surveys, etc., paste 
 
 ---
 
-## Restoring the repository from `GamerGain-SOURCE-CODE.zip`
+## Restoring the repository from `Get Goods Gratis-SOURCE-CODE.zip`
 
 If you ever need to put this exact code back into GitHub (e.g. recover the repo), the ZIP is a full
 copy of the source tree (everything except `node_modules`, which `npm install` regenerates).
 
 **Easiest (GitHub Desktop):**
-1. Unzip `GamerGain-SOURCE-CODE.zip` to a folder.
+1. Unzip `Get Goods Gratis-SOURCE-CODE.zip` to a folder.
 2. GitHub Desktop → **File → Add local repository** → pick that folder.
 3. If it isn't a repo yet, GitHub Desktop offers to create one — do that, then **Publish/Push**.
 
@@ -62,5 +62,5 @@ git remote add origin https://github.com/benjaminjohnvick-cmyk/playearningnexus.
 git push -u origin main          # add --force ONLY if you intend to overwrite what's on GitHub
 ```
 
-> The code in `GamerGain-SOURCE-CODE.zip` already matches what's currently pushed to `main`, so you
+> The code in `Get Goods Gratis-SOURCE-CODE.zip` already matches what's currently pushed to `main`, so you
 > normally don't need to restore anything — this is here for disaster recovery.

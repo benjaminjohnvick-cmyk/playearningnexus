@@ -1,8 +1,8 @@
-# GamerGain — Launch Cost Estimate (floor edition)
+# Get Goods Gratis — Launch Cost Estimate (floor edition)
 
 > ## ⭐ CURRENT RECONCILED ESTIMATE — 2026-08-15
 >
-> **All GamerGain / Get Goods Gratis launch-cost docs use these figures. Where an older number appears
+> **All Get Goods Gratis / Get Goods Gratis launch-cost docs use these figures. Where an older number appears
 > anywhere below, this banner supersedes it.** (Reflects everything built through 2026-08-15: the AI concierge
 > funnel + auto-launch, the public `/Apply` page marketing the Founding offer + "coming soon" financing, the
 > results/benchmark auto-compilers and per-product stats, the Tier 2 "Scale" pay-as-you-go ladder +

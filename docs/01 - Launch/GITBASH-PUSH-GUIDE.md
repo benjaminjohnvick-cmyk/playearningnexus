@@ -19,7 +19,7 @@ GitHub no longer accepts your account password over the command line — you use
 Access Token (PAT)** as the password instead.
 1. Sign in to GitHub, then open **https://github.com/settings/tokens**
 2. Click **Generate new token → Generate new token (classic)**.
-3. Name it `gamergain-push`, set **Expiration** to 90 days, and check the **`repo`** box.
+3. Name it `getgoodsgratis-push`, set **Expiration** to 90 days, and check the **`repo`** box.
 4. Click **Generate token** and **copy the token** (starts with `ghp_…`). You won't see it again —
    paste it somewhere safe for the next step.
 
@@ -47,7 +47,7 @@ and pushes. When it finishes it prints a verification link.
 Paste these one at a time in Git Bash (from the folder with the zip):
 ```bash
 # 1. unzip the source
-unzip playearningnexus-NO-BASE44-20260720.zip -d gamergain-src
+unzip playearningnexus-NO-BASE44-20260720.zip -d getgoodsgratis-src
 
 # 2. clone your repo
 git clone https://github.com/benjaminjohnvick-cmyk/playearningnexus.git
@@ -58,11 +58,11 @@ git checkout main
 
 # 4. replace the repo's contents with the new source (keeps git history)
 find . -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
-cp -a ../gamergain-src/. .
+cp -a ../getgoodsgratis-src/. .
 
 # 5. stage, commit, and push
 git add -A
-git commit -m "Replace with self-hosted build (Base44 removed): SDK, backend, auth, GamerGain icons"
+git commit -m "Replace with self-hosted build (Base44 removed): SDK, backend, auth, Get Goods Gratis icons"
 git push origin main
 ```
 (At step 5's push, enter the username + token as above.)
@@ -71,7 +71,7 @@ git push origin main
 Open this link in a browser:
 **https://github.com/benjaminjohnvick-cmyk/playearningnexus/blob/main/DE-BASE44-REWORK.md**
 If that page loads, your push succeeded. You can also just visit the repo and see the new files
-(`backend/`, the updated `src/`, the GamerGain icons).
+(`backend/`, the updated `src/`, the Get Goods Gratis icons).
 
 ---
 

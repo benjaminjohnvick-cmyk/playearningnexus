@@ -1,4 +1,4 @@
-# GamerGain / PlayEarning Nexus — Configuration, API Keys & Auth Inventory
+# Get Goods Gratis / PlayEarning Nexus — Configuration, API Keys & Auth Inventory
 ### Self-hosted stack (Base44 removed)
 
 ## Summary — no secrets are stored in the code

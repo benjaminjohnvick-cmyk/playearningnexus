@@ -1,4 +1,4 @@
-# Developer Handoff Brief — GamerGain / PlayEarning Nexus
+# Developer Handoff Brief — Get Goods Gratis / PlayEarning Nexus
 
 > **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
 ### Scope: launch on **web + native apps (Android & iOS)**
@@ -29,7 +29,7 @@ your time, and the owner-provided accounts/fees are separate.)
 ## 2. What's already done — do NOT rebuild
 Full frontend + backend; auth (signup/login/password-reset/Google); all 1,009 functions converted to
 the self-hosted SDK; the 239-table schema; row-level security; agent runtime; scheduler; migration
-tooling; brand-matched auth screens; and the GamerGain icon set. It **compiles and passes syntax
+tooling; brand-matched auth screens; and the Get Goods Gratis icon set. It **compiles and passes syntax
 checks, and the DB layer is validated against real Postgres** — but it has **not been booted
 end-to-end as a live service yet.** That first boot is your Phase A.
 
@@ -48,7 +48,7 @@ end-to-end as a live service yet.** That first boot is your Phase A.
 - **Domain**, a **hosting account**, an **Apple Developer** account ($99/yr) and **Google Play
   Console** account ($25). iOS work needs a **Mac with Xcode**.
 - **Legal pages** completed + lawyer-reviewed (templates + `LEGAL-PAGES-GUIDE.md`).
-- The **app icon** is already in the repo (GamerGain green "G", `assets/icon.png`).
+- The **app icon** is already in the repo (Get Goods Gratis green "G", `assets/icon.png`).
 
 ## 5. Where to spend care (known gotchas)
 - **Deno, not Node** — the backend runs on Deno; deploy with a Deno-capable container (Dockerfile

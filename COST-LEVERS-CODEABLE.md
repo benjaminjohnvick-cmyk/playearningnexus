@@ -1,6 +1,6 @@
 # Codeable Cost Levers — everything ON, just cheaper
 
-**Prepared 2026-07-30.** This is the complete list of *code* changes that lower GamerGain's runtime bill
+**Prepared 2026-07-30.** This is the complete list of *code* changes that lower Get Goods Gratis's runtime bill
 **without turning any feature off**. Every lever here is pure efficiency — cheaper model tiers, caching,
 batching, dedup, sampling, pruning, and activating infrastructure that's already written but dormant. No
 feature is disabled; the platform stays fully on from the get-go.

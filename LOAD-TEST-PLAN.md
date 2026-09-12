@@ -1,4 +1,4 @@
-# GamerGain / PlayEarning Nexus — Load-Test Plan
+# Get Goods Gratis / PlayEarning Nexus — Load-Test Plan
 
 **Purpose:** prove the app handles the target load (path to **200,000 registered users**, ≈10,000–30,000 concurrent at peak) *before* launch, and find where it bends first so you fix that instead of guessing. Turns "should scale" into measured numbers.
 

@@ -46,7 +46,7 @@ Every Base44 page in `src/pages` exists in the current `src/pages`, with 4 pages
 - **Buttons:** the count of `<Button>` elements across all pages and components is **identical (1,566 = 1,566)**, and `onClick` handlers are **identical (1,952 = 1,952)**. Every button and interactive control that existed in Base44 exists now.
 
 ### 6. Design elements — preserved
-The full design system is intact: `tailwind.config.js`, `src/globals.css`, `src/index.css`, `components.json` (shadcn config), `index.html`, and all brand assets (`assets/`, `public/` — both supersets of the originals). The GamerGain brand, colors, layout, and component styling carry over unchanged.
+The full design system is intact: `tailwind.config.js`, `src/globals.css`, `src/index.css`, `components.json` (shadcn config), `index.html`, and all brand assets (`assets/`, `public/` — both supersets of the originals). The Get Goods Gratis brand, colors, layout, and component styling carry over unchanged.
 
 ---
 

@@ -42,11 +42,11 @@ Then **Build → Generate Signed Bundle / APK → Android App Bundle**, create/s
    then promote to Production.
 
 ## Step 3 — Listing copy (ready to paste; tweak to taste)
-- **App name:** GamerGain — Play & Earn
+- **App name:** Get Goods Gratis — Play & Earn
 - **Short description (≤80 chars):**
   `Play games, take surveys, earn rewards and store credit. Cash out as a partner.`
 - **Full description (draft):**
-  > GamerGain is a play-to-earn rewards app. Complete surveys, play games, and refer friends to earn
+  > Get Goods Gratis is a play-to-earn rewards app. Complete surveys, play games, and refer friends to earn
   > store credit you can spend on real products we ship to you. Affiliates and partners can earn cash
   > payouts. Features: daily goals and streaks, a rewards store with product search, referral
   > contests, and a secure closed-loop wallet. Rewards are based on genuine activity and merit — not

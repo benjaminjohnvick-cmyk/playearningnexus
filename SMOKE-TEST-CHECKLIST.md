@@ -93,7 +93,7 @@ off. Nothing here spends real money (card charging is off).
       in points"** banner shows → check the box → **Open my storefront** → toast confirms `@username`; the
       banner flips to the "You're a seller" strip. A `ConsentRecord` (`seller_user_activation`, via
       `seller_signup_one_click`) is written and `is_seller: true` is set.
-- [ ] **Curate a catalog product:** on a **GamerGain Official** (platform-catalog) card, tap **Sell this** →
+- [ ] **Curate a catalog product:** on a **Get Goods Gratis Official** (platform-catalog) card, tap **Sell this** →
       a new listing appears under your username (`source: "curated"`, `fulfilled_by: "platform_ai"`). Adding
       the same item twice says "already in your storefront."
 - [ ] **Curated sale pays 10% (on sale only):** as another user, buy that curated listing with points →

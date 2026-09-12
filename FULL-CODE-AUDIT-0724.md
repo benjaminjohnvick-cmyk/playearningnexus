@@ -1,4 +1,4 @@
-# Full Code Audit — GamerGain / PlayEarning Nexus (2026-07-24)
+# Full Code Audit — Get Goods Gratis / PlayEarning Nexus (2026-07-24)
 
 Static audit of the entire codebase **without a build or sandbox on your machine**, run
 inside the cloud workspace using real tooling: the TypeScript compiler (`tsc`) over all

@@ -4,11 +4,11 @@ Ready-to-paste store metadata for submission. Fill the few [BRACKETS]. Written t
 (merit-based, not gambling). Not legal advice.
 
 ## Names & identifiers
-- **App name:** GamerGain
+- **App name:** Get Goods Gratis
 - **Brand tagline (lockup):** Where Global Goods Gather — Buy Anything Available Online
 - **Subtitle (Apple, ≤30 chars):** Play, earn points, shop
 - **Short description (Play, ≤80 chars):** Complete surveys and tasks, earn points, and shop a global marketplace.
-- **Bundle ID / Package:** [com.yourco.gamergain]
+- **Bundle ID / Package:** [com.yourco.getgoodsgratis]
 - **Primary category:** Shopping (secondary: Lifestyle)
 - **Age rating:** 17+ / Mature 17+ (money-earning; 18+ enforced in-app)
 
@@ -17,7 +17,7 @@ Earn points by completing surveys and tasks, then spend them in a Facebook-style
 local pricing in your currency. New rewards and products added continually.
 
 ## Description (both stores)
-GamerGain is a retail rewards platform where your time turns into points you can actually use.
+Get Goods Gratis is a retail rewards platform where your time turns into points you can actually use.
 
 Earn points by completing surveys, offers, and daily activities. Points are worth one cent of your
 local currency inside the app, so what you see is always in your own money.
@@ -37,14 +37,14 @@ Highlights:
 - Buy with points or card; members can sell their own items with privacy
 - Personalized recommendations and a helpful in-app assistant
 
-GamerGain rewards participation and merit — it is not gambling and involves no wagering. You must be 18+
+Get Goods Gratis rewards participation and merit — it is not gambling and involves no wagering. You must be 18+
 to use the app.
 
 ## Keywords (Apple, ≤100 chars, comma-separated)
 earn points,rewards,surveys,cash back,marketplace,shopping,deals,offers,play to earn,paid tasks
 
 ## What's New (first release)
-Welcome to GamerGain: earn points from surveys and tasks, shop a global marketplace in your own
+Welcome to Get Goods Gratis: earn points from surveys and tasks, shop a global marketplace in your own
 currency and language, and find the real product with one tap.
 
 ## Support & marketing URLs

@@ -1,4 +1,4 @@
-# Under-$5K Execution Kit — GamerGain / PlayEarning Nexus
+# Under-$5K Execution Kit — Get Goods Gratis / PlayEarning Nexus
 
 **Purpose:** get a developer from "code on GitHub" to "live on web + Android + iOS" for **≤ $5,000**
 at **$75/hr (≤ ~66 billable hours)**. It works by removing the guesswork — every phase below ships
@@ -159,7 +159,7 @@ The one thing that can still add hours is an **Apple review rejection round** (k
 via `REVIEWER_DEMO=1`, merit-not-gambling framing). Owner account signups and optional legal review are
 separate from dev hours; AI runtime stays capped by `AI_DAILY_SPEND_CAP_USD` and can launch at ~$0.
 
-<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
+<!-- last synced to remote: 2026-07-29 (Get Goods Gratis 9) -->
 
 ---
 

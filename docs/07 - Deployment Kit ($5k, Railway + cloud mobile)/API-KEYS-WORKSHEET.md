@@ -12,7 +12,7 @@ build variable (`VITE_*`, public) · **required** = app won't run without it.
 |---|---|---|
 | `DATABASE_URL` **[B]** required | Railway Postgres service → Variables (auto-created) | `____________________` |
 | `AUTH_JWT_SECRET` **[B]** required | Generate a long random string: `openssl rand -base64 48` | `____________________` |
-| `APP_URL` **[B]** required | Your frontend domain (e.g. https://gamergain.app) | `____________________` |
+| `APP_URL` **[B]** required | Your frontend domain (e.g. https://getgoodsgratis.app) | `____________________` |
 | `FRONTEND_URL` **[B]** | Same as APP_URL (used for password-reset links) | `____________________` |
 | `CORS_ORIGIN` **[B]** | Your frontend domain | `____________________` |
 | `VITE_NEXUS_API_URL` **[F]** required | Your backend domain (Railway-generated or custom) | `____________________` |

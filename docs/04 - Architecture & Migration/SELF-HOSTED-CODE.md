@@ -1,4 +1,4 @@
-# PlayEarning Nexus / GamerGain — Self-Hosted Code (Base44 removed)
+# PlayEarning Nexus / Get Goods Gratis — Self-Hosted Code (Base44 removed)
 
 Complete source of the hand-authored self-hosted layer that replaced Base44:
 compatibility SDK, server routes, auth (incl. reset + Google), agent runtime, scheduler,
@@ -2114,9 +2114,9 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
-import GamerGainLogo from '@/components/branding/GamerGainLogo';
+import GetGoodsGratisLogo from '@/components/branding/GetGoodsGratisLogo';
 
-// Self-hosted login/signup form, styled to match the GamerGain app design system
+// Self-hosted login/signup form, styled to match the Get Goods Gratis app design system
 // (green logo/wordmark, red CTA, red-50/white background). Replaces Base44's hosted screen.
 // mode: 'login' | 'signup'. On success, stores the JWT and navigates to ?redirect= (or home).
 export default function AuthForm({ mode = 'login' }) {
@@ -2165,8 +2165,8 @@ export default function AuthForm({ mode = 'login' }) {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <GamerGainLogo className="w-12 h-12" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">GamerGain</span>
+            <GetGoodsGratisLogo className="w-12 h-12" />
+            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Get Goods Gratis</span>
           </div>
           <p className="text-gray-500 text-sm">{isSignup ? 'Create your account' : 'Sign in to your account'}</p>
         </div>
@@ -2312,7 +2312,7 @@ export default function Signup() {
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import GamerGainLogo from '@/components/branding/GamerGainLogo';
+import GetGoodsGratisLogo from '@/components/branding/GetGoodsGratisLogo';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -2338,8 +2338,8 @@ export default function ForgotPassword() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <GamerGainLogo className="w-12 h-12" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">GamerGain</span>
+            <GetGoodsGratisLogo className="w-12 h-12" />
+            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Get Goods Gratis</span>
           </div>
           <p className="text-gray-500 text-sm">Reset your password — we'll email you a link.</p>
         </div>
@@ -2378,7 +2378,7 @@ export default function ForgotPassword() {
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import GamerGainLogo from '@/components/branding/GamerGainLogo';
+import GetGoodsGratisLogo from '@/components/branding/GetGoodsGratisLogo';
 
 export default function ResetPassword() {
   const [params] = useSearchParams();
@@ -2415,8 +2415,8 @@ export default function ResetPassword() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <GamerGainLogo className="w-12 h-12" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">GamerGain</span>
+            <GetGoodsGratisLogo className="w-12 h-12" />
+            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Get Goods Gratis</span>
           </div>
           <p className="text-gray-500 text-sm">Choose a new password{email ? ` for ${email}` : ''}</p>
         </div>
@@ -2455,11 +2455,11 @@ export default function ResetPassword() {
 }
 ```
 
-## `src/components/branding/GamerGainLogo.jsx`
+## `src/components/branding/GetGoodsGratisLogo.jsx`
 ```jsx
 import React from 'react';
 
-export default function GamerGainLogo({ className = "w-10 h-10" }) {
+export default function GetGoodsGratisLogo({ className = "w-10 h-10" }) {
   return (
     <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -2523,7 +2523,7 @@ export default defineConfig({
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- GamerGain favicons -->
+    <!-- Get Goods Gratis favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png" />

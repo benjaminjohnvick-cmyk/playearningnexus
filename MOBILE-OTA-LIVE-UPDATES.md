@@ -1,6 +1,6 @@
 # Mobile OTA Live Updates — ship web-layer changes with no App Store review
 
-**Bottom line: ongoing changes to GamerGain are store-review-free.** GamerGain is a React web app inside
+**Bottom line: ongoing changes to Get Goods Gratis are store-review-free.** Get Goods Gratis is a React web app inside
 a thin Capacitor shell, so nearly all of the app — every screen, all the logic — is a **web bundle**
 (JS/HTML/CSS). Over-the-air (OTA) live updates push a new web bundle straight to installed native apps;
 the native shell never changes, so **Apple/Google review is not required** for web-layer changes. Users

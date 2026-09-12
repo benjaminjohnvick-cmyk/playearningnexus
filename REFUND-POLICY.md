@@ -2,7 +2,7 @@
 
 **Effective date: July 28, 2026** · Version 2026-07-28
 
-This Refund Policy explains how refunds work on GamerGain (the "Service"). It applies together with our
+This Refund Policy explains how refunds work on Get Goods Gratis (the "Service"). It applies together with our
 Terms of Service.
 
 > This is a plain-language template describing current practice. It is not legal advice, and consumer

@@ -938,4 +938,4 @@ M  base44/functions/submitFeatureVote/entry.ts  (now also credits pending referr
 (src/App.jsx and FloatingNavSidebar.jsx updated again for the referral page)
 ```
 
-<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
+<!-- last synced to remote: 2026-07-29 (Get Goods Gratis 9) -->

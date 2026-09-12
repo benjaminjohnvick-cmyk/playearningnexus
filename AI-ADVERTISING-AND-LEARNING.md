@@ -5,7 +5,7 @@
 > plugs into.
 
 
-_Version: GamerGain 8 · 2026-07-29. How the Premium PPC AI advertiser generates ads, posts them under
+_Version: Get Goods Gratis 8 · 2026-07-29. How the Premium PPC AI advertiser generates ads, posts them under
 consent, and learns from outcomes using the platform's existing AI-learning infrastructure. **Not legal
 advice** — the social-posting model requires the platform/FTC review flagged below._
 
@@ -96,4 +96,4 @@ advertiser needs reach ──> premiumPPCAutoAdvertise (daily)
 
 _The learning loop makes the ads **better**, not **cleared**. None of the above is solved by code._
 
-<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
+<!-- last synced to remote: 2026-07-29 (Get Goods Gratis 9) -->

@@ -1,12 +1,12 @@
-# GamerGain — Refund Policy (Businesses & Customers)
+# Get Goods Gratis — Refund Policy (Businesses & Customers)
 
-_Last updated: 2026-07-25. This describes how refunds are issued and spent on GamerGain. It is a
+_Last updated: 2026-07-25. This describes how refunds are issued and spent on Get Goods Gratis. It is a
 plain-language policy; have it reviewed by counsel before publishing as a binding legal page._
 
 ## 1. How refunds are issued — store credit, not cash
 
-All refunds on GamerGain are issued as **store credit** to your GamerGain account, not as cash to a
-card or bank. Store credit can be spent on any product or online service available through GamerGain's
+All refunds on Get Goods Gratis are issued as **store credit** to your Get Goods Gratis account, not as cash to a
+card or bank. Store credit can be spent on any product or online service available through Get Goods Gratis's
 AI order fulfillment.
 
 - **Customers** receive refunds as in-store credit (their `current_balance`).
@@ -14,7 +14,7 @@ AI order fulfillment.
 
 ## 2. No markup on refunded credit
 
-GamerGain normally applies a single 10% platform markup when a regular customer buys a product. **That
+Get Goods Gratis normally applies a single 10% platform markup when a regular customer buys a product. **That
 markup is never applied when you pay with refunded credit** — for businesses *or* customers. Refund
 credit spends at face value ($1 of refund credit = $1 of product/service value). Business accounts also
 pay no markup on any purchase.
@@ -35,7 +35,7 @@ Advertisers on the $5,000 annual PPC AdGrid earn a partial refund tied to their 
 activity:
 
 - For every day the matched user does **not** earn $8, the advertiser is credited **$4 in store
-  credit** (50% of that day's $8) to their `refund_credit_balance`. GamerGain retains the other $4.
+  credit** (50% of that day's $8) to their `refund_credit_balance`. Get Goods Gratis retains the other $4.
 - Separately, the advertiser receives **$32/day in free social-media advertising credit** on those
   days — and keeps receiving it **until they have doubled their investment**, i.e. received **$10,000
   in fulfilled product/service orders** through the platform. After that, free social credit stops.
@@ -50,7 +50,7 @@ activity:
   refunded to store credit.
 - **Online services:** because services are delivered immediately, they are refundable to store credit
   only if the service could not be delivered or materially failed to match its description.
-- Store credit is redeemable for products and services on GamerGain and is **not withdrawable as
+- Store credit is redeemable for products and services on Get Goods Gratis and is **not withdrawable as
   cash** (consistent with the platform's closed-loop credit model).
 
 ## 6. How to request a refund

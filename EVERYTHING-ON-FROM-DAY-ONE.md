@@ -1,6 +1,6 @@
 # Everything is ON, up, and running from the get-go
 
-This is the core operating posture of GamerGain / PlayEarning Nexus, and it governs every estimate, guide,
+This is the core operating posture of Get Goods Gratis / PlayEarning Nexus, and it governs every estimate, guide,
 and deploy step in this bundle. **Read this first — it is the assumption behind all the numbers.**
 
 ## The rule

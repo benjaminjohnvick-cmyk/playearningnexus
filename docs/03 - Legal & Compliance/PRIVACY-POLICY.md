@@ -2,7 +2,7 @@
 
 **Effective date: July 28, 2026** · Version 2026-07-28
 
-This Privacy Policy explains how GamerGain ("GamerGain," "we," "us") collects, uses, shares, and
+This Privacy Policy explains how Get Goods Gratis ("Get Goods Gratis," "we," "us") collects, uses, shares, and
 protects personal information when you use our website, progressive web app, and mobile applications
 (the "Service"). It also describes the choices and rights you have over your information.
 
@@ -11,8 +11,8 @@ protects personal information when you use our website, progressive web app, and
 > regional laws) before you rely on it.
 
 ## 1. Who we are
-GamerGain operates a retail rewards platform where users complete activities to earn points and use those
-points in a store and marketplace. The data controller is GamerGain; contact details are in Section 12.
+Get Goods Gratis operates a retail rewards platform where users complete activities to earn points and use those
+points in a store and marketplace. The data controller is Get Goods Gratis; contact details are in Section 12.
 
 ## 2. Information we collect
 - **Account information** you provide: name or display name, email, password (stored only as a secure

@@ -1,6 +1,6 @@
 # Social Posting — One-Tap Composer, Consent & Compliance
 
-_Version: GamerGain 8 · 2026-07-29. How members connect accounts, consent to social advertising, and post
+_Version: Get Goods Gratis 8 · 2026-07-29. How members connect accounts, consent to social advertising, and post
 AI-generated ads with the least friction the browser allows. **Not legal advice.**_
 
 ## 1. Connecting accounts (consent, not scanning)
@@ -60,4 +60,4 @@ ad-learning loop.
 - `backend/functions/socialMediaOAuthHandler`, `SocialMediaSetup.jsx` — account connection.
 - `backend/sdk/disclosure.ts` — `withAdDisclosure()`.
 
-<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
+<!-- last synced to remote: 2026-07-29 (Get Goods Gratis 9) -->

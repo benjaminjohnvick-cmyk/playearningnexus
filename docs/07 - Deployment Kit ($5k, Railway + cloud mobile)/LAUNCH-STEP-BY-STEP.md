@@ -1,5 +1,5 @@
 # Launch — Step by Step (developer handoff)
-## GamerGain / PlayEarning Nexus · using the pre-built execution kit
+## Get Goods Gratis / PlayEarning Nexus · using the pre-built execution kit
 
 **How to read this:** every step is tagged with who does it —
 🧍 **OWNER** (only you can; needs your identity/card) · 🛠 **DEVELOPER** (following the kit) ·
@@ -9,7 +9,7 @@
 web PWA + Android + native iOS + AWS auto-scaling + the user-capacity load test, everything ON from day one
 (nothing omitted). Developer labor only; see **`DEV-COST-3000-FULL-SCOPE.md`** (the single source of truth
 for this number). The 🧍 owner steps and the fixed fees (Apple $99/yr, Google $25, domain, hosting) are
-separate — see `GamerGain-Launch-Estimate.pdf`.
+separate — see `Get Goods Gratis-Launch-Estimate.pdf`.
 The per-phase hours below are the pre-automation figures; the cheat-sheet scripts bring them down.
 
 ---

@@ -1,4 +1,4 @@
-# Invention Disclosure & Patent Groundwork — Get Goods Gratis (Free) / GamerGain / PlayEarning Nexus
+# Invention Disclosure & Patent Groundwork — Get Goods Gratis (Free) / Get Goods Gratis / PlayEarning Nexus
 
 > **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`. **Action for patent counsel:** per decision #2, consider reframing claim language around retail/rewards with games as one searchable category (proposal only — no claims are amended in this document).
 

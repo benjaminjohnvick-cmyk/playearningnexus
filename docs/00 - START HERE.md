@@ -1,4 +1,4 @@
-# GamerGain / PlayEarning Nexus — Guides & Documents
+# Get Goods Gratis / PlayEarning Nexus — Guides & Documents
 ### Start Here
 
 Welcome — this folder holds every guide and document for your app, **updated for the self-hosted

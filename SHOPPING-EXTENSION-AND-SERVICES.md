@@ -9,7 +9,7 @@ foundations and seams that keep the ceiling open, with the compliance line held.
 Consented Audience Insights, Rewards-as-a-Service, Marketplace & Ads, and Cost Leverage — plus the opt-in
 shopping helper. It is **marketing-only**: a partnerships contact email is the call to action, with **no lead
 form and no backend**. Each card labels what is live today versus a foundation. Replace the placeholder
-`partnerships@gamergain.example` with your real inbox before launch.
+`partnerships@getgoodsgratis.example` with your real inbox before launch.
 
 ## 2. Marketplace-equivalent hold on survey revenue (flywheel #3, inventory-free)
 

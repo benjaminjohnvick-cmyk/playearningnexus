@@ -1,6 +1,6 @@
 # Premium PPC — Up-Front Grant & Social-Advertising Model
 
-_Version: GamerGain 8 · 2026-07-29. Supersedes PREMIUM-PPC-CREDIT-ADVANCE.md, which described the earlier
+_Version: Get Goods Gratis 8 · 2026-07-29. Supersedes PREMIUM-PPC-CREDIT-ADVANCE.md, which described the earlier
 earn-as-you-go/advance framing. This is the authoritative description of the Premium PPC network as it
 now stands in code. **Not legal advice** — the flagged items require counsel sign-off before launch._
 
@@ -112,4 +112,4 @@ The design deliberately removes the classic regulated triggers: **no money advan
 - `premiumPPCOffer` — real-dollar offer surface with the points disclaimer.
 - Scheduler: `daily-premium-ppc-reconcile` (08:00 UTC), `daily-premium-ppc-autoadvertise` (10:30 UTC).
 
-<!-- last synced to remote: 2026-07-29 (GamerGain 9) -->
+<!-- last synced to remote: 2026-07-29 (Get Goods Gratis 9) -->

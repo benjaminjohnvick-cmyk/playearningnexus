@@ -14,9 +14,9 @@ fulfillment flow and "the same class of bug" as the surveyWidget dead-URL issue.
    on the item itself. It now sources against a new `sourcingBudget = order.raw_price`
    (falls back to amount for business/legacy orders where no markup applies).
 3. **Dead base44.app URLs (surveyWidget class).** `sendSurveyNotifications` linked to
-   `https://gamergain.base44.app/Surveys` and `notifyWeeklyTopEarners` to
-   `https://gamergain.base44.app/Leaderboard` — both dead domains in user-facing emails.
-   Replaced with `${APP_URL}` (env `APP_URL`, default `https://gamergain.app`).
+   `https://getgoodsgratis.base44.app/Surveys` and `notifyWeeklyTopEarners` to
+   `https://getgoodsgratis.base44.app/Leaderboard` — both dead domains in user-facing emails.
+   Replaced with `${APP_URL}` (env `APP_URL`, default `https://getgoodsgratis.app`).
 
 ## Verified fine (checked, not a bug)
 - `src/lib/NavigationTracker.jsx` calls `base44.appLogs.logUserInApp` — the self-hosted

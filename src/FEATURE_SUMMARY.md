@@ -30,7 +30,7 @@
 
 **Flow:**
 1. User submits dispute type + description + files
-2. Files uploaded to GamerGain storage
+2. Files uploaded to Get Goods Gratis storage
 3. AI analyzes evidence vs platform logs
 4. Creates `SurveyDispute` record with AI recommendation
 5. Admin reviews AI analysis + user evidence for final decision

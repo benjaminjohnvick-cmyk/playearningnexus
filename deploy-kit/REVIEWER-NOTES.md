@@ -10,11 +10,11 @@ a clean pass is the single biggest factor in hitting the launch floor (a rejecti
 > a sample survey, store items, and notifications so every screen has real content to review.
 >
 > If a typed login is required instead:
->   email: reviewer@gamergain.app   password: (set REVIEWER_DEMO_PASSWORD; provide the value here)
+>   email: reviewer@getgoodsgratis.app   password: (set REVIEWER_DEMO_PASSWORD; provide the value here)
 
 ## What the app is (framing — merit, not gambling)
 
-> GamerGain is a rewards platform. Users earn on-site credit by completing **surveys** and **skill/merit
+> Get Goods Gratis is a rewards platform. Users earn on-site credit by completing **surveys** and **skill/merit
 > activities** (e.g. verified referrals, engagement), then spend that credit in an on-site store. Rewards
 > are **merit-based, never chance-based** — there is no wager, no random prize draw, and no purchase is
 > required to earn. "Contests" and the weekly reward are ranked by **verified performance**, not luck.

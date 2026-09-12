@@ -9,7 +9,7 @@ authorized-affiliate only — no retailer catalog is copied.
   `user` (member sells/ships, AI-managed escrow), `affiliate` (retailer sells; we return the link).
 - **Card orders don't fulfill until payment is captured** (no giveaway if card charging is switched on
   before a processor is wired).
-- Members can **relist owned items with no personal info** (`relistItem`, seller shows as "GamerGain
+- Members can **relist owned items with no personal info** (`relistItem`, seller shows as "Get Goods Gratis
   Member"). Third-party sellers post via `createMarketplaceListing` / the third-party seller page.
 - Grid has search + sort (price/newest) + category filter.
 

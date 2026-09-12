@@ -1,4 +1,4 @@
-# GamerGain / Get Goods Gratis (Free) — Complete Feature & Function Disclosure Brief
+# Get Goods Gratis / Get Goods Gratis (Free) — Complete Feature & Function Disclosure Brief
 
 > **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`. **Action for patent counsel:** per decision #2, the game/play mechanics described below should be reframed as one retail category within a retail-first invention (proposal for counsel — claims are **not** amended here).
 
@@ -797,7 +797,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 - **`livestreamChannels`** — livestreamChannels — read endpoint for the Omni-Channel Livestream shopping section. Returns the category, its channels (subcategories that mirror the shopping sections), and the featured products with their AI image / commercial, so the client can render it alongside the other shopping sections.…
 - **`mosaicAutoShareSocialMedia`** — Auto-post mosaic grid to social media twice daily
 - **`postAdToSocialMedia`** — Get user's connected social accounts
-- **`postGamerGainAds`** — Post 2 GamerGain ads across all 7 social channels twice daily
+- **`postGetGoodsGratisAds`** — Post 2 Get Goods Gratis ads across all 7 social channels twice daily
 - **`reportChat`** — reportChat (authenticated) — the "Report inappropriate behavior" button. On click we IMMEDIATELY: end the reporter's chat, pull + snapshot the full transcript (and any attached files), flag every message for review, and open a SupportTicket in customer service. For a 1:1 the pair ends; for a grou…
 - **`sessionSimulcast`** — sessionSimulcast — start/stop/status of pushing a hosted livestream to multiple RTMP destinations at once. It builds the fan-out PLAN (validated, secret-free) and dispatches it to the media RELAY (SIMULCAST_RELAY_URL), which does the actual WebRTC-in → RTMP-out fan-out and pulls each stream key f…
 - **`setChatPrefs`** — setChatPrefs (authenticated) — the user's chat language (what they READ messages in) and the countries they'd like to be matched with. Chat is auto-translated into their language on display. Body: { lang, countries?: [ISO codes] } → { success, lang, countries }
@@ -1299,7 +1299,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 - **`realtimeAdBiddingEngine`** — slot_request contains targeting info: { user_id, geo, interests, device, ad_format, placement }
 - **`recordContentLicense`** — recordContentLicense (auth) — log a content-license/rights attestation for uploaded content (ad creatives, storefront media). Called by the uploader's client after they check the rights-attestation box. GET-style (no accepted flag) returns the current license text + version to display. Records to…
 - **`recordMatchResult`** — Records a game/contest match result and updates participant standings.
-- **`relistItem`** — relistItem (authenticated member) — turn something you own into a marketplace listing WITHOUT exposing any personal information. The listing shows an anonymized seller ("GamerGain Member"), is buyable with points or card, and its order is handled by the AI order-fulfillment lifecycle.
+- **`relistItem`** — relistItem (authenticated member) — turn something you own into a marketplace listing WITHOUT exposing any personal information. The listing shows an anonymized seller ("Get Goods Gratis Member"), is buyable with points or card, and its order is handled by the AI order-fulfillment lifecycle.
 - **`requestGroupSpend`** — Requests to spend from the group pool — a large-ticket purchase or a transfer to a member. If the requester is the group owner, it executes immediately; otherwise it is created as pending for owner approval (approveGroupSpend).
 - **`roasBiddingEngine`** — Fetch all active campaigns for this user (or specific one)
 - **`saveToGetCancel`** — saveToGetCancel (auth) — cancel a goal and move its reserved savings BACK to spendable. Proves nothing is locked: the user reclaims every cent, no penalty, no balance owed. Body: { goal_id }

@@ -1,6 +1,6 @@
 # Subprocessors
 
-The third parties that may process personal or operational data on GamerGain's behalf. Publish a version
+The third parties that may process personal or operational data on Get Goods Gratis's behalf. Publish a version
 of this list (privacy laws often require it) and keep it current. Only providers you actually enable
 apply. Not legal advice.
 
