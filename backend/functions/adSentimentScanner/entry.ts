@@ -35,7 +35,7 @@ export default __handler(async (req) => {
     let aiResult;
     try {
       aiResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are an Ad Sentiment AI for GamerGain. Analyze the following user feedback and engagement data for ad-specific sentiment signals.
+        prompt: `You are an Ad Sentiment AI for Get Goods Gratis. Analyze the following user feedback and engagement data for ad-specific sentiment signals.
 
 FEEDBACK SAMPLE (${recentFeedback.length} total responses):
 ${feedbackText.slice(0, 3000) || 'No text feedback — analyze engagement patterns.'}

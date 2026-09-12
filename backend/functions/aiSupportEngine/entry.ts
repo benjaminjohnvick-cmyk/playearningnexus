@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
 const PLATFORM_DOCS = `
-GamerGain Platform Documentation:
+Get Goods Gratis Platform Documentation:
 
 SURVEYS & EARNINGS:
 - Complete surveys to earn money. 50% of survey revenue goes to users.
@@ -48,7 +48,7 @@ TRANSFERS & MARKETPLACE:
 TECHNICAL ISSUES:
 - Clear browser cache if experiencing loading issues.
 - Use Chrome or Firefox for best experience.
-- Contact support@gamergain.com for account-specific issues.
+- Contact support@getgoodsgratis.com for account-specific issues.
 `;
 
 export default __handler(async (req) => {
@@ -65,7 +65,7 @@ export default __handler(async (req) => {
       const { ticket_id, category, subject, description, user_name } = body;
 
       const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a friendly, expert support agent for GamerGain.
+        prompt: `You are a friendly, expert support agent for Get Goods Gratis.
 
 Platform Documentation:
 ${PLATFORM_DOCS}
@@ -122,7 +122,7 @@ Also classify this ticket.`,
       ).join('\n');
 
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a customer experience analyst for GamerGain.
+        prompt: `You are a customer experience analyst for Get Goods Gratis.
 
 Analyze these ${tickets.length} support tickets and identify patterns:
 

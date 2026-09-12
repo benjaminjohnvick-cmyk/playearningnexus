@@ -101,7 +101,7 @@ export default function PayoutReceiptDownloader({ payout, user }) {
       doc.line(margin, 268, pageW - margin, 268);
       doc.setFontSize(8);
       doc.setTextColor(150, 150, 150);
-      doc.text('Get Goods Gratis (Free) · support@gamergain.com · This is an automated receipt.', pageW / 2, 274, { align: 'center' });
+      doc.text('Get Goods Gratis (Free) · support@getgoodsgratis.com · This is an automated receipt.', pageW / 2, 274, { align: 'center' });
 
       doc.save(`Get Goods Gratis (Free)-Payout-${payout.id || 'receipt'}.pdf`);
     } catch (err) {

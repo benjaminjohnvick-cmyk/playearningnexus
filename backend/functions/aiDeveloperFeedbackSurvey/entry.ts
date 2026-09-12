@@ -110,7 +110,7 @@ Respond in JSON:
         success: true,
         survey_id: savedSurvey.id,
         survey,
-        message: 'Feedback survey generated and live for GamerGain users',
+        message: 'Feedback survey generated and live for Get Goods Gratis users',
       });
     }
 

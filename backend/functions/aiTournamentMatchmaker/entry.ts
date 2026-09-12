@@ -82,7 +82,7 @@ export default __handler(async (req) => {
         );
 
         await base44.integrations.Core.SendEmail({
-          to: p.email || `user_${p.user_id}@gamergain.local`,
+          to: p.email || `user_${p.user_id}@getgoodsgratis.local`,
           subject: `🏆 You\'re In! Tournament Bracket Ready`,
           body: `Your ${tournament.title} tournament bracket is set! You have ${userMatches.length} matches scheduled. Check your dashboard for match times and opponents.`
         });

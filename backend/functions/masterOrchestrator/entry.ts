@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
 /**
- * MASTER ORCHESTRATOR — GamerGain Platform Superagent
+ * MASTER ORCHESTRATOR — Get Goods Gratis Platform Superagent
  * 
  * The brain that coordinates all 5 domain super agents:
  * 1. superAgentSurveyOps
@@ -104,7 +104,7 @@ export default __handler(async (req) => {
       .join('\n');
 
     const masterAI = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are the GamerGain Master Orchestrator AI. Analyze the full platform status after this orchestration run.
+      prompt: `You are the Get Goods Gratis Master Orchestrator AI. Analyze the full platform status after this orchestration run.
 
 AGENT RESULTS:
 ${agentSummaries}
@@ -188,8 +188,8 @@ Return JSON:
       for (const admin of admins.slice(0, 2)) {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: admin.email,
-          subject: `🔴 GamerGain Master Orchestrator Alert — Health Score: ${masterAIData.overall_health_score}/100`,
-          body: `<h2>${statusEmoji} GamerGain Platform Alert</h2>
+          subject: `🔴 Get Goods Gratis Master Orchestrator Alert — Health Score: ${masterAIData.overall_health_score}/100`,
+          body: `<h2>${statusEmoji} Get Goods Gratis Platform Alert</h2>
 <p><strong>Health Score:</strong> ${masterAIData.overall_health_score}/100</p>
 <p><strong>Status:</strong> ${masterAIData.platform_status?.toUpperCase()}</p>
 <p>${masterAIData.executive_summary}</p>
@@ -197,7 +197,7 @@ Return JSON:
 <h3>Cross-Domain Actions Needed:</h3><ul>${(masterAIData.cross_domain_actions || []).filter(a => a.priority === 'high').map(a => `<li>[${a.domain}] ${a.action}</li>`).join('')}</ul>
 <h3>Agent Summary:</h3><ul>${Object.entries(agentResults).map(([k, v]) => `<li>✓ ${k}: ${v.summary}</li>`).join('')}${Object.entries(agentErrors).map(([k, v]) => `<li>✗ ${k}: ${v}</li>`).join('')}</ul>
 <p style="color:#6b7280;font-size:11px;">Run duration: ${totalDuration}s | ${new Date().toISOString()}</p>`,
-          from_name: 'GamerGain Master AI'
+          from_name: 'Get Goods Gratis Master AI'
         }).catch(() => {});
       }
     }

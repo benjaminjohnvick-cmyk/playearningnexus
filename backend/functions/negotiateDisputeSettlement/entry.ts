@@ -144,9 +144,9 @@ Keep response brief (2-3 sentences + optional offer).`;
       // Notify affiliate
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: dispute.affiliate_email,
-        from_name: 'GamerGain Dispute Resolution',
+        from_name: 'Get Goods Gratis Dispute Resolution',
         subject: '✅ Your Dispute Has Been Resolved',
-        body: `Hi,\n\nGreat news! Based on our AI-powered negotiation, your dispute has been approved.\n\n💰 Settlement Amount: $${proposedAmount}\nReason: ${autoApprovalReason}\n\nThis amount will be included in your next payout.\n\n— GamerGain Dispute Resolution`
+        body: `Hi,\n\nGreat news! Based on our AI-powered negotiation, your dispute has been approved.\n\n💰 Settlement Amount: $${proposedAmount}\nReason: ${autoApprovalReason}\n\nThis amount will be included in your next payout.\n\n— Get Goods Gratis Dispute Resolution`
       }).catch(() => null);
     }
 

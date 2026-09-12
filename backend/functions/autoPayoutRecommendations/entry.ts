@@ -20,7 +20,7 @@ export default __handler(async (req) => {
 
       const { InvokeLLM } = base44.asServiceRole.integrations.Core;
       const rec = await InvokeLLM({
-        prompt: `Generate a personalized payout recommendation for a GamerGain user:
+        prompt: `Generate a personalized payout recommendation for a Get Goods Gratis user:
 Current balance: $${user.total_earnings || 0}
 Wishlist items count: ${wishlistItems.length}
 Wishlist total value: $${wishlistTotal}

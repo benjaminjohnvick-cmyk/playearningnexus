@@ -391,7 +391,7 @@ Keep it under 150 words, friendly tone.`,
                   <div><span className="text-slate-400">Revenue Share:</span> <span className="text-emerald-400 font-bold">25%</span></div>
                   <div><span className="text-slate-400">Buyout Option:</span> <span className="text-amber-400 font-bold">4x Revenue Multiple</span></div>
                   <div><span className="text-slate-400">Guarantee:</span> <span className="text-blue-400 font-semibold">2x ROI or we keep working</span></div>
-                  <div><span className="text-slate-400">Domain:</span> <span className="text-white">{form.domain || `${form.company_name?.toLowerCase().replace(/\s/g, '')}.gamergain.app`}</span></div>
+                  <div><span className="text-slate-400">Domain:</span> <span className="text-white">{form.domain || `${form.company_name?.toLowerCase().replace(/\s/g, '')}.getgoodsgratis.app`}</span></div>
                 </div>
               </div>
 

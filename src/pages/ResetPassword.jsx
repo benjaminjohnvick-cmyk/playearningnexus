@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import GamerGainLogo from '@/components/branding/GamerGainLogo';
+import GetGoodsGratisLogo from '@/components/branding/GetGoodsGratisLogo';
 
 export default function ResetPassword() {
   const [params] = useSearchParams();
@@ -38,7 +38,7 @@ export default function ResetPassword() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <GamerGainLogo className="w-12 h-12" />
+            <GetGoodsGratisLogo className="w-12 h-12" />
             <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">Get Goods Gratis (Free)</span>
           </div>
           <div className="mb-2">

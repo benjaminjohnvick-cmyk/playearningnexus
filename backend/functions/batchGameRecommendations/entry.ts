@@ -34,7 +34,7 @@ export default __handler(async (req) => {
       const topGenres = Object.entries(genreFreq).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([g]) => g);
 
       const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a game recommendation AI for GamerGain. Pick the top 2 games to recommend to this user.
+        prompt: `You are a game recommendation AI for Get Goods Gratis. Pick the top 2 games to recommend to this user.
 
 User profile:
 - Games played: ${userEngagements.length}

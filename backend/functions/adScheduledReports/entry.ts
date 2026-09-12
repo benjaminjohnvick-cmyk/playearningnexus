@@ -64,9 +64,9 @@ export default __handler(async (req) => {
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: user.email,
-      from_name: 'GamerGain Ad Grid',
+      from_name: 'Get Goods Gratis Ad Grid',
       subject: `📊 ${freqLabel} Ad Report — ${periodLabel}`,
-      body: `Hi ${user.full_name || 'Advertiser'},\n\nHere's your ${freq} automated report for ${periodLabel}.\n\n━━━━━━━━━━━━━━━\n📈 PERIOD SUMMARY\n• Ad Spend This Period: $${totalSpend.toFixed(2)}\n• Budget Top-Ups: $${totalTopUps.toFixed(2)}\n• Transactions: ${periodTxns.length}\n\n📊 PORTFOLIO TOTALS\n• Total Clicks: ${totals.clicks}\n• Completions: ${totals.completed}\n• Avg CTR: ${avgCTR}%\n• Lifetime Spend: $${totals.spent.toFixed(2)}\n• Current Balance: $${balance.toFixed(2)}\n\n🎯 CAMPAIGNS\n${adRows}\n\n━━━━━━━━━━━━━━━\n🔗 Full Dashboard: https://gamergain.app/AdBusinessDashboard\n\n⚙️ Change report frequency or unsubscribe:\nDashboard → Account → Automation\n\n— GamerGain Ad Grid`,
+      body: `Hi ${user.full_name || 'Advertiser'},\n\nHere's your ${freq} automated report for ${periodLabel}.\n\n━━━━━━━━━━━━━━━\n📈 PERIOD SUMMARY\n• Ad Spend This Period: $${totalSpend.toFixed(2)}\n• Budget Top-Ups: $${totalTopUps.toFixed(2)}\n• Transactions: ${periodTxns.length}\n\n📊 PORTFOLIO TOTALS\n• Total Clicks: ${totals.clicks}\n• Completions: ${totals.completed}\n• Avg CTR: ${avgCTR}%\n• Lifetime Spend: $${totals.spent.toFixed(2)}\n• Current Balance: $${balance.toFixed(2)}\n\n🎯 CAMPAIGNS\n${adRows}\n\n━━━━━━━━━━━━━━━\n🔗 Full Dashboard: https://getgoodsgratis.app/AdBusinessDashboard\n\n⚙️ Change report frequency or unsubscribe:\nDashboard → Account → Automation\n\n— Get Goods Gratis Ad Grid`,
     });
     sent++;
   }

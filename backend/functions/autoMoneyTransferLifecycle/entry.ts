@@ -62,7 +62,7 @@ export default __handler(async (req) => {
             await base44.integrations.Core.SendEmail({
               to: recipient.email,
               subject: `✅ $${transfer.amount} Transfer Received`,
-              body: `${sender?.full_name || 'A GamerGain user'} sent you $${transfer.amount}. It has been added to your GamerGain balance.`
+              body: `${sender?.full_name || 'A Get Goods Gratis user'} sent you $${transfer.amount}. It has been added to your Get Goods Gratis balance.`
             });
           }
         }

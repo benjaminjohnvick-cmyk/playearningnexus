@@ -37,8 +37,8 @@ export default __handler(async (req) => {
       if (subUser[0]) {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: subUser[0].email,
-          subject: '⚡ Your GamerGain Premium is ending soon — keep your benefits!',
-          body: `Hi ${subUser[0].full_name},\n\nYour ${sub.plan_name} subscription ends soon. Renew now to keep your premium benefits including ad-free experience, enhanced analytics, and priority support.\n\nRenew at: https://gamergain.app/Pricing\n\nTeam GamerGain`
+          subject: '⚡ Your Get Goods Gratis Premium is ending soon — keep your benefits!',
+          body: `Hi ${subUser[0].full_name},\n\nYour ${sub.plan_name} subscription ends soon. Renew now to keep your premium benefits including ad-free experience, enhanced analytics, and priority support.\n\nRenew at: https://getgoodsgratis.app/Pricing\n\nTeam Get Goods Gratis`
         });
       }
     }
@@ -52,7 +52,7 @@ export default __handler(async (req) => {
         const alreadyExists = existingReports.find(r => r.category === cat);
         if (!alreadyExists) {
           const aiReport = await base44.asServiceRole.integrations.Core.InvokeLLM({
-            prompt: `Generate a market research report for the GamerGain gaming platform on the topic: "${cat}". 
+            prompt: `Generate a market research report for the Get Goods Gratis gaming platform on the topic: "${cat}". 
             Include:
             - An engaging title
             - A 2-paragraph executive summary
@@ -165,7 +165,7 @@ export default __handler(async (req) => {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: keyUser[0].email,
           subject: '⚠️ You are approaching your API limit — upgrade for more calls',
-          body: `Hi ${keyUser[0].full_name},\n\nYou've used ${key.calls_today}/${key.calls_per_day_limit} API calls today. Upgrade your API tier to avoid interruptions.\n\nManage at: https://gamergain.app/RevenueHub\n\nTeam GamerGain`
+          body: `Hi ${keyUser[0].full_name},\n\nYou've used ${key.calls_today}/${key.calls_per_day_limit} API calls today. Upgrade your API tier to avoid interruptions.\n\nManage at: https://getgoodsgratis.app/RevenueHub\n\nTeam Get Goods Gratis`
         });
       }
     }
@@ -186,8 +186,8 @@ export default __handler(async (req) => {
       if (license.contact_email) {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: license.contact_email,
-          subject: 'GamerGain White-Label — Let\'s schedule your demo',
-          body: `Hi ${license.company_name},\n\nThank you for your interest in GamerGain's white-label platform (${license.license_type} tier).\n\nOur team would love to schedule a personalized demo. Please reply to this email or book directly at: https://gamergain.app/RevenueHub\n\nTeam GamerGain`
+          subject: 'Get Goods Gratis White-Label — Let\'s schedule your demo',
+          body: `Hi ${license.company_name},\n\nThank you for your interest in Get Goods Gratis's white-label platform (${license.license_type} tier).\n\nOur team would love to schedule a personalized demo. Please reply to this email or book directly at: https://getgoodsgratis.app/RevenueHub\n\nTeam Get Goods Gratis`
         });
         await base44.asServiceRole.entities.WhiteLabelLicense.update(license.id, { status: 'negotiating' });
       }

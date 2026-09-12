@@ -13,7 +13,7 @@ export default __handler(async (req) => {
     if (event?.type === 'create') {
       // AI qualify the lead
       const qualification = await base44.integrations.Core.InvokeLLM({
-        prompt: `Qualify this B2B lead for GamerGain (a game discovery platform where developers pay for installs/surveys):
+        prompt: `Qualify this B2B lead for Get Goods Gratis (a game discovery platform where developers pay for installs/surveys):
 Company/Name: ${lead.company_name || lead.name || 'Unknown'}
 Email: ${lead.email || 'unknown'}
 Source: ${lead.source || 'direct'}
@@ -44,8 +44,8 @@ Provide: score (0-100), tier (hot/warm/cold), follow_up_message (personalized 2 
       if (lead.email && qualification.tier !== 'cold') {
         await base44.integrations.Core.SendEmail({
           to: lead.email,
-          subject: `Welcome to GamerGain — Let's Grow Your Game Together`,
-          body: `${qualification.follow_up_message}\n\nGamerGain connects your game with 100,000+ active players who earn real money completing surveys about games like yours. Our developers see guaranteed engagement with a 50/50 revenue split.\n\nReply to this email or visit gamergain.com to get started.`
+          subject: `Welcome to Get Goods Gratis — Let's Grow Your Game Together`,
+          body: `${qualification.follow_up_message}\n\nGet Goods Gratis connects your game with 100,000+ active players who earn real money completing surveys about games like yours. Our developers see guaranteed engagement with a 50/50 revenue split.\n\nReply to this email or visit getgoodsgratis.com to get started.`
         });
       }
 
@@ -67,8 +67,8 @@ Provide: score (0-100), tier (hot/warm/cold), follow_up_message (personalized 2 
       if (lead.email) {
         await base44.integrations.Core.SendEmail({
           to: lead.email,
-          subject: `🎉 Welcome to GamerGain — Your Developer Account is Ready!`,
-          body: `Congratulations! Your GamerGain developer account has been activated. Log in to submit your game, set up surveys, and start earning from 100,000+ engaged players. Our team will be in touch within 24 hours to help you get started.`
+          subject: `🎉 Welcome to Get Goods Gratis — Your Developer Account is Ready!`,
+          body: `Congratulations! Your Get Goods Gratis developer account has been activated. Log in to submit your game, set up surveys, and start earning from 100,000+ engaged players. Our team will be in touch within 24 hours to help you get started.`
         });
       }
     }

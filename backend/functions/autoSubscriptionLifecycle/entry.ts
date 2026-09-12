@@ -18,7 +18,7 @@ export default __handler(async (req) => {
         await base44.integrations.Core.SendEmail({
           to: user.email,
           subject: `🎉 Welcome to ${sub.plan_name || 'Premium'}!`,
-          body: `Thank you for subscribing to ${sub.plan_name || 'GamerGain Premium'}! Your subscription is now active. Enjoy all premium benefits including enhanced earnings, priority surveys, and exclusive rewards.`
+          body: `Thank you for subscribing to ${sub.plan_name || 'Get Goods Gratis Premium'}! Your subscription is now active. Enjoy all premium benefits including enhanced earnings, priority surveys, and exclusive rewards.`
         });
       }
       await base44.asServiceRole.entities.Notification.create({

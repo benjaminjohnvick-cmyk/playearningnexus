@@ -38,8 +38,8 @@ export default __handler(async (req) => {
           await base44.asServiceRole.entities.SocialMediaPost.create({
             developer_id: campaign.created_by || 'system',
             platform,
-            content: withAdDisclosure(campaign.content || `🎮 ${campaign.name} — Join GamerGain and start earning today!`), // FTC: promotional post carries a sponsorship disclosure
-            hashtags: ['GamerGain', 'EarnWhileYouPlay', 'GameRewards'],
+            content: withAdDisclosure(campaign.content || `🎮 ${campaign.name} — Join Get Goods Gratis and start earning today!`), // FTC: promotional post carries a sponsorship disclosure
+            hashtags: ['Get Goods Gratis', 'EarnWhileYouPlay', 'GameRewards'],
             scheduled_date: now.toISOString(),
             status: 'scheduled',
             post_type: 'promotional'

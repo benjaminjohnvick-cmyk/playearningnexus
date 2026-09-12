@@ -36,7 +36,7 @@ export default __handler(async (req) => {
     }
 
     // Use AI to extract business info from the user's profile + payment context
-    const aiPrompt = `A user just paid for a business service on GamerGain (a gaming platform). 
+    const aiPrompt = `A user just paid for a business service on Get Goods Gratis (a gaming platform). 
 Auto-generate a BusinessClient profile for this user based on the available data.
 
 User Info:
@@ -112,9 +112,9 @@ Respond with JSON:
     if (user.email) {
       await base44.integrations.Core.SendEmail({
         to: user.email,
-        subject: '🎮 You\'ve Been Registered as a GamerGain Business Client!',
-        body: `Hi ${user.full_name},\n\nBecause you just purchased "${service_type || 'a business service'}" on GamerGain, you've been automatically registered as a Business Client.\n\nCompany: ${aiResult.company_name}\nStatus: ${aiResult.is_legitimate ? 'Active ✅' : 'Pending Review'}\n\nYou now have access to the Developer Dashboard and business features.\n\n— The GamerGain Team`,
-        from_name: 'GamerGain',
+        subject: '🎮 You\'ve Been Registered as a Get Goods Gratis Business Client!',
+        body: `Hi ${user.full_name},\n\nBecause you just purchased "${service_type || 'a business service'}" on Get Goods Gratis, you've been automatically registered as a Business Client.\n\nCompany: ${aiResult.company_name}\nStatus: ${aiResult.is_legitimate ? 'Active ✅' : 'Pending Review'}\n\nYou now have access to the Developer Dashboard and business features.\n\n— The Get Goods Gratis Team`,
+        from_name: 'Get Goods Gratis',
       }).catch(() => null);
     }
 

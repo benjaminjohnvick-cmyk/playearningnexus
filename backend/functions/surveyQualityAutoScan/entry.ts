@@ -80,7 +80,7 @@ export default __handler(async (req) => {
       let batchAssessment;
       try {
         batchAssessment = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `You are GamerGain's survey quality monitor. Score these survey responses.
+          prompt: `You are Get Goods Gratis's survey quality monitor. Score these survey responses.
 
 RESPONSES TO SCORE:
 ${JSON.stringify(batchData, null, 2)}

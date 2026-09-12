@@ -34,7 +34,7 @@ export const KYC_SURVEY: { title: string; description: string; questions: KycQue
   questions: [
     {
       id: "goals",
-      text: "What do you mainly want from GamerGain?",
+      text: "What do you mainly want from Get Goods Gratis?",
       type: "multi",
       required: true,
       options: ["Earn cash from surveys & offers", "Shop deals in the store", "Play games", "Sell my own items", "Buy-now-pay-later on real goods", "Just exploring"],
@@ -78,7 +78,7 @@ export const KYC_SURVEY: { title: string; description: string; questions: KycQue
     },
     {
       id: "device",
-      text: "Where will you mostly use GamerGain?",
+      text: "Where will you mostly use Get Goods Gratis?",
       type: "single",
       options: ["Phone", "Tablet", "Laptop / Desktop", "Game console"],
     },

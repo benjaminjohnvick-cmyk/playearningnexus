@@ -155,7 +155,7 @@ export default __handler(async (req) => {
 
       // Use AI to generate cross-function improvement insights
       const aiAnalysis = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are an AI automation performance analyst for GamerGain platform.
+        prompt: `You are an AI automation performance analyst for Get Goods Gratis platform.
 
 Analyze this automation execution data from the last ${lookbackDays} days:
 

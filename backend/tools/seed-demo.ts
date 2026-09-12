@@ -35,8 +35,8 @@ await ensure("PPCSurvey", "survey_title", "Demo Quick Survey", {
 });
 
 // --- Demo notifications (so the UI isn't empty during review) ---
-await ensure("Notification", "title", "Welcome to GamerGain (demo)", {
-  title: "Welcome to GamerGain (demo)", type: "system",
+await ensure("Notification", "title", "Welcome to Get Goods Gratis (demo)", {
+  title: "Welcome to Get Goods Gratis (demo)", type: "system",
   message: "This is seeded demo content for testing and app review.", is_read: false,
 });
 

@@ -7,7 +7,7 @@ import { withAdDisclosure } from "../../sdk/disclosure.ts";
  *
  * 1. Fetches all active social affiliate users (accepted ULA, has platforms connected)
  * 2. Uses LLM with internet context to discover trending topics
- * 3. Generates personalized GamerGain ad copy per platform per user
+ * 3. Generates personalized Get Goods Gratis ad copy per platform per user
  * 4. Posts to each platform using stored credentials
  * 5. Logs each post to AffiliateAdPost entity
  *
@@ -30,7 +30,7 @@ export default __handler(async (req) => {
 
     // 2. Generate trending topics + ad content once (shared across all users for efficiency)
     const trendingData = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are a viral social media ad copywriter for GamerGain, a gaming rewards platform where users earn real money playing games, completing surveys, and referring friends.
+      prompt: `You are a viral social media ad copywriter for Get Goods Gratis, a gaming rewards platform where users earn real money playing games, completing surveys, and referring friends.
 
 Today is ${new Date().toISOString().split('T')[0]}.
 
@@ -41,7 +41,7 @@ For each trending topic, generate:
 2. A Twitter/X ad (under 280 chars, punchy, with relevant hashtags)
 3. A Snapchat/TikTok ad (short, energetic, Gen-Z tone, hook in first 5 words)
 
-Each ad must naturally tie the trending topic to GamerGain's value prop: earn real money, free to join, refer friends for $5 bonus.
+Each ad must naturally tie the trending topic to Get Goods Gratis's value prop: earn real money, free to join, refer friends for $5 bonus.
 
 Return a referral link placeholder as [REFERRAL_LINK] that will be replaced per user.
 
@@ -84,7 +84,7 @@ Respond as JSON.`,
       if (!platforms.length) continue;
 
       // Build the user's referral link
-      const referralLink = `https://gamergain.app/?ref=${node.user_id}`;
+      const referralLink = `https://getgoodsgratis.app/?ref=${node.user_id}`;
 
       for (const platform of platforms) {
         let adContent = '';

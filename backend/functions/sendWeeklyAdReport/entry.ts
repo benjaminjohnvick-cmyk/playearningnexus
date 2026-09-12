@@ -72,7 +72,7 @@ async function sendReportForUser(base44, userId, email, name, ads) {
       </tr>`;
   }).join('');
 
-  const dashboardUrl = 'https://gamergain.app/AdBusinessDashboard';
+  const dashboardUrl = 'https://getgoodsgratis.app/AdBusinessDashboard';
 
   const body = `
 <!DOCTYPE html>
@@ -84,7 +84,7 @@ async function sendReportForUser(base44, userId, email, name, ads) {
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#f59e0b,#ea580c);border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;">
       <h1 style="margin:0;color:#000;font-size:24px;font-weight:900;">📊 Weekly Ad Report</h1>
-      <p style="margin:8px 0 0;color:#1c1917;font-size:14px;">GamerGain Million Dollar Ad Grid</p>
+      <p style="margin:8px 0 0;color:#1c1917;font-size:14px;">Get Goods Gratis Million Dollar Ad Grid</p>
     </div>
 
     <p style="color:#d1d5db;font-size:15px;margin-bottom:24px;">Hi <strong style="color:#fff;">${name}</strong>, here's your weekly performance summary.</p>
@@ -138,7 +138,7 @@ async function sendReportForUser(base44, userId, email, name, ads) {
       </a>
     </div>
 
-    <p style="color:#4b5563;font-size:12px;text-align:center;">GamerGain · Unsubscribe from weekly reports in your dashboard settings.</p>
+    <p style="color:#4b5563;font-size:12px;text-align:center;">Get Goods Gratis · Unsubscribe from weekly reports in your dashboard settings.</p>
   </div>
 </body>
 </html>`;

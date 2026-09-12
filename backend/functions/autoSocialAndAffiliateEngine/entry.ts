@@ -25,8 +25,8 @@ export default __handler(async (req) => {
   await invoke('autoSocialPostingAndTracking');
   results.social_posts_scheduled = true;
 
-  // 3. Post GamerGain platform ads to social channels
-  await invoke('postGamerGainAds');
+  // 3. Post Get Goods Gratis platform ads to social channels
+  await invoke('postGetGoodsGratisAds');
   await invoke('postAdToSocialMedia');
   results.platform_ads_posted = true;
 

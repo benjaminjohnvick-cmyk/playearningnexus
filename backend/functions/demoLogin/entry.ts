@@ -5,7 +5,7 @@ import { signJwt } from "../../sdk/auth.ts";
 // Reviewer / demo login. Returns a ready JWT for a seeded demo account so an App Store / Play
 // reviewer (or a tester) can get into a populated app in one tap — no signup, no real data.
 // GATED: only works when REVIEWER_DEMO=1 is set in the backend env. Off by default.
-const DEMO_EMAIL = "reviewer@demo.gamergain.app";
+const DEMO_EMAIL = "reviewer@demo.getgoodsgratis.app";
 
 export default __handler(async (req) => {
   if ((Deno.env.get("REVIEWER_DEMO") ?? "0") !== "1") {

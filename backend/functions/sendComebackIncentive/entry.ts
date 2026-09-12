@@ -46,11 +46,11 @@ export default __handler(async (req) => {
         to: email,
         subject: `🎉 We miss you! ${message}`,
         body: `
-          <h2>Come Back to GamerGain!</h2>
+          <h2>Come Back to Get Goods Gratis!</h2>
           <p>We've noticed you haven't been active lately.</p>
           <p><strong>${message}</strong></p>
           <p>Your account is all set, just log in and start earning!</p>
-          <p><a href="https://gamergain.com/login">Log in now</a></p>
+          <p><a href="https://getgoodsgratis.com/login">Log in now</a></p>
         ` + emailUnsubscribeFooter(userRecord ?? { email }),
       });
       if (userRecord) {

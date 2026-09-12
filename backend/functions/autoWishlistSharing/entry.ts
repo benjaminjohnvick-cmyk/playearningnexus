@@ -37,7 +37,7 @@ export default __handler(async (req) => {
       const earnedTogether = referral.total_earnings || 0;
       const message = earnedTogether > 50
         ? `Hey! Check out my wishlist and earn rewards when you help me fund items: ${shareLink}`
-        : `I'm building my wishlist on GamerGain. Want to help and earn entries? ${shareLink}`;
+        : `I'm building my wishlist on Get Goods Gratis. Want to help and earn entries? ${shareLink}`;
 
       // Send via email
       try {

@@ -97,7 +97,7 @@ Provide:
     const critical = optimizations.filter(o => o.priority === 'critical');
     if (critical.length > 0) {
       await base44.integrations.Core.SendEmail({
-        to: 'admin@gamergain.com',
+        to: 'admin@getgoodsgratis.com',
         subject: `🚨 CRITICAL: ${critical.length} AI Feature(s) Need Optimization`,
         body: `Critical AI features requiring immediate optimization:\n${critical.map(c => `\n${c.feature_name}:\n- Current: ${c.current_performance.success_rate}% success\n- Issue: ${c.optimization?.root_cause || 'unknown'}\n- Expected Improvement: +${c.optimization?.expected_improvement_percent || 0}%`).join('\n')}`
       }).catch(() => null);

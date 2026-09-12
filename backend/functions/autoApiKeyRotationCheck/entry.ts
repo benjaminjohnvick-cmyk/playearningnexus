@@ -41,7 +41,7 @@ export default __handler(async (req) => {
         if (admin.email) {
           await base44.asServiceRole.integrations.Core.SendEmail({
             to: admin.email,
-            subject: `⚠️ GamerGain Integration Alert: ${failures.map(f => f.service).join(', ')} degraded`,
+            subject: `⚠️ Get Goods Gratis Integration Alert: ${failures.map(f => f.service).join(', ')} degraded`,
             body: `Integration health check failed:\n\n${failures.map(f => `${f.service}: ${f.status} (${f.error || f.code})`).join('\n')}\n\nPlease check API keys and service status.`,
           });
         }

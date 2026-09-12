@@ -12,11 +12,11 @@ import { isEnabled } from "./feature-flags.ts";
 export const SMS_OPT_OUT_SUFFIX = " Reply STOP to opt out.";
 
 export function emailUnsubscribeFooter(user: Record<string, unknown>): string {
-  const base = (Deno.env.get("FRONTEND_URL") ?? "https://gamergain.app").replace(/\/$/, "");
+  const base = (Deno.env.get("FRONTEND_URL") ?? "https://getgoodsgratis.app").replace(/\/$/, "");
   const email = encodeURIComponent(String(user.email ?? ""));
   const addr = snapString("BUSINESS_MAILING_ADDRESS", "[your business mailing address]");
-  return `\n\n—\nYou're receiving this because you have a GamerGain account. ` +
-    `Unsubscribe: ${base}/unsubscribe?email=${email}\nGamerGain · ${addr}`;
+  return `\n\n—\nYou're receiving this because you have a Get Goods Gratis account. ` +
+    `Unsubscribe: ${base}/unsubscribe?email=${email}\nGet Goods Gratis · ${addr}`;
 }
 
 /** Marketing email allowed? email_marketing flag ON, user not opted out, has an address. */

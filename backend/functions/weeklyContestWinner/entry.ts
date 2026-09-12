@@ -86,9 +86,9 @@ export default __handler(async (req) => {
       // Send email
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: winnerUser.email,
-        subject: `🏆 You Won $${prize} in GamerGain's Weekly Referral Contest!`,
-        body: `<h2>Congratulations, ${winnerUser.full_name}!</h2><p>You placed <strong>#${rank}</strong> in this week's Referral Contest with <strong>${winner.count} active referrals</strong>.</p><p>Your prize of <strong>$${prize}</strong> is being processed to your PayPal on file.</p><p>Keep referring to compete next week!</p><br><p>— The GamerGain Team</p>`,
-        from_name: 'GamerGain Contests',
+        subject: `🏆 You Won $${prize} in Get Goods Gratis's Weekly Referral Contest!`,
+        body: `<h2>Congratulations, ${winnerUser.full_name}!</h2><p>You placed <strong>#${rank}</strong> in this week's Referral Contest with <strong>${winner.count} active referrals</strong>.</p><p>Your prize of <strong>$${prize}</strong> is being processed to your PayPal on file.</p><p>Keep referring to compete next week!</p><br><p>— The Get Goods Gratis Team</p>`,
+        from_name: 'Get Goods Gratis Contests',
       });
 
       results.push({ rank, user_id: winner.user_id, email: winnerUser.email, referrals: winner.count, prize });

@@ -9,7 +9,7 @@
 import { snapBool, snapString, snapNumber } from "./settings.ts";
 
 export const multiTenancyEnabled = () => snapBool("MULTITENANCY_ENABLED", false);
-export const defaultTenantId = () => snapString("DEFAULT_TENANT_ID", "gamergain");
+export const defaultTenantId = () => snapString("DEFAULT_TENANT_ID", "getgoodsgratis");
 export const raasRevenueSharePct = () => Math.min(1, Math.max(0, snapNumber("RAAS_REVENUE_SHARE_PCT", 0.15)));
 
 /** Resolve the tenant for a request. Single-tenant (default off) → always your own tenant. When enabled,

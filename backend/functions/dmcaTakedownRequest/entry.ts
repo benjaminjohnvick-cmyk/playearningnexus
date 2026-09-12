@@ -62,7 +62,7 @@ export default __handler(async (req) => {
 
     // Notify the designated agent.
     await base44.asServiceRole.integrations.Core.SendEmail({
-      to: snapString("DMCA_AGENT_EMAIL", snapString("EMAIL_FROM", "admin@gamergain.app")),
+      to: snapString("DMCA_AGENT_EMAIL", snapString("EMAIL_FROM", "admin@getgoodsgratis.app")),
       subject: `[DMCA] Takedown notice — ${copyrighted_work}`,
       body: `A DMCA takedown notice was filed.\n\nComplainant: ${complainant_name} (${complainant_email})${complainant_org ? " — " + complainant_org : ""}\nWork: ${copyrighted_work}\nTarget: ${infringing_url || infringing_content_id}\nRequest ID: ${record.id}\n\nReview and act within your posted DMCA policy timeframe.`,
     }).catch(() => null);

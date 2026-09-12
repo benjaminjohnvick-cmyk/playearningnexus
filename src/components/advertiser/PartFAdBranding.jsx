@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Globe, ExternalLink, CheckCircle, Smartphone, Monitor, Eye } from 'lucide-react';
 
-const SIGNUP_URL = 'https://gamergain.app/signup';
-const SITE_URL = 'https://gamergain.app';
+const SIGNUP_URL = 'https://getgoodsgratis.app/signup';
+const SITE_URL = 'https://getgoodsgratis.app';
 
 const SAMPLE_ADS = [
   { brand: 'Nike', tagline: 'Just Do It', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop', color: '#111111' },
@@ -58,7 +58,7 @@ export default function PartFAdBranding() {
         </h3>
         <p className="text-gray-400 text-xs mb-5">
           All ads on Get Goods Gratis (Free) automatically include the <span className="text-red-400 font-bold">Get Goods Gratis (Free) logo</span> and 
-          a <span className="text-yellow-400 font-bold">sign-up link</span> (gamergain.app). 
+          a <span className="text-yellow-400 font-bold">sign-up link</span> (getgoodsgratis.app). 
           This is applied to every ad on the grid and all social media posts generated from clicks.
         </p>
 
@@ -66,9 +66,9 @@ export default function PartFAdBranding() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           {[
             { icon: '🎮', title: 'Get Goods Gratis (Free) Logo', desc: 'Displayed on all ad creatives — top-left watermark and bottom branding bar', check: true },
-            { icon: '🔗', title: 'Sign-Up Link', desc: 'gamergain.app/signup — included on every ad and social post', check: true },
+            { icon: '🔗', title: 'Sign-Up Link', desc: 'getgoodsgratis.app/signup — included on every ad and social post', check: true },
             { icon: '📱', title: 'Social Posts', desc: 'All 20 auto-generated social posts include Get Goods Gratis (Free) branding', check: true },
-            { icon: '🌐', title: 'Website Link', desc: 'gamergain.app shown prominently on every ad format', check: true },
+            { icon: '🌐', title: 'Website Link', desc: 'getgoodsgratis.app shown prominently on every ad format', check: true },
           ].map(item => (
             <div key={item.title} className="bg-gray-800 rounded-xl p-3 flex items-start gap-2">
               <span className="text-xl">{item.icon}</span>

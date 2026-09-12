@@ -39,7 +39,7 @@ function InvoicePreview({ data, onClose }) {
           </div>
           <div className="text-right">
             <p className="font-black text-gray-900">Get Goods Gratis (Free) Ad Grid</p>
-            <p className="text-gray-500 text-xs">advertising@gamergain.com</p>
+            <p className="text-gray-500 text-xs">advertising@getgoodsgratis.com</p>
           </div>
         </div>
 

@@ -25,7 +25,7 @@ export default __handler(async (req) => {
 
       // Generate AI content for this user
       const aiResponse = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `Generate 3 different SHORT, engaging social media captions (1 line each) for a GamerGain user to share with their network.
+        prompt: `Generate 3 different SHORT, engaging social media captions (1 line each) for a Get Goods Gratis user to share with their network.
 
 User stats:
 - Total earnings: $${earnings.toFixed(2)}
@@ -64,7 +64,7 @@ Format output as JSON with "captions" array.`,
           await base44.asServiceRole.entities.SocialMediaPost.create({
             user_id: topUser.id,
             platform,
-            content: withAdDisclosure(`🎮 ${captionToPost}\n\n🔗 Join GamerGain: https://gamergain.app?ref=${topUser.id}`),
+            content: withAdDisclosure(`🎮 ${captionToPost}\n\n🔗 Join Get Goods Gratis: https://getgoodsgratis.app?ref=${topUser.id}`),
             status: 'published',
             posted_at: new Date().toISOString(),
             auto_posted: true,

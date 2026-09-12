@@ -43,7 +43,7 @@ export default __handler(async (req) => {
       return { day: `${dayStart.getMonth() + 1}/${dayStart.getDate()}`, earnings: parseFloat(dayEarnings.toFixed(2)) };
     });
 
-    const prompt = `You are an AI financial advisor for GamerGain developers. Analyze this developer's earning data and recommend optimal payout timing.
+    const prompt = `You are an AI financial advisor for Get Goods Gratis developers. Analyze this developer's earning data and recommend optimal payout timing.
 
 DEVELOPER FINANCIAL SNAPSHOT:
 - Available Balance: $${availableBalance.toFixed(2)}

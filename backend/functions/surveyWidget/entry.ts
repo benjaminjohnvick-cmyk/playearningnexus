@@ -23,7 +23,7 @@ export default __handler(async (req) => {
     const widgetScript = `
 (function() {
   var surveyId = "${surveyId}";
-  if (!surveyId) { console.error("GamerGain: survey_id is required"); return; }
+  if (!surveyId) { console.error("Get Goods Gratis: survey_id is required"); return; }
 
   // Inject styles
   var style = document.createElement('style');
@@ -55,7 +55,7 @@ export default __handler(async (req) => {
 
   // Find container
   var container = document.querySelector('[data-gg-survey="' + surveyId + '"]');
-  if (!container) { console.error("GamerGain: No container found for survey " + surveyId); return; }
+  if (!container) { console.error("Get Goods Gratis: No container found for survey " + surveyId); return; }
 
   var survey = null;
   var currentQ = 0;
@@ -101,7 +101,7 @@ export default __handler(async (req) => {
         '<div class="gg-survey-header">',
           '<div>',
             '<h3>' + (survey.title || 'Quick Survey') + '</h3>',
-            '<p>Powered by GamerGain · Earn rewards for answering</p>',
+            '<p>Powered by Get Goods Gratis · Earn rewards for answering</p>',
           '</div>',
         '</div>',
         '<div class="gg-survey-body">',
@@ -112,7 +112,7 @@ export default __handler(async (req) => {
           '</div>',
           '<button class="gg-btn" id="gg-next-btn" disabled>' + (currentQ === total - 1 ? 'Submit Survey' : 'Next →') + '</button>',
         '</div>',
-        '<div class="gg-footer">Powered by <a href="https://gamergain.com" target="_blank">GamerGain</a></div>',
+        '<div class="gg-footer">Powered by <a href="https://getgoodsgratis.com" target="_blank">Get Goods Gratis</a></div>',
       '</div>'
     ].join('');
 
@@ -155,7 +155,7 @@ export default __handler(async (req) => {
             '<h3>Thank you!</h3>',
             '<p>' + (data.message || 'Your response has been recorded.') + '</p>',
           '</div>',
-          '<div class="gg-footer">Powered by <a href="https://gamergain.com" target="_blank">GamerGain</a></div>',
+          '<div class="gg-footer">Powered by <a href="https://getgoodsgratis.com" target="_blank">Get Goods Gratis</a></div>',
         '</div>'
       ].join('');
     })

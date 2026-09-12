@@ -21,7 +21,7 @@ export default __handler(async (req) => {
     const emailBody = `
 Hi there,
 
-${referrerName} thinks you'd love GamerGain! 🎮
+${referrerName} thinks you'd love Get Goods Gratis! 🎮
 
 You can earn real money by:
 - Playing games
@@ -34,14 +34,14 @@ ${referralLink}
 We even offer payment methods worldwide, so you can cash out whenever you want.
 
 See you on the platform!
-The GamerGain Team
+The Get Goods Gratis Team
     `;
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: email,
-      subject: `${referrerName} invited you to join GamerGain 💰`,
+      subject: `${referrerName} invited you to join Get Goods Gratis 💰`,
       body: emailBody + emailUnsubscribeFooter({ email }),
-      from_name: 'GamerGain'
+      from_name: 'Get Goods Gratis'
     });
 
     // Create referral record

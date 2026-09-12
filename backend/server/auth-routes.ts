@@ -43,7 +43,7 @@ export async function authRoutes(req: Request, pathname: string): Promise<Respon
       ageOk = true;
     }
     if (!ageOk) {
-      return Response.json({ error: `You must be ${minAge} or older to use GamerGain. Please provide a date of birth showing you are at least ${minAge}.` }, { status: 403 });
+      return Response.json({ error: `You must be ${minAge} or older to use Get Goods Gratis. Please provide a date of birth showing you are at least ${minAge}.` }, { status: 403 });
     }
     // --------------------------------------------------------------------------------------------
 
@@ -145,7 +145,7 @@ export async function authRoutes(req: Request, pathname: string): Promise<Respon
       ageOk = true;
     }
     if (!ageOk) {
-      return Response.json({ error: `You must be ${minAge} or older to use GamerGain.` }, { status: 403 });
+      return Response.json({ error: `You must be ${minAge} or older to use Get Goods Gratis.` }, { status: 403 });
     }
     const updated = await db.update("User", payload.sub, {
       date_of_birth: dobIso,

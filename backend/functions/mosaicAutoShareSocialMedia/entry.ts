@@ -14,7 +14,7 @@ export default __handler(async (req) => {
     const allConnections = await base44.asServiceRole.entities.SocialMediaConnection.list();
     const activeConnections = allConnections.filter(c => c.is_active && c.auto_posting_enabled);
 
-    const shareContent = `🎮 The GamerGain Million Dollar Ad Grid — Click brand ads, answer 4 questions, earn $0.20 per ad!
+    const shareContent = `🎮 The Get Goods Gratis Million Dollar Ad Grid — Click brand ads, answer 4 questions, earn $0.20 per ad!
 
 Featured brands: Nike, Apple, Sony, Adidas, Samsung, Amazon, Netflix, Spotify, Tesla, Disney+, GoPro, Uber Eats, Airbnb, Shopify, Canva, Duolingo, Notion, Figma, Slack, Dropbox, YouTube, Reddit, LinkedIn, Twitch, Discord
 
@@ -26,7 +26,7 @@ Featured brands: Nike, Apple, Sony, Adidas, Samsung, Amazon, Netflix, Spotify, T
 
 Auto-added to your wishlist upon unlock! 🛍️
 
-🎯 https://gamergain.app/PaidPPCAdsMosaic`;
+🎯 https://getgoodsgratis.app/PaidPPCAdsMosaic`;
 
     let posted = 0;
     for (const conn of activeConnections) {

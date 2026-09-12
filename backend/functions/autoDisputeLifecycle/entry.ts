@@ -17,7 +17,7 @@ export default __handler(async (req) => {
     const { InvokeLLM } = base44.asServiceRole.integrations.Core;
 
     const result = await InvokeLLM({
-      prompt: `You are an automated dispute resolution agent for GamerGain, a survey rewards platform.
+      prompt: `You are an automated dispute resolution agent for Get Goods Gratis, a survey rewards platform.
 
 Analyze this dispute and make a resolution decision:
 - Type: ${dispute.dispute_type || 'survey_payment'}

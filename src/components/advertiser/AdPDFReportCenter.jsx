@@ -53,7 +53,7 @@ function InvoiceModal({ data, branding, onClose }) {
               </div>
               <div className="text-right">
                 <p className="font-black text-gray-900 text-lg">{branding.companyName || 'Get Goods Gratis (Free) Ad Grid'}</p>
-                <p className="text-gray-500 text-sm">{branding.tagline || 'advertising@gamergain.com'}</p>
+                <p className="text-gray-500 text-sm">{branding.tagline || 'advertising@getgoodsgratis.com'}</p>
                 <span className="badge" style={{ backgroundColor: branding.color + '20', color: branding.color }}>{data.taxRegion} TAX</span>
               </div>
             </div>

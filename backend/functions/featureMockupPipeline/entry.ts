@@ -27,7 +27,7 @@ export default __handler(async (req) => {
         .map(r => `"${r.option}" (${r.pct}% of votes)`).join(', ');
 
       const generated = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a UX designer for GamerGain, a gaming + survey earnings platform.
+        prompt: `You are a UX designer for Get Goods Gratis, a gaming + survey earnings platform.
 
 Feature: "${record.feature_name}" (Category: ${record.category})
 Survey question asked: "${record.survey_question}"
@@ -119,7 +119,7 @@ Return JSON with this exact structure:
       if (!winnerMockup) return Response.json({ error: 'Winner mockup not found' }, { status: 400 });
 
       const implSpec = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a senior React/Tailwind developer for GamerGain (gaming + survey earnings platform).
+        prompt: `You are a senior React/Tailwind developer for Get Goods Gratis (gaming + survey earnings platform).
 
 A user community voted for this feature to be implemented:
 Feature: "${record.feature_name}" (${record.category})

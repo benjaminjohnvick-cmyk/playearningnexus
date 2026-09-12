@@ -42,7 +42,7 @@ export default __handler(async (req) => {
     ).join('\n');
 
     const aiResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are a security AI for GamerGain. Analyze these admin audit log entries for anomalies, suspicious patterns, or security concerns.
+      prompt: `You are a security AI for Get Goods Gratis. Analyze these admin audit log entries for anomalies, suspicious patterns, or security concerns.
 
 LOGS (last 24h, ${todayLogs.length} total):
 ${logSample}
@@ -93,9 +93,9 @@ Return JSON: {
         if (aiResult.risk_level === 'critical' || aiResult.risk_level === 'high') {
           await base44.asServiceRole.integrations.Core.SendEmail({
             to: admin.email,
-            subject: `🚨 GamerGain Security Alert: ${aiResult.risk_level?.toUpperCase()} risk in audit logs`,
+            subject: `🚨 Get Goods Gratis Security Alert: ${aiResult.risk_level?.toUpperCase()} risk in audit logs`,
             body: `<h2>Security Alert Detected</h2><p><strong>Risk Level:</strong> ${aiResult.risk_level}</p><p>${aiResult.summary}</p><h3>Anomalies:</h3><ul>${(aiResult.anomaly_list || []).map(a => `<li>${a}</li>`).join('')}</ul><h3>Recommended Actions:</h3><ul>${(aiResult.recommended_actions || []).map(a => `<li>${a}</li>`).join('')}</ul>`,
-            from_name: 'GamerGain Security'
+            from_name: 'Get Goods Gratis Security'
           }).catch(() => {});
         }
       }

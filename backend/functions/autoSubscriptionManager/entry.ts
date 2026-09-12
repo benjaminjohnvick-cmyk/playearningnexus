@@ -40,8 +40,8 @@ export default __handler(async (req) => {
         if (user?.email) {
           await base44.integrations.Core.SendEmail({
             to: user.email,
-            subject: `⏰ Your GamerGain subscription expires in ${Math.ceil(daysUntilExpiry)} day(s)`,
-            body: `Hi ${user.full_name || 'Gamer'},\n\nYour ${sub.plan_name || 'GamerGain subscription'} is expiring in ${Math.ceil(daysUntilExpiry)} day(s).\n\nRenew now at gamergain.com to keep your premium benefits.\n\nThe GamerGain Team`
+            subject: `⏰ Your Get Goods Gratis subscription expires in ${Math.ceil(daysUntilExpiry)} day(s)`,
+            body: `Hi ${user.full_name || 'Gamer'},\n\nYour ${sub.plan_name || 'Get Goods Gratis subscription'} is expiring in ${Math.ceil(daysUntilExpiry)} day(s).\n\nRenew now at getgoodsgratis.com to keep your premium benefits.\n\nThe Get Goods Gratis Team`
           });
         }
         results.reminded++;

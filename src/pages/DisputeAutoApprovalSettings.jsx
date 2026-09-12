@@ -197,7 +197,7 @@ export default function DisputeAutoApprovalSettings() {
                   type="email"
                   value={settings.escalation_email || ''}
                   onChange={e => setSettings(prev => ({ ...prev, escalation_email: e.target.value }))}
-                  placeholder="admin@gamergain.app"
+                  placeholder="admin@getgoodsgratis.app"
                   className="mt-1"
                 />
                 <p className="text-xs text-slate-500 mt-1">Send complex disputes here for manual review</p>

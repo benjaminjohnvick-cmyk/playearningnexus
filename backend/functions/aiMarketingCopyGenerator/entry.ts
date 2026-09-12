@@ -11,7 +11,7 @@ export default __handler(async (req) => {
     const { platform, goal, audience, tone = 'enthusiastic' } = await req.json();
 
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are an expert digital marketing copywriter for GamerGain, a gaming rewards platform.
+      prompt: `You are an expert digital marketing copywriter for Get Goods Gratis, a gaming rewards platform.
 
 Create compelling referral campaign marketing copy for:
 - Platform: ${platform}
@@ -19,7 +19,7 @@ Create compelling referral campaign marketing copy for:
 - Target Audience: ${audience}
 - Tone: ${tone}
 
-GamerGain key benefits to highlight:
+Get Goods Gratis key benefits to highlight:
 - Earn real money playing games and completing surveys
 - $4 per survey response
 - Referral bonuses up to $500 per business referral

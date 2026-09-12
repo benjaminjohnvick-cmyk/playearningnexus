@@ -49,7 +49,7 @@ export default __handler(async (req) => {
   <tr><td><strong>Submitted At</strong></td><td>${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })} ET</td></tr>
   <tr><td><strong>Activity Link</strong></td><td><a href="${activityLink}">View Payout Record</a></td></tr>
 </table>
-<p style="color:#6b7280;font-size:12px;">This alert was triggered automatically by GamerGain platform monitoring.</p>
+<p style="color:#6b7280;font-size:12px;">This alert was triggered automatically by Get Goods Gratis platform monitoring.</p>
       `.trim(),
     });
 
@@ -81,7 +81,7 @@ export default __handler(async (req) => {
   <tr><td><strong>Triggered At</strong></td><td>${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })} ET</td></tr>
   <tr><td><strong>Activity Link</strong></td><td><a href="${activityLink}">View User Record</a></td></tr>
 </table>
-<p style="color:#6b7280;font-size:12px;">This alert was triggered automatically by GamerGain platform monitoring.</p>
+<p style="color:#6b7280;font-size:12px;">This alert was triggered automatically by Get Goods Gratis platform monitoring.</p>
       `.trim(),
     });
 

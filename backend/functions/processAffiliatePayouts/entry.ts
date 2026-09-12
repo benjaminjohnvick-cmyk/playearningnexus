@@ -114,7 +114,7 @@ export default __handler(async (req) => {
       if (payout && payout.affiliate_email) {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: payout.affiliate_email,
-          subject: '💰 Your GamerGain Affiliate Payout Has Been Processed',
+          subject: '💰 Your Get Goods Gratis Affiliate Payout Has Been Processed',
           body: `
 Hi there,
 
@@ -130,7 +130,7 @@ Payout Details:
 Payment will arrive via ${payout.payment_method || 'your selected method'} within 3–5 business days.
 
 Keep up the great work!
-— GamerGain Team
+— Get Goods Gratis Team
           `.trim(),
         });
       }

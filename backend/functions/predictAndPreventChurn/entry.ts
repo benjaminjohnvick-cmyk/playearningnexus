@@ -69,7 +69,7 @@ Return JSON with:
               to: appUser.email,
               subject: '🎁 Exclusive Offer: 30% Off Your Next Month',
               body: `We noticed you haven't been active recently. Here's an exclusive offer to get you back in action!\n\nUse code: COMEBACK30 for 30% off your next subscription month.\n\nWe miss you!`,
-              from_name: 'GamerGain Team'
+              from_name: 'Get Goods Gratis Team'
             });
             interventionExecuted = true;
           } else if (churnAssessment.intervention_type === 'reengagement_email') {
@@ -77,7 +77,7 @@ Return JSON with:
               to: appUser.email,
               subject: '👋 We Created Something New Just For You',
               body: `Hi ${appUser.full_name}! New surveys and challenges are waiting. Come back and see what\'s changed.\n\nClick here to jump back in: [app_link]`,
-              from_name: 'GamerGain Team'
+              from_name: 'Get Goods Gratis Team'
             });
             interventionExecuted = true;
           }

@@ -60,7 +60,7 @@ export default __handler(async (req) => {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: user.email,
           subject: `💰 Your payout of $${amount.toFixed(2)} has been requested!`,
-          body: `Hi ${user.full_name || 'there'},\n\nYour payout of $${amount.toFixed(2)} has been submitted.\n\nMethod: ${method || pref.payout_method || 'PayPal'}\nRecipient: ${recipientEmail}\nStatus: Pending review\n\nYour payout will be processed within 1–5 business days.\n\n— The GamerGain Team`,
+          body: `Hi ${user.full_name || 'there'},\n\nYour payout of $${amount.toFixed(2)} has been submitted.\n\nMethod: ${method || pref.payout_method || 'PayPal'}\nRecipient: ${recipientEmail}\nStatus: Pending review\n\nYour payout will be processed within 1–5 business days.\n\n— The Get Goods Gratis Team`,
         });
       }
 
@@ -152,7 +152,7 @@ export default __handler(async (req) => {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: user.email,
           subject: `💰 Your scheduled payout of $${balance.toFixed(2)} is being processed!`,
-          body: `Hi ${user.full_name || 'there'},\n\nYour scheduled ${schedule} payout of $${balance.toFixed(2)} has been initiated.\n\nMethod: ${payoutMethod}\nRecipient: ${recipientEmail}\n\nExpect delivery within 1–5 business days.\n\n— The GamerGain Team`,
+          body: `Hi ${user.full_name || 'there'},\n\nYour scheduled ${schedule} payout of $${balance.toFixed(2)} has been initiated.\n\nMethod: ${payoutMethod}\nRecipient: ${recipientEmail}\n\nExpect delivery within 1–5 business days.\n\n— The Get Goods Gratis Team`,
         });
 
         processed++;

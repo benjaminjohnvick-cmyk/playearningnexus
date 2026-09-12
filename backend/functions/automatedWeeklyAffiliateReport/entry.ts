@@ -38,13 +38,13 @@ export default __handler(async (req) => {
     });
 
     // Email the report
-    const emailBody = `Your Weekly Performance Report\n\n${reportSummary}\n\nView detailed analytics: https://gamergain.app/dashboard\n\nKeep crushing it!`;
+    const emailBody = `Your Weekly Performance Report\n\n${reportSummary}\n\nView detailed analytics: https://getgoodsgratis.app/dashboard\n\nKeep crushing it!`;
 
     await base44.integrations.Core.SendEmail({
       to: user.email,
       subject: `Your Weekly Report: ${stats.total_referrals} Referrals, $${stats.total_revenue.toFixed(2)} Earned`,
       body: emailBody + emailUnsubscribeFooter(user),
-      from_name: 'GamerGain'
+      from_name: 'Get Goods Gratis'
     });
 
     return Response.json({

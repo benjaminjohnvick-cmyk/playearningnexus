@@ -35,7 +35,7 @@ Social Caption: ${social_caption}
 
 We'll notify you once your survey goes live. Log in to the PPC Marketplace to track responses in real time.
 
-— The GamerGain Team
+— The Get Goods Gratis Team
       `.trim()
     });
   }

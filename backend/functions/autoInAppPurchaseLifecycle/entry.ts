@@ -17,7 +17,7 @@ export default __handler(async (req) => {
       await base44.integrations.Core.SendEmail({
         to: user.email,
         subject: `🎮 Purchase Confirmed: ${purchase.item_name || 'In-App Item'}`,
-        body: `Your purchase of "${purchase.item_name || 'item'}" for $${purchase.amount || purchase.price} has been confirmed! The item has been added to your account. Thank you for playing on GamerGain!`
+        body: `Your purchase of "${purchase.item_name || 'item'}" for $${purchase.amount || purchase.price} has been confirmed! The item has been added to your account. Thank you for playing on Get Goods Gratis!`
       });
     }
 

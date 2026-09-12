@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 import { withAdDisclosure } from "../../sdk/disclosure.ts";
 
-// Post 2 GamerGain ads across all 7 social channels twice daily
+// Post 2 Get Goods Gratis ads across all 7 social channels twice daily
 export default __handler(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -16,17 +16,17 @@ export default __handler(async (req) => {
         title: 'Play & Earn',
         content: `🎮 Play premium games. 📋 Answer quick surveys. 💰 Earn real money!
 
-GamerGain lets you unlock 60+ new games yearly while earning $0.20+ per survey. Withdraw to PayPal, Venmo, or Cash App anytime.
+Get Goods Gratis lets you unlock 60+ new games yearly while earning $0.20+ per survey. Withdraw to PayPal, Venmo, or Cash App anytime.
 
-Start earning: https://gamergain.app 🚀`,
+Start earning: https://getgoodsgratis.app 🚀`,
       },
       {
         title: 'Referral Rewards',
-        content: `💸 Earn $1 per active referral on GamerGain!
+        content: `💸 Earn $1 per active referral on Get Goods Gratis!
 
 Refer friends → They complete surveys → You earn commissions. Top earners make $100+ monthly from referrals alone.
 
-100K players already earning. Join them: https://gamergain.app/ReferralDashboard 🎯`,
+100K players already earning. Join them: https://getgoodsgratis.app/ReferralDashboard 🎯`,
       },
     ];
 
@@ -44,7 +44,7 @@ Refer friends → They complete surveys → You earn commissions. Top earners ma
             status: 'published',
             posted_at: new Date().toISOString(),
             auto_posted: true,
-            post_type: 'gamergain_promotion',
+            post_type: 'getgoodsgratis_promotion',
             title: ad.title,
           });
           posted++;

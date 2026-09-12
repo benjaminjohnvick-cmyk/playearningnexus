@@ -12,10 +12,10 @@ export default __handler(async (req) => {
 
     // AI verify the submission
     const aiCheck = await base44.integrations.Core.InvokeLLM({
-      prompt: `Verify this social media contest submission for GamerGain (gaming platform):
+      prompt: `Verify this social media contest submission for Get Goods Gratis (gaming platform):
 Type: ${verification.verification_type}
 Post URL: ${verification.post_url || 'not provided'}
-Required hashtags: #GamerGain #EarnWhilePlaying
+Required hashtags: #GetGoodsGratis #EarnWhilePlaying
 Submission details: ${JSON.stringify({ hashtags_found: verification.hashtags_found, image_matched: verification.image_matched, caption_matched: verification.caption_matched })}
 
 Based on the available data, determine:
@@ -40,7 +40,7 @@ Based on the available data, determine:
 
     await base44.asServiceRole.entities.ContestVerification.update(verification.id, {
       status: newStatus,
-      hashtags_found: aiCheck.hashtags_present ? ['#GamerGain', '#EarnWhilePlaying'] : (verification.hashtags_found || []),
+      hashtags_found: aiCheck.hashtags_present ? ['#GetGoodsGratis', '#EarnWhilePlaying'] : (verification.hashtags_found || []),
       verified_at: newStatus === 'verified' ? new Date().toISOString() : null,
       rejection_reason: newStatus === 'rejected' ? aiCheck.reason : null
     });
@@ -69,7 +69,7 @@ Based on the available data, determine:
         user_id: verification.user_id,
         type: 'contest_rejected',
         title: `❌ Contest Submission Not Verified`,
-        message: `Your submission could not be verified. Reason: ${aiCheck.reason}. Please re-submit with all required hashtags (#GamerGain #EarnWhilePlaying).`,
+        message: `Your submission could not be verified. Reason: ${aiCheck.reason}. Please re-submit with all required hashtags (#GetGoodsGratis #EarnWhilePlaying).`,
         is_read: false
       });
     }

@@ -56,7 +56,7 @@ export default __handler(async (req) => {
 Return ONLY a JSON object with key "translations" containing an array of translated strings in the exact same order.
 Rules:
 - Keep formatting intact (spaces, punctuation, line breaks)
-- Do NOT translate proper nouns: GamerGain, BitLabs, PayPal, Stripe, PPC
+- Do NOT translate proper nouns: Get Goods Gratis, BitLabs, PayPal, Stripe, PPC
 - Keep currency symbols and numbers as-is
 - Keep emoji as-is
 - Keep short UI labels concise

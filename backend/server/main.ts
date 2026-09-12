@@ -115,7 +115,7 @@ Deno.serve({ port: PORT }, async (req) => {
   ) {
     await primeSettings().catch(() => {});
     if (snapBool("MAINTENANCE_MODE", false) && !(await requesterIsAdmin(req))) {
-      return Response.json({ error: "maintenance", message: "GamerGain is briefly down for maintenance. Please check back soon." }, { status: 503, headers: CORS });
+      return Response.json({ error: "maintenance", message: "Get Goods Gratis is briefly down for maintenance. Please check back soon." }, { status: 503, headers: CORS });
     }
   }
 

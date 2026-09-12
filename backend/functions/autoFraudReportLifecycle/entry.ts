@@ -71,7 +71,7 @@ Provide: confidence_score (0-100), recommended_action (warn/suspend/ban/dismiss/
           user_id: report.reporter_user_id,
           type: 'fraud_report_resolved',
           title: '✅ Fraud Report Resolved',
-          message: `Your fraud report has been reviewed and resolved. Thank you for keeping GamerGain safe!`,
+          message: `Your fraud report has been reviewed and resolved. Thank you for keeping Get Goods Gratis safe!`,
           is_read: false
         });
       }

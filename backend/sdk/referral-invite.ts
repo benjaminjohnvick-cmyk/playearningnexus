@@ -10,9 +10,9 @@ import { snapBool, snapNumber, snapString } from "./settings.ts";
 
 export const contactInviteEnabled = () => snapBool("REFERRAL_CONTACT_INVITE_ENABLED", true);
 export const inviteDailyCap = () => Math.max(0, snapNumber("REFERRAL_INVITE_DAILY_CAP", 50));
-export const inviteBaseUrl = () => (snapString("REFERRAL_INVITE_BASE_URL", "https://gamergain.app") || "https://gamergain.app").replace(/\/+$/, "");
+export const inviteBaseUrl = () => (snapString("REFERRAL_INVITE_BASE_URL", "https://getgoodsgratis.app") || "https://getgoodsgratis.app").replace(/\/+$/, "");
 export const inviteTemplate = () => snapString("REFERRAL_INVITE_TEMPLATE",
-  "Hi {{name}}! I've been using GamerGain to earn rewards in my spare time — thought you'd like it. Join with my link: {{link}}");
+  "Hi {{name}}! I've been using Get Goods Gratis to earn rewards in my spare time — thought you'd like it. Join with my link: {{link}}");
 
 /** A user's personal referral link (matches the app's existing ?ref=<user id> convention). */
 export function referralLinkFor(userId: string): string {

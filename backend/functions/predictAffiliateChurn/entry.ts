@@ -140,13 +140,13 @@ Return JSON with:
         }
 
         // Send alert to account managers if high risk
-        if (shouldAlert && !prediction.alert_sent_to?.includes('ops@gamergain.app')) {
-          const alertEmails = ['ops@gamergain.app'];
+        if (shouldAlert && !prediction.alert_sent_to?.includes('ops@getgoodsgratis.app')) {
+          const alertEmails = ['ops@getgoodsgratis.app'];
           await base44.asServiceRole.integrations.Core.SendEmail({
             to: alertEmails.join(','),
-            from_name: 'GamerGain Churn Alert',
+            from_name: 'Get Goods Gratis Churn Alert',
             subject: `⚠️ HIGH CHURN RISK: ${affiliate.full_name} (Score: ${churnAnalysis.churn_risk_score}/100)`,
-            body: `An affiliate is showing signs of inactivity.\n\nAffiliate: ${affiliate.full_name} (${affiliate.email})\nRisk Level: ${churnAnalysis.risk_level}\nChurn Score: ${churnAnalysis.churn_risk_score}/100\n\nTop Indicators:\n${churnAnalysis.top_3_indicators.map((i, idx) => `${idx + 1}. ${i}`).join('\n')}\n\nAI Insights: ${churnAnalysis.ai_insights}\n\nSuggested Action: ${churnAnalysis.suggested_incentive_type}${churnAnalysis.suggested_incentive_amount ? ` - $${churnAnalysis.suggested_incentive_amount}` : ''}\n\nView Details: https://gamergain.app/AffiliateChurnMonitor\n\n— Churn Prediction System`
+            body: `An affiliate is showing signs of inactivity.\n\nAffiliate: ${affiliate.full_name} (${affiliate.email})\nRisk Level: ${churnAnalysis.risk_level}\nChurn Score: ${churnAnalysis.churn_risk_score}/100\n\nTop Indicators:\n${churnAnalysis.top_3_indicators.map((i, idx) => `${idx + 1}. ${i}`).join('\n')}\n\nAI Insights: ${churnAnalysis.ai_insights}\n\nSuggested Action: ${churnAnalysis.suggested_incentive_type}${churnAnalysis.suggested_incentive_amount ? ` - $${churnAnalysis.suggested_incentive_amount}` : ''}\n\nView Details: https://getgoodsgratis.app/AffiliateChurnMonitor\n\n— Churn Prediction System`
           }).catch(() => null);
 
           await base44.asServiceRole.entities.AffiliateChurnPrediction.update(

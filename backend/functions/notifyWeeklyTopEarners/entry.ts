@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { emailUnsubscribeFooter } from "../../sdk/messaging-consent.ts";
 
 // Self-hosted app URL (replaces the dead base44.app domain). Set APP_URL in your env.
-const APP_URL = (Deno.env.get("APP_URL") || "https://gamergain.app").replace(/\/$/, "");
+const APP_URL = (Deno.env.get("APP_URL") || "https://getgoodsgratis.app").replace(/\/$/, "");
 
 /**
  * Scheduled weekly — finds top earners for the past 7 days and sends winner notifications.
@@ -74,7 +74,7 @@ export default __handler(async (req) => {
         subject: `🏆 You're a Weekly Top Earner! ${medals[i]}`,
         body: `Hi ${winner.full_name || 'there'},
 
-Congratulations! You made the GamerGain Weekly Leaderboard!
+Congratulations! You made the Get Goods Gratis Weekly Leaderboard!
 
 ${medals[i]}
 💰 Weekly Earnings: $${earned.toFixed(2)}
@@ -85,7 +85,7 @@ Keep it up and compete for the top spot next week. Your ranking is live on the l
 👉 View Leaderboard: ${APP_URL}/Leaderboard
 
 Happy earning!
-— The GamerGain Team` + emailUnsubscribeFooter(winner),
+— The Get Goods Gratis Team` + emailUnsubscribeFooter(winner),
       });
 
       notified++;

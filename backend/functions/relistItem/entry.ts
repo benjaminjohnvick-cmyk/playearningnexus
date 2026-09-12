@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { blockedOrderReason } from "../../sdk/catalog-policy.ts";
 
 // relistItem (authenticated member) — turn something you own into a marketplace listing WITHOUT
-// exposing any personal information. The listing shows an anonymized seller ("GamerGain Member"), is
+// exposing any personal information. The listing shows an anonymized seller ("Get Goods Gratis Member"), is
 // buyable with points or card, and its order is handled by the AI order-fulfillment lifecycle.
 //   Body: { order_id?, title?, description?, price_points?, price_usd?, category?, condition?, images? }
 //   Provide order_id to relist a prior purchase (title is derived from it), or title+price directly.
@@ -40,7 +40,7 @@ export default __handler(async (req) => {
 
     const listing = await base44.asServiceRole.entities.MarketplaceListing.create({
       seller_id: user.id,                 // internal ownership only — never displayed
-      seller_name: "GamerGain Member",    // anonymized: no name, email, or location exposed
+      seller_name: "Get Goods Gratis Member",    // anonymized: no name, email, or location exposed
       title: String(baseTitle).slice(0, 200),
       description: (b.description || "").toString().slice(0, 5000),
       price_points: ppOk ? Math.round(pp) : null,

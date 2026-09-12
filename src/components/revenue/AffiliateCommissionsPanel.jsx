@@ -113,7 +113,7 @@ export default function AffiliateCommissionsPanel({ user }) {
                   <div className="font-bold text-sm text-green-700">${p.monthly_revenue}</div>
                 </div>
                 <Badge className={p.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}>{p.status}</Badge>
-                <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => handleCopy(p.id, `https://gamergain.app/ref/${p.id}?u=${user?.id}`)}>
+                <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => handleCopy(p.id, `https://getgoodsgratis.app/ref/${p.id}?u=${user?.id}`)}>
                   {copied === p.id ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Link</>}
                 </Button>
               </div>

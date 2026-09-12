@@ -84,7 +84,7 @@ export default __handler(async (req) => {
 
     // Use AI to generate personalized ad recommendations + boosted section
     const aiResult = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are an AI ad discovery engine for a gaming/survey rewards platform called GamerGain.
+      prompt: `You are an AI ad discovery engine for a gaming/survey rewards platform called Get Goods Gratis.
 
 USER PROFILE:
 - Total Lifetime Earnings: $${userProfile.total_earnings}

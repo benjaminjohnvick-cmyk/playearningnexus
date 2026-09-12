@@ -29,7 +29,7 @@ export default __handler(async (req) => {
         const winningOption = winner === 'a' ? cmp.option_a : cmp.option_b;
 
         const implSpec = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `You are a senior React/Tailwind developer for GamerGain (gaming + survey platform, red/white theme).
+          prompt: `You are a senior React/Tailwind developer for Get Goods Gratis (gaming + survey platform, red/white theme).
 The community voted for this design to be implemented:
 
 Feature: "${cmp.feature_name}"
@@ -38,7 +38,7 @@ Description: ${winningOption?.description}
 Total votes: ${Math.max(aVotes, bVotes)} (out of ${aVotes + bVotes})
 
 Write a detailed, actionable implementation plan:
-1. Which file(s) to create or modify (use actual GamerGain page/component paths)
+1. Which file(s) to create or modify (use actual Get Goods Gratis page/component paths)
 2. Key UI changes with Tailwind class examples
 3. Any new entity fields or backend function needed
 4. Step-by-step implementation order
@@ -172,7 +172,7 @@ Be specific and concise. Format as markdown.`
 
         // Generate implementation spec for winner
         const implSpec = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `You are a senior React/Tailwind developer for GamerGain (gaming + survey platform, red/white theme).
+          prompt: `You are a senior React/Tailwind developer for Get Goods Gratis (gaming + survey platform, red/white theme).
 The community voted for this design to be implemented:
 
 Feature: "${cmp.feature_name}"
@@ -181,7 +181,7 @@ Description: ${winningOption?.description}
 Total votes: ${Math.max(aVotes, bVotes)} (out of ${aVotes + bVotes})
 
 Write a detailed, actionable implementation plan:
-1. Which file(s) to create or modify (use actual GamerGain page/component paths)
+1. Which file(s) to create or modify (use actual Get Goods Gratis page/component paths)
 2. Key UI changes with Tailwind class examples
 3. Any new entity fields or backend function needed
 4. Step-by-step implementation order

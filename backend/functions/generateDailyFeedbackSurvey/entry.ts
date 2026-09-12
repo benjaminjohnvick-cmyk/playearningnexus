@@ -67,7 +67,7 @@ export default __handler(async (req) => {
     const shuffled = SITE_FEATURES.sort(() => 0.5 - Math.random());
     const todayFocusAreas = shuffled.slice(0, 6);
 
-    const prompt = `You are generating a comprehensive daily user feedback survey for GamerGain, a gaming platform with the following features:
+    const prompt = `You are generating a comprehensive daily user feedback survey for Get Goods Gratis, a gaming platform with the following features:
 - PPC Survey Marketplace (users earn money by completing surveys)
 - Referral programs with tiered rewards
 - Game Store with in-app purchases

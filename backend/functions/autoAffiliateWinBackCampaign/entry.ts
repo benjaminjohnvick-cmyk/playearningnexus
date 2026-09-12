@@ -40,14 +40,14 @@ export default __handler(async (req) => {
     const emailsSent = [];
     for (const target of winBackTargets) {
       const emailSubject = `We Miss You! 🎯 New ${target.tier.toUpperCase()} Tier Opportunities`;
-      const emailBody = `Hi there! You've been quiet for ${target.days_inactive} days.\n\nWe've prepared new high-paying campaigns tailored to your ${target.tier} tier. Don't miss out!\n\nLog in now to see exclusive opportunities: https://gamergain.app/dashboard\n\nBest,\nGamerGain Team`;
+      const emailBody = `Hi there! You've been quiet for ${target.days_inactive} days.\n\nWe've prepared new high-paying campaigns tailored to your ${target.tier} tier. Don't miss out!\n\nLog in now to see exclusive opportunities: https://getgoodsgratis.app/dashboard\n\nBest,\nGet Goods Gratis Team`;
 
       try {
         await base44.integrations.Core.SendEmail({
           to: target.email,
           subject: emailSubject,
           body: emailBody,
-          from_name: 'GamerGain Affiliates'
+          from_name: 'Get Goods Gratis Affiliates'
         });
         emailsSent.push(target.affiliate_id);
       } catch (e) {

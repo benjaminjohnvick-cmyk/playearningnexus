@@ -22,7 +22,7 @@ export default __handler(async (req) => {
       : [];
 
     if (!(Deno.env.get("ANTHROPIC_API_KEY") || Deno.env.get("OPENAI_API_KEY"))) {
-      return Response.json({ reply: "I'm here to help you earn more and enjoy GamerGain! Try completing a survey to reach today's goal, or check the store for a reward." });
+      return Response.json({ reply: "I'm here to help you earn more and enjoy Get Goods Gratis! Try completing a survey to reach today's goal, or check the store for a reward." });
     }
 
     const [profile, site] = await Promise.all([
@@ -35,7 +35,7 @@ export default __handler(async (req) => {
 
     const reply = await Core.InvokeLLM({
       prompt:
-        `You are GamerGain's friendly in-app assistant. Be concise, warm, and genuinely helpful. Help the ` +
+        `You are Get Goods Gratis's friendly in-app assistant. Be concise, warm, and genuinely helpful. Help the ` +
         `user earn, play, and get value; where natural, encourage engagement and purchases — never pushy, ` +
         `never misleading, no guaranteed-earnings claims.\n\n${site}\n\nUser profile: ${JSON.stringify(profile)}\n\n` +
         `${convo ? "Conversation so far:\n" + convo + "\n\n" : ""}User: ${message}\nAssistant:`,

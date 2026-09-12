@@ -32,7 +32,7 @@ export default __handler(async (req) => {
               user_id: costRecord.developer_id,
               type: 'install_milestone',
               title: `🎮 "${game.title}" hit ${m.toLocaleString()} Installs!`,
-              message: `Your game has reached ${m.toLocaleString()} installs on GamerGain. Keep it up!`,
+              message: `Your game has reached ${m.toLocaleString()} installs on Get Goods Gratis. Keep it up!`,
               is_read: false
             });
             break;

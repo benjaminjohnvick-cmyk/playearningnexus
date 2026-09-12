@@ -94,7 +94,7 @@ export default __handler(async (req) => {
     const payload = {
       sender_batch_header: {
         sender_batch_id: batchId,
-        email_subject: 'Your GamerGain Payout Has Arrived!',
+        email_subject: 'Your Get Goods Gratis Payout Has Arrived!',
         email_message: `Congratulations! Your earnings of $${wh.net.toFixed(2)} have been sent to your PayPal account.`,
       },
       items: [
@@ -102,7 +102,7 @@ export default __handler(async (req) => {
           recipient_type: 'EMAIL',
           amount: { value: wh.net.toFixed(2), currency },
           receiver: recipientEmail,
-          note: 'GamerGain survey & referral earnings payout',
+          note: 'Get Goods Gratis survey & referral earnings payout',
           sender_item_id: payoutId,
         },
       ],

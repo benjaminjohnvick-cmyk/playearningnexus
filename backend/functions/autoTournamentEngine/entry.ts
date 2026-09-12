@@ -18,7 +18,7 @@ export default __handler(async (req) => {
           name: `Weekly Tournament - ${weekLabel}`,
           tournament_name: `Weekly Tournament - ${weekLabel}`,
           game_id: featuredGame.id,
-          game_title: featuredGame.title || 'GamerGain',
+          game_title: featuredGame.title || 'Get Goods Gratis',
           title: `Weekly Tournament - ${weekLabel}`,
           status: 'upcoming',
           start_date: new Date(Date.now() + 86400000).toISOString(),

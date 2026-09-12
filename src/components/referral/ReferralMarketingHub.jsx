@@ -80,7 +80,7 @@ const PLATFORMS = [
 
 function getTemplates(referralLink, referralCode, userName) {
   const name = userName || 'Friend';
-  const shortLink = referralLink || 'https://gamergain.app/?ref=YOURCODE';
+  const shortLink = referralLink || 'https://getgoodsgratis.app/?ref=YOURCODE';
 
   return {
     instagram: [
@@ -410,7 +410,7 @@ export default function ReferralMarketingHub({ user }) {
   const [activeSection, setActiveSection] = useState('templates');
 
   const referralCode = user ? `REF-${user.id.slice(0, 8).toUpperCase()}` : 'REF-YOURCODE';
-  const referralLink = user ? `${window.location.origin}/?ref=${referralCode}` : 'https://gamergain.app/?ref=YOURCODE';
+  const referralLink = user ? `${window.location.origin}/?ref=${referralCode}` : 'https://getgoodsgratis.app/?ref=YOURCODE';
 
   const allTemplates = getTemplates(referralLink, referralCode, user?.full_name);
   const platform = PLATFORMS.find(p => p.id === activePlatform);

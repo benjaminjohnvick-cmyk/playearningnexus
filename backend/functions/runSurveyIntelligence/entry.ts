@@ -67,7 +67,7 @@ export default __handler(async (req) => {
 
     // 6. Use LLM to generate deep insights and recommendations
     const analysis = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are GamerGain's Survey Intelligence AI. Analyze this platform survey data and produce a comprehensive analysis.
+      prompt: `You are Get Goods Gratis's Survey Intelligence AI. Analyze this platform survey data and produce a comprehensive analysis.
 
 DATA SUMMARY:
 ${JSON.stringify(analysisData, null, 2)}

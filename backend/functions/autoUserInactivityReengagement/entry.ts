@@ -64,8 +64,8 @@ Keep it warm, exciting, mention they may have missed earnings and new games. Max
       if (user.email) {
         await base44.integrations.Core.SendEmail({
           to: user.email,
-          subject: `🎮 GamerGain misses you — $${bonusAmount} waiting for you!`,
-          body: `${aiMsg}\n\nWe've reserved a $${bonusAmount} comeback bonus just for you — but it expires in 7 days!\n\nLog back in at gamergain.com to claim it and see what's new.`
+          subject: `🎮 Get Goods Gratis misses you — $${bonusAmount} waiting for you!`,
+          body: `${aiMsg}\n\nWe've reserved a $${bonusAmount} comeback bonus just for you — but it expires in 7 days!\n\nLog back in at getgoodsgratis.com to claim it and see what's new.`
         });
       }
 

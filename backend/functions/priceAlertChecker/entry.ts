@@ -84,13 +84,13 @@ Return:
           await base44.asServiceRole.integrations.Core.SendEmail({
             to: item.user_id,
             subject: `💰 Price Drop Alert: ${item.product_name} is ${Math.round(dropPercent)}% off!`,
-            body: `Great news! An item on your GamerGain wishlist just dropped in price.\n\n` +
+            body: `Great news! An item on your Get Goods Gratis wishlist just dropped in price.\n\n` +
               `<strong>${item.product_name}</strong>\n\n` +
               `<strong>Was:</strong> $${savedPrice.toFixed(2)}\n` +
               `<strong>Now:</strong> $${currentPrice.toFixed(2)} at ${priceData.retailer}\n` +
               `<strong>You save:</strong> $${(savedPrice - currentPrice).toFixed(2)} (${Math.round(dropPercent)}% off)\n\n` +
               (priceData.product_url ? `<a href="${priceData.product_url}">View Deal →</a>\n\n` : '') +
-              `<a href="/Wishlist">Go to My Wishlist</a> to order this item through GamerGain.\n\n` +
+              `<a href="/Wishlist">Go to My Wishlist</a> to order this item through Get Goods Gratis.\n\n` +
               `You're receiving this because you enabled price alerts for this item. <a href="/Wishlist">Manage alerts</a>.`
           });
 

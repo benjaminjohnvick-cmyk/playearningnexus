@@ -60,7 +60,7 @@ export default __handler(async (req) => {
     for (const adv of advertisers) {
       // Compose the ad once per advertiser.
       const product = String(adv.business_name || adv.company || adv.full_name || "our featured partner");
-      let copy = `Check out ${product} on GamerGain — shop it (and anything else) with your points.`;
+      let copy = `Check out ${product} on Get Goods Gratis — shop it (and anything else) with your points.`;
       if (hasLLM) {
         try {
           const out = await Core.InvokeLLM({
@@ -102,7 +102,7 @@ export default __handler(async (req) => {
     // ALSO post a daily ad for YOUR OWN business to every consenting member's connected accounts.
     let ownPosts = 0;
     if (await getBool("PREMIUM_OWN_AD_ENABLED", true)) {
-      const bizName = await getString("PREMIUM_OWN_AD_BUSINESS", "GamerGain");
+      const bizName = await getString("PREMIUM_OWN_AD_BUSINESS", "Get Goods Gratis");
       let ownCopy = await getString("PREMIUM_OWN_AD_TEXT", "");
       if (!ownCopy && hasLLM) {
         try {

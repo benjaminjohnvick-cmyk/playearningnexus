@@ -48,7 +48,7 @@ Get Goods Gratis (Free) does not provide tax advice.
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `gamergain-tax-summary-${year}.txt`;
+    a.download = `getgoodsgratis-tax-summary-${year}.txt`;
     a.click();
   };
 

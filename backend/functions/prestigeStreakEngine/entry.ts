@@ -110,16 +110,16 @@ export default __handler(async (req) => {
         subject: `⚠️ Your ${currentStreakCount}-day streak is about to break!`,
         body: `Hey ${currentUser?.full_name || 'there'}! 👋
 
-You're about to lose your ${currentStreakCount}-day activity streak on GamerGain!
+You're about to lose your ${currentStreakCount}-day activity streak on Get Goods Gratis!
 
 Your current badge: ${earnedTier?.badge || 'Building your first badge...'}
 Revenue share bonus at stake: +${earnedTier?.revenue_share_bonus || 0}%
 
-Log in NOW to keep your streak alive → https://gamergain.app
+Log in NOW to keep your streak alive → https://getgoodsgratis.app
 
 ${nextTier ? `Just ${daysToNextTier} more days to earn the ${nextTier.badge} badge!` : 'You\'re a legend — keep going!'}
 
-GamerGain Team`,
+Get Goods Gratis Team`,
       }).catch(() => {});
 
       await base44.asServiceRole.entities.Notification.create({

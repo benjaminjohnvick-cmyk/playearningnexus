@@ -25,7 +25,7 @@ export default __handler(async (req) => {
     }
 
     const DAILY_GOAL = 4.00; // User's 50% share of $8/day minimum
-    const appUrl = req.headers.get('origin') || 'https://gamergain.app';
+    const appUrl = req.headers.get('origin') || 'https://getgoodsgratis.app';
 
     let smsSent = 0;
     let alreadyCompleted = 0;
@@ -47,7 +47,7 @@ export default __handler(async (req) => {
       if (earned >= DAILY_GOAL) { alreadyCompleted++; continue; }
 
       const remaining = (DAILY_GOAL - earned).toFixed(2);
-      const smsBody = `🎮 GamerGain: You still need $${remaining} in survey earnings today! Complete your surveys now to hit your $${DAILY_GOAL.toFixed(2)} goal. ${appUrl}/Surveys` + SMS_OPT_OUT_SUFFIX;
+      const smsBody = `🎮 Get Goods Gratis: You still need $${remaining} in survey earnings today! Complete your surveys now to hit your $${DAILY_GOAL.toFixed(2)} goal. ${appUrl}/Surveys` + SMS_OPT_OUT_SUFFIX;
 
       try {
         const smsResponse = await fetch(

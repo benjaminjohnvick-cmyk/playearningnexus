@@ -62,7 +62,7 @@ export default __handler(async (req) => {
 
       const subject = `🔥 Survey Streak Alert — Complete today's surveys, ${user.full_name?.split(' ')[0] || 'friend'}!`;
       const emailBody = `
-Hi ${user.full_name || 'GamerGainer'},
+Hi ${user.full_name || 'friend'},
 
 You haven't completed any surveys in the last 24 hours! 😮
 
@@ -72,14 +72,14 @@ It only takes one 8-minute survey session to earn your $3 daily goal and unlock 
 
 💡 Tip: Survey availability is highest in the morning — log in now for the best options!
 
-👉 Complete surveys now: https://gamergain.app/Surveys
+👉 Complete surveys now: https://getgoodsgratis.app/Surveys
 
 📊 Your stats:
 • Current streak: ${currentStreak} days
 • Best streak ever: ${bestStreak} days
 
 Happy earning,
-The GamerGain Team
+The Get Goods Gratis Team
       `.trim();
 
       // Create in-app notification
@@ -104,7 +104,7 @@ The GamerGain Team
           const twilioPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
 
           if (twilioSid && twilioToken && twilioPhone) {
-            const smsBody = `GamerGain 🔥 ${streakMsg} Complete surveys in 8 min → gamergain.app/Surveys` + SMS_OPT_OUT_SUFFIX;
+            const smsBody = `Get Goods Gratis 🔥 ${streakMsg} Complete surveys in 8 min → getgoodsgratis.app/Surveys` + SMS_OPT_OUT_SUFFIX;
             const resp = await fetch(
               `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`,
               {
@@ -127,7 +127,7 @@ The GamerGain Team
           to: user.email,
           subject,
           body: emailBody,
-          from_name: 'GamerGain',
+          from_name: 'Get Goods Gratis',
         });
         emailsSent++;
       } catch (err) {

@@ -26,7 +26,7 @@ export default __handler(async (req) => {
         if (user?.email) {
           await base44.integrations.Core.SendEmail({
             to: user.email,
-            subject: `🏆 Contest Entry Confirmed: ${contest?.name || 'GamerGain Contest'}`,
+            subject: `🏆 Contest Entry Confirmed: ${contest?.name || 'Get Goods Gratis Contest'}`,
             body: `You're officially entered in "${contest?.name || 'the contest'}"!\n\nTop prize: ${contest?.top_prize || 'Amazing rewards'}\nEnds: ${contest?.end_date || 'TBD'}\n\nShare your referral link to earn points and win!`
           });
         }

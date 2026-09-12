@@ -40,7 +40,7 @@ export default __handler(async (req) => {
     const nameClause = firstName ? ("their name is " + firstName) : "no name";
 
     const prompt =
-      "Write ONE ready-to-post referral message for a person inviting friends to GamerGain — an app where you " +
+      "Write ONE ready-to-post referral message for a person inviting friends to Get Goods Gratis — an app where you " +
       "earn rewards for playing games and doing surveys in your spare time. Platform: " + spec.label + ". " +
       "Style: " + spec.guide + ". Keep it UNDER " + spec.limit + " characters total. Write in the FIRST PERSON " +
       "as the user (" + nameClause + ") sharing with people they know — friendly and genuine, NOT a corporate " +
@@ -55,7 +55,7 @@ export default __handler(async (req) => {
 
     if (!text) {
       // Deterministic fallback if the model is unavailable.
-      text = "I've been using GamerGain to earn rewards in my spare time — thought you'd like it. Join with my link: " + link;
+      text = "I've been using Get Goods Gratis to earn rewards in my spare time — thought you'd like it. Join with my link: " + link;
     }
     if (!text.includes(link)) text = text + " " + link;
 

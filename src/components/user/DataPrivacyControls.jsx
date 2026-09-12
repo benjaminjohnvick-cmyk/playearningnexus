@@ -29,7 +29,7 @@ export default function DataPrivacyControls() {
       const blob = new Blob([JSON.stringify(res.data ?? res, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `gamergain-my-data-${new Date().toISOString().slice(0, 10)}.json`;
+      a.href = url; a.download = `getgoodsgratis-my-data-${new Date().toISOString().slice(0, 10)}.json`;
       a.click(); URL.revokeObjectURL(url);
       toast.success('Your data has been downloaded.');
     } catch (e) { toast.error(e?.data?.error || 'Export failed.'); }

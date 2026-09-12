@@ -21,7 +21,7 @@ const STEPS = [
   { id: 4, label: 'Complete', icon: CheckCircle2 },
 ];
 
-const AGREEMENT_TEXT = `GAMERGAIN PARTNER SERVICE AGREEMENT
+const AGREEMENT_TEXT = `GET GOODS GRATIS PARTNER SERVICE AGREEMENT
 
 Last updated: ${new Date().toLocaleDateString()}
 

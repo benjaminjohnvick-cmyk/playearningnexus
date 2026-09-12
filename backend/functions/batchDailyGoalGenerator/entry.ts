@@ -26,7 +26,7 @@ export default __handler(async (req) => {
       const maxDay = Math.max(...userEarnings.map(e => e.total_earned || 0), 0);
 
       const goalAnalysis = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `Generate a personalized daily earning goal for a GamerGain user.
+        prompt: `Generate a personalized daily earning goal for a Get Goods Gratis user.
 User: ${user.full_name || 'User'}
 Avg daily earnings (last 30 days): $${avgDaily.toFixed(2)}
 Best day: $${maxDay.toFixed(2)}

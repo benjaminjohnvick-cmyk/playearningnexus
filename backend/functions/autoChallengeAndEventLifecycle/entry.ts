@@ -28,7 +28,7 @@ export default __handler(async (req) => {
     if (entityName === 'WeeklyEvent' && event?.type === 'create') {
       const weeklyEvent = data;
       const promo = await base44.integrations.Core.InvokeLLM({
-        prompt: `Write a hype notification for this GamerGain weekly event: "${weeklyEvent.title || 'Weekly Event'}" — ${weeklyEvent.description || ''}. Prize: ${weeklyEvent.prize || 'rewards'}. Max 100 chars.`,
+        prompt: `Write a hype notification for this Get Goods Gratis weekly event: "${weeklyEvent.title || 'Weekly Event'}" — ${weeklyEvent.description || ''}. Prize: ${weeklyEvent.prize || 'rewards'}. Max 100 chars.`,
         response_json_schema: { type: "object", properties: { message: { type: "string" } } }
       });
       const users = await base44.asServiceRole.entities.User.list('-created_date', 50);

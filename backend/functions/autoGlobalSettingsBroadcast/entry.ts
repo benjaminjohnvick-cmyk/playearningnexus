@@ -21,7 +21,7 @@ export default __handler(async (req) => {
           user_id: 'broadcast',
           type: 'maintenance',
           title: `🔧 Scheduled Maintenance in Progress`,
-          message: settings.maintenance_message || 'GamerGain is undergoing brief maintenance. We\'ll be back shortly!',
+          message: settings.maintenance_message || 'Get Goods Gratis is undergoing brief maintenance. We\'ll be back shortly!',
           is_read: false
         });
       }

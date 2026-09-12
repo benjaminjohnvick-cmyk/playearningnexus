@@ -34,10 +34,10 @@ export default __handler(async (req) => {
 
           await base44.asServiceRole.integrations.Core.SendEmail({
             to: u.email,
-            subject: `Welcome to GamerGain, ${u.full_name?.split(' ')[0] || 'friend'}! 🎮`,
+            subject: `Welcome to Get Goods Gratis, ${u.full_name?.split(' ')[0] || 'friend'}! 🎮`,
             body: `Hi ${u.full_name?.split(' ')[0] || 'there'},
 
-Welcome to GamerGain — your new home for gaming and earning! 🎮💰
+Welcome to Get Goods Gratis — your new home for gaming and earning! 🎮💰
 
 Here's how to get started:
 ✅ Complete your first survey and earn instantly
@@ -46,10 +46,10 @@ Here's how to get started:
 🔥 Log in daily to build your streak and unlock multipliers
 💸 Withdraw to PayPal, Venmo, or Cash App at any time
 
-Your dashboard is ready: https://gamergain.app/UserDashboard
+Your dashboard is ready: https://getgoodsgratis.app/UserDashboard
 
 Let's get earning!
-— The GamerGain Team`.trim() + emailUnsubscribeFooter(u),
+— The Get Goods Gratis Team`.trim() + emailUnsubscribeFooter(u),
           });
 
           await base44.asServiceRole.entities.User.update(u.id, { onboarding_email_sent: true, last_automated_email_date: new Date().toISOString() });
@@ -81,10 +81,10 @@ ${balance > 0 ? `💰 You have $${balance.toFixed(2)} in your account ready to w
 🔥 Your daily login streak is waiting — come back to keep it alive
 🏆 Weekly Referral Conquest leaderboard prizes are up for grabs
 
-Come back and earn: https://gamergain.app/Surveys
+Come back and earn: https://getgoodsgratis.app/Surveys
 
 See you soon,
-— The GamerGain Team`.trim() + emailUnsubscribeFooter(u),
+— The Get Goods Gratis Team`.trim() + emailUnsubscribeFooter(u),
           });
 
           await base44.asServiceRole.entities.User.update(u.id, { last_winback_sent: now.toISOString(), last_automated_email_date: new Date().toISOString() });
@@ -106,17 +106,17 @@ See you soon,
           const referrals = u.total_referrals || 0;
 
           const aiSummary = await base44.asServiceRole.integrations.Core.InvokeLLM({
-            prompt: `Write a short, motivating 2-sentence weekly earnings summary for a GamerGain user.
+            prompt: `Write a short, motivating 2-sentence weekly earnings summary for a Get Goods Gratis user.
 Stats: total earnings $${earnings.toFixed(2)}, balance $${balance.toFixed(2)}, referrals ${referrals}.
 Be encouraging and personalized. Mention their potential if they refer more or complete more surveys.`,
           });
 
           await base44.asServiceRole.integrations.Core.SendEmail({
             to: u.email,
-            subject: `Your Weekly GamerGain Summary 📊 — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+            subject: `Your Weekly Get Goods Gratis Summary 📊 — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
             body: `Hi ${u.full_name?.split(' ')[0] || 'there'},
 
-Here's your weekly GamerGain report 📈
+Here's your weekly Get Goods Gratis report 📈
 
 💰 Total Earned: $${earnings.toFixed(2)}
 🏦 Available Balance: $${balance.toFixed(2)}
@@ -124,12 +124,12 @@ Here's your weekly GamerGain report 📈
 
 ${aiSummary || 'Keep up the great work! More surveys and opportunities are waiting for you.'}
 
-📋 Browse this week's top surveys: https://gamergain.app/Surveys
-💵 Withdraw your balance: https://gamergain.app/Withdrawal
-👥 Refer friends for $1 each: https://gamergain.app/ReferralDashboard
+📋 Browse this week's top surveys: https://getgoodsgratis.app/Surveys
+💵 Withdraw your balance: https://getgoodsgratis.app/Withdrawal
+👥 Refer friends for $1 each: https://getgoodsgratis.app/ReferralDashboard
 
 Keep earning,
-— The GamerGain Team`.trim() + emailUnsubscribeFooter(u),
+— The Get Goods Gratis Team`.trim() + emailUnsubscribeFooter(u),
           });
 
           await base44.asServiceRole.entities.User.update(u.id, { last_weekly_summary_sent: now.toISOString(), last_automated_email_date: new Date().toISOString() });

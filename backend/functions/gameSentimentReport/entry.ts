@@ -187,7 +187,7 @@ Produce a concise but thorough Game Sentiment Report. Return JSON with:
 
       <div style="color:#9ca3af;font-size:12px;text-align:center;border-top:1px solid #e5e7eb;padding-top:16px">
         ${voiceCount > 0 ? `🎤 ${voiceCount} of ${weeklyReviews.length} reviews submitted via voice-to-text &nbsp;•&nbsp; ` : ''}
-        Powered by GamerGain AI Analytics &nbsp;•&nbsp; <a href="#" style="color:#6366f1">View full dashboard</a>
+        Powered by Get Goods Gratis AI Analytics &nbsp;•&nbsp; <a href="#" style="color:#6366f1">View full dashboard</a>
       </div>
     </div>
   </div>
@@ -198,7 +198,7 @@ Produce a concise but thorough Game Sentiment Report. Return JSON with:
       if (devEmail) {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: devEmail,
-          from_name: 'GamerGain Analytics',
+          from_name: 'Get Goods Gratis Analytics',
           subject: `📊 Weekly Sentiment Report: ${game.title} — ${weeklyReviews.length} reviews, ${avgRating.toFixed(1)}⭐ avg`,
           body: htmlBody
         });

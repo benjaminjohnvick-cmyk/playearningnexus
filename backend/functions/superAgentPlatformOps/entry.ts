@@ -2,12 +2,12 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
 /**
- * Super Agent 4: GamerGain Platform Operations Superagent
+ * Super Agent 4: Get Goods Gratis Platform Operations Superagent
  * Orchestrates: sendDailyReminder, sendPPCAdNotification, surveyStreakReminder,
  * notifyHighQualityResponse, gameSentimentReport, adCampaignHealthDigest,
  * sendWeeklyAdReport, verifyCampaignOutcomes, aiCampaignAutomation,
  * appStoreEarningsValidator, evaluateAgentPerformance, applyApprovedLearnings,
- * aiPlatformInsights, youtubeAutoEmbed, mosaicAutoShareSocialMedia, postGamerGainAds,
+ * aiPlatformInsights, youtubeAutoEmbed, mosaicAutoShareSocialMedia, postGetGoodsGratisAds,
  * sendSurveyNotifications, triggerEmailMarketing, autoEnrollUserInSocialPosting
  */
 export default __handler(async (req) => {
@@ -48,7 +48,7 @@ export default __handler(async (req) => {
     // === SOCIAL & CONTENT ===
     await run('auto_enroll_social_posting', 'autoEnrollUserInSocialPosting', {});
     await run('mosaic_auto_share', 'mosaicAutoShareSocialMedia', {});
-    await run('post_gamergain_ads', 'postGamerGainAds', {});
+    await run('post_getgoodsgratis_ads', 'postGetGoodsGratisAds', {});
     await run('youtube_auto_embed', 'youtubeAutoEmbed', {});
 
     // === WEEKLY OPERATIONS ===
@@ -74,7 +74,7 @@ export default __handler(async (req) => {
     const successRate = totalSteps > 0 ? Math.round((Object.keys(results).length / totalSteps) * 100) : 100;
 
     const assessment = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `GamerGain Platform Operations Super Agent completed a run.
+      prompt: `Get Goods Gratis Platform Operations Super Agent completed a run.
 Success rate: ${successRate}%
 Steps completed: ${Object.keys(results).join(', ')}
 Steps failed: ${Object.keys(errors).join(', ') || 'none'}

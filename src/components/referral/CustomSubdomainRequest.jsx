@@ -99,7 +99,7 @@ export default function CustomSubdomainRequest({ user, activeReferrals = 0 }) {
                   <Icon className="w-5 h-5 text-blue-600 flex-shrink-0" />
                   <div>
                     <p className="text-sm font-semibold text-blue-800">{cfg.label}</p>
-                    <code className="text-xs font-mono text-blue-600">{req.requested_subdomain}.gamergain.com</code>
+                    <code className="text-xs font-mono text-blue-600">{req.requested_subdomain}.getgoodsgratis.com</code>
                     {req.admin_notes && <p className="text-xs text-red-600 mt-0.5">Note: {req.admin_notes}</p>}
                   </div>
                   <Badge className={`ml-auto ${cfg.color} text-xs`}>{cfg.label}</Badge>
@@ -129,10 +129,10 @@ export default function CustomSubdomainRequest({ user, activeReferrals = 0 }) {
                   onChange={e => setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                   className="max-w-48"
                 />
-                <span className="text-gray-500 text-sm font-mono">.gamergain.com</span>
+                <span className="text-gray-500 text-sm font-mono">.getgoodsgratis.com</span>
               </div>
               {subdomain && (
-                <p className="text-xs text-indigo-600 mt-1 font-mono">→ https://{subdomain}.gamergain.com</p>
+                <p className="text-xs text-indigo-600 mt-1 font-mono">→ https://{subdomain}.getgoodsgratis.com</p>
               )}
             </div>
 

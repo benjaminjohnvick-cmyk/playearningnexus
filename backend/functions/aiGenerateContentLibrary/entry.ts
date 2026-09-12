@@ -13,7 +13,7 @@ export default __handler(async (req) => {
     const TYPES = ['social_post', 'email_copy', 'caption', 'social_post', 'banner', 'social_post'];
 
     const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are a viral content marketing expert for GamerGain — a platform where users earn money by playing games, completing surveys, and referring friends.
+      prompt: `You are a viral content marketing expert for Get Goods Gratis — a platform where users earn money by playing games, completing surveys, and referring friends.
 
 Generate 8 high-converting referral content templates that users can share on social media to recruit friends. Each should embed {{referral_link}} where the personal link goes.
 

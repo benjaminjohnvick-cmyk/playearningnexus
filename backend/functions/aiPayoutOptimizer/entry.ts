@@ -48,7 +48,7 @@ export default __handler(async (req) => {
         ? Math.floor((Date.now() - new Date(lastPayout.created_date)) / (1000 * 60 * 60 * 24))
         : null;
 
-      const prompt = `You are a payout optimization AI for GamerGain, a gaming rewards platform.
+      const prompt = `You are a payout optimization AI for Get Goods Gratis, a gaming rewards platform.
 
 Analyze this user's payout profile and predict the optimal next payout date and reasoning:
 

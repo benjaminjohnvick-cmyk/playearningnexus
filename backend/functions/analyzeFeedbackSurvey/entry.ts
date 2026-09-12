@@ -35,7 +35,7 @@ export default __handler(async (req) => {
       }
     }
 
-    const prompt = `You are an expert product analyst for GamerGain, a gaming platform. Analyze the following aggregated user feedback collected from ${responses.length} users today (${survey.date}).
+    const prompt = `You are an expert product analyst for Get Goods Gratis, a gaming platform. Analyze the following aggregated user feedback collected from ${responses.length} users today (${survey.date}).
 
 AGGREGATED FEEDBACK BY CATEGORY:
 ${JSON.stringify(aggregated, null, 2)}

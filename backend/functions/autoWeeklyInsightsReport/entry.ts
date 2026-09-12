@@ -26,7 +26,7 @@ export default __handler(async (req) => {
 
     // AI-generate weekly insights
     const insights = await base44.integrations.Core.InvokeLLM({
-      prompt: `Generate a weekly performance report for GamerGain platform with these stats:
+      prompt: `Generate a weekly performance report for Get Goods Gratis platform with these stats:
       - New users this week: ${newUsersThisWeek}
       - Orders placed: ${ordersThisWeek.length} ($${totalOrderRevenue.toFixed(2)} revenue)
       - Payouts processed: ${payoutsThisWeek.length} ($${totalPayoutAmount.toFixed(2)})
@@ -48,7 +48,7 @@ export default __handler(async (req) => {
 
     // Store weekly report as an AdminAuditLog instead of AgentPerformanceLog
     await base44.asServiceRole.entities.AdminAuditLog.create({
-      actor_email: 'system@gamergain.io',
+      actor_email: 'system@getgoodsgratis.io',
       action_type: 'other',
       target: 'weekly_insights_report',
       details: JSON.stringify({
@@ -71,7 +71,7 @@ export default __handler(async (req) => {
       if (admin.email) {
         await base44.integrations.Core.SendEmail({
           to: admin.email,
-          subject: `📊 GamerGain Weekly Report — Health Score: ${insights.health_score}/100`,
+          subject: `📊 Get Goods Gratis Weekly Report — Health Score: ${insights.health_score}/100`,
           body: `WEEKLY PERFORMANCE SUMMARY\n\n${insights.executive_summary}\n\n✅ TOP WINS:\n${insights.top_wins?.map(w => `• ${w}`).join('\n')}\n\n⚠️ IMPROVE:\n${insights.areas_to_improve?.map(a => `• ${a}`).join('\n')}\n\n🎯 NEXT WEEK:\n${insights.next_week_priorities?.map(p => `• ${p}`).join('\n')}\n\nNEW USERS: ${newUsersThisWeek} | ORDERS: ${ordersThisWeek.length} | PAYOUTS: $${totalPayoutAmount.toFixed(2)} | AD CAMPAIGNS: ${activeCampaigns.length}`
         });
       }

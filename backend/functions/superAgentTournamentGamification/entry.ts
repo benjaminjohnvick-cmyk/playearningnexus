@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
 /**
- * Super Agent 3: GamerGain Tournament & Gamification Manager
+ * Super Agent 3: Get Goods Gratis Tournament & Gamification Manager
  * Orchestrates: calculateGlobalPrestige, computeUserTrustScore,
  * calculateTrustScore (batch), earningVelocityMonitor, milestoneAlertChecker,
  * notifyWeeklyTopEarners, awardUserXP (batch), checkAndAwardBadges,
@@ -81,7 +81,7 @@ export default __handler(async (req) => {
 
     // AI health assessment
     const assessment = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `GamerGain Tournament & Gamification Super Agent run summary:
+      prompt: `Get Goods Gratis Tournament & Gamification Super Agent run summary:
 
 Steps completed: ${Object.keys(results).join(', ')}
 Steps failed: ${Object.keys(errors).join(', ') || 'none'}

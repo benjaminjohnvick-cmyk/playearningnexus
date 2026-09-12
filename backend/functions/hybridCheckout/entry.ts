@@ -90,7 +90,7 @@ export default __handler(async (req) => {
     let approveUrl: string | null = null, paypalOrderId: string | null = null;
     if (!paidNow && paypalConfigured()) {
       try {
-        const pp = await createOrder({ amountUsd: cardNet, ref: String((order as any).id), description: listing.title || "GamerGain order" });
+        const pp = await createOrder({ amountUsd: cardNet, ref: String((order as any).id), description: listing.title || "Get Goods Gratis order" });
         approveUrl = pp.approve_url; paypalOrderId = pp.id;
         await db.update("Order", String((order as any).id), { paypal_order_id: pp.id, paypal_status: pp.status }).catch(() => null);
       } catch { /* leave as awaiting_payment; client can retry via paypalCreateCheckout */ }

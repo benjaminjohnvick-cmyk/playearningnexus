@@ -23,8 +23,8 @@ export default __handler(async (req) => {
     const flowTemplates = {
       welcome_series: [
         {
-          subject: `Welcome to GamerGain, {{user_name}}! 🎮`,
-          body: `Hi {{user_name}},\n\nWelcome to GamerGain! We're thrilled to have you join our community of gamers earning real rewards.\n\nHere's how to get started:\n1. Complete your profile\n2. Take your first survey\n3. Earn your first reward\n\nLet's go! 🚀`,
+          subject: `Welcome to Get Goods Gratis, {{user_name}}! 🎮`,
+          body: `Hi {{user_name}},\n\nWelcome to Get Goods Gratis! We're thrilled to have you join our community of gamers earning real rewards.\n\nHere's how to get started:\n1. Complete your profile\n2. Take your first survey\n3. Earn your first reward\n\nLet's go! 🚀`,
           delay: 0,
         },
         {
@@ -100,7 +100,7 @@ export default __handler(async (req) => {
       to: user.email,
       subject: emailSubject,
       body: emailBody + emailUnsubscribeFooter(user),
-      from_name: 'GamerGain',
+      from_name: 'Get Goods Gratis',
     });
 
     // Mark as sent

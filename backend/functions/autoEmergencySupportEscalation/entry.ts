@@ -25,7 +25,7 @@ export default __handler(async (req) => {
 
       // Send urgent notification
       await base44.integrations.Core.SendEmail({
-        to: 'support@gamergain.com',
+        to: 'support@getgoodsgratis.com',
         subject: `🚨 CRITICAL: Ticket ${ticket.id} - ${ticket.subject}`,
         body: `Critical support ticket requires immediate attention.\nUser: ${ticket.user_id}\nIssue: ${ticket.description}`
       });

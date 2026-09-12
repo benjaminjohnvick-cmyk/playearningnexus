@@ -25,11 +25,11 @@ export default __handler(async (req) => {
       },
       implemented: {
         title: `🎉 Your Suggestion Was Implemented!`,
-        message: `Your suggestion "${(suggestion.suggestion || '').substring(0, 60)}" has been built into GamerGain! Thank you for making the platform better.`
+        message: `Your suggestion "${(suggestion.suggestion || '').substring(0, 60)}" has been built into Get Goods Gratis! Thank you for making the platform better.`
       },
       rejected: {
         title: `Suggestion Update`,
-        message: `We reviewed your suggestion but won't be implementing it at this time. Thank you for helping us improve GamerGain!`
+        message: `We reviewed your suggestion but won't be implementing it at this time. Thank you for helping us improve Get Goods Gratis!`
       }
     };
 
@@ -55,7 +55,7 @@ export default __handler(async (req) => {
       await base44.asServiceRole.entities.ActivityFeedItem.create({
         user_id: suggestion.user_id,
         activity_type: 'achievement',
-        title: `💡 Suggestion Implemented on GamerGain!`,
+        title: `💡 Suggestion Implemented on Get Goods Gratis!`,
         description: `"${(suggestion.suggestion || '').substring(0, 80)}"`,
         icon: '💡',
         is_public: true

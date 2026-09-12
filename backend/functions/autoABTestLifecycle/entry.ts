@@ -30,7 +30,7 @@ export default __handler(async (req) => {
       const rateB = variantB / totalB;
 
       const aiInsights = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this A/B test result for GamerGain:
+        prompt: `Analyze this A/B test result for Get Goods Gratis:
         Test: "${test.name || test.hypothesis || 'Unnamed test'}"
         Variant A: ${variantA} conversions / ${totalA} users (rate: ${(rateA * 100).toFixed(2)}%)
         Variant B: ${variantB} conversions / ${totalB} users (rate: ${(rateB * 100).toFixed(2)}%)

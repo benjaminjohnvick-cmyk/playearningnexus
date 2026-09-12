@@ -17,7 +17,7 @@ export default __handler(async (req) => {
 
   // Score the ad with AI
   const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-    prompt: `You are a brand safety reviewer for GamerGain, a gaming platform ad grid. Review this ad submission and score it.
+    prompt: `You are a brand safety reviewer for Get Goods Gratis, a gaming platform ad grid. Review this ad submission and score it.
 
 Ad Details:
 - Brand Name: "${ad.brand_name}"
@@ -78,9 +78,9 @@ Return JSON only.`,
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: advertiser.email,
-      from_name: 'GamerGain Ad Grid',
+      from_name: 'Get Goods Gratis Ad Grid',
       subject: `Ad Review: "${ad.brand_name}" — ${statusLabel}`,
-      body: `Hi ${advertiser.full_name || 'Advertiser'},\n\nYour ad "${ad.brand_name}" has been reviewed by our AI system.\n\n📋 REVIEW RESULT: ${statusLabel}\nAI Score: ${overall_score}/10\nBrand Safety: ${brand_safety}/10\n\n${rejection_reason ? `❌ Reason: ${rejection_reason}\n\n` : ''}${suggestions ? `💡 Suggestions to improve your ad:\n${suggestions}\n\n` : ''}${newStatus === 'active' ? '🎉 Your ad is now live on the GamerGain Ad Grid!\n\n' : newStatus === 'pending' ? '⏳ Our team will manually review your ad within 24 hours.\n\n' : '🔄 You can edit and resubmit your ad after making improvements.\n\n'}Manage your campaigns:\nhttps://gamergain.app/AdBusinessDashboard\n\n— GamerGain Ad Grid`,
+      body: `Hi ${advertiser.full_name || 'Advertiser'},\n\nYour ad "${ad.brand_name}" has been reviewed by our AI system.\n\n📋 REVIEW RESULT: ${statusLabel}\nAI Score: ${overall_score}/10\nBrand Safety: ${brand_safety}/10\n\n${rejection_reason ? `❌ Reason: ${rejection_reason}\n\n` : ''}${suggestions ? `💡 Suggestions to improve your ad:\n${suggestions}\n\n` : ''}${newStatus === 'active' ? '🎉 Your ad is now live on the Get Goods Gratis Ad Grid!\n\n' : newStatus === 'pending' ? '⏳ Our team will manually review your ad within 24 hours.\n\n' : '🔄 You can edit and resubmit your ad after making improvements.\n\n'}Manage your campaigns:\nhttps://getgoodsgratis.app/AdBusinessDashboard\n\n— Get Goods Gratis Ad Grid`,
     });
   }
 

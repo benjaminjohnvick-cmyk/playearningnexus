@@ -79,7 +79,7 @@ export default __handler(async (req) => {
   try {
     await base44.asServiceRole.entities.AdminAuditLog.create({
       action_type: 'other',
-      actor_email: 'system@gamergain.com',
+      actor_email: 'system@getgoodsgratis.com',
       details: `auto_fraud_security_engine_run: ${JSON.stringify(results)}`
     });
   } catch (e) {

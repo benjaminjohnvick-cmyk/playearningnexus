@@ -11,7 +11,7 @@ export default __handler(async (req) => {
 
     const user = data;
 
-    const prompt = `You are an AI onboarding specialist for GamerGain, a gaming rewards and survey platform.
+    const prompt = `You are an AI onboarding specialist for Get Goods Gratis, a gaming rewards and survey platform.
 
 New User Profile:
 - Name: ${user.full_name}
@@ -39,7 +39,7 @@ Focus on the most impactful first steps to help them earn money quickly through 
     await base44.asServiceRole.entities.Notification.create({
       user_id: user.id,
       type: 'onboarding',
-      title: `👋 Welcome to GamerGain, ${user.full_name}!`,
+      title: `👋 Welcome to Get Goods Gratis, ${user.full_name}!`,
       message: plan.welcome_message,
       is_read: false
     });
@@ -47,7 +47,7 @@ Focus on the most impactful first steps to help them earn money quickly through 
     // Send welcome email
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: user.email,
-      subject: `Welcome to GamerGain, ${user.full_name}! Here's your personalized earning plan 🎮`,
+      subject: `Welcome to Get Goods Gratis, ${user.full_name}! Here's your personalized earning plan 🎮`,
       body: `
 Hi ${user.full_name},
 
@@ -62,10 +62,10 @@ ${plan.earning_potential}
 PERSONALIZED TIPS FOR YOU:
 ${(plan.personalized_tips || []).map(t => `• ${t}`).join('\n')}
 
-Get started now at GamerGain!
+Get started now at Get Goods Gratis!
 
 Best,
-The GamerGain AI Team
+The Get Goods Gratis AI Team
       `
     });
 

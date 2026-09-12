@@ -24,7 +24,7 @@ export default __handler(async (req) => {
       currency: 'usd',
       payment_method: paymentMethodId,
       confirm: true,
-      return_url: 'https://gamergain.com/Surveys',
+      return_url: 'https://getgoodsgratis.com/Surveys',
       description: `Survey creation: "${surveyTitle}" — ${minSampleSize} responses @ $4 each`,
       metadata: {
         user_id: user.id,

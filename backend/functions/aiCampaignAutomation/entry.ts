@@ -23,7 +23,7 @@ export default __handler(async (req) => {
 
       const platform = platforms[Math.floor(Math.random() * platforms.length)];
 
-      const prompt = `You are an AI marketing expert. Generate a referral campaign for this GamerGain user.
+      const prompt = `You are an AI marketing expert. Generate a referral campaign for this Get Goods Gratis user.
 
 User Stats:
 - Name: ${user.full_name}

@@ -41,7 +41,7 @@ export default __handler(async (req) => {
               user_id: client.owner_user_id,
               type: 'revenue_milestone',
               title: `💰 $${m.toLocaleString()} Revenue Milestone!`,
-              message: `Your games have generated $${m.toLocaleString()} in total revenue on GamerGain. Congratulations!`,
+              message: `Your games have generated $${m.toLocaleString()} in total revenue on Get Goods Gratis. Congratulations!`,
               is_read: false
             });
           }

@@ -40,7 +40,7 @@ export default __handler(async (req) => {
               to: application.contact_email,
               subject: won ? `🎉 Community Voted — Your Game is Approved!` : `Community Vote Results`,
               body: won
-                ? `The GamerGain community voted for "${application.game_title}"! You received ${winner.votes} votes. Log in to complete setup.`
+                ? `The Get Goods Gratis community voted for "${application.game_title}"! You received ${winner.votes} votes. Log in to complete setup.`
                 : `The community vote has concluded. "${application.game_title}" received ${opt.votes || 0} votes. You've been added to our priority waitlist for the next opening.`
             });
           }

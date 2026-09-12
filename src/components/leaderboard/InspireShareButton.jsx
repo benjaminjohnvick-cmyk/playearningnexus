@@ -7,11 +7,11 @@ export default function InspireShareButton({ user, rank, dailyEarned, weeklyEarn
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const referralCode = user?.referral_code || user?.id?.slice(0, 8).toUpperCase() || 'GAMERGAIN';
+  const referralCode = user?.referral_code || user?.id?.slice(0, 8).toUpperCase() || 'GETGOODSGRATIS';
   const rankText = rank <= 3 ? ['🥇 #1', '🥈 #2', '🥉 #3'][rank - 1] : `#${rank}`;
 
   const shareText = `🎮 I'm ranked ${rankText} on Get Goods Gratis (Free)'s leaderboard today!\n💰 Earned $${(dailyEarned || 0).toFixed(2)} just from surveys today.\n\nJoin me and start earning — use my link 👇`;
-  const shareUrl = `https://gamergain.app?ref=${referralCode}`;
+  const shareUrl = `https://getgoodsgratis.app?ref=${referralCode}`;
   const fullText = `${shareText}\n${shareUrl}`;
 
   const handleCopy = () => {

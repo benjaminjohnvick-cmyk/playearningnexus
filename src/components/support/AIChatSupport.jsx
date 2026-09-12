@@ -55,7 +55,7 @@ User info:
 - Games in Library: ${user?.game_library?.length || 0}
 - Points: ${user?.gamification_points || 0}
 
-Provide helpful, concise answers. If the question requires account-specific actions or complex troubleshooting, politely suggest they contact human support at support@gamergain.com.`;
+Provide helpful, concise answers. If the question requires account-specific actions or complex troubleshooting, politely suggest they contact human support at support@getgoodsgratis.com.`;
 
       // Call AI
       const response = await base44.integrations.Core.InvokeLLM({
@@ -219,7 +219,7 @@ Provide helpful, concise answers. If the question requires account-specific acti
                     </div>
                     <VoiceInputHint className="mt-2" />
                     <p className="text-xs text-gray-500 mt-1">
-                      For complex issues, email: support@gamergain.com
+                      For complex issues, email: support@getgoodsgratis.com
                     </p>
                   </div>
                 </CardContent>

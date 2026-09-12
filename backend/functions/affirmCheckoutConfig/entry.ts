@@ -46,7 +46,7 @@ export default __handler(async (req) => {
         user_confirmation_url: `${siteBase}/Marketplace?affirm=confirm`,
         user_cancel_url: `${siteBase}/Marketplace?affirm=cancel`,
         user_confirmation_url_action: "POST",
-        name: "GamerGain",
+        name: "Get Goods Gratis",
       },
       shipping: {
         name: { full: shipping.name || user.full_name || "Customer" },

@@ -85,9 +85,9 @@ export default __handler(async (req) => {
     if (daysUntilEmpty <= 3 && daysUntilEmpty > 0 && activeAds.length > 0 && user.ad_budget_alerts) {
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: user.email,
-        from_name: 'GamerGain Ad Grid',
+        from_name: 'Get Goods Gratis Ad Grid',
         subject: `⚠️ Budget Alert: ${daysUntilEmpty} day${daysUntilEmpty === 1 ? '' : 's'} of ad spend remaining`,
-        body: `Hi ${user.full_name || 'Advertiser'},\n\nYour GamerGain ad budget is running low.\n\n💰 Current Balance: $${balance.toFixed(2)}\n📊 Avg Daily Spend: $${avgDailySpend.toFixed(2)}\n⏰ Estimated Days Remaining: ${daysUntilEmpty}\n\nYou have ${activeAds.length} active campaign${activeAds.length !== 1 ? 's' : ''} that will auto-pause when your balance hits $0.\n\nTop up your budget to keep your ads running:\nhttps://gamergain.app/AdBusinessDashboard\n\nBest,\nGamerGain Ad Grid`,
+        body: `Hi ${user.full_name || 'Advertiser'},\n\nYour Get Goods Gratis ad budget is running low.\n\n💰 Current Balance: $${balance.toFixed(2)}\n📊 Avg Daily Spend: $${avgDailySpend.toFixed(2)}\n⏰ Estimated Days Remaining: ${daysUntilEmpty}\n\nYou have ${activeAds.length} active campaign${activeAds.length !== 1 ? 's' : ''} that will auto-pause when your balance hits $0.\n\nTop up your budget to keep your ads running:\nhttps://getgoodsgratis.app/AdBusinessDashboard\n\nBest,\nGet Goods Gratis Ad Grid`,
       });
       budgetAlerts++;
     }
@@ -106,9 +106,9 @@ export default __handler(async (req) => {
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: user.email,
-      from_name: 'GamerGain Ad Grid',
+      from_name: 'Get Goods Gratis Ad Grid',
       subject: `📊 Daily Campaign Digest — ${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`,
-      body: `Good morning ${user.full_name || 'Advertiser'},\n\nHere's your daily AI campaign summary:\n\n${aiInsight}\n\n━━━━━━━━━━━━━━━\n📈 PORTFOLIO SNAPSHOT\n• Active Campaigns: ${activeAds.length}\n• Total Clicks: ${totals.clicks}\n• Completions: ${totals.completed}\n• Total Spent: $${totals.spent.toFixed(2)}\n• Budget Remaining: $${balance.toFixed(2)}\n• Est. Days of Budget Left: ${daysUntilEmpty === 999 ? '∞' : daysUntilEmpty}\n\n🔗 Manage your campaigns:\nhttps://gamergain.app/AdBusinessDashboard\n\n—\nYou're receiving this because you enabled Daily AI Digest.\nManage preferences in your Advertiser Dashboard → Automation tab.`,
+      body: `Good morning ${user.full_name || 'Advertiser'},\n\nHere's your daily AI campaign summary:\n\n${aiInsight}\n\n━━━━━━━━━━━━━━━\n📈 PORTFOLIO SNAPSHOT\n• Active Campaigns: ${activeAds.length}\n• Total Clicks: ${totals.clicks}\n• Completions: ${totals.completed}\n• Total Spent: $${totals.spent.toFixed(2)}\n• Budget Remaining: $${balance.toFixed(2)}\n• Est. Days of Budget Left: ${daysUntilEmpty === 999 ? '∞' : daysUntilEmpty}\n\n🔗 Manage your campaigns:\nhttps://getgoodsgratis.app/AdBusinessDashboard\n\n—\nYou're receiving this because you enabled Daily AI Digest.\nManage preferences in your Advertiser Dashboard → Automation tab.`,
     });
     emailed++;
   }

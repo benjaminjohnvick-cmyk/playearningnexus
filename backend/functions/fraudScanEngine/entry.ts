@@ -72,7 +72,7 @@ export default __handler(async (req) => {
       let aiAssessment;
       try {
         aiAssessment = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `You are GamerGain's fraud detection AI. Assess if this user is fraudulent.
+          prompt: `You are Get Goods Gratis's fraud detection AI. Assess if this user is fraudulent.
 
 USER ID: ${userId}
 RESPONSE COUNT IN ${lookback_hours}H: ${userResponses.length}

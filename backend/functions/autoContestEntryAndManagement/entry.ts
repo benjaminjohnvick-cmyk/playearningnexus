@@ -14,7 +14,7 @@ export default __handler(async (req) => {
     if (activeContests.length === 0) {
       const endDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       await base44.asServiceRole.entities.ReferralContest.create({
-        name: `GamerGain Weekly Referral Contest - Week of ${new Date().toLocaleDateString()}`,
+        name: `Get Goods Gratis Weekly Referral Contest - Week of ${new Date().toLocaleDateString()}`,
         status: 'active',
         start_date: new Date().toISOString(),
         end_date: endDate,

@@ -67,7 +67,7 @@ async function generateAdviceForUser(userId, base44) {
 
   // Use AI to generate personalized advice
   const result = await base44.integrations.Core.InvokeLLM({
-    prompt: `You are a personalized Market Advisor AI for GamerGain, a gaming rewards platform. Analyze this user's profile and generate tailored recommendations.
+    prompt: `You are a personalized Market Advisor AI for Get Goods Gratis, a gaming rewards platform. Analyze this user's profile and generate tailored recommendations.
 
 USER PROFILE:
 - Wishlist Items: ${wishlistContext}
@@ -157,8 +157,8 @@ ${alerts.map(a => `• ${a.product_name}: Was $${a.original_price} → Now $${a.
 🎟️ EXCLUSIVE COUPONS:
 ${coupons.map(c => `• Code: ${c.code} — ${c.discount} off ${c.category} (min $${c.min_spend})`).join('\n')}
 
-Log in to GamerGain to claim these deals and earn more today!
+Log in to Get Goods Gratis to claim these deals and earn more today!
 
-— The GamerGain Team
+— The Get Goods Gratis Team
   `.trim();
 }

@@ -16,7 +16,7 @@ export default __handler(async (req) => {
       // New promo code → broadcast to relevant users via AI targeting
       const aiTarget = await base44.integrations.Core.InvokeLLM({
         prompt: `A new promo code "${code.code}" was created: discount=${code.discount_value}${code.discount_type === 'percentage' ? '%' : ' USD'}, valid until ${code.expires_at || 'no expiry'}, category=${code.category || 'general'}.
-        Write a compelling notification message (max 120 chars) and email subject (max 60 chars) to promote this to GamerGain users. Return: message (string), subject (string), target_audience (string describing who benefits most).`,
+        Write a compelling notification message (max 120 chars) and email subject (max 60 chars) to promote this to Get Goods Gratis users. Return: message (string), subject (string), target_audience (string describing who benefits most).`,
         response_json_schema: {
           type: "object",
           properties: {

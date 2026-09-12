@@ -32,7 +32,7 @@ export default __handler(async (req) => {
 
       // Alert admin
       await base44.integrations.Core.SendEmail({
-        to: 'fraud@gamergain.com',
+        to: 'fraud@getgoodsgratis.com',
         subject: '🚨 CRITICAL FRAUD: Immediate Lockout',
         body: `User ${user_id} has been locked out due to critical fraud score: ${fraud_score}`
       });

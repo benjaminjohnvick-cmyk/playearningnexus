@@ -38,7 +38,7 @@ export default function CustomDomainManager() {
   const approveMutation = useMutation({
     mutationFn: ({ id, uid, subdomain }) => base44.entities.CustomSubdomain.update(id, {
       status: 'approved',
-      full_domain: `${subdomain}.gamergain.com`,
+      full_domain: `${subdomain}.getgoodsgratis.com`,
       approved_by: uid,
       approved_date: new Date().toISOString(),
     }),
@@ -108,7 +108,7 @@ export default function CustomDomainManager() {
                   <p className="font-semibold text-gray-900">{getUserName(req.user_id)}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <Globe className="w-3.5 h-3.5 text-indigo-500" />
-                    <code className="text-sm font-mono text-indigo-700">{req.requested_subdomain}.gamergain.com</code>
+                    <code className="text-sm font-mono text-indigo-700">{req.requested_subdomain}.getgoodsgratis.com</code>
                   </div>
                   {req.custom_cname && (
                     <div className="flex items-center gap-1 mt-0.5">
@@ -156,7 +156,7 @@ export default function CustomDomainManager() {
                   <p className="font-semibold text-sm text-gray-900">{getUserName(req.user_id)}</p>
                   <code className="text-sm font-mono text-blue-700">{req.full_domain}</code>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    CNAME → <code className="text-gray-600">referral.gamergain.com</code>
+                    CNAME → <code className="text-gray-600">referral.getgoodsgratis.com</code>
                   </p>
                 </div>
                 <div className="flex gap-2">

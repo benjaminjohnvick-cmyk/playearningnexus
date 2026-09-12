@@ -32,7 +32,7 @@ export default __handler(async (req) => {
     });
 
     await base44.asServiceRole.integrations.Core.SendEmail({
-      to: snapString("DMCA_AGENT_EMAIL", snapString("EMAIL_FROM", "admin@gamergain.app")),
+      to: snapString("DMCA_AGENT_EMAIL", snapString("EMAIL_FROM", "admin@getgoodsgratis.app")),
       subject: `[DMCA] Counter-notice — request ${dmca_request_id ?? record.id}`,
       body: `A DMCA counter-notice was filed by user ${user.email}.\nRequest ID: ${record.id}\nRelated takedown: ${dmca_request_id ?? "n/a"}\n\nPer §512(g), restore the material in 10–14 business days unless the complainant files a court action.`,
     }).catch(() => null);

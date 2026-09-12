@@ -13,7 +13,7 @@ export default __handler(async (req) => {
     if (event?.type === 'create') {
       // AI auto-triage and reply
       const triage = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are GamerGain support AI. Triage this user support ticket:
+        prompt: `You are Get Goods Gratis support AI. Triage this user support ticket:
 Subject: "${ticket.subject || ticket.title || ''}"
 Message: "${ticket.message || ticket.description || ''}"
 Category: "${ticket.category || 'general'}"
@@ -46,7 +46,7 @@ Provide: auto_reply (2-3 sentences resolving or acknowledging), priority (low/me
           await base44.integrations.Core.SendEmail({
             to: user.email,
             subject: `📋 Support Ticket Received: ${ticket.subject || ticket.title}`,
-            body: `Thank you for contacting GamerGain support!\n\n${triage.auto_reply}\n\nTicket Priority: ${triage.priority}\n\n${triage.can_auto_resolve ? 'Your issue has been automatically resolved.' : 'A team member will follow up if needed.'}`
+            body: `Thank you for contacting Get Goods Gratis support!\n\n${triage.auto_reply}\n\nTicket Priority: ${triage.priority}\n\n${triage.can_auto_resolve ? 'Your issue has been automatically resolved.' : 'A team member will follow up if needed.'}`
           });
         }
       }

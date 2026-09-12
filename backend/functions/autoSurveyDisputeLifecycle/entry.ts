@@ -15,7 +15,7 @@ export default __handler(async (req) => {
     if (event?.type === 'create') {
       // AI analyze survey dispute
       const aiVerdict = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this survey dispute for GamerGain platform:
+        prompt: `Analyze this survey dispute for Get Goods Gratis platform:
         Dispute Type: "${dispute.dispute_type || 'general'}"
         User Claim: "${dispute.user_claim || dispute.description || ''}"
         Survey ID: "${dispute.survey_id || 'N/A'}"

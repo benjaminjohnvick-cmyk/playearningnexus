@@ -104,9 +104,9 @@ Return JSON only.`,
     if (dispute.affiliate_email) {
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: dispute.affiliate_email,
-        from_name: 'GamerGain Dispute Center',
+        from_name: 'Get Goods Gratis Dispute Center',
         subject: `🔍 Dispute #${dispute_id.slice(-6).toUpperCase()} — AI Analysis Complete`,
-        body: `Hi,\n\nYour dispute has been analyzed by our AI system.\n\nValidity Score: ${analysis.validity_score}/100\nEvidence Strength: ${analysis.evidence_strength}\n\n${analysis.settlement_amount > 0 ? `💰 Settlement Offer: $${analysis.settlement_amount}\nBasis: ${analysis.settlement_basis}\nExpires: ${settlementExpiry.toDateString()}\n\n` : ''}${analysis.analysis_notes}\n\nView your dispute: https://gamergain.app/AffiliateDisputeCenter\n\n— GamerGain Support`
+        body: `Hi,\n\nYour dispute has been analyzed by our AI system.\n\nValidity Score: ${analysis.validity_score}/100\nEvidence Strength: ${analysis.evidence_strength}\n\n${analysis.settlement_amount > 0 ? `💰 Settlement Offer: $${analysis.settlement_amount}\nBasis: ${analysis.settlement_basis}\nExpires: ${settlementExpiry.toDateString()}\n\n` : ''}${analysis.analysis_notes}\n\nView your dispute: https://getgoodsgratis.app/AffiliateDisputeCenter\n\n— Get Goods Gratis Support`
       }).catch(() => null);
     }
 

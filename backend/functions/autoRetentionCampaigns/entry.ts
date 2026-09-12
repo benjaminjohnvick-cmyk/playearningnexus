@@ -51,7 +51,7 @@ export default __handler(async (req) => {
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: user.email,
           subject: `We miss you, ${user.full_name || 'Gamer'}! Here's a $${bonusAmount} comeback bonus 🎮`,
-          body: `Hey ${user.full_name || 'there'},\n\nWe noticed you haven't been on GamerGain lately. We'd love to have you back!\n\nAs a special comeback offer, we're giving you a $${bonusAmount} bonus when you complete your next survey.\n\nThis offer expires in 14 days. Come back and start earning again!\n\nhttps://gamergain.com\n\nThe GamerGain Team`
+          body: `Hey ${user.full_name || 'there'},\n\nWe noticed you haven't been on Get Goods Gratis lately. We'd love to have you back!\n\nAs a special comeback offer, we're giving you a $${bonusAmount} bonus when you complete your next survey.\n\nThis offer expires in 14 days. Come back and start earning again!\n\nhttps://getgoodsgratis.com\n\nThe Get Goods Gratis Team`
         });
         await base44.asServiceRole.entities.RetentionCampaign.update(
           (await base44.asServiceRole.entities.RetentionCampaign.filter({ user_id: user.id, status: 'triggered' }))[0]?.id,

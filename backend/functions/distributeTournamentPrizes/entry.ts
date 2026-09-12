@@ -110,7 +110,7 @@ export default __handler(async (req) => {
           to: participant.user_email,
           subject: `🏆 Congratulations! You Won $${prize} in the Tournament!`,
           body: `Hi ${participant.user_name},\n\nCongratulations on placing ${placement} in the ${tournament.tournament_name}!\n\nYour prize of $${prize} has been added to your account and is ready to withdraw.\n\nThank you for competing! 🎉`,
-          from_name: 'GamerGain Tournaments',
+          from_name: 'Get Goods Gratis Tournaments',
         });
 
         distributions.push({

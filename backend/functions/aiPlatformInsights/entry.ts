@@ -25,7 +25,7 @@ export default __handler(async (req) => {
       ? ((responses.filter(r => r.is_flagged).length / responses.length) * 100).toFixed(1)
       : 0;
 
-    const prompt = `You are an AI business analyst for GamerGain, a survey and gaming rewards platform. Analyze this platform data and provide actionable insights.
+    const prompt = `You are an AI business analyst for Get Goods Gratis, a survey and gaming rewards platform. Analyze this platform data and provide actionable insights.
 
 PLATFORM METRICS (last period):
 - Total Active Surveys: ${surveys.filter(s => s.status === 'active').length}

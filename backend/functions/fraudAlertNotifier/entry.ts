@@ -105,7 +105,7 @@ export default __handler(async (req) => {
     // ── Send consolidated email to all admins ──
     const highSeverity = alerts.filter(a => a.severity === 'high');
     const emailBody = `
-<h2>🚨 GamerGain Fraud Alert Report</h2>
+<h2>🚨 Get Goods Gratis Fraud Alert Report</h2>
 <p><strong>${alerts.length} suspicious pattern(s) detected</strong> (${highSeverity.length} high severity)</p>
 <hr/>
 ${alerts.map(a => `
@@ -120,7 +120,7 @@ ${alerts.map(a => `
     for (const email of adminEmails) {
       await base44.integrations.Core.SendEmail({
         to: email,
-        subject: `🚨 GamerGain Fraud Alert: ${alerts.length} suspicious pattern(s) detected`,
+        subject: `🚨 Get Goods Gratis Fraud Alert: ${alerts.length} suspicious pattern(s) detected`,
         body: emailBody,
       });
     }

@@ -85,9 +85,9 @@ export default __handler(async (req) => {
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: user.email,
-      from_name: 'GamerGain Ad Grid — Auto Counter-Bid',
+      from_name: 'Get Goods Gratis Ad Grid — Auto Counter-Bid',
       subject: `🤖 Auto Counter-Bid: ${bumps.length} bid${bumps.length !== 1 ? 's' : ''} bumped to stay competitive`,
-      body: `Hi ${user.full_name || 'Advertiser'},\n\nYour Auto Counter-Bid engine detected competitor bids above yours and automatically adjusted:\n\n${bumpList}\n\n💡 Your bids were bumped by your configured margin to stay ahead.\nBids will never exceed the maximum for your current tier.\n\n⚙️ To adjust your counter-bid margin or disable this feature:\nhttps://gamergain.app/AdBusinessDashboard → Account → Automation\n\n— GamerGain Ad Grid`,
+      body: `Hi ${user.full_name || 'Advertiser'},\n\nYour Auto Counter-Bid engine detected competitor bids above yours and automatically adjusted:\n\n${bumpList}\n\n💡 Your bids were bumped by your configured margin to stay ahead.\nBids will never exceed the maximum for your current tier.\n\n⚙️ To adjust your counter-bid margin or disable this feature:\nhttps://getgoodsgratis.app/AdBusinessDashboard → Account → Automation\n\n— Get Goods Gratis Ad Grid`,
     });
     alerted++;
   }

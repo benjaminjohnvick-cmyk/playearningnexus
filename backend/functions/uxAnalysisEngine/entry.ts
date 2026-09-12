@@ -66,7 +66,7 @@ export default __handler(async (req) => {
       );
       if (alreadyHasSurvey) continue;
 
-      const surveyPrompt = `You are a UX researcher for GamerGain, a gaming rewards platform.
+      const surveyPrompt = `You are a UX researcher for Get Goods Gratis, a gaming rewards platform.
 
 Feature area "${area}" has high friction:
 - Friction score: ${stats.frictionScore}/100
@@ -148,7 +148,7 @@ Only include "options" for multiple_choice type. For rating, type is "rating" wi
         .map(a => `Q: ${a.question} | A: ${a.answer || a.rating}`)
         .join('\n');
 
-      const analysisPrompt = `Analyze these ${responses.length} survey responses about the "${featureArea}" feature on GamerGain:
+      const analysisPrompt = `Analyze these ${responses.length} survey responses about the "${featureArea}" feature on Get Goods Gratis:
 
 ${answerSummary.slice(0, 3000)}
 

@@ -46,8 +46,8 @@ async function sendPayPalPayout(token, recipientEmail, amount, note, senderItemI
     },
     body: JSON.stringify({
       sender_batch_header: {
-        sender_batch_id: `gamergain_${senderItemId}`, // caller passes a stable, unique senderItemId
-        email_subject: 'GamerGain Reward Payout!',
+        sender_batch_id: `getgoodsgratis_${senderItemId}`, // caller passes a stable, unique senderItemId
+        email_subject: 'Get Goods Gratis Reward Payout!',
         email_message: note,
       },
       items: [{
@@ -121,7 +121,7 @@ export default __handler(async (req) => {
         // Send via PayPal (stable per-user/day sender id so a retry dedupes at PayPal).
         const paypalResult = await sendPayPalPayout(
           token, pref.paypal_email, wh.net,
-          `GamerGain referral earnings payout of $${wh.net.toFixed(2)}`,
+          `Get Goods Gratis referral earnings payout of $${wh.net.toFixed(2)}`,
           `ref_${u.id}_${new Date().toISOString().slice(0, 10)}`
         );
 
@@ -196,7 +196,7 @@ export default __handler(async (req) => {
       // Tax: backup withholding when no W-9 is on file — send net, set aside `withheld`.
       const wh = applyBackupWithholding(Number(amount), targetUser);
       const token = await getPayPalToken();
-      const note = reward_note || `GamerGain reward: ${reward_type || 'contest_win'}`;
+      const note = reward_note || `Get Goods Gratis reward: ${reward_type || 'contest_win'}`;
       const paypalResult = await sendPayPalPayout(
         token, pref.paypal_email, wh.net, note,
         `${reward_type || 'reward'}_${target_user_id}_${Date.now()}`
@@ -280,7 +280,7 @@ export default __handler(async (req) => {
       // Tax: backup withholding when no W-9 is on file — send net, set aside `withheld`.
       const wh = applyBackupWithholding(Number(prize_amount), winner);
       const token = await getPayPalToken();
-      const note = `GamerGain contest win: ${contest_name} — Prize: $${prize_amount.toFixed(2)}`;
+      const note = `Get Goods Gratis contest win: ${contest_name} — Prize: $${prize_amount.toFixed(2)}`;
       const paypalResult = await sendPayPalPayout(
         token, pref.paypal_email, wh.net, note,
         `contest_${winner_user_id}_${Date.now()}`

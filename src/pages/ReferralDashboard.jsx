@@ -149,7 +149,7 @@ export default function ReferralDashboard() {
           </TabsContent>
 
           <TabsContent value="share" className="mt-5">
-            <SocialShareHub user={user} referralLink={`https://gamergain.app/ref/${user.id?.slice(0,8)}`} />
+            <SocialShareHub user={user} referralLink={`https://getgoodsgratis.app/ref/${user.id?.slice(0,8)}`} />
           </TabsContent>
 
           <TabsContent value="live" className="mt-5">

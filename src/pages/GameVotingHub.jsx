@@ -32,7 +32,7 @@ export default function GameVotingHub() {
   const [applyForm, setApplyForm] = useState({
     company_name: '', contact_name: '', contact_email: '', website: '',
     game_title: '', game_description: '', game_category: 'casual',
-    game_platform: ['web'], demo_url: '', why_gamergain: '', monetization_model: 'free',
+    game_platform: ['web'], demo_url: '', why_getgoodsgratis: '', monetization_model: 'free',
   });
   const qc = useQueryClient();
 
@@ -301,7 +301,7 @@ export default function GameVotingHub() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-gray-600 mb-1">Why Get Goods Gratis (Free)?</p>
-                      <Textarea value={applyForm.why_gamergain} onChange={e => setApplyForm(f => ({ ...f, why_gamergain: e.target.value }))} placeholder="Why do you want to host on Get Goods Gratis (Free)?" className="text-sm h-14" />
+                      <Textarea value={applyForm.why_getgoodsgratis} onChange={e => setApplyForm(f => ({ ...f, why_getgoodsgratis: e.target.value }))} placeholder="Why do you want to host on Get Goods Gratis (Free)?" className="text-sm h-14" />
                     </div>
                     <div className="flex gap-2 justify-end">
                       <Button variant="outline" size="sm" onClick={() => setShowApplyForm(false)}>Cancel</Button>

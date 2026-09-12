@@ -44,7 +44,7 @@ export default __handler(async (req) => {
       roiScore: s.totalInstalls > 0 ? (s.totalRevenue / s.totalInstalls).toFixed(2) : '0',
     }));
 
-    const prompt = `You are a market analyst for GamerGain, a gaming + survey platform. 
+    const prompt = `You are a market analyst for Get Goods Gratis, a gaming + survey platform. 
 Analyze the following aggregated data and generate a comprehensive weekly Market Trend Report for developers.
 
 PLATFORM DATA SUMMARY:

@@ -371,7 +371,7 @@ Requires CAPTCHA: ${vendorIntel?.requires_captcha}
 
 Generate a complete Playwright-compatible automation plan:
 1. ordered_steps — array of {step_number, action (NAVIGATE/CLICK/TYPE/SELECT/WAIT/EXTRACT), selector_hint (CSS selector), value_hint (value to type/click), notes}
-   - Include: navigate to URL, click Add to Cart, click Checkout, fill shipping fields (parse from address: "${order.shipping_address}"), fill card (GamerGain card fields — leave as PLACEHOLDER), submit order
+   - Include: navigate to URL, click Add to Cart, click Checkout, fill shipping fields (parse from address: "${order.shipping_address}"), fill card (Get Goods Gratis card fields — leave as PLACEHOLDER), submit order
 2. shipping_fields — {full_name, address_line1, address_line2, city, state, zip, country} parsed from the shipping address
 3. expected_confirmation_signals — text/elements that appear on the success/confirmation page
 4. tracking_extraction_hints — where to find order ID and tracking on confirmation
@@ -540,7 +540,7 @@ Based on all the above, determine:
     if (buyerEmail) await base44.asServiceRole.integrations.Core.SendEmail({
       to: buyerEmail,
       subject: `✅ Order Placed — ${order.product_name}`,
-      body: `Your GamerGain order has been <strong>automatically purchased</strong> by our AI fulfillment system!\n\n` +
+      body: `Your Get Goods Gratis order has been <strong>automatically purchased</strong> by our AI fulfillment system!\n\n` +
         `<strong>Product:</strong> ${order.product_name}\n` +
         `<strong>Purchased From:</strong> ${finalRetailerName}\n` +
         `<strong>External Order ID:</strong> ${placementEval?.external_order_id || 'Pending'}\n` +

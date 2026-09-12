@@ -18,7 +18,7 @@ export default __handler(async (req) => {
           user_id: fr.to_user_id,
           type: 'friend_request_received',
           title: '👥 New Friend Request!',
-          message: `${sender?.full_name || 'Someone'} wants to be your friend on GamerGain! Accept to connect and share stats.`,
+          message: `${sender?.full_name || 'Someone'} wants to be your friend on Get Goods Gratis! Accept to connect and share stats.`,
           is_read: false
         });
       }
@@ -32,7 +32,7 @@ export default __handler(async (req) => {
           user_id: fr.from_user_id,
           type: 'friend_request_accepted',
           title: '🎉 Friend Request Accepted!',
-          message: `${accepter?.full_name || 'Your friend'} accepted your friend request! You're now connected on GamerGain.`,
+          message: `${accepter?.full_name || 'Your friend'} accepted your friend request! You're now connected on Get Goods Gratis.`,
           is_read: false
         });
         // Award XP for making a friend connection

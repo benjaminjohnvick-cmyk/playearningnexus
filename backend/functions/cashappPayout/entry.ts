@@ -80,7 +80,7 @@ export default __handler(async (req) => {
       amount: amountCents,
       currency,
       destination: stripeAccountId,
-      description: `GamerGain CashApp payout for user ${user.id}`,
+      description: `Get Goods Gratis CashApp payout for user ${user.id}`,
     }, { idempotencyKey: `gg-transfer-${payoutId}` });
 
     // Attach the Cash Card token as an external account on the connected account
@@ -95,7 +95,7 @@ export default __handler(async (req) => {
         currency,
         method: 'instant',
         destination: externalAccount.id,
-        description: 'GamerGain CashApp Instant Payout',
+        description: 'Get Goods Gratis CashApp Instant Payout',
         metadata: { payout_id: payoutId, user_id: user.id },
       },
       { stripeAccount: stripeAccountId, idempotencyKey: `gg-payout-${payoutId}` }

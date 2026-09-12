@@ -44,7 +44,7 @@ export default __handler(async (req) => {
           user_id: sale.affiliate_user_id,
           type: 'affiliate_commission_paid',
           title: `✅ Affiliate Commission Paid: $${sale.commission_earned}`,
-          message: `Your $${sale.commission_earned} commission has been added to your GamerGain balance!`,
+          message: `Your $${sale.commission_earned} commission has been added to your Get Goods Gratis balance!`,
           is_read: false
         });
       }

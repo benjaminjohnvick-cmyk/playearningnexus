@@ -221,7 +221,7 @@ function AdFullScreen({
         <button onClick={onClose} aria-label="Close ad" className="text-white/70 hover:text-white p-1 -ml-1 flex-shrink-0">
           <X className="w-6 h-6" />
         </button>
-        <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
+        <a href="https://getgoodsgratis.app" target="_blank" rel="noopener noreferrer"
           className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center gap-1 truncate">
           <Globe className="w-3 h-3 flex-shrink-0" /> Get Goods Gratis (Free).app
         </a>
@@ -595,7 +595,7 @@ export default function PaidPPCAdsMosaic() {
   const goNextAd = () => { if (activeIndex >= 0 && activeIndex < currentPageAds.length - 1) startAd(currentPageAds[activeIndex + 1]); };
 
   const handleShareGrid = async () => {
-    const shareText = `🎮 The Get Goods Gratis (Free) Million Dollar Ad Grid — click brand ads, answer 4 questions, earn $0.20 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/PaidPPCAdsMosaic`;
+    const shareText = `🎮 The Get Goods Gratis (Free) Million Dollar Ad Grid — click brand ads, answer 4 questions, earn $0.20 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://getgoodsgratis.app/PaidPPCAdsMosaic`;
     if (navigator.share) {
       await navigator.share({ title: 'Get Goods Gratis (Free) Million Dollar Ad Grid', text: shareText });
     } else {
@@ -655,7 +655,7 @@ export default function PaidPPCAdsMosaic() {
         )}
       </AnimatePresence>
       <div className="bg-red-700 text-center py-2 text-sm font-bold tracking-wide sticky top-0 z-40">
-        🎮 <a href="https://gamergain.app" className="underline hover:text-yellow-300">Get Goods Gratis (Free).app</a>
+        🎮 <a href="https://getgoodsgratis.app" className="underline hover:text-yellow-300">Get Goods Gratis (Free).app</a>
         {' '}— Click an ad · Answer 4 questions ($0.40) · Earn $0.20 · Visit the business
       </div>
       <div className="max-w-5xl mx-auto px-4 pt-8 pb-4 text-center">
@@ -671,9 +671,9 @@ export default function PaidPPCAdsMosaic() {
           4 survey questions, and <span className="text-green-400 font-bold">earn ${EARNINGS_PER_CLICK.toFixed(2)} per ad</span> (your 50% of $0.50 CPC).
           Click <span className="text-yellow-400 font-bold">{REQUIRED_DAILY_CLICKS} ads/day</span> to meet the mandatory minimum of $4/day. Each ad limited to once per 24 hours.
         </p>
-        <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
+        <a href="https://getgoodsgratis.app" target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-red-400 font-bold text-sm hover:text-red-300 mb-4">
-          <Globe className="w-4 h-4" /> gamergain.app
+          <Globe className="w-4 h-4" /> getgoodsgratis.app
         </a>
         {/* Daily progress bar */}
         <div className="max-w-sm mx-auto mb-4">
@@ -731,9 +731,9 @@ export default function PaidPPCAdsMosaic() {
           <p className="text-yellow-300/80 text-xs mt-1">
             Required: Click <strong>{REQUIRED_DAILY_CLICKS} ads/day</strong> (minimum $8 total · your share = $4) · Each ad clickable once per 24 hours
           </p>
-          <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
+          <a href="https://getgoodsgratis.app" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-red-400 text-xs font-bold mt-2 hover:text-red-300">
-            <Globe className="w-3 h-3" /> gamergain.app
+            <Globe className="w-3 h-3" /> getgoodsgratis.app
           </a>
         </div>
         <div className="flex items-center justify-between mb-3 text-xs text-gray-500">

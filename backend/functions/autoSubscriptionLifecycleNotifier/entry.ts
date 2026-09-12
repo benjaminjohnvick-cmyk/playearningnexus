@@ -17,8 +17,8 @@ export default __handler(async (req) => {
       if (user?.email) {
         await base44.integrations.Core.SendEmail({
           to: user.email,
-          subject: `🌟 Welcome to ${sub.plan_name || 'GamerGain Premium'}!`,
-          body: `Your subscription to "${sub.plan_name || 'Premium'}" is now active! You now have access to all premium features. Next billing: ${sub.next_billing_date || 'monthly'}. Thank you for supporting GamerGain!`
+          subject: `🌟 Welcome to ${sub.plan_name || 'Get Goods Gratis Premium'}!`,
+          body: `Your subscription to "${sub.plan_name || 'Premium'}" is now active! You now have access to all premium features. Next billing: ${sub.next_billing_date || 'monthly'}. Thank you for supporting Get Goods Gratis!`
         });
       }
       if (sub.user_id) {

@@ -47,9 +47,9 @@ export default __handler(async (req) => {
           // Send tax form reminder
           await base44.asServiceRole.integrations.Core.SendEmail({
             to: payout.affiliate_email,
-            from_name: 'GamerGain Payroll',
+            from_name: 'Get Goods Gratis Payroll',
             subject: '📋 Tax Form Required for Your Monthly Payout',
-            body: `Hi,\n\nYour ${payout.payout_month} payout of $${payout.net_payout_amount} is ready, but requires a completed tax form.\n\nTax Form Type: ${payout.tax_form_type}\n\nSubmit your form here: https://gamergain.app/PayoutSettings\n\nPayout will process once verified.\n\n— GamerGain Payments`
+            body: `Hi,\n\nYour ${payout.payout_month} payout of $${payout.net_payout_amount} is ready, but requires a completed tax form.\n\nTax Form Type: ${payout.tax_form_type}\n\nSubmit your form here: https://getgoodsgratis.app/PayoutSettings\n\nPayout will process once verified.\n\n— Get Goods Gratis Payments`
           }).catch(() => null);
           skipped++;
           continue;
@@ -94,9 +94,9 @@ export default __handler(async (req) => {
             // Send payout confirmation
             await base44.asServiceRole.integrations.Core.SendEmail({
               to: payout.affiliate_email,
-              from_name: 'GamerGain Payroll',
+              from_name: 'Get Goods Gratis Payroll',
               subject: `✅ Payout Confirmed — $${payout.net_payout_amount}`,
-              body: `Hi,\n\nYour ${payout.payout_month} payout has been processed!\n\nAmount: $${payout.net_payout_amount}\nMethod: ${payout.payment_method}\nTransaction ID: ${paymentResult.transaction_id}\n\nExpected arrival: 1-3 business days\n\n— GamerGain Payments`
+              body: `Hi,\n\nYour ${payout.payout_month} payout has been processed!\n\nAmount: $${payout.net_payout_amount}\nMethod: ${payout.payment_method}\nTransaction ID: ${paymentResult.transaction_id}\n\nExpected arrival: 1-3 business days\n\n— Get Goods Gratis Payments`
             }).catch(() => null);
 
             processed++;
@@ -150,9 +150,9 @@ async function processStripePayment(payout, base44) {
       body: new URLSearchParams({
         amount: Math.round(payout.net_payout_amount * 100),
         currency: 'usd',
-        description: `GamerGain Affiliate Payout ${payout.payout_month}`,
+        description: `Get Goods Gratis Affiliate Payout ${payout.payout_month}`,
         destination: payout.payment_details?.stripe_connect_id || 'default',
-        statement_descriptor: 'GAMERGAIN PAYOUT'
+        statement_descriptor: 'GETGOODSGRATIS PAYOUT'
       })
     });
 
@@ -195,7 +195,7 @@ async function processPayPalPayment(payout, base44) {
       body: JSON.stringify({
         sender_batch_header: {
           sender_batch_id: `GG-${payout.id}`,
-          email_subject: `GamerGain Payout for ${payout.payout_month}`
+          email_subject: `Get Goods Gratis Payout for ${payout.payout_month}`
         },
         items: [{
           recipient_type: 'EMAIL',

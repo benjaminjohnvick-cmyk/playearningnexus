@@ -29,7 +29,7 @@ export async function buildSiteContext(): Promise<string> {
     const wins = (outcomes as any[]).filter((o) => o.verdict === "win").map((o) => `${o.key}(+${o.lift_pct}%)`).slice(0, 10).join(", ");
 
     const text =
-      `GAMERGAIN SITE MODEL (auto-compiled).\n` +
+      `GET GOODS GRATIS SITE MODEL (auto-compiled).\n` +
       `Live metrics: ${JSON.stringify(latest)}.\n` +
       `Learned best setting values: ${best || "(none yet)"}.\n` +
       `Recent winning changes: ${wins || "(none yet)"}.\n` +
@@ -37,7 +37,7 @@ export async function buildSiteContext(): Promise<string> {
     _ctx = { text, at: Date.now() };
     return text;
   } catch {
-    return "GAMERGAIN SITE MODEL (unavailable — proceed with general best practices).";
+    return "GET GOODS GRATIS SITE MODEL (unavailable — proceed with general best practices).";
   }
 }
 

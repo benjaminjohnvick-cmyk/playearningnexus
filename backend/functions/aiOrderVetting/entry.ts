@@ -69,7 +69,7 @@ Order Details:
 Your job:
 1. Determine if this order has been successfully delivered
 2. Check for any delivery anomalies (wrong address, failed delivery, package lost, etc.)
-3. Assess whether GamerGain should release the held funds to complete the transaction
+3. Assess whether Get Goods Gratis should release the held funds to complete the transaction
 4. Provide a vetting decision
 
 Decision options:
@@ -111,7 +111,7 @@ Be conservative — only recommend RELEASE_FUNDS when you are confident delivery
           await base44.asServiceRole.integrations.Core.SendEmail({
             to: order.user_id,
             subject: `Your order has been delivered — ${order.product_name}`,
-            body: `Great news! Your GamerGain order for <strong>${order.product_name}</strong> has been confirmed as delivered by our AI verification system.\n\nYour transaction is now complete. Thank you for shopping with GamerGain!`
+            body: `Great news! Your Get Goods Gratis order for <strong>${order.product_name}</strong> has been confirmed as delivered by our AI verification system.\n\nYour transaction is now complete. Thank you for shopping with Get Goods Gratis!`
           });
 
           results.push({ order_id: order.id, decision: 'FUNDS_RELEASED', product: order.product_name });

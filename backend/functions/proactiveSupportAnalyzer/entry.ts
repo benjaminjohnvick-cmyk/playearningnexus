@@ -22,7 +22,7 @@ export default __handler(async (req) => {
       if (ticket.admin_notes) continue; // already has a response
 
       const aiResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a friendly support agent for GamerGain. Write a short, helpful first response to this ticket.
+        prompt: `You are a friendly support agent for Get Goods Gratis. Write a short, helpful first response to this ticket.
 
 Category: ${ticket.category}
 Subject: ${ticket.subject}
@@ -54,7 +54,7 @@ Return JSON: { "response": "string", "priority": "low|medium|high|urgent", "can_
     ).join('\n');
 
     const digest = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `Analyze these ${openTickets.length} open GamerGain support tickets and identify top 3 pain points. Be concise.
+      prompt: `Analyze these ${openTickets.length} open Get Goods Gratis support tickets and identify top 3 pain points. Be concise.
 
 ${ticketSummary}
 

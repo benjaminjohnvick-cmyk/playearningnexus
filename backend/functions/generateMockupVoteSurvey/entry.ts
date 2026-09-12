@@ -55,7 +55,7 @@ export default __handler(async (req) => {
     // For each item, generate two distinct AI mockup concepts + images in parallel
     const comparisonPromises = items.map(async (item, idx) => {
       const conceptsResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a UX designer for GamerGain, a gaming + survey earnings platform.
+        prompt: `You are a UX designer for Get Goods Gratis, a gaming + survey earnings platform.
 Feature to design: "${item.title}"
 Description: ${item.description}
 User feedback driving this: ${item.source_feedback}
@@ -69,12 +69,12 @@ Return JSON:
   "option_a": {
     "title": "2-4 word name for this design",
     "description": "2 sentence description of what the user sees and how it works",
-    "image_prompt": "Detailed prompt for generating a realistic UI screenshot mockup of this design for GamerGain (a red/white gaming platform). Include layout, elements, colors, style."
+    "image_prompt": "Detailed prompt for generating a realistic UI screenshot mockup of this design for Get Goods Gratis (a red/white gaming platform). Include layout, elements, colors, style."
   },
   "option_b": {
     "title": "2-4 word name for this design",
     "description": "2 sentence description of what the user sees and how it works",
-    "image_prompt": "Detailed prompt for generating a realistic UI screenshot mockup of this design for GamerGain (a red/white gaming platform). Include layout, elements, colors, style."
+    "image_prompt": "Detailed prompt for generating a realistic UI screenshot mockup of this design for Get Goods Gratis (a red/white gaming platform). Include layout, elements, colors, style."
   }
 }`,
         response_json_schema: {
@@ -89,10 +89,10 @@ Return JSON:
       // Generate images in parallel
       const [imgA, imgB] = await Promise.all([
         base44.asServiceRole.integrations.Core.GenerateImage({
-          prompt: conceptsResult.option_a?.image_prompt || `Modern UI mockup for ${item.title} option A, GamerGain gaming platform, red and white theme, clean card-based design`
+          prompt: conceptsResult.option_a?.image_prompt || `Modern UI mockup for ${item.title} option A, Get Goods Gratis gaming platform, red and white theme, clean card-based design`
         }).catch(() => ({ url: null })),
         base44.asServiceRole.integrations.Core.GenerateImage({
-          prompt: conceptsResult.option_b?.image_prompt || `Modern UI mockup for ${item.title} option B, GamerGain gaming platform, dark mode, bold typography`
+          prompt: conceptsResult.option_b?.image_prompt || `Modern UI mockup for ${item.title} option B, Get Goods Gratis gaming platform, dark mode, bold typography`
         }).catch(() => ({ url: null }))
       ]);
 
@@ -126,7 +126,7 @@ Return JSON:
     await base44.asServiceRole.entities.MockupVoteSurvey.update(survey.id, {
       status: 'active',
       title: `Design Vote — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
-      description: 'Vote on these design concepts. The most voted designs get built into GamerGain!',
+      description: 'Vote on these design concepts. The most voted designs get built into Get Goods Gratis!',
       comparisons
     });
 

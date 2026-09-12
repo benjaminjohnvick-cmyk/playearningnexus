@@ -37,8 +37,8 @@ export default __handler(async (req) => {
     if (client.contact_email) {
       await base44.integrations.Core.SendEmail({
         to: client.contact_email,
-        subject: '🎮 Welcome to GamerGain Developer Platform!',
-        body: `Hi ${client.company_name},\n\nWelcome to GamerGain! Your developer account is now active.\n\nNext steps:\n1. Submit your first game for review\n2. Set up your PayPal for revenue payouts\n3. Launch a concept survey to validate your game idea\n\nLogin at gamergain.com/BusinessDashboard\n\nThe GamerGain Team`
+        subject: '🎮 Welcome to Get Goods Gratis Developer Platform!',
+        body: `Hi ${client.company_name},\n\nWelcome to Get Goods Gratis! Your developer account is now active.\n\nNext steps:\n1. Submit your first game for review\n2. Set up your PayPal for revenue payouts\n3. Launch a concept survey to validate your game idea\n\nLogin at getgoodsgratis.com/BusinessDashboard\n\nThe Get Goods Gratis Team`
       });
     }
 

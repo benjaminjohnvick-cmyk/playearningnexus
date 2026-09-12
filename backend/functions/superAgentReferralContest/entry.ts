@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
 /**
- * Super Agent 2: GamerGain Referral & Contest Engine
+ * Super Agent 2: Get Goods Gratis Referral & Contest Engine
  * Orchestrates: processReferralDailyBonus, flagSuspiciousReferrals,
  * referralReengagementEmail, awardReferralJackpotEntries,
  * weeklyContestWinner, headToHeadContestMatchmaker,
@@ -55,7 +55,7 @@ export default __handler(async (req) => {
     let fraudAction = null;
     if (suspicious.length > 5) {
       const aiDecision = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `GamerGain Referral Fraud Assessment:
+        prompt: `Get Goods Gratis Referral Fraud Assessment:
 ${suspicious.length} suspicious referrals detected today.
 Sample: ${JSON.stringify(suspicious.slice(0, 5).map(r => ({ referrer: r.referrer_user_id, referred: r.referred_user_id, status: r.status })))}
 

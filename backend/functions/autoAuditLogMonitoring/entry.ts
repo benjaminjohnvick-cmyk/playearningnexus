@@ -60,7 +60,7 @@ Respond with JSON: { "anomalies_found": boolean, "severity": "low" | "medium" | 
         if (admin.email) {
           await base44.asServiceRole.integrations.Core.SendEmail({
             to: admin.email,
-            subject: `🔴 GamerGain Security Alert: Audit Log Anomaly Detected`,
+            subject: `🔴 Get Goods Gratis Security Alert: Audit Log Anomaly Detected`,
             body: `Daily audit log analysis found concerns:\n\nSeverity: ${summary.severity}\n\n${summary.summary}\n\nPlease review the admin audit dashboard.`,
           });
         }

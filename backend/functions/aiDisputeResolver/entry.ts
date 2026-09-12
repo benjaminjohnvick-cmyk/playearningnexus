@@ -33,7 +33,7 @@ export default __handler(async (req) => {
       const businessClients = await base44.asServiceRole.entities.BusinessClient.filter({ owner_user_id: user.id });
       const businessClient = businessClients[0];
 
-      const prompt = `You are an AI dispute resolution agent for GamerGain platform. A developer has submitted a dispute ticket. Analyze all available evidence and propose a fair resolution.
+      const prompt = `You are an AI dispute resolution agent for Get Goods Gratis platform. A developer has submitted a dispute ticket. Analyze all available evidence and propose a fair resolution.
 
 DISPUTE DETAILS:
 - Ticket ID: ${ticket.id}
@@ -111,8 +111,8 @@ Return JSON:
       await base44.integrations.Core.SendEmail({
         to: user.email,
         subject: `🎮 Dispute Ticket #${ticket.id.slice(-6).toUpperCase()} — AI Analysis Complete`,
-        body: `Hi ${user.full_name},\n\nYour dispute ticket has been analyzed by our AI resolution system.\n\nValidity Score: ${aiAnalysis.validity_score}/100\nResolution Type: ${aiAnalysis.resolution_type}\nEstimated Resolution: ${aiAnalysis.estimated_resolution_days} business days\n\nAI Findings: ${aiAnalysis.resolution_explanation}\n\nNext Steps:\n${(aiAnalysis.resolution_steps || []).map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\n— GamerGain Support`,
-        from_name: 'GamerGain Support',
+        body: `Hi ${user.full_name},\n\nYour dispute ticket has been analyzed by our AI resolution system.\n\nValidity Score: ${aiAnalysis.validity_score}/100\nResolution Type: ${aiAnalysis.resolution_type}\nEstimated Resolution: ${aiAnalysis.estimated_resolution_days} business days\n\nAI Findings: ${aiAnalysis.resolution_explanation}\n\nNext Steps:\n${(aiAnalysis.resolution_steps || []).map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\n— Get Goods Gratis Support`,
+        from_name: 'Get Goods Gratis Support',
       }).catch(() => null);
 
       return Response.json({ success: true, ticket_id: ticket.id, ai_analysis: aiAnalysis });

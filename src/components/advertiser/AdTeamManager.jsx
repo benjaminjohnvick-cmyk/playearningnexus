@@ -54,7 +54,7 @@ export default function AdTeamManager({ userId, userName }) {
     await base44.integrations.Core.SendEmail({
       to: inviteEmail.trim(),
       subject: `${userName} invited you to their Advertiser Dashboard on Get Goods Gratis (Free)`,
-      body: `Hi,\n\n${userName} has invited you to collaborate on their Get Goods Gratis (Free) advertising account as a ${ROLE_LABELS[inviteRole] || inviteRole}.\n\nYour role gives you ${ROLES[inviteRole]?.desc}.\n\nSign in at https://gamergain.app/AdBusinessDashboard to get started.\n\nGet Goods Gratis (Free) Team`,
+      body: `Hi,\n\n${userName} has invited you to collaborate on their Get Goods Gratis (Free) advertising account as a ${ROLE_LABELS[inviteRole] || inviteRole}.\n\nYour role gives you ${ROLES[inviteRole]?.desc}.\n\nSign in at https://getgoodsgratis.app/AdBusinessDashboard to get started.\n\nGet Goods Gratis (Free) Team`,
     }).catch(() => null);
 
     persist([...members, newMember]);

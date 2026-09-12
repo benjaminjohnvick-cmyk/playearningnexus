@@ -42,10 +42,10 @@ export async function createOrder(input: { amountUsd: number; ref?: string; desc
       amount: { currency_code: "USD", value },
       custom_id: input.ref || undefined,
       invoice_id: input.ref ? `ord_${input.ref}_${value}` : undefined,
-      description: (input.description || "GamerGain order").slice(0, 120),
+      description: (input.description || "Get Goods Gratis order").slice(0, 120),
     }],
     application_context: {
-      brand_name: "GamerGain",
+      brand_name: "Get Goods Gratis",
       user_action: "PAY_NOW",
       return_url: siteUrl() ? `${siteUrl()}/paypal/return` : undefined,
       cancel_url: siteUrl() ? `${siteUrl()}/paypal/cancel` : undefined,
@@ -103,7 +103,7 @@ export async function createPayout(input: { email: string; amountUsd: number; no
   const token = await getAccessToken();
   const value = (Math.round((Number(input.amountUsd) || 0) * 100) / 100).toFixed(2);
   const body = {
-    sender_batch_header: { sender_batch_id: `payout_${input.ref || value}_${Date.now()}`, email_subject: "You have a payment from GamerGain" },
+    sender_batch_header: { sender_batch_id: `payout_${input.ref || value}_${Date.now()}`, email_subject: "You have a payment from Get Goods Gratis" },
     items: [{ recipient_type: "EMAIL", amount: { value, currency: "USD" }, receiver: input.email, note: (input.note || "").slice(0, 120), sender_item_id: input.ref || undefined }],
   };
   const res = await fetch(`${apiBase()}/v1/payments/payouts`, {

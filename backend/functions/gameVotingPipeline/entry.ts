@@ -38,7 +38,7 @@ export default __handler(async (req) => {
 
       // Generate game TYPE preference survey via AI
       const typeSurveyData = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are creating a community survey for GamerGain, a gaming + survey earning platform.
+        prompt: `You are creating a community survey for Get Goods Gratis, a gaming + survey earning platform.
 Generate a fun survey asking users which game types/genres they most want to see added.
 Create 6-8 game genre options with catchy descriptions.
 
@@ -62,8 +62,8 @@ Return JSON: {
       // Create developer applications survey
       const appSurvey = await base44.asServiceRole.entities.GameVoteSurvey.create({
         survey_type: 'developer_applications',
-        title: `Vote: Which Games Should Join GamerGain? (${allApps.length} Applicants)`,
-        description: 'These developers want to host their games on GamerGain. Vote for the ones you want to see! Top-ranked games will be added first.',
+        title: `Vote: Which Games Should Join Get Goods Gratis? (${allApps.length} Applicants)`,
+        description: 'These developers want to host their games on Get Goods Gratis. Vote for the ones you want to see! Top-ranked games will be added first.',
         options: appOptions,
         status: 'active',
         total_votes: 0,
@@ -98,11 +98,11 @@ Return JSON: {
 
       for (const app of apps.slice(0, 10)) {
         const review = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `Review this developer application for GamerGain (gaming + survey earning platform):
+          prompt: `Review this developer application for Get Goods Gratis (gaming + survey earning platform):
 Game: "${app.game_title}" (${app.game_category})
 Company: ${app.company_name}
 Description: ${app.game_description}
-Why GamerGain: ${app.why_gamergain}
+Why Get Goods Gratis: ${app.why_getgoodsgratis}
 Monetization: ${app.monetization_model}
 
 Score 0-100 on: fit with platform, potential engagement, quality indicators.
@@ -222,7 +222,7 @@ Return JSON: { "score": number, "notes": "2 sentence review", "recommendation": 
       if (!app) return Response.json({ error: 'Application not found' }, { status: 404 });
 
       const review = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `Review this developer application for GamerGain (gaming + survey earning platform):
+        prompt: `Review this developer application for Get Goods Gratis (gaming + survey earning platform):
 Game: "${app.game_title}" (${app.game_category})
 Company: ${app.company_name}
 Description: ${app.game_description}
@@ -269,7 +269,7 @@ Return JSON: { "score": number, "notes": "2 sentence review", "recommendation": 
 
         // Build AI-enriched survey title/description
         const surveyMeta = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `We have ${allCandidates.length} game developers who applied to host games on GamerGain, a gaming + survey earning platform.
+          prompt: `We have ${allCandidates.length} game developers who applied to host games on Get Goods Gratis, a gaming + survey earning platform.
 Write an exciting community voting survey title and description to hype users about voting.
 Keep it short and energetic. Return JSON: { "title": "string", "description": "string" }`,
           response_json_schema: {
@@ -292,7 +292,7 @@ Keep it short and energetic. Return JSON: { "title": "string", "description": "s
 
         const newSurvey = await base44.asServiceRole.entities.GameVoteSurvey.create({
           survey_type: 'developer_applications',
-          title: surveyMeta.title || `🎮 Vote: Which ${allCandidates.length} Games Join GamerGain?`,
+          title: surveyMeta.title || `🎮 Vote: Which ${allCandidates.length} Games Join Get Goods Gratis?`,
           description: surveyMeta.description || 'The community decides which games get added first!',
           options: appOptions,
           status: 'active',

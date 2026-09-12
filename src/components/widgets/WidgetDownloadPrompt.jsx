@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Download, Trophy, DollarSign, Gift } from 'lucide-react';
 import { toast } from 'sonner';
 
-const DOWNLOADED_KEY = 'gamergain_widget_downloaded';
+const DOWNLOADED_KEY = 'getgoodsgratis_widget_downloaded';
 
 export default function WidgetDownloadPrompt() {
   const [visible, setVisible] = useState(false);
@@ -29,7 +29,7 @@ export default function WidgetDownloadPrompt() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'gamergain-widget.json';
+    a.download = 'getgoodsgratis-widget.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

@@ -54,7 +54,7 @@ export default __handler(async (req) => {
   <tr><td><strong>Triggered At</strong></td><td>${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })} ET</td></tr>
   <tr><td><strong>Activity Link</strong></td><td><a href="${activityLink}">View Earnings Record</a></td></tr>
 </table>
-<p style="color:#6b7280;font-size:12px;">GamerGain platform monitoring — auto-generated alert.</p>
+<p style="color:#6b7280;font-size:12px;">Get Goods Gratis platform monitoring — auto-generated alert.</p>
       `.trim(),
     });
 

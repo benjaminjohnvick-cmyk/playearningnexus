@@ -23,7 +23,7 @@ export default __handler(async (req) => {
     const amount = Number(order.amount) || 0;
     if (amount <= 0) return Response.json({ error: "Nothing to charge on this order" }, { status: 400 });
 
-    const pp = await createOrder({ amountUsd: amount, ref: String(order.id), description: order.item_name || "GamerGain order" });
+    const pp = await createOrder({ amountUsd: amount, ref: String(order.id), description: order.item_name || "Get Goods Gratis order" });
     await db.update("Order", String(order.id), { paypal_order_id: pp.id, paypal_status: pp.status }).catch(() => null);
 
     return Response.json({ configured: true, paypal_order_id: pp.id, approve_url: pp.approve_url, amount_usd: amount });

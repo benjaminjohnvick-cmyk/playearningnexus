@@ -22,7 +22,7 @@ export default __handler(async (req) => {
         user_id: connection.following_user_id,
         type: 'new_follower',
         title: connection.connection_type === 'friend' ? `👥 New Friend Request` : `👁️ New Follower!`,
-        message: `${follower?.full_name || 'Someone'} ${actionWord} on GamerGain!`,
+        message: `${follower?.full_name || 'Someone'} ${actionWord} on Get Goods Gratis!`,
         is_read: false
       });
     }

@@ -116,7 +116,7 @@ export default __handler(async (req) => {
           type: 'partner_game_featured',
           channel: 'partner_exclusive',
           title: `🏆 "${game.title}" is Now Featured!`,
-          message: `Congratulations! The GamerGain community voted "${game.title}" into the Featured section. Your game will now receive prime visibility across the platform.`,
+          message: `Congratulations! The Get Goods Gratis community voted "${game.title}" into the Featured section. Your game will now receive prime visibility across the platform.`,
           related_item_id: game.id,
           action_url: `/GameVotingHub`,
           icon: '🏆',

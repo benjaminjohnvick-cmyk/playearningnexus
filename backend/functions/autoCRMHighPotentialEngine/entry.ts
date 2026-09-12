@@ -47,7 +47,7 @@ Prospect details:
 - Recent news: ${(prospect.recent_news || []).slice(0, 2).join('; ') || 'N/A'}
 - Website: ${prospect.website || 'N/A'}
 
-The email is from GamerGain - a survey/PPC research platform. Reference:
+The email is from Get Goods Gratis - a survey/PPC research platform. Reference:
 1. Their specific industry pain points
 2. Any recent news or funding if available
 3. How survey data can help their business specifically
@@ -109,7 +109,7 @@ Respond in JSON.`,
         to: prospect.contact_email,
         subject: aiResult.subject_line,
         body: aiResult.email_body,
-        from_name: 'GamerGain Partnerships'
+        from_name: 'Get Goods Gratis Partnerships'
       });
 
       results.push({

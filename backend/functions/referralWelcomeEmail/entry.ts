@@ -37,11 +37,11 @@ export default __handler(async (req) => {
     // Send welcome email
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: referredUser.email,
-      subject: `🎉 Welcome to GamerGain — You were invited by ${referrerName}!`,
+      subject: `🎉 Welcome to Get Goods Gratis — You were invited by ${referrerName}!`,
       body: `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;">
   <div style="background:linear-gradient(135deg,#dc2626,#7c3aed);padding:32px;text-align:center;border-radius:12px 12px 0 0;">
-    <h1 style="color:#fff;margin:0;font-size:28px;">Welcome to GamerGain! 🎮</h1>
+    <h1 style="color:#fff;margin:0;font-size:28px;">Welcome to Get Goods Gratis! 🎮</h1>
     <p style="color:rgba(255,255,255,0.85);margin-top:8px;">You were invited by <strong>${referrerName}</strong></p>
   </div>
   <div style="padding:32px;">
@@ -57,13 +57,13 @@ export default __handler(async (req) => {
       <p style="color:#065f46;font-weight:bold;font-size:18px;margin:0;">Earn up to $58,400/yr</p>
       <p style="color:#047857;margin:4px 0 0;font-size:14px;">Surveys + referral commissions + PPC network</p>
     </div>
-    <a href="${globalThis.location?.origin || 'https://app.gamergain.com'}/Surveys" 
+    <a href="${globalThis.location?.origin || 'https://app.getgoodsgratis.com'}/Surveys" 
        style="display:block;background:linear-gradient(135deg,#dc2626,#7c3aed);color:#fff;padding:16px;border-radius:10px;text-align:center;text-decoration:none;font-weight:bold;font-size:16px;">
       Start Earning Now →
     </a>
   </div>
   <div style="padding:16px 32px;border-top:1px solid #e5e7eb;text-align:center;">
-    <p style="color:#9ca3af;font-size:12px;margin:0;">GamerGain · Unsubscribe anytime</p>
+    <p style="color:#9ca3af;font-size:12px;margin:0;">Get Goods Gratis · Unsubscribe anytime</p>
   </div>
 </div>
       `.trim(),

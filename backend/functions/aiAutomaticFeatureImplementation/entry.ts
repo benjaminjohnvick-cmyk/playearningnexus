@@ -89,7 +89,7 @@ Generate a prioritized implementation plan with:
     // Alert admin about auto-deployable items
     if (quickWins.length > 0) {
       await base44.integrations.Core.SendEmail({
-        to: 'admin@gamergain.com',
+        to: 'admin@getgoodsgratis.com',
         subject: `🚀 AI: ${quickWins.length} Quick Win Feature Improvements Ready for Deploy`,
         body: `Quick wins ready for immediate implementation:\n${quickWins.map((q, i) => `${i+1}. ${q}`).join('\n')}\n\nHigh-priority competitive counters:\n${highPriority.slice(0, 3).map((h, i) => `${i+1}. ${h}`).join('\n')}`
       }).catch(() => null);

@@ -21,7 +21,7 @@ export default __handler(async (req) => {
           if (daysSince > 14) {
             const { InvokeLLM } = base44.asServiceRole.integrations.Core;
             const newCopy = await InvokeLLM({
-              prompt: `Generate a fresh, compelling referral campaign message for a gaming rewards app (GamerGain).
+              prompt: `Generate a fresh, compelling referral campaign message for a gaming rewards app (Get Goods Gratis).
 User name: ${user.full_name || 'Gamer'}
 Keep it under 280 characters. Make it exciting. Include the hook "earn real cash playing games".
 Return just the message text, no quotes.`
@@ -41,14 +41,14 @@ Return just the message text, no quotes.`
 
       const { InvokeLLM } = base44.asServiceRole.integrations.Core;
       const message = await InvokeLLM({
-        prompt: `Generate a short compelling referral invite message for GamerGain (gaming rewards app).
+        prompt: `Generate a short compelling referral invite message for Get Goods Gratis (gaming rewards app).
 The user's name is ${user.full_name || 'a gamer'}. Include "use my code ${code}". Under 200 characters. No quotes.`
       });
 
       await base44.asServiceRole.entities.ReferralCampaign.create({
         user_id: user.id,
         referral_code: code,
-        campaign_name: `${user.full_name || 'User'}'s GamerGain Campaign`,
+        campaign_name: `${user.full_name || 'User'}'s Get Goods Gratis Campaign`,
         message,
         status: 'active',
         platform: 'all',

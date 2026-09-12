@@ -20,8 +20,8 @@ export default __handler(async (req) => {
         if (user?.email) {
           await base44.integrations.Core.SendEmail({
             to: user.email,
-            subject: notif.title || 'GamerGain Notification',
-            body: `${notif.message}\n\nLog in to GamerGain to take action.`
+            subject: notif.title || 'Get Goods Gratis Notification',
+            body: `${notif.message}\n\nLog in to Get Goods Gratis to take action.`
           });
         }
       }

@@ -41,7 +41,7 @@ export default __handler(async (req) => {
 
     const out = await Core.InvokeLLM({
       prompt:
-        `You improve the onboarding "Know Your Customer" personalization survey for GamerGain (a play-to-earn ` +
+        `You improve the onboarding "Know Your Customer" personalization survey for Get Goods Gratis (a play-to-earn ` +
         `store + games platform, 18+). GOAL: capture what best personalizes each member's catalog, deals, and ` +
         `recommendations. Keep it SHORT (6-10 questions), warm, and easy. Options for single/multi questions ` +
         `should map to real shopping/gaming interests. Keep stable question ids where the meaning is unchanged; ` +

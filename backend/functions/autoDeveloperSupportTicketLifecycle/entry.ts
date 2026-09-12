@@ -13,7 +13,7 @@ export default __handler(async (req) => {
     if (event?.type === 'create') {
       // AI classify and auto-respond to developer support
       const aiResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are GamerGain developer support AI. A developer submitted a support ticket:
+        prompt: `You are Get Goods Gratis developer support AI. A developer submitted a support ticket:
         Subject: "${ticket.subject}"
         Message: "${ticket.message || ticket.description || ''}"
         Category: "${ticket.category || 'general'}"

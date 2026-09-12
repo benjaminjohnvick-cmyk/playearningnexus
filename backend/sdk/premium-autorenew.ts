@@ -87,19 +87,19 @@ export interface NoticeCopy { subject: string; title: string; message: string; b
 export function premiumAdvanceNoticeCopy(opts: { name: string; renewOnISO: string; advanceDays: number }): NoticeCopy {
   const date = opts.renewOnISO.slice(0, 10);
   return {
-    subject: `Your GamerGain Premium renews on ${date} — ${opts.advanceDays}-day notice`,
+    subject: `Your Get Goods Gratis Premium renews on ${date} — ${opts.advanceDays}-day notice`,
     title: `⏰ Premium renews in ~${opts.advanceDays} days`,
     message: `Your Premium membership is set to auto-renew on ${date}. You can turn off auto-renew any time before then in your account settings — no charge if you cancel.`,
-    body: `Hi ${opts.name || "there"},\n\nThis is your advance renewal reminder: your GamerGain Premium membership is scheduled to auto-renew on ${date}.\n\nYou can turn off auto-renew (cancel) at any time before ${date} from your account settings — the same place you signed up. If you cancel, nothing is charged and your benefits simply end at the current expiry.\n\nYou'll also get a short final reminder before the renewal date.\n\n— Get Goods Gratis (Free)`,
+    body: `Hi ${opts.name || "there"},\n\nThis is your advance renewal reminder: your Get Goods Gratis Premium membership is scheduled to auto-renew on ${date}.\n\nYou can turn off auto-renew (cancel) at any time before ${date} from your account settings — the same place you signed up. If you cancel, nothing is charged and your benefits simply end at the current expiry.\n\nYou'll also get a short final reminder before the renewal date.\n\n— Get Goods Gratis (Free)`,
   };
 }
 
 export function premiumFinalNoticeCopy(opts: { name: string; renewOnISO: string; finalHours: number }): NoticeCopy {
   const date = opts.renewOnISO.slice(0, 10);
   return {
-    subject: `Final notice: your GamerGain Premium renews in ~${opts.finalHours} hours`,
+    subject: `Final notice: your Get Goods Gratis Premium renews in ~${opts.finalHours} hours`,
     title: `🔔 Final reminder — Premium renews soon`,
     message: `Final reminder: your Premium membership auto-renews on ${date}. To cancel, turn off auto-renew now in your account settings — no charge if you cancel.`,
-    body: `Hi ${opts.name || "there"},\n\nFinal reminder (about ${opts.finalHours} hours out): your GamerGain Premium membership auto-renews on ${date}. If you don't want to renew, turn off auto-renew now from your account settings — if you cancel, nothing is charged.\n\n— Get Goods Gratis (Free)`,
+    body: `Hi ${opts.name || "there"},\n\nFinal reminder (about ${opts.finalHours} hours out): your Get Goods Gratis Premium membership auto-renews on ${date}. If you don't want to renew, turn off auto-renew now from your account settings — if you cancel, nothing is charged.\n\n— Get Goods Gratis (Free)`,
   };
 }

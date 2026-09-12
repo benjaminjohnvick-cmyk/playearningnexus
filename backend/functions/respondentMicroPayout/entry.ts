@@ -194,14 +194,14 @@ export default __handler(async (req) => {
           body: JSON.stringify({
             sender_batch_header: {
               sender_batch_id: batchId,
-              email_subject: 'Your GamerGain Survey Earnings!',
-              email_message: `You earned $${newBalance.toFixed(2)} completing surveys on GamerGain. Keep it up!`,
+              email_subject: 'Your Get Goods Gratis Survey Earnings!',
+              email_message: `You earned $${newBalance.toFixed(2)} completing surveys on Get Goods Gratis. Keep it up!`,
             },
             items: [{
               recipient_type: 'EMAIL',
               amount: { value: newBalance.toFixed(2), currency: 'USD' },
               receiver: pref.paypal_email,
-              note: `GamerGain survey earnings — ${survey.title}`,
+              note: `Get Goods Gratis survey earnings — ${survey.title}`,
               sender_item_id: batchId,
             }],
           }),

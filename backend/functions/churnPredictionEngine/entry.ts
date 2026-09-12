@@ -100,7 +100,7 @@ export default __handler(async (req) => {
         .map(m => m.content)
         .join('\n---\n');
 
-      const campaignPrompt = `Generate a personalized retention campaign for this GamerGain user:
+      const campaignPrompt = `Generate a personalized retention campaign for this Get Goods Gratis user:
 
 Name: ${u.full_name || 'User'}
 Churn Risk: ${riskLevel} (score: ${churnScore}/100)
@@ -192,7 +192,7 @@ Return JSON:
           to: u.email,
           subject: campaign.email_subject,
           body: campaign.email_body,
-          from_name: 'GamerGain',
+          from_name: 'Get Goods Gratis',
         });
         await base44.asServiceRole.entities.RetentionCampaign.update(riskRecord.id, {
           email_sent: true,

@@ -28,7 +28,7 @@ export default __handler(async (req) => {
     await base44.asServiceRole.entities.Notification.create({
       user_id: user.id,
       type: 'welcome',
-      title: `🎮 Welcome to GamerGain — up to $${advertised.toLocaleString()} in first-year value!`,
+      title: `🎮 Welcome to Get Goods Gratis — up to $${advertised.toLocaleString()} in first-year value!`,
       message: `You have up to $${welcomeRewards.toLocaleString()} in welcome rewards to spend. Complete your profile, explore surveys, and start earning!`,
       is_read: false
     });
@@ -37,8 +37,8 @@ export default __handler(async (req) => {
     if (user.email) {
       await base44.integrations.Core.SendEmail({
         to: user.email,
-        subject: `🎮 Welcome to GamerGain — up to $${advertised.toLocaleString()} in first-year value`,
-        body: `Hi ${user.full_name || 'Gamer'},\n\nWelcome to GamerGain! As a new member you have up to $${welcomeRewards.toLocaleString()} in welcome rewards to spend, part of up to $${advertised.toLocaleString()} in first-year value.\n\nHere's how to get started:\n1. Complete your profile\n2. Take your first survey and earn cash\n3. Install a featured game for bonus rewards\n4. Invite friends and earn referral commissions\n\nLog in now and start earning: gamergain.com\n\nThe GamerGain Team\n\n---\nWelcome rewards are non-cashable promotional credit that covers up to a set share per order and expires 12 months after signup. "Up to" values reflect the maximum available; actual value depends on your activity. Terms apply.`
+        subject: `🎮 Welcome to Get Goods Gratis — up to $${advertised.toLocaleString()} in first-year value`,
+        body: `Hi ${user.full_name || 'Gamer'},\n\nWelcome to Get Goods Gratis! As a new member you have up to $${welcomeRewards.toLocaleString()} in welcome rewards to spend, part of up to $${advertised.toLocaleString()} in first-year value.\n\nHere's how to get started:\n1. Complete your profile\n2. Take your first survey and earn cash\n3. Install a featured game for bonus rewards\n4. Invite friends and earn referral commissions\n\nLog in now and start earning: getgoodsgratis.com\n\nThe Get Goods Gratis Team\n\n---\nWelcome rewards are non-cashable promotional credit that covers up to a set share per order and expires 12 months after signup. "Up to" values reflect the maximum available; actual value depends on your activity. Terms apply.`
       });
     }
 

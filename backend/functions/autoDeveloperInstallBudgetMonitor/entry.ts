@@ -33,7 +33,7 @@ export default __handler(async (req) => {
       if (devClient.contact_email) {
         await base44.integrations.Core.SendEmail({
           to: devClient.contact_email,
-          subject: `⚠️ GamerGain Install Budget Warning — 80% Used`,
+          subject: `⚠️ Get Goods Gratis Install Budget Warning — 80% Used`,
           body: `Your install campaign for app ${costRecord.app_id} has used 80% of its monthly budget ($${monthlySpent}/$${monthlyBudget}). Please add funds to avoid your campaign being automatically paused.`
         });
       }

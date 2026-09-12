@@ -14,7 +14,7 @@ export default __handler(async (req) => {
 
     if (action === 'generate') {
       // AI generates a tailored pre-launch feedback survey
-      const prompt = `You are a game market research expert. A developer is about to launch a game on GamerGain and wants to test it with users first.
+      const prompt = `You are a game market research expert. A developer is about to launch a game on Get Goods Gratis and wants to test it with users first.
 
 Game Details:
 - Title: ${game_title}

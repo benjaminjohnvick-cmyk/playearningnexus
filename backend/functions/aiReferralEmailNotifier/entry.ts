@@ -50,9 +50,9 @@ Return ONLY the email body text, no subject line needed.`,
       // Send the email
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: referral.referred_email,
-        subject: `${referrer.full_name} thinks you should check out GamerGain 💰`,
+        subject: `${referrer.full_name} thinks you should check out Get Goods Gratis 💰`,
         body: emailResponse,
-        from_name: 'GamerGain Team'
+        from_name: 'Get Goods Gratis Team'
       });
 
       // Log the email send

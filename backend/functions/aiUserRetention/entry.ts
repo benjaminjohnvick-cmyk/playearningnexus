@@ -24,7 +24,7 @@ export default __handler(async (req) => {
 
       const totalEarned = userEarnings.reduce((sum, t) => sum + (t.amount || 0), 0);
 
-      const prompt = `You are a user retention AI for GamerGain. Create a personalized re-engagement message.
+      const prompt = `You are a user retention AI for Get Goods Gratis. Create a personalized re-engagement message.
 
 User: ${user.full_name}
 Days Inactive: ${Math.floor(daysSinceActive)}

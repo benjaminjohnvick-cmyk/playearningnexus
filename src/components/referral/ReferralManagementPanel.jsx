@@ -48,7 +48,7 @@ const SNIPPETS = [
 function SnippetCard({ snippet, referralUrl, userName }) {
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const text = snippet.text(referralUrl || 'https://gamergain.app?ref=YOUR_CODE', userName);
+  const text = snippet.text(referralUrl || 'https://getgoodsgratis.app?ref=YOUR_CODE', userName);
   const Icon = snippet.icon;
 
   const copy = () => {

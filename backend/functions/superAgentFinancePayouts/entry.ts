@@ -3,7 +3,7 @@ import { __handler } from "../../sdk/runtime.ts";
 import { gate } from "../../sdk/oversight.ts";
 
 /**
- * Super Agent 5: GamerGain Finance & Payout Ops Agent
+ * Super Agent 5: Get Goods Gratis Finance & Payout Ops Agent
  * Orchestrates: processAutomatedPayouts, processScheduledPayouts,
  * processWithdrawalRequest (batch pending), calculateDeveloperPayout (all devs),
  * chargeInstallCPI, aiPayoutFraudDetection, aiPayoutScheduler,
@@ -98,7 +98,7 @@ export default __handler(async (req) => {
     const totalPending = pendingPayouts.reduce((s, p) => s + (p.amount || 0), 0);
 
     const riskAssessment = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `GamerGain Finance Super Agent completed a run.
+      prompt: `Get Goods Gratis Finance Super Agent completed a run.
 Dry run: ${dry_run}
 Steps OK: ${Object.keys(results).join(', ')}
 Steps failed: ${Object.keys(errors).join(', ') || 'none'}
@@ -134,9 +134,9 @@ Return JSON: { "financial_health": "stable|watch|critical", "risk_flag": null or
 
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: admin.email,
-          subject: `🚨 GamerGain Finance Alert: ${riskAssessment.financial_health?.toUpperCase()}`,
+          subject: `🚨 Get Goods Gratis Finance Alert: ${riskAssessment.financial_health?.toUpperCase()}`,
           body: `<h2>Finance Agent Alert</h2><p><strong>Status:</strong> ${riskAssessment.financial_health}</p><p>${riskAssessment.summary}</p><p><strong>Risk:</strong> ${riskAssessment.risk_flag || 'See dashboard'}</p><p>Pending payouts: ${pendingPayouts.length} ($${totalPending.toFixed(2)})</p>`,
-          from_name: 'GamerGain Finance AI'
+          from_name: 'Get Goods Gratis Finance AI'
         }).catch(() => {});
       }
     }

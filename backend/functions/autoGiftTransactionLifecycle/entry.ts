@@ -26,7 +26,7 @@ export default __handler(async (req) => {
       if (recipient?.email) {
         await base44.integrations.Core.SendEmail({
           to: recipient.email,
-          subject: `🎁 ${sender?.full_name || 'Someone'} Sent You a Gift on GamerGain!`,
+          subject: `🎁 ${sender?.full_name || 'Someone'} Sent You a Gift on Get Goods Gratis!`,
           body: `You received a gift from ${sender?.full_name || 'a friend'}!\n\nGift: ${gift.gift_type === 'currency' ? `${gift.amount} coins` : gift.item_name}\n${gift.message ? `Personal message: "${gift.message}"` : ''}\n\nLog in to claim your gift!`
         });
       }

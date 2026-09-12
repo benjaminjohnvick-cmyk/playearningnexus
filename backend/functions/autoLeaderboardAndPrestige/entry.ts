@@ -34,7 +34,7 @@ export default __handler(async (req) => {
               prestige_level: 1,
               total_points: entry.score || 0,
               rank: 1,
-              title: 'GamerGain Champion'
+              title: 'Get Goods Gratis Champion'
             });
           } else {
             await base44.asServiceRole.entities.GlobalPrestige.update(existingPrestige[0].id, {

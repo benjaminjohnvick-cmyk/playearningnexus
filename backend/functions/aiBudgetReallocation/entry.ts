@@ -139,9 +139,9 @@ Return the exact budget changes as JSON: { moves: [{ ad_id: string, brand: strin
 
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: email,
-        from_name: 'GamerGain AI Budget Manager',
+        from_name: 'Get Goods Gratis AI Budget Manager',
         subject: `🤖 Daily Budget Reallocation — $${total_shifted.toFixed(2)} shifted across ${applied.length} campaign${applied.length !== 1 ? 's' : ''}`,
-        body: `Hi ${name},\n\nYour AI Budget Manager completed today's reallocation cycle.\n\n━━━━━━━━━━━━━━━\n💰 TOTAL SHIFTED: $${total_shifted.toFixed(2)}\n📊 CAMPAIGNS ADJUSTED: ${applied.length}\n\n${moveLines}\n\n━━━━━━━━━━━━━━━\n🧠 AI SUMMARY\n${summary}\n\nAll changes are live. View your dashboard:\nhttps://gamergain.app/AdBusinessDashboard\n\n⚙️ To adjust thresholds or disable: Dashboard → Advanced → Daily Pacer\n\n— GamerGain AI Budget Manager`,
+        body: `Hi ${name},\n\nYour AI Budget Manager completed today's reallocation cycle.\n\n━━━━━━━━━━━━━━━\n💰 TOTAL SHIFTED: $${total_shifted.toFixed(2)}\n📊 CAMPAIGNS ADJUSTED: ${applied.length}\n\n${moveLines}\n\n━━━━━━━━━━━━━━━\n🧠 AI SUMMARY\n${summary}\n\nAll changes are live. View your dashboard:\nhttps://getgoodsgratis.app/AdBusinessDashboard\n\n⚙️ To adjust thresholds or disable: Dashboard → Advanced → Daily Pacer\n\n— Get Goods Gratis AI Budget Manager`,
       });
     }
 

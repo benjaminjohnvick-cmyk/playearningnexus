@@ -31,7 +31,7 @@ export default __handler(async (req) => {
         user_id: referral.referrer_user_id,
         type: 'referral_converted',
         title: `🎉 Your Referral Signed Up!`,
-        message: `Someone you referred just joined GamerGain! You'll earn commissions as they complete surveys and play games.`,
+        message: `Someone you referred just joined Get Goods Gratis! You'll earn commissions as they complete surveys and play games.`,
         is_read: false
       });
 

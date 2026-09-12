@@ -150,7 +150,7 @@ function SurveyModal({ ad, step, onAnswer, onClose }) {
       >
         {/* Get Goods Gratis (Free).app link at top of modal */}
         <div className="text-center mb-3">
-          <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
+          <a href="https://getgoodsgratis.app" target="_blank" rel="noopener noreferrer"
             className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center justify-center gap-1">
             <Globe className="w-3 h-3" /> Get Goods Gratis (Free).app
           </a>
@@ -218,7 +218,7 @@ function SuccessModal({ ad, onVisit, onBack }) {
         style={{ boxShadow: '0 0 40px rgba(34,197,94,0.25)' }}
       >
         {/* Get Goods Gratis (Free).app link */}
-        <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
+        <a href="https://getgoodsgratis.app" target="_blank" rel="noopener noreferrer"
           className="text-xs text-red-400 font-semibold hover:text-red-300 flex items-center justify-center gap-1 mb-4">
           <Globe className="w-3 h-3" /> Get Goods Gratis (Free).app
         </a>
@@ -387,7 +387,7 @@ export default function GoogleAdsOverlay() {
   };
 
   const handleShareGrid = async () => {
-    const shareText = `🎮 The Get Goods Gratis (Free) Million Dollar Ad Grid — click brand ads, answer 5 questions, earn $0.25 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://gamergain.app/GoogleAdsOverlay`;
+    const shareText = `🎮 The Get Goods Gratis (Free) Million Dollar Ad Grid — click brand ads, answer 5 questions, earn $0.25 per ad!\nFeatured brands: Nike, Apple, Tesla, Netflix & more.\n👉 https://getgoodsgratis.app/GoogleAdsOverlay`;
     if (navigator.share) {
       await navigator.share({ title: 'Get Goods Gratis (Free) Million Dollar Ad Grid', text: shareText });
     } else {
@@ -401,7 +401,7 @@ export default function GoogleAdsOverlay() {
 
       {/* ── Top sticky banner with Get Goods Gratis (Free).app link ── */}
       <div className="bg-red-700 text-center py-2 text-sm font-bold tracking-wide sticky top-0 z-40">
-        🎮 <a href="https://gamergain.app" className="underline hover:text-yellow-300">Get Goods Gratis (Free).app</a>
+        🎮 <a href="https://getgoodsgratis.app" className="underline hover:text-yellow-300">Get Goods Gratis (Free).app</a>
         {' '}— Click an ad · Answer 5 questions ($0.50) · Earn $0.25 · Visit the business
       </div>
 
@@ -424,9 +424,9 @@ export default function GoogleAdsOverlay() {
         </p>
 
         {/* Link to site */}
-        <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
+        <a href="https://getgoodsgratis.app" target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-red-400 font-bold text-sm hover:text-red-300 mb-4">
-          <Globe className="w-4 h-4" /> gamergain.app
+          <Globe className="w-4 h-4" /> getgoodsgratis.app
         </a>
 
         {/* Earned today badge + share button */}
@@ -469,9 +469,9 @@ export default function GoogleAdsOverlay() {
           <p className="text-yellow-300/80 text-xs mt-1">
             Unlock the business info & site link · You earn <strong>$0.25</strong> · Get Goods Gratis (Free) earns <strong>$0.25</strong>
           </p>
-          <a href="https://gamergain.app" target="_blank" rel="noopener noreferrer"
+          <a href="https://getgoodsgratis.app" target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-red-400 text-xs font-bold mt-2 hover:text-red-300">
-            <Globe className="w-3 h-3" /> gamergain.app
+            <Globe className="w-3 h-3" /> getgoodsgratis.app
           </a>
         </div>
 

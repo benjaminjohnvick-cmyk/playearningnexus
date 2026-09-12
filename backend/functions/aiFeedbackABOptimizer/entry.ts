@@ -33,7 +33,7 @@ export default __handler(async (req) => {
         ? feedbackResponses.reduce((s, r) => s + (r.overall_rating || 0), 0) / feedbackResponses.length
         : 0;
 
-      const prompt = `You are an AI product optimizer for GamerGain. Analyze survey feedback and A/B test data to recommend specific site changes.
+      const prompt = `You are an AI product optimizer for Get Goods Gratis. Analyze survey feedback and A/B test data to recommend specific site changes.
 
 PLATFORM FEEDBACK SUMMARY:
 - Average Rating: ${avgRating.toFixed(1)}/5

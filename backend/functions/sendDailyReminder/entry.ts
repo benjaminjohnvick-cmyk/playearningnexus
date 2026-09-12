@@ -39,11 +39,11 @@ export default __handler(async (req) => {
       if (earned >= 3) continue; // Already hit goal today, skip
 
       const remaining = (3 - earned).toFixed(2);
-      const subject = `⏰ GamerGain Daily Reminder – $${remaining} left to reach your goal!`;
+      const subject = `⏰ Get Goods Gratis Daily Reminder – $${remaining} left to reach your goal!`;
       const body = `
-Hi ${user.full_name || 'GamerGainer'},
+Hi ${user.full_name || 'friend'},
 
-Don't forget to complete your daily surveys on GamerGain! 🎮
+Don't forget to complete your daily surveys on Get Goods Gratis! 🎮
 
 Your progress today: $${earned.toFixed(2)} / $3.00 earned
 
@@ -51,13 +51,13 @@ You need just $${remaining} more to unlock the game store for today.
 
 📋 Remember: Each survey pays you 50% of its value. Complete $6 in surveys = $3 earned for you.
 
-👉 Log in now and complete surveys: ${req.headers.get('origin') || 'https://gamergain.app'}/InAppGameStore
+👉 Log in now and complete surveys: ${req.headers.get('origin') || 'https://getgoodsgratis.app'}/InAppGameStore
 
 ---
 🚀 Also, share your referral link and earn $0.25 every time a friend earns $3 in a day!
 
 Happy earning,
-The GamerGain Team
+The Get Goods Gratis Team
       `.trim();
 
       // Try SMS first if phone number is set AND the user has TCPA consent, otherwise send email.
@@ -70,7 +70,7 @@ The GamerGain Team
           const twilioPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
 
           if (twilioSid && twilioToken && twilioPhone) {
-            const smsBody = `GamerGain: You're $${remaining} away from your $3 daily goal! Complete surveys to unlock the store. ${req.headers.get('origin') || 'https://gamergain.app'}/InAppGameStore` + SMS_OPT_OUT_SUFFIX;
+            const smsBody = `Get Goods Gratis: You're $${remaining} away from your $3 daily goal! Complete surveys to unlock the store. ${req.headers.get('origin') || 'https://getgoodsgratis.app'}/InAppGameStore` + SMS_OPT_OUT_SUFFIX;
 
             const smsResponse = await fetch(
               `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`,
@@ -104,7 +104,7 @@ The GamerGain Team
           to: user.email,
           subject,
           body,
-          from_name: 'GamerGain'
+          from_name: 'Get Goods Gratis'
         });
         await base44.asServiceRole.entities.User.update(user.id, { last_automated_email_date: new Date().toISOString() });
         alreadyEmailedToday.add(user.id);

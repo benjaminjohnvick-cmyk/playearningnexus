@@ -16,7 +16,7 @@ export default __handler(async (req) => {
       if (user?.email) {
         await base44.integrations.Core.SendEmail({
           to: user.email,
-          subject: `⭐ Welcome to GamerGain Premium!`,
+          subject: `⭐ Welcome to Get Goods Gratis Premium!`,
           body: `Congratulations ${user.full_name}! Your Premium membership is now active.\n\nBenefits unlocked:\n• Priority survey matching\n• 2x XP on all activities\n• Exclusive premium games\n• Advanced earnings analytics\n• Priority support\n\nYour membership is valid until ${membership.expires_at ? new Date(membership.expires_at).toLocaleDateString() : 'cancelled'}. Enjoy!`
         });
       }
@@ -46,8 +46,8 @@ export default __handler(async (req) => {
         if (user?.email) {
           await base44.integrations.Core.SendEmail({
             to: user.email,
-            subject: `⚠️ Your GamerGain Premium Has Expired`,
-            body: `Your Premium membership has expired. Renew now to keep your premium benefits and avoid losing your priority survey queue position. Visit gamergain.com/Pricing to renew.`
+            subject: `⚠️ Your Get Goods Gratis Premium Has Expired`,
+            body: `Your Premium membership has expired. Renew now to keep your premium benefits and avoid losing your priority survey queue position. Visit getgoodsgratis.com/Pricing to renew.`
           });
         }
         if (membership.user_id) {

@@ -39,7 +39,7 @@ export default function SocialShareButtons({ imageUrl, caption, platform = null 
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `gamergain-${Date.now()}.png`;
+      link.download = `getgoodsgratis-${Date.now()}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

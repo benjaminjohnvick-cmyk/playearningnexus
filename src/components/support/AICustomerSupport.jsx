@@ -99,7 +99,7 @@ export default function AICustomerSupport({ isOpen, onClose, user }) {
       toast.error('Failed to send message');
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: "I'm having trouble processing your request. Please try again or contact support@gamergain.com",
+        content: "I'm having trouble processing your request. Please try again or contact support@getgoodsgratis.com",
         timestamp: new Date(),
         error: true
       }]);

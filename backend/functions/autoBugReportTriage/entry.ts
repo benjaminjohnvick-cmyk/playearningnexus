@@ -42,7 +42,7 @@ export default __handler(async (req) => {
 
       // AI triage: classify severity, suggest fix, notify dev team
       const triage = await base44.integrations.Core.InvokeLLM({
-        prompt: `Triage this bug report for GamerGain gaming platform:
+        prompt: `Triage this bug report for Get Goods Gratis gaming platform:
         Title: "${report.title || report.description?.substring(0, 80)}"
         Description: "${report.description}"
         Page/Area: "${report.page || 'unknown'}"
@@ -106,7 +106,7 @@ export default __handler(async (req) => {
           await base44.integrations.Core.SendEmail({
             to: user.email,
             subject: '✅ Your bug report has been resolved!',
-            body: `Great news! The issue you reported has been fixed. Thank you for helping us improve GamerGain! As a thank-you, we've added a small bonus to your account.`
+            body: `Great news! The issue you reported has been fixed. Thank you for helping us improve Get Goods Gratis! As a thank-you, we've added a small bonus to your account.`
           });
         }
         // Reward bug reporter

@@ -101,7 +101,7 @@ export default __handler(async (req) => {
           const samples = await sampleListingsForInterests(interests, country, 6);
           const out = await Core.InvokeLLM({
             prompt:
-              `You are GamerGain's friendly catalog shopping assistant greeting a member as they open the store. ` +
+              `You are Get Goods Gratis's friendly catalog shopping assistant greeting a member as they open the store. ` +
               `${returning ? "This is a RETURNING member — greet them like you remember them and reference what you know, then ask how you can help today." : "Greet them warmly by first name, reference their interests, and ASK what they're looking for today."} ` +
               `One or two sentences, no lists.\n\n` +
               `First name: ${name}\nTheir KYC preferences: ${kycText}\n${mem ? mem + "\n" : ""}${site}\n` +
@@ -134,7 +134,7 @@ export default __handler(async (req) => {
 
     const replyRaw = await Core.InvokeLLM({
       prompt:
-        `You are GamerGain's catalog shopping assistant. Help the member find products in OUR store, tailored to them. ` +
+        `You are Get Goods Gratis's catalog shopping assistant. Help the member find products in OUR store, tailored to them. ` +
         `Be concise, warm, and genuinely useful; use what you REMEMBER about this member to personalize; suggest categories ` +
         `and specific items when relevant; encourage exploring and purchasing without being pushy; never make ` +
         `guaranteed-earnings claims. If nothing in the catalog fits, suggest the closest categories or the neutral product ` +

@@ -14,7 +14,7 @@ const SHARE_MESSAGES = {
   twitter: [
     (link) => `🎮 I'm earning real money playing games & taking surveys on Get Goods Gratis (Free)! Join me and we BOTH get rewarded 💰 → ${link} #GetGoodsGratis #EarnOnline`,
     (link) => `Imagine getting paid to play games 🕹️ That's Get Goods Gratis (Free). Use my link and start earning today → ${link}`,
-    (link) => `Just hit another referral milestone on @GamerGainApp 🏆 You can earn too — ${link} #PassiveIncome #Gamers`,
+    (link) => `Just hit another referral milestone on @GetGoodsGratis 🏆 You can earn too — ${link} #PassiveIncome #Gamers`,
   ],
   facebook: [
     (link) => `🎮 I've been using Get Goods Gratis (Free) to earn money by playing games and completing surveys, and it's been amazing!\n\nSign up with my link and we both get a bonus when you start earning:\n👉 ${link}\n\nLet's grow together! 💰`,
@@ -75,7 +75,7 @@ export default function SocialShareHub({ user, referralLink }) {
     enabled: !!user,
   });
 
-  const link = referralLink || `https://gamergain.app/ref/${user?.id?.slice(0, 8)}`;
+  const link = referralLink || `https://getgoodsgratis.app/ref/${user?.id?.slice(0, 8)}`;
 
   const twitterMessage = SHARE_MESSAGES.twitter[msgIdx % SHARE_MESSAGES.twitter.length](link);
   const facebookMessage = SHARE_MESSAGES.facebook[msgIdx % SHARE_MESSAGES.facebook.length](link);

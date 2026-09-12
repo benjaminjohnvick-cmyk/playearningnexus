@@ -29,7 +29,7 @@ export default __handler(async (req) => {
       avg_survey_payout: avgSurveyPayout,
     };
 
-    const prompt = `You are a viral social media content creator for GamerGain — a platform where users earn real money completing surveys and gaming.
+    const prompt = `You are a viral social media content creator for Get Goods Gratis — a platform where users earn real money completing surveys and gaming.
 
 Platform Data:
 ${JSON.stringify(contextData, null, 2)}

@@ -23,7 +23,7 @@ export default __handler(async (req) => {
       const cleaned = emailLocal.replace(/[._\-0-9]+/g, ' ').trim();
       const words = cleaned.split(' ').filter(Boolean);
       const generated = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-      updates.full_name = generated || 'GamerGain User';
+      updates.full_name = generated || 'Get Goods Gratis User';
     }
 
     // Auto-assign role if missing

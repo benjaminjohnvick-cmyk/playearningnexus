@@ -25,14 +25,14 @@ export default __handler(async (req) => {
         user_id: u.id,
         type: 'weekly_top_earner',
         title: `${titles[i]} — $${prizes[i]} Bonus!`,
-        message: `Congratulations! You were one of GamerGain's top earners this week and earned a $${prizes[i]} bonus!`,
+        message: `Congratulations! You were one of Get Goods Gratis's top earners this week and earned a $${prizes[i]} bonus!`,
         is_read: false
       });
       if (u.email) {
         await base44.integrations.Core.SendEmail({
           to: u.email,
           subject: `🏆 ${titles[i]} — $${prizes[i]} Bonus Earned!`,
-          body: `Congratulations ${u.full_name}! You ranked #${i + 1} among all GamerGain earners this week and earned a $${prizes[i]} cash bonus, now in your account balance. Keep it up!`
+          body: `Congratulations ${u.full_name}! You ranked #${i + 1} among all Get Goods Gratis earners this week and earned a $${prizes[i]} cash bonus, now in your account balance. Keep it up!`
         });
       }
       results.push(`rewarded_rank_${i + 1}`);

@@ -85,15 +85,15 @@ export default __handler(async (req) => {
     const payload = {
       sender_batch_header: {
         sender_batch_id: batchId,
-        email_subject: 'Your GamerGain Payout Has Arrived!',
-        email_message: `Your GamerGain earnings of $${wh.net.toFixed(2)} have been sent to your Venmo account.`,
+        email_subject: 'Your Get Goods Gratis Payout Has Arrived!',
+        email_message: `Your Get Goods Gratis earnings of $${wh.net.toFixed(2)} have been sent to your Venmo account.`,
       },
       items: [
         {
           recipient_type: recipientType,
           amount: { value: wh.net.toFixed(2), currency },
           receiver: recipientValue,
-          note: 'GamerGain earnings payout',
+          note: 'Get Goods Gratis earnings payout',
           sender_item_id: payoutId,
         },
       ],

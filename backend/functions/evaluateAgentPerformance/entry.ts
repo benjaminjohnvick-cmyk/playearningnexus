@@ -125,7 +125,7 @@ export default __handler(async (req) => {
       let learningResult;
       try {
         learningResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `You are an AI meta-learning system for the "${agentName}" agent on GamerGain platform.
+          prompt: `You are an AI meta-learning system for the "${agentName}" agent on Get Goods Gratis platform.
 
 PERFORMANCE METRICS (last ${logs.length} actions):
 - Accuracy rate: ${accuracyRate !== null ? accuracyRate + '%' : 'not enough verified data'}

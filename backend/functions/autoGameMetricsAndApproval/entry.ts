@@ -14,7 +14,7 @@ export default __handler(async (req) => {
 
       const { InvokeLLM } = base44.asServiceRole.integrations.Core;
       const review = await InvokeLLM({
-        prompt: `Review this game submission for the GamerGain platform and decide if it should be approved or rejected.
+        prompt: `Review this game submission for the Get Goods Gratis platform and decide if it should be approved or rejected.
 Game Title: ${game.title}
 Description: ${game.description}
 Category: ${game.category}

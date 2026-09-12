@@ -43,7 +43,7 @@ export default __handler(async (req) => {
       : null;
 
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are a fraud and dispute analyst AI for GamerGain. Your job is to deeply cross-reference evidence with platform data.
+      prompt: `You are a fraud and dispute analyst AI for Get Goods Gratis. Your job is to deeply cross-reference evidence with platform data.
 
 DISPUTE DETAILS:
 - Type: ${dispute.dispute_type}

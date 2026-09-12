@@ -73,7 +73,7 @@ Provide:
     // Send alert if critical
     if (optimization.data.health_status === 'critical' || optimization.data.capacity_warning) {
       await base44.integrations.Core.SendEmail({
-        to: 'admin@gamergain.com',
+        to: 'admin@getgoodsgratis.com',
         subject: `⚠️ CRITICAL: Platform Performance Issue Detected`,
         body: `Health Status: ${optimization.data.health_status}\n\nBottlenecks:\n${optimization.data.bottlenecks.join('\n')}\n\nImmediate Actions Required:\n${optimization.data.immediate_actions.join('\n')}`
       });

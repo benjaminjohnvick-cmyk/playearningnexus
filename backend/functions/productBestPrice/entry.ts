@@ -49,7 +49,7 @@ export default __handler(async (req) => {
       .filter((l) => picked ? String(l.id) === String(picked!.id) || String(l.title || "").toLowerCase().includes(q) : String(l.title || "").toLowerCase().includes(q))
       .slice(0, 25)
       .map((l) => ({
-        source: "first_party", seller: "GamerGain Store", title: String(l.title || ""), listing_id: String(l.id),
+        source: "first_party", seller: "Get Goods Gratis Store", title: String(l.title || ""), listing_id: String(l.id),
         item_price_usd: Number(l.price_usd) || 0, tax_usd: Number(l.tax_usd) || 0, shipping_usd: Number(l.shipping_usd) || 0,
         existing_discount_usd: Number(l.sale_discount_usd) || 0, currency: "USD",
       }));

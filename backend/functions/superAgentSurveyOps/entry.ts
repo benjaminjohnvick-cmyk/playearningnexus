@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
 /**
- * Super Agent 1: GamerGain Survey Operations Agent
+ * Super Agent 1: Get Goods Gratis Survey Operations Agent
  * Orchestrates all survey lifecycle functions:
  * surveyHealthMonitor, surveyQualityAutoScan, surveyQualityMonitor,
  * dailyAISurveyGenerator, processSurveySchedules, scheduleSurveyDistribution,
@@ -53,7 +53,7 @@ export default __handler(async (req) => {
     // AI health assessment
     const hasAlerts = Object.keys(errors).length > 0;
     const assessment = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: `You are the GamerGain Survey Operations Super Agent. Analyze this run result and determine if any escalation is needed.
+      prompt: `You are the Get Goods Gratis Survey Operations Super Agent. Analyze this run result and determine if any escalation is needed.
 
 Steps completed: ${Object.keys(results).join(', ')}
 Steps failed: ${Object.keys(errors).join(', ') || 'none'}

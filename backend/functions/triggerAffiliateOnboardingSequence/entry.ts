@@ -28,8 +28,8 @@ export default __handler(async (req) => {
       starter: [
         {
           day: 0,
-          subject: `Welcome to GamerGain Affiliate Program - ${onboarding.assigned_tier.charAt(0).toUpperCase() + onboarding.assigned_tier.slice(1)} Tier`,
-          body: `Hi ${user.full_name || 'Affiliate'},\n\nCongrats! You've been assigned to our ${onboarding.assigned_tier.toUpperCase()} Tier based on your reach of ${onboarding.social_media_reach.total_reach.toLocaleString()} followers.\n\nYour personalized goals have been set. Focus on hitting these targets to advance your tier.\n\nLet's build this together!\n\nBest,\nGamerGain Team`
+          subject: `Welcome to Get Goods Gratis Affiliate Program - ${onboarding.assigned_tier.charAt(0).toUpperCase() + onboarding.assigned_tier.slice(1)} Tier`,
+          body: `Hi ${user.full_name || 'Affiliate'},\n\nCongrats! You've been assigned to our ${onboarding.assigned_tier.toUpperCase()} Tier based on your reach of ${onboarding.social_media_reach.total_reach.toLocaleString()} followers.\n\nYour personalized goals have been set. Focus on hitting these targets to advance your tier.\n\nLet's build this together!\n\nBest,\nGet Goods Gratis Team`
         },
         {
           day: 3,
@@ -50,7 +50,7 @@ export default __handler(async (req) => {
       growth: [
         {
           day: 0,
-          subject: `Welcome to GamerGain - ${onboarding.assigned_tier.toUpperCase()} Tier Affiliate`,
+          subject: `Welcome to Get Goods Gratis - ${onboarding.assigned_tier.toUpperCase()} Tier Affiliate`,
           body: `Excited to have you, ${user.full_name || 'Affiliate'}! Your ${onboarding.social_media_reach.total_reach.toLocaleString()}-follower reach qualifies you for GROWTH Tier.\n\nThis tier includes premium campaigns and higher commissions.\n\nYour personalized goals are live.`
         },
         {
@@ -94,7 +94,7 @@ export default __handler(async (req) => {
         to: onboarding.affiliate_email,
         subject: firstEmail.subject,
         body: firstEmail.body,
-        from_name: 'GamerGain Affiliates'
+        from_name: 'Get Goods Gratis Affiliates'
       });
     }
 

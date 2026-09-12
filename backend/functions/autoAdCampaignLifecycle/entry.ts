@@ -15,7 +15,7 @@ export default __handler(async (req) => {
       // Generate AI suggestions if not already present
       if (!campaign.ai_suggestions?.generated_at) {
         const aiResult = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are an ad campaign optimization AI for GamerGain gaming platform.
+          prompt: `You are an ad campaign optimization AI for Get Goods Gratis gaming platform.
           New campaign created: "${campaign.name}", objective: ${campaign.objective}, budget: $${campaign.budget_total}, daily: $${campaign.budget_daily}.
           Demographics: ${JSON.stringify(campaign.demographics || {})}.
           Provide: recommended_bid (number), audience_score (0-100), predicted_ctr (0.01-0.15), predicted_conversions (number), optimization_tips (3 strings).`,

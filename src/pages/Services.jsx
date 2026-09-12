@@ -12,7 +12,7 @@ import {
 // plus the opt-in shopping extension as SERVICES the platform offers. Marketing only: no lead form, no
 // backend — a contact email is the call to action. Each card names what's live vs. what's a foundation.
 
-const CONTACT_EMAIL = 'partnerships@gamergain.example';   // TODO: replace with your real partnerships inbox
+const CONTACT_EMAIL = 'partnerships@getgoodsgratis.example';   // TODO: replace with your real partnerships inbox
 
 const SERVICES = [
   {

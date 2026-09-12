@@ -33,7 +33,7 @@ export default function ContentLibraryBrowser({ user }) {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('all');
 
-  const referralLink = `https://gamergain.app/ref/${user?.id?.slice(0, 8) || 'yourcode'}`;
+  const referralLink = `https://getgoodsgratis.app/ref/${user?.id?.slice(0, 8) || 'yourcode'}`;
 
   const { data: assets = [], isLoading } = useQuery({
     queryKey: ['content-assets'],

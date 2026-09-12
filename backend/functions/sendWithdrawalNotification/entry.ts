@@ -29,7 +29,7 @@ export default __handler(async (req) => {
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: user.email,
       subject: `✅ Your $${amount} withdrawal is complete!`,
-      body: `Hi ${user.full_name || 'there'},\n\nGreat news! Your withdrawal of $${amount} via ${method} has been processed and is on its way to you.\n\nTransaction ID: ${data.id || 'N/A'}\nAmount: $${amount}\nMethod: ${method}\n\nThank you for using GamerGain!\n\n— The GamerGain Team`,
+      body: `Hi ${user.full_name || 'there'},\n\nGreat news! Your withdrawal of $${amount} via ${method} has been processed and is on its way to you.\n\nTransaction ID: ${data.id || 'N/A'}\nAmount: $${amount}\nMethod: ${method}\n\nThank you for using Get Goods Gratis!\n\n— The Get Goods Gratis Team`,
     });
 
     return Response.json({ ok: true, message: `Email sent to ${user.email}` });

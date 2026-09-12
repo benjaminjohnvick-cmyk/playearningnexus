@@ -35,7 +35,7 @@ export default function DeveloperSDK({ developer }) {
 
   const codeExamples = {
     analytics: `// Track custom event
-fetch('https://api.gamergain.com/v1/analytics/event', {
+fetch('https://api.getgoodsgratis.com/v1/analytics/event', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer ${apiKey}',
@@ -53,7 +53,7 @@ fetch('https://api.gamergain.com/v1/analytics/event', {
   })
 });`,
     iap: `// Process in-game purchase
-fetch('https://api.gamergain.com/v1/purchases', {
+fetch('https://api.getgoodsgratis.com/v1/purchases', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer ${apiKey}',
@@ -68,7 +68,7 @@ fetch('https://api.gamergain.com/v1/purchases', {
   })
 });`,
     userProfile: `// Get user profile
-fetch('https://api.gamergain.com/v1/users/{user_id}', {
+fetch('https://api.getgoodsgratis.com/v1/users/{user_id}', {
   headers: {
     'Authorization': 'Bearer ${apiKey}'
   }

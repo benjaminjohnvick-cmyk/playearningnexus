@@ -152,14 +152,14 @@ For each flagged response return its id and detected issues. Only flag responses
           `Reason: ${reject_reason || 'Response quality did not meet standards'}\n\n` +
           `A dispute has been automatically opened on your behalf (Dispute ID: ${dispute.id.slice(-6).toUpperCase()}).\n\n` +
           `You may appeal this decision by visiting the Dispute Center. If your appeal is approved, any withheld earnings will be reinstated.\n\n` +
-          `<a href="/DisputeCenter">Go to Dispute Center →</a>\n\n— GamerGain Quality Team`
+          `<a href="/DisputeCenter">Go to Dispute Center →</a>\n\n— Get Goods Gratis Quality Team`
       }).catch(() => {});
 
       // Notify business client confirmation
       await base44.integrations.Core.SendEmail({
         to: user.email,
         subject: '✅ Response Rejected & Dispute Opened',
-        body: `Response ${response_id.slice(-6).toUpperCase()} has been rejected and flagged.\n\nThe respondent has been notified and a dispute ticket (${dispute.id.slice(-6).toUpperCase()}) has been opened for their appeal.\n\n— GamerGain Audit System`
+        body: `Response ${response_id.slice(-6).toUpperCase()} has been rejected and flagged.\n\nThe respondent has been notified and a dispute ticket (${dispute.id.slice(-6).toUpperCase()}) has been opened for their appeal.\n\n— Get Goods Gratis Audit System`
       }).catch(() => {});
 
       return Response.json({ success: true, dispute_id: dispute.id, response_id });

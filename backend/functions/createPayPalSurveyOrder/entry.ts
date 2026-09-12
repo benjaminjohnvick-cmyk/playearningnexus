@@ -38,9 +38,9 @@ export default __handler(async (req) => {
         custom_id: user.id,
       }],
       application_context: {
-        return_url: returnUrl || 'https://gamergain.com/Surveys?paypal=success',
-        cancel_url: cancelUrl || 'https://gamergain.com/Surveys?paypal=cancel',
-        brand_name: 'GamerGain',
+        return_url: returnUrl || 'https://getgoodsgratis.com/Surveys?paypal=success',
+        cancel_url: cancelUrl || 'https://getgoodsgratis.com/Surveys?paypal=cancel',
+        brand_name: 'Get Goods Gratis',
         user_action: 'PAY_NOW',
       },
     };

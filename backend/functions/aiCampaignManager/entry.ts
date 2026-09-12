@@ -14,7 +14,7 @@ export default __handler(async (req) => {
       if (!campaign.ai_bid_enabled) continue;
       const perf = campaign.performance || {};
       const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `AI bidding optimizer for GamerGain ad campaign "${campaign.name}".
+        prompt: `AI bidding optimizer for Get Goods Gratis ad campaign "${campaign.name}".
         Current bid: $${campaign.bid_amount || 0}, Impressions: ${perf.impressions || 0}, Clicks: ${perf.clicks || 0}, Conversions: ${perf.conversions || 0}, CTR: ${(perf.ctr || 0).toFixed(3)}%, ROAS: ${perf.roas || 0}x.
         Return a recommended_bid (number) and optimization_tips (array of 3 strings).`,
         response_json_schema: {
@@ -50,7 +50,7 @@ export default __handler(async (req) => {
   if (action === 'generate_campaign') {
     // AI-assisted campaign creation based on target demographics
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are an expert digital advertising strategist for GamerGain, a gaming/survey rewards platform.
+      prompt: `You are an expert digital advertising strategist for Get Goods Gratis, a gaming/survey rewards platform.
       
       Generate a complete, optimized ad campaign based on:
       - Objective: ${objective}
@@ -67,7 +67,7 @@ export default __handler(async (req) => {
       7. Best platforms to target (from: facebook, instagram, twitter, tiktok, snapchat, in_app)
       8. Interest targeting keywords relevant to gaming/survey audience
       
-      Be specific and data-driven. Tailor everything to the GamerGain gaming audience.`,
+      Be specific and data-driven. Tailor everything to the Get Goods Gratis gaming audience.`,
       response_json_schema: {
         type: "object",
         properties: {
@@ -98,7 +98,7 @@ export default __handler(async (req) => {
 
     const perf = campaign.performance || {};
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are an AI bidding optimizer for digital ad campaigns on GamerGain platform.
+      prompt: `You are an AI bidding optimizer for digital ad campaigns on Get Goods Gratis platform.
 
       Campaign Performance Data:
       - Current Bid: $${campaign.bid_amount || 0}
@@ -166,7 +166,7 @@ export default __handler(async (req) => {
     const recentUsers = await base44.asServiceRole.entities.User.list('-created_date', 50);
 
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `Analyze LTV and churn insights for an ad campaign on GamerGain gaming platform.
+      prompt: `Analyze LTV and churn insights for an ad campaign on Get Goods Gratis gaming platform.
 
       Campaign: ${campaign?.name}
       Objective: ${campaign?.objective}

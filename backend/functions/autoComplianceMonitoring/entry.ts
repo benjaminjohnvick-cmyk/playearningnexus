@@ -57,7 +57,7 @@ export default __handler(async (req) => {
 
       // Notify compliance team
       await base44.integrations.Core.SendEmail({
-        to: 'compliance@gamergain.com',
+        to: 'compliance@getgoodsgratis.com',
         subject: `⚠️ Compliance Issues Detected: ${violations.length} violations`,
         body: `${violations.length} compliance violations detected and logged for review.`
       });

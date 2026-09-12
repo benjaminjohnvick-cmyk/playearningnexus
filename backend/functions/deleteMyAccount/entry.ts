@@ -19,7 +19,7 @@ export default __handler(async (req) => {
 
     await recordConsent({ user_id: user.id, kind: "dsar_delete_request", accepted: true }).catch(() => null);
 
-    const anonEmail = `deleted+${user.id}@deleted.gamergain.local`;
+    const anonEmail = `deleted+${user.id}@deleted.getgoodsgratis.local`;
     await db.update("User", user.id as string, {
       email: anonEmail,
       full_name: "Deleted User",

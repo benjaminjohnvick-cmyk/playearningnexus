@@ -66,7 +66,7 @@ export default __handler(async (req) => {
       let campaignData;
       try {
         campaignData = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `You are a retention specialist for GamerGain, a survey-earning platform for gamers.
+          prompt: `You are a retention specialist for Get Goods Gratis, a survey-earning platform for gamers.
 
 USER PROFILE:
 - Name: ${risk.user_name || user.full_name}
@@ -110,8 +110,8 @@ Return JSON with:
       } catch (_) {
         campaignData = {
           email_subject: `${risk.user_name || user.full_name}, we have a special offer for you!`,
-          email_body: `<p>Hi ${risk.user_name || user.full_name},</p><p>We noticed you haven't been active lately. Come back and earn — new high-paying surveys are waiting for you!</p><p>Your GamerGain balance: $${(risk.lifetime_value || 0).toFixed(2)}</p>`,
-          sms_message: `GamerGain: New surveys available! Earn up to $5 today. Login now: gamergain.app`,
+          email_body: `<p>Hi ${risk.user_name || user.full_name},</p><p>We noticed you haven't been active lately. Come back and earn — new high-paying surveys are waiting for you!</p><p>Your Get Goods Gratis balance: $${(risk.lifetime_value || 0).toFixed(2)}</p>`,
+          sms_message: `Get Goods Gratis: New surveys available! Earn up to $5 today. Login now: getgoodsgratis.app`,
           offer_type: 'double_earnings',
           offer_value: risk.risk_level === 'critical' ? 5 : 2,
           predicted_outcome: 'uncertain'
@@ -155,7 +155,7 @@ Return JSON with:
             to: user.email,
             subject: campaignData.email_subject,
             body: campaignData.email_body,
-            from_name: 'GamerGain Team'
+            from_name: 'Get Goods Gratis Team'
           });
           emailOk = true;
           emailsSent++;

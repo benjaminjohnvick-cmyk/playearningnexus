@@ -29,7 +29,7 @@ export default __handler(async (req) => {
       .join(', ');
 
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are an AI growth content analyst for GamerGain, a platform where users earn money through gaming, surveys, and social media affiliate marketing.
+      prompt: `You are an AI growth content analyst for Get Goods Gratis, a platform where users earn money through gaming, surveys, and social media affiliate marketing.
 
 REAL PLATFORM DATA:
 Top performing posts (last 20):

@@ -25,11 +25,11 @@ const BUSINESS_ADS = [
 const GRID_AD_BRANDS = BUSINESS_ADS.map(a => a.brand).join(', ');
 
 const PLATFORM_PROMPTS = {
-  facebook: (ads, postNum) => `Write a ${postNum === 1 ? 'morning' : 'evening'} Facebook post promoting GamerGain.app's Million Dollar Ad Grid — a mosaic of brand thumbnails (like the original Million Dollar Homepage) featuring ${ads.slice(0,5).map(a=>a.brand).join(', ')} and more. Users click any ad thumbnail, answer 4 survey questions worth $0.10 each ($0.40 total), earn $0.20 cash, then visit the business. Keep it under 180 chars, exciting tone. End with: 👉 gamergain.app/GoogleAdsOverlay — No markdown.`,
-  twitter: (ads, postNum) => `Write a ${postNum === 1 ? 'morning' : 'evening'} tweet (max 260 chars) about GamerGain.app's Million Dollar Ad Grid. Brands: ${ads.slice(0,4).map(a=>a.brand).join(', ')} & more. Click a thumbnail → answer 4 survey questions ($0.40 total) → earn $0.20 → visit the business. Include hashtags #MillionDollarHomepage #EarnMoney #GamerGain. End with gamergain.app/GoogleAdsOverlay`,
-  instagram: (ads, postNum) => `Write an ${postNum === 1 ? 'AM' : 'PM'} Instagram caption (under 220 chars) with emojis for GamerGain.app's Million Dollar Ad Grid post. A mosaic image of brand ads (${ads.slice(0,5).map(a=>a.brand).join(', ')}...). Tap a thumbnail → answer 4 questions ($0.40) → earn $0.20 💰 → get the business link. Include 5 hashtags. End with: 🔗 gamergain.app/GoogleAdsOverlay`,
-  snapchat: (ads, postNum) => `Write a short punchy Snapchat caption (under 120 chars) for GamerGain.app's ad grid image. Tap brand ads like ${ads.slice(0,3).map(a=>a.brand).join(', ')}, answer quick questions, earn real cash! 🔥 gamergain.app Post ${postNum}.`,
-  tiktok: (ads, postNum) => `Write a TikTok caption (under 160 chars) for a video showing the GamerGain Million Dollar Ad Grid — ${ads.slice(0,4).map(a=>a.brand).join(', ')} & more. Click ads, take 4 quick surveys ($0.40), earn $0.20 each! Trending hashtags: #MillionDollarHomepage #EarnMoney #SideHustle #GamerGain #TikTokMadeMeDoIt. Link: gamergain.app/GoogleAdsOverlay Post ${postNum}.`,
+  facebook: (ads, postNum) => `Write a ${postNum === 1 ? 'morning' : 'evening'} Facebook post promoting getgoodsgratis.app's Million Dollar Ad Grid — a mosaic of brand thumbnails (like the original Million Dollar Homepage) featuring ${ads.slice(0,5).map(a=>a.brand).join(', ')} and more. Users click any ad thumbnail, answer 4 survey questions worth $0.10 each ($0.40 total), earn $0.20 cash, then visit the business. Keep it under 180 chars, exciting tone. End with: 👉 getgoodsgratis.app/GoogleAdsOverlay — No markdown.`,
+  twitter: (ads, postNum) => `Write a ${postNum === 1 ? 'morning' : 'evening'} tweet (max 260 chars) about getgoodsgratis.app's Million Dollar Ad Grid. Brands: ${ads.slice(0,4).map(a=>a.brand).join(', ')} & more. Click a thumbnail → answer 4 survey questions ($0.40 total) → earn $0.20 → visit the business. Include hashtags #MillionDollarHomepage #EarnMoney #GetGoodsGratis. End with getgoodsgratis.app/GoogleAdsOverlay`,
+  instagram: (ads, postNum) => `Write an ${postNum === 1 ? 'AM' : 'PM'} Instagram caption (under 220 chars) with emojis for getgoodsgratis.app's Million Dollar Ad Grid post. A mosaic image of brand ads (${ads.slice(0,5).map(a=>a.brand).join(', ')}...). Tap a thumbnail → answer 4 questions ($0.40) → earn $0.20 💰 → get the business link. Include 5 hashtags. End with: 🔗 getgoodsgratis.app/GoogleAdsOverlay`,
+  snapchat: (ads, postNum) => `Write a short punchy Snapchat caption (under 120 chars) for getgoodsgratis.app's ad grid image. Tap brand ads like ${ads.slice(0,3).map(a=>a.brand).join(', ')}, answer quick questions, earn real cash! 🔥 getgoodsgratis.app Post ${postNum}.`,
+  tiktok: (ads, postNum) => `Write a TikTok caption (under 160 chars) for a video showing the Get Goods Gratis Million Dollar Ad Grid — ${ads.slice(0,4).map(a=>a.brand).join(', ')} & more. Click ads, take 4 quick surveys ($0.40), earn $0.20 each! Trending hashtags: #MillionDollarHomepage #EarnMoney #SideHustle #GetGoodsGratis #TikTokMadeMeDoIt. Link: getgoodsgratis.app/GoogleAdsOverlay Post ${postNum}.`,
 };
 
 // Build the in-app landing link a scheduled post points at. The landing renders the same Buy Now +
@@ -40,7 +40,7 @@ function buildLandingUrl(ad) {
     ad: ad.brand || '', brand: ad.brand || '', site: ad.site || '',
     image: ad.image || '', tag: ad.tagline || '', src: 'auto',
   });
-  return `https://gamergain.app/AdLanding?${q.toString()}`;
+  return `https://getgoodsgratis.app/AdLanding?${q.toString()}`;
 }
 
 async function generatePostContent(base44, platform, postNum) {
@@ -51,7 +51,7 @@ async function generatePostContent(base44, platform, postNum) {
 
   const promptFn = PLATFORM_PROMPTS[platform];
   if (!promptFn) {
-    return { content: `🎮 Discover GamerGain.app — click ads, take quick surveys, earn real money!${cta} #GamerGain`, ad_id: featured.brand, landing_url: landing };
+    return { content: `🎮 Discover getgoodsgratis.app — click ads, take quick surveys, earn real money!${cta} #GetGoodsGratis`, ad_id: featured.brand, landing_url: landing };
   }
 
   const result = await base44.asServiceRole.integrations.Core.InvokeLLM({

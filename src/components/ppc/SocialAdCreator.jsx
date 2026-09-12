@@ -36,7 +36,7 @@ For each brand, create 1 short social media post (max 280 characters) that:
 2. Mentions they found it on Get Goods Gratis (Free)
 3. Includes a clear call to action to BUY IT or SAVE IT — e.g., "🛒 Buy it or tap ♥ Interested (link below)"
 4. Includes relevant emojis
-5. Ends with: "via @Get Goods Gratis (Free) 🎮 gamergain.app"
+5. Ends with: "via @Get Goods Gratis (Free) 🎮 getgoodsgratis.app"
 
 Keep each post engaging, natural, and platform-friendly.`,
         response_json_schema: {
@@ -79,7 +79,7 @@ Keep each post engaging, natural, and platform-friendly.`,
           brand_image,
           brand_site,
           ad_id: original.id ?? '',
-          landing_url: `https://gamergain.app/AdLanding?${q.toString()}`,
+          landing_url: `https://getgoodsgratis.app/AdLanding?${q.toString()}`,
           platforms: PLATFORMS.map(p => p.id), // default all platforms
           approved: false,
         };

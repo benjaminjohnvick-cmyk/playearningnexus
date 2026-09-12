@@ -30,7 +30,7 @@ export default __handler(async (req) => {
         'amount': Math.round(amount * 100).toString(), // cents
         'currency': 'usd',
         'automatic_payment_methods[enabled]': 'true',
-        'description': description || 'GamerGain PPC Campaign',
+        'description': description || 'Get Goods Gratis PPC Campaign',
         'metadata[user_id]': user.id,
         'metadata[user_email]': user.email || '',
         'metadata[plan]': metadata?.plan || 'ppc_annual',

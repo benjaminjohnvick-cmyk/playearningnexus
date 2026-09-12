@@ -26,7 +26,7 @@ export default __handler(async (req) => {
       10: { bonus: 1.00, badge: 'Veteran Player' },
       25: { bonus: 2.50, badge: 'Elite Gamer' },
       50: { bonus: 5.00, badge: 'Legend' },
-      100: { bonus: 10.00, badge: 'GamerGain Legend' }
+      100: { bonus: 10.00, badge: 'Get Goods Gratis Legend' }
     };
 
     const milestone = levelBonuses[newLevel];
@@ -60,8 +60,8 @@ export default __handler(async (req) => {
       if (user?.email) {
         await base44.integrations.Core.SendEmail({
           to: user.email,
-          subject: `🎉 Level ${newLevel} Milestone Unlocked on GamerGain!`,
-          body: `Congratulations ${user.full_name}! You've reached Level ${newLevel} on GamerGain!\n\nYou've earned:\n• The "${milestone.badge}" badge\n• $${milestone.bonus} bonus added to your account\n\nKeep playing and earning to reach the next milestone!`
+          subject: `🎉 Level ${newLevel} Milestone Unlocked on Get Goods Gratis!`,
+          body: `Congratulations ${user.full_name}! You've reached Level ${newLevel} on Get Goods Gratis!\n\nYou've earned:\n• The "${milestone.badge}" badge\n• $${milestone.bonus} bonus added to your account\n\nKeep playing and earning to reach the next milestone!`
         });
       }
     }

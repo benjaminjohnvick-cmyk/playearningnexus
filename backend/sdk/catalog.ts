@@ -271,7 +271,7 @@ export async function generateSeedListings(country: string, count = 12, category
   // Fallback originals if no LLM configured.
   if (!items.length) {
     items = Array.from({ length: Math.min(count, 6) }, (_, i) => ({
-      title: `GamerGain Essentials Item ${i + 1}`, description: "Original platform-catalog product.",
+      title: `Get Goods Gratis Essentials Item ${i + 1}`, description: "Original platform-catalog product.",
       category: category || "general", price_usd: 9.99 + i * 5,
     }));
   }
@@ -289,7 +289,7 @@ export async function generateSeedListings(country: string, count = 12, category
     const usd = round2(Number(it.price_usd) || 0);
     const imageUrl = images[i] || null;
     const listing = await db.create("MarketplaceListing", {
-      seller_id: PLATFORM_SELLER_ID, seller_name: "GamerGain Catalog",
+      seller_id: PLATFORM_SELLER_ID, seller_name: "Get Goods Gratis Catalog",
       title: String(it.title || "Product").slice(0, 120),
       description: String(it.description || "").slice(0, 2000),
       category: it.category || category || "general",
@@ -343,7 +343,7 @@ export async function ensureTemplateListings(count: number, category?: string): 
   }
   if (!items.length) {
     items = Array.from({ length: Math.min(deficit, 6) }, (_, i) => ({
-      title: `GamerGain ${category || "Essentials"} ${(existing?.length || 0) + i + 1}`, description: "Original platform-catalog product.",
+      title: `Get Goods Gratis ${category || "Essentials"} ${(existing?.length || 0) + i + 1}`, description: "Original platform-catalog product.",
       category: category || "general", price_usd: 9.99 + i * 5,
     }));
   }
@@ -358,7 +358,7 @@ export async function ensureTemplateListings(count: number, category?: string): 
     const usd = round2(Number(it.price_usd) || 0);
     const imageUrl = images[i] || null;
     const t = await db.create("MarketplaceListing", {
-      seller_id: PLATFORM_SELLER_ID, seller_name: "GamerGain Catalog",
+      seller_id: PLATFORM_SELLER_ID, seller_name: "Get Goods Gratis Catalog",
       title: String(it.title || "Product").slice(0, 120),
       description: String(it.description || "").slice(0, 2000),
       category: it.category || category || "general",
@@ -453,7 +453,7 @@ export async function cloneTemplatesToCountry(country: string, cap = 500, opts: 
     const px = localPricing(c, Number(t.price_usd) || 0);
     const loc = localized.get(String(t.id));
     const listing = await db.create("MarketplaceListing", {
-      seller_id: PLATFORM_SELLER_ID, seller_name: "GamerGain Catalog",
+      seller_id: PLATFORM_SELLER_ID, seller_name: "Get Goods Gratis Catalog",
       title: loc?.title || t.title,
       description: loc?.description || t.description,
       base_title: loc ? t.title : undefined,               // English original kept for review when localized

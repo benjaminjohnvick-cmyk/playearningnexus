@@ -104,7 +104,7 @@ export default function UserLicenseAgreement({ isOpen, onAccept, onDecline }) {
                 <li>AI automatically evaluates your social media performance and advances your affiliate tier (Starter → Growth → Pro → Gold → Platinum) when you meet the requirements</li>
                 <li>Higher tiers unlock increased commission percentages and campaign allocations</li>
                 <li>Your affiliate tier is reviewed daily using AI analysis of your social media posts, engagement, and conversion metrics</li>
-                <li>You receive a unique referral link (https://gamergain.app/ref/[CODE]) to share and earn from</li>
+                <li>You receive a unique referral link (https://getgoodsgratis.app/ref/[CODE]) to share and earn from</li>
                 <li>Affiliate earnings are processed and paid out monthly via your selected payout method</li>
               </ul>
               <p className="mt-2">This affiliate enrollment is included at no additional cost and is part of your standard Get Goods Gratis (Free) membership.</p>

@@ -52,7 +52,7 @@ export default __handler(async (req) => {
 
     if (remaining.length === 0) {
       const aiContest = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `Generate a weekly referral contest for GamerGain (gaming rewards platform). 
+        prompt: `Generate a weekly referral contest for Get Goods Gratis (gaming rewards platform). 
 Make the title catchy and the rules simple — most referrals wins. 
 Return JSON: { "title": "string", "description": "string", "prize_pool": number, "rules": "string" }`,
         response_json_schema: {

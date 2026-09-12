@@ -34,7 +34,7 @@ export default __handler(async (req) => {
     const pref = prefs[0];
 
     // Run AI verification
-    const verifyPrompt = `You are a fraud prevention and business verification AI for GamerGain, a gaming platform.
+    const verifyPrompt = `You are a fraud prevention and business verification AI for Get Goods Gratis, a gaming platform.
 
 Your job is to evaluate whether a new business client registration is legitimate or potentially fraudulent (e.g., a regular user trying to abuse the business payout system).
 
@@ -111,28 +111,28 @@ Respond with JSON:
     // Notify the applicant by email
     if (client.contact_email) {
       const subject = approved
-        ? `✅ Your GamerGain Developer Account is Approved!`
-        : `❌ GamerGain Developer Application - Not Approved`;
+        ? `✅ Your Get Goods Gratis Developer Account is Approved!`
+        : `❌ Get Goods Gratis Developer Application - Not Approved`;
 
       const emailBody = approved
-        ? `Hi ${client.company_name},\n\nCongratulations! Your developer account has been verified and approved. You can now access the full Developer Dashboard and start earning.\n\nWelcome to GamerGain!\n— The GamerGain Team`
-        : `Hi ${client.company_name},\n\nUnfortunately, your developer account application could not be approved at this time.\n\nReason: ${aiResult.rejection_reason || 'Your application did not meet our verification requirements.'}\n\nIf you believe this is an error, please contact our support team.\n\n— The GamerGain Team`;
+        ? `Hi ${client.company_name},\n\nCongratulations! Your developer account has been verified and approved. You can now access the full Developer Dashboard and start earning.\n\nWelcome to Get Goods Gratis!\n— The Get Goods Gratis Team`
+        : `Hi ${client.company_name},\n\nUnfortunately, your developer account application could not be approved at this time.\n\nReason: ${aiResult.rejection_reason || 'Your application did not meet our verification requirements.'}\n\nIf you believe this is an error, please contact our support team.\n\n— The Get Goods Gratis Team`;
 
       await base44.integrations.Core.SendEmail({
         to: client.contact_email,
         subject,
         body: emailBody,
-        from_name: 'GamerGain'
+        from_name: 'Get Goods Gratis'
       }).catch(() => {});
     }
 
     // Alert admin if rejected (potential fraud)
     if (!approved && aiResult.risk_flags?.length > 0) {
       await base44.integrations.Core.SendEmail({
-        to: 'admin@gamergain.com',
+        to: 'admin@getgoodsgratis.com',
         subject: `🚨 Suspicious Business Signup Blocked: ${client.company_name}`,
         body: `AI blocked a potentially fraudulent business signup.\n\nCompany: ${client.company_name}\nEmail: ${client.contact_email}\nRisk Flags: ${(aiResult.risk_flags || []).join(', ')}\nReason: ${aiResult.rejection_reason}\nConfidence: ${aiResult.confidence_score}/100`,
-        from_name: 'GamerGain Security'
+        from_name: 'Get Goods Gratis Security'
       }).catch(() => {});
     }
 

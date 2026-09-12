@@ -61,7 +61,7 @@ export default __handler(async (req) => {
       fulfilled_by: "platform_ai",
       wholesale_cost_usd: Number(src.wholesale_cost_usd) || null,
       curator_reward_pct: curatorRewardPointsPct(),
-      fulfillment_disclosure: "Fulfilled by GamerGain. Curated by a member.",
+      fulfillment_disclosure: "Fulfilled by Get Goods Gratis. Curated by a member.",
       country: src.country || null,
       status: "active",
       created_at: new Date().toISOString(),
@@ -76,7 +76,7 @@ export default __handler(async (req) => {
       seller_username: username,
       curator_reward_pct: curatorRewardPointsPct(),
       level,
-      message: "Added to your storefront. You'll earn 10% back in points if it sells (fulfilled by GamerGain).",
+      message: "Added to your storefront. You'll earn 10% back in points if it sells (fulfilled by Get Goods Gratis).",
     });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });

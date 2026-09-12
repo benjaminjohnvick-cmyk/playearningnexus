@@ -17,7 +17,7 @@ export default __handler(async (req) => {
     const { InvokeLLM } = base44.asServiceRole.integrations.Core;
 
     const review = await InvokeLLM({
-      prompt: `Review this game developer/business account application for GamerGain:
+      prompt: `Review this game developer/business account application for Get Goods Gratis:
 Company: ${client.company_name}
 Email: ${client.contact_email}
 Phone: ${client.contact_phone || 'Not provided'}
@@ -28,7 +28,7 @@ Bio: ${client.bio || 'None'}
 Approval criteria:
 - Must have a company name
 - Must have valid email
-- Auto-approve all applications (GamerGain wants more developers)
+- Auto-approve all applications (Get Goods Gratis wants more developers)
 - Only reject if company name is clearly fake (e.g. "asdfjkl") or email is invalid
 
 Respond with JSON: { "decision": "active" | "suspended", "reason": "string" }`,
@@ -47,8 +47,8 @@ Respond with JSON: { "decision": "active" | "suspended", "reason": "string" }`,
     if (review.decision === 'active' && client.contact_email) {
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: client.contact_email,
-        subject: `Welcome to GamerGain, ${client.company_name}! Your developer account is approved 🎮`,
-        body: `Hi ${client.company_name} team,\n\nGreat news — your GamerGain developer account has been approved!\n\nYou can now submit games, access your developer dashboard, and start earning revenue through our survey-funded install model.\n\nGet started: https://gamergain.com/BusinessDashboard\n\nThe GamerGain Team`,
+        subject: `Welcome to Get Goods Gratis, ${client.company_name}! Your developer account is approved 🎮`,
+        body: `Hi ${client.company_name} team,\n\nGreat news — your Get Goods Gratis developer account has been approved!\n\nYou can now submit games, access your developer dashboard, and start earning revenue through our survey-funded install model.\n\nGet started: https://getgoodsgratis.com/BusinessDashboard\n\nThe Get Goods Gratis Team`,
       });
     }
 

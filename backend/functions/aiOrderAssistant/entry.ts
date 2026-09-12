@@ -28,7 +28,7 @@ export default __handler(async (req) => {
         if (items.length >= 12) break;
         const title = String(l.title || "");
         if (!title.toLowerCase().includes(ql.split(" ")[0])) continue;
-        items.push({ title, retailer: (l.source_label as string) || "GamerGain", supplier_id: null, buy_url: (l.affiliate_url as string) || null, price_usd: Number(l.price_usd) || 0, image_url: (l.image_url as string) || null, sku: String(l.id) });
+        items.push({ title, retailer: (l.source_label as string) || "Get Goods Gratis", supplier_id: null, buy_url: (l.affiliate_url as string) || null, price_usd: Number(l.price_usd) || 0, image_url: (l.image_url as string) || null, sku: String(l.id) });
       }
     }
     items = items.filter((x) => x.title && x.price_usd > 0).slice(0, 12);

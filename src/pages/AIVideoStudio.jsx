@@ -56,7 +56,7 @@ export default function AIVideoStudio() {
     enabled: !!user?.id,
   });
 
-  const referralLink = user ? `https://gamergain.app?ref=${user.id?.slice(0, 8)}` : 'https://gamergain.app';
+  const referralLink = user ? `https://getgoodsgratis.app?ref=${user.id?.slice(0, 8)}` : 'https://getgoodsgratis.app';
   const ctaText = ctaType === 'referral'
     ? `Join me on Get Goods Gratis (Free) → ${referralLink}`
     : (customCTA || `Check it out → ${referralLink}`);

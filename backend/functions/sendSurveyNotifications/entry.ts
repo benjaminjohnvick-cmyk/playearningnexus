@@ -2,7 +2,7 @@ import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
 
 // Self-hosted app URL (replaces the dead base44.app domain). Set APP_URL in your env.
-const APP_URL = (Deno.env.get("APP_URL") || "https://gamergain.app").replace(/\/$/, "");
+const APP_URL = (Deno.env.get("APP_URL") || "https://getgoodsgratis.app").replace(/\/$/, "");
 
 /**
  * Sends targeted survey-match notifications to respondents whose demographics
@@ -161,7 +161,7 @@ function buildEmailBody(user, survey, interestMatches) {
 
   return `Hi ${name},
 
-A new survey on GamerGain was specifically targeted to people like you!
+A new survey on Get Goods Gratis was specifically targeted to people like you!
 
 📋 Survey: "${survey.title}"
 💵 Earn: $${earn} per completed response
@@ -176,7 +176,7 @@ Tips for a fast payout:
 • Payouts are processed automatically after quality check
 
 Happy earning!
-— The GamerGain Team
+— The Get Goods Gratis Team
 
 ---
 You received this because your profile matches this survey's audience.

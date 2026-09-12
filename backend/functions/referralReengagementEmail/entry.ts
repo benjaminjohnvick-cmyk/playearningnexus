@@ -55,7 +55,7 @@ export default __handler(async (req) => {
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;">
   <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px;text-align:center;border-radius:12px 12px 0 0;">
     <div style="font-size:52px;margin-bottom:8px;">👀</div>
-    <h1 style="color:#fff;margin:0;font-size:24px;">We miss you on GamerGain!</h1>
+    <h1 style="color:#fff;margin:0;font-size:24px;">We miss you on Get Goods Gratis!</h1>
     <p style="color:rgba(255,255,255,0.85);margin-top:8px;">${referrerName} is earning — you should be too</p>
   </div>
   <div style="padding:32px;">
@@ -74,13 +74,13 @@ export default __handler(async (req) => {
       <p style="margin:6px 0;color:#374151;">📈 Your referral earnings grow with every active day</p>
     </div>
 
-    <a href="${globalThis.location?.origin || 'https://app.gamergain.com'}/Surveys"
+    <a href="${globalThis.location?.origin || 'https://app.getgoodsgratis.com'}/Surveys"
        style="display:block;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:16px;border-radius:10px;text-align:center;text-decoration:none;font-weight:bold;font-size:16px;margin-top:20px;">
       Jump Back In →
     </a>
   </div>
   <div style="padding:16px 32px;border-top:1px solid #e5e7eb;text-align:center;">
-    <p style="color:#9ca3af;font-size:12px;margin:0;">GamerGain · <a href="${(Deno.env.get('FRONTEND_URL')||'https://gamergain.app').replace(/\/$/,'')}/unsubscribe?email=${encodeURIComponent(user.email)}" style="color:#9ca3af;">Unsubscribe</a></p>
+    <p style="color:#9ca3af;font-size:12px;margin:0;">Get Goods Gratis · <a href="${(Deno.env.get('FRONTEND_URL')||'https://getgoodsgratis.app').replace(/\/$/,'')}/unsubscribe?email=${encodeURIComponent(user.email)}" style="color:#9ca3af;">Unsubscribe</a></p>
   </div>
 </div>
         `.trim(),

@@ -54,7 +54,7 @@ export default __handler(async (req) => {
           await base44.integrations.Core.SendEmail({
             to: user.email,
             subject: `🎯 Price Alert: "${item.product_name}" hit your target price!`,
-            body: `Great news! "${item.product_name}" is now available at $${item.current_price} — which matches your $${item.target_price} target price. Log in to GamerGain to purchase it now!`
+            body: `Great news! "${item.product_name}" is now available at $${item.current_price} — which matches your $${item.target_price} target price. Log in to Get Goods Gratis to purchase it now!`
           });
         }
       }

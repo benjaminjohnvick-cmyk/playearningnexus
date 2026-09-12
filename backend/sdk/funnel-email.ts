@@ -14,7 +14,7 @@ export const funnelEmailCtaPath = () => snapString("FUNNEL_EMAIL_CTA_PATH", "/AI
 const money = (n: number | null | undefined) => (n == null ? "" : `$${Number(n).toLocaleString()}`);
 
 function ctaUrl(): string {
-  const base = (Deno.env.get("FRONTEND_URL") ?? "https://gamergain.app").replace(/\/$/, "");
+  const base = (Deno.env.get("FRONTEND_URL") ?? "https://getgoodsgratis.app").replace(/\/$/, "");
   const path = funnelEmailCtaPath();
   return `${base}${path.startsWith("/") ? path : "/" + path}`;
 }

@@ -34,8 +34,8 @@ export default __handler(async (req) => {
       if (referred?.email) {
         await base44.integrations.Core.SendEmail({
           to: referred.email,
-          subject: `🎮 Welcome to GamerGain — You were referred by ${referrer?.full_name || 'a friend'}!`,
-          body: `Welcome to GamerGain! You were invited by ${referrer?.full_name || 'a friend'}. Complete surveys and earn real money. Your referrer gets rewarded when you earn, so you're both winning!`
+          subject: `🎮 Welcome to Get Goods Gratis — You were referred by ${referrer?.full_name || 'a friend'}!`,
+          body: `Welcome to Get Goods Gratis! You were invited by ${referrer?.full_name || 'a friend'}. Complete surveys and earn real money. Your referrer gets rewarded when you earn, so you're both winning!`
         });
       }
 

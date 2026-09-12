@@ -13,13 +13,13 @@ export default __handler(async (req) => {
     if (event?.type === 'create') {
       // AI review score the application
       const review = await base44.integrations.Core.InvokeLLM({
-        prompt: `Score this game developer application for GamerGain (gaming platform with 100k users, survey-based monetization):
+        prompt: `Score this game developer application for Get Goods Gratis (gaming platform with 100k users, survey-based monetization):
 Company: ${app.company_name}
 Game: "${app.game_title}" — ${app.game_description || ''}
 Category: ${app.game_category}, Platform: ${(app.game_platform || []).join(', ')}
 Monetization: ${app.monetization_model}
 Expected installs: ${app.expected_installs}
-Why GamerGain: "${app.why_gamergain || ''}"
+Why Get Goods Gratis: "${app.why_getgoodsgratis || ''}"
 
 Provide: score (0-100), recommendation (approve/waitlist/reject), strengths (array of 2-3 strings), concerns (array of 0-2 strings), summary (1 sentence).`,
         response_json_schema: {
@@ -59,7 +59,7 @@ Provide: score (0-100), recommendation (approve/waitlist/reject), strengths (arr
         } else {
           await base44.asServiceRole.entities.GameVoteSurvey.create({
             survey_type: 'developer_applications',
-            title: 'Vote: Which Game Should Join GamerGain Next?',
+            title: 'Vote: Which Game Should Join Get Goods Gratis Next?',
             description: 'Community vote to decide which developer application gets approved next!',
             status: 'active',
             closes_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -80,8 +80,8 @@ Provide: score (0-100), recommendation (approve/waitlist/reject), strengths (arr
       if (app.contact_email) {
         await base44.integrations.Core.SendEmail({
           to: app.contact_email,
-          subject: `📋 GamerGain Application Received: ${app.game_title}`,
-          body: `Thank you for applying to GamerGain! Your application for "${app.game_title}" has been received and reviewed.\n\nAI Score: ${review.score}/100\n${review.summary}\n\nStatus: ${newStatus === 'in_survey' ? 'Accepted for community vote!' : newStatus === 'waitlisted' ? 'Waitlisted — we\'ll be in touch.' : 'Under review — expect a response within 5 business days.'}`
+          subject: `📋 Get Goods Gratis Application Received: ${app.game_title}`,
+          body: `Thank you for applying to Get Goods Gratis! Your application for "${app.game_title}" has been received and reviewed.\n\nAI Score: ${review.score}/100\n${review.summary}\n\nStatus: ${newStatus === 'in_survey' ? 'Accepted for community vote!' : newStatus === 'waitlisted' ? 'Waitlisted — we\'ll be in touch.' : 'Under review — expect a response within 5 business days.'}`
         });
       }
     }
@@ -91,9 +91,9 @@ Provide: score (0-100), recommendation (approve/waitlist/reject), strengths (arr
         const approved = data.status === 'approved';
         await base44.integrations.Core.SendEmail({
           to: app.contact_email,
-          subject: approved ? `🎉 GamerGain Application Approved: ${app.game_title}!` : `Application Update: ${app.game_title}`,
+          subject: approved ? `🎉 Get Goods Gratis Application Approved: ${app.game_title}!` : `Application Update: ${app.game_title}`,
           body: approved
-            ? `Congratulations! Your game "${app.game_title}" has been approved for GamerGain! Log in to your developer dashboard to complete setup and start earning.`
+            ? `Congratulations! Your game "${app.game_title}" has been approved for Get Goods Gratis! Log in to your developer dashboard to complete setup and start earning.`
             : `Thank you for your interest. After review, we're unable to approve "${app.game_title}" at this time. ${app.admin_notes || 'Please feel free to reapply with updates.'}`
         });
       }

@@ -35,11 +35,11 @@ export default __handler(async (req) => {
     let trendingAds = null;
     try {
       trendingAds = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a viral social media ad strategist for GamerGain — a platform where people earn real money by playing games and completing surveys.
+        prompt: `You are a viral social media ad strategist for Get Goods Gratis — a platform where people earn real money by playing games and completing surveys.
 
 Today is ${new Date().toISOString().split('T')[0]}.
 
-TASK: Search the internet RIGHT NOW for the 3 most viral, trending stories/events/memes dominating social media in the last 24 hours. Think like a Mint Mobile or Wendy's social media team — find what everyone is talking about and cleverly tie it to GamerGain.
+TASK: Search the internet RIGHT NOW for the 3 most viral, trending stories/events/memes dominating social media in the last 24 hours. Think like a Mint Mobile or Wendy's social media team — find what everyone is talking about and cleverly tie it to Get Goods Gratis.
 
 For each trend, generate ad copy for 3 platforms:
 
@@ -78,9 +78,9 @@ Return as JSON only.`,
         trends: [{
           topic: 'Earn Money Gaming',
           virality_score: 7,
-          facebook_instagram: '🎮 Did you know you can earn REAL money just by playing games? GamerGain pays you to play, complete surveys, and refer friends. Join free → [REFERRAL_LINK] 💰',
-          twitter: '💸 Getting paid to play games is a thing now. Join GamerGain free and start earning today → [REFERRAL_LINK] #GamerGain #EarnMoney #Gaming',
-          snapchat_tiktok: 'Wait… you\'re NOT getting paid to game? 🤯 GamerGain fixes that → [REFERRAL_LINK]'
+          facebook_instagram: '🎮 Did you know you can earn REAL money just by playing games? Get Goods Gratis pays you to play, complete surveys, and refer friends. Join free → [REFERRAL_LINK] 💰',
+          twitter: '💸 Getting paid to play games is a thing now. Join Get Goods Gratis free and start earning today → [REFERRAL_LINK] #GetGoodsGratis #EarnMoney #Gaming',
+          snapchat_tiktok: 'Wait… you\'re NOT getting paid to game? 🤯 Get Goods Gratis fixes that → [REFERRAL_LINK]'
         }]
       };
     }
@@ -108,7 +108,7 @@ Return as JSON only.`,
       const todayStr = new Date().toISOString().split('T')[0];
       if (node.last_ad_posted_at && node.last_ad_posted_at.startsWith(todayStr)) continue;
 
-      const referralLink = `https://gamergain.app/?ref=${node.user_id}`;
+      const referralLink = `https://getgoodsgratis.app/?ref=${node.user_id}`;
 
       for (const platform of platforms) {
         const rawContent = platformAdMap[platform] || topTrend.facebook_instagram;

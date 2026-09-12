@@ -17,7 +17,7 @@ const SOCIAL_MEDIA_BENCHMARKS = [
 ];
 
 // Get Goods Gratis (Free) PPC Model
-const GAMERGAIN = {
+const PLATFORM = {
   platform: 'Get Goods Gratis (Free) Ad Grid',
   cpc: 0.50,
   cpm: 2.50,  // 5000 views/day grid, $0.50 * 5 clicks per 1000 views estimate
@@ -81,13 +81,13 @@ export default function PartDProductUpload({ ads: _ads = [], userId }) {
         prompt: `You are an advertising cost analyst. Analyze the following PPC advertising data for Get Goods Gratis (Free) vs typical social media platforms.
 
 Get Goods Gratis (Free) Ad Grid Specs:
-- CPC: $${GAMERGAIN.cpc} per click (user earns $0.25, platform earns $0.25)
+- CPC: $${PLATFORM.cpc} per click (user earns $0.25, platform earns $0.25)
 - Each click triggers 20 social media posts automatically
-- Cost per social media post: $${GAMERGAIN.costPerPost.toFixed(3)} (vs $0.50 industry avg per post)
-- CTR: ~${GAMERGAIN.ctr}% (users actively click to earn rewards — very high intent)
-- Estimated CPM: $${GAMERGAIN.cpm}
-- Estimated conversion rate: ${GAMERGAIN.convRate}%
-- Estimated ROI: ${GAMERGAIN.roi}x
+- Cost per social media post: $${PLATFORM.costPerPost.toFixed(3)} (vs $0.50 industry avg per post)
+- CTR: ~${PLATFORM.ctr}% (users actively click to earn rewards — very high intent)
+- Estimated CPM: $${PLATFORM.cpm}
+- Estimated conversion rate: ${PLATFORM.convRate}%
+- Estimated ROI: ${PLATFORM.roi}x
 - Advertiser budget target: $${budget}
 - Campaign runs until sales revenue is 2× the ad budget
 
@@ -99,7 +99,7 @@ Provide a structured analysis comparing Get Goods Gratis (Free) vs each platform
           type: 'object',
           properties: {
             summary: { type: 'string' },
-            gamergain_metrics: {
+            getgoodsgratis_metrics: {
               type: 'object',
               properties: {
                 clicks: { type: 'number' },
@@ -129,7 +129,7 @@ Provide a structured analysis comparing Get Goods Gratis (Free) vs each platform
                   budget_views: { type: 'number' },
                   cost_per_post: { type: 'number' },
                   dollar_cost_for_budget: { type: 'number' },
-                  gamergain_advantage: { type: 'string' },
+                  getgoodsgratis_advantage: { type: 'string' },
                 }
               }
             },
@@ -310,12 +310,12 @@ Provide a structured analysis comparing Get Goods Gratis (Free) vs each platform
                     <td className="py-2.5 pr-3 font-black text-yellow-400 flex items-center gap-1">
                       🎮 Get Goods Gratis (Free) <Badge className="ml-1 bg-yellow-500 text-black text-[9px] px-1 py-0">BEST</Badge>
                     </td>
-                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">${GAMERGAIN.cpm.toFixed(2)}</td>
-                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">${GAMERGAIN.cpc.toFixed(2)}</td>
-                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">{GAMERGAIN.ctr}%</td>
-                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">{GAMERGAIN.convRate}%</td>
-                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">{GAMERGAIN.roi}x</td>
-                    <td className="text-right py-2.5 pl-2 text-green-400 font-bold">${GAMERGAIN.costPerPost.toFixed(3)}</td>
+                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">${PLATFORM.cpm.toFixed(2)}</td>
+                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">${PLATFORM.cpc.toFixed(2)}</td>
+                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">{PLATFORM.ctr}%</td>
+                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">{PLATFORM.convRate}%</td>
+                    <td className="text-right py-2.5 px-2 text-green-400 font-bold">{PLATFORM.roi}x</td>
+                    <td className="text-right py-2.5 pl-2 text-green-400 font-bold">${PLATFORM.costPerPost.toFixed(3)}</td>
                   </tr>
                   {SOCIAL_MEDIA_BENCHMARKS.map(p => (
                     <tr key={p.platform} className="border-b border-gray-800">
@@ -371,15 +371,15 @@ Provide a structured analysis comparing Get Goods Gratis (Free) vs each platform
                     <p className="text-purple-300 font-bold text-sm mb-1">🤖 AI Analysis Summary</p>
                     <p className="text-gray-300 text-xs leading-relaxed">{aiAnalysis.summary}</p>
                   </div>
-                  {aiAnalysis.gamergain_metrics && (
+                  {aiAnalysis.getgoodsgratis_metrics && (
                     <div className="bg-yellow-900/20 border border-yellow-500/40 rounded-xl p-4">
                       <p className="text-yellow-400 font-bold text-sm mb-2">🎮 Your ${budget} Budget on Get Goods Gratis (Free)</p>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
                         {[
-                          { label: 'Clicks', value: aiAnalysis.gamergain_metrics.clicks?.toFixed(0) },
-                          { label: 'Social Posts', value: aiAnalysis.gamergain_metrics.posts_generated?.toFixed(0) },
-                          { label: 'Est. Views', value: aiAnalysis.gamergain_metrics.estimated_views?.toLocaleString() },
-                          { label: 'Est. Sales', value: `$${aiAnalysis.gamergain_metrics.estimated_sales_revenue?.toFixed(0)}` },
+                          { label: 'Clicks', value: aiAnalysis.getgoodsgratis_metrics.clicks?.toFixed(0) },
+                          { label: 'Social Posts', value: aiAnalysis.getgoodsgratis_metrics.posts_generated?.toFixed(0) },
+                          { label: 'Est. Views', value: aiAnalysis.getgoodsgratis_metrics.estimated_views?.toLocaleString() },
+                          { label: 'Est. Sales', value: `$${aiAnalysis.getgoodsgratis_metrics.estimated_sales_revenue?.toFixed(0)}` },
                         ].map(m => (
                           <div key={m.label} className="bg-gray-800 rounded-lg p-2">
                             <p className="text-yellow-400 font-black text-base">{m.value}</p>

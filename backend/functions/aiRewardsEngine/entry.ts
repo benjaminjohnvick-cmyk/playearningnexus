@@ -50,7 +50,7 @@ export default __handler(async (req) => {
 
     if (action === 'suggest_tier') {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a gamification expert for GamerGain, a survey & gaming rewards platform.
+        prompt: `You are a gamification expert for Get Goods Gratis, a survey & gaming rewards platform.
 
 User stats:
 - Total earnings: $${userContext.total_earnings}
@@ -88,7 +88,7 @@ Based on this user's activity pattern, suggest:
 
     if (action === 'churn_prediction') {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a churn prediction specialist for GamerGain.
+        prompt: `You are a churn prediction specialist for Get Goods Gratis.
 
 User activity:
 - Days since last activity: ${userContext.days_since_last_activity}
@@ -135,7 +135,7 @@ Predict:
       const avgEarnings = allUsers.reduce((s, u) => s + (u.total_earnings || 0), 0) / (allUsers.length || 1);
 
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a growth marketing expert for GamerGain, a gaming survey rewards platform.
+        prompt: `You are a growth marketing expert for Get Goods Gratis, a gaming survey rewards platform.
 
 Platform stats:
 - Total users: ${allUsers.length}

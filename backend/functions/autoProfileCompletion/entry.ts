@@ -43,13 +43,13 @@ export default __handler(async (req) => {
     if (earnedAmount > 0) {
       const tiers = [
         { min: 0, max: 25, bio: 'Casual earner exploring games and surveys' },
-        { min: 25, max: 100, bio: 'Active GamerGain member earning steady income' },
+        { min: 25, max: 100, bio: 'Active Get Goods Gratis member earning steady income' },
         { min: 100, max: 500, bio: 'Dedicated community member and experienced player' },
         { min: 500, Infinity, bio: 'Top contributor with strong earnings track record' }
       ];
       
       const tier = tiers.find(t => earnedAmount >= t.min && earnedAmount < t.max);
-      suggestions.bio = tier?.bio || 'Passionate GamerGain community member';
+      suggestions.bio = tier?.bio || 'Passionate Get Goods Gratis community member';
     }
 
     // Auto-update user with suggestions

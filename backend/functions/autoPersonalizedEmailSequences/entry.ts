@@ -71,7 +71,7 @@ Return JSON with:
             to: appUser.email,
             subject: emailSequence.email_subject,
             body: emailSequence.email_body + emailUnsubscribeFooter(appUser),
-            from_name: 'GamerGain'
+            from_name: 'Get Goods Gratis'
           });
           await base44.entities.User.update(appUser.id, { last_automated_email_date: new Date().toISOString() });
           emailsSent++;

@@ -78,7 +78,7 @@ export default __handler(async (req) => {
       const changedEmailRecently = !!emailChangedAt && !isNaN(emailChangedAt.getTime())
         && (Date.now() - emailChangedAt.getTime()) <= 7 * 24 * 60 * 60 * 1000;
 
-      const prompt = `You are a financial fraud detection AI for GamerGain, a gaming rewards platform where users earn money by completing surveys and referring friends.
+      const prompt = `You are a financial fraud detection AI for Get Goods Gratis, a gaming rewards platform where users earn money by completing surveys and referring friends.
 
 Analyze this payout transaction for fraud signals and return a risk assessment:
 

@@ -32,7 +32,7 @@ export default __handler(async (req) => {
         body: `
 Hi ${user.full_name || 'there'},
 
-Great news! A product in your GamerGain wishlist just dropped in price.
+Great news! A product in your Get Goods Gratis wishlist just dropped in price.
 
 🛍️ Product: ${wishlistItem.product_name}
 💸 Old Price: $${previousBestPrice.toFixed(2)}
@@ -41,12 +41,12 @@ Great news! A product in your GamerGain wishlist just dropped in price.
 🛒 Vendor: ${wishlistItem.vendor_name || 'Best available retailer'}
 
 Buy it now before the price goes back up:
-${wishlistItem.vendor_url || 'https://gamergain.app/Wishlist'}
+${wishlistItem.vendor_url || 'https://getgoodsgratis.app/Wishlist'}
 
-Visit your wishlist: https://gamergain.app/Wishlist
+Visit your wishlist: https://getgoodsgratis.app/Wishlist
 
 Happy saving,
-The GamerGain Team
+The Get Goods Gratis Team
         `.trim(),
       });
 

@@ -51,7 +51,7 @@ export default __handler(async (req) => {
     }));
 
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are an AI performance marketing optimization engine for GamerGain. Analyze ad campaigns and make precise budget/bid adjustments to maximize ROAS.
+      prompt: `You are an AI performance marketing optimization engine for Get Goods Gratis. Analyze ad campaigns and make precise budget/bid adjustments to maximize ROAS.
 
 CAMPAIGN PERFORMANCE DATA:
 ${JSON.stringify(analysisData, null, 2)}

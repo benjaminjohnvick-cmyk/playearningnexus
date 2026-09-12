@@ -79,7 +79,7 @@ function buildLandingUrl(ad) {
     ad: ad.brand || '', brand: ad.brand || '', site: ad.site || '',
     image: ad.image || '', tag: ad.tagline || '', src: 'auto',
   });
-  return `https://gamergain.app/AdLanding?${q.toString()}`;
+  return `https://getgoodsgratis.app/AdLanding?${q.toString()}`;
 }
 
 // Buy/Interested CTA to append to a product-ad caption/tweet (empty string for non-product content).
@@ -148,7 +148,7 @@ async function scheduleYouTubeVideo(content, base44) {
   // For MVP, generate metadata and notify admin
   
   await base44.integrations.Core.SendEmail({
-    to: 'marketing@gamergain.com',
+    to: 'marketing@getgoodsgratis.com',
     subject: '🎬 New YouTube Video Ready to Schedule',
     body: `
 Title: ${content.title}

@@ -264,11 +264,11 @@ export default function AffiliateMarketingPage() {
               <div className="flex gap-2">
                 <Input
                   readOnly
-                  value={`https://gamergain.app/ref/${user.referral_code || user.id?.slice(-8) || 'AFFILIATE'}`}
+                  value={`https://getgoodsgratis.app/ref/${user.referral_code || user.id?.slice(-8) || 'AFFILIATE'}`}
                   className="bg-white"
                 />
                 <Button
-                  onClick={() => navigator.clipboard?.writeText(`https://gamergain.app/ref/${user.referral_code || user.id?.slice(-8) || 'AFFILIATE'}`)}
+                  onClick={() => navigator.clipboard?.writeText(`https://getgoodsgratis.app/ref/${user.referral_code || user.id?.slice(-8) || 'AFFILIATE'}`)}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   Copy

@@ -22,7 +22,7 @@ export default __handler(async (req) => {
         const { InvokeLLM } = base44.asServiceRole.integrations.Core;
 
         const adCopy = await InvokeLLM({
-          prompt: `Create a high-converting ad campaign for this mobile game on GamerGain:
+          prompt: `Create a high-converting ad campaign for this mobile game on Get Goods Gratis:
 Game: ${game.title}
 Category: ${game.category}
 Description: ${game.description || 'A fun mobile game'}

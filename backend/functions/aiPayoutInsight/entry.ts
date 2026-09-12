@@ -37,7 +37,7 @@ export default __handler(async (req) => {
       ? completedPayouts.reduce((s, p) => s + p.amount, 0) / completedPayouts.length : 0;
 
     const insight = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are a financial AI advisor analyzing a user's payout history for GamerGain, a survey rewards platform.
+      prompt: `You are a financial AI advisor analyzing a user's payout history for Get Goods Gratis, a survey rewards platform.
 
 User Financial Data:
 - Current Balance: $${balance.toFixed(2)}
@@ -99,7 +99,7 @@ Based on all of the above, provide:
       });
       await base44.integrations.Core.SendEmail({
         to: user.email,
-        subject: '📅 Payout Reminder Set — GamerGain',
+        subject: '📅 Payout Reminder Set — Get Goods Gratis',
         body: `Your payout reminder has been set!\n\n` +
           `<strong>Recommended Payout Date:</strong> ${insight.recommended_payout_date}\n` +
           `<strong>Forecasted Balance:</strong> $${insight.forecasted_balance_at_payout?.toFixed(2)}\n` +
