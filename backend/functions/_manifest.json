@@ -1,4 +1,10 @@
 [
+  "approvalDecide",
+  "approvalQueue",
+  "approverList",
+  "approverSet",
+  "modelReadiness",
+  "modelTrainingExport",
   "abTestAssigner",
   "acceptTerms",
   "adAutoCounterBid",

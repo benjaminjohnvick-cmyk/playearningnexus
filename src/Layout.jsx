@@ -277,6 +277,10 @@ export default function Layout({ children, currentPageName }) {
   { name: 'Tournaments', icon: Trophy, path: 'Tournaments', requireAuth: true }];
 
 
+  if (user?.role === 'admin' || user?.is_approver === true) {
+    navigation.push({ name: 'Approvals', icon: ShieldCheck, path: 'Approvals', requireAuth: true });
+  }
+
   if (user?.role === 'admin') {
     navigation.push({ name: 'Admin', icon: Settings, path: 'AdminDashboard', requireAuth: true });
     navigation.push({ name: 'Platform Settings', icon: Settings, path: 'AdminSettings', requireAuth: true });

@@ -165,6 +165,21 @@ export default function DataDrivenCoverage() {
         ) : <div className="text-sm text-slate-400">Nothing waiting on a human right now.</div>}
       </CardContent></Card>
 
+      {/* Custom-model readiness */}
+      {data.model_readiness ? (
+        <Card><CardContent className="p-5">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-800"><TrendingUp className="w-4 h-4 text-violet-600" /> Custom-model readiness</div>
+            <Badge className="bg-violet-100 text-violet-700">{data.model_readiness.readiness_pct}% ready</Badge>
+          </div>
+          <p className="text-xs text-slate-500 mb-3">How ready your collected first-party data is to train a custom model one day. Blends volume ({data.model_readiness.labeled_examples}/{data.model_readiness.target_examples} labeled examples) and breadth ({data.model_readiness.domains_with_data}/{data.model_readiness.domains_total} domains). Training itself is an external step with a provider — this tracks when there's enough clean data to start.</p>
+          <div className="h-2 rounded-full bg-slate-100 overflow-hidden mb-3"><div className="h-full rounded-full bg-violet-500" style={{ width: `${Math.max(0, Math.min(100, data.model_readiness.readiness_pct))}%` }} /></div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            {Object.entries(data.model_readiness.by_type || {}).map(([k, v]) => <Badge key={k} variant="outline">{k.replace(/_/g, ' ')}: {v}</Badge>)}
+          </div>
+        </CardContent></Card>
+      ) : null}
+
       {/* Gaps */}
       {data.gaps?.length ? (
         <Card><CardContent className="p-5">

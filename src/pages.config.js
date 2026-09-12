@@ -156,9 +156,11 @@ import AutomationCommandCenter from './pages/AutomationCommandCenter';
 import FairTopicPicker from './pages/FairTopicPicker';
 
 import DataDrivenCoverage from './pages/DataDrivenCoverage';
+import Approvals from './pages/Approvals';
 
 export const PAGES = {
     "DataDrivenCoverage": DataDrivenCoverage,
+    "Approvals": Approvals,
     "AdminVideoEngine": AdminVideoEngine,
     "AutomationCommandCenter": AutomationCommandCenter,
     "FairTopicPicker": FairTopicPicker,

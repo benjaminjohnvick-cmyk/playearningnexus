@@ -59,6 +59,10 @@ const LEGAL_BRIEFS: Record<string, string> = {
   // disclosure, affiliate-network terms, and (for the browsing layer) privacy/profiling consent all apply.
   EXTENSION_ENABLED: "BROWSER-EXTENSION-ATTENTION-REWARDS-DESIGN.md",
   EXTENSION_TRACKING_ENABLED: "BROWSER-EXTENSION-ATTENTION-REWARDS-DESIGN.md",
+  // Exporting collected-data-derived examples to train a custom model. The examples are operational (AI actions
+  // + human labels + measured outcomes), first-party and PII-minimized — but using collected data to train a
+  // model is a privacy/consent matter the privacy policy must disclose and counsel must clear before enabling.
+  MODEL_TRAINING_EXPORT_ENABLED: "MODEL-TRAINING-DATA-COUNSEL-NOTE.md",
   // Buddy Chat next-session booking (schedules members to meet again at a set time; matches strangers, holds the
   // next session until the booked time). Pairing-safety, voice-note consent, minors, mandatory pairing,
   // moderation/mandatory-reporting, data retention and notification consent all apply — see the brief.

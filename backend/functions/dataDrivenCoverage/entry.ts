@@ -3,6 +3,7 @@ import { requireInternalOrAdmin } from "../../sdk/internal-guard.ts";
 import {
   dataDrivenCoverageEnabled, buildCoverageReport, snapshotCoverage, coverageTrend, humanReviewQueue,
 } from "../../sdk/data-driven-coverage.ts";
+import { modelTrainingEnabled, modelReadiness } from "../../sdk/model-training.ts";
 
 // dataDrivenCoverage (admin/internal) — the single-page "is my site data-driven?" report. Rolls the autonomy
 // kernel, the optimizer registry, and the OptimizationSignal/AgentPerformanceLog stores into two numbers:
@@ -22,12 +23,13 @@ export default __handler(async (req) => {
     const report = await buildCoverageReport(freshDays);
     if (body.snapshot === true) await snapshotCoverage(report);
 
-    const [trend, queue] = await Promise.all([
+    const [trend, queue, readiness] = await Promise.all([
       coverageTrend(60),
       humanReviewQueue(100),
+      modelTrainingEnabled() ? modelReadiness().catch(() => null) : Promise.resolve(null),
     ]);
 
-    return Response.json({ ok: true, enabled: true, ...report, trend, human_review_queue: queue });
+    return Response.json({ ok: true, enabled: true, ...report, trend, human_review_queue: queue, model_readiness: readiness });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });
   }

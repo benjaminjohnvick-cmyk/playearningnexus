@@ -5,6 +5,7 @@ import {
   domainById, resolvePolicy, computeAgreement, autonomyDecision, currentThresholds, autonomyKillSwitch,
   autonomyAutoOkDefault,
 } from "../../sdk/autonomy-kernel.ts";
+import { notifyApprovers } from "../../sdk/approvals.ts";
 
 // autonomyDecide — the reusable GATE any automated process calls before acting. Give it a domain + a proposal;
 // it computes that domain's trust, asks the kernel, records an AutonomyDecision, and tells the caller whether
@@ -41,10 +42,16 @@ export default __handler(async (req) => {
       created_at: now, updated_at: now,
     }).catch(() => null) as Record<string, unknown> | null;
 
+    // If the AI-prepared output needs a human, ping every approver who covers this domain (in-app + push).
+    let notified = 0;
+    if (!decision.auto_approve && row?.id) {
+      notified = await notifyApprovers(domainId, { decision_id: String(row.id), subject_id: body.subject_id ? String(body.subject_id) : undefined, reason: decision.reason }).catch(() => 0);
+    }
+
     return Response.json({
       ok: true, decision_id: row?.id ?? null, domain: domainId,
       auto_approve: decision.auto_approve, stage: decision.auto_approve ? "approved" : "awaiting_approval",
-      reason: decision.reason, mode: policy.mode, permanent_gate: policy.permanent_gate,
+      reason: decision.reason, mode: policy.mode, permanent_gate: policy.permanent_gate, approvers_notified: notified,
     });
   } catch (e) {
     return Response.json({ error: String((e as Error)?.message || e) }, { status: 500 });
