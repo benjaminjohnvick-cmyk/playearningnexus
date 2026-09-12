@@ -395,6 +395,12 @@
       "function": "dataDrivenCoverage",
       "body": { "snapshot": true },
       "_comment": "Snapshots the two headline coverage numbers (BUILD = loop wired, LIVE = data flowing) as OptimizationSignal rows so the Data-Driven Coverage dashboard trends them over time. Read-only reporting."
+    },
+    {
+      "name": "daily-custom-model-eval",
+      "cron": "30 8 * * *",
+      "function": "customModelEval",
+      "_comment": "Step-by-step accuracy-vs-incumbent evaluation of the custom model: re-trains on older labeled decisions, scores the newer ones against the incumbent AI's actual labels, records custom_model_accuracy_pct. Readiness rises as data accumulates; the model is 'ready' only when it matches the incumbent at target accuracy."
     }
   ]
 }

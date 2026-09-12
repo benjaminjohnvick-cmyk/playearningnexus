@@ -97,6 +97,9 @@ const OPERATIONAL_FLAGS = new Set<string>([
   "REWARDED_VIDEO_ENABLED", "SEASON_PASS_ENABLED", "SPONSORED_PUSH_EMAIL_ENABLED", "STEP_UP_ENABLED",
   "SURVEY_AUTO_TRANSLATE_ENABLED", "SURVEY_ROUTING_ARBITRAGE_ENABLED", "SURVEY_TEST_FIRST_ENABLED",
   "TIER_AUTORENEW_REMINDER_ENABLED", "TUTORIAL_ENABLED",
+  // Operational: switches which model backend serves decisions. No new legal question (the data/export legal
+  // question is MODEL_TRAINING_EXPORT_ENABLED in LEGAL_BRIEFS); money/identity/legal stay human-gated regardless.
+  "MODEL_AUTO_PROMOTE_ENABLED",
 ]);
 
 export default __handler(async (req) => {

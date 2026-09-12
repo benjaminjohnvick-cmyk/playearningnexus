@@ -41,10 +41,15 @@ export default function DataDrivenCoverage() {
   const [busy, setBusy] = useState('');
   const timer = useRef(null);
 
+  const [model, setModel] = useState(null);
   const load = useCallback(async () => {
     try {
-      const r = await base44.functions.invoke('dataDrivenCoverage', {});
+      const [r, m] = await Promise.all([
+        base44.functions.invoke('dataDrivenCoverage', {}),
+        base44.functions.invoke('customModelStatus', {}).catch(() => null),
+      ]);
       setData(r?.data ?? r);
+      setModel(m?.data ?? m);
     } catch (e) {
       toast.error('Could not load coverage: ' + (e?.message || e));
     } finally { setLoading(false); }
@@ -65,6 +70,17 @@ export default function DataDrivenCoverage() {
     } catch (e) {
       toast.error('Failed: ' + (e?.message || e));
     } finally { setBusy(''); }
+  };
+
+  const promote = async (backend) => {
+    setBusy('promote');
+    try {
+      const r = await base44.functions.invoke('modelPromote', { backend });
+      const res = r?.data ?? r;
+      if (res?.error) toast.error(res.error); else toast.success(backend === 'custom' ? 'Promoted to your custom model.' : 'Rolled back to shadow.');
+      await load();
+    } catch (e) { toast.error('Failed: ' + (e?.message || e)); }
+    finally { setBusy(''); }
   };
 
   if (loading) return <div className="flex items-center justify-center h-96"><Loader2 className="w-6 h-6 animate-spin text-slate-400" /></div>;
@@ -176,6 +192,40 @@ export default function DataDrivenCoverage() {
           <div className="h-2 rounded-full bg-slate-100 overflow-hidden mb-3"><div className="h-full rounded-full bg-violet-500" style={{ width: `${Math.max(0, Math.min(100, data.model_readiness.readiness_pct))}%` }} /></div>
           <div className="flex flex-wrap gap-2 text-xs">
             {Object.entries(data.model_readiness.by_type || {}).map(([k, v]) => <Badge key={k} variant="outline">{k.replace(/_/g, ' ')}: {v}</Badge>)}
+          </div>
+        </CardContent></Card>
+      ) : null}
+
+      {/* Custom model — accuracy vs the incumbent AI */}
+      {model && !model.error ? (
+        <Card><CardContent className="p-5">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-800"><Activity className="w-4 h-4 text-fuchsia-600" /> Your custom model — accuracy vs the incumbent AI</div>
+            <Badge className={model.ready ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}>{model.ready ? 'READY' : 'not ready'}</Badge>
+          </div>
+          <div className="flex items-end gap-3 mt-2">
+            <div className="text-3xl font-bold text-slate-900">{model.accuracy_pct ?? 0}%</div>
+            <div className="text-xs text-slate-500 mb-1">match with the incumbent · target {model.target_pct ?? 95}% · {model.test_samples ?? 0}/{model.min_samples ?? 200} test decisions · backend <b>{model.backend}</b></div>
+          </div>
+          <div className="h-2 rounded-full bg-slate-100 overflow-hidden my-2">
+            <div className="h-full rounded-full bg-fuchsia-500" style={{ width: `${Math.max(0, Math.min(100, model.accuracy_pct || 0))}%` }} />
+          </div>
+          <p className="text-xs text-slate-500">{model.note}</p>
+          {model.by_domain && Object.keys(model.by_domain).length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {Object.entries(model.by_domain).map(([k, v]) => <Badge key={k} variant="outline" className="text-[10px]">{k}: {v.accuracy_pct}% ({v.n})</Badge>)}
+            </div>
+          )}
+          <div className="mt-2"><Spark series={model.trend} color="#c026d3" /></div>
+          <div className="flex gap-2 mt-3">
+            {model.backend !== 'custom' ? (
+              <Button size="sm" className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white" disabled={busy === 'promote' || !model.ready} onClick={() => promote('custom')}>
+                {busy === 'promote' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Promote to custom'}
+              </Button>
+            ) : (
+              <Button size="sm" variant="outline" disabled={busy === 'promote'} onClick={() => promote('claude_shadow')}>Roll back to shadow</Button>
+            )}
+            {!model.ready && model.backend !== 'custom' && <span className="text-[11px] text-slate-400 self-center">Promote unlocks once it matches the incumbent. Turn on auto-switch in settings to flip automatically.</span>}
           </div>
         </CardContent></Card>
       ) : null}
