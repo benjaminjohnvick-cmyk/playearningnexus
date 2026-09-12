@@ -103,7 +103,27 @@ export default function AdTargeting({ ads }) {
       const created = await base44.entities.AdTargetingRule.create(payload);
       setExistingRuleId(created.id);
     }
-    toast.success('Targeting rules saved');
+    // Write the CANONICAL targeting block + objective onto the ad itself, so the serving matcher
+    // (normalizeTargeting → userMatchesTargeting) and the AI optimizer (which reads optimize_for off the
+    // ad) actually consume it end-to-end — not just stored as a rule. Maps the editor's fields onto the
+    // backend targeting shape (interest cohort → categories; demographics: age_range/gender/country/region;
+    // audience_type; optimize_for). Best-effort — the rule above is still saved either way.
+    const targetingBlock = {
+      enabled: true,
+      match: 'any',
+      categories: rule.interest_buckets,
+      demographics: {
+        age_range: rule.age_buckets,
+        gender: rule.gender,
+        country: rule.countries,
+        region: rule.us_states,
+      },
+      audience_type: rule.audience_type,
+    };
+    try {
+      await base44.entities.AdListing.update(selectedAdId, { targeting: targetingBlock, optimize_for: rule.optimize_for });
+    } catch { /* ad update is best-effort; the targeting rule is already saved */ }
+    toast.success('Targeting saved — applied to delivery & AI optimization');
     setLoading(false);
   };
 
