@@ -11,6 +11,7 @@
 // survey. It never targets an individual, and untargeted ads serve to everyone. Pure/deterministic.
 
 import { snapBool } from "./settings.ts";
+import { normalizeAudience, userMatchesAudience, audienceSummary, type AudienceTargeting } from "./ad-audience.ts";
 
 export const adTargetingEnabled = () => snapBool("AD_TARGETING_ENABLED", true);
 
@@ -32,6 +33,7 @@ export interface AdTargeting {
   enabled: boolean;
   match: "any" | "all"; // "any" = user matches if ANY chosen field matches; "all" = every chosen field must match
   criteria: Partial<Record<TargetingField, string[]>>;
+  audience?: AudienceTargeting | null; // demographics (age/gender/country/region) + new/existing audience type
 }
 
 /**
@@ -51,17 +53,20 @@ export function normalizeTargeting(raw: unknown): AdTargeting | null {
       if (vals.length) criteria[f] = vals;
     }
   }
-  if (!Object.keys(criteria).length) return null;
+  const audience = normalizeAudience(raw); // demographics + new/existing audience type (may be null)
+  if (!Object.keys(criteria).length && !audience) return null;
   return {
     enabled: r.enabled !== false,
     match: r.match === "all" ? "all" : "any",
     criteria,
+    audience,
   };
 }
 
-/** True if this ad carries an active, non-empty targeting cohort. */
+/** True if this ad carries an active, non-empty targeting cohort (interest criteria OR audience). */
 export function isTargeted(targeting: AdTargeting | null | undefined): boolean {
-  return !!(targeting && targeting.enabled !== false && targeting.criteria && Object.keys(targeting.criteria).length);
+  return !!(targeting && targeting.enabled !== false &&
+    ((targeting.criteria && Object.keys(targeting.criteria).length) || targeting.audience));
 }
 
 /**
@@ -75,6 +80,7 @@ export function isTargeted(targeting: AdTargeting | null | undefined): boolean {
 export function userMatchesTargeting(
   targeting: AdTargeting | null | undefined,
   kycAnswers: Record<string, unknown> | null | undefined,
+  user?: Record<string, unknown> | null,
 ): boolean {
   if (!adTargetingEnabled()) return true;
   if (!isTargeted(targeting)) return true;
@@ -89,10 +95,17 @@ export function userMatchesTargeting(
     return wanted.some((w) => haveSet.has(String(w).toLowerCase()));
   };
 
+  // Interest/behavior cohort match (empty criteria = passes, so an audience-only ad still serves).
   const entries = Object.entries(t.criteria) as [TargetingField, string[]][];
-  return t.match === "all"
+  const interestMatch = entries.length === 0 ? true : (t.match === "all"
     ? entries.every(([f, w]) => fieldMatch(f, w))
-    : entries.some(([f, w]) => fieldMatch(f, w));
+    : entries.some(([f, w]) => fieldMatch(f, w)));
+
+  // Demographic + new/existing audience match (evaluated against the user object when provided; when the
+  // caller can't supply a user, audience constraints pass so an ad is never wrongly suppressed).
+  const audienceMatch = (t.audience && user) ? userMatchesAudience(t.audience, user) : true;
+
+  return interestMatch && audienceMatch;
 }
 
 /** A short human-readable summary of a cohort, for advertiser UI / logs. */
@@ -100,5 +113,7 @@ export function targetingSummary(targeting: AdTargeting | null | undefined): str
   if (!isTargeted(targeting)) return "Everyone (untargeted)";
   const t = targeting as AdTargeting;
   const parts = Object.entries(t.criteria).map(([f, w]) => `${f}: ${(w as string[]).join(" / ")}`);
-  return `${t.match === "all" ? "Match ALL" : "Match ANY"} — ${parts.join("; ")}`;
+  const aud = audienceSummary(t.audience);
+  const interest = parts.length ? `${t.match === "all" ? "Match ALL" : "Match ANY"} — ${parts.join("; ")}` : "";
+  return [interest, aud].filter(Boolean).join(" | ") || "Everyone (untargeted)";
 }

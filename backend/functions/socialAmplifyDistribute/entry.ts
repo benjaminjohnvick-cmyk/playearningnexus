@@ -34,7 +34,7 @@ export default __handler(async (req) => {
     let queued = 0, projectedReach = 0, projectedImpressions = 0, projectedValue = 0, skippedByCohort = 0;
     for (const m of members) {
       // Cohort targeting: skip opted-in members who don't match the advertiser's chosen cohort.
-      if (!userMatchesTargeting(targeting, m.kyc_answers as Record<string, unknown> | undefined)) { skippedByCohort++; continue; }
+      if (!userMatchesTargeting(targeting, m.kyc_answers as Record<string, unknown> | undefined, m)) { skippedByCohort++; continue; }
       const reach = Math.max(0, Number(m.social_reach) || 0);
       if (reach <= 0) continue;
       const c = socialPostContribution(reach);

@@ -511,6 +511,26 @@ for (const fn of ['aiCreativeSuiteGenerate','aiCreativeSuiteStatus','aiCreativeS
 check(/if \(opts\?\.founding\) return all;/.test(read('backend/sdk/advertiser-features.ts')), 'founding still gets the WHOLE add-on catalog free (featuresForContext)');
 
 // ============================================================================================================
+console.log('\n\x1b[1m18) AD METRICS — full network metric set, tracked + AI-optimized, demographic & audience targeting\x1b[0m');
+const adMetrics = read('backend/sdk/ad-metrics.ts');
+check(/export const ecpm\b/.test(adMetrics) && /export const cpp\b/.test(adMetrics) && /export const ipm\b/.test(adMetrics) && /export const arpdau\b/.test(adMetrics) && /export const fillRatePct\b/.test(adMetrics), 'ad-metrics.ts implements eCPM, CPP, IPM, ARPDAU, fill rate');
+check(/AD_METRIC_WINDOWS\s*=\s*\[1, 3, 7, 14, 28, 90, 365\]/.test(adMetrics), 'windowed D1–D365 ROAS curve defined (by-timespan)');
+check(/export async function computePublisherAdMetrics/.test(adMetrics) && /export async function computeAdNetworkAdvertiserMetrics/.test(adMetrics), 'publisher + advertiser metric computers exist');
+check(/"AD_METRICS_ENABLED"[\s\S]*?default: "1"/.test(read('backend/sdk/settings.ts')), 'AD_METRICS_ENABLED registered, default ON (everything-on)');
+const adOpt = read('backend/sdk/ad-metrics-optimizer.ts');
+check(/OptimizationSignal/.test(adOpt) && /AgentLearningMemory/.test(adOpt), 'optimizer TRACKS via OptimizationSignal + AgentLearningMemory (no new tables)');
+check(/gateAndRun\("ad_optimization"/.test(adOpt), 'every optimizer action routes through the autonomy kernel (ad_optimization)');
+check(/spend_change:\s*0/.test(adOpt), 'optimizer never raises spend (spend_change: 0, reversible)');
+check(/"adMetricsSweep"/.test(read('backend/scheduler/schedules.json')), 'adMetricsSweep is scheduled (tracked over time)');
+check(/"ad_metrics_optimizer"/.test(read('backend/agents-runtime/agents.json')), 'ad_metrics_optimizer agent registered');
+const adAud = read('backend/sdk/ad-audience.ts');
+check(/DEMOGRAPHIC_FIELDS\s*=\s*\["age_range", "gender", "country", "region"\]/.test(adAud), 'demographic targeting fields: age_range, gender, country, region');
+check(/AUDIENCE_TYPES\s*=\s*\["all", "new", "existing"\]/.test(adAud), 'new-vs-existing audience targeting');
+check(/OPTIMIZE_OBJECTIVES\s*=\s*\["roas", "new_users", "existing_users"\]/.test(adAud), 'optimize_for objectives: roas, new_users, existing_users');
+check(/userMatchesAudience/.test(read('backend/sdk/ad-targeting.ts')), 'targeting matcher evaluates demographics + audience type');
+check(/optimize_for: normalizeObjective/.test(read('backend/functions/createAdGridAd/entry.ts')), 'advertisers set optimize_for at ad creation');
+
+// ============================================================================================================
 console.log('');
 if (failures === 0) {
   console.log('\x1b[1;32m✓ LOAD TEST PASSED — everything ships at the floor (AI on Llama free tier, hosting egress capped).\x1b[0m\n');

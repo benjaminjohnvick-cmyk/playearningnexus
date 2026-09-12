@@ -119,7 +119,7 @@
       "name": "daily-delivery-makegood-sweep",
       "cron": "0 11 * * *",
       "function": "deliveryMakeGoodSweep",
-      "_comment": "All-tiers DELIVERY make-good true-up. For every active advertising seat past its guarantee term, compares delivered impressions to the guaranteed volume and, on a shortfall, grants a FREE make-good (extends delivery at no charge until the guaranteed volume is served \u2014 bounded, never more than what was sold), records an AdvertiserMakeGood, and emails the advertiser. Closes out make-goods once met/expired. Guarantees delivery we control, never revenue/ROI. Respects DELIVERY_GUARANTEE_ENABLED."
+      "_comment": "All-tiers DELIVERY make-good true-up. For every active advertising seat past its guarantee term, compares delivered impressions to the guaranteed volume and, on a shortfall, grants a FREE make-good (extends delivery at no charge until the guaranteed volume is served — bounded, never more than what was sold), records an AdvertiserMakeGood, and emails the advertiser. Closes out make-goods once met/expired. Guarantees delivery we control, never revenue/ROI. Respects DELIVERY_GUARANTEE_ENABLED."
     },
     {
       "name": "weekly-advertiser-ai-report",
@@ -333,13 +333,13 @@
       "name": "video-autopilot-tick",
       "cron": "35 */4 * * *",
       "function": "aiVideoAutopilotTick",
-      "_comment": "Every 4 hours: advance any run whose poll is ready \u2014 learn from votes, select render winners, then auto-approve (if trust earned) or park at the human gate."
+      "_comment": "Every 4 hours: advance any run whose poll is ready — learn from votes, select render winners, then auto-approve (if trust earned) or park at the human gate."
     },
     {
       "name": "feedback-auto-collect",
       "cron": "45 * * * *",
       "function": "feedbackAutoCollect",
-      "_comment": "Hourly: mine the site's page telemetry (dwell/scroll/friction/purchases) into implicit feedback signals per domain \u2014 automatic, no user prompts."
+      "_comment": "Hourly: mine the site's page telemetry (dwell/scroll/friction/purchases) into implicit feedback signals per domain — automatic, no user prompts."
     },
     {
       "name": "omni-channel-livestream-build",
@@ -376,6 +376,12 @@
       "cron": "30 11 * * *",
       "function": "orderDelayNotice",
       "_comment": "FTC 30-Day Rule: notify buyers of undelivered orders past their ETA (or 30 days) and offer cancel-for-refund. Notification only; never moves money."
+    },
+    {
+      "name": "daily-ad-metrics-sweep",
+      "cron": "20 7 * * *",
+      "function": "adMetricsSweep",
+      "_comment": "MEASURE->TRACK->LEARN->IMPROVE for the ad metric set: computes publisher + per-advertiser network metrics, tracks them as OptimizationSignal history, and runs the AI delivery optimizer through the autonomy kernel (ad_optimization). Reversible, no spend increase."
     }
   ]
 }

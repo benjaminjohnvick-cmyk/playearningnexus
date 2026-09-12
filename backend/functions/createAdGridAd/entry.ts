@@ -5,6 +5,7 @@ import { adgridQuestionsPerThumbnail } from "../../sdk/adgrid.ts";
 import { recordContentLicense, contentLicenseVersion } from "../../sdk/content-license.ts";
 import { normalizeAdMediaInput } from "../../sdk/ad-media.ts";
 import { normalizeTargeting } from "../../sdk/ad-targeting.ts";
+import { normalizeObjective } from "../../sdk/ad-audience.ts";
 
 // createAdGridAd (authenticated advertiser) — create a PPC AdGrid ad: a product thumbnail + 2 survey
 // questions (A-D options) + a product page (name, image, Buy Now). The advertiser writes it by hand, or sets
@@ -73,8 +74,10 @@ export default __handler(async (req) => {
       media_type: media.media_type,
       media_url: media.media_url || null,
       poster_url: media.poster_url || null,
-      // Cohort targeting from KYC survey answers (null → everyone).
+      // Cohort targeting from KYC survey answers + demographics/audience (null → everyone).
       targeting: targeting,
+      // AI delivery objective: roas (default) | new_users | existing_users — steers the ad-metrics optimizer.
+      optimize_for: normalizeObjective(b.optimize_for),
       product_page: { description: String(productPage?.description || "").slice(0, 2000) },
       questions,
       // Premium "extra minute" ad-free placement — a 60s full-screen ad a premium member watches once a day

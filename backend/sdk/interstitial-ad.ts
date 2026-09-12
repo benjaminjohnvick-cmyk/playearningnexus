@@ -55,7 +55,7 @@ export async function pickInterstitialAd(base44: any, db: any, opts?: { ppcPrior
   // Cohort targeting: keep only creatives whose targeting matches THIS user's Know-Your-Customer answers.
   // Untargeted creatives always pass; if nothing matches, the house fallback below still fills the slot.
   const kycAnswers = (opts?.user?.kyc_answers as Record<string, unknown> | undefined) ?? null;
-  slots = (slots || []).filter((s) => userMatchesTargeting(normalizeTargeting(s.targeting), kycAnswers));
+  slots = (slots || []).filter((s) => userMatchesTargeting(normalizeTargeting(s.targeting), kycAnswers, opts?.user as Record<string, unknown> | undefined));
 
   // Self-learning relevance bias: order the matching slots by learned cohort affinity for this user, so each
   // priority tier's first-match picks the most relevant creative. No-op when the AI layer is off or untrained.

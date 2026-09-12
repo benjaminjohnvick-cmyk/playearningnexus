@@ -49,7 +49,7 @@ export default __handler(async (req) => {
     let eligible = (ads || []).filter((a) =>
       !notInterested.has(String(a.id)) &&
       !answeredToday.has(String(a.id)) &&
-      userMatchesTargeting(normalizeTargeting(a.targeting), kycAnswers),
+      userMatchesTargeting(normalizeTargeting(a.targeting), kycAnswers, user as Record<string, unknown> | undefined),
     );
 
     // Self-learning AI layer: order the eligible ads by learned cohort affinity for THIS user (a relevance

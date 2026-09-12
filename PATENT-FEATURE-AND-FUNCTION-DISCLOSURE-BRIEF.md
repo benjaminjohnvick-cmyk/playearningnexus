@@ -82,7 +82,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 2. Software engines (SDK modules) — 214  *(the 14 most-recent are listed in §6)*
+## 2. Software engines (SDK modules) — 217  *(the 17 most-recent are listed in §6)*
 
 *Each engine is a self-contained module implementing one subsystem's logic. Descriptions are the module's own header summary from source.*
 
@@ -286,7 +286,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 3. Complete backend function inventory — 1,009  *(the 26 most-recent are listed in §6)*
+## 3. Complete backend function inventory — 1,011  *(the 28 most-recent are listed in §6)*
 
 *Every backend function (HTTP endpoint, scheduled job, or entity-automation), grouped by domain. Each description is sourced from the function's own code header.*
 
@@ -1418,11 +1418,13 @@ The platform exposes ~1,200 admin-configurable capability flags — every one a 
 
 *These items were added to the codebase after the §2–§5 sweep was last taken, and are folded into the totals above. Listed here so the inventory is complete and counsel can assess the newest features. (Regenerate/refresh with `deploy-kit/inventory-drift-check.mjs`.)*
 
-### 6.1 Functions (26)
+### 6.1 Functions (28)
 
 - `adEngagementRank` — the AI ad-optimization read: given the caller and a set of candidate ads,
 - `adEngagementRecord` — the write behind the two ad buttons on every advertisement.
 - `adEngagementStats` — the advertiser-facing view of the two ad buttons.
+- `adMetricsReport` — the full network-standard advertising metric set (eCPM, CPM, IPM, CPP, windowed D1–D365 ROAS, fill rate, ARPDAU, retention, plus the new-vs-existing audience breakdown), measured from real activity, on demand for an advertiser or (admin) the platform publisher view.
+- `adMetricsSweep` — the scheduled MEASURE→TRACK→LEARN→IMPROVE pass: computes the metric set, tracks it as OptimizationSignal history, and runs the AI delivery optimizer through the autonomy kernel (reversible delivery re-prioritization within caps, honoring each advertiser's optimize_for objective; never raises spend).
 - `adTargetingAiStatus` — admin READ of the self-learning ad-targeting layer: whether it's enabled/killed, its
 - `adTargetingLearn` — the self-learning pass. Samples recent PPC responses (each is a creative VIEW with an
 - `advertiserSeoAssist` — an advertiser optimizes their OWN product/landing listing for SEO
@@ -1447,9 +1449,12 @@ The platform exposes ~1,200 admin-configurable capability flags — every one a 
 - `sessionReport` — a viewer reports a live session. Distinct reporters are counted; at HOSTING_MODERATION_REPORT_
 - `sessionSocialAnnounce` — puts a LIVE hosted session onto members' SOCIAL FEEDS. Reuses the existing
 
-### 6.2 Engines (14)
+### 6.2 Engines (17)
 
+- **`ad-audience`** — ad-audience.ts — demographic targeting (age_range, gender, country, region) + new-vs-existing audience targeting/optimization, layered on the interest cohorts; pure matcher + audience classifier used on the ad-serving path and by the optimizer.
 - **`ad-engagement`** — ad-engagement.ts — the "engagement signals" layer for the Autonomous Advertising Engine.
+- **`ad-metrics`** — ad-metrics.ts — the full network-standard advertising metric engine (eCPM, CPM, IPM, CPP, windowed ROAS curve, publisher-side fill rate/ARPDAU/retention, audience breakdown) computed from real platform data; measured, never guaranteed.
+- **`ad-metrics-optimizer`** — ad-metrics-optimizer.ts — the MEASURE→LEARN→IMPROVE loop for the ad metric set: tracks each metric as OptimizationSignal history + AgentLearningMemory, decides a reversible delivery-priority action honoring the advertiser's optimize_for objective, and routes it through the autonomy kernel (ad_optimization) — never raising spend.
 - **`ad-targeting-ai`** — ad-targeting-ai.ts — the self-learning, self-improving layer over ad cohort targeting.
 - **`ad-targeting`** — ad-targeting.ts — advertiser cohort targeting from first-party Know-Your-Customer (KYC) survey data.
 - **`advertised-products`** — advertised-products.ts — the bridge that makes the livestream a placement of the ADVERTISING ecosystem:

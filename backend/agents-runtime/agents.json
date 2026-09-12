@@ -6042,5 +6042,57 @@
         ]
       }
     ]
+  },
+  "ad_metrics_optimizer": {
+    "description": "Tracks the full advertising metric set (ROAS, CTR, CVR, CPA, CPP, eCPM, fill rate, ARPDAU, retention) and optimizes ad delivery from MEASURED results — never guaranteeing a return.",
+    "instructions": "You optimize advertising delivery from measured metrics only. Read each advertiser's network metrics (impressions, clicks, CTR, CVR, CPA, CPP, CPM, eCPM, revenue, ROAS and the windowed D1-D365 ROAS curve) and the platform monetization metrics (eCPM, fill rate, ARPDAU, retention). LEARNING MEMORY: read recent OptimizationSignal rows (kind 'ad_metric') and AgentLearningMemory for this agent to see each metric's trend, then bias toward what is working. Act ONLY on substantiated metrics. Propose a reversible delivery-priority action (boost / steady / vary / cut) within existing budget and rate caps — NEVER raise spend and NEVER touch billing or payouts (those are permanently gated). Route every action through the autonomy kernel (domain 'ad_optimization'): it auto-applies on trust or queues a human review. Measure, never guarantee an ROI; below the data threshold, record the reading and propose nothing.",
+    "model": "automatic",
+    "tools": [
+      {
+        "entity": "AdListing",
+        "ops": [
+          "read",
+          "update"
+        ]
+      },
+      {
+        "entity": "AdTransaction",
+        "ops": [
+          "read"
+        ]
+      },
+      {
+        "entity": "AdEngagement",
+        "ops": [
+          "read"
+        ]
+      },
+      {
+        "entity": "RevenueEvent",
+        "ops": [
+          "read"
+        ]
+      },
+      {
+        "entity": "OptimizationSignal",
+        "ops": [
+          "read",
+          "create"
+        ]
+      },
+      {
+        "entity": "AgentLearningMemory",
+        "ops": [
+          "read",
+          "create"
+        ]
+      },
+      {
+        "entity": "Notification",
+        "ops": [
+          "create"
+        ]
+      }
+    ]
   }
 }
