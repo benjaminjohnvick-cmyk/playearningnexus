@@ -388,6 +388,13 @@
       "cron": "40 8 * * *",
       "function": "aiTrendSocialAds",
       "_comment": "Reactive, current-events social ADS for the business (Mint-Mobile style) from the live brand-safe trend pool, right after the morning trend refresh. Queued disclosed to consenting members (member-approval by default); tracked in the ad-metrics own-ad social performance."
+    },
+    {
+      "name": "daily-data-driven-coverage",
+      "cron": "0 8 * * *",
+      "function": "dataDrivenCoverage",
+      "body": { "snapshot": true },
+      "_comment": "Snapshots the two headline coverage numbers (BUILD = loop wired, LIVE = data flowing) as OptimizationSignal rows so the Data-Driven Coverage dashboard trends them over time. Read-only reporting."
     }
   ]
 }

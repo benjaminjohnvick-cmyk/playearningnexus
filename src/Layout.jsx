@@ -283,6 +283,7 @@ export default function Layout({ children, currentPageName }) {
     navigation.push({ name: 'KYC Survey Editor', icon: Sparkles, path: 'KYCSurveyAdmin', requireAuth: true });
     navigation.push({ name: 'AI Live Oversight', icon: Brain, path: 'AILiveOversight', requireAuth: true });
     navigation.push({ name: 'Autonomy Oversight', icon: Gauge, path: 'AutonomyOversight', requireAuth: true });
+    navigation.push({ name: 'Data-Driven Coverage', icon: Gauge, path: 'DataDrivenCoverage', requireAuth: true });
     navigation.push({ name: 'AI Optimization', icon: Brain, path: 'AIOptimization', requireAuth: true });
     navigation.push({ name: 'Pricing Feedback', icon: DollarSign, path: 'AdminPricingFeedback', requireAuth: true });
     navigation.push({ name: 'PayPal', icon: DollarSign, path: 'PayPalManagement', requireAuth: true });
