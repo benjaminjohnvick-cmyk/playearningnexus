@@ -22,9 +22,12 @@ import type { TrainingExample } from "./model-training.ts";
 
 export const modelBackend = () => snapString("MODEL_BACKEND", "claude_shadow");
 export const modelShadowEnabled = () => snapBool("MODEL_SHADOW_ENABLED", true);
-export const modelAccuracyTargetPct = () => Math.min(100, Math.max(1, snapNumber("MODEL_ACCURACY_TARGET_PCT", 95)));
+export const modelAccuracyFloorPct = () => Math.max(0, snapNumber("MODEL_ACCURACY_TARGET_PCT", 0)); // optional absolute floor (0 = off)
+export const modelExceedMarginPct = () => Math.max(0, snapNumber("MODEL_EXCEED_MARGIN_PCT", 0.5));
+export const modelPerFunctionMinSamples = () => Math.max(1, Math.round(snapNumber("MODEL_PER_FUNCTION_MIN_SAMPLES", 30)));
 export const modelMinEvalSamples = () => Math.max(1, Math.round(snapNumber("MODEL_MIN_EVAL_SAMPLES", 200)));
-export const modelAutoPromoteEnabled = () => snapBool("MODEL_AUTO_PROMOTE_ENABLED", false);
+export const modelAutoPromoteEnabled = () => snapBool("MODEL_AUTO_PROMOTE_ENABLED", true);
+export const modelAutoRollbackEnabled = () => snapBool("MODEL_AUTO_ROLLBACK_ENABLED", true);
 export const modelReadyStreakRequired = () => Math.max(1, Math.round(snapNumber("MODEL_READY_STREAK_REQUIRED", 3)));
 // The "plug in your own model" seam: point this at YOUR trained model's HTTP endpoint (any provider / your own
 // server). When the backend is "custom" and this is set, serve() calls it; until then serve() uses the built-in

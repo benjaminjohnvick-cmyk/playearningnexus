@@ -196,27 +196,60 @@ export default function DataDrivenCoverage() {
         </CardContent></Card>
       ) : null}
 
-      {/* Custom model — accuracy vs the incumbent AI */}
+      {/* Custom model — YOUR accuracy vs the existing AI's accuracy (switch when yours exceeds) */}
       {model && !model.error ? (
         <Card><CardContent className="p-5">
           <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-800"><Activity className="w-4 h-4 text-fuchsia-600" /> Your custom model — accuracy vs the incumbent AI</div>
-            <Badge className={model.ready ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}>{model.ready ? 'READY' : 'not ready'}</Badge>
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-800"><Activity className="w-4 h-4 text-fuchsia-600" /> Your model vs the existing AI — output accuracy</div>
+            <Badge className={model.ready ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}>{model.ready ? 'EXCEEDS — clear to switch' : 'not ahead yet'}</Badge>
           </div>
-          <div className="flex items-end gap-3 mt-2">
-            <div className="text-3xl font-bold text-slate-900">{model.accuracy_pct ?? 0}%</div>
-            <div className="text-xs text-slate-500 mb-1">match with the incumbent · target {model.target_pct ?? 95}% · {model.test_samples ?? 0}/{model.min_samples ?? 200} test decisions · backend <b>{model.backend}</b></div>
+          <div className="flex items-end gap-4 mt-2">
+            <div><div className="text-3xl font-bold text-fuchsia-700">{model.custom_accuracy_pct ?? 0}%</div><div className="text-[11px] text-slate-500">your model</div></div>
+            <div className="text-slate-400 mb-2">vs</div>
+            <div><div className="text-3xl font-bold text-slate-700">{model.incumbent_accuracy_pct ?? 0}%</div><div className="text-[11px] text-slate-500">existing AI</div></div>
+            <div className="text-xs text-slate-500 mb-1 ml-auto text-right">must beat by ≥ {model.margin_pct ?? 0.5} pts<br/>{model.test_samples ?? 0}/{model.min_samples ?? 200} test decisions · backend <b>{model.backend}</b></div>
           </div>
-          <div className="h-2 rounded-full bg-slate-100 overflow-hidden my-2">
-            <div className="h-full rounded-full bg-fuchsia-500" style={{ width: `${Math.max(0, Math.min(100, model.accuracy_pct || 0))}%` }} />
+          <div className="relative h-2 rounded-full bg-slate-100 overflow-hidden my-2">
+            <div className="absolute h-full bg-slate-300" style={{ width: `${Math.max(0, Math.min(100, model.incumbent_accuracy_pct || 0))}%` }} />
+            <div className="absolute h-full rounded-full bg-fuchsia-500 opacity-80" style={{ width: `${Math.max(0, Math.min(100, model.custom_accuracy_pct || 0))}%` }} />
           </div>
           <p className="text-xs text-slate-500">{model.note}</p>
+
+          {/* The two-part switch gate: EVERY function individually AND the whole must beat the existing AI. */}
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            <div className={`rounded-lg border p-2 text-xs flex items-center gap-2 ${model.overall_exceeds ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+              {model.overall_exceeds ? <Check className="w-4 h-4 shrink-0" /> : <X className="w-4 h-4 shrink-0 text-slate-400" />}
+              <span><b>As a whole</b> — {model.overall_exceeds ? 'ahead of the existing AI' : 'not ahead yet'}</span>
+            </div>
+            <div className={`rounded-lg border p-2 text-xs flex items-center gap-2 ${model.all_functions_exceed ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+              {model.all_functions_exceed ? <Check className="w-4 h-4 shrink-0" /> : <X className="w-4 h-4 shrink-0 text-slate-400" />}
+              <span><b>Every function</b> — {model.all_functions_exceed ? 'all beat it individually' : `${(model.functions_passing || []).length} ahead · ${(model.functions_failing || []).length} behind · ${(model.functions_insufficient || []).length} need data`}</span>
+            </div>
+          </div>
+          <div className="text-[10px] text-slate-400 mt-1">The site switches over only when BOTH are green — every function beats the existing AI individually, and the model beats it overall (≥{model.per_function_min ?? 30} decisions per function to confirm one).</div>
+
           {model.by_domain && Object.keys(model.by_domain).length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {Object.entries(model.by_domain).map(([k, v]) => <Badge key={k} variant="outline" className="text-[10px]">{k}: {v.accuracy_pct}% ({v.n})</Badge>)}
+            <div className="mt-3 border-t pt-2">
+              <div className="text-[11px] font-semibold text-slate-600 mb-1.5">Function-by-function (your % vs existing AI %)</div>
+              <div className="flex flex-wrap gap-1.5">
+                {Object.entries(model.by_domain).map(([k, v]) => {
+                  const cls = !v.confirmed
+                    ? 'bg-amber-50 border-amber-200 text-amber-700'   // has data but not enough to confirm — blocks
+                    : v.exceeds
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-700' // confirmed and beating
+                      : 'bg-rose-50 border-rose-200 text-rose-700';        // confirmed but behind — blocks
+                  const mark = !v.confirmed ? '◒' : v.exceeds ? '✓' : '✗';
+                  return (
+                    <span key={k} className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] ${cls}`} title={!v.confirmed ? 'Needs more samples to confirm — blocks the switch' : v.exceeds ? 'Beats the existing AI' : 'Behind the existing AI — blocks the switch'}>
+                      <span className="font-bold">{mark}</span>{k}: {v.custom_pct}% vs {v.incumbent_pct}% <span className="opacity-60">({v.n})</span>
+                    </span>
+                  );
+                })}
+              </div>
+              <div className="text-[10px] text-slate-400 mt-1.5">✓ beating · ✗ behind (blocks) · ◒ needs more data (blocks)</div>
             </div>
           )}
-          <div className="mt-2"><Spark series={model.trend} color="#c026d3" /></div>
+          <div className="mt-2"><Spark series={model.trend?.custom} color="#c026d3" /></div>
           <div className="flex gap-2 mt-3">
             {model.backend !== 'custom' ? (
               <Button size="sm" className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white" disabled={busy === 'promote' || !model.ready} onClick={() => promote('custom')}>

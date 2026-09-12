@@ -51,31 +51,60 @@ statistical sense: it predicts from your accumulated data and gets better as mor
 placeholder that makes the whole loop live from day one — and it's swappable for a trained neural model without
 touching anything around it.
 
-## 5. Step-by-step accuracy vs. the incumbent — and the readiness gate
+## 5. The switch criterion — EVERY function must EXCEED the existing AI, individually AND as a whole
 
-`backend/sdk/model-eval.ts` measures your model **against the incumbent AI, continuously**:
+The site switches to your model exactly when **your model produces more accurate outputs than the pre-existing
+AI** — and the bar is deliberately strict: it must beat the existing AI **function by function on an individual
+basis AND as a whole**. `backend/sdk/model-eval.ts` measures both sides against the same **ground truth** (the
+human's approve/reject on each decision — the final "was this the right call?"):
 
-1. Take the collected labeled decisions (each label = what the incumbent + human actually decided).
-2. Sort by time; **train** the predictor on the older split; **test** it on the newer split.
-3. **Accuracy = the share of newer decisions your model would have gotten right** — i.e., how often it matches
-   the incumbent. Recorded every run (`customModelEval`, scheduled daily) as a trend point.
+1. Take the labeled decisions, sort by time; **train** the predictor on the older split, **test** on the newer.
+2. On that same held-out test set, for each side:
+   - **Existing-AI accuracy** = how often the pre-existing AI's own proposal was approved (its output was right).
+   - **Your-model accuracy** = how often your model's predicted verdict matches the human's actual verdict.
+3. Compute this **overall** and **separately for every function (domain)** — earning, pricing, moderation,
+   advertising, and so on.
 
-**The model is "ready" only when it matches the incumbent** — accuracy ≥ `MODEL_ACCURACY_TARGET_PCT` (default 95;
-set 100 to require an exact match) over at least `MODEL_MIN_EVAL_SAMPLES` held-out decisions. You watch this on
-the **Data-Driven Coverage** dashboard (accuracy number, per-domain breakdown, trend, ready/not-ready).
+The switch gate has **two conditions, and BOTH must be true:**
 
-## 6. Automatic switchover — "when the data says it's time"
+- **As a whole** — your overall accuracy beats the existing AI's by at least `MODEL_EXCEED_MARGIN_PCT` points
+  (default 0.5, so a statistical tie doesn't flip it), over at least `MODEL_MIN_EVAL_SAMPLES` held-out decisions.
+- **Every function individually** — *each* function beats the existing AI by that same margin. A function only
+  counts once it has enough evidence: at least `MODEL_PER_FUNCTION_MIN_SAMPLES` decisions (default 30) to be
+  "confirmed." A function that is **behind** blocks the switch; a function that **doesn't yet have enough data**
+  to confirm *also* blocks it — the model can't switch over on functions it hasn't proven.
 
-When the model has matched the incumbent for **`MODEL_READY_STREAK_REQUIRED`** consecutive evaluations (default 3
-— so one lucky run can't trigger it):
+An optional absolute floor (`MODEL_ACCURACY_TARGET_PCT`, default 0 = off) can additionally require a minimum
+accuracy on top of "beats the incumbent."
 
-- **`MODEL_AUTO_PROMOTE_ENABLED` ON** → the active backend **auto-switches to `custom`**, and you're notified.
-- **OFF (default)** → you're notified it's ready and you promote it yourself (a **Promote** button on the
-  dashboard, or `modelPromote`; promoting is guarded — it refuses unless the model is actually ready). Rolling
-  back to shadow is always allowed.
+**The model is "ready" — and the site auto-switches — only when every function exceeds the existing AI
+individually AND the model exceeds it overall.** If even one function is behind, or one function still lacks the
+samples to prove it, the switch stays closed. Both numbers, the margin, the per-function pass/fail breakdown
+(✓ beating · ✗ behind · ◒ needs more data), and the trend are on the **Data-Driven Coverage** dashboard, which
+shows the two gate conditions side by side. Recorded every run (`customModelEval`, scheduled daily) so the gap
+trends over time.
 
-Either way the switch changes only *which backend answers*; the permanent human gates on money/identity/legal
-are untouched.
+> Honest note on the measurement: because your model only shadows (it isn't making the live decisions yet), its
+> accuracy is scored as how well it predicts the correct verdict on held-out decisions, versus the existing AI's
+> realized hit-rate on the same decisions. It's an apples-to-apples accuracy comparison against the human ground
+> truth; §6's auto-rollback then confirms the win holds up once your model is actually serving.
+
+## 6. Automatic switchover — on from day one, "when your model is more accurate"
+
+Auto-switch is **ON by default** (`MODEL_AUTO_PROMOTE_ENABLED`, default 1) — from the get-go. When your model has
+**exceeded** the existing AI — meaning every function individually *and* the whole, per §5 — for
+**`MODEL_READY_STREAK_REQUIRED`** consecutive evaluations (default 3, so one lucky run can't trigger it), the
+active backend **auto-switches to `custom`** and you're notified. (Turn the flag
+off if you'd rather tap **Promote** yourself on the dashboard; promoting is guarded — it refuses unless your
+model actually exceeds.)
+
+**Auto-rollback** (`MODEL_AUTO_ROLLBACK_ENABLED`, default 1) is the safety net: while your model is serving, if it
+ever stops out-accuracy-ing the existing AI, the backend automatically reverts to shadow and you're notified — so
+the switch is only ever *kept* while your model is genuinely more accurate. It re-promotes when it pulls ahead
+again.
+
+Either way the switch changes only *which backend answers* the reversible decisions; the permanent human gates on
+money / identity / legal are untouched.
 
 ## 7. What to actually train your model with (answering "if not Claude, then what?")
 
@@ -118,9 +147,12 @@ server-side). The harness, ingestion, eval, and switchover don't change.
   (accuracy-vs-incumbent + auto-promotion), `backend/sdk/model-training.ts` (dataset assembly + readiness).
 - Functions: `customModelStatus`, `customModelEval` (scheduled daily), `modelPromote`, `modelReadiness`,
   `modelTrainingExport`.
-- Settings (Automation): `MODEL_BACKEND`, `MODEL_SHADOW_ENABLED`, `MODEL_ACCURACY_TARGET_PCT`,
-  `MODEL_MIN_EVAL_SAMPLES`, `MODEL_AUTO_PROMOTE_ENABLED`, `MODEL_READY_STREAK_REQUIRED`, `MODEL_CUSTOM_ENDPOINT`,
-  `MODEL_TRAINING_ENABLED`, `MODEL_TRAINING_TARGET_EXAMPLES`, `MODEL_TRAINING_EXPORT_ENABLED`.
+- Settings (Automation): `MODEL_BACKEND`, `MODEL_SHADOW_ENABLED`, `MODEL_EXCEED_MARGIN_PCT` (win margin),
+  `MODEL_PER_FUNCTION_MIN_SAMPLES` (decisions needed to confirm a single function, default 30),
+  `MODEL_ACCURACY_TARGET_PCT` (optional absolute floor, 0 = off), `MODEL_MIN_EVAL_SAMPLES`,
+  `MODEL_AUTO_PROMOTE_ENABLED` (default ON — auto-switch), `MODEL_AUTO_ROLLBACK_ENABLED` (default ON — auto-revert
+  on regression), `MODEL_READY_STREAK_REQUIRED`, `MODEL_CUSTOM_ENDPOINT`, `MODEL_TRAINING_ENABLED`,
+  `MODEL_TRAINING_TARGET_EXAMPLES`, `MODEL_TRAINING_EXPORT_ENABLED`.
 - Dashboard: **Data-Driven Coverage** (admin) — accuracy vs incumbent, readiness, trend, Promote control.
 
 *This is a design/roadmap document, not legal clearance. The provider-terms and privacy questions in §7 and §9
