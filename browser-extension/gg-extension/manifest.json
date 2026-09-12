@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Get Goods Gratis",
+  "version": "1.0.0",
+  "description": "Earn Site Cash on the new-tab page and get cashback when you shop. On-platform rewards, no cash value.",
+  "action": { "default_popup": "popup.html", "default_title": "Get Goods Gratis" },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "chrome_url_overrides": { "newtab": "newtab.html" },
+  "options_page": "options.html",
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+
+  "//permissions": "Minimal at install. 'storage' for prefs + the picked-up session token; 'scripting' to (un)register the opt-in shopping helper. NO broad host access at install.",
+  "permissions": ["storage", "scripting"],
+
+  "//host_permissions": "Our OWN backend API + the app origins the auth bridge reads the signed-in session token from. Add your custom domain here (and to content_scripts) once it's live.",
+  "host_permissions": [
+    "https://playearningnexus-production.up.railway.app/*",
+    "https://getgreen-production.up.railway.app/*"
+  ],
+
+  "//content_scripts": "AUTH BRIDGE ONLY. Runs on OUR app origins to read the signed-in session token (localStorage 'nexus_token') and hand it to the extension so it can call the backend as the user. Reads nothing else and runs on no other site.",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://getgreen-production.up.railway.app/*",
+        "https://playearningnexus-production.up.railway.app/*"
+      ],
+      "js": ["content-auth.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "//optional_host_permissions": "Requested ONLY when the user opts into the shopping helper (retailer pages) or the browsing layer. Never granted at install.",
+  "optional_host_permissions": ["https://*/*"],
+
+  "web_accessible_resources": [
+    { "resources": ["icons/icon128.png"], "matches": ["https://*/*"] }
+  ]
+}

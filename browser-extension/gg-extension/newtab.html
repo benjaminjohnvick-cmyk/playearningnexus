@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Get Goods Gratis — New Tab</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="newtab">
+  <main class="card" id="app">
+    <header class="row">
+      <div class="brand">Get Goods Gratis</div>
+      <div class="balance" id="balance">—</div>
+    </header>
+
+    <section id="signedout" hidden>
+      <p>Sign in on the site to start earning.</p>
+      <a class="btn" id="signinLink" href="#" target="_blank">Open site to sign in</a>
+    </section>
+
+    <section id="earn" hidden>
+      <div class="streak" id="streak"></div>
+      <!-- OUR OWN advertiser inventory renders here. This is our surface — we never inject ads onto other sites. -->
+      <div class="adslot" id="adslot">
+        <div class="adslot-inner" id="adInner">Your reward ad will appear here.</div>
+      </div>
+      <button class="btn primary" id="watchBtn">Watch to earn</button>
+      <div class="note" id="note"></div>
+      <p class="fineprint">Rewards are non-cashable Site Cash — on-platform only, no cash value.</p>
+    </section>
+
+    <footer class="row small">
+      <a href="options.html" target="_blank">Settings</a>
+      <span id="capnote"></span>
+    </footer>
+  </main>
+  <script type="module" src="newtab.js"></script>
+</body>
+</html>

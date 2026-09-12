@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Get Goods Gratis — Settings</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="options">
+  <main class="card wide">
+    <h1>Get Goods Gratis — Settings</h1>
+
+    <section>
+      <h2>Rewards</h2>
+      <label class="toggle"><input type="checkbox" id="rewardsToggle" /> Earn Site Cash for viewing ads on the new-tab page</label>
+      <p class="muted">On by default. Turn off anytime — you'll keep any Site Cash you've earned.</p>
+    </section>
+
+    <section>
+      <h2>Shopping helper</h2>
+      <label class="toggle"><input type="checkbox" id="shoppingToggle" /> Find coupons &amp; earn cashback when I shop</label>
+      <p class="muted">Turning this on asks Chrome for permission to run on retailer sites. We only add our
+        cashback link when no other affiliate is already credited — we never take credit from someone else.</p>
+    </section>
+
+    <section>
+      <h2>Personalized offers (optional)</h2>
+      <label class="toggle"><input type="checkbox" id="trackingToggle" /> Let the extension use the sites I browse to personalize offers</label>
+      <p class="muted"><strong>Off by default.</strong> This is the only feature that looks at the pages you visit.
+        It's optional — everything above works without it. Turning it on asks Chrome for broad site permission and
+        records your consent. You can turn it off anytime.</p>
+    </section>
+
+    <section>
+      <h2>Advanced</h2>
+      <label class="muted" for="apiBase">Backend URL (change only if you use a custom domain)</label>
+      <input id="apiBase" type="url" placeholder="https://playearningnexus-production.up.railway.app"
+        style="width:100%;margin:6px 0;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:#22263c;color:#f4f5fb" />
+      <label class="muted" for="affBase">Affiliate redirect base (set once your cashback network is connected)</label>
+      <input id="affBase" type="url" placeholder="(optional) https://your-network/redirect"
+        style="width:100%;margin:6px 0;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:#22263c;color:#f4f5fb" />
+      <button class="btn" id="saveAdvanced" style="width:auto;padding:8px 14px">Save advanced settings</button>
+    </section>
+
+    <p class="fineprint">Site Cash is non-cashable, on-platform store credit — no cash value, can't be withdrawn.</p>
+    <div id="msg" class="muted"></div>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

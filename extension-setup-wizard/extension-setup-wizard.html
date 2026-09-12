@@ -1,0 +1,241 @@
+<title>Extension Setup Wizard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f7f6fb; --surface:#ffffff; --surface-2:#f2f0f9; --ink:#1a1922; --muted:#6a6678;
+    --line:#e5e2ef; --line-strong:#d6d2e6;
+    --accent:#5a49d6; --accent-ink:#4737b8; --accent-wash:#efecfb;
+    --done:#12885a; --done-wash:#e6f4ec; --done-line:#bfe4cf;
+    --add:#b5680b; --add-wash:#fbf1e2; --add-line:#f0dcb8;
+    --opt:#5a6474; --opt-wash:#eef1f5; --opt-line:#d9dfe8;
+    --shadow:0 1px 2px rgba(26,25,34,.05), 0 8px 24px -12px rgba(26,25,34,.14);
+  }
+  :root:not([data-theme="light"]){ @media (prefers-color-scheme: dark){
+    --bg:#121019; --surface:#1b1926; --surface-2:#221f30; --ink:#ece9f4; --muted:#9a95ab;
+    --line:#2c2940; --line-strong:#3a3652;
+    --accent:#9384f2; --accent-ink:#a99cf6; --accent-wash:#241f3d;
+    --done:#48c98b; --done-wash:#16281f; --done-line:#28513c;
+    --add:#e6a955; --add-wash:#2c2314; --add-line:#4d3d1c;
+    --opt:#98a3b4; --opt-wash:#20242c; --opt-line:#343b47;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#121019; --surface:#1b1926; --surface-2:#221f30; --ink:#ece9f4; --muted:#9a95ab;
+    --line:#2c2940; --line-strong:#3a3652;
+    --accent:#9384f2; --accent-ink:#a99cf6; --accent-wash:#241f3d;
+    --done:#48c98b; --done-wash:#16281f; --done-line:#28513c;
+    --add:#e6a955; --add-wash:#2c2314; --add-line:#4d3d1c;
+    --opt:#98a3b4; --opt-wash:#20242c; --opt-line:#343b47;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55; margin:0; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:920px; margin:0 auto; padding-inline:20px; padding-block:0 72px;}
+  code,kbd,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;}
+  h1,h2,h3{text-wrap:balance; line-height:1.15; margin:0;}
+  a{color:var(--accent-ink); text-underline-offset:2px;}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink); font-weight:600;}
+  header{position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  .hbar{max-width:920px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .hbar h1{font-size:19px; font-weight:700; letter-spacing:-.01em;}
+  .hbar .tag{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted); border:1px solid var(--line-strong); border-radius:999px; padding:2px 9px;}
+  .progress{margin-left:auto; display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted);}
+  .bar{width:130px; height:7px; border-radius:999px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line);}
+  .bar>i{display:block; height:100%; width:0; background:var(--accent); transition:width .3s ease;}
+  .hero{padding-block:34px 10px;}
+  .hero h2{font-size:30px; font-weight:700; letter-spacing:-.02em;}
+  .hero p{color:var(--muted); max-width:64ch; margin:12px 0 0; font-size:16px;}
+  .flow{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:24px 0 8px;}
+  .flow .step{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:13px 14px; box-shadow:var(--shadow);}
+  .flow .n{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--accent-ink); font-weight:600;}
+  .flow .t{font-weight:600; font-size:14px; margin-top:3px;}
+  .flow .d{font-size:12.5px; color:var(--muted); margin-top:2px;}
+  section{margin-top:34px;}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:12px; flex-wrap:wrap;}
+  .sec-head h3{font-size:18px; font-weight:700;}
+  .sec-head .count{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted);}
+  .pill{font-size:11.5px; font-weight:600; padding:2px 9px; border-radius:999px; letter-spacing:.02em; font-family:"IBM Plex Mono",monospace;}
+  .pill.done{color:var(--done); background:var(--done-wash); border:1px solid var(--done-line);}
+  .pill.add{color:var(--add); background:var(--add-wash); border:1px solid var(--add-line);}
+  .pill.opt{color:var(--opt); background:var(--opt-wash); border:1px solid var(--opt-line);}
+  .lead{color:var(--muted); font-size:14.5px; margin:0 0 14px;}
+  .lead .mono,.meta .mono,.final .mono,ol.stepslist li .mono{font-family:"IBM Plex Mono",monospace; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:.92em;}
+  .note{border-left:3px solid var(--add); background:var(--add-wash); color:var(--ink); padding:11px 14px; border-radius:0 8px 8px 0; font-size:13.5px; margin:14px 0;}
+  .note b{color:var(--add);}
+  .raw{background:var(--surface); border:1px solid var(--line-strong); border-radius:14px; box-shadow:var(--shadow); overflow:hidden; margin:8px 0 4px;}
+  .raw .top{display:flex; align-items:center; gap:10px; padding:11px 14px; border-bottom:1px solid var(--line); background:var(--surface-2);}
+  .raw .top .lbl{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--ink);}
+  .raw pre{margin:0; padding:14px 16px; overflow-x:auto; font-family:"IBM Plex Mono",monospace; font-size:12.5px; line-height:1.7; color:var(--ink);}
+  .raw pre .c{color:var(--muted);} .raw pre .k{color:var(--accent-ink); font-weight:500;}
+  button.copy{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); border-radius:8px; padding:5px 11px; transition:all .15s; margin-left:auto;}
+  button.copy:hover{border-color:var(--accent); color:var(--accent-ink);}
+  button.copy.ok{background:var(--done-wash); border-color:var(--done-line); color:var(--done);}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .rows{display:flex; flex-direction:column; gap:10px;}
+  .row{display:grid; grid-template-columns:26px 1fr; gap:12px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:13px 15px; box-shadow:var(--shadow);}
+  .row.add{border-left:3px solid var(--add);} .row.opt{border-left:3px solid var(--opt);} .row.done{border-left:3px solid var(--done);}
+  .row .chk{width:20px; height:20px; margin-top:2px; accent-color:var(--accent); cursor:pointer;}
+  .row .body{min-width:0;}
+  .row .name{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .row .name .var{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:14px; color:var(--ink); word-break:break-all;}
+  .row .meta{font-size:13.5px; color:var(--muted); margin-top:5px;}
+  .row .meta .src{color:var(--ink);}
+  .checked .var{text-decoration:line-through; text-decoration-color:var(--muted); opacity:.7;}
+  ol.stepslist{margin:12px 0 0; padding-left:20px; font-size:13.5px; color:var(--ink);}
+  ol.stepslist li{margin:0 0 9px; line-height:1.5;}
+  .final{background:var(--accent-wash); border:1px solid var(--line-strong); border-radius:14px; padding:18px 20px; margin-top:14px; box-shadow:var(--shadow);}
+  .final h3{font-size:16px; margin-bottom:6px;} .final p{margin:6px 0 0; font-size:14px; color:var(--ink);}
+  footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:12.5px;}
+  @media (max-width:640px){ .flow{grid-template-columns:1fr 1fr;} .hero h2{font-size:24px;} }
+</style>
+
+<header>
+  <div class="hbar">
+    <h1>Extension Setup Wizard</h1>
+    <span class="tag">Get Goods Gratis · gg-extension</span>
+    <div class="progress"><span id="ptext">0 of 0</span><span class="bar"><i id="pbar"></i></span></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <span class="eyebrow">Plug-and-play</span>
+    <h2>Load the browser extension, flip its gates, publish it, and verify — step by step.</h2>
+    <p>The extension (<span class="mono">gg-extension</span>, Manifest V3) is code-complete. It earns members
+      non-cashable Site Cash on its own new-tab/popup surfaces and offers clean-attribution cashback. Everything
+      is <strong>gated OFF server-side</strong> until you turn it on. This wizard walks the go-live: load &amp;
+      test, flip the server flags, publish to the Chrome Web Store, and verify.</p>
+  </div>
+
+  <div class="flow">
+    <div class="step"><div class="n">01</div><div class="t">Load &amp; test</div><div class="d">Load unpacked in Chrome, sign in on the site, confirm the new-tab earn surface.</div></div>
+    <div class="step"><div class="n">02</div><div class="t">Flip gates</div><div class="d">Turn on the <span class="mono">EXTENSION_*</span> flags in Railway Variables (counsel-gated).</div></div>
+    <div class="step"><div class="n">03</div><div class="t">Publish</div><div class="d">Upload the store zip to the Chrome Web Store; set <span class="mono">EXTENSION_WEBSTORE_URL</span>.</div></div>
+    <div class="step"><div class="n">04</div><div class="t">Verify</div><div class="d">Install from the store, earn once, confirm Site Cash credited &amp; caps hold.</div></div>
+  </div>
+
+  <!-- 1. LOAD & TEST -->
+  <section>
+    <div class="sec-head"><h3>1 · Load &amp; test (unpacked)</h3><span class="pill done">no account needed</span></div>
+    <p class="lead">The extension lives in the repo at <span class="mono">browser-extension/gg-extension</span> and in Bundle 38 under <span class="mono">09 - Browser Extension</span>. A store-ready <span class="mono">gg-extension.zip</span> is built alongside it.</p>
+    <div class="rows">
+      <label class="row done"><input type="checkbox" class="chk" data-id="load"><div class="body">
+        <div class="name"><span class="var">Load unpacked &amp; sign in</span></div>
+        <div class="meta">The auth bridge picks up your signed-in session automatically.</div>
+        <ol class="stepslist">
+          <li>Open <span class="mono">chrome://extensions</span> → toggle <b>Developer mode</b> (top-right).</li>
+          <li><b>Load unpacked</b> → select the <span class="mono">gg-extension</span> folder.</li>
+          <li>Sign in on your site (a matched app origin). The bridge (<span class="mono">content-auth.js</span>) copies your session token so the extension calls the backend as you.</li>
+          <li>Open a <b>new tab</b> — you should see the earn surface with your status (or a "sign in" prompt if not signed in).</li>
+        </ol></div></label>
+    </div>
+  </section>
+
+  <!-- 2. FLIP THE GATES -->
+  <section>
+    <div class="sec-head"><h3>2 · Flip the server gates</h3><span class="pill add">counsel-gated</span><span class="count">Railway → Variables → Raw Editor</span></div>
+    <p class="lead">Nothing rewards, tracks, or pays until you turn these on. The master switch plus each layer is separate. Rewards enrollment is opt-out (on) by default; tracking is opt-in.</p>
+    <div class="note"><b>Two compliance lines first.</b> The affiliate layer needs a connected network account, and the tracking layer (Layer B) is a privacy line — <b>clear both with your lawyer</b> before enabling. Money/points stay closed-loop and non-cashable.</div>
+    <div class="raw">
+      <div class="top"><span class="lbl"># Extension — Railway raw block</span><button class="copy" data-copy="ext">Copy block</button></div>
+      <pre id="raw-ext"><span class="c"># Master switch — turns the extension backend on</span>
+<span class="k">EXTENSION_ENABLED</span>=1
+<span class="c"># Own-inventory ads on the extension's own surfaces (new-tab/popup) — the reward layer</span>
+<span class="k">EXTENSION_OWN_ADS_ENABLED</span>=1
+<span class="c"># Reward economics (points; 100 points = $1 of non-cashable Site Cash)</span>
+<span class="k">EXTENSION_REWARD_PER_IMPRESSION_POINTS</span>=5
+<span class="k">EXTENSION_REWARD_DAILY_CAP_USD</span>=1
+<span class="k">EXTENSION_REWARD_LIFETIME_CAP_USD</span>=200
+<span class="c"># --- Counsel-gated layers: leave OFF until cleared ---</span>
+<span class="c"># Affiliate cashback (needs a connected network account)</span>
+<span class="k">EXTENSION_AFFILIATE_ENABLED</span>=0
+<span class="k">EXTENSION_AFFILIATE_USER_SHARE_PCT</span>=0.5
+<span class="c"># Layer B browsing/personalization (opt-in; privacy review)</span>
+<span class="k">EXTENSION_TRACKING_ENABLED</span>=0
+<span class="c"># Chrome Web Store listing URL (set after you publish — step 3)</span>
+<span class="k">EXTENSION_WEBSTORE_URL</span>=</pre>
+    </div>
+    <div class="rows" style="margin-top:14px">
+      <label class="row add"><input type="checkbox" class="chk" data-id="EXTENSION_ENABLED"><div class="body">
+        <div class="name"><span class="var">EXTENSION_ENABLED</span> · <span class="var">EXTENSION_OWN_ADS_ENABLED</span></div>
+        <div class="meta">Master switch + the reward layer. With these on and the reward economics set, the new-tab earn surface goes live.</div></div></label>
+      <label class="row opt"><input type="checkbox" class="chk" data-id="EXTENSION_AFFILIATE_ENABLED"><div class="body">
+        <div class="name"><span class="var">EXTENSION_AFFILIATE_ENABLED</span></div>
+        <div class="meta">Leave <span class="mono">0</span> until a cashback network is connected. Then set the affiliate redirect base in the extension's Settings and the network's postback calls <span class="mono">extensionAffiliateReward</span>.</div></div></label>
+      <label class="row opt"><input type="checkbox" class="chk" data-id="EXTENSION_TRACKING_ENABLED"><div class="body">
+        <div class="name"><span class="var">EXTENSION_TRACKING_ENABLED</span></div>
+        <div class="meta">Layer B (browsing/personalization) — opt-in, off by default, strictest privacy standard. Leave <span class="mono">0</span> unless you deliberately launch it with counsel.</div></div></label>
+    </div>
+  </section>
+
+  <!-- 3. PUBLISH -->
+  <section>
+    <div class="sec-head"><h3>3 · Publish to the Chrome Web Store</h3><span class="pill add">your action</span></div>
+    <div class="rows">
+      <label class="row add"><input type="checkbox" class="chk" data-id="publish"><div class="body">
+        <div class="name"><span class="var">Upload &amp; link the listing</span></div>
+        <ol class="stepslist">
+          <li>Go to the <a href="https://chrome.google.com/webstore/devconsole" target="_blank" rel="noopener">Chrome Web Store Developer Dashboard</a> (one-time $5 developer registration — your action).</li>
+          <li><b>New item</b> → upload <span class="mono">gg-extension.zip</span> (built next to the extension folder). Fill listing details, privacy disclosures, and the permission justifications (own-surface rewards + opt-in shopping helper; broad host access is requested only at opt-in).</li>
+          <li>Submit for review. On approval, copy the public listing URL.</li>
+          <li>Set <span class="mono">EXTENSION_WEBSTORE_URL</span> in Railway to that URL — the in-app install prompt then links straight to "Add to Chrome."</li>
+        </ol></div></label>
+    </div>
+  </section>
+
+  <!-- 4. CUSTOM DOMAIN -->
+  <section>
+    <div class="sec-head"><h3>4 · Custom domain (if you have one)</h3><span class="pill opt">optional</span></div>
+    <div class="rows">
+      <label class="row opt"><input type="checkbox" class="chk" data-id="domain"><div class="body">
+        <div class="name"><span class="var">Point the extension at your domain</span></div>
+        <ol class="stepslist">
+          <li>In <span class="mono">manifest.json</span>, add your domain to <b>both</b> <span class="mono">host_permissions</span> and <span class="mono">content_scripts.matches</span> (so the auth bridge reads your session token on your domain).</li>
+          <li>In the extension's <b>Settings → Advanced</b>, set <b>Backend URL</b> to your API domain.</li>
+          <li>Re-pack the zip and upload the new version.</li>
+        </ol></div></label>
+    </div>
+  </section>
+
+  <div class="final">
+    <h3>Last step — verify</h3>
+    <p>Install from the store (or reload the unpacked build), sign in, open a new tab, tap <span class="mono">Watch to earn</span>, wait the 5-second view, and confirm Site Cash credited. Check the daily cap holds (a second view past the cap returns <span class="mono">capped</span>, credits 0). Confirm the popup's rewards toggle and the Settings page all read your live state.</p>
+  </div>
+
+  <footer>
+    Sources: the live extension (<span class="mono">browser-extension/gg-extension</span>) and backend
+    (<span class="mono">extension.ts</span>, <span class="mono">extensionConfig/Enroll/AdServe/AdReward</span>).
+    The extension is code-complete and gated OFF until you flip <span class="mono">EXTENSION_ENABLED</span>.
+    Site Cash is non-cashable, on-platform credit. Progress on this page is saved in your browser only.
+  </footer>
+</div>
+
+<script>
+  const rawText = {
+    ext: `# Master switch — turns the extension backend on
+EXTENSION_ENABLED=1
+# Own-inventory ads on the extension's own surfaces (new-tab/popup) — the reward layer
+EXTENSION_OWN_ADS_ENABLED=1
+# Reward economics (points; 100 points = $1 of non-cashable Site Cash)
+EXTENSION_REWARD_PER_IMPRESSION_POINTS=5
+EXTENSION_REWARD_DAILY_CAP_USD=1
+EXTENSION_REWARD_LIFETIME_CAP_USD=200
+# --- Counsel-gated layers: leave OFF until cleared ---
+EXTENSION_AFFILIATE_ENABLED=0
+EXTENSION_AFFILIATE_USER_SHARE_PCT=0.5
+EXTENSION_TRACKING_ENABLED=0
+# Chrome Web Store listing URL (set after you publish)
+EXTENSION_WEBSTORE_URL=`
+  };
+  function flash(b,l){const o=b.textContent;b.textContent=l;b.classList.add('ok');setTimeout(()=>{b.textContent=o;b.classList.remove('ok');},1400);}
+  async function copy(t){try{await navigator.clipboard.writeText(t);return true;}catch{try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true;}catch{return false;}}}
+  document.addEventListener('click', async (e)=>{const b=e.target.closest('button.copy'); if(!b) return; e.preventDefault(); const k=b.getAttribute('data-copy'); if(await copy(rawText[k])) flash(b,'Copied ✓');});
+  const KEY='ggg_ext_wizard_v1'; const boxes=[...document.querySelectorAll('.chk')];
+  let saved={}; try{saved=JSON.parse(localStorage.getItem(KEY)||'{}');}catch{}
+  const paint=(cb)=>cb.closest('.row')?.classList.toggle('checked',cb.checked);
+  function update(){const t=boxes.length,d=boxes.filter(b=>b.checked).length;document.getElementById('ptext').textContent=d+' of '+t;document.getElementById('pbar').style.width=(t?d/t*100:0)+'%';}
+  boxes.forEach(cb=>{const id=cb.getAttribute('data-id'); if(id in saved) cb.checked=saved[id]; paint(cb); cb.addEventListener('change',()=>{saved[id]=cb.checked; try{localStorage.setItem(KEY,JSON.stringify(saved));}catch{} paint(cb); update();});});
+  update();
+</script>
