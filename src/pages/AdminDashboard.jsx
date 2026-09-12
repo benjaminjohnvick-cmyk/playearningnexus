@@ -32,6 +32,7 @@ import ProductPriceManager from '../components/admin/ProductPriceManager';
 import FeedbackAdminDashboard from './FeedbackAdminDashboard';
 import RetentionRiskPanel from '../components/admin/RetentionRiskPanel';
 import SurveyABTestDashboard from '../components/admin/SurveyABTestDashboard';
+import PublisherMetricsPanel from '../components/admin/PublisherMetricsPanel';
 
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -177,6 +178,7 @@ export default function AdminDashboard() {
         <Tabs defaultValue="revenue" className="space-y-6">
           <TabsList className="bg-white shadow-md">
             <TabsTrigger value="revenue">Revenue & Analytics</TabsTrigger>
+            <TabsTrigger value="publisher_metrics">📺 Ad Metrics</TabsTrigger>
             <TabsTrigger value="rotation">Game Rotation</TabsTrigger>
             <TabsTrigger value="rewards">Reward Payouts</TabsTrigger>
             <TabsTrigger value="payouts">Payout Manager</TabsTrigger>
@@ -210,6 +212,10 @@ export default function AdminDashboard() {
               <RevenueDistribution />
               <RevenueTracker />
             </div>
+          </TabsContent>
+
+          <TabsContent value="publisher_metrics">
+            <PublisherMetricsPanel />
           </TabsContent>
 
           <TabsContent value="rotation">
