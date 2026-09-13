@@ -4448,3 +4448,14 @@ CREATE TABLE IF NOT EXISTS "HostModerationEvent" (
 CREATE INDEX IF NOT EXISTS "HostModerationEvent_data_gin" ON "HostModerationEvent" USING gin (data jsonb_path_ops);
 CREATE INDEX IF NOT EXISTS "HostModerationEvent_created" ON "HostModerationEvent" (created_date DESC);
 CREATE INDEX IF NOT EXISTS "HostModerationEvent_host" ON "HostModerationEvent" ((data->>'host_player_id'), (data->>'strike'));
+
+-- LoadingSurveyResponse — answers to the "earn while it loads" profiling questions (first-party survey data).
+CREATE TABLE IF NOT EXISTS "LoadingSurveyResponse" (
+  id           text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  created_date timestamptz NOT NULL DEFAULT now(),
+  updated_date timestamptz NOT NULL DEFAULT now(),
+  created_by   text,
+  data         jsonb NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS "LoadingSurveyResponse_data_gin" ON "LoadingSurveyResponse" USING gin (data jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS "LoadingSurveyResponse_created" ON "LoadingSurveyResponse" (created_date DESC);

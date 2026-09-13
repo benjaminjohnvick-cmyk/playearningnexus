@@ -47,7 +47,7 @@ export function getCachedRead(key) {
   try { const r = JSON.parse(localStorage.getItem("rm_cache_" + key) || "null"); return r ? r.v : null; } catch { return null; }
 }
 export function onModeChange(fn) { state.listeners.add(fn); return () => state.listeners.delete(fn); }
-function setMode(m) { if (m !== state.mode) { state.mode = m; state.listeners.forEach((f) => { try { f(m); } catch { /* ignore */ } }); } }
+function setMode(m) { if (m !== state.mode) { state.mode = m; try { if (typeof window !== "undefined") window.__resilientMode = m; } catch { /* ignore */ } state.listeners.forEach((f) => { try { f(m); } catch { /* ignore */ } }); } }
 export function currentMode() { return state.mode; }
 
 /** Poll the server's load signal and set the mode. Falls back to "degraded" if the signal itself is unreachable. */

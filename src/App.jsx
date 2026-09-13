@@ -10,6 +10,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { LocalizationProvider } from '@/context/LocalizationContext';
 import { registerRouteLoader } from '@/lib/route-prefetch';
+import LoadingSurveyOverlay from '@/components/LoadingSurveyOverlay';
 
 // Lazy-load heavy pages to reduce initial bundle size
 const EarningsInsights = lazy(() => import('./pages/EarningsInsights'));
@@ -511,6 +512,7 @@ function App() {
             <AuthenticatedApp />
           </Router>
           <Toaster />
+          <LoadingSurveyOverlay />
         </QueryClientProvider>
       </LocalizationProvider>
     </AuthProvider>

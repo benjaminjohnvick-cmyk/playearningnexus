@@ -1024,5 +1024,7 @@
   "perfVitalsIngest",
   "perfConfig",
   "perfStatus",
-  "perfOptimize"
+  "perfOptimize",
+  "loadingSurveyNext",
+  "loadingSurveyAnswer"
 ]

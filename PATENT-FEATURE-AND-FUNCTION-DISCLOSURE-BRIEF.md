@@ -78,11 +78,11 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 >
 > *Honest steer for counsel: of the three angles, **(C)** — the technical interaction (single tap → continuous-loop watch gate → questions beneath the still-playing creative → server-credited submit → swipe-to-next as one full-screen unit) — is the one most plausibly claimable. **(A)** shared-across-tiers and **(B)** founding-max-capability are business-model / offer choices and are likely **not** separately patentable; they are listed for completeness, not as independent claims.*
 
-*Beyond these highlights, the inventory that follows lists the full 1,009 functions, 214 engines, 276 surfaces, and 368 entities so counsel can spot additional candidates the highlights don't call out.*
+*Beyond these highlights, the inventory that follows lists the full 1,028 functions, 225 engines, 278 surfaces, and 369 entities so counsel can spot additional candidates the highlights don't call out.*
 
 ---
 
-## 2. Software engines (SDK modules) — 217  *(the 17 most-recent are listed in §6)*
+## 2. Software engines (SDK modules) — 225  *(the most-recent are listed in §6)*
 
 *Each engine is a self-contained module implementing one subsystem's logic. Descriptions are the module's own header summary from source.*
 
@@ -286,7 +286,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 3. Complete backend function inventory — 1,012  *(the 29 most-recent are listed in §6)*
+## 3. Complete backend function inventory — 1,028  *(the most-recent are listed in §6)*
 
 *Every backend function (HTTP endpoint, scheduled job, or entity-automation), grouped by domain. Each description is sourced from the function's own code header.*
 
@@ -1338,7 +1338,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 4. User-facing surfaces (pages) — 276  *(the 4 most-recent are listed in §6)*
+## 4. User-facing surfaces (pages) — 278  *(the most-recent are listed in §6)*
 
 *Each is a distinct application screen/route in the web + mobile app.*
 
@@ -1346,7 +1346,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 5. Data model — persisted entity types (368)  *(the 4 most-recent are listed in §6)*
+## 5. Data model — persisted entity types (369)  *(the most-recent are listed in §6)*
 
 *Each is a stored record type in the platform's database (Postgres JSONB-backed).*
 
@@ -1483,3 +1483,35 @@ The platform exposes ~1,200 admin-configurable capability flags — every one a 
 - **AutonomyOversight**
 - **HostStudio**
 - **WatchSession**
+
+### 6.5 Inventory delta — 2026-09-13 session (custom model, mobile approvals, data-driven coverage, load speed, earn-while-loading)
+
+*Added after the §6.1–6.4 sweep; folded into the totals above. Listed so the inventory stays complete for counsel.*
+
+**Functions (16)**
+
+- `approvalQueue`, `approvalDecide`, `approverSet`, `approverList` — mobile, multi-person human-in-the-loop approvals: any authorized approver (not just the owner) can approve/reject AI-prepared outputs from their phone, scoped per domain; admins grant/revoke approver access.
+- `customModelStatus`, `customModelEval`, `modelPromote`, `modelReadiness`, `modelTrainingExport` — the custom-AI-model harness: measures the model's output accuracy against the incumbent AI **per function and overall**, auto-promotes/auto-rolls-back the active backend, reports training-data readiness, and (gated, counsel-noted) exports first-party training JSONL.
+- `dataDrivenCoverage` — the read behind the Data-Driven Coverage dashboard (build + live coverage of the optimize→gate→signal loop, human-review queue, model readiness).
+- `perfVitalsIngest`, `perfConfig`, `perfStatus`, `perfOptimize` — load-speed telemetry beacon (Web Vitals + in-app navigation timing), the public client speed config, the admin speed read, and the scheduled AI load-time optimizer that keeps load times under the ~80 ms perception budget.
+- `loadingSurveyNext`, `loadingSurveyAnswer` — earn-while-it-loads: serve generic customer-profiling questions during a predicted-slow load and record answers + award capped store credit.
+
+**Engines / SDK modules (8)**
+
+- `approvals` — approver identity + per-domain scoping + notify (in-app + push).
+- `custom-model` — the pluggable model interface (`serve`), backend switch, and built-in data-learner.
+- `model-eval` — accuracy-vs-incumbent evaluation with the function-by-function AND overall switch gate, auto-promote/rollback.
+- `model-training` — first-party, PII-minimized training-example assembly + readiness.
+- `data-driven-coverage` — build/live coverage math + human-review queue + trend.
+- `perf-optimizer` — the load-speed perception budget, p75 math, and getters (wired into the existing optimizer + a `load_time` autonomy domain).
+- `loading-survey` — question selection, predictive slow-load detection, and the capped store-credit reward.
+- `kyc-loading-questions` — the 1,000 generic (non-sensitive) customer-profiling questions.
+
+**Persisted entities (1)**
+
+- `LoadingSurveyResponse` — first-party answers to the earn-while-loading profiling questions.
+
+**User-facing surfaces / pages (2)**
+
+- `DataDrivenCoverage` — the admin dashboard: build/live coverage, human-review queue, custom-model accuracy vs the incumbent (per-function), and the load-speed card.
+- `Approvals` — the mobile-first approvals screen + admin approver management.
