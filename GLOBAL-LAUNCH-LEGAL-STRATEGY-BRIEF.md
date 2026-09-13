@@ -102,6 +102,41 @@ Launching in three well-cleared markets beats launching in forty half-cleared on
   unusual promotion/consumer rules create real friction (e.g., China and certain others) — restrict now,
   revisit later. **[Counsel: confirm the restrict list.]**
 
+## 8b. Phased rollout & IP cost-deferral — launch US-only, keep global rights
+
+You can launch **operations in the US only**, defer the expensive per-country regulatory work, and still lock in
+**global IP rights now for a fraction of the cost** — because *where you operate* and *where you own the IP* are
+separate decisions. International IP runs on **priority dates**: the treaties let you claim your date cheaply now
+and defer the country-by-country spend for years. Geo-restricting the app to the US at launch defers GDPR reps,
+VAT registration, and per-country consumer law; the priority filings below run in parallel and do **not** require
+operating in those markets.
+
+**The priority-date ladder (patents — cheap now, expensive only later and only where you choose):**
+
+- **Now:** US **provisional** (drafted) — modest fee + attorney time; stamps the priority date and "patent
+  pending" for 12 months.
+- **By month 12:** file the **PCT** — one international application preserves the priority date across ~150+
+  countries and **defers national-phase filings to 30 months**. Moderate cost, not per-country.
+- **By month 30:** choose the national-phase countries (the real cost — translations, local agents, per-country
+  fees) based on where the platform has actually expanded.
+
+**Deadline calendar (hard dates — missing them can forfeit rights; calendar with counsel now):**
+
+- **Provisional + 12 months** → PCT (and/or US non-provisional) filing deadline.
+- **US trademark filing + 6 months** → Paris Convention window to file abroad and still claim the US date.
+- **Priority date + 30 months** → PCT national-phase entry deadline.
+
+**Trademark — Madrid Protocol + the first-to-file hedge.** File the **US trademark now** as the base, then use the
+**Madrid Protocol** to file once and **add countries later** (subsequent designation) as you expand. The one place
+"wait" carries real risk: many countries — notably **China** and the EU — are **first-to-file**, where a squatter
+can register the mark before you arrive. The cheap insurance is to **defensively file early in just the handful of
+first-to-file markets** you're most likely to enter, even while launching US-only. **[Counsel: identify the
+first-to-file markets to protect early vs. defer.]**
+
+**The near-free layers:** copyright is automatic in ~180 Berne Convention countries; trade secrets are protected
+by keeping them secret (NDAs, access controls) — global by nature, no filing. Leaning on trade-secret protection
+for the sensitive implementation details (per the provisional's §13) is itself a cost lever.
+
 ## 9. Per-market triage — ask counsel to sort every target market into three buckets
 
 1. **Clear with the baseline** — the strictest-standard build already satisfies it; launch.
