@@ -444,6 +444,16 @@ This draft intentionally stops short of tasks that require a registered practiti
     is submitted as part of this provisional (as pages of the specification or as an attached appendix/exhibit),
     and confirm the incorporation-by-reference language is sufficient in the jurisdiction of filing. Cross-check
     the trade-secret carve-out (item 8) first, so nothing that should stay secret is published via the appendix.
+14. **OWNER INTENT — two points, held in tension, to honor together:** **(a) Include ALL functions and features
+    for breadth and priority.** The owner wants the entire feature set disclosed in the provisional (Appendix A)
+    so the priority date covers everything and the broadest later claims are supported — disclosure here is
+    deliberate and maximal. **(b) BUT scrub the trade-secret-sensitive specifics before the non-provisional
+    publishes.** Because the application publishes (~18 months) and thereby teaches everything disclosed to the
+    public, counsel should identify and REMOVE from the published specification the true competitive secrets —
+    exact thresholds, scoring formulas, switch-over margins, model-training parameters, and data features — and
+    keep those as trade secret, while leaving the feature/architecture-level disclosure broad. In short: disclose
+    everything at the feature/architecture level for breadth and priority; withhold the precise "secret-sauce"
+    implementation values from publication. (Reconciles with items 8 and 13.)
 
 ---
 
