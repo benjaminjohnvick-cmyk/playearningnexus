@@ -28,7 +28,22 @@ gates on money, identity, and legal actions**. Full plain-language overview: `WE
 6. **Tax:** `Tax & Reporting\` (obligations brief + the 1099 pipeline).
 7. **Counterparty contracts:** `Agreements\` (Partner/Affiliate/Developer + Advertiser).
 8. **IP:** `Provisional Patent\` (draft the provisional first), `Trademarks\`.
-9. **Global expansion:** `GLOBAL-LAUNCH-LEGAL-STRATEGY-BRIEF.md` + `COUNSEL-SHORTLIST.md`.
+9. **Global expansion:** `GLOBAL-LAUNCH-LEGAL-STRATEGY-BRIEF.md` + `COUNSEL-SHORTLIST.md` + `IP-BUDGET-ESTIMATE.md` (see §2a).
+
+## 2a. Global rollout — the three documents to read together
+
+If and when the platform goes beyond the U.S., three documents in this packet form the **global set** — read
+them together; they answer *what's the plan, who do I hire, and what will it cost*:
+
+- **`GLOBAL-LAUNCH-LEGAL-STRATEGY-BRIEF`** — the posture: the hub-and-spoke counsel model (one lead firm
+  quarterbacks local counsel abroad), the centralize-vs-localize split, IP via the **Madrid Protocol** (trademark)
+  and **PCT** (patent), GDPR/VAT globalization, phased market tiering + per-market triage, and (§8b) the
+  **phased-rollout IP cost-deferral** strategy — launch U.S.-only and still hold global rights cheaply.
+- **`COUNSEL-SHORTLIST`** — U.S. retail/e-commerce firms ranked by proximity to Grand Rapids (West Michigan →
+  statewide → national), with practice-fit tags and the pre-filled **screening questions** to ask each firm.
+- **`IP-BUDGET-ESTIMATE`** — the phased cost ranges (US-first ~$15k–$40k to secure U.S. + worldwide priority;
+  national phase ~$75k–$150k+ only in chosen markets; trademark/Madrid; ongoing annuities), with assumptions and
+  caveats.
 
 ## 3. Open decisions register (sign-off needed)
 
