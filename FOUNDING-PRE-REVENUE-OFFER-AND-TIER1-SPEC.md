@@ -14,15 +14,22 @@ first 200,000 founding advertisers        ──▶       opens automatically wh
 • $2,000 site credit over 12 months                 • existing founders GRANDFATHERED (keep it all)
 • get EVERY perk (current + all add-ons)
         │
-        └─ capital is used to acquire 200,000 regular PREMIUM users
-           BEFORE the full public launch (the launch gate)
+        └─ PHASE 1: funds acquire the 200,000 prelaunch users + 200,000 MORE
+           regular users (~400,000 total) the founders advertise to.
+           PHASE 2: after both, funds = owner's discretion, ANY business purpose
 ```
 
 ## Phase 1 — The Founding / Pre-Revenue Offer
 
 - **Cap: the first 200,000 founding advertisers** (a hard slot cap, independent of user count).
-- **Purpose — pre-revenue capital.** Founders prepay the Tier 1 price up front; that capital is used to
-  **acquire at least 200,000 regular *premium* users before the full public launch** (the launch gate below).
+- **Purpose — pre-revenue capital (use-of-funds is TWO-PHASE).** Founders prepay the Tier 1 price up front.
+  **Phase 1 (restricted):** the funds are **directed to user acquisition until BOTH** (a) the **200,000-user
+  prelaunch milestone** (the launch gate below) **and** (b) an **additional 200,000 regular users** — the
+  audience the founders advertise to — are acquired (~**400,000 users total**). Acquiring **both** user groups is
+  part of Phase 1. **Phase 2 (discretion):** once Phase 1 is complete, the funds are **the owner's to spend
+  however the owner chooses, for any lawful business purpose** — Phase 2 is *only* the discretionary spend.
+  **[COUNSEL: two-phase use-of-funds — confirm against the pre-sale/consumer-protection framing and
+  the funds model; the user figures are goals, not guaranteed reachable-audience counts.]**
 - **Founders double as year-one users + feedback partners.** They actively use the platform for the first year
   and provide feedback — framed as a founding-partner *privilege/role*, not a paid obligation.
 - **$2,000 in on-site credit, spent over 12 months** (~$166.67/month, non-cashable Site Cash) — the firm
@@ -169,8 +176,11 @@ guaranteed), zero return/ROI promise.
 ## Compliance notes (for counsel)
 
 - **Prepayment, not credit.** Founders prepay for advertising services; the capital is unearned revenue
-  recognized as delivery occurs. Using it to acquire users pre-launch is fine **provided** the capacity-paced,
-  deliver-until-met guarantee is disclosed up front (no fixed launch date or year-one volume is promised).
+  recognized as delivery occurs. The funds are **directed to user acquisition until the 200,000 prelaunch +
+  200,000 additional regular users (~400,000 total) are reached, and are the owner's to use for any lawful
+  business purpose thereafter** — fine **provided** the capacity-paced, deliver-until-met guarantee is disclosed
+  up front and honored (no fixed launch date or year-one volume is promised), and enough is reserved to actually
+  deliver the advertising sold.
 - **$2,000 site credit** is non-cashable, closed-loop, spendable only on-site over 12 months — never cash.
 - **Feedback/beta role** is a founding privilege, not compensation, and the survey earn-share is a share of
   *whatever they actually earn*, non-guaranteed, paid as Site Cash — never a return on the advertising.
@@ -246,31 +256,41 @@ escrow / hybrid) and the refund/escrow representations, and (c) finalized the la
 standard. Full analysis and confirm-points are in
 `SESSION-2026-09-05-AUTONOMY-DATA-AND-FOUNDING-TERM-COUNSEL-NOTE.md` (confirm-points 5–6). Two variants:*
 
-**Owner's directed terms (2026-09-05) captured in the drafts below:** (1) founding contributions are
-**non-refundable** and, **once the offer is filled, are the owner's to use at discretion** (this **reverses**
-an earlier "funds only for completing the offer" draft); (2) **after the founding year**, the owner will invest
-in **acquiring a ~200,000-user audience**; and (3) each **founding business gets a free additional year of
-marketing** to that audience as part of the offer. Points 2–3 are forward commitments — counsel to frame the
-200k figure as a **goal, not a guaranteed reachable-audience count**, and to add the **free marketing year** as
-a delivery obligation in the value stack / delivery guarantee (confirm-point 6).
+**Owner's directed terms (updated 2026-09-13 — TWO-PHASE) captured in the drafts below:** (1) founding
+contributions are **non-refundable**; (2) **Phase 1** — the funds are **directed to user acquisition until BOTH**
+the **200,000-user prelaunch milestone** and an **additional 200,000 regular users** (the audience founders
+advertise to; ~**400,000 total**) are reached; (3) **Phase 2** — **once both milestones are met, the funds are
+the owner's to use at its discretion for any lawful business purpose** (this broadens the earlier
+"invest specifically in the audience" wording, which itself reversed a still-earlier "funds only for completing
+the offer" draft); and (4) as a **value** matter (separate from fund use), each **founding business still gets a
+free additional year of marketing access**. The user figures are **goals, not guaranteed reachable-audience
+counts**; the **free marketing year** is a delivery obligation to add to the value stack / delivery guarantee
+(confirm-point 6). **[COUNSEL: two-phase use-of-funds — confirm against the pre-sale/consumer-protection framing,
+the funds model, and the non-refundable representation; note earmarking to acquisition in Phase 1 may lean toward
+escrow/custodial treatment for that phase.]**
 
 **Variant A — statement of current intent (softer):**
 > "Founding contributions are a non-refundable purchase of advertising and membership — not funds held in trust.
-> Once the founding offer is filled, we may allocate these funds at our discretion. As part of this offer, we
-> intend — after the founding year is complete — to invest in growing the platform's audience toward a
-> 200,000-member base, and to give each founding business an additional year of marketing access to that
-> audience at no extra charge. These statements describe our plans and the value we intend to deliver; they are
-> not a guarantee of any specific audience size, reach, result, revenue, or financial return."
+> Until we have (1) reached the 200,000-user prelaunch milestone and (2) acquired an additional 200,000 regular
+> users for founding businesses to advertise to (about 400,000 users in total), we direct these funds to
+> acquiring those users and building that audience. Once both milestones are met, we may use these funds at our
+> discretion for any lawful business purpose. As part of this offer we also give each founding business an
+> additional year of marketing access to the platform's user audience at no extra charge. These statements
+> describe our plans and the value we intend to deliver; the user figures are goals, and nothing here guarantees
+> any specific audience size, reach, result, revenue, or financial return."
 
 **Variant B — commitment/covenant (stronger; only if counsel advises it can be honored and evidenced):**
-> "Founding contributions are non-refundable and, once the offer is filled, are ours to allocate as we
-> determine. As part of the founding offer, we commit to provide each founding business a free additional year
-> of marketing access to the platform's user audience following the founding year, and we intend to grow that
-> audience toward a 200,000-member target. We will maintain records of this investment. This is a commitment to
-> deliver the additional marketing year described; the 200,000-member figure is a goal, not a guaranteed count
-> of reachable users, and nothing here is a promise of sales, revenue, profit, or investment return."
+> "Founding contributions are non-refundable. Until we have reached the 200,000-user prelaunch milestone and
+> acquired a further 200,000 regular users for founding businesses to advertise to (about 400,000 users in
+> total), these funds are directed to acquiring those users and building that audience; once both milestones are
+> met, they are ours to use at our discretion for any lawful business purpose. As part of the founding offer we
+> commit to provide each founding business a free additional year of marketing access to the platform's user
+> audience following the founding year. The user figures are goals, not guaranteed counts of reachable users, and
+> nothing here is a promise of sales, revenue, profit, or investment return."
 
-*Open questions for counsel: the non-refundable "owner's discretion after fill" posture vs. the funds model and
-any refund/escrow language it reverses; framing the 200,000-user figure as a goal (not a guaranteed reachable
-audience); and whether the free additional marketing year needs its own delivery-guarantee wording and a line
-in the value stack. It must not read as a promise of a return.*
+*Open questions for counsel: the **two-phase use-of-funds** (directed to user acquisition until the 200,000
+prelaunch + 200,000 additional regular users are reached, then owner's discretion for any lawful business
+purpose) vs. the funds model and any refund/escrow language it reverses — including whether Phase 1 earmarking
+leans toward escrow/custodial treatment; framing the user figures as goals (not guaranteed reachable audiences);
+and whether the free additional marketing year needs its own delivery-guarantee wording and a line in the value
+stack. It must not read as a promise of a return.*

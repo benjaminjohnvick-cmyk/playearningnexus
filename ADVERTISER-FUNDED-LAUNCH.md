@@ -58,17 +58,23 @@ and accepted at purchase**); escrow/hybrid refundable portions are flagged `refu
 ## The 200,000-user pool (separate gate)
 
 Separate from the 200,000 founding advertisers, the program commits to acquiring **200,000 premium users**
-before launch, funded by the founding advertisers' payments. This is a distinct population and a distinct launch
-gate:
+before launch **and** a further **200,000 regular users** for the founders to advertise to (~400,000 users
+total). **Acquiring both user groups is Phase 1** — the founding payments are **directed to user acquisition**
+throughout it. **Phase 2 begins only once Phase 1 is complete**: with both user milestones met, the funds are
+the owner's to spend however the owner chooses, for any lawful business purpose (a use-of-funds phase, not a
+change to the launch gate). This is a distinct population and a distinct launch gate:
 
-- **Who they are.** Regular members on premium, acquired through the user-acquisition spend the founding capital
-  pays for. They are **not** the advertisers — every founding advertiser also acts as a user during the year,
+- **Who they are.** Regular members on premium, acquired through the platform's user-acquisition efforts (funded,
+  in Phase 1, by the founding payments). They are **not** the advertisers — every founding advertiser also acts as a user during the year,
   but founders count toward the advertiser gate, not this one.
 - **The gate.** `FOUNDING_LAUNCH_MILESTONE_PREMIUM_USERS` = **200,000**. Launch does not proceed until this pool
   **and** the 200,000-advertiser pool are both reached. It is measured on real premium memberships
   (`premiumUserCount`), not projected.
 - **Why it exists.** It ensures the advertising the founding advertisers bought has a real audience to deliver
-  to at launch — the audience their capital was used to build.
+  to at launch — the audience the founding program commits to build (the 200,000 prelaunch + 200,000 additional
+  regular users). The platform **commits** to building this audience as a delivery/value matter; in Phase 1 the
+  founding funds are directed to that acquisition, and once both user milestones are met the funds are the
+  owner's to use for any lawful business purpose.
 - **Deadline behavior.** Same as the advertiser gate: if the deadline passes with either gate unmet,
   escrow/hybrid refundable portions flag `refund_due`; presale is `launch_unmet` (disclosed, no money back).
 
@@ -133,10 +139,12 @@ appeal and drops the guarantee:
 - **Securities + FTC counsel review** of the whole offer, the disclosures, and every piece of marketing copy.
   This module is a scaffold; it is off the critical path to a compliant launch until counsel signs off.
 - **Crowdfunding / pre-sale obligations (presale model).** Taking non-refundable money to build-then-deliver is
-  a crowdfunding-style pre-sale: use the funds for the stated purpose, keep records, and make the
-  non-refundable + may-not-launch risk unmistakable to buyers (the UI does this — don't weaken it). The line
-  that must never be crossed: **no promised financial return, and never pay any promised payout to earlier
-  buyers out of later buyers' money.**
+  a crowdfunding-style pre-sale: in Phase 1 direct the funds to the stated user-acquisition purpose (once the
+  200,000 prelaunch + 200,000 additional user milestones are met, the funds are the owner's to use for any lawful
+  business purpose), keep records, reserve enough to deliver the advertising sold, and make the non-refundable +
+  may-not-launch risk unmistakable to buyers (the UI does this — don't weaken it). The line that must never be
+  crossed: **no promised financial return, and never pay any promised payout to earlier buyers out of later
+  buyers' money.**
 - **A real escrow arrangement** (a licensed escrow agent / segregated account) if you run the escrow/hybrid
   model. The code tracks `escrowed` / `refund_due` state and flags; it never moves money.
 - **Substantiation for any earnings language.** If you ever show what members *can* earn, it must be backed by
