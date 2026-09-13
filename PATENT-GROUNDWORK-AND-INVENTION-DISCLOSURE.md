@@ -258,6 +258,54 @@ one-click member storefronts (`catalog.ts`, `marketplace-fee.ts`, `seller-activa
 localization/i18n; white-label/tenant (`tenant.ts`). These establish the **full scope** of the software for
 copyright and for the "system" claims that incorporate the novel subsystems above.
 
+### 5.15 Operator-owned custom AI model for ecommerce, trained from first-party operational data, with function-by-function accuracy-gated autonomous switchover
+**What.** A system and method for an ecommerce operator to build, continuously train, evaluate, and **autonomously
+put into service its OWN AI model** for running the platform — without ever degrading decision quality. The model
+sits behind a single pluggable prediction interface (`serve(domain, context)`); a backend switch selects which
+"brain" answers. An incumbent general AI runs the platform at first and plays two roles only: it **labels the
+operator's first-party data** as it operates (its proposed action per ecommerce domain + the human approve/reject
+on it) and it is the **accuracy benchmark**. A continuous pipeline assembles those labels — plus optimizer
+win/loss outcomes and per-feature quality — into **first-party, PII-minimized** `(context → label/reward)`
+training examples. The operator's model runs **in shadow from day one**, producing a candidate answer for every
+decision; an evaluator scores the candidate's **output accuracy against the incumbent's**, on the same human
+ground truth, **both per ecommerce function (domain — e.g. pricing, merchandising, survey/offer matching,
+homepage personalization, page load-speed) AND in aggregate**. The platform **automatically promotes** the
+custom model to serve **only when it exceeds the incumbent on EVERY function individually by a margin AND exceeds
+it overall**, each over a minimum sample count and sustained across consecutive evaluations; it **automatically
+rolls back** to the incumbent if the model later regresses. Money/identity/legal decisions stay **permanently
+human-gated** regardless of which model serves, and the training-data export is gated behind a counsel switch.
+Modules: `custom-model.ts` (interface + backend switch + built-in data-learner), `model-eval.ts` (per-function +
+aggregate accuracy-vs-incumbent gate, auto-promote/rollback), `model-training.ts` (first-party example assembly +
+readiness); functions `customModelStatus`, `customModelEval`, `modelPromote`, `modelReadiness`,
+`modelTrainingExport`. **Novelty.** (a) Promotion gated on **per-function AND aggregate** out-performance of an
+incumbent model — not a single global metric — so the operator's model only takes over functions it has
+provably learned better; (b) the incumbent model used simultaneously as **labeler and live benchmark** while the
+challenger shadows, with **sustained-streak auto-promotion and automatic regression rollback**; (c) the whole
+mechanism bound to the **same permanent compliance gates and autonomy convention** (5.6) so an autonomous model
+swap can never move money/identity/legal decisions out of human control; (d) specialized to **ecommerce
+operational domains** as the unit of both measurement and switchover.
+
+### 5.16 Single operator-owned AI model operating an entire consumer website AND its companion mobile apps from one cross-surface first-party corpus
+**What.** A specific application of 5.15: **one** operator-owned AI model, trained on the operator's own
+first-party data, **autonomously operates the operator's whole consumer website AND its native mobile apps**
+(iOS/Android) as a single cross-surface system — not a single feature or channel, but the end-to-end experience
+(merchandising, personalization, offer/survey matching, notifications, page/screen load-speed, and the other
+reversible operational domains) across both web and app. The novel elements over 5.15's general method are the
+**single shared model + single shared training corpus spanning BOTH surfaces**: signals collected on the website
+and in the apps (the same account, the same closed-loop economy, the same decision domains) are unified into one
+first-party corpus, so the model learns the operator's business **once** and makes **consistent decisions across
+every surface** rather than a separate model or ruleset per platform. It runs behind the same pluggable interface
+and the **same function-by-function, accuracy-gated autonomous switchover** (5.15): the operator's model only
+takes over a surface/function once it provably out-performs the incumbent there, with automatic rollback, and
+**money/identity/legal decisions stay permanently human-gated on every surface**. Implemented on a shared
+web + PWA/native app shell so one model deployment (`MODEL_BACKEND` / `MODEL_CUSTOM_ENDPOINT`) serves web and app
+identically. **Novelty.** (a) A single operator-owned model **operating an entire consumer property end-to-end
+across web + native apps** from **one unified first-party corpus**, with cross-surface consistency as an explicit
+objective; (b) the per-function accuracy-gated switchover and permanent compliance gates of 5.15 applied
+**per-surface-and-function** so autonomy is earned independently where behavior differs (e.g., app vs. web
+load-speed) while the model stays one brain; (c) the whole consumer experience — not just ad or pricing
+optimization — placed under the earned-autonomy + permanent-gate mechanism (5.6).
+
 ---
 
 ## 6. Candidate inventions / claim seeds (for counsel to prioritize)
@@ -286,6 +334,16 @@ assess §101 eligibility (frame as specific technical implementations, not abstr
     fallback. (§5.12)
 12. **Compliance-as-code layer** binding jurisdiction/age/disclosure/money/consent controls to the autonomy
     switches. (§5.13)
+13. **Operator-owned custom AI model for ecommerce with function-by-function, accuracy-gated autonomous
+    switchover** — building and training an operator's own model from first-party operational data (incumbent
+    labels + human approve/reject + optimizer outcomes), shadow-evaluated against the incumbent's output accuracy
+    **per ecommerce function AND in aggregate**, auto-promoted to serve only when it beats the incumbent on every
+    function individually and overall (sustained), with automatic regression rollback, all behind the permanent
+    money/identity/legal gates. (§5.15) — *strong standalone candidate.*
+14. **Single operator-owned AI model operating an entire consumer website AND its mobile apps** from one unified
+    cross-surface first-party corpus — the whole end-to-end experience (not just one channel) run by one model,
+    with per-surface-and-function accuracy-gated switchover, automatic rollback, and permanent money/identity/
+    legal human gates on every surface. (§5.16) — *specific-application candidate; pairs with 13.*
 
 Several of the above are strongest **in combination** (e.g., 1+4+5 as an "autonomous, compliant, self-improving
 advertising distribution system"); counsel may prefer one or two broad system claims plus dependent method
@@ -305,6 +363,13 @@ claims.
   conversion**, and posting **gated by earned autonomy trust**.
 - vs. MLM/referral software: single-tier, **clawback-gated** settlement from cleared revenue; explicitly not a
   downline.
+- vs. AutoML / model-selection / champion-challenger and A/B model deployment tools: promotion is gated on the
+  challenger beating the incumbent **on every ecommerce function individually AND in aggregate** (not one global
+  metric or a traffic-split winner), the **incumbent model is simultaneously the labeler and the live benchmark**
+  while the challenger shadows, promotion requires a **sustained multi-evaluation streak** with **automatic
+  regression rollback**, and the entire autonomous swap is bound to **permanent money/identity/legal human
+  gates** — the model can never take over a sensitive decision. The training corpus is the operator's own
+  first-party operational data, PII-minimized, not a third-party or general-web dataset.
 
 ---
 
