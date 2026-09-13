@@ -17,6 +17,13 @@ description) and `FOUNDING-OFFER-COUNSEL-REVIEW` (the counsel packet).*
   buyers; it is a pure availability threshold, not a payout event.
 - **Category exclusivity** — each founder is the only founding advertiser in their category during the founding
   window.
+- **No fill deadline.** The founding offer stays open until the 200,000-slot availability cap is reached,
+  however long that takes — there is no time limit to fill it (`FOUNDING_FILL_NO_TIME_LIMIT`).
+- **Benefit year anchored to the milestone.** A founder's 100%-keep survey year does **not** start at signup —
+  it starts on the date the **200,000 premium-user milestone** is reached (stamped once, idempotently); a member
+  who joins after the milestone starts from their join date. Until the milestone is reached the window has not
+  begun and the member keeps their in-window rate (`FOUNDING_TERM_STARTS_AT_MILESTONE`,
+  `FOUNDING_MILESTONE_USERS_REACHED_AT`).
 
 ## 2. Entry: free trial → auto-convert to paid
 
@@ -92,7 +99,9 @@ Founding contributions are **non-refundable** (presale model; escrow/hybrid supp
   `FOUNDING_CATEGORY_EXCLUSIVITY` (on) · `FOUNDING_MAX_SCALE_ENABLED` (on) ·
   `FOUNDING_LAUNCH_MILESTONE_PREMIUM_USERS` (200,000) · `FOUNDING_DISCLOSURE_COPY` (capacity-paced delivery
   disclosure, recorded to the consent ledger on `/Apply`) · `FOUNDING_FUNDS_MODEL` (presale / escrow / hybrid) ·
-  `FOUNDING_FREE_TRIAL_*` (free-trial auto-convert; default OFF).
+  `FOUNDING_FREE_TRIAL_*` (free-trial auto-convert; default OFF) · `FOUNDING_FILL_NO_TIME_LIMIT` (on) ·
+  `FOUNDING_TERM_STARTS_AT_MILESTONE` (on) · `FOUNDING_MILESTONE_USERS_REACHED_AT` (stamped when the 200k-user
+  gate is first met).
 - Price flips automatically when the cap fills; the 100%→75% survey-share revert and the grandfathering are in
   code. Founding perks surface on `/Apply` with the delivery disclosure and a required acceptance checkbox.
 

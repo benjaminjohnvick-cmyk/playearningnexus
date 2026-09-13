@@ -103,6 +103,14 @@ Founding contributions are **non-refundable** (presale model).
 Alongside the paid founding path there are participation paths — a **no-upfront** path and a **free
 earn-to-unlock** path — which are delivery schedules, never debts: stop anytime, owe nothing, no penalty.
 
+## Where to read more
+
+- **`FOUNDING-OFFER-DESIGN-AND-BUILD`** — the mechanics and what's coded (offer structure, the free-trial
+  auto-convert, advertising, max features, the two launch gates, the two-phase use-of-funds, no-fill-deadline /
+  milestone-anchored benefit year, and the settings flags).
+- **`FOUNDING-OFFER-COUNSEL-REVIEW`** — the counsel review packet (the legally-weighty mechanics and the specific
+  questions for counsel).
+
 ---
 
 *Not legal advice. The billing, disclosure, and consumer-protection terms of the free-trial auto-conversion are
