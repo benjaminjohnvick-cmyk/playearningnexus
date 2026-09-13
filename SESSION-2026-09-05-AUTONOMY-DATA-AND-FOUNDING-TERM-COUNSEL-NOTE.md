@@ -35,7 +35,8 @@ preserve every existing constraint. Nothing here creates a new money-movement, c
    wired into any member-facing or live term** pending counsel's decision on (a) whether to make it a binding
    covenant or a non-binding statement of current intent, and (b) how it interacts with the funds model
    (`FOUNDING_FUNDS_MODEL`: presale / escrow / hybrid), since earmarking funds for a specific purpose can shift
-   the posture toward escrow/custodial treatment.
+   the posture toward escrow/custodial treatment. **(Superseded — see confirm-point 5, revised 2026-09-13, for
+   the current two-phase use-of-funds posture.)**
 
 ## Guardrails preserved (the point of this note)
 
@@ -74,20 +75,24 @@ preserve every existing constraint. Nothing here creates a new money-movement, c
    than at signup — during which the member keeps their in-window rate but the clock has not begun — is
    consistent with the founding-offer terms and disclosures the member accepts, and with any auto-renewal /
    term-length representations.
-5. **Use-of-funds posture (REVISED 2026-09-05 — reverses the earlier draft):** the owner now wants the letter
-   to state that founding contributions are **non-refundable** and, **once the offer is filled, are the owner's
-   to allocate at discretion** (a purchase of advertising/membership, **not** funds held in trust or ring-fenced).
-   This **reverses** the earlier "spent only on completing the offer" draft. Please confirm this "purchase, not
-   custodial funds" posture is consistent with the funds model (`FOUNDING_FUNDS_MODEL`) and with every refund /
-   escrow representation the buyer sees, and reconcile or remove any prior escrow/earmark language so the two
-   don't conflict.
-6. **Post-year deliverable + audience figure (NEW 2026-09-05):** the letter now adds two forward statements —
-   (a) after the founding year the owner will invest funds in **acquiring a ~200,000-user audience**, and
-   (b) each founding business receives a **free additional year of marketing access to that audience** as part
-   of the offer. Please confirm the framing needed to stay within the existing no-performance-guarantee posture:
-   the free marketing year is a concrete **new delivery obligation** (it must be added to the value stack /
-   delivery guarantee and actually honored), and the **200,000-user figure should read as a goal/target, not a
-   guaranteed count of reachable users**, so it isn't an audience-size or results guarantee. Confirm the
+5. **Use-of-funds posture (REVISED 2026-09-13 — TWO-PHASE):** the owner wants the letter to state that founding
+   contributions are **non-refundable** and are **directed to user acquisition until BOTH** the **200,000-user
+   prelaunch milestone** and an **additional 200,000 regular users** (the audience founders advertise to;
+   ~400,000 total) are reached; **once both milestones are met, the funds are the owner's to allocate at
+   discretion for any lawful business purpose** (a purchase of advertising/membership, **not** funds held in
+   trust). This supersedes both the earlier "spent only on completing the offer" draft and the 2026-09-05
+   "discretion once the offer is filled" draft. Please confirm this two-phase posture is consistent with the
+   funds model (`FOUNDING_FUNDS_MODEL`) and with every refund/escrow representation the buyer sees, and note that
+   earmarking funds to user acquisition during Phase 1 may shift that phase toward escrow/custodial treatment —
+   reconcile accordingly.
+6. **Post-year deliverable + audience figures (REVISED 2026-09-13):** the letter adds two forward statements —
+   (a) the founding funds are **directed to acquiring the 200,000 prelaunch users plus an additional 200,000
+   regular users (~400,000 total)** for founders to advertise to, after which the funds are at the owner's
+   discretion; and (b) each founding business receives a **free additional year of marketing access to that
+   audience** as part of the offer. Please confirm the framing needed to stay within the no-performance-guarantee
+   posture: the free marketing year is a concrete **new delivery obligation** (it must be added to the value
+   stack / delivery guarantee and actually honored), and the **user figures should read as goals/targets, not
+   guaranteed counts of reachable users**, so they aren't an audience-size or results guarantee. Confirm the
    interaction with the existing capacity-paced, "advertising delivered — not audience/results/ROI" disclosure,
    and whether the free-marketing-year benefit needs its own delivery-guarantee wording.
 
@@ -100,25 +105,30 @@ counsel can choose the posture.*
 
 **Variant A — statement of current intent (softer):**
 > "Founding contributions are a non-refundable purchase of advertising and membership — not funds held in trust.
-> Once the founding offer is filled, we may allocate these funds at our discretion. As part of this offer, we
-> intend — after the founding year is complete — to invest in growing the platform's audience toward a
-> 200,000-member base, and to give each founding business an additional year of marketing access to that
-> audience at no extra charge. These statements describe our plans and the value we intend to deliver; they are
-> not a guarantee of any specific audience size, reach, result, revenue, or financial return."
+> Until we have (1) reached the 200,000-user prelaunch milestone and (2) acquired an additional 200,000 regular
+> users for founding businesses to advertise to (about 400,000 users in total), we direct these funds to
+> acquiring those users and building that audience. Once both milestones are met, we may use these funds at our
+> discretion for any lawful business purpose. As part of this offer we also give each founding business an
+> additional year of marketing access to the platform's user audience at no extra charge. These statements
+> describe our plans and the value we intend to deliver; the user figures are goals, and nothing here guarantees
+> any specific audience size, reach, result, revenue, or financial return."
 
 **Variant B — commitment/covenant (stronger; only if counsel advises it can be honored and evidenced):**
-> "Founding contributions are non-refundable and, once the offer is filled, are ours to allocate as we
-> determine. As part of the founding offer, we commit to provide each founding business a free additional year
-> of marketing access to the platform's user audience following the founding year, and we intend to grow that
-> audience toward a 200,000-member target. We will maintain records of this investment. This is a commitment to
-> deliver the additional marketing year described; the 200,000-member figure is a goal, not a guaranteed count
-> of reachable users, and nothing here is a promise of sales, revenue, profit, or investment return."
+> "Founding contributions are non-refundable. Until we have reached the 200,000-user prelaunch milestone and
+> acquired a further 200,000 regular users for founding businesses to advertise to (about 400,000 users in
+> total), these funds are directed to acquiring those users and building that audience; once both milestones are
+> met, they are ours to use at our discretion for any lawful business purpose. As part of the founding offer we
+> commit to provide each founding business a free additional year of marketing access to the platform's user
+> audience following the founding year. The user figures are goals, not guaranteed counts of reachable users, and
+> nothing here is a promise of sales, revenue, profit, or investment return."
 
-*Open drafting questions for counsel, tied to confirm-points 5–6: (a) the "non-refundable purchase, owner's
-discretion after fill" posture vs. the funds model and any refund/escrow language it reverses; (b) framing the
-200,000-user figure as a goal, not a guaranteed reachable-audience count; (c) whether the free additional
-marketing year needs its own delivery-guarantee wording and a place in the value stack. Nothing here changes
-the closed loop, the no-ROI posture, or any permanent gate.*
+*Open drafting questions for counsel, tied to confirm-points 5–6: (a) the **two-phase** "non-refundable,
+directed to user acquisition until the 200,000 prelaunch + 200,000 additional users are reached, then owner's
+discretion for any lawful business purpose" posture vs. the funds model and any refund/escrow language it
+reverses — including whether Phase 1 earmarking leans toward escrow/custodial treatment; (b) framing the user
+figures as goals, not guaranteed reachable-audience counts; (c) whether the free additional marketing year needs
+its own delivery-guarantee wording and a place in the value stack. Nothing here changes the closed loop, the
+no-ROI posture, or any permanent gate.*
 
 *Cross-references: `AUTONOMOUS-AI-AND-FOUNDING-DATA-DESIGN.md` (design), `TIERED-FEATURE-CATALOG-AND-PMF.md`,
 `FOUNDING-PRE-REVENUE-OFFER-AND-TIER1-SPEC.md`, `FOUNDING-OFFER-LEGAL-REVIEW.md`,

@@ -123,9 +123,11 @@ advertiser gate.
   framing sufficient to substantiate the guarantee? Is the disclosure copy adequate and conspicuous enough?
 
 ### (d) Crowdfunding / pre-sale delivery obligations (FTC)
-- **Design:** funds are earmarked to build/launch/grow and acquire the user audience; the non-refundable /
-  may-not-launch risk is disclosed prominently and accepted; records are kept; the operator intends to reserve
-  enough to actually deliver the advertising sold.
+- **Design (two-phase use-of-funds):** in **Phase 1** the funds are **directed to acquiring the user audience**
+  — the 200,000 prelaunch users plus an additional 200,000 regular users (~400,000 total) the founders advertise
+  to; in **Phase 2**, once both milestones are met, the funds are **the owner's to use at its discretion for any
+  lawful business purpose**. The non-refundable / may-not-launch risk is disclosed prominently and accepted;
+  records are kept; the operator intends to reserve enough to actually deliver the advertising sold.
 - **For counsel:** What obligations attach to the non-refundable pre-sale? Is any portion legally required to be
   refundable/escrowed? What delivery-effort and record-keeping standard should we hold ourselves to?
 
