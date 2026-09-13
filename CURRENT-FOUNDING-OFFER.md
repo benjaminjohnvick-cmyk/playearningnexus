@@ -89,11 +89,12 @@ Together that's roughly a **400,000-user** audience in place before full public 
 
 ## How the funds are used (two-phase)
 
-- **Phase 1** — until **both** user milestones are met (the 200,000 prelaunch users **and** the additional
-  200,000 regular users, ~400,000 total), the founding funds are **directed to acquiring those users and building
-  that audience**.
-- **Phase 2** — once Phase 1 is complete, the funds are the **owner's to use at its discretion for any lawful
-  business purpose**.
+- **Phase 1 — business expenses only.** Until **both** user milestones are met (the 200,000 prelaunch users
+  **and** the additional 200,000 regular users, ~400,000 total), the founding funds go to **business expenses**
+  — any lawful cost of operating and growing the business (for example user acquisition, product, operations,
+  staffing, and marketing). During this phase the money is spent on the business, not taken as personal profit.
+- **Phase 2 — full discretion.** Once Phase 1 is complete, the funds are the **owner's to use at its sole
+  discretion for any lawful purpose** — no longer limited to business expenses.
 
 Founding contributions are **non-refundable** (presale model).
 
