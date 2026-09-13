@@ -42,14 +42,17 @@ export default function DataDrivenCoverage() {
   const timer = useRef(null);
 
   const [model, setModel] = useState(null);
+  const [perf, setPerf] = useState(null);
   const load = useCallback(async () => {
     try {
-      const [r, m] = await Promise.all([
+      const [r, m, p] = await Promise.all([
         base44.functions.invoke('dataDrivenCoverage', {}),
         base44.functions.invoke('customModelStatus', {}).catch(() => null),
+        base44.functions.invoke('perfStatus', {}).catch(() => null),
       ]);
       setData(r?.data ?? r);
       setModel(m?.data ?? m);
+      setPerf(p?.data ?? p);
     } catch (e) {
       toast.error('Could not load coverage: ' + (e?.message || e));
     } finally { setLoading(false); }
@@ -260,6 +263,40 @@ export default function DataDrivenCoverage() {
             )}
             {!model.ready && model.backend !== 'custom' && <span className="text-[11px] text-slate-400 self-center">Promote unlocks once it matches the incumbent. Turn on auto-switch in settings to flip automatically.</span>}
           </div>
+        </CardContent></Card>
+      ) : null}
+
+      {/* Load speed — real visitor p75 vs the ~80ms perception budget (20% below the 100ms "instant" threshold) */}
+      {perf && !perf.error ? (
+        <Card><CardContent className="p-5">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-800"><Activity className="w-4 h-4 text-sky-600" /> Load speed vs the human "instant" threshold</div>
+            <Badge className={perf.overall === 'instant' ? 'bg-emerald-100 text-emerald-700' : perf.overall === 'needs_work' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}>
+              {perf.overall === 'instant' ? 'feels instant' : perf.overall === 'needs_work' ? 'above budget' : 'within budget'}
+            </Badge>
+          </div>
+          <p className="text-xs text-slate-500 mb-3">The human brain perceives a response as instantaneous at ~{perf.perception_ms ?? 100}ms; the budget is <b>{perf.instant_budget_ms ?? 80}ms</b> (20% below that) and the AI optimizer drives the real numbers as low as it can. p75 = the speed most visitors get or better. Auto-optimization: <b>{perf.auto_optimize_enabled ? 'on' : 'off'}</b> · prefetch <b>{perf.prefetch_strategy}</b>.</p>
+          <div className="space-y-3">
+            {(perf.vitals || []).map((v) => {
+              const color = v.status === 'instant' ? '#059669' : v.status === 'needs_work' ? '#e11d48' : '#d97706';
+              const pctOfBudget = v.budget_ms ? Math.min(100, (v.p75 / v.budget_ms) * 100) : 0;
+              return (
+                <div key={v.vital}>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="text-slate-600 pr-2">{v.label}</span>
+                    <span className="font-semibold whitespace-nowrap" style={{ color }}>
+                      {v.n > 0 ? `${v.p75}${v.unit}` : '—'} <span className="text-slate-400 font-normal">/ {v.budget_ms}{v.unit} budget{v.n > 0 ? ` (${v.n})` : ' · no data yet'}</span>
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full" style={{ width: `${pctOfBudget}%`, background: color }} /></div>
+                </div>
+              );
+            })}
+          </div>
+          {perf.trend?.length > 1 && (
+            <div className="mt-3"><div className="text-[11px] text-slate-500 mb-1">In-app navigation p75 (lower is faster)</div><Spark series={perf.trend} color="#0284c7" /></div>
+          )}
+          <p className="text-[11px] text-slate-400 mt-2">Cold first paint (LCP) has a physical network floor no code removes; the 80ms budget is for what's controllable — in-app navigation, interaction, and warm/repeat loads. Speed runs through the <b>load_time</b> AI domain, so it also feeds the custom model's training and the per-function switch gate.</p>
         </CardContent></Card>
       ) : null}
 

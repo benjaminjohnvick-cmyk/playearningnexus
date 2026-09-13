@@ -1020,5 +1020,9 @@
   "welcomeCreditStatus",
   "wishlistAISuggest",
   "wishlistGet",
-  "youtubeAutoEmbed"
+  "youtubeAutoEmbed",
+  "perfVitalsIngest",
+  "perfConfig",
+  "perfStatus",
+  "perfOptimize"
 ]

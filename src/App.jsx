@@ -9,6 +9,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { LocalizationProvider } from '@/context/LocalizationContext';
+import { registerRouteLoader } from '@/lib/route-prefetch';
 
 // Lazy-load heavy pages to reduce initial bundle size
 const EarningsInsights = lazy(() => import('./pages/EarningsInsights'));
@@ -204,6 +205,23 @@ const PageLoader = () => (
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
+
+// Register the high-traffic lazy routes with the prefetch engine so their code can be warmed BEFORE the click
+// (on hover / when the link scrolls into view), making navigation commit under the ~80ms perception budget. Keyed
+// by the route's first path segment, lowercased (how perf-vitals derives the route name). Routes not listed here
+// still work normally (they're service-worker cached) — this just makes the hot paths feel instant.
+registerRouteLoader('myorders', () => import('./pages/MyOrders'));
+registerRouteLoader('managepayouts', () => import('./pages/ManagePayouts'));
+registerRouteLoader('mypayouts', () => import('./pages/MyPayouts'));
+registerRouteLoader('rewardsmarketplace', () => import('./pages/RewardsMarketplace'));
+registerRouteLoader('surveymarketplace', () => import('./pages/SurveyMarketplace'));
+registerRouteLoader('campaigns', () => import('./pages/Campaigns'));
+registerRouteLoader('tournaments', () => import('./pages/Tournaments'));
+registerRouteLoader('notificationinbox', () => import('./pages/NotificationInbox'));
+registerRouteLoader('achievementspage', () => import('./pages/AchievementsPage'));
+registerRouteLoader('globalleaderboard', () => import('./pages/GlobalLeaderboard'));
+registerRouteLoader('dailyearningstreak', () => import('./pages/DailyEarningStreak'));
+registerRouteLoader('referralsquads', () => import('./pages/ReferralSquads'));
 
 const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   <Layout currentPageName={currentPageName}>{children}</Layout>

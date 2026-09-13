@@ -30,6 +30,7 @@
 // ============================================================================
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 
 const ROOT = process.cwd();
 const args = new Set(process.argv.slice(2));
@@ -200,6 +201,31 @@ const WIZARD_EXCLUDE = {
         `gated flag "${key}" is UNCLASSIFIED: add it to LEGAL_BRIEFS (with its counsel brief) if it carries any ` +
         `legal/compliance question, else to OPERATIONAL_FLAGS in counselFeatureGate/entry.ts — the ` +
         `legal-vs-operational call must be explicit for every gate.`);
+    }
+  }
+}
+
+// ---- STRUCTURAL 8: load-speed budget — the entry bundle can't silently bloat ----
+// The main "index" chunk loads on every route, so its size directly sets load speed. A regression that dumps a
+// big new dependency into it would quietly push load time back over the perception budget. This guards the
+// GZIPPED entry-chunk size (what actually goes over the wire). Skips cleanly when there's no build yet (audit
+// run without `vite build`), so it only ever fires on a real, measured regression.
+const ENTRY_GZIP_BUDGET_KB = 750;   // current entry ≈ 676KB gz; headroom for normal growth, catches a real jump.
+{
+  const assetsDir = path.join(ROOT, 'dist/assets');
+  if (fs.existsSync(assetsDir)) {
+    const entries = fs.readdirSync(assetsDir).filter((f) => /^index-.*\.js$/.test(f));
+    if (entries.length) {
+      // The largest index-*.js is the entry chunk.
+      let biggest = null, biggestRaw = 0;
+      for (const f of entries) { const sz = fs.statSync(path.join(assetsDir, f)).size; if (sz > biggestRaw) { biggestRaw = sz; biggest = f; } }
+      const gzKb = Math.round(zlib.gzipSync(fs.readFileSync(path.join(assetsDir, biggest))).length / 1024);
+      if (gzKb > ENTRY_GZIP_BUDGET_KB) {
+        fail('dist/assets/' + biggest,
+          `entry bundle is ${gzKb}KB gzipped, over the ${ENTRY_GZIP_BUDGET_KB}KB load-speed budget. A bigger entry ` +
+          `chunk slows every page load. Lazy-load the new weight (React.lazy a heavy page/lib) or give it its own ` +
+          `manualChunk in vite.config, or raise ENTRY_GZIP_BUDGET_KB in deploy-kit/audit.mjs if this growth is intended.`);
+      }
     }
   }
 }

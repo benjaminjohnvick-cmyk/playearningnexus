@@ -18,6 +18,7 @@ import { Core } from "./integrations.ts";
 import { requireExperiment, createExperimentForProposal } from "./experiments.ts";
 import { createLiveExperiment, liveEnabled } from "./live-experiments.ts";
 import { topBaseSegment } from "./personalization.ts";
+import { vitalP75 } from "./perf-optimizer.ts";
 import { aiPaused, logAiAction } from "./ai-control.ts";
 import { canAutoApplyNonSensitive, autoApplyMode } from "./ai-autonomy.ts";
 
@@ -113,6 +114,10 @@ export const OPTIMIZABLE: Optimizable[] = [
   { key: "BOOST_BASE_RATE", objective: "engagement_rate", goal: "max", step: 0.1 },
   { key: "BOOST_STREAK_RATE", objective: "engagement_rate", goal: "max", step: 0.05 },
   { key: "BOOST_VAULT_BONUS_PCT", objective: "engagement_rate", goal: "max", step: 0.25 },
+  // Load speed — the AI drives the perceived in-app navigation time DOWN (goal: min) toward the ~80ms perception
+  // budget by tuning how aggressively the next page's code is prefetched. Non-price, non-sensitive → auto-applies
+  // within bounds (0..3, clamped by the setting) and reverts on regression, exactly like the engagement knobs.
+  { key: "PERF_PREFETCH_LEVEL", objective: "route_nav_p75_ms", goal: "min", step: 1 },
 ].filter((o) => !COMPLIANCE_DENYLIST.has(o.key));
 
 const byKey = Object.fromEntries(OPTIMIZABLE.map((o) => [o.key, o]));
@@ -239,6 +244,16 @@ export async function collectSignals(days = 14): Promise<Snapshot> {
   const recentFounding = founding.filter((f: any) => (f.at ?? f.created_date) >= since);
   snap.founding_signal_volume = recentFounding.length;
   snap.founding_active_users = new Set(recentFounding.map((f: any) => String(f.user_id || "")).filter(Boolean)).size;
+
+  // Load speed — the objective the load-time optimizer minimizes. p75 of the raw Web-Vitals samples the client
+  // beacons in (perfVitalsIngest). route_nav_p75_ms is what PERF_PREFETCH_LEVEL is tuned against.
+  try {
+    const [route, lcp, inp] = await Promise.all([vitalP75("route"), vitalP75("lcp"), vitalP75("inp")]);
+    // Guard against a no-data spike driving the tuner: only expose the objective once there are enough samples.
+    if (route.n >= 30) snap.route_nav_p75_ms = route.p75;
+    if (lcp.n >= 30) snap.lcp_p75_ms = lcp.p75;
+    if (inp.n >= 30) snap.inp_p75_ms = inp.p75;
+  } catch { /* perf metrics are best-effort */ }
 
   // Persist each metric as a signal row for trend history.
   const collectedAt = new Date().toISOString();
