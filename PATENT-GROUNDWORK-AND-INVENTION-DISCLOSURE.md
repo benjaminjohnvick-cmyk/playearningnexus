@@ -38,7 +38,7 @@ marketplace** that unifies (a) a consumer rewards economy funded by advertisers 
 social surfaces, and (c) a platform-wide **graduated-autonomy automation framework** by which AI progressively
 and safely takes over operational decisions under measured trust, with permanent human/compliance gates on
 money, identity, and legal actions. Implemented as a responsive website, native/wrapped mobile applications, and
-a serverless back end of ~890 functions and ~180 subsystem modules.
+a serverless back end of ~1,028 functions and ~225 subsystem modules.
 
 ---
 
@@ -97,10 +97,10 @@ The platform is a single system combining the following cooperating subsystems, 
 
 ## 4. System architecture (implementation)
 
-- **Front end:** responsive React/Vite single-page web application (~230 route-level pages) with a
+- **Front end:** responsive React/Vite single-page web application (~278 route-level pages) with a
   configuration-driven page router; packaged as mobile apps via a wrapper/Fastlane pipeline. Distinctive screens
   (e.g., the Automation Command Center, AI Video Studio, Fair Topic Picker) are candidates for **design patents**.
-- **Back end:** ~890 serverless functions (Deno runtime) dispatched through a manifest, plus ~180 typed subsystem
+- **Back end:** ~1,028 serverless functions (Deno runtime) dispatched through a manifest, plus ~225 typed subsystem
   modules ("sdk"). An in-process function-invocation bus lets functions compose without HTTP.
 - **Data:** a document-style store (JSONB rows) with generated relational schema and expression indexes;
   append-only **money ledger** and **consent ledger**; optimization-signal and learning-memory stores.
@@ -384,7 +384,7 @@ claims.
 
 ---
 
-## Appendix A — Subsystem module inventory (~180 modules)
+## Appendix A — Subsystem module inventory (~225 modules)
 
 The back-end `sdk` modules are the authoritative subsystem list; representative modules are named in Section 5.
 The complete set is in `06 - Code Backup/backend/sdk/` and includes (non-exhaustive): autonomy-kernel,
@@ -396,9 +396,9 @@ balance, providers, provider-advisor, image-gen, tts, transcription, survey-suit
 survey-evidence, catalog, marketplace-fee, seller-activation, tier1-financed, tier2-scaling, tier3-unlimited,
 premium-finance, flexpay, household, tenant, and others.
 
-## Appendix B — Application surface inventory (~230 pages, ~890 functions)
+## Appendix B — Application surface inventory (~278 pages, ~1,028 functions)
 
-The front end exposes ~230 route-level pages (see `06 - Code Backup/src/pages/`); the back end exposes ~890
+The front end exposes ~278 route-level pages (see `06 - Code Backup/src/pages/`); the back end exposes ~1,028
 serverless functions registered in `06 - Code Backup/backend/functions/_manifest.json`. Distinctive UI screens
 for possible design-patent coverage include the Automation Command Center, AI Video Studio, Fair Topic Picker,
 AI Agents Command Center, and the Setup Wizard. The `auto*` function family (~250 functions) implements the

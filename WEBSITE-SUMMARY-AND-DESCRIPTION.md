@@ -106,7 +106,7 @@ and the Tier 2 items in `FOR-YOUR-ATTORNEY.md` §8–§9).
 ## 7. Technology & AI (what's under the hood)
 
 - **Delivery:** a responsive **website (PWA)** plus **native/wrapped mobile apps** (Capacitor), backed by a
-  **serverless back end** of roughly **980 functions across ~180 subsystem modules**.
+  **serverless back end** of roughly **1,028 functions across ~225 subsystem modules**.
 - **AI advertising engine:** generates, tests, and optimizes advertising creative across owned and social
   surfaces (including AI-generated images/video).
 - **Graduated-autonomy automation:** AI progressively takes over routine operational decisions under measured

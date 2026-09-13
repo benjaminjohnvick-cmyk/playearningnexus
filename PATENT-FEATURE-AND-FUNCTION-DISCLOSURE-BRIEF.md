@@ -9,13 +9,13 @@
 ## How to read this brief
 
 - **Section 1 — Patent-candidate highlights.** The subsystems most likely to be worth counsel's attention, described at invention-disclosure depth (mechanism, inputs, novelty angle). Start here.
-- **Section 2 — Software engines (SDK modules).** The 195 backend engines that implement the platform's logic — the 'how it works' layer where most inventive mechanism lives.
-- **Section 3 — Complete backend function inventory.** All 983 backend functions (API endpoints, scheduled jobs, automations), grouped by domain, each with its code-sourced description.
-- **Section 4 — User-facing surfaces.** All 272 application pages/screens.
-- **Section 5 — Data model.** All 364 persisted entity types.
-- **Section 6 — Configurable capabilities.** The ~1,200 capability/feature flags across 50 categories that govern platform behavior.
+- **Section 2 — Software engines (SDK modules).** The 225 backend engines that implement the platform's logic — the 'how it works' layer where most inventive mechanism lives.
+- **Section 3 — Complete backend function inventory.** All 1,028 backend functions (API endpoints, scheduled jobs, automations), grouped by domain, each with its code-sourced description.
+- **Section 4 — User-facing surfaces.** All 278 application pages/screens.
+- **Section 5 — Data model.** All 369 persisted entity types.
+- **Section 6 — Configurable capabilities.** The 1,118 capability/feature flags across 52 categories that govern platform behavior.
 
-**Scale at a glance:** 983 backend functions · 195 software engines · 272 pages · 364 entity types · ~1,200 capability flags across 50 configuration categories.
+**Scale at a glance:** 1,028 backend functions · 225 software engines · 278 pages · 369 entity types · 1,118 capability flags across 52 configuration categories.
 
 ---
 
@@ -1356,58 +1356,60 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ## 6. Configurable capabilities (feature/capability flags)
 
-The platform exposes ~1,200 admin-configurable capability flags — every one a switch or tunable that governs a feature's behavior, cost, or compliance gate. They are organized into these 50 categories:
+The platform exposes 1,118 admin-configurable capability flags — every one a switch or tunable that governs a feature's behavior, cost, or compliance gate. They are organized into these 52 categories:
 
-- **Scale & Platform** — 106 flags
+- **Scale** — 125 flags
+- **Scale & Platform** — 108 flags
+- **AI & Agents** — 100 flags
 - **Surveys** — 91 flags
-- **Scale** — 88 flags
-- **AI & Agents** — 82 flags
 - **Founding Advertiser** — 69 flags
-- **Premium PPC** — 50 flags
+- **Premium PPC** — 53 flags
+- **Automation** — 48 flags
 - **AI Creative Suite** — 44 flags
 - **Earned Advertiser** — 35 flags
 - **Economy & Payouts** — 31 flags
-- **Tier 2 Scaling** — 29 flags
 - **AI Video Engine** — 29 flags
+- **Tier 2 Scaling** — 29 flags
 - **Revenue** — 25 flags
-- **Referrals / Affiliate** — 23 flags
+- **Advertiser Billing** — 24 flags
 - **Loyalty & Rewards** — 23 flags
-- **Advertiser Billing** — 20 flags
+- **Referrals / Affiliate** — 23 flags
 - **AI Funnel** — 19 flags
-- **Revenue Levers (gated)** — 17 flags
 - **Marketplace** — 17 flags
+- **Revenue Levers (gated)** — 17 flags
 - **Social Amplification** — 16 flags
-- **Automation** — 14 flags
-- **Compliance & Legal** — 11 flags
+- **Ad Branding** — 15 flags
+- **Ad Media & Targeting** — 15 flags
+- **Compliance & Legal** — 13 flags
 - **Flexible Payment (credit — OFF)** — 11 flags
 - **Points Boost** — 10 flags
 - **Growth** — 9 flags
-- **Tier 1 Financed (credit — OFF)** — 9 flags
 - **Product Stats** — 9 flags
+- **Tier 1 Financed (credit — OFF)** — 9 flags
 - **Tier Progression** — 9 flags
-- **Ad Branding** — 9 flags
 - **Video Autopilot** — 9 flags
 - **Goods Advance (credit — OFF)** — 8 flags
-- **Games & Contests** — 6 flags
 - **Concept Polling** — 6 flags
-- **Tier 1 Self-Paced (no-debt)** — 5 flags
+- **Games & Contests** — 6 flags
+- **SEO & Search** — 6 flags
 - **AI Survey Suite** — 5 flags
-- **Revenue Levers (counsel)** — 4 flags
-- **Store & Fulfillment** — 4 flags
-- **Referrals** — 4 flags
-- **Messaging & Marketing** — 4 flags
+- **Tier 1 Self-Paced (no-debt)** — 5 flags
 - **Content & UI** — 4 flags
-- **Tier 3 Unlimited** — 4 flags
+- **Messaging & Marketing** — 4 flags
+- **Referrals** — 4 flags
+- **Revenue Levers (counsel)** — 4 flags
 - **Security** — 4 flags
+- **Store & Fulfillment** — 4 flags
+- **Tier 3 Unlimited** — 4 flags
 - **Gamification** — 3 flags
 - **Gift & Boost** — 3 flags
 - **Premium Gift Boost** — 3 flags
-- **Membership** — 2 flags
-- **Sourcing** — 2 flags
-- **Save-to-Get** — 2 flags
 - **Earnings What-If** — 2 flags
-- **Earnings Set-Aside** — 1 flags
-- **SMS Opt-In** — 1 flags
+- **Membership** — 2 flags
+- **Save-to-Get** — 2 flags
+- **Sourcing** — 2 flags
+- **Earnings Set-Aside** — 1 flag
+- **SMS Opt-In** — 1 flag
 
 *(The complete flag list with defaults and help text is in `ADMIN-SETTINGS-README.md` / `backend/sdk/settings.ts`.)*
 
