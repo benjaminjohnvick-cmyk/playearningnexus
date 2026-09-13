@@ -30,13 +30,12 @@ operations, with **permanent human/compliance gates** on anything touching money
 - **It is not** a bank, a money-transmitter, an investment or lending service, a cash-out "get paid" app, or
   a gambling site. Consumer balances are **closed-loop store credit**, not money; the prize competition is
   **skill/merit-based with a free entry option**, not a random-draw lottery.
-- **Positioning note for counsel:** the brand repositioned from a "play games, earn" framing to a
-  **retail-first** identity. Games are now **one searchable store category** among others, not a pillar and not a
+- **Positioning note for counsel:** the brand is a **retail-first** identity. Games are now **one searchable store category** among others, not a pillar and not a
   curated catalog: users search for any game available online and buy or download it through the store, on the
   **same zero-inventory sourcing/fulfillment model as every other product** (the store holds no inventory).
   Marketing copy across the site now leads with shopping; surveys/rewards and the games category are presented as
   secondary features. This matters for how the product is characterized (retail commerce vs. a rewards/gaming app).
-  See `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md` for the full decision record. `PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).`
+  
 
 ---
 

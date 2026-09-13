@@ -41,7 +41,7 @@ Get Goods Gratis rewards participation and merit — it is not gambling and invo
 to use the app.
 
 ## Keywords (Apple, ≤100 chars, comma-separated)
-earn points,rewards,surveys,cash back,marketplace,shopping,deals,offers,play to earn,paid tasks
+earn points,rewards,surveys,cash back,marketplace,shopping,deals,offers,paid tasks
 
 ## What's New (first release)
 Welcome to Get Goods Gratis: earn points from surveys and tasks, shop a global marketplace in your own

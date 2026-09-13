@@ -4,7 +4,6 @@
 > tiers) is documented in **`AI-CREATIVE-SUITE.md`**. This doc covers the broader self-improvement loop it
 > plugs into.
 
-
 _Version: Get Goods Gratis 8 · 2026-07-29. How the Premium PPC AI advertiser generates ads, posts them under
 consent, and learns from outcomes using the platform's existing AI-learning infrastructure. **Not legal
 advice** — the social-posting model requires the platform/FTC review flagged below._

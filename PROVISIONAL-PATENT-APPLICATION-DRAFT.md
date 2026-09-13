@@ -393,7 +393,7 @@ so the full disclosure receives this application's priority date.)
 
 - Whether using an AI provider's outputs to label data for training a separate model is permitted under that
   provider's terms — a terms-of-service + privacy question (see `MODEL-TRAINING-DATA-COUNSEL-NOTE.md`).
-- The games-to-retail repositioning (2026-09-09): counsel may prefer claim language framed around retail/rewards
+- The treatment of games as one searchable retail category: counsel may prefer claim language framed around retail/rewards
   with games as one searchable category.
 - Which elements to protect as **trade secret** rather than patent (exact thresholds, margins, scoring formulas),
   since a published patent teaches them.
@@ -456,8 +456,6 @@ a registered patent attorney's review and filing.*
 
 > **This appendix is part of the provisional application as filed.** It reproduces, in full, the platform's complete inventory of every function and feature — **1,028 backend functions, 225 software engines, 369 persisted entity types, 278 pages, and 1,118 capability flags across 52 categories** — each with a code-sourced description, so the entire disclosure receives this application's priority date and supports the broadest possible later claims. (Reproduced from the platform's feature/function disclosure brief; counsel to review the trade-secret carve-out in §11/§13 before the non-provisional publishes.)
 
-
-> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`. **Action for patent counsel:** per decision #2, the game/play mechanics described below should be reframed as one retail category within a retail-first invention (proposal for counsel — claims are **not** amended here).
 
 **Prepared for patent counsel · 2026-09-05 · Confidential — attorney work-product / invention disclosure**
 
@@ -642,7 +640,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 - **`livestream-channels`** — livestream-channels.ts — pure logic for the Omni-Channel Livestream shopping category. The category's
 - **`localization`** — localization.ts — the culturalization layer. Beyond translation: when features, products, sales, or services
 - **`localize-price`** — localize-price.ts — pure helpers to show shop prices in each user's LOCAL currency for DISPLAY, using the
-- **`loyalty`** — Loyalty & Rewards program engine (retail-loyalty reframe) — two-tier, scale-governed, indefinite.
+- **`loyalty`** — Loyalty & Rewards program engine (retail-loyalty program) — two-tier, scale-governed, indefinite.
 - **`maintenance`** — maintenance.ts — the pure decision core of the site-maintenance agent. Given a HealthSnapshot (plain numbers
 - **`marketplace-fee`** — marketplace-fee.ts — third-party seller economics (flywheel #3, the classic Amazon move).
 - **`membership`** — Premium membership + points valuation.
@@ -1869,7 +1867,6 @@ The platform exposes 1,118 admin-configurable capability flags — every one a s
 - **SMS Opt-In** — 1 flag
 
 *(The complete flag list with defaults and help text is in `ADMIN-SETTINGS-README.md` / `backend/sdk/settings.ts`.)*
-
 
 ---
 

@@ -1,18 +1,17 @@
 # PlayEarning Nexus — Changes Summary
 
-## Session — games → retail category pivot (2026-09-09)
+## Session — games as a searchable retail category (2026-09-09)
 
-Repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category**,
+Games are **one searchable, zero-inventory store category**,
 matching every other category ("the Uber of retail" — hold no inventory; users search for any game available online
 and buy or download it through the store). Mockups updated (standalone game/tournament pages + game nav removed;
 `InAppGameStore` rebuilt as a search-any-game category with AI-generated original cover art, visible "AI-generated"
 labels, age checks at checkout, digital-refund disclosure, no loot boxes, "not endorsed" disclaimer). Product/marketing
 docs reworded retail-first. Legal/compliance/patent/trademark docs carry a dated **PENDING COUNSEL REVIEW** header
-pointing to `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`; patent claim reframing and a revised trademark Nice-class
-list are flagged as **proposals for counsel** (not filed/amended here). Backend Game entities/functions
+Backend Game entities/functions
 (`enterTournament`, `distributeTournamentPrizes`, `GameCheckoutModal`, `game_library`, device-hosted sessions) are
 unchanged and still accurately described in the technical docs. Skill tournaments / prize competitions remain a
-**separate** feature, unaffected by this pivot.
+**separate** feature, a separate feature.
 
 ## Session — hosting arc, social shop, agents, tutorial (this session)
 
@@ -39,8 +38,6 @@ throughout: users only ever receive Site Cash; businesses are paid real money; m
 - **Interactive tutorial + guidebook:** auto-starts on first login, role-branched, downloadable + emailable.
 - **Docs:** AWS-LAUNCH-TO-200M-CHECKLIST, AWS-200M-PATH, DB-SCALING-PATH, DEVICE-OFFLOAD-TIERS, AI-SITE-MAINTENANCE,
   HOSTING-MONETIZATION-STREAMING-COUNSEL-BRIEF, BUDDYCHAT-SOCIAL-SHOP-AND-AGENTS-DESIGN; FOR-YOUR-ATTORNEY updated.
-
-
 
 ## 2026-08-29 — Two-tier referral bonus + paid-endorser social program (BUILT, gated OFF pending counsel)
 
@@ -520,8 +517,6 @@ A Digital Products section mirroring the physical store for online-delivered goo
   promo credit + affordability + earn-back tracker; **no Affirm BNPL** (real shippable goods only).
 - Flag `digital_store`; nav entry + Marketplace banner (physical + digital side by side).
 
-
-
 ## 2026-07-28 — Buy Physical Items section (ship/pickup) + payment options + earn-back tracker + layaway
 
 New marketplace section for tangible goods with full parity, serverless-GPU tiles, and the legal,
@@ -542,8 +537,6 @@ non-lending versions of "buy now, work it off." See `PHYSICAL-STORE.md`.
 - Flags `physical_store`/`local_pickup`/`layaway`/`purchase_payback`; `physicalStoreConfig` endpoint;
   functions registered.
 
-
-
 ## 2026-07-28 — Points Boost: closed-loop "your points grow while you hold them" (non-cashable, breakage-funded, self-tuning)
 
 The legal, $0-marginal version of "value goes up → capture the difference as more points." Not crypto,
@@ -562,8 +555,6 @@ not an investment — a loyalty mechanic keyed to the user's own behavior. See `
 - **Self-tuning**: rate knobs (`BOOST_BASE_RATE`, `BOOST_STREAK_RATE`, `BOOST_VAULT_BONUS_PCT`) added to
   optimizer `OPTIMIZABLE` → auto-tuned + live-A/B-tested for engagement through the existing segment
   holdout → significance → guardrail → promote pipeline; `boost_harvest` metric reported.
-
-
 
 ## 2026-07-28 — Performance & cost optimization pass (keeps every feature, removes cost + risk)
 
@@ -588,8 +579,6 @@ See `PERFORMANCE-AND-COST-OPTIMIZATION.md`. No features removed; each concern be
 - **Overhead monitor** (`learningOverheadMonitor`, hourly): watches telemetry/metric/snapshot volume + AI
   spend and auto-throttles within bounds (lowers sample rates over `OVERHEAD_MAX_EVENTS_PER_DAY`; pauses
   experiments at `OVERHEAD_AI_SPEND_PAUSE_PCT` of the AI cap). `OverheadReport` + audit.
-
-
 
 ## 2026-07-28 — Personalized (segment) learning + segment→site-wide graduation + login/logout lifecycle + OTA live updates
 
@@ -618,8 +607,6 @@ OTA channel so web-layer code reaches installed native apps with no store review
   installed native apps with **no store review**; app-resume checks for updates. `APP-STORE-SUBMISSION-
   CHECKLIST.md` now documents that ongoing changes are store-review-free.
 
-
-
 ## 2026-07-28 — Live experimentation: 24h test → promote-if-better, bandit, circuit breaker, canary, per-user quiet-swap
 
 Added a live-experiment layer so AI-proposed changes are tested on real traffic and promoted only if the
@@ -642,8 +629,6 @@ settings/flags; money/compliance stays human-gated.
 - **Frontend**: `src/lib/liveVariants.js` (fetch-once-per-session applier + `reportMetric`) and
   `VariantProvider`/`useVariant`. `Marketplace.jsx` wired as the reference adoption (buy-CTA variant +
   `purchase`/`click_through` reporting). No new paid deps; monitor is cheap aggregate math under the AI cap.
-
-
 
 ## 2026-07-28 — KYC survey, catalog first-view chatbot, telemetry + sampled capture, self-learning loop
 
@@ -674,8 +659,6 @@ Added the AI data + self-learning package, all default-safe and built on the exi
 - Scheduled `telemetryStats`, `sessionCaptureAnalyzeBatch`, and `selfLearningCycle` in
   `backend/scheduler/schedules.json`. No new paid dependencies — launch cost unchanged; the only cost
   lever (full screenshot capture) ships off + sampled.
-
-
 
 Two zips (your local "final 2" and the GitHub `main`) were confirmed **byte-for-byte identical**, so these changes apply cleanly to either.
 

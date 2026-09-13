@@ -1,7 +1,5 @@
 # PlayEarning Nexus — App Store Pre-Submission Checklist
 
-> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`.
-
 Work top to bottom before you upload to **Google Play** or the **Apple App Store**. Anything marked **BLOCKER** will get your app rejected or delayed if skipped. Companion docs: `MASTER-LAUNCH-GUIDE.md`, `MOBILE-APP-WRAPPER-GUIDE.md`, `LEGAL-PAGES-GUIDE.md`, `COMPLIANCE-AND-ASSUMPTIONS.md`.
 
 Because this app involves **earning money, payouts, referrals, and prize pools**, it gets extra scrutiny from both stores. Budget time for at least one round of review questions.

@@ -38,7 +38,6 @@
 > *Older single figures in these docs predate the kit/automation + cost floor that trimmed the numbers; the
 > banner above is current.*
 
-
 > **Posture: everything is ON, up, and running from the get-go.** There is no build phase — the product
 > ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy +
 > test + submit only. That is *why* these numbers are this low. See `EVERYTHING-ON-FROM-DAY-ONE.md`.

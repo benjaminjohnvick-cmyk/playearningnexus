@@ -1,7 +1,5 @@
 # Get Goods Gratis / Get Goods Gratis (Free) — Complete Feature & Function Disclosure Brief
 
-> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`. **Action for patent counsel:** per decision #2, the game/play mechanics described below should be reframed as one retail category within a retail-first invention (proposal for counsel — claims are **not** amended here).
-
 **Prepared for patent counsel · 2026-09-05 · Confidential — attorney work-product / invention disclosure**
 
 > **Purpose.** This brief is a **100% inventory** of the platform's implemented features and functions, so counsel can decide what is worth pursuing for patent protection. It is generated directly from the live codebase — every backend function is listed with the description carried in its own source, alongside the software engines (SDK modules), user-facing surfaces (pages), the data model (entities), and the configurable capability flags. **Nothing is omitted.** This is a disclosure of what exists and how it works; it is **not** a legal opinion on novelty or patentability — that determination is counsel's, aided by a prior-art search. Not legal advice.
@@ -185,7 +183,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 - **`livestream-channels`** — livestream-channels.ts — pure logic for the Omni-Channel Livestream shopping category. The category's
 - **`localization`** — localization.ts — the culturalization layer. Beyond translation: when features, products, sales, or services
 - **`localize-price`** — localize-price.ts — pure helpers to show shop prices in each user's LOCAL currency for DISPLAY, using the
-- **`loyalty`** — Loyalty & Rewards program engine (retail-loyalty reframe) — two-tier, scale-governed, indefinite.
+- **`loyalty`** — Loyalty & Rewards program engine (retail-loyalty program) — two-tier, scale-governed, indefinite.
 - **`maintenance`** — maintenance.ts — the pure decision core of the site-maintenance agent. Given a HealthSnapshot (plain numbers
 - **`marketplace-fee`** — marketplace-fee.ts — third-party seller economics (flywheel #3, the classic Amazon move).
 - **`membership`** — Premium membership + points valuation.
@@ -1412,7 +1410,6 @@ The platform exposes 1,118 admin-configurable capability flags — every one a s
 - **SMS Opt-In** — 1 flag
 
 *(The complete flag list with defaults and help text is in `ADMIN-SETTINGS-README.md` / `backend/sdk/settings.ts`.)*
-
 
 ---
 

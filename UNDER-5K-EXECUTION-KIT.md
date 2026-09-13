@@ -25,7 +25,6 @@
 > *Older single figures in these docs (e.g. "$3,750–$4,950" or "under $3,900") predate the kit/automation
 > that trimmed the developer hours; the number above is current.*
 
-
 **Purpose:** get a developer from "code on GitHub" to "live on web + Android + iOS" for **≤ $5,000**
 at **$75/hr**. It works by removing the guesswork — every phase below ships with the exact config, copy,
 and steps, so the developer runs near the *low* end of the estimate instead of the high end.

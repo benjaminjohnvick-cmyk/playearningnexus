@@ -24,7 +24,6 @@
 > *Older single figures in these docs (e.g. "$3,750–$4,950" or "under $3,900") predate the kit/automation
 > that trimmed the developer hours; the number above is current.*
 
-
 > **Posture: everything is ON, up, and running from the get-go** — no build phase, so these levers are about
 > deploy/test/scale, not development. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
 

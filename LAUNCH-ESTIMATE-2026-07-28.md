@@ -23,7 +23,6 @@
 > *Older single figures in these docs (e.g. "$3,750–$4,950" or "under $3,900") predate the kit/automation
 > that trimmed the developer hours; the number above is current.*
 
-
 > **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
 
 **Prepared 2026-07-28 · Brand-new estimate · Figures are planning targets, not quotes**

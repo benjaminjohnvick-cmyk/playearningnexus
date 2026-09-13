@@ -1,7 +1,5 @@
 # Trademark Filing Brief — Get Goods Gratis (Free)
 
-> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`. **Action for trademark counsel:** confirm Nice classes for a retail-first identity — Class **35** (online retail / retail-store services) as primary, **9/41** for downloadable software/games as a searchable category; reassess whether **41 (entertainment/games)** should still lead now that games are a store category rather than a pillar. (Draft class list only — no filing amended here.)
-
 *Prepared 2026-09-05 for the owner and trademark counsel. Consolidates the brand assets and lays out what to
 register and what's needed to file. **Not legal advice** — availability, registrability, and the filings
 themselves are counsel's; "Gratis"/"Free" and descriptive terms may need special handling. This brief gathers

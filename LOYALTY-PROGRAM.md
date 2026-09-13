@@ -1,6 +1,6 @@
 # Loyalty & Rewards Program — build + compliance posture
 
-What got built (this pass) for the retail-loyalty reframe we discussed. Not legal advice — a structural
+What got built (this pass) for the retail-loyalty program we discussed. Not legal advice — a structural
 risk-reducer. The whole thing is config-driven; the money/cap knobs are on the AI optimizer's denylist so
 they're never auto-tuned.
 
@@ -126,4 +126,4 @@ This structure is about as low-risk as a rewards program gets, but "no lawyer at
 can promise. The small, bounded items still worth a cheap check when you turn real money on: the promo
 terms for the clawback-free bonus, the auto-renewal/cancel disclosure on any recurring fee, sales tax
 (a tax-tool job, not a lawyer), and privacy basics if you'll have CA/EU users. Everything above is
-standard retail-loyalty practice, which is the point — the reframe shrinks the surface to those few items.
+standard retail-loyalty practice, which is the point — the retail-loyalty scope shrinks the surface to those few items.

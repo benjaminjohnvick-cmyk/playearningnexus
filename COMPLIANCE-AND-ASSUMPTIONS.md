@@ -1,7 +1,5 @@
 # Assumptions Reviewed & Corrected — Profitability, Legality, Ethics, Best Practice
 
-> **⚠️ PENDING COUNSEL REVIEW (games→retail pivot, 2026-09-09).** The product repositioned games from a standalone "play-to-earn" pillar to **one searchable, zero-inventory store category** — users search for any game available online and buy or download it through the store, on the same sourcing/fulfillment model as every other product (no inventory held). This document has been **updated to reflect that model**; game/tournament references describe the searchable retail category (or, where they name backend functions/entities, the unchanged underlying code). It still requires **counsel sign-off** before reliance. Full decision record: `GAMES-TO-RETAIL-PIVOT-DECISIONS-2026-09-09.md`. **Note:** the games category is now search-any-game / zero-inventory, so section 6 (AI auto-creating *games*) is largely mooted for it — only original category *artwork* is AI-generated, not game products, and games ride the store's existing sourcing/fulfillment compliance. Section 7 (skill tournament / prize competition) is a **separate** rewards feature and is unchanged by this pivot.
-
 You asked me to revisit the assumptions I baked in and correct the ones that don't hold up. Here is every material assumption, the problem with it, and the change I made. Corrections are implemented in code unless marked **Flag** (needs your/your lawyer's decision).
 
 ## 1. "Mandatory" weekly survey & referral posting  → changed to OPT-IN

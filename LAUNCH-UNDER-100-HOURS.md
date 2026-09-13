@@ -23,7 +23,6 @@
 > *Older single figures in these docs (e.g. "$3,750–$4,950" or "under $3,900") predate the kit/automation
 > that trimmed the developer hours; the number above is current.*
 
-
 > **Posture: everything is ON, up, and running from the get-go** — the product ships feature-complete with every flag ON by default and pre-warms its own content, so launch is deploy/test/submit, not build. See `EVERYTHING-ON-FROM-DAY-ONE.md`.
 
 **Goal:** launch fast and cheap using the pre-built execution kit. With the kit (deploy configs, cloud CI, checklists, `launch.sh`, and the step-by-step), a developer completes the full **PWA + Android + iOS** launch in **~50–66 hours at $75/hour = ~$3,750–$4,950** — under $5,000. (This supersedes the older ~70–95h figure; the kit trims it further.)
