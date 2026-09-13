@@ -79,14 +79,58 @@ export function applyPrefetchStrategy(next, eagerRoutes) {
   }
 }
 
+let allowPreloadOnWait = true;
+
 /** Init from the AI-tuned config (best-effort; defaults to "visible" for everyone). */
 export async function initRoutePrefetch(eagerRoutes) {
   try {
     let strat = "visible";
     try {
       const res = await fetch("/functions/perfConfig", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
-      if (res.ok) { const cfg = await res.json().catch(() => ({})); if (cfg.prefetch_enabled === false) strat = "off"; else if (cfg.prefetch_strategy) strat = cfg.prefetch_strategy; }
+      if (res.ok) { const cfg = await res.json().catch(() => ({})); if (cfg.prefetch_enabled === false) strat = "off"; else if (cfg.prefetch_strategy) strat = cfg.prefetch_strategy; if (cfg.preload_on_wait === false) allowPreloadOnWait = false; }
     } catch {}
     applyPrefetchStrategy(strat, eagerRoutes);
   } catch {}
+}
+
+// ---- Preload the ENTIRE app while the user waits (behind the loading-survey trigger) ------------
+// Once a load has crossed the load-time threshold (the earn-while-loading questions are showing), we have the
+// user's attention for a few seconds — so we quietly warm EVERY page's code in the background. Then whatever they
+// open next is already in memory and commits instantly.
+//
+// BUDGET-AWARE ("test load times first, stay within 80ms"): this must never make the user's foreground feel slow.
+// So it (1) skips on save-data / very slow links, (2) warms ONE chunk at a time, strictly during idle time, and
+// (3) TESTS how long each warm takes and backs off (widens the gap) if it sees congestion — keeping main-thread
+// work in small slices well under the 80ms interaction budget. It runs at most once per session.
+let preloadStarted = false;
+const idle = (fn, timeout = 2000) => (typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout }) : setTimeout(() => fn({ timeRemaining: () => 16 }), 200));
+
+export function preloadEntireApp() {
+  if (preloadStarted || !allowPreloadOnWait || saveData()) return;
+  preloadStarted = true;
+  let loaders;
+  try {
+    // Vite build-time enumeration of every page module -> a map of path -> () => import(...).
+    const mods = import.meta.glob("/src/pages/**/*.{jsx,js}");
+    loaders = Object.values(mods);
+  } catch { return; }
+  if (!loaders || !loaders.length) return;
+
+  let i = 0, gap = 0;                 // gap = adaptive backoff between warms (ms), grows if we detect congestion
+  const warmNext = () => {
+    if (i >= loaders.length) return;  // done — the whole app is warm
+    const load = loaders[i++];
+    const t0 = (performance && performance.now) ? performance.now() : Date.now();
+    Promise.resolve().then(load).catch(() => {}).finally(() => {
+      // TEST the load time: if a single chunk warm took long, the device/link is congested — back off so we
+      // never eat into the user's foreground budget. If it was quick, keep the gap tight.
+      const took = ((performance && performance.now) ? performance.now() : Date.now()) - t0;
+      if (took > 250) gap = Math.min(2500, gap + 300);        // congested → widen the gap
+      else if (gap > 0 && took < 80) gap = Math.max(0, gap - 100); // recovered → tighten it back up
+      // Honor the adaptive gap as a real minimum delay, then wait for idle before the next warm.
+      setTimeout(() => idle(warmNext, 3000), gap);
+    });
+  };
+  // Kick off during idle so we start only when the main thread has room.
+  idle(() => warmNext(), 3000);
 }

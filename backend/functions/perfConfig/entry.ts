@@ -1,7 +1,7 @@
 import { __handler } from "../../sdk/runtime.ts";
 import {
   perfMonitoringEnabled, perfPrefetchEnabled, perfPrefetchLevel, perfQueryStaleMinutes, perfSampleRate,
-  prefetchStrategyForLevel,
+  prefetchStrategyForLevel, perfPreloadOnWaitEnabled,
 } from "../../sdk/perf-optimizer.ts";
 
 // perfConfig — the tiny PUBLIC config the client reads at startup to know how to behave for speed: whether to
@@ -19,8 +19,9 @@ export default __handler(async () => {
       prefetch_level: level,
       prefetch_strategy: perfPrefetchEnabled() ? prefetchStrategyForLevel(level) : "off",
       query_stale_minutes: perfQueryStaleMinutes(),
+      preload_on_wait: perfPreloadOnWaitEnabled(),
     });
   } catch {
-    return Response.json({ monitoring_enabled: true, sample_rate: 1, prefetch_enabled: true, prefetch_strategy: "visible", query_stale_minutes: 15 });
+    return Response.json({ monitoring_enabled: true, sample_rate: 1, prefetch_enabled: true, prefetch_strategy: "visible", query_stale_minutes: 15, preload_on_wait: true });
   }
 });

@@ -20,6 +20,7 @@ export type PerfVital = typeof PERF_VITALS[number];
 export const perfMonitoringEnabled = () => snapBool("PERF_MONITORING_ENABLED", true);
 export const perfAutoOptimizeEnabled = () => snapBool("PERF_AUTO_OPTIMIZE_ENABLED", true);
 export const perfPrefetchEnabled = () => snapBool("PERF_PREFETCH_ENABLED", true);
+export const perfPreloadOnWaitEnabled = () => snapBool("PERF_PRELOAD_ON_WAIT_ENABLED", true);
 export const perfPrefetchLevel = () => Math.max(0, Math.min(3, Math.round(snapNumber("PERF_PREFETCH_LEVEL", 2))));
 export const perfQueryStaleMinutes = () => Math.max(1, Math.round(snapNumber("PERF_QUERY_STALE_MINUTES", 15)));
 export const perfSampleRate = () => { const r = snapNumber("PERF_SAMPLE_RATE", 1); return r > 0 && r <= 1 ? r : 1; };

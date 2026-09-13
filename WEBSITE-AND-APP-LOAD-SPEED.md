@@ -69,6 +69,26 @@ as every other optimization:
 So there are two independent safety nets: the runtime optimizer (reverts a live change that hurt speed) and the
 build guard (blocks a code change that would hurt speed before it ships).
 
+## 4a. Preload the whole app while the user waits
+
+The moment a load crosses the load-time threshold and the earn-while-loading questions appear (see
+`EARN-WHILE-LOADING-SURVEY.md`), the app has the user's attention for a few seconds — so it uses that time to
+**preload the entire app's page code in the background**. By the time the current load finishes and they start
+navigating, every screen is already warm and commits instantly.
+
+This is deliberately **budget-aware** — it tests as it goes and stays within the 80 ms budget so it never makes
+the foreground feel slow while it works:
+
+- It **skips entirely on save-data / very slow connections** (never competes for scarce bandwidth).
+- It warms **one page chunk at a time, strictly during browser idle time** — never a burst that floods the
+  network or blocks the main thread.
+- It **times each warm and backs off**: if a chunk takes too long (a sign the device or link is congested), it
+  widens the gap between warms; when things are quick again, it tightens back up. So main-thread work stays in
+  small slices well under the 80 ms interaction budget.
+- It runs at most once per session.
+
+Toggle: `PERF_PRELOAD_ON_WAIT_ENABLED` (default on).
+
 ## 5. It runs through BOTH AI models (existing + custom), by convention
 
 Load-time optimization is **not a separate silo** — it's wired into the same decision stream as the rest of the
