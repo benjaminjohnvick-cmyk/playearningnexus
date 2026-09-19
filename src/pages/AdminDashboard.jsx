@@ -33,6 +33,7 @@ import FeedbackAdminDashboard from './FeedbackAdminDashboard';
 import RetentionRiskPanel from '../components/admin/RetentionRiskPanel';
 import SurveyABTestDashboard from '../components/admin/SurveyABTestDashboard';
 import PublisherMetricsPanel from '../components/admin/PublisherMetricsPanel';
+import SocialAdMetricsPanel from '../components/advertiser/SocialAdMetricsPanel';
 
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -216,6 +217,7 @@ export default function AdminDashboard() {
 
           <TabsContent value="publisher_metrics">
             <PublisherMetricsPanel />
+            <SocialAdMetricsPanel admin={true} />
           </TabsContent>
 
           <TabsContent value="rotation">

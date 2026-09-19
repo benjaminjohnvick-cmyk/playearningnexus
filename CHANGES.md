@@ -1,5 +1,22 @@
 # PlayEarning Nexus — Changes Summary
 
+## Session — voice + image product search, social ad metrics (2026-09-19)
+
+Shoppers can now **search products by voice** (speak instead of type — on-device Web Speech API where available,
+with a server-transcription fallback via Whisper/`transcription.ts` for browsers without it, notably the iOS app
+WebView) and **by uploading a photo** (a vision model identifies the product and drives a normal product-feed
+search). Both work on the website and, via the Capacitor wrapper, on iOS and Android; the store `ProductSearchBar`
+gained a mic button plus upload/camera photo search. New backend: `visual-voice-search` engine +
+`imageProductSearch` / `voiceSearchTranscribe` functions. **Social ad metrics** now cover the full network-standard
+metric set (reach, impressions, CTR, conversions, CVR, engagement, spend, revenue, eCPM, CPM, CPP, windowed
+D1–D365 ROAS, delivered ad value) for the SOCIAL channel — tracked for **every advertiser and the platform's own
+business ads** — via the new `social-ad-metrics` engine + `socialAdMetrics` function, surfaced on the advertiser
+(`AdBusinessDashboard`) and admin (`AdminDashboard`) dashboards through a new `SocialAdMetricsPanel`. All figures
+are MEASURED, never guaranteed. Flags (all on by default): `VOICE_SEARCH_ENABLED`, `IMAGE_SEARCH_ENABLED`,
+`SOCIAL_AD_METRICS_ENABLED`, `SOCIAL_AD_METRICS_MIN_POSTS`, `SOCIAL_VIEW_RATE`. No new entities. Patent
+feature-disclosure brief updated (§6.6); inventory drift-check green. Mic/camera permission entries for the mobile
+wrapper documented in `MOBILE-APP-WRAPPER-GUIDE.md`.
+
 ## Session — games as a searchable retail category (2026-09-09)
 
 Games are **one searchable, zero-inventory store category**,

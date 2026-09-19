@@ -110,3 +110,38 @@ If you'd rather not manage native projects at all, once your PWA is deployed to 
 1. Go to **[pwabuilder.com](https://www.pwabuilder.com)** and enter your deployed URL.
 2. It reads your `manifest.json` (now present) and generates a **Google Play package (TWA)** and an **iOS package** for you to submit.
 This is the least-effort path for a PWA → stores, though Capacitor (set up above) gives you more native control and a better shot at App Store approval.
+
+## Microphone & camera permissions (voice + image product search)
+
+Voice product search and image/photo product search use the device **microphone** and **camera**. In the browser
+these are granted by the standard permission prompt with no app change. In the Capacitor iOS/Android wrapper the
+WebView needs the OS-level usage declarations, or the prompt never appears. Because the `android/` and `ios/`
+folders are generated build artifacts (see above), add these each time you generate them (or script them into your
+build):
+
+**iOS — `ios/App/App/Info.plist`** (usage strings are mandatory or the App Store rejects the build):
+
+```xml
+<key>NSMicrophoneUsageDescription</key>
+<string>Used for voice product search — speak to search for products.</string>
+<key>NSCameraUsageDescription</key>
+<string>Used for image product search — take a photo to find a product.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Used to pick a photo for image product search.</string>
+```
+
+Note: `getUserMedia`/`MediaRecorder` (the voice fallback recorder) works in the iOS `WKWebView` only on **iOS
+14.3+**; on older iOS the Web Speech API is also absent, so voice search degrades gracefully to typed/photo search.
+
+**Android — `android/app/src/main/AndroidManifest.xml`:**
+
+```xml
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-feature android:name="android.hardware.microphone" android:required="false" />
+<uses-feature android:name="android.hardware.camera" android:required="false" />
+```
+
+The photo/upload flow uses a standard `<input type="file" accept="image/*" capture="environment">`, which the
+WebView handles with the system picker/camera — no native plugin required. Voice uses the Web Speech API on
+Android's Chrome-backed WebView, with the server-transcription fallback (`voiceSearchTranscribe`) elsewhere.

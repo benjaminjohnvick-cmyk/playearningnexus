@@ -13,7 +13,7 @@
 - **Section 5 — Data model.** All 369 persisted entity types.
 - **Section 6 — Configurable capabilities.** The 1,118 capability/feature flags across 52 categories that govern platform behavior.
 
-**Scale at a glance:** 1,028 backend functions · 225 software engines · 278 pages · 369 entity types · 1,118 capability flags across 52 configuration categories.
+**Scale at a glance:** 1,031 backend functions · 227 software engines · 278 pages · 369 entity types · 1,118 capability flags across 52 configuration categories.
 
 ---
 
@@ -80,7 +80,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 2. Software engines (SDK modules) — 225  *(the most-recent are listed in §6)*
+## 2. Software engines (SDK modules) — 227  *(the most-recent are listed in §6)*
 
 *Each engine is a self-contained module implementing one subsystem's logic. Descriptions are the module's own header summary from source.*
 
@@ -284,7 +284,7 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-## 3. Complete backend function inventory — 1,028  *(the most-recent are listed in §6)*
+## 3. Complete backend function inventory — 1,031  *(the most-recent are listed in §6)*
 
 *Every backend function (HTTP endpoint, scheduled job, or entity-automation), grouped by domain. Each description is sourced from the function's own code header.*
 
@@ -1514,3 +1514,20 @@ The platform exposes 1,118 admin-configurable capability flags — every one a s
 
 - `DataDrivenCoverage` — the admin dashboard: build/live coverage, human-review queue, custom-model accuracy vs the incumbent (per-function), and the load-speed card.
 - `Approvals` — the mobile-first approvals screen + admin approver management.
+
+### 6.6 Inventory delta — 2026-09-19 session (voice + image product search, social ad metrics for all advertisers + own)
+
+*Added after the §6.1–6.5 sweep; folded into the totals above. Listed so the inventory stays complete for counsel.*
+
+**Functions (3)**
+
+- `imageProductSearch` — search for products by uploading a photo: a vision model identifies the product in the image (brand + model + attributes) and that identity drives a product-feed search; returns results in the same shape as the text `productSearch`, each tagged with its sanctioned checkout channel. Accepts a client-identified `query` to skip the server vision call.
+- `voiceSearchTranscribe` — the server transcription fallback for voice product search: browsers without the Web Speech API (notably the iOS WebView) record a short clip and POST it here to be transcribed (Whisper via `transcription.ts`); the returned text drives a normal product search. On-device transcription never calls this.
+- `socialAdMetrics` — the full advertising metric set for the SOCIAL channel, tracked for every advertiser AND the platform's own business ads: reach, impressions, clicks, CTR, conversions, CVR, engagement, spend, revenue, eCPM, CPM, CPP, ROAS (incl. the windowed D1–D365 curve), and delivered ad value. An advertiser sees their own; an admin can query any advertiser, the platform's own ads, the platform-wide total, or the per-advertiser leaderboard. Measured from real `SocialMediaPost` activity, never guaranteed.
+
+**Engines / SDK modules (2)**
+
+- `visual-voice-search` — the shared logic behind voice + image product search: enable flags, the vision identify prompt + JSON schema, defensive normalization of the vision output, and `searchProductsForQuery` (the feed search + checkout-channel tagging both modes return through), so image/voice results are drop-in compatible with the text search.
+- `social-ad-metrics` — computes the full network-standard advertising metric set for the social channel (member-amplified posts + the platform's own AI social ads) per advertiser, across all advertisers (an aggregate + a leaderboard), and for the platform's own ads; estimates impressions from reach only when a post has no measured impression count, and reports spend-based costs (CPM/CPP/ROAS) only when a real social spend is recorded. Same measured-not-guaranteed posture as `ad-metrics.ts`.
+
+*Feature flags added this session: `VOICE_SEARCH_ENABLED`, `IMAGE_SEARCH_ENABLED` (Store & Fulfillment), `SOCIAL_AD_METRICS_ENABLED`, `SOCIAL_AD_METRICS_MIN_POSTS` (AI & Agents), `SOCIAL_VIEW_RATE` (Ad Media & Targeting) — all on/measured by default. No new persisted entities (reuse `SocialMediaPost` + the product feeds). Front end: voice (mic) + camera/photo search added to the store `ProductSearchBar`; a `SocialAdMetricsPanel` surfaced on the advertiser (`AdBusinessDashboard`) and admin (`AdminDashboard`) views. Mobile: works in the Capacitor iOS/Android wrapper of the web build — see `MOBILE-APP-WRAPPER-GUIDE.md` for the mic/camera permission entries.*

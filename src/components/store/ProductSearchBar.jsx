@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Search, Upload, X, Zap } from "lucide-react";
+import { Search, Upload, X, Zap, Mic, Camera, Loader2 } from "lucide-react";
 import { base44 } from '@/api/base44Client';
 import { toast } from "sonner";
 import BestPriceBadge from '@/components/store/BestPriceBadge';
+
+// Web Speech API (on-device voice-to-text) — present in Chrome/Edge/Android WebView; absent in the iOS WebView,
+// where we fall back to recording a clip and transcribing it on the server (voiceSearchTranscribe / Whisper).
+const SpeechRec = (typeof window !== 'undefined') && (window.SpeechRecognition || window.webkitSpeechRecognition);
 
 export default function ProductSearchBar({ onSearchResults, onClose }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,23 +20,89 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
   const [engineLoading, setEngineLoading] = useState(false);
   const [bestPrice, setBestPrice] = useState(null);
   const [bestVendor, setBestVendor] = useState(null);
+  const [listening, setListening] = useState(false);
+  const [identifying, setIdentifying] = useState(false);
+  const [identifiedName, setIdentifiedName] = useState(null);
+  const recRef = useRef(null);        // SpeechRecognition instance
+  const mediaRef = useRef(null);      // { recorder, chunks, stream } for the server-STT fallback
 
+  useEffect(() => () => { // cleanup any live capture on unmount
+    try { recRef.current?.stop?.(); } catch { /* ignore */ }
+    try { mediaRef.current?.stream?.getTracks?.().forEach((t) => t.stop()); } catch { /* ignore */ }
+  }, []);
+
+  // ---- Image upload (also usable as a live camera on mobile via capture="environment") ----
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      try {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        setSearchImage(file_url);
-        toast.success('Image uploaded');
-      } catch {
-        toast.error('Failed to upload image');
-      }
+    if (!file) return;
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setSearchImage(file_url);
+      setIdentifiedName(null);
+      toast.success('Image added — searching by photo');
+    } catch {
+      toast.error('Failed to upload image');
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery && !searchImage) {
-      toast.error('Please enter a product name or upload an image');
+  // ---- Voice search: on-device where available, server transcription fallback otherwise ----
+  const startVoice = async () => {
+    if (listening) { stopVoice(); return; }
+    if (SpeechRec) {
+      try {
+        const rec = new SpeechRec();
+        rec.lang = 'en-US';
+        rec.interimResults = false;
+        rec.maxAlternatives = 1;
+        rec.onresult = (ev) => {
+          const said = Array.from(ev.results).map((r) => r[0]?.transcript || '').join(' ').trim();
+          if (said) { setSearchQuery(said); setTimeout(() => handleSearch(said), 50); }
+        };
+        rec.onerror = () => { setListening(false); toast.error('Could not hear you — try again or type it.'); };
+        rec.onend = () => setListening(false);
+        recRef.current = rec;
+        setListening(true);
+        rec.start();
+        return;
+      } catch { /* fall through to recorder */ }
+    }
+    // Fallback: record a short clip and transcribe on the server (iOS WebView path).
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+      recorder.ondataavailable = (e) => { if (e.data?.size) chunks.push(e.data); };
+      recorder.onstop = async () => {
+        try { stream.getTracks().forEach((t) => t.stop()); } catch { /* ignore */ }
+        const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        const b64 = await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result)); fr.readAsDataURL(blob); });
+        try {
+          const r = await base44.functions.invoke('voiceSearchTranscribe', { audio_base64: b64, mime_type: recorder.mimeType || 'audio/webm' });
+          const text = (r?.data?.text || r?.text || '').trim();
+          if (text) { setSearchQuery(text); setTimeout(() => handleSearch(text), 50); }
+          else toast.error('Could not transcribe — try again or type it.');
+        } catch { toast.error('Voice search unavailable — please type it.'); }
+      };
+      mediaRef.current = { recorder, chunks, stream };
+      recorder.start();
+      setListening(true);
+      // Auto-stop after 6s so the user doesn't have to.
+      setTimeout(() => { try { recorder.state !== 'inactive' && recorder.stop(); } catch { /* ignore */ } setListening(false); }, 6000);
+    } catch {
+      toast.error('Microphone permission is needed for voice search.');
+    }
+  };
+
+  const stopVoice = () => {
+    try { recRef.current?.stop?.(); } catch { /* ignore */ }
+    try { const m = mediaRef.current; if (m?.recorder && m.recorder.state !== 'inactive') m.recorder.stop(); } catch { /* ignore */ }
+    setListening(false);
+  };
+
+  const handleSearch = async (overrideQuery) => {
+    const typed = (typeof overrideQuery === 'string' ? overrideQuery : searchQuery).trim();
+    if (!typed && !searchImage) {
+      toast.error('Speak, type a product name, or add a photo');
       return;
     }
 
@@ -40,18 +110,34 @@ export default function ProductSearchBar({ onSearchResults, onClose }) {
     setBestPrice(null);
     setBestVendor(null);
 
-    // Run AI pricing engine in parallel if enabled
+    // Image search: identify the product in the photo first, so an image (even with no text) becomes a query.
+    let effectiveQuery = typed;
+    if (searchImage) {
+      setIdentifying(true);
+      try {
+        const idr = await base44.functions.invoke('imageProductSearch', { image_url: searchImage, query: typed || undefined, limit: 20 });
+        const data = idr?.data || idr || {};
+        const name = (data.query || data?.identity?.query || '').trim();
+        if (name) {
+          setIdentifiedName(name);
+          if (!effectiveQuery) { effectiveQuery = name; setSearchQuery(name); }
+        }
+      } catch { /* non-fatal — the vision step below still sees the image */ }
+      setIdentifying(false);
+    }
+
+    // Run AI pricing engine in parallel if enabled.
     let enginePromise = null;
     if (aiPricingEnabled) {
       setEngineLoading(true);
       enginePromise = base44.functions.invoke('aiPriceEngine', {
-        product_name: searchQuery,
+        product_name: effectiveQuery,
         image_url: searchImage || undefined
       }).catch(() => null);
     }
 
     try {
-      const prompt = `You are a real-time price comparison engine. Search across the web for: "${searchQuery}".
+      const prompt = `You are a real-time price comparison engine. Search across the web for: "${effectiveQuery}".
 
 Find this exact product listed at MULTIPLE different retailers/websites. Return every distinct retailer listing you can find, sorted from LOWEST price to HIGHEST price.
 
@@ -112,7 +198,7 @@ Return AT LEAST 6 listings if they exist. Sort the listings array from lowest pr
           setEngineLoading(false);
         }
 
-        onSearchResults(sorted, searchQuery, searchImage, engineData);
+        onSearchResults(sorted, effectiveQuery, searchImage, engineData);
       } else {
         toast.error('No products found');
       }
@@ -160,27 +246,45 @@ Return AT LEAST 6 listings if they exist. Sort the listings array from lowest pr
       )}
 
       <p className="text-xs text-gray-600 mb-3">
-        Don't have the product you want? Search for it here.
+        Don't have the product you want? Search by name, voice, or a photo.
       </p>
 
       <div className="space-y-3">
-        <Input
-          placeholder="Enter product name..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-        />
+        <div className="flex items-center gap-2">
+          <Input
+            placeholder="Enter product name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+          />
+          {/* Voice search */}
+          <Button
+            type="button"
+            variant={listening ? 'default' : 'outline'}
+            size="icon"
+            aria-label={listening ? 'Stop voice search' : 'Search by voice'}
+            title="Search by voice"
+            onClick={startVoice}
+            className={listening ? 'bg-red-600 hover:bg-red-700 animate-pulse' : ''}
+          >
+            <Mic className="w-4 h-4" />
+          </Button>
+        </div>
+
+        {listening && (
+          <p className="text-[11px] text-red-600 font-medium">Listening… say the product name.</p>
+        )}
+        {identifiedName && (
+          <p className="text-[11px] text-blue-700">Identified from photo: <strong>{identifiedName}</strong></p>
+        )}
 
         <div className="flex items-center gap-2">
+          {/* Upload from library */}
           <label htmlFor="product-image-upload" aria-label="Upload image" className="flex-1">
-            <Button
-              variant="outline"
-              className="w-full"
-              asChild
-            >
+            <Button variant="outline" className="w-full" asChild>
               <div>
                 <Upload className="w-4 h-4 mr-2" />
-                {searchImage ? 'Image uploaded' : 'Upload image'}
+                {searchImage ? 'Image added' : 'Upload image'}
               </div>
             </Button>
             <input
@@ -191,33 +295,41 @@ Return AT LEAST 6 listings if they exist. Sort the listings array from lowest pr
               className="hidden"
             />
           </label>
-          
+
+          {/* Take a photo (mobile camera) */}
+          <label htmlFor="product-image-camera" aria-label="Take a photo">
+            <Button variant="outline" size="icon" asChild>
+              <div><Camera className="w-4 h-4" /></div>
+            </Button>
+            <input
+              id="product-image-camera"
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </label>
+
           {searchImage && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSearchImage(null)}
-            >
+            <Button variant="ghost" size="icon" onClick={() => { setSearchImage(null); setIdentifiedName(null); }}>
               <X className="w-4 h-4" />
             </Button>
           )}
         </div>
 
         {searchImage && (
-          <img
-            src={searchImage}
-            alt="Search"
-            className="w-full h-32 object-cover rounded-lg"
-          />
+          <img src={searchImage} alt="Search" className="w-full h-32 object-cover rounded-lg" />
         )}
 
         <Button
           className="w-full bg-blue-600"
-          onClick={handleSearch}
+          onClick={() => handleSearch()}
           disabled={searching}
         >
-          <Search className="w-4 h-4 mr-2" />
-          {searching ? 'Comparing prices across the web...' : 'Compare prices across all stores'}
+          {searching
+            ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{identifying ? 'Identifying product…' : 'Comparing prices across the web…'}</>
+            : <><Search className="w-4 h-4 mr-2" />Compare prices across all stores</>}
         </Button>
       </div>
     </div>

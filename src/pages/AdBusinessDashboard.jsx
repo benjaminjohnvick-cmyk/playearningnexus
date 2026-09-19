@@ -40,6 +40,7 @@ import AdLoyaltySystem from '@/components/advertiser/AdLoyaltySystem';
 import AdGridHeatmapOverlay from '@/components/advertiser/AdGridHeatmapOverlay';
 import DeliveryGuaranteeCard from '@/components/advertiser/DeliveryGuaranteeCard';
 import AdvertiserPerformanceCard from '@/components/advertiser/AdvertiserPerformanceCard';
+import SocialAdMetricsPanel from '@/components/advertiser/SocialAdMetricsPanel';
 import AdCreativeCanvas from '@/components/advertiser/AdCreativeCanvas';
 import AdAutoPilotBidder from '@/components/advertiser/AdAutoPilotBidder';
 import AdSocialPushIntegration from '@/components/advertiser/AdSocialPushIntegration';
@@ -501,6 +502,7 @@ export default function AdBusinessDashboard() {
               <div className="space-y-4">
                 <DeliveryGuaranteeCard />
                 <AdvertiserPerformanceCard />
+                <SocialAdMetricsPanel admin={false} />
                 {ads.map(ad => (
                   <AdAnalyticsCard key={ad.id} ad={ad} onRefresh={refetch} />
                 ))}
