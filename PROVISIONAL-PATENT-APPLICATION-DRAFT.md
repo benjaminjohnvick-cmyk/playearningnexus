@@ -30,7 +30,7 @@
   `WEBSITE-AND-APP-LOAD-SPEED.md`, `EARN-WHILE-LOADING-SURVEY.md`.
 
 > **⚠️ NOTE TO COUNSEL — file the COMPLETE functions-and-features inventory WITH this provisional.** The entire
-> inventory — all **1,028 backend functions, 225 software engines, 369 persisted entity types, 278 pages, and
+> inventory — all **1,031 backend functions, 227 software engines, 369 persisted entity types, 278 pages, and
 > 1,118 capability flags across 52 categories**, each with a code-sourced description — is **reproduced in full in
 > Appendix A of this document (filed herewith)**, not merely referenced. This is intentional: a provisional
 > secures a priority date only for what it discloses, and new matter cannot be added later, so **every function
@@ -107,7 +107,7 @@ and which are also claimed in combination:
 - **Front end:** responsive single-page web application (React/Vite) with a configuration-driven page router
   (~278 route-level pages), packaged as native/wrapped mobile applications (iOS/Android) sharing one code base and
   one service-worker-cached application shell.
-- **Back end:** ~1,028 serverless functions (Deno runtime) dispatched via a manifest, plus ~225 typed subsystem
+- **Back end:** ~1,031 serverless functions (Deno runtime) dispatched via a manifest, plus ~227 typed subsystem
   modules; an in-process invocation bus composes functions without HTTP.
 - **Data:** a document-style store (JSONB rows) with generated relational schema and expression indexes; an
   append-only money ledger and an append-only consent ledger; optimization-signal and learning-memory stores;
@@ -360,7 +360,7 @@ compliance controls enforced in code.
 
 ## 9. Enablement pointers (for written-description support)
 
-The reference implementation comprises **1,028 serverless functions, 225 subsystem modules, 369 persisted entity
+The reference implementation comprises **1,031 serverless functions, 227 subsystem modules, 369 persisted entity
 types, 278 client pages, and 1,118 capability flags across 52 categories**. The **complete inventory of every one
 of these functions and features — each with a code-sourced description — is reproduced in full in Appendix A of
 this application (filed herewith)**, providing written-description and enablement support for the claimed
@@ -464,7 +464,7 @@ a registered patent attorney's review and filing.*
 
 ## Appendix A — Complete Feature & Function Inventory (filed herewith)
 
-> **This appendix is part of the provisional application as filed.** It reproduces, in full, the platform's complete inventory of every function and feature — **1,028 backend functions, 225 software engines, 369 persisted entity types, 278 pages, and 1,118 capability flags across 52 categories** — each with a code-sourced description, so the entire disclosure receives this application's priority date and supports the broadest possible later claims. (Reproduced from the platform's feature/function disclosure brief; counsel to review the trade-secret carve-out in §11/§13 before the non-provisional publishes.)
+> **This appendix is part of the provisional application as filed.** It reproduces, in full, the platform's complete inventory of every function and feature — **1,031 backend functions, 227 software engines, 369 persisted entity types, 278 pages, and 1,118 capability flags across 52 categories** — each with a code-sourced description, so the entire disclosure receives this application's priority date and supports the broadest possible later claims. (Reproduced from the platform's feature/function disclosure brief; counsel to review the trade-secret carve-out in §11/§13 before the non-provisional publishes.)
 
 
 **Prepared for patent counsel · 2026-09-05 · Confidential — attorney work-product / invention disclosure**
@@ -474,13 +474,13 @@ a registered patent attorney's review and filing.*
 ### How to read this brief
 
 - **Section 1 — Patent-candidate highlights.** The subsystems most likely to be worth counsel's attention, described at invention-disclosure depth (mechanism, inputs, novelty angle). Start here.
-- **Section 2 — Software engines (SDK modules).** The 225 backend engines that implement the platform's logic — the 'how it works' layer where most inventive mechanism lives.
-- **Section 3 — Complete backend function inventory.** All 1,028 backend functions (API endpoints, scheduled jobs, automations), grouped by domain, each with its code-sourced description.
+- **Section 2 — Software engines (SDK modules).** The 227 backend engines that implement the platform's logic — the 'how it works' layer where most inventive mechanism lives.
+- **Section 3 — Complete backend function inventory.** All 1,031 backend functions (API endpoints, scheduled jobs, automations), grouped by domain, each with its code-sourced description.
 - **Section 4 — User-facing surfaces.** All 278 application pages/screens.
 - **Section 5 — Data model.** All 369 persisted entity types.
 - **Section 6 — Configurable capabilities.** The 1,118 capability/feature flags across 52 categories that govern platform behavior.
 
-**Scale at a glance:** 1,028 backend functions · 225 software engines · 278 pages · 369 entity types · 1,118 capability flags across 52 configuration categories.
+**Scale at a glance:** 1,031 backend functions · 227 software engines · 278 pages · 369 entity types · 1,118 capability flags across 52 configuration categories.
 
 ---
 
@@ -543,11 +543,11 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 >
 > *Honest steer for counsel: of the three angles, **(C)** — the technical interaction (single tap → continuous-loop watch gate → questions beneath the still-playing creative → server-credited submit → swipe-to-next as one full-screen unit) — is the one most plausibly claimable. **(A)** shared-across-tiers and **(B)** founding-max-capability are business-model / offer choices and are likely **not** separately patentable; they are listed for completeness, not as independent claims.*
 
-*Beyond these highlights, the inventory that follows lists the full 1,028 functions, 225 engines, 278 surfaces, and 369 entities so counsel can spot additional candidates the highlights don't call out.*
+*Beyond these highlights, the inventory that follows lists the full 1,031 functions, 227 engines, 278 surfaces, and 369 entities so counsel can spot additional candidates the highlights don't call out.*
 
 ---
 
-### 2. Software engines (SDK modules) — 225  *(the most-recent are listed in §6)*
+### 2. Software engines (SDK modules) — 227  *(the most-recent are listed in §6)*
 
 *Each engine is a self-contained module implementing one subsystem's logic. Descriptions are the module's own header summary from source.*
 
@@ -751,9 +751,19 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 
 ---
 
-### 3. Complete backend function inventory — 1,028  *(the most-recent are listed in §6)*
+### 3. Complete backend function inventory — 1,031  *(the most-recent are listed in §6)*
 
 *Every backend function (HTTP endpoint, scheduled job, or entity-automation), grouped by domain. Each description is sourced from the function's own code header.*
+
+### Recent additions — 2026-09-19 (3 functions + 2 engines)
+
+*Folded into the totals above; listed here so the inventory stays complete for counsel. See the feature/function disclosure brief §6.6.*
+
+- **`imageProductSearch`** (function) — search for products by uploading a photo: a vision model identifies the product (brand + model + attributes) and that identity drives a product-feed search; results come back in the same shape as the text `productSearch`, each tagged with its sanctioned checkout channel.
+- **`voiceSearchTranscribe`** (function) — the server transcription fallback for voice product search (browsers without the on-device Web Speech API — notably the iOS WebView — record a clip transcribed here via Whisper); the transcript drives a normal product search.
+- **`socialAdMetrics`** (function) — the full network-standard advertising metric set (reach, impressions, CTR, conversions, CVR, engagement, spend, revenue, eCPM, CPM, CPP, windowed D1–D365 ROAS, delivered ad value) for the SOCIAL channel, tracked for every advertiser AND the platform's own business ads; measured, never guaranteed.
+- **`visual-voice-search`** (engine) — shared logic behind voice + image product search: enable flags, the vision identify prompt/schema, and the feed-search + checkout-channel tagging both modes return through.
+- **`social-ad-metrics`** (engine) — computes the social-channel metric set per advertiser, across all advertisers (aggregate + leaderboard), and for the platform's own ads; same measured-not-guaranteed posture as the on-platform ad metrics.
 
 ### Extension & Attention Rewards (6)
 

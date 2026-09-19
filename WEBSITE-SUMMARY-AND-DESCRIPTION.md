@@ -105,7 +105,13 @@ and the Tier 2 items in `FOR-YOUR-ATTORNEY.md` §8–§9).
 ## 7. Technology & AI (what's under the hood)
 
 - **Delivery:** a responsive **website (PWA)** plus **native/wrapped mobile apps** (Capacitor), backed by a
-  **serverless back end** of roughly **1,028 functions across ~225 subsystem modules**.
+  **serverless back end** of roughly **1,031 functions across ~227 subsystem modules**.
+- **Product search — text, voice, or image:** shoppers search the catalog by typing, by **voice** (on-device
+  speech-to-text with a server-transcription fallback for the iOS app), or by **uploading a photo** (a vision
+  model identifies the product) — on the website and both mobile apps.
+- **Social-channel ad metrics:** the full network-standard advertising metric set (reach, impressions, CTR,
+  conversions, eCPM, CPM, CPP, windowed ROAS, delivered ad value) is measured for the social channel across
+  **every advertiser and the platform's own business ads** — measured, never a guaranteed result.
 - **AI advertising engine:** generates, tests, and optimizes advertising creative across owned and social
   surfaces (including AI-generated images/video).
 - **Graduated-autonomy automation:** AI progressively takes over routine operational decisions under measured
