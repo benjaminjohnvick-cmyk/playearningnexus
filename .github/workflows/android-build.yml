@@ -114,8 +114,23 @@ jobs:
 
       # ── OPTIONAL: auto-publish to Google Play (needs a SIGNED build + PLAY_SERVICE_ACCOUNT_JSON + the app
       #    already created once in Play Console). Skipped automatically unless both are present. ──
+      # NOTE: the `secrets` context is NOT allowed inside an `if:` expression (it makes the whole workflow
+      # file invalid, which GitHub reports as a failed run on every push). So we probe the secret in a run
+      # step (where secrets ARE allowed, via env) and gate the publish on that step's output instead.
+      - name: Check for Play publishing credentials
+        id: play
+        env:
+          SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -n "$SA" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Play publish skipped::No PLAY_SERVICE_ACCOUNT_JSON secret set, so the build stops at the downloadable .aab. Add PLAY_SERVICE_ACCOUNT_JSON (and the ANDROID_KEYSTORE_* signing secrets) to auto-publish to the Play internal track."
+          fi
+
       - name: Publish to Google Play (internal track)
-        if: ${{ steps.signing.outputs.ready == 'true' && secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
+        if: ${{ steps.signing.outputs.ready == 'true' && steps.play.outputs.ready == 'true' }}
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
