@@ -1,0 +1,37 @@
+{
+  "name": "MLMNode Updated \u2192 Website Credit Earned Notification + Milestone Badges",
+  "description": "Notifies user when website_credit_balance increases by $1+; milestone notifications + ActivityFeedItem at $5/$10/$25/$50/$100",
+  "trigger": {
+    "condition": "${ (.trigger.changed_fields | index(\"website_credit_balance\") != null) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "MLMNode"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "mlmnode_updated_website_credit_earned_notification_milestone_badges",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoMLMWebsiteCreditNotifier",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoMLMWebsiteCreditNotifier"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "BusinessClient Created \u2192 Onboarding (MarketplaceStore + Welcome Email + OnboardingProgress)",
+  "description": "",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "BusinessClient"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "businessclient_created_onboarding_marketplacestore_welcome_email_onboardingprogress",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoBusinessClientOnboarding",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoBusinessClientOnboarding"
+  }
+}

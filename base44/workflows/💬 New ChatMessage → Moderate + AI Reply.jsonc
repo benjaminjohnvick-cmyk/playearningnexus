@@ -1,0 +1,37 @@
+{
+  "name": "\ud83d\udcac New ChatMessage \u2192 Moderate + AI Reply",
+  "description": "Moderates chat messages and triggers AI support replies when no agent responds",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "ChatMessage"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_chatmessage_moderate_ai_reply",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoCommunityEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoCommunityEngine"
+  }
+}

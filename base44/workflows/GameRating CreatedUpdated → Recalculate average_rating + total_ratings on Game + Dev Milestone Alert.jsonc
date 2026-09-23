@@ -1,0 +1,38 @@
+{
+  "name": "GameRating Created/Updated \u2192 Recalculate average_rating + total_ratings on Game + Dev Milestone Alert",
+  "description": "Recalculates average_rating and total_ratings on the parent Game entity; notifies developer at 10/50/100/500/1000 rating milestones",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update"
+      ],
+      "entity_name": "GameRating"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "gamerating_created_updated_recalculate_average_rating_total_ratings_on_game_dev_milestone_alert",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoGameRatingAggregation",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoGameRatingAggregation"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "DeveloperInstallCost Updated \u2192 Sync total_installs to Game + BusinessClient + Dev Milestone Alert",
+  "description": "Propagates install count deltas to Game.total_installs and BusinessClient.total_installs in real-time; notifies developer at 1k/5k/10k/25k/50k/100k milestones",
+  "trigger": {
+    "condition": "${ (.trigger.changed_fields | index(\"total_installs\") != null) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "DeveloperInstallCost"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "developerinstallcost_updated_sync_total_installs_to_game_businessclient_dev_milestone_alert",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoInstallCountAggregator",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoInstallCountAggregator"
+  }
+}

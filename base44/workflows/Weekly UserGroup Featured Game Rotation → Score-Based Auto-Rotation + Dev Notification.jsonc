@@ -1,0 +1,44 @@
+{
+  "name": "Weekly UserGroup Featured Game Rotation \u2192 Score-Based Auto-Rotation + Dev Notification",
+  "description": "Weekly (Monday 4am): rotates current_featured_game_id per UserGroup based on priority payment + installs + rating score; expires old featured games; notifies developers",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * 1",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "weekly_usergroup_featured_game_rotation_score_based_auto_rotation_dev_notification",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoUserGroupFeaturedGameRotation",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoUserGroupFeaturedGameRotation"
+  }
+}

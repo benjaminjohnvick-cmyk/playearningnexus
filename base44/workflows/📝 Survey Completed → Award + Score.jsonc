@@ -1,0 +1,37 @@
+{
+  "name": "\ud83d\udcdd Survey Completed \u2192 Award + Score",
+  "description": "Triggers scoring, fraud check, and rewards when a survey response is submitted",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "PPCSurveyResponse"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "survey_completed_award_score",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoSurveyLifecycleEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoSurveyLifecycleEngine"
+  }
+}

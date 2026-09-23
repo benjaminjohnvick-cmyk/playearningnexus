@@ -1,0 +1,44 @@
+{
+  "name": "Daily Jobs \u2014 Streaks + Re-Engagement + CRM Follow-Ups + Campaign Expiry",
+  "description": "6am daily: resets broken streaks, sends 7-day re-engagement emails, fires CRM follow-up reminders, expires stale retention campaigns, checks achievements",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 10 * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_jobs_streaks_re_engagement_crm_follow_ups_campaign_expiry",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoDailyScheduledJobs",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoDailyScheduledJobs"
+  }
+}

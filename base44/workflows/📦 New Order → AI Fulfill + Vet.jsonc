@@ -1,0 +1,37 @@
+{
+  "name": "\ud83d\udce6 New Order \u2192 AI Fulfill + Vet",
+  "description": "Immediately starts AI vetting and fulfillment pipeline for every new order",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Order"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_order_ai_fulfill_vet",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoOrderLifecycleEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoOrderLifecycleEngine"
+  }
+}

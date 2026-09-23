@@ -1,0 +1,37 @@
+{
+  "name": "Transaction Created \u2192 Anomaly Detection + Admin Alert on Suspicious",
+  "description": "Flags large amounts (>$1000), negative values, and duplicate transactions within 60s; alerts admins; marks duplicates as failed",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Transaction"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "transaction_created_anomaly_detection_admin_alert_on_suspicious",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoTransactionAnomalyDetector",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoTransactionAnomalyDetector"
+  }
+}

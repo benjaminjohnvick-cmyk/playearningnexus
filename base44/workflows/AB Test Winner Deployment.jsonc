@@ -1,0 +1,44 @@
+{
+  "name": "A/B Test Winner Deployment",
+  "description": "Analyzes completed A/B tests for statistical winners and auto-deploys high-confidence variants. Close tests flagged for human review to prevent false positives.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 12,
+      "interval_unit": "hours",
+      "interval_anchor": "2026-05-20T02:50:33.863000",
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "a_b_test_winner_deployment",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoABTestWinner",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoABTestWinner"
+  }
+}

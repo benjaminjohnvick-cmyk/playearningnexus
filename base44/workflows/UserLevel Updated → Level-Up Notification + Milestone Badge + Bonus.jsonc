@@ -1,0 +1,37 @@
+{
+  "name": "UserLevel Updated \u2192 Level-Up Notification + Milestone Badge + Bonus",
+  "description": "Detects level increases; notifies user; awards milestone badges and cash bonuses at levels 5/10/25/50/100; emails milestones",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "UserLevel"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "userlevel_updated_level_up_notification_milestone_badge_bonus",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoUserLevelUpNotifier",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoUserLevelUpNotifier"
+  }
+}

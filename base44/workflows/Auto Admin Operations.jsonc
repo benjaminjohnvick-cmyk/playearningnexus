@@ -1,0 +1,44 @@
+{
+  "name": "Auto Admin Operations",
+  "description": "Every 12 hours: auto-approves low-risk custom domains, processes pending withdrawals 48h+, updates partner tiers, runs bulk payouts",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 12,
+      "interval_unit": "hours",
+      "interval_anchor": "2026-05-17T00:26:25.321000",
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_admin_operations",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoAdminOperations",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoAdminOperations"
+  }
+}

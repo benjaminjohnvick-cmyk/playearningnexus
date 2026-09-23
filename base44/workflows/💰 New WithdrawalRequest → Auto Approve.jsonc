@@ -1,0 +1,37 @@
+{
+  "name": "\ud83d\udcb0 New WithdrawalRequest \u2192 Auto Approve",
+  "description": "Runs fraud check and auto-approval flow when a withdrawal is requested",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "WithdrawalRequest"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_withdrawalrequest_auto_approve",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoFinancialEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoFinancialEngine"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Referral Jackpot Entries on New Referral",
+  "description": "Awards jackpot entries to the referrer the moment a new referral is created.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Referral"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "referral_jackpot_entries_on_new_referral",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "awardReferralJackpotEntries",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "awardReferralJackpotEntries"
+  }
+}

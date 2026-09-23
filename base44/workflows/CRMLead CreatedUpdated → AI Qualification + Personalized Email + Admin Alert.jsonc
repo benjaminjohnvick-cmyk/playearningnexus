@@ -1,0 +1,38 @@
+{
+  "name": "CRMLead Created/Updated \u2192 AI Qualification + Personalized Email + Admin Alert",
+  "description": "AI scores and tiers leads (hot/warm/cold); sends personalized welcome email for hot/warm; alerts admin; conversion welcome email",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update"
+      ],
+      "entity_name": "CRMLead"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "crmlead_created_updated_ai_qualification_personalized_email_admin_alert",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoCRMLeadLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoCRMLeadLifecycle"
+  }
+}

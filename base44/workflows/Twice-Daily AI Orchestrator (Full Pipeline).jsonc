@@ -1,0 +1,46 @@
+{
+  "name": "Twice-Daily AI Orchestrator (Full Pipeline)",
+  "description": "Runs the full closed-loop AI pipeline every 12 hours: quality scan \u2192 fraud scan \u2192 churn prediction \u2192 retention campaigns \u2192 outcome verification \u2192 survey intelligence",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 12,
+      "interval_unit": "hours",
+      "interval_anchor": "2026-03-30T01:37:30.659000",
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "twice_daily_ai_orchestrator_full_pipeline",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "aiOrchestrator",
+            "args": {
+              "dry_run": false
+            }
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "aiOrchestrator"
+  }
+}

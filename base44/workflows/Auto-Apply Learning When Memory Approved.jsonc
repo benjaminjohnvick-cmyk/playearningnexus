@@ -1,0 +1,37 @@
+{
+  "name": "Auto-Apply Learning When Memory Approved",
+  "description": "Instantly applies a learning memory into the agent system the moment an admin approves it \u2014 no waiting for the weekly batch",
+  "trigger": {
+    "condition": "${ ((.trigger.data.admin_approved == true) and (.trigger.changed_fields | index(\"admin_approved\") != null)) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "AgentLearningMemory"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_apply_learning_when_memory_approved",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "applyApprovedLearnings",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "applyApprovedLearnings"
+  }
+}

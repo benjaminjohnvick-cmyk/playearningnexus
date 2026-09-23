@@ -1,0 +1,37 @@
+{
+  "name": "GiftTransaction Created \u2192 Recipient Gift Notification + Sender Confirm + XP",
+  "description": "Notifies recipient with gift details + personal message; confirms to sender; emails recipient; awards 15 XP to sender",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "GiftTransaction"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "gifttransaction_created_recipient_gift_notification_sender_confirm_xp",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoGiftTransactionLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoGiftTransactionLifecycle"
+  }
+}

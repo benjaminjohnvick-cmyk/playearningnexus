@@ -1,0 +1,38 @@
+{
+  "name": "Referral Created/Updated \u2192 Welcome Email + MLM Node Build + $5 Credit on Complete",
+  "description": "Notifies referrer on signup; welcome email to referred; builds 3-level MLM node; pays $5 credit on completion",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update"
+      ],
+      "entity_name": "Referral"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "referral_created_updated_welcome_email_mlm_node_build_5_credit_on_complete",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoReferralCreatedLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoReferralCreatedLifecycle"
+  }
+}

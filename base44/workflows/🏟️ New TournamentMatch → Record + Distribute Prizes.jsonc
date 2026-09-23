@@ -1,0 +1,37 @@
+{
+  "name": "\ud83c\udfdf\ufe0f New TournamentMatch \u2192 Record + Distribute Prizes",
+  "description": "Records result and distributes prizes when a tournament match is completed",
+  "trigger": {
+    "condition": "${ (.trigger.data.status == \"completed\") }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "TournamentMatch"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_tournamentmatch_record_distribute_prizes",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoTournamentEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoTournamentEngine"
+  }
+}

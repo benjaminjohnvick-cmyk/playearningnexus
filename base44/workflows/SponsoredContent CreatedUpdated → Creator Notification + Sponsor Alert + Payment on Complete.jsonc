@@ -1,0 +1,38 @@
+{
+  "name": "SponsoredContent Created/Updated \u2192 Creator Notification + Sponsor Alert + Payment on Complete",
+  "description": "Notifies creator of new deal; sponsor notified on publish; auto-creates CreatorPayout on completion",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update"
+      ],
+      "entity_name": "SponsoredContent"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "sponsoredcontent_created_updated_creator_notification_sponsor_alert_payment_on_complete",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoSponsoredContentLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoSponsoredContentLifecycle"
+  }
+}

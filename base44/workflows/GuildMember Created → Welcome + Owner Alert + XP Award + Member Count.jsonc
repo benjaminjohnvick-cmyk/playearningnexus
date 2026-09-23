@@ -1,0 +1,37 @@
+{
+  "name": "GuildMember Created \u2192 Welcome + Owner Alert + XP Award + Member Count",
+  "description": "Welcomes new guild member; notifies owner; awards 25 XP; updates member count",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "GuildMember"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "guildmember_created_welcome_owner_alert_xp_award_member_count",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoGuildLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoGuildLifecycle"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Auto-Post PPC Ads on Social Connect",
+  "description": "When a user connects a social media account, immediately trigger 2 AI posts of the PPC ad grid to that platform",
+  "trigger": {
+    "condition": "${ (.trigger.data.is_active == true) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "SocialMediaConnection"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_post_ppc_ads_on_social_connect",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "automaticSocialPostingScheduler",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "automaticSocialPostingScheduler"
+  }
+}

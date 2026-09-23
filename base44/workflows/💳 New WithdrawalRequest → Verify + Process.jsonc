@@ -1,0 +1,37 @@
+{
+  "name": "\ud83d\udcb3 New WithdrawalRequest \u2192 Verify + Process",
+  "description": "Immediately verifies and processes new withdrawal requests with fraud checks",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "WithdrawalRequest"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_withdrawalrequest_verify_process",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoSupportTicketEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoSupportTicketEngine"
+  }
+}

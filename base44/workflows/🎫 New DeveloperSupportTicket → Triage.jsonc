@@ -1,0 +1,37 @@
+{
+  "name": "\ud83c\udfab New DeveloperSupportTicket \u2192 Triage",
+  "description": "Immediately triages new developer support tickets with AI",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "DeveloperSupportTicket"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_developersupportticket_triage",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoSupportTicketEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoSupportTicketEngine"
+  }
+}

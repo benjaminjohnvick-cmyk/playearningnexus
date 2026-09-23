@@ -1,0 +1,37 @@
+{
+  "name": "MoneyTransfer Created \u2192 Fraud Check + Notify Both + Record Transaction",
+  "description": "Flags large transfers for review; auto-processes safe ones; notifies sender + recipient; records transaction",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "MoneyTransfer"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "moneytransfer_created_fraud_check_notify_both_record_transaction",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoMoneyTransferLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoMoneyTransferLifecycle"
+  }
+}

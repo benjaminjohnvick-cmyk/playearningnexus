@@ -1,0 +1,37 @@
+{
+  "name": "ProductWishlistItem Updated \u2192 On Sale/Low Stock \u2192 Cart Suggestion + PersonalizedOffer",
+  "description": "",
+  "trigger": {
+    "condition": "${ (.trigger.changed_fields | index(\"status\") != null) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "ProductWishlistItem"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "productwishlistitem_updated_on_sale_low_stock_cart_suggestion_personalizedoffer",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoWishlistCartSuggestion",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoWishlistCartSuggestion"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "AI Auto-Review New Ad Submissions",
+  "description": "When a new AdListing is created, AI scores it for brand safety, tagline quality, and URL legitimacy \u2014 then auto-approves, auto-rejects, or flags for human review, and emails the advertiser the result.",
+  "trigger": {
+    "condition": "${ (.trigger.data.status == \"pending\") }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "AdListing"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "ai_auto_review_new_ad_submissions",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "adAutoReviewer",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "adAutoReviewer"
+  }
+}

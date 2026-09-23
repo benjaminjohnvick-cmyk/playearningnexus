@@ -1,0 +1,37 @@
+{
+  "name": "\ud83c\udfc5 New Achievement \u2192 Notify + XP Award",
+  "description": "Notifies user and awards XP when a new achievement is unlocked",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "UserAchievement"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_achievement_notify_xp_award",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoStreakAndGamificationEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoStreakAndGamificationEngine"
+  }
+}

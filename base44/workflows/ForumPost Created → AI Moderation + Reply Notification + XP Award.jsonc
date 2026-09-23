@@ -1,0 +1,37 @@
+{
+  "name": "ForumPost Created \u2192 AI Moderation + Reply Notification + XP Award",
+  "description": "AI moderates every post; locks high-severity content; notifies original post author of replies; awards XP (5 for reply, 15 for new post)",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "ForumPost"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "forumpost_created_ai_moderation_reply_notification_xp_award",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoForumPostLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoForumPostLifecycle"
+  }
+}

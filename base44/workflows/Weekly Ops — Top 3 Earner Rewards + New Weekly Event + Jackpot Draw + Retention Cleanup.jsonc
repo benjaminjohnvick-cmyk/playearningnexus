@@ -1,0 +1,44 @@
+{
+  "name": "Weekly Ops \u2014 Top 3 Earner Rewards + New Weekly Event + Jackpot Draw + Retention Cleanup",
+  "description": "Every Monday: rewards top 3 earners ($5/$3/$1 bonuses + emails), closes old weekly events, creates next week's AI-generated event, processes jackpot draws, expires stale retention campaigns",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 11 * * 1",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "weekly_ops_top_3_earner_rewards_new_weekly_event_jackpot_draw_retention_cleanup",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoWeeklyScheduledOps",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoWeeklyScheduledOps"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "A/B Test Auto-Optimizer (69c9e0ab4cad82cdecbc3b07)",
+  "description": "Runs every 6 hours to evaluate active A/B tests, shift traffic to winning variants, and auto-declare winners at 85%+ confidence.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 6,
+      "interval_unit": "hours",
+      "interval_anchor": "2026-03-30T02:32:11.671000",
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "a_b_test_auto_optimizer_69c9e0ab4cad82cdecbc3b07",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "abTestAssigner",
+            "args": {
+              "action": "optimize"
+            }
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "abTestAssigner"
+  }
+}

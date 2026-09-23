@@ -1,0 +1,37 @@
+{
+  "name": "Season Updated \u2192 Distribute Top-100 Rewards + Create Next Season",
+  "description": "When season completes: distributes badges/cash to top 100 by rank tier; creates next season automatically",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "Season"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "season_updated_distribute_top_100_rewards_create_next_season",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoSeasonLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoSeasonLifecycle"
+  }
+}

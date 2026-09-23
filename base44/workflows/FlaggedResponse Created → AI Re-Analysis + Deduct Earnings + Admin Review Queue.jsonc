@@ -1,0 +1,37 @@
+{
+  "name": "FlaggedResponse Created \u2192 AI Re-Analysis + Deduct Earnings + Admin Review Queue",
+  "description": "AI re-confirms fraud; deducts earnings if confirmed; warns user; alerts admins when human review needed",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "FlaggedResponse"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "flaggedresponse_created_ai_re_analysis_deduct_earnings_admin_review_queue",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoFlaggedResponseLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoFlaggedResponseLifecycle"
+  }
+}

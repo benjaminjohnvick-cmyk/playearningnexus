@@ -1,0 +1,37 @@
+{
+  "name": "\ud83d\udccb New PPCAbTest \u2192 Initialize Variants",
+  "description": "Initializes A/B test variants and assigns users when a new PPC A/B test is created",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "PPCAbTest"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_ppcabtest_initialize_variants",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoTrustAndFlagEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoTrustAndFlagEngine"
+  }
+}

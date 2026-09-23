@@ -1,0 +1,44 @@
+{
+  "name": "Daily Competitor Trend Analysis",
+  "description": "Automatically analyzes the top 5 industry competitors' public-facing content (social media posts, blogs, etc.). Uses AI to extract and categorize emerging trends, hashtag usage patterns, content themes, and posting strategies. Provides strategic insights on market opportunities and competitive threats to inform content strategy.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 10 * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_competitor_trend_analysis",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "analyzeCompetitorTrends",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "analyzeCompetitorTrends"
+  }
+}

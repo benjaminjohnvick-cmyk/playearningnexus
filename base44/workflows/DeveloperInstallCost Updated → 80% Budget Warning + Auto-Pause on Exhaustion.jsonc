@@ -1,0 +1,37 @@
+{
+  "name": "DeveloperInstallCost Updated \u2192 80% Budget Warning + Auto-Pause on Exhaustion",
+  "description": "Alerts developer at 80% budget usage; auto-pauses campaign and emails developer when budget exhausted",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "DeveloperInstallCost"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "developerinstallcost_updated_80_budget_warning_auto_pause_on_exhaustion",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoDeveloperInstallBudgetMonitor",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoDeveloperInstallBudgetMonitor"
+  }
+}

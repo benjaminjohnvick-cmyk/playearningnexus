@@ -1,0 +1,37 @@
+{
+  "name": "\ud83d\udecd\ufe0f New Order \u2192 AI Fulfillment",
+  "description": "Triggers AI order fulfillment and vetting immediately when an order is placed",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Order"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_order_ai_fulfillment",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoAdminOpsEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoAdminOpsEngine"
+  }
+}

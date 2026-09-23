@@ -1,0 +1,38 @@
+{
+  "name": "AffiliateSale Created/Updated \u2192 Commission Notification + Auto-Pay on Confirmed",
+  "description": "Notifies affiliate of new sale + XP on create; auto-credits commission to balance and marks paid on confirmation",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update"
+      ],
+      "entity_name": "AffiliateSale"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "affiliatesale_created_updated_commission_notification_auto_pay_on_confirmed",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoAffiliateSaleLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoAffiliateSaleLifecycle"
+  }
+}

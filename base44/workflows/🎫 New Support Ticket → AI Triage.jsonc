@@ -1,0 +1,37 @@
+{
+  "name": "\ud83c\udfab New Support Ticket \u2192 AI Triage",
+  "description": "Immediately triages new support tickets with AI and auto-responds to common issues",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "SupportTicket"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_support_ticket_ai_triage",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoSupportAndDisputeEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoSupportAndDisputeEngine"
+  }
+}

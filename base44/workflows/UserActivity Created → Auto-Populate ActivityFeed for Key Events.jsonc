@@ -1,0 +1,37 @@
+{
+  "name": "UserActivity Created \u2192 Auto-Populate ActivityFeed for Key Events",
+  "description": "Creates public ActivityFeedItems for survey completions, level-ups, purchases, game sessions, friend connections, guide publications, affiliate sales",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "UserActivity"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "useractivity_created_auto_populate_activityfeed_for_key_events",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoActivityFeedPopulator",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoActivityFeedPopulator"
+  }
+}

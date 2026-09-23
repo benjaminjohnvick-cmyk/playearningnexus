@@ -1,0 +1,44 @@
+{
+  "name": "Daily Payout Status Reconciliation \u2192 Auto-Complete 72h+ Processing + Fail 7-Day Stuck",
+  "description": "Daily: auto-completes payouts stuck in processing for 72h+; fails payouts stuck for 7+ days; notifies users and updates linked Transactions",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 7 * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_payout_status_reconciliation_auto_complete_72h_processing_fail_7_day_stuck",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoPayoutStatusReconciliation",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoPayoutStatusReconciliation"
+  }
+}

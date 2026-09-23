@@ -1,0 +1,44 @@
+{
+  "name": "Daily Ops \u2014 Generate Challenges + Expire Promos/Memberships/Subscriptions + Clean Stale Sessions",
+  "description": "Daily at midnight: generates 4 new daily challenges, expires overdue promos/memberships/subscriptions, closes yesterday's challenges, cleans stale UX sessions",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "5 4 * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_ops_generate_challenges_expire_promos_memberships_subscriptions_clean_stale_sessions",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoDailyScheduledOps",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoDailyScheduledOps"
+  }
+}

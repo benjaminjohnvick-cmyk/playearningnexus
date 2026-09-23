@@ -1,0 +1,37 @@
+{
+  "name": "GameGuide Created \u2192 AI Quality Review + Approve/Reject + Author XP + Dev Notification",
+  "description": "AI reviews guide quality; auto-approves/rejects with notification; awards 30-100 XP; marks high-quality guides as featured; notifies game developer",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "GameGuide"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "gameguide_created_ai_quality_review_approve_reject_author_xp_dev_notification",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoGameGuideLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoGameGuideLifecycle"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Partner: New Game Review Notification",
+  "description": "Fires when a new GameReview is created \u2014 notifies the game's developer via partner_exclusive channel",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "GameReview"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "partner_new_game_review_notification",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "partnerNotificationWebhook",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "partnerNotificationWebhook"
+  }
+}

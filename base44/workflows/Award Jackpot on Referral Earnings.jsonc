@@ -1,0 +1,39 @@
+{
+  "name": "Award Jackpot on Referral Earnings",
+  "description": "",
+  "trigger": {
+    "condition": "${ ((.trigger.changed_fields | index(\"commission_earned\") != null) and (.trigger.data.commission_earned > 0)) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "Referral"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "award_jackpot_on_referral_earnings",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "awardReferralJackpotEntries",
+            "args": {
+              "trigger_type": "earning"
+            }
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "awardReferralJackpotEntries"
+  }
+}

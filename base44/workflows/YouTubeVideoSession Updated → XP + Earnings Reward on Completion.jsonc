@@ -1,0 +1,37 @@
+{
+  "name": "YouTubeVideoSession Updated \u2192 XP + Earnings Reward on Completion",
+  "description": "Awards XP (5-30) based on watch %; credits $0.05 earnings bonus and notification for 90%+ watch completion",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "YouTubeVideoSession"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "youtubevideosession_updated_xp_earnings_reward_on_completion",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoYouTubeSessionLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoYouTubeSessionLifecycle"
+  }
+}

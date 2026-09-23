@@ -1,0 +1,44 @@
+{
+  "name": "Daily AI AdCampaign Self-Optimizer \u2192 Auto-Bid Adjustment + Auto-Pause Zero-Conversion + Performance Alerts",
+  "description": "Daily: AI analyzes every active ai_bid_enabled campaign; updates ai_suggestions with recommended bids/tips; auto-adjusts bids for auto campaigns; pauses zero-conversion campaigns burning budget",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 10 * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_ai_adcampaign_self_optimizer_auto_bid_adjustment_auto_pause_zero_conversion_performance_alerts",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoAdCampaignSelfOptimizer",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoAdCampaignSelfOptimizer"
+  }
+}

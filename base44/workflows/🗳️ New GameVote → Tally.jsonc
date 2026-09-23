@@ -1,0 +1,37 @@
+{
+  "name": "\ud83d\uddf3\ufe0f New GameVote \u2192 Tally",
+  "description": "Immediately tallies game vote and updates game ranking scores",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "GameVote"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_gamevote_tally",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoAffiliateAndStreamerEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoAffiliateAndStreamerEngine"
+  }
+}

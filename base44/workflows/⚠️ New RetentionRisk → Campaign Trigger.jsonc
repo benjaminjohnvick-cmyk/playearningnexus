@@ -1,0 +1,37 @@
+{
+  "name": "\u26a0\ufe0f New RetentionRisk \u2192 Campaign Trigger",
+  "description": "Immediately triggers a retention campaign when a user is flagged as churn risk",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "RetentionRisk"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_retentionrisk_campaign_trigger",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoUserOnboardingEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoUserOnboardingEngine"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Referral Daily Bonus on Goal Met",
+  "description": "Pays $0.25 referral bonus to referrer when referred user hits $3 daily goal.",
+  "trigger": {
+    "condition": "${ (.trigger.data.goal_met == true) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "DailyEarnings"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "referral_daily_bonus_on_goal_met",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "processReferralDailyBonus",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "processReferralDailyBonus"
+  }
+}

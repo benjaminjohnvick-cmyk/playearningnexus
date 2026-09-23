@@ -1,0 +1,37 @@
+{
+  "name": "Guild Created \u2192 Owner Notification + Member Count",
+  "description": "Notifies guild founder on create; handles member joins, owner alerts, XP awards, member count updates, and reward broadcasts",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Guild"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "guild_created_owner_notification_member_count",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoGuildLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoGuildLifecycle"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "Track A/B Test Metrics",
+  "description": "Updates A/B test metrics (completion rate, quality score) when survey responses are submitted, determines winner when thresholds are reached.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update"
+      ],
+      "entity_name": "PPCSurveyResponse"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "track_a_b_test_metrics",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "trackABTestMetrics",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "trackABTestMetrics"
+  }
+}

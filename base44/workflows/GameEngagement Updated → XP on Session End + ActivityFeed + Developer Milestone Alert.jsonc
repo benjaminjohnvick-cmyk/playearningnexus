@@ -1,0 +1,37 @@
+{
+  "name": "GameEngagement Updated \u2192 XP on Session End + ActivityFeed + Developer Milestone Alert",
+  "description": "Awards 5-30 XP on session end based on duration; creates ActivityFeedItem for 10+ min sessions; notifies developer at every 100-session milestone",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "GameEngagement"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "gameengagement_updated_xp_on_session_end_activityfeed_developer_milestone_alert",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoGameEngagementLifecycle",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoGameEngagementLifecycle"
+  }
+}

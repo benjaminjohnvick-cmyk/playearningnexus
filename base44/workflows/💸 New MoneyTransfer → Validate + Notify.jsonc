@@ -1,0 +1,37 @@
+{
+  "name": "\ud83d\udcb8 New MoneyTransfer \u2192 Validate + Notify",
+  "description": "Validates and processes money transfers immediately, notifies recipient",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "MoneyTransfer"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "new_moneytransfer_validate_notify",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoTransferAndGiftEngine",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoTransferAndGiftEngine"
+  }
+}

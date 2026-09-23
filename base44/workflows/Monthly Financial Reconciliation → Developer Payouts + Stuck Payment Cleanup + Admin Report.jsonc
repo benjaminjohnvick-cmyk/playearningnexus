@@ -1,0 +1,44 @@
+{
+  "name": "Monthly Financial Reconciliation \u2192 Developer Payouts + Stuck Payment Cleanup + Admin Report",
+  "description": "1st of every month: reconciles all transactions, calculates developer payouts, flags stuck payments >30 days, emails admins full financial report",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 11 1 * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "monthly_financial_reconciliation_developer_payouts_stuck_payment_cleanup_admin_report",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoMonthlyReconciliation",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoMonthlyReconciliation"
+  }
+}

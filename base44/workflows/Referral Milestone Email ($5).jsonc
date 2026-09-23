@@ -1,0 +1,38 @@
+{
+  "name": "Referral Milestone Email ($5)",
+  "description": "Fires when DailyEarnings is updated \u2014 checks if referred user has crossed $5 total and sends a milestone email (once only)",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update",
+        "create"
+      ],
+      "entity_name": "DailyEarnings"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "referral_milestone_email_5",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "referralMilestoneEmail",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "referralMilestoneEmail"
+  }
+}

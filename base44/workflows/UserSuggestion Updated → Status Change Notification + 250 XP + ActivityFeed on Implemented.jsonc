@@ -1,0 +1,37 @@
+{
+  "name": "UserSuggestion Updated \u2192 Status Change Notification + 250 XP + ActivityFeed on Implemented",
+  "description": "Notifies suggestion author at every status transition (added_to_survey \u2192 in_mockup \u2192 implemented \u2192 rejected); awards 250 XP and creates ActivityFeedItem on implementation",
+  "trigger": {
+    "condition": "${ (.trigger.changed_fields | index(\"status\") != null) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "UserSuggestion"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "usersuggestion_updated_status_change_notification_250_xp_activityfeed_on_implemented",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoUserSuggestionStatusNotifier",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoUserSuggestionStatusNotifier"
+  }
+}
