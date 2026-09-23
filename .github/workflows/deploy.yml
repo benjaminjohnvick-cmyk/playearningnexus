@@ -8,7 +8,7 @@
 #
 # ONE-TIME HUMAN SETUP (all in GitHub → Settings → Secrets and variables → Actions):
 #   • Secret  RAILWAY_TOKEN   — a Railway project/account token (Railway → account → Tokens).
-#   • Variable RAILWAY_SERVICE — your backend service name (optional; defaults to "backend").
+#   • Variable RAILWAY_SERVICE — your backend service name (optional; defaults to "getgreen").
 #   • Variable BACKEND_URL     — your deployed backend URL (optional; enables the post-deploy smoke test).
 # Without these, the workflow still runs VALIDATE and simply SKIPS deploy/smoke with a notice — it never
 # hard-fails for someone who hasn't wired the secrets yet. Nothing here can charge a card or touch money.
@@ -72,7 +72,7 @@ jobs:
           RAILWAY_SERVICE: ${{ vars.RAILWAY_SERVICE }}
         run: |
           npm install -g @railway/cli
-          railway up --service "${RAILWAY_SERVICE:-backend}" --ci
+          railway up --service "${RAILWAY_SERVICE:-getgreen}" --ci
 
   smoke:
     name: Automated QA smoke (live)
