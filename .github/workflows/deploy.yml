@@ -1,17 +1,19 @@
-# Continuous Deployment — GamerGain / PlayEarning Nexus
+# Continuous Integration — GamerGain / PlayEarning Nexus
 #
 # WHAT IT DOES (automatically, on every push to main):
-#   1. VALIDATE  — builds the frontend and runs the full pre-deploy audit (entities↔schema,
-#                  scheduler↔functions, manifest). Fails fast if anything drifted.
-#   2. DEPLOY    — deploys the backend to Railway (only if you've added a RAILWAY_TOKEN secret).
-#   3. SMOKE     — runs the automated QA pass against the live backend (only if BACKEND_URL is set).
+#   1. VALIDATE  — builds the frontend and runs the full pre-deploy audit (entities<->schema,
+#                  scheduler<->functions, manifest). Fails fast if anything drifted.
+#   2. SMOKE     — runs the automated QA pass against the live backend (only if BACKEND_URL is set).
 #
-# ONE-TIME HUMAN SETUP (all in GitHub → Settings → Secrets and variables → Actions):
-#   • Secret  RAILWAY_TOKEN   — a Railway project/account token (Railway → account → Tokens).
-#   • Variable RAILWAY_SERVICE — your backend service name (optional; defaults to "getgreen").
-#   • Variable BACKEND_URL     — your deployed backend URL (optional; enables the post-deploy smoke test).
-# Without these, the workflow still runs VALIDATE and simply SKIPS deploy/smoke with a notice — it never
-# hard-fails for someone who hasn't wired the secrets yet. Nothing here can charge a card or touch money.
+# DEPLOY is handled by Railway's native GitHub integration: the "getgreen" service auto-builds the
+# frontend from deploy-kit/railway/frontend.Dockerfile on every push to main. That is the live deploy,
+# so this workflow no longer runs a separate Railway CLI deploy (it was redundant with Railway's own
+# integration and double-built the service). No RAILWAY_TOKEN / RAILWAY_SERVICE is needed here anymore.
+#
+# ONE-TIME HUMAN SETUP (optional; GitHub -> Settings -> Secrets and variables -> Actions):
+#   • Variable BACKEND_URL — your deployed backend URL (enables the post-deploy smoke test).
+# Without it, the workflow still runs VALIDATE and simply SKIPS the smoke test with a notice — it never
+# hard-fails for someone who hasn't wired it yet. Nothing here can charge a card or touch money.
 
 name: Deploy (CI/CD)
 
@@ -45,38 +47,9 @@ jobs:
         # Structural errors fail the build. Guardrail lints are advisory (printed for review).
         # To also block on advisory warnings once clean, change to: node deploy-kit/audit.mjs --strict
 
-  deploy-backend:
-    name: Deploy backend to Railway
-    needs: validate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check for Railway token
-        id: guard
-        run: |
-          if [ -n "${{ secrets.RAILWAY_TOKEN }}" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice title=Auto-deploy skipped::Add a RAILWAY_TOKEN secret (Settings → Secrets → Actions) to enable one-push deploys. Validation still ran."
-          fi
-      - uses: actions/setup-node@v4
-        if: steps.guard.outputs.ready == 'true'
-        with:
-          node-version: '20'
-      - name: Install Railway CLI + deploy
-        if: steps.guard.outputs.ready == 'true'
-        working-directory: backend
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_SERVICE: ${{ vars.RAILWAY_SERVICE }}
-        run: |
-          npm install -g @railway/cli
-          railway up --service "${RAILWAY_SERVICE:-getgreen}" --ci
-
   smoke:
     name: Automated QA smoke (live)
-    needs: deploy-backend
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -87,7 +60,7 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice title=Smoke skipped::Set a BACKEND_URL variable (Settings → Variables → Actions) to run the live QA smoke after deploy."
+            echo "::notice title=Smoke skipped::Set a BACKEND_URL variable (Settings -> Variables -> Actions) to run the live QA smoke after deploy."
           fi
       - uses: actions/setup-node@v4
         if: steps.guard.outputs.ready == 'true'
