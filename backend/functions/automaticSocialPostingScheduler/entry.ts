@@ -1,6 +1,31 @@
 import { createClientFromRequest } from "../../sdk/mod.ts";
 import { __handler } from "../../sdk/runtime.ts";
-import { withAdDisclosure } from "../../sdk/disclosure.ts";
+import { withAdDisclosureFront } from "../../sdk/disclosure.ts";
+import { getBool, getString } from "../../sdk/settings.ts";
+
+// ============================================================================
+// MEMBER-IN-THE-LOOP POSTING POSTURE (FTC + platform-ToS safe default)
+// ----------------------------------------------------------------------------
+// This scheduler DRAFTS and QUEUES social posts for one-tap member approval; by
+// default it does NOT publish live to any platform. Each generated post is saved
+// as a SocialMediaPost with status 'pending_approval', which surfaces in the
+// member's PremiumAdQueue where they review, edit, and tap Post/Share themselves
+// (member-initiated sharing = compliant with platform automation terms + FTC).
+//
+// Live API posting happens ONLY when ALL THREE conditions hold:
+//   (a) SOCIAL_API_AUTOPOST_ENABLED is ON — the master counsel gate (ships OFF; surfaced in the
+//       Setup Wizard's counsel-gated panel; turning it on needs COUNSEL_APPROVED), AND
+//   (b) PREMIUM_ADS_REQUIRE_APPROVAL is explicitly OFF (owner disabled the member-approval gate), AND
+//   (c) the platform is on the SOCIAL_API_AUTOPOST_APPROVED_PLATFORMS allow-list —
+//       meaning that platform has granted written approval for automated posting
+//       on the member's behalf and counsel has signed off.
+//
+// LinkedIn is deliberately NOT auto-posted via API by default: LinkedIn's
+// Professional Community Policies restrict automated / incentivized posting, so
+// LinkedIn routes to the member composer/share path until LinkedIn Marketing
+// Developer Platform approval is on file. Do NOT add 'linkedin' to the allow-list
+// without that approval.
+// ============================================================================
 
 // The full PPC ad grid — mirrors GoogleAdsOverlay BUSINESS_ADS
 const BUSINESS_ADS = [
@@ -52,7 +77,7 @@ async function generatePostContent(base44, platform, postNum) {
 
   const promptFn = PLATFORM_PROMPTS[platform];
   if (!promptFn) {
-    return { content: `🎮 Discover getgoodsgratis.app — click ads, take quick surveys, earn real money!${cta} #GetGoodsGratis`, ad_id: featured.brand, landing_url: landing };
+    return { content: withAdDisclosureFront(`🎮 Discover getgoodsgratis.app — click ads, take quick surveys, earn real money! #GetGoodsGratis`) + cta, ad_id: featured.brand, landing_url: landing };
   }
 
   const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
@@ -60,8 +85,8 @@ async function generatePostContent(base44, platform, postNum) {
   });
 
   const raw = typeof result === 'string' ? result : (result?.text || result?.content || JSON.stringify(result));
-  // FTC: every auto-posted promotional caption carries a sponsorship disclosure; then the buy/interested CTA.
-  return { content: withAdDisclosure(raw) + cta, ad_id: featured.brand, landing_url: landing };
+  // FTC: sponsorship disclosure LEADS the caption (clear-and-conspicuous), then the copy, then the CTA.
+  return { content: withAdDisclosureFront(raw) + cta, ad_id: featured.brand, landing_url: landing };
 }
 
 async function postToSocialPlatform(connection, content) {
@@ -191,6 +216,21 @@ export default __handler(async (req) => {
 
     const connections = await base44.asServiceRole.entities.SocialMediaConnection.filter(filter);
 
+    // ---- Member-in-the-loop gate ----
+    // Default: DRAFT + QUEUE for one-tap approval; never publish live. Live automated posting requires
+    // ALL of: the master counsel gate SOCIAL_API_AUTOPOST_ENABLED ON, the approval gate
+    // PREMIUM_ADS_REQUIRE_APPROVAL OFF, and the platform explicitly allow-listed (see banner at top).
+    const autopostEnabled = await getBool("SOCIAL_API_AUTOPOST_ENABLED", false);   // master counsel gate
+    const requireApproval = await getBool("PREMIUM_ADS_REQUIRE_APPROVAL", true);
+    const apiApproved = new Set(
+      (await getString("SOCIAL_API_AUTOPOST_APPROVED_PLATFORMS", ""))
+        .split(",").map((s) => s.trim().toLowerCase()).filter(Boolean),
+    );
+    // LinkedIn must NOT be added to the allow-list until LinkedIn Marketing Developer Platform approval
+    // is on file; with the master gate OFF by default it routes to the member composer/share path anyway.
+    const canLivePost = (platform) =>
+      autopostEnabled && !requireApproval && apiApproved.has(String(platform || '').toLowerCase());
+
     const results = [];
 
     for (const connection of connections) {
@@ -201,35 +241,60 @@ export default __handler(async (req) => {
       for (let postNum = 1; postNum <= postsPerPlatform; postNum++) {
         try {
           const { content, ad_id, landing_url } = await generatePostContent(base44, connection.platform, postNum);
-          const postResult = await postToSocialPlatform(connection, content);
 
-          // Save record to SocialMediaPost entity
-          await base44.asServiceRole.entities.SocialMediaPost.create({
-            user_id: connection.user_id,
-            platform: connection.platform,
-            content,
-            post_id: postResult.postId,
-            status: postResult.simulated ? 'simulated' : 'published',
-            ad_id: ad_id || null,
-            landing_url: landing_url || null,
-            source: 'auto_scheduler',
-            posted_at: new Date().toISOString(),
-          }).catch(() => null); // non-critical
-
-          platformResults.push({ postNum, success: true, postId: postResult.postId, simulated: !!postResult.simulated });
+          if (canLivePost(connection.platform)) {
+            // Owner disabled the approval gate AND this platform is allow-listed for automated posting.
+            const postResult = await postToSocialPlatform(connection, content);
+            await base44.asServiceRole.entities.SocialMediaPost.create({
+              user_id: connection.user_id,
+              platform: connection.platform,
+              content,
+              post_id: postResult.postId,
+              status: postResult.simulated ? 'simulated' : 'published',
+              ad_id: ad_id || null,
+              landing_url: landing_url || null,
+              source: 'auto_scheduler',
+              auto_posted: true,
+              disclosed: true,
+              posted_at: new Date().toISOString(),
+            }).catch(() => null); // non-critical
+            platformResults.push({ postNum, success: true, queued: false, postId: postResult.postId, simulated: !!postResult.simulated });
+          } else {
+            // DEFAULT PATH: queue a draft the member reviews, edits, and one-taps to post (PremiumAdQueue).
+            const draft = await base44.asServiceRole.entities.SocialMediaPost.create({
+              user_id: connection.user_id,
+              platform: connection.platform,
+              content,
+              status: 'pending_approval',
+              ad_id: ad_id || null,
+              landing_url: landing_url || null,
+              source: 'auto_scheduler_draft',
+              auto_posted: false,
+              disclosed: true,
+              created_at: new Date().toISOString(),
+            }).catch(() => null); // non-critical
+            platformResults.push({ postNum, success: true, queued: true, postId: draft?.id || null });
+          }
         } catch (e) {
           platformResults.push({ postNum, success: false, error: e.message });
         }
       }
 
-      // Update connection stats
-      const successCount = platformResults.filter(r => r.success).length;
-      if (successCount > 0) {
-        await base44.asServiceRole.entities.SocialMediaConnection.update(connection.id, {
-          last_post_at: new Date().toISOString(),
-          total_posts: (connection.total_posts || 0) + successCount,
-          auto_post_count: (connection.auto_post_count || 0) + successCount,
-        }).catch(() => null);
+      // Update connection stats — published live-posts and queued drafts are counted separately.
+      const publishedCount = platformResults.filter(r => r.success && !r.queued).length;
+      const queuedCount = platformResults.filter(r => r.success && r.queued).length;
+      const connUpdate = {};
+      if (publishedCount > 0) {
+        connUpdate.last_post_at = new Date().toISOString();
+        connUpdate.total_posts = (connection.total_posts || 0) + publishedCount;
+        connUpdate.auto_post_count = (connection.auto_post_count || 0) + publishedCount;
+      }
+      if (queuedCount > 0) {
+        connUpdate.last_draft_at = new Date().toISOString();
+        connUpdate.pending_approval_count = (connection.pending_approval_count || 0) + queuedCount;
+      }
+      if (Object.keys(connUpdate).length) {
+        await base44.asServiceRole.entities.SocialMediaConnection.update(connection.id, connUpdate).catch(() => null);
       }
 
       results.push({
@@ -240,7 +305,19 @@ export default __handler(async (req) => {
       });
     }
 
-    return Response.json({ success: true, processed: results.length, results });
+    const published = results.reduce((n, r) => n + r.posts.filter(p => p.success && !p.queued).length, 0);
+    const queued = results.reduce((n, r) => n + r.posts.filter(p => p.success && p.queued).length, 0);
+    return Response.json({
+      success: true,
+      processed: results.length,
+      mode: requireApproval ? 'member_approval_queue' : 'partial_live',
+      published,
+      queued,
+      note: queued > 0
+        ? 'Posts drafted and queued for one-tap member approval (member-in-the-loop). Members review, edit, and post from PremiumAdQueue.'
+        : 'All eligible posts published live via allow-listed platform APIs.',
+      results,
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

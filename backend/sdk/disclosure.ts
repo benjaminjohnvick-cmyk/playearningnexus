@@ -13,3 +13,12 @@ export function withAdDisclosure(content: string): string {
   if (ALREADY_DISCLOSED.test(c)) return c;
   return `${c}\n\n${snapString("AD_DISCLOSURE_TAG", AD_DISCLOSURE)} · Sponsored`;
 }
+
+// FTC "clear and conspicuous" is strongest when the disclosure LEADS the post rather than trailing it.
+// withAdDisclosureFront() puts "#ad · Sponsored" at the very top so a reader (and the member reviewing
+// the draft) sees it before the ad copy. Used by the member-in-the-loop social scheduler.
+export function withAdDisclosureFront(content: string): string {
+  const c = String(content ?? "");
+  if (ALREADY_DISCLOSED.test(c)) return c;
+  return `${snapString("AD_DISCLOSURE_TAG", AD_DISCLOSURE)} · Sponsored\n\n${c}`;
+}

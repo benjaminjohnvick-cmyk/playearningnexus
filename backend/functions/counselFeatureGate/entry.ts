@@ -20,6 +20,11 @@ const LEGAL_BRIEFS: Record<string, string> = {
   USAGE_FEE_ENABLED: "PLATFORM-ADVANCE-AND-USAGE-FEE-LEGAL-BRIEF.md",
   ADVANCE_ENABLED: "PLATFORM-ADVANCE-AND-USAGE-FEE-LEGAL-BRIEF.md",
   REFERRAL_TIERS_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
+  // Zero-touch automated posting to members' connected social accounts. OFF by default: the scheduler
+  // drafts + queues for one-tap member approval (member-in-the-loop). Automated/incentivized posting is
+  // restricted by platform ToS (esp. LinkedIn) and raises FTC endorsement questions — enable only after
+  // counsel + written per-platform approval, then allow-list platforms in SOCIAL_API_AUTOPOST_APPROVED_PLATFORMS.
+  SOCIAL_API_AUTOPOST_ENABLED: "SOCIAL-POSTING-ONE-TAP-AND-CONSENT.md",
   ENDORSER_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
   ENDORSER_PERSONALIZE_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
   ENDORSER_AUTOPOST_ENABLED: "SOCIAL-ENDORSER-AND-REFERRAL-LEGAL-BRIEF.md",
