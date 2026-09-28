@@ -16,7 +16,7 @@ const SECTIONS = [
     'Activity: surveys you take and responses, games played, referrals, votes, contributions to groups, earnings and payout history.',
     'Payments: processed by Stripe and PayPal. We do not store full card numbers; the processors handle card data. We store transaction records and payout details.',
     'Device & usage: IP address, device/browser type, app interactions, and approximate location/currency (from your browser/IP) used for localization and fraud prevention.',
-    'Social connections: if you connect Facebook, Instagram, X/Twitter, or Snapchat, we access the permissions you grant (e.g., to post on your behalf when you opt in).',
+    'Social connections: if you connect Facebook, Instagram, X/Twitter, Snapchat, TikTok, YouTube, or LinkedIn, we access the permissions you grant (e.g., to post on your behalf when you opt in).',
     'Notifications: push subscription tokens if you enable web/app notifications.',
   ]},
   { h: '3. How we use your information', b: [

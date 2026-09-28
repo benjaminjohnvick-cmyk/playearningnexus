@@ -765,6 +765,13 @@ A single canonical PPC ad-grid survey surface (`AdGridSurvey`, to which **all en
 - **`visual-voice-search`** (engine) — shared logic behind voice + image product search: enable flags, the vision identify prompt/schema, and the feed-search + checkout-channel tagging both modes return through.
 - **`social-ad-metrics`** (engine) — computes the social-channel metric set per advertiser, across all advertisers (aggregate + leaderboard), and for the platform's own ads; same measured-not-guaranteed posture as the on-platform ad metrics.
 
+### Recent additions — 2026-09-28 (LinkedIn as the 7th auto-posting network)
+
+*An enhancement to two existing functions (no new functions/engines/entities); folded into the totals above. See the feature/function disclosure brief §6.7.*
+
+- **`socialMediaOAuthHandler`** (function, enhanced) — adds a LinkedIn OAuth path (`exchangeLinkedInToken` + `getLinkedInUserInfo` via OpenID Connect), so members can connect LinkedIn like the other networks.
+- **`automaticSocialPostingScheduler`** (function, enhanced) — adds a `postToLinkedIn` adapter (LinkedIn UGC Posts API), making LinkedIn the 7th autonomy-gated, `#ad`-disclosed auto-posting network (with Facebook, Instagram, X/Twitter, Snapchat, TikTok, YouTube). Enabled by `LINKEDIN_CLIENT_ID` / `LINKEDIN_CLIENT_SECRET`; LinkedIn is also available as a keyless share link. Broadens the §6.11 paid-endorser auto-posting claim's platform coverage without changing the claimed mechanism.
+
 ### Extension & Attention Rewards (6)
 
 - **`advertiserExtensionClause`** — advertiserExtensionClause (authenticated advertiser/business) — accept or opt out of the extension-inventory clause of the advertising agreement (B2B, disclosed): the advertiser's campaigns may run on the extension's surfaces. Default posture is eligible (opt-out); the advertiser can opt out. Acc…
