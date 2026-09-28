@@ -36,6 +36,10 @@ export default __handler(async (req) => {
         tokenData = await exchangeSnapchatToken(code);
         accountInfo = await getSnapchatAdAccountInfo(tokenData.access_token);
         break;
+      case 'linkedin':
+        tokenData = await exchangeLinkedInToken(code);
+        accountInfo = await getLinkedInUserInfo(tokenData.access_token);
+        break;
       default:
         return Response.json({ error: 'Invalid platform' }, { status: 400 });
     }
@@ -144,6 +148,36 @@ async function exchangeSnapchatToken(code) {
     access_token: data.access_token,
     expires_at: new Date(Date.now() + data.expires_in * 1000).toISOString()
   };
+}
+
+async function exchangeLinkedInToken(code) {
+  const response = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      client_id: Deno.env.get('LINKEDIN_CLIENT_ID'),
+      client_secret: Deno.env.get('LINKEDIN_CLIENT_SECRET'),
+      redirect_uri: `${Deno.env.get('APP_URL')}/social-auth-callback`,
+      code
+    }).toString()
+  });
+
+  const data = await response.json();
+  return {
+    access_token: data.access_token,
+    // LinkedIn access tokens default to ~60 days (5184000s) when expires_in is absent.
+    expires_at: new Date(Date.now() + (data.expires_in || 5184000) * 1000).toISOString()
+  };
+}
+
+async function getLinkedInUserInfo(accessToken) {
+  // OpenID Connect userinfo endpoint returns { sub, name, given_name, ... }.
+  const response = await fetch('https://api.linkedin.com/v2/userinfo', {
+    headers: { 'Authorization': `Bearer ${accessToken}` }
+  });
+  const data = await response.json();
+  return { id: data.sub, name: data.name || data.given_name || 'LinkedIn' };
 }
 
 async function getFacebookPageInfo(accessToken) {

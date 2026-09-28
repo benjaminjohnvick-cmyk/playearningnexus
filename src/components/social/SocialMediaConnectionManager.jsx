@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Facebook, Twitter, Instagram, Zap, Trash2, CheckCircle2, Gift } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin, Zap, Trash2, CheckCircle2, Gift } from 'lucide-react';
 
 const PLATFORMS = {
   facebook: {
@@ -29,6 +29,12 @@ const PLATFORMS = {
     label: 'Snapchat',
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-50'
+  },
+  linkedin: {
+    icon: Linkedin,
+    label: 'LinkedIn',
+    color: 'text-blue-700',
+    bgColor: 'bg-blue-50'
   },
   tiktok: {
     icon: ({ className }) => (
@@ -92,6 +98,7 @@ export default function SocialMediaConnectionManager({ onConnectionsChange }) {
       instagram: `https://www.instagram.com/oauth/authorize?client_id=INSTAGRAM_APP_ID&redirect_uri=${cb}&scope=instagram_business_basic,instagram_business_content_publish&response_type=code`,
       snapchat: `https://accounts.snapchat.com/accounts/oauth2/authorize?client_id=SNAPCHAT_CLIENT_ID&redirect_uri=${cb}&scope=snapchat-marketing-api&response_type=code`,
       tiktok: `https://www.tiktok.com/v2/auth/authorize?client_key=TIKTOK_CLIENT_KEY&redirect_uri=${cb}&scope=video.upload,video.publish&response_type=code&state=tiktok`,
+      linkedin: `https://www.linkedin.com/oauth/v2/authorization?client_id=LINKEDIN_CLIENT_ID&redirect_uri=${cb}&scope=openid%20profile%20w_member_social&response_type=code&state=linkedin`,
       youtube_shorts: `https://accounts.google.com/o/oauth2/v2/auth?client_id=GOOGLE_CLIENT_ID&redirect_uri=${cb}&scope=https://www.googleapis.com/auth/youtube.upload&response_type=code&state=youtube_shorts`,
       youtube: `https://accounts.google.com/o/oauth2/v2/auth?client_id=GOOGLE_CLIENT_ID&redirect_uri=${cb}&scope=https://www.googleapis.com/auth/youtube.upload&response_type=code&state=youtube`,
     };

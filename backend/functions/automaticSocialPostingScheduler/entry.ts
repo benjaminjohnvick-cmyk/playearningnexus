@@ -30,6 +30,7 @@ const PLATFORM_PROMPTS = {
   instagram: (ads, postNum) => `Write an ${postNum === 1 ? 'AM' : 'PM'} Instagram caption (under 220 chars) with emojis for getgoodsgratis.app's Million Dollar Ad Grid post. A mosaic image of brand ads (${ads.slice(0,5).map(a=>a.brand).join(', ')}...). Tap a thumbnail → answer 4 questions ($0.40) → earn $0.20 💰 → get the business link. Include 5 hashtags. End with: 🔗 getgoodsgratis.app/GoogleAdsOverlay`,
   snapchat: (ads, postNum) => `Write a short punchy Snapchat caption (under 120 chars) for getgoodsgratis.app's ad grid image. Tap brand ads like ${ads.slice(0,3).map(a=>a.brand).join(', ')}, answer quick questions, earn real cash! 🔥 getgoodsgratis.app Post ${postNum}.`,
   tiktok: (ads, postNum) => `Write a TikTok caption (under 160 chars) for a video showing the Get Goods Gratis Million Dollar Ad Grid — ${ads.slice(0,4).map(a=>a.brand).join(', ')} & more. Click ads, take 4 quick surveys ($0.40), earn $0.20 each! Trending hashtags: #MillionDollarHomepage #EarnMoney #SideHustle #GetGoodsGratis #TikTokMadeMeDoIt. Link: getgoodsgratis.app/GoogleAdsOverlay Post ${postNum}.`,
+  linkedin: (ads, postNum) => `Write a professional LinkedIn post (under 240 chars) about getgoodsgratis.app's Million Dollar Ad Grid featuring ${ads.slice(0,4).map(a=>a.brand).join(', ')} & more. Users click an ad thumbnail, answer 4 short survey questions ($0.40 total), earn $0.20 cash, then visit the business. Professional but upbeat tone; no hype. Include 3 relevant hashtags. End with getgoodsgratis.app/GoogleAdsOverlay Post ${postNum}.`,
 };
 
 // Build the in-app landing link a scheduled post points at. The landing renders the same Buy Now +
@@ -71,6 +72,8 @@ async function postToSocialPlatform(connection, content) {
       return postToTwitter(connection, content);
     case 'instagram':
       return postToInstagram(connection, content);
+    case 'linkedin':
+      return postToLinkedIn(connection, content);
     case 'snapchat':
     case 'tiktok':
       // Log-only for now since Snapchat/TikTok require special API access
@@ -103,6 +106,35 @@ async function postToTwitter(connection, content) {
   const data = await response.json();
   if (!response.ok) throw new Error(data.errors?.[0]?.message || 'Twitter post failed');
   return { postId: data.data?.id };
+}
+
+async function postToLinkedIn(connection, content) {
+  // Text share via the UGC Posts API. author = the connected member URN (account_id holds the OIDC `sub`).
+  const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${connection.access_token}`,
+      'Content-Type': 'application/json',
+      'X-Restli-Protocol-Version': '2.0.0'
+    },
+    body: JSON.stringify({
+      author: `urn:li:person:${connection.account_id}`,
+      lifecycleState: 'PUBLISHED',
+      specificContent: {
+        'com.linkedin.ugc.ShareContent': {
+          shareCommentary: { text: content },
+          shareMediaCategory: 'NONE'
+        }
+      },
+      visibility: { 'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC' }
+    })
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.message || 'LinkedIn post failed');
+  }
+  const postId = response.headers.get('x-restli-id') || response.headers.get('x-linkedin-id');
+  return { postId: postId || `linkedin_${Date.now()}` };
 }
 
 async function postToInstagram(connection, content) {
